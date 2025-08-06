@@ -47,16 +47,25 @@
             border: 3px solid #2563eb;
         }
         
+        .profile-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 3px solid #2563eb;
+        }
+        
         .header-info h1 {
             font-size: 28px;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 5px;
-        }
-        
-        /* Fallback wenn kein Bild vorhanden */
-        .header:has(.profile-image[style*="display: none"]) .header-info {
-            margin-left: 0;
         }
         
         .header-info h2 {
@@ -244,9 +253,8 @@
     <!-- Seite 1 -->
     <div class="page">
         <div class="header">
-            <img src="manuel-weiss-photo.jpg" alt="Manuel Weiss" class="profile-image" 
-                 onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';"
-                 onload="console.log('Profilbild geladen:', this.src)">
+            <img src="manuel-weiss-photo.jpg" alt="Manuel Weiss" class="profile-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="profile-placeholder" style="display: none; width: 80px; height: 80px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border: 3px solid #2563eb;">MW</div>
             <div class="header-info">
                 <h1>Manuel Weiss</h1>
                 <h2>Professional Services</h2>
@@ -440,5 +448,23 @@
             <p>Digitalisierung • Prozessmanagement • HR-Tech Beratung</p>
         </div>
     </div>
+
+    <script>
+        // Load saved profile image if available
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const profileImage = document.querySelector('.profile-image');
+                if (profileImage) {
+                    profileImage.src = savedImage;
+                    profileImage.style.display = 'block';
+                    const placeholder = document.querySelector('.profile-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html> 

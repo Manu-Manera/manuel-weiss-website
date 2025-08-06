@@ -111,12 +111,6 @@ class AdminPanel {
             // Save to localStorage for persistence
             localStorage.setItem('profileImage', e.target.result);
 
-            // Also update the PDF template image
-            const pdfImage = document.querySelector('img[src*="manuel-weiss-photo"]');
-            if (pdfImage) {
-                pdfImage.src = e.target.result;
-            }
-
             this.showNotification('Profilbild erfolgreich aktualisiert', 'success');
             this.markAsChanged('profile-image', e.target.result);
         };
@@ -601,16 +595,21 @@ class AdminPanel {
     }
 
     generatePDF() {
-        // Check if profile image exists
-        const profileImage = document.getElementById('profile-preview');
-        if (profileImage && profileImage.src && !profileImage.src.includes('manuel-weiss-photo.jpg')) {
-            // Image has been updated, show instructions
-            this.showNotification('Profilbild aktualisiert! PDF wird mit neuem Bild generiert.', 'success');
-        }
-        
         // Open PDF generation page
         window.open('beraterprofil.html', '_blank');
         this.showNotification('PDF-Vorschau geöffnet. Nutzen Sie "Drucken als PDF" im Browser.', 'info');
+    }
+
+    updatePDFImage() {
+        // Update PDF image when profile image is changed
+        const savedImage = localStorage.getItem('profileImage');
+        if (savedImage) {
+            // Update PDF template image
+            const pdfImage = document.querySelector('.profile-image');
+            if (pdfImage) {
+                pdfImage.src = savedImage;
+            }
+        }
     }
 }
 
