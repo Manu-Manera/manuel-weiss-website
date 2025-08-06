@@ -69,18 +69,23 @@ body {
 }
 
 .download-link {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: #2563eb;
     color: white !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 20px;
-    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .download-link:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    background: #1d4ed8;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.download-link i {
+    font-size: 0.9rem;
 }
 
 .hamburger {
@@ -524,8 +529,9 @@ body {
 
 .contact-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .contact-item i {
@@ -533,16 +539,19 @@ body {
     color: #2563eb;
     width: 40px;
     text-align: center;
+    margin-top: 0.25rem;
 }
 
 .contact-item h4 {
     font-weight: 600;
     color: #1e293b;
     margin-bottom: 0.25rem;
+    text-align: left;
 }
 
 .contact-item p {
     color: #64748b;
+    text-align: left;
 }
 
 .contact-form {
@@ -561,7 +570,6 @@ body {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: #374151;
-    text-align: left;
 }
 
 .form-group input,

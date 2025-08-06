@@ -18,13 +18,15 @@ async function generatePDF() {
         const htmlPath = path.join(__dirname, 'beraterprofil.html');
         const htmlContent = fs.readFileSync(htmlPath, 'utf8');
         
-        // HTML in Page laden
         await page.setContent(htmlContent, {
             waitUntil: 'networkidle0'
         });
         
         // PDF generieren
-        const pdfBuffer = await page.pdf({
+        const pdfPath = path.join(__dirname, 'beraterprofil.pdf');
+        
+        await page.pdf({
+            path: pdfPath,
             format: 'A4',
             printBackground: true,
             margin: {
@@ -32,15 +34,10 @@ async function generatePDF() {
                 right: '0mm',
                 bottom: '0mm',
                 left: '0mm'
-            },
-            preferCSSPageSize: true
+            }
         });
         
-        // PDF speichern
-        const outputPath = path.join(__dirname, 'beraterprofil.pdf');
-        fs.writeFileSync(outputPath, pdfBuffer);
-        
-        console.log('✅ PDF erfolgreich erstellt: beraterprofil.pdf');
+        console.log('✅ PDF erfolgreich generiert: beraterprofil.pdf');
         
         await browser.close();
         
@@ -50,9 +47,5 @@ async function generatePDF() {
     }
 }
 
-// PDF generieren wenn Skript direkt ausgeführt wird
-if (require.main === module) {
-    generatePDF();
-}
-
-module.exports = { generatePDF }; 
+// Script ausführen
+generatePDF(); 

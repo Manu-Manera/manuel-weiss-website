@@ -216,16 +216,6 @@ class AdminPanel {
                 });
             }
         });
-
-        // Add change event listeners for immediate updates
-        const allInputs = document.querySelectorAll('input, textarea, select');
-        allInputs.forEach(input => {
-            input.addEventListener('change', () => {
-                if (input.id) {
-                    this.updateMainWebsite(input.id, input.value);
-                }
-            });
-        });
     }
 
     setupServiceHandlers() {
@@ -297,8 +287,6 @@ class AdminPanel {
             }
         }
 
-        // Update main website if it's open
-        this.updateMainWebsite(field, value);
         this.markAsChanged(field, value);
     }
 
@@ -309,9 +297,6 @@ class AdminPanel {
         if (element) {
             element.textContent = value;
         }
-        
-        // Update main website with correct key
-        this.updateMainWebsite(`stat${stat}-name`, value);
         this.markAsChanged(`${stat}-name`, value);
     }
 
@@ -322,10 +307,6 @@ class AdminPanel {
         if (element) {
             element.textContent = value + unit;
         }
-        
-        // Update main website with correct keys
-        this.updateMainWebsite(`stat${stat}-value`, value);
-        this.updateMainWebsite(`stat${stat}-unit`, unit);
         this.markAsChanged(`${stat}-value`, value);
         this.markAsChanged(`${stat}-unit`, unit);
     }
@@ -347,8 +328,6 @@ class AdminPanel {
             }
         }
 
-        // Update main website
-        this.updateMainWebsite(field, value);
         this.markAsChanged(field, value);
     }
 
@@ -558,17 +537,6 @@ class AdminPanel {
         // This would update the main website projects section
     }
 
-    // Live Update Functions
-    updateMainWebsite(field, value) {
-        // Save to localStorage for persistence
-        localStorage.setItem(`website-${field}`, JSON.stringify(value));
-        
-        // Trigger a custom event that the main page can listen to
-        window.dispatchEvent(new CustomEvent('website-update', {
-            detail: { field, value }
-        }));
-    }
-
     // Utility Functions
     markAsChanged(field, value) {
         this.changes[field] = value;
@@ -583,18 +551,6 @@ class AdminPanel {
                 formData[input.id] = input.value;
             }
         });
-        
-        // Also collect statistics data
-        for (let i = 1; i <= 3; i++) {
-            const nameInput = document.getElementById(`stat${i}-name`);
-            const valueInput = document.getElementById(`stat${i}-value`);
-            const unitInput = document.getElementById(`stat${i}-unit`);
-            
-            if (nameInput) formData[`stat${i}-name`] = nameInput.value;
-            if (valueInput) formData[`stat${i}-value`] = valueInput.value;
-            if (unitInput) formData[`stat${i}-unit`] = unitInput.value;
-        }
-        
         return formData;
     }
 
@@ -609,83 +565,16 @@ class AdminPanel {
     }
 
     loadCurrentData() {
-        // Load current website data into admin panel from localStorage
-        this.loadHeroData();
-        this.loadStatsData();
-        this.loadContactData();
-    }
-
-    loadHeroData() {
-        // Load hero data from localStorage
-        const heroName = localStorage.getItem('website-hero-name');
-        const heroTitle = localStorage.getItem('website-hero-title');
-        const heroSubtitle = localStorage.getItem('website-hero-subtitle');
-        const heroDescription = localStorage.getItem('website-hero-description');
-
-        if (heroName) document.getElementById('hero-name').value = heroName;
-        if (heroTitle) document.getElementById('hero-title').value = heroTitle;
-        if (heroSubtitle) document.getElementById('hero-subtitle').value = heroSubtitle;
-        if (heroDescription) document.getElementById('hero-description').value = heroDescription;
-    }
-
-    loadStatsData() {
-        // Load statistics data from localStorage
-        for (let i = 1; i <= 3; i++) {
-            const statValue = localStorage.getItem(`website-stat-${i}`);
-            const statLabel = localStorage.getItem(`website-stat-label-${i}`);
-            
-            if (statValue) {
-                const statData = JSON.parse(statValue);
-                document.getElementById(`stat${i}-value`).value = statData.value;
-                document.getElementById(`stat${i}-unit`).value = statData.unit;
-            }
-            if (statLabel) {
-                document.getElementById(`stat${i}-name`).value = statLabel;
-            }
-        }
-    }
-
-    loadContactData() {
-        // Load contact data from localStorage
-        const contactName = localStorage.getItem('website-contact-name');
-        const contactTitle = localStorage.getItem('website-contact-title');
-        const contactLocation = localStorage.getItem('website-contact-location');
-        const contactEmail = localStorage.getItem('website-contact-email');
-        const contactPhone = localStorage.getItem('website-contact-phone');
-
-        if (contactName) document.getElementById('contact-name').value = contactName;
-        if (contactTitle) document.getElementById('contact-title').value = contactTitle;
-        if (contactLocation) document.getElementById('contact-location').value = contactLocation;
-        if (contactEmail) document.getElementById('contact-email').value = contactEmail;
-        if (contactPhone) document.getElementById('contact-phone').value = contactPhone;
+        // Load current website data into admin panel
+        // This would typically fetch from localStorage or server
     }
 
     // Save and Publish Functions
     saveAllChanges() {
         const changes = this.collectChanges();
-        
-        // Save all changes to localStorage
-        Object.keys(changes).forEach(key => {
-            localStorage.setItem(`website-${key}`, JSON.stringify(changes[key]));
-        });
-        
-        // Also save the complete data
+        // Save to localStorage for now
         localStorage.setItem('websiteData', JSON.stringify(changes));
-        
-        // Force a page reload to ensure all changes are applied
-        this.showNotification('Alle Änderungen gespeichert. Bitte laden Sie die Hauptseite neu.', 'success');
-        
-        // Open main page in new tab if not already open
-        setTimeout(() => {
-            window.open('index.html', '_blank');
-        }, 1000);
-    }
-
-    updateMainWebsiteFromChanges(changes) {
-        // Update main website with all changes
-        Object.keys(changes).forEach(key => {
-            this.updateMainWebsite(key, changes[key]);
-        });
+        this.showNotification('Alle Änderungen gespeichert', 'success');
     }
 
     publishChanges() {
@@ -706,18 +595,9 @@ class AdminPanel {
     }
 
     generatePDF() {
-        // Show loading state
-        this.showNotification('PDF wird generiert...', 'info');
-        
-        // In a real implementation, this would call the server to generate PDF
-        // For now, we'll just open the PDF if it exists
-        setTimeout(() => {
-            const pdfLink = document.createElement('a');
-            pdfLink.href = 'beraterprofil.pdf';
-            pdfLink.target = '_blank';
-            pdfLink.click();
-            this.showNotification('PDF erfolgreich generiert!', 'success');
-        }, 2000);
+        // Open PDF generation page
+        window.open('beraterprofil.html', '_blank');
+        this.showNotification('PDF-Vorschau geöffnet. Nutzen Sie "Drucken als PDF" im Browser.', 'info');
     }
 }
 

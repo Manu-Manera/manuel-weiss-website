@@ -55,30 +55,27 @@
         }
         
         .header-info h2 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #2563eb;
             margin-bottom: 10px;
         }
         
         .header-info p {
-            font-size: 14px;
+            font-size: 12px;
             color: #64748b;
-            line-height: 1.4;
+            margin-bottom: 5px;
         }
         
         .contact-info {
-            display: flex;
-            gap: 30px;
-            margin-top: 10px;
+            margin-left: auto;
+            text-align: right;
         }
         
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
+        .contact-info p {
+            font-size: 11px;
             color: #64748b;
+            margin-bottom: 3px;
         }
         
         .section {
@@ -101,43 +98,61 @@
             margin-bottom: 20px;
         }
         
-        .expertise-item {
+        .expertise-card {
             background: #f8fafc;
             padding: 15px;
             border-radius: 8px;
             border-left: 4px solid #2563eb;
         }
         
-        .expertise-item h4 {
+        .expertise-card h3 {
             font-size: 14px;
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 8px;
         }
         
-        .expertise-item p {
+        .expertise-card ul {
+            list-style: none;
             font-size: 11px;
             color: #64748b;
-            line-height: 1.4;
         }
         
-        .project {
-            margin-bottom: 15px;
-            padding: 15px;
+        .expertise-card li {
+            margin-bottom: 3px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .expertise-card li::before {
+            content: "•";
+            color: #2563eb;
+            position: absolute;
+            left: 0;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .project-card {
             background: #f8fafc;
-            border-radius: 8px;
-            border-left: 4px solid #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
         }
         
-        .project h4 {
-            font-size: 14px;
+        .project-card h3 {
+            font-size: 13px;
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 5px;
         }
         
-        .project p {
-            font-size: 11px;
+        .project-card p {
+            font-size: 10px;
             color: #64748b;
             margin-bottom: 8px;
         }
@@ -151,9 +166,9 @@
         .tag {
             background: #2563eb;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
             font-weight: 500;
         }
         
@@ -164,23 +179,24 @@
             margin-bottom: 20px;
         }
         
-        .stat {
+        .stat-item {
             text-align: center;
+            background: #f8fafc;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             border-radius: 8px;
         }
         
         .stat-number {
             font-size: 24px;
             font-weight: 700;
+            color: #2563eb;
             margin-bottom: 5px;
         }
         
         .stat-label {
             font-size: 11px;
-            opacity: 0.9;
+            color: #64748b;
+            font-weight: 500;
         }
         
         .certifications {
@@ -191,23 +207,27 @@
         
         .certification {
             background: #e2e8f0;
+            color: #1e293b;
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 500;
-            color: #374151;
         }
         
         .page-break {
             page-break-before: always;
         }
         
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 10px;
+            color: #64748b;
+        }
+        
         @media print {
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
             .page {
                 box-shadow: none;
                 margin: 0;
@@ -222,61 +242,71 @@
             <img src="manuel-weiss-photo.jpg" alt="Manuel Weiss" class="profile-image">
             <div class="header-info">
                 <h1>Manuel Weiss</h1>
-                <h2>Senior HR-Tech & Digitalisierungsberater</h2>
-                <p>Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Technologien. 
-                   Über 6 Jahre Erfahrung in der Implementierung von HR-Systemen und der Optimierung von Geschäftsprozessen.</p>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <strong>📧</strong> weiss-manuel@gmx.de
-                    </div>
-                    <div class="contact-item">
-                        <strong>📱</strong> +49 173 3993407
-                    </div>
-                    <div class="contact-item">
-                        <strong>📍</strong> Schweiz
-                    </div>
-                </div>
+                <h2>Professional Services</h2>
+                <p>Digitalisierung • Prozessmanagement • HR-Tech Beratung</p>
+                <p>Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation</p>
+            </div>
+            <div class="contact-info">
+                <p>weiss-manuel@gmx.de</p>
+                <p>+49 173 3993407</p>
+                <p>Schweiz</p>
             </div>
         </div>
 
         <div class="section">
-            <h3 class="section-title">Expertise & Kernkompetenzen</h3>
+            <h2 class="section-title">Expertise & Kernkompetenzen</h2>
             <div class="expertise-grid">
-                <div class="expertise-item">
-                    <h4>HR-Tech Implementierung</h4>
-                    <p>Spezialisierung auf UKG HRSD, SAP SuccessFactors und moderne HR-Lösungen. 
-                       Erfolgreiche Implementierung von HR-Service-Delivery-Plattformen für internationale Konzerne.</p>
+                <div class="expertise-card">
+                    <h3>Prozessmanagement</h3>
+                    <ul>
+                        <li>BPMN 2.0 Modellierung</li>
+                        <li>ADONIS Implementierung</li>
+                        <li>Workflow-Design</li>
+                        <li>Prozessoptimierung</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Prozessmanagement</h4>
-                    <p>BPMN 2.0, ADONIS und bewährte Methoden zur Prozessoptimierung. 
-                       Entwicklung und Implementierung von digitalen Workflows und Service-Center-Lösungen.</p>
+                <div class="expertise-card">
+                    <h3>HR-Tech Beratung</h3>
+                    <ul>
+                        <li>UKG HRSD Implementierung</li>
+                        <li>Service Delivery Optimierung</li>
+                        <li>Change Management</li>
+                        <li>HR-Systeme Integration</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Change Management</h4>
-                    <p>Begleitung von Digitalisierungsprojekten mit Fokus auf Mitarbeiterakzeptanz. 
-                       Workshop-Moderation und Schulungen für erfolgreiche Transformationen.</p>
+                <div class="expertise-card">
+                    <h3>Projektmanagement</h3>
+                    <ul>
+                        <li>Scrum Master</li>
+                        <li>Prince2 Agile</li>
+                        <li>Agile Methoden</li>
+                        <li>Stakeholder-Management</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Projektmanagement</h4>
-                    <p>Agile und klassische Methoden (Scrum, Prince2). 
-                       Leitung von Großprojekten mit internationalen Teams und Stakeholder-Management.</p>
+                <div class="expertise-card">
+                    <h3>Digitalisierung</h3>
+                    <ul>
+                        <li>Design Thinking</li>
+                        <li>Business Model Innovation</li>
+                        <li>Digitalisierungsroadmaps</li>
+                        <li>AI Process Automation</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h3 class="section-title">Leistungsübersicht</h3>
+            <h2 class="section-title">Erfolgsstatistiken</h2>
             <div class="stats-grid">
-                <div class="stat">
+                <div class="stat-item">
                     <div class="stat-number">6+</div>
                     <div class="stat-label">Jahre Erfahrung</div>
                 </div>
-                <div class="stat">
+                <div class="stat-item">
                     <div class="stat-number">30+</div>
                     <div class="stat-label">Projekte geleitet</div>
                 </div>
-                <div class="stat">
+                <div class="stat-item">
                     <div class="stat-number">100%</div>
                     <div class="stat-label">Kundenzufriedenheit</div>
                 </div>
@@ -284,14 +314,14 @@
         </div>
 
         <div class="section">
-            <h3 class="section-title">Zertifikate & Qualifikationen</h3>
+            <h2 class="section-title">Zertifikate & Qualifikationen</h2>
             <div class="certifications">
-                <div class="certification">Scrum Master</div>
-                <div class="certification">Prince2 Agile</div>
-                <div class="certification">BPMN 2.0</div>
-                <div class="certification">Bachelor HR Management</div>
-                <div class="certification">Supply Chain Management</div>
-                <div class="certification">Service Management</div>
+                <span class="certification">Scrum Master</span>
+                <span class="certification">Prince2 Agile</span>
+                <span class="certification">BPMN 2.0</span>
+                <span class="certification">Bachelor HR Management</span>
+                <span class="certification">Supply Chain Management</span>
+                <span class="certification">Service Management</span>
             </div>
         </div>
     </div>
@@ -299,113 +329,108 @@
     <!-- Seite 2 -->
     <div class="page page-break">
         <div class="section">
-            <h3 class="section-title">Ausgewählte Projekte</h3>
-            
-            <div class="project">
-                <h4>Digitalisierung HR-Prozesse - Internationaler Konzern</h4>
-                <p>Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden. 
-                   Entwicklung einer ganzheitlichen HR-Service-Delivery-Strategie mit digitalen Self-Service-Funktionen.</p>
-                <div class="project-tags">
-                    <span class="tag">UKG HRSD</span>
-                    <span class="tag">HR-Tech</span>
-                    <span class="tag">Change Management</span>
-                    <span class="tag">Self-Service</span>
+            <h2 class="section-title">Ausgewählte Projekte</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Digitalisierung HR-Prozesse</h3>
+                    <p>Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden. Vollständige Digitalisierung des Employee Lifecycle.</p>
+                    <div class="project-tags">
+                        <span class="tag">HR-Tech</span>
+                        <span class="tag">UKG</span>
+                        <span class="tag">Change Management</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="project">
-                <h4>Prozessoptimierung mit ADONIS - Schweizer Bank</h4>
-                <p>Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank. 
-                   Modellierung von Geschäftsprozessen nach BPMN 2.0 Standard und Implementierung von ADONIS.</p>
-                <div class="project-tags">
-                    <span class="tag">BPMN 2.0</span>
-                    <span class="tag">ADONIS</span>
-                    <span class="tag">Banking</span>
-                    <span class="tag">Prozessmodellierung</span>
+                
+                <div class="project-card">
+                    <h3>Prozessoptimierung mit ADONIS</h3>
+                    <p>Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank. BPMN 2.0 Modellierung und Tool-Implementierung.</p>
+                    <div class="project-tags">
+                        <span class="tag">BPMN</span>
+                        <span class="tag">ADONIS</span>
+                        <span class="tag">Banking</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="project">
-                <h4>HR Service Center Transformation - Schindler</h4>
-                <p>Health-Check und Digitalisierungs-Roadmap für HR-Prozesse. 
-                   Analyse der bestehenden HR-Struktur und Entwicklung einer strategischen Digitalisierungsplanung.</p>
-                <div class="project-tags">
-                    <span class="tag">HR-Strategie</span>
-                    <span class="tag">Digitalisierungs-Roadmap</span>
-                    <span class="tag">Health-Check</span>
-                    <span class="tag">Service Center</span>
+                
+                <div class="project-card">
+                    <h3>HR Service Center Digitalisierung</h3>
+                    <p>Umfassende Digitalisierung eines HR Service Centers mit 121 verschiedenen HR-Applikationen im Best-of-Breed-Ansatz.</p>
+                    <div class="project-tags">
+                        <span class="tag">Service Delivery</span>
+                        <span class="tag">Integration</span>
+                        <span class="tag">Best-of-Breed</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="project">
-                <h4>Internationale Prozessberatung - Allianz</h4>
-                <p>Prozessoptimierung in internationalen Teams mit Service-Centern in Indien und Workshops in den USA. 
-                   Entwicklung von globalen Standardprozessen und lokalen Anpassungen.</p>
-                <div class="project-tags">
-                    <span class="tag">International</span>
-                    <span class="tag">Prozessberatung</span>
-                    <span class="tag">Workshops</span>
-                    <span class="tag">Global</span>
+                
+                <div class="project-card">
+                    <h3>Change Management Workshops</h3>
+                    <p>Durchführung von Design Thinking Workshops und Change Management Trainings für internationale Teams in USA, Kanada und Indien.</p>
+                    <div class="project-tags">
+                        <span class="tag">Design Thinking</span>
+                        <span class="tag">Workshops</span>
+                        <span class="tag">International</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h3 class="section-title">Technische Expertise</h3>
+            <h2 class="section-title">Technische Expertise</h2>
             <div class="expertise-grid">
-                <div class="expertise-item">
-                    <h4>HR-Systeme</h4>
-                    <p>UKG HRSD, SAP SuccessFactors, Workday, ServiceNow, Zendesk, Confluence</p>
+                <div class="expertise-card">
+                    <h3>HR-Systeme</h3>
+                    <ul>
+                        <li>UKG HRSD (People Assist, Document Manager)</li>
+                        <li>UKG WFM (Workforce Management)</li>
+                        <li>SAP SuccessFactors</li>
+                        <li>Workday (Grundkenntnisse)</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Prozessmanagement</h4>
-                    <p>ADONIS, BPMN 2.0, Visio, Lucidchart, Process Mining</p>
+                <div class="expertise-card">
+                    <h3>Prozessmanagement-Tools</h3>
+                    <ul>
+                        <li>ADONIS BPM Suite</li>
+                        <li>BPMN 2.0 Modellierung</li>
+                        <li>Process Mining</li>
+                        <li>RPA (Robotic Process Automation)</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Projektmanagement</h4>
-                    <p>Scrum, Prince2, Kanban, Jira, MS Project, MS Teams</p>
+                <div class="expertise-card">
+                    <h3>Projektmanagement</h3>
+                    <ul>
+                        <li>Scrum & Agile Methoden</li>
+                        <li>Prince2 (Practitioner, Agile)</li>
+                        <li>Kanban & Lean Management</li>
+                        <li>SAFe Agilist</li>
+                    </ul>
                 </div>
-                <div class="expertise-item">
-                    <h4>Datenanalyse</h4>
-                    <p>Excel, Power BI, Python, AI/ML Tools, API Integration</p>
+                <div class="expertise-card">
+                    <h3>Technologien</h3>
+                    <ul>
+                        <li>Python Scripting</li>
+                        <li>AI/ML Integration</li>
+                        <li>API Endpoints (REST, SOAP)</li>
+                        <li>Cloud Architecture</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h3 class="section-title">Methoden & Ansätze</h3>
-            <div class="expertise-grid">
-                <div class="expertise-item">
-                    <h4>Design Thinking</h4>
-                    <p>Workshop-Moderation, Prototyping, User-Centered Design, Innovation Workshops</p>
-                </div>
-                <div class="expertise-item">
-                    <h4>Agile Methoden</h4>
-                    <p>Scrum Master, Sprint Planning, Retrospectives, User Stories, Backlog Management</p>
-                </div>
-                <div class="expertise-item">
-                    <h4>Change Management</h4>
-                    <p>Stakeholder-Management, Kommunikationsstrategien, Training & Schulungen</p>
-                </div>
-                <div class="expertise-item">
-                    <h4>Business Analysis</h4>
-                    <p>Requirements Engineering, Gap-Analyse, Business Cases, ROI-Berechnungen</p>
-                </div>
+            <h2 class="section-title">Beratungsansatz</h2>
+            <div class="expertise-card">
+                <p style="font-size: 12px; color: #64748b; line-height: 1.6;">
+                    Mein Beratungsansatz basiert auf der Kombination aus technischem Verständnis und pragmatischer Umsetzung. 
+                    Ich begleite Unternehmen von der strategischen Planung bis zur erfolgreichen Implementierung, 
+                    wobei der Fokus immer auf messbaren Ergebnissen und nachhaltigen Lösungen liegt. 
+                    Durch meine internationale Erfahrung und interkulturelle Kompetenz kann ich auch 
+                    komplexe Projekte mit globalen Teams erfolgreich umsetzen.
+                </p>
             </div>
         </div>
 
-        <div class="section">
-            <h3 class="section-title">Sprachen & Soft Skills</h3>
-            <div class="expertise-grid">
-                <div class="expertise-item">
-                    <h4>Sprachen</h4>
-                    <p>Deutsch (Muttersprache), Englisch (C1), Spanisch (A2)</p>
-                </div>
-                <div class="expertise-item">
-                    <h4>Soft Skills</h4>
-                    <p>Präsentation, Moderation, Verhandlung, interkulturelle Kommunikation</p>
-                </div>
-            </div>
+        <div class="footer">
+            <p>Manuel Weiss Professional Services | weiss-manuel@gmx.de | +49 173 3993407</p>
+            <p>Digitalisierung • Prozessmanagement • HR-Tech Beratung</p>
         </div>
     </div>
 </body>
