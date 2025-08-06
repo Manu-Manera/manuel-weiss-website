@@ -7,8 +7,7 @@
     "start": "python3 -m http.server 8000",
     "dev": "python3 -m http.server 8000",
     "build": "echo 'Static site - no build required'",
-    "deploy": "vercel --prod",
-    "generate-pdf": "node generate-pdf.js"
+    "deploy": "vercel --prod"
   },
   "keywords": [
     "website",
@@ -25,8 +24,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "devDependencies": {
-    "puppeteer": "^21.11.0"
   }
-}
+} 

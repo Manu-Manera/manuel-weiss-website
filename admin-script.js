@@ -43,8 +43,9 @@ class AdminPanel {
         // Update title
         const titles = {
             'hero': 'Hero-Bereich bearbeiten',
+            'profile': 'Beraterprofil bearbeiten',
             'services': 'Beratungs-Services bearbeiten',
-            'rental': 'Vermietung bearbeiten',
+            'activities': 'Sonstige Tätigkeiten bearbeiten',
             'projects': 'Projekte bearbeiten',
             'contact': 'Kontakt bearbeiten',
             'settings': 'Einstellungen bearbeiten'
@@ -166,6 +167,9 @@ class AdminPanel {
         // Hero section
         this.setupHeroHandlers();
         
+        // Profile
+        this.setupProfileHandlers();
+        
         // Services
         this.setupServiceHandlers();
         
@@ -213,6 +217,18 @@ class AdminPanel {
             if (unitInput) {
                 unitInput.addEventListener('input', () => {
                     this.updateStatValue(stat, valueInput ? valueInput.value : '', unitInput.value);
+                });
+            }
+        });
+    }
+
+    setupProfileHandlers() {
+        const profileInputs = ['profile-title', 'profile-description', 'profile-availability'];
+        profileInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.updateProfileContent(id, input.value);
                 });
             }
         });
@@ -287,6 +303,12 @@ class AdminPanel {
             }
         }
 
+        this.markAsChanged(field, value);
+    }
+
+    updateProfileContent(field, value) {
+        // This would update the profile PDF content
+        // Implementation depends on how you want to sync with the profile page
         this.markAsChanged(field, value);
     }
 
@@ -593,24 +615,6 @@ class AdminPanel {
         // Open website in new tab for preview
         window.open('index.html', '_blank');
     }
-
-    generatePDF() {
-        // Open PDF generation page
-        window.open('beraterprofil.html', '_blank');
-        this.showNotification('PDF-Vorschau geöffnet. Nutzen Sie "Drucken als PDF" im Browser.', 'info');
-    }
-
-    updatePDFImage() {
-        // Update PDF image when profile image is changed
-        const savedImage = localStorage.getItem('profileImage');
-        if (savedImage) {
-            // Update PDF template image
-            const pdfImage = document.querySelector('.profile-image');
-            if (pdfImage) {
-                pdfImage.src = savedImage;
-            }
-        }
-    }
 }
 
 // Global Functions for HTML onclick handlers
@@ -628,10 +632,6 @@ function resetChanges() {
 
 function previewWebsite() {
     adminPanel.previewWebsite();
-}
-
-function generatePDF() {
-    adminPanel.generatePDF();
 }
 
 function addService() {

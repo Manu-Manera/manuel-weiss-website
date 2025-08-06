@@ -22,6 +22,9 @@
                     <li><a href="#hero" class="nav-link active" data-section="hero">
                         <i class="fas fa-home"></i> Hero-Bereich
                     </a></li>
+                    <li><a href="#profile" class="nav-link" data-section="profile">
+                        <i class="fas fa-file-pdf"></i> Beraterprofil
+                    </a></li>
                     <li><a href="#services" class="nav-link" data-section="services">
                         <i class="fas fa-cogs"></i> Beratungs-Services
                     </a></li>
@@ -46,9 +49,6 @@
                 </button>
                 <button class="btn btn-secondary" onclick="previewWebsite()">
                     <i class="fas fa-eye"></i> Website anzeigen
-                </button>
-                <button class="btn btn-success" onclick="generatePDF()">
-                    <i class="fas fa-file-pdf"></i> PDF generieren
                 </button>
             </div>
         </aside>
@@ -148,6 +148,54 @@
                                 <input type="text" id="stat3-unit" value="%" placeholder="+, %, etc.">
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section Editor -->
+            <section id="profile" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-user"></i> Profil-Informationen</h3>
+                        <div class="form-group">
+                            <label for="profile-title">Berufsbezeichnung</label>
+                            <input type="text" id="profile-title" value="Senior HR-Tech Consultant & Digitalisierungsexperte">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-description">Beschreibung</label>
+                            <textarea id="profile-description" rows="4">Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-availability">Verfügbarkeit</label>
+                            <input type="text" id="profile-availability" value="Sofort verfügbar">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-project-diagram"></i> Projekte bearbeiten</h3>
+                        <div id="projects-container">
+                            <div class="project-item">
+                                <div class="form-group">
+                                    <label>Projekt 1 - Titel</label>
+                                    <input type="text" value="Digitalisierung HR-Prozesse" class="project-title">
+                                </div>
+                                <div class="form-group">
+                                    <label>Projekt 1 - Unternehmen</label>
+                                    <input type="text" value="Internationaler Konzern (500+ Mitarbeiter)" class="project-company">
+                                </div>
+                                <div class="form-group">
+                                    <label>Projekt 1 - Beschreibung</label>
+                                    <textarea rows="3" class="project-description">Implementierung von UKG HRSD für einen internationalen Konzern. Entwicklung einer Digitalisierungsroadmap, Prozessanalyse und -optimierung des gesamten Employee Lifecycle. Erfolgreiche Einführung von Self-Service Funktionen und Case Management.</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Projekt 1 - Technologien (durch Kommas getrennt)</label>
+                                    <input type="text" value="UKG HRSD, BPMN 2.0, Change Management, Process Mining" class="project-tech">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="addProject()">
+                            <i class="fas fa-plus"></i> Projekt hinzufügen
+                        </button>
                     </div>
                 </div>
             </section>
