@@ -1,0 +1,28 @@
+{
+  "name": "manuel-weiss-professional-services",
+  "version": "1.0.0",
+  "description": "Professionelle Website für Manuel Weiss - Beratung, Vermietung und IT-Projekte",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "website",
+    "beratung",
+    "vermietung",
+    "digitalisierung",
+    "prozessmanagement"
+  ],
+  "author": "Manuel Weiss",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/manuel-weiss-website.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
