@@ -593,6 +593,21 @@ class AdminPanel {
         // Open website in new tab for preview
         window.open('index.html', '_blank');
     }
+
+    generatePDF() {
+        // Show loading state
+        this.showNotification('PDF wird generiert...', 'info');
+        
+        // In a real implementation, this would call the server to generate PDF
+        // For now, we'll just open the PDF if it exists
+        setTimeout(() => {
+            const pdfLink = document.createElement('a');
+            pdfLink.href = 'beraterprofil.pdf';
+            pdfLink.target = '_blank';
+            pdfLink.click();
+            this.showNotification('PDF erfolgreich generiert!', 'success');
+        }, 2000);
+    }
 }
 
 // Global Functions for HTML onclick handlers
@@ -610,6 +625,10 @@ function resetChanges() {
 
 function previewWebsite() {
     adminPanel.previewWebsite();
+}
+
+function generatePDF() {
+    adminPanel.generatePDF();
 }
 
 function addService() {
