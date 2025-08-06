@@ -54,6 +54,11 @@
             margin-bottom: 5px;
         }
         
+        /* Fallback wenn kein Bild vorhanden */
+        .header:has(.profile-image[style*="display: none"]) .header-info {
+            margin-left: 0;
+        }
+        
         .header-info h2 {
             font-size: 16px;
             font-weight: 600;
@@ -239,7 +244,9 @@
     <!-- Seite 1 -->
     <div class="page">
         <div class="header">
-            <img src="manuel-weiss-photo.jpg" alt="Manuel Weiss" class="profile-image">
+            <img src="manuel-weiss-photo.jpg" alt="Manuel Weiss" class="profile-image" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';"
+                 onload="console.log('Profilbild geladen:', this.src)">
             <div class="header-info">
                 <h1>Manuel Weiss</h1>
                 <h2>Professional Services</h2>

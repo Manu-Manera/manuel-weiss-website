@@ -16,7 +16,25 @@ async function generatePDF() {
         
         // HTML-Datei laden
         const htmlPath = path.join(__dirname, 'beraterprofil.html');
-        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        
+        // Profilbild als Base64 einbetten
+        const imagePath = path.join(__dirname, 'manuel-weiss-photo.jpg');
+        if (fs.existsSync(imagePath)) {
+            const imageBuffer = fs.readFileSync(imagePath);
+            const base64Image = imageBuffer.toString('base64');
+            const mimeType = 'image/jpeg'; // oder 'image/png' je nach Dateityp
+            
+            // Bild im HTML durch Base64 ersetzen
+            htmlContent = htmlContent.replace(
+                'src="manuel-weiss-photo.jpg"',
+                `src="data:${mimeType};base64,${base64Image}"`
+            );
+            
+            console.log('📸 Profilbild als Base64 eingebettet');
+        } else {
+            console.log('⚠️  Profilbild nicht gefunden, verwende Platzhalter');
+        }
         
         await page.setContent(htmlContent, {
             waitUntil: 'networkidle0'
