@@ -96,11 +96,20 @@ class AdminPanel {
             const preview = document.getElementById('profile-preview');
             preview.src = e.target.result;
             
-            // Update main website image
+            // Update main website image immediately
             const mainImage = document.getElementById('profile-photo');
             if (mainImage) {
                 mainImage.src = e.target.result;
             }
+
+            // Also update any other instances of the profile image
+            const allProfileImages = document.querySelectorAll('img[src*="manuel-weiss-photo"]');
+            allProfileImages.forEach(img => {
+                img.src = e.target.result;
+            });
+
+            // Save to localStorage for persistence
+            localStorage.setItem('profileImage', e.target.result);
 
             this.showNotification('Profilbild erfolgreich aktualisiert', 'success');
             this.markAsChanged('profile-image', e.target.result);
@@ -160,8 +169,8 @@ class AdminPanel {
         // Services
         this.setupServiceHandlers();
         
-        // Rental
-        this.setupRentalHandlers();
+        // Activities
+        this.setupActivityHandlers();
         
         // Projects
         this.setupProjectHandlers();
@@ -185,12 +194,25 @@ class AdminPanel {
         });
 
         // Stats
-        const statInputs = ['stat-years', 'stat-projects', 'stat-satisfaction'];
-        statInputs.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('input', () => {
-                    this.updateStats(id, input.value);
+        const statFields = ['stat1', 'stat2', 'stat3'];
+        statFields.forEach(stat => {
+            const nameInput = document.getElementById(`${stat}-name`);
+            const valueInput = document.getElementById(`${stat}-value`);
+            const unitInput = document.getElementById(`${stat}-unit`);
+            
+            if (nameInput) {
+                nameInput.addEventListener('input', () => {
+                    this.updateStatLabel(stat, nameInput.value);
+                });
+            }
+            if (valueInput) {
+                valueInput.addEventListener('input', () => {
+                    this.updateStatValue(stat, valueInput.value, unitInput ? unitInput.value : '');
+                });
+            }
+            if (unitInput) {
+                unitInput.addEventListener('input', () => {
+                    this.updateStatValue(stat, valueInput ? valueInput.value : '', unitInput.value);
                 });
             }
         });
@@ -201,9 +223,9 @@ class AdminPanel {
         this.updateServiceCards();
     }
 
-    setupRentalHandlers() {
-        // Rental cards are handled dynamically
-        this.updateRentalCards();
+    setupActivityHandlers() {
+        // Activity cards are handled dynamically
+        this.updateActivityCards();
     }
 
     setupProjectHandlers() {
@@ -268,22 +290,25 @@ class AdminPanel {
         this.markAsChanged(field, value);
     }
 
-    updateStats(field, value) {
-        const mappings = {
-            'stat-years': '.stat:nth-child(1) .stat-number',
-            'stat-projects': '.stat:nth-child(2) .stat-number',
-            'stat-satisfaction': '.stat:nth-child(3) .stat-number'
-        };
-
-        const selector = mappings[field];
-        if (selector) {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.textContent = value + (field === 'stat-satisfaction' ? '%' : '+');
-            }
+    updateStatLabel(stat, value) {
+        const statIndex = parseInt(stat.replace('stat', '')) - 1;
+        const selector = `.stat:nth-child(${statIndex + 1}) .stat-label`;
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = value;
         }
+        this.markAsChanged(`${stat}-name`, value);
+    }
 
-        this.markAsChanged(field, value);
+    updateStatValue(stat, value, unit) {
+        const statIndex = parseInt(stat.replace('stat', '')) - 1;
+        const selector = `.stat:nth-child(${statIndex + 1}) .stat-number`;
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = value + unit;
+        }
+        this.markAsChanged(`${stat}-value`, value);
+        this.markAsChanged(`${stat}-unit`, unit);
     }
 
     updateContactInfo(field, value) {
@@ -387,49 +412,49 @@ class AdminPanel {
         return card;
     }
 
-    addRental() {
-        const container = document.getElementById('rental-container');
-        const rentalId = Date.now();
-        const rentalCard = this.createRentalCard(rentalId);
-        container.appendChild(rentalCard);
-        this.updateRentalCards();
+    addActivity() {
+        const container = document.getElementById('activities-container');
+        const activityId = Date.now();
+        const activityCard = this.createActivityCard(activityId);
+        container.appendChild(activityCard);
+        this.updateActivityCards();
     }
 
-    removeRental(id) {
-        const rentalCard = document.querySelector(`[data-rental-id="${id}"]`);
-        if (rentalCard) {
-            rentalCard.remove();
-            this.updateRentalCards();
+    removeActivity(id) {
+        const activityCard = document.querySelector(`[data-activity-id="${id}"]`);
+        if (activityCard) {
+            activityCard.remove();
+            this.updateActivityCards();
         }
     }
 
-    createRentalCard(id) {
+    createActivityCard(id) {
         const card = document.createElement('div');
-        card.className = 'rental-editor-card';
-        card.setAttribute('data-rental-id', id);
+        card.className = 'activity-editor-card';
+        card.setAttribute('data-activity-id', id);
         card.innerHTML = `
-            <div class="rental-header">
-                <h4>Vermietung ${id}: Neue Vermietung</h4>
-                <button class="btn btn-danger btn-sm" onclick="adminPanel.removeRental(${id})">
+            <div class="activity-header">
+                <h4>Tätigkeit ${id}: Neue Tätigkeit</h4>
+                <button class="btn btn-danger btn-sm" onclick="adminPanel.removeActivity(${id})">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
-            <div class="rental-content">
+            <div class="activity-content">
                 <div class="form-group">
                     <label>Icon (FontAwesome Klasse)</label>
-                    <input type="text" value="fas fa-box" class="rental-icon">
+                    <input type="text" value="fas fa-tasks" class="activity-icon">
                 </div>
                 <div class="form-group">
                     <label>Titel</label>
-                    <input type="text" value="Neue Vermietung" class="rental-title">
+                    <input type="text" value="Neue Tätigkeit" class="activity-title">
                 </div>
                 <div class="form-group">
                     <label>Beschreibung</label>
-                    <textarea rows="3" class="rental-description">Beschreibung der neuen Vermietung.</textarea>
+                    <textarea rows="3" class="activity-description">Beschreibung der neuen Tätigkeit.</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Features (durch Kommas getrennt)</label>
-                    <input type="text" value="Feature 1, Feature 2, Feature 3" class="rental-features">
+                    <label>Link zur Detailseite</label>
+                    <input type="text" value="neue-taetigkeit.html" class="activity-link">
                 </div>
             </div>
         `;
@@ -504,8 +529,8 @@ class AdminPanel {
         // Implementation depends on how you want to sync with the main site
     }
 
-    updateRentalCards() {
-        // This would update the main website rental section
+    updateActivityCards() {
+        // This would update the main website activities section
     }
 
     updateProjectCards() {
@@ -595,12 +620,12 @@ function removeService(id) {
     adminPanel.removeService(id);
 }
 
-function addRental() {
-    adminPanel.addRental();
+function addActivity() {
+    adminPanel.addActivity();
 }
 
-function removeRental(id) {
-    adminPanel.removeRental(id);
+function removeActivity(id) {
+    adminPanel.removeActivity(id);
 }
 
 function addProject() {

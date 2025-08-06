@@ -25,8 +25,8 @@
                     <li><a href="#services" class="nav-link" data-section="services">
                         <i class="fas fa-cogs"></i> Beratungs-Services
                     </a></li>
-                    <li><a href="#rental" class="nav-link" data-section="rental">
-                        <i class="fas fa-rental"></i> Vermietung
+                    <li><a href="#activities" class="nav-link" data-section="activities">
+                        <i class="fas fa-tasks"></i> Sonstige Tätigkeiten
                     </a></li>
                     <li><a href="#projects" class="nav-link" data-section="projects">
                         <i class="fas fa-project-diagram"></i> Projekte
@@ -105,16 +105,44 @@
                         <h3><i class="fas fa-chart-line"></i> Expertise-Statistiken</h3>
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <label>Jahre Erfahrung</label>
-                                <input type="number" id="stat-years" value="6" min="0">
+                                <label>Statistik 1 - Name</label>
+                                <input type="text" id="stat1-name" value="Jahre Erfahrung">
                             </div>
                             <div class="stat-item">
-                                <label>Projekte geleitet</label>
-                                <input type="number" id="stat-projects" value="30" min="0">
+                                <label>Statistik 1 - Wert</label>
+                                <input type="number" id="stat1-value" value="6" min="0">
                             </div>
                             <div class="stat-item">
-                                <label>Kundenzufriedenheit (%)</label>
-                                <input type="number" id="stat-satisfaction" value="100" min="0" max="100">
+                                <label>Statistik 1 - Einheit</label>
+                                <input type="text" id="stat1-unit" value="+" placeholder="+, %, etc.">
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <label>Statistik 2 - Name</label>
+                                <input type="text" id="stat2-name" value="Projekte geleitet">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 2 - Wert</label>
+                                <input type="number" id="stat2-value" value="30" min="0">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 2 - Einheit</label>
+                                <input type="text" id="stat2-unit" value="+" placeholder="+, %, etc.">
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <label>Statistik 3 - Name</label>
+                                <input type="text" id="stat3-name" value="Kundenzufriedenheit">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 3 - Wert</label>
+                                <input type="number" id="stat3-value" value="100" min="0" max="100">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 3 - Einheit</label>
+                                <input type="text" id="stat3-unit" value="%" placeholder="+, %, etc.">
                             </div>
                         </div>
                     </div>
@@ -199,40 +227,68 @@
                 </div>
             </section>
 
-            <!-- Rental Section Editor -->
-            <section id="rental" class="editor-section">
+            <!-- Activities Section Editor -->
+            <section id="activities" class="editor-section">
                 <div class="editor-header">
-                    <h3>Vermietung bearbeiten</h3>
-                    <button class="btn btn-primary" onclick="addRental()">
-                        <i class="fas fa-plus"></i> Vermietung hinzufügen
+                    <h3>Sonstige Tätigkeiten bearbeiten</h3>
+                    <button class="btn btn-primary" onclick="addActivity()">
+                        <i class="fas fa-plus"></i> Tätigkeit hinzufügen
                     </button>
                 </div>
                 
-                <div class="rental-editor" id="rental-container">
-                    <!-- Rental 1 -->
-                    <div class="rental-editor-card" data-rental-id="1">
-                        <div class="rental-header">
-                            <h4>Vermietung 1: Wohnmobil</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeRental(1)">
+                <div class="activities-editor" id="activities-container">
+                    <!-- Activity 1 -->
+                    <div class="activity-editor-card" data-activity-id="1">
+                        <div class="activity-header">
+                            <h4>Tätigkeit 1: Wohnmobil Vermietung</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeActivity(1)">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                        <div class="rental-content">
+                        <div class="activity-content">
                             <div class="form-group">
                                 <label>Icon (FontAwesome Klasse)</label>
-                                <input type="text" value="fas fa-campground" class="rental-icon">
+                                <input type="text" value="fas fa-campground" class="activity-icon">
                             </div>
                             <div class="form-group">
                                 <label>Titel</label>
-                                <input type="text" value="Wohnmobil" class="rental-title">
+                                <input type="text" value="Wohnmobil Vermietung" class="activity-title">
                             </div>
                             <div class="form-group">
                                 <label>Beschreibung</label>
-                                <textarea rows="3" class="rental-description">Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</textarea>
+                                <textarea rows="3" class="activity-description">Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</textarea>
                             </div>
                             <div class="form-group">
-                                <label>Features (durch Kommas getrennt)</label>
-                                <input type="text" value="Vollausstattung, Flexible Mietdauer, 24/7 Support" class="rental-features">
+                                <label>Link zur Detailseite</label>
+                                <input type="text" value="wohnmobil.html" class="activity-link">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity 2 -->
+                    <div class="activity-editor-card" data-activity-id="2">
+                        <div class="activity-header">
+                            <h4>Tätigkeit 2: Fotobox Vermietung</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeActivity(2)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="activity-content">
+                            <div class="form-group">
+                                <label>Icon (FontAwesome Klasse)</label>
+                                <input type="text" value="fas fa-camera" class="activity-icon">
+                            </div>
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="Fotobox Vermietung" class="activity-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="activity-description">Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Link zur Detailseite</label>
+                                <input type="text" value="fotobox.html" class="activity-link">
                             </div>
                         </div>
                     </div>

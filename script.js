@@ -194,6 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         observer.observe(el);
     });
+
+    // Load saved profile image if available
+    const savedImage = localStorage.getItem('profileImage');
+    if (savedImage) {
+        const profileImage = document.getElementById('profile-photo');
+        if (profileImage) {
+            profileImage.src = savedImage;
+        }
+    }
 });
 
 // Service selection in contact form

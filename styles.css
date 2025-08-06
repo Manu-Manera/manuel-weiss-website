@@ -382,19 +382,19 @@ body {
     font-size: 1.2rem;
 }
 
-/* Rental Section */
-.rental {
+/* Sonstige Tätigkeiten Section */
+.other-activities {
     padding: 80px 0;
     background: white;
 }
 
-.rental-grid {
+.activities-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
 }
 
-.rental-card {
+.activity-card {
     background: #f8fafc;
     border-radius: 12px;
     overflow: hidden;
@@ -402,57 +402,37 @@ body {
     border: 1px solid #e2e8f0;
 }
 
-.rental-card:hover {
+.activity-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.rental-image {
+.activity-image {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 3rem;
     text-align: center;
     color: white;
 }
 
-.rental-image i {
+.activity-image i {
     font-size: 3rem;
 }
 
-.rental-content {
+.activity-content {
     padding: 2rem;
 }
 
-.rental-content h3 {
+.activity-content h3 {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1rem;
     color: #1e293b;
 }
 
-.rental-content p {
+.activity-content p {
     color: #64748b;
     margin-bottom: 1.5rem;
     line-height: 1.6;
-}
-
-.rental-content ul {
-    list-style: none;
-    margin-bottom: 1.5rem;
-    color: #64748b;
-}
-
-.rental-content ul li {
-    padding: 0.25rem 0;
-    position: relative;
-    padding-left: 1.5rem;
-}
-
-.rental-content ul li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #2563eb;
-    font-weight: bold;
 }
 
 /* Projects Section */
@@ -750,9 +730,199 @@ html {
     animation: fadeInUp 0.6s ease-out;
 }
 
+/* Page Hero (for sub-pages) */
+.page-hero {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.page-hero .hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.page-hero .hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: #e2e8f0;
+}
+
+.page-hero .hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+
+/* Details Section */
+.details-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.detail-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.detail-icon {
+    font-size: 2.5rem;
+    color: #2563eb;
+    margin-bottom: 1rem;
+}
+
+.detail-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.detail-card p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* Pricing Section */
+.pricing-section {
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.pricing-section h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1e293b;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.pricing-card {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.pricing-card.featured {
+    border-color: #2563eb;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    transform: scale(1.05);
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-card h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+}
+
+.pricing-card p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.pricing-card ul {
+    list-style: none;
+    text-align: left;
+    color: #64748b;
+}
+
+.pricing-card ul li {
+    padding: 0.5rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.pricing-card ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* Contact Section */
+.contact-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.contact-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-content h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.contact-content p {
+    font-size: 1.2rem;
+    color: #64748b;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.contact-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* Hover Effects */
 .service-card:hover .service-icon,
-.rental-card:hover .rental-image i {
+.activity-card:hover .activity-image i {
     transform: scale(1.1);
     transition: transform 0.3s ease;
 } 
