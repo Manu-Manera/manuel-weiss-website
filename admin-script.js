@@ -287,6 +287,8 @@ class AdminPanel {
             }
         }
 
+        // Update main website if it's open
+        this.updateMainWebsite(field, value);
         this.markAsChanged(field, value);
     }
 
@@ -297,6 +299,9 @@ class AdminPanel {
         if (element) {
             element.textContent = value;
         }
+        
+        // Update main website
+        this.updateMainWebsite(`stat-label-${stat}`, value);
         this.markAsChanged(`${stat}-name`, value);
     }
 
@@ -307,6 +312,9 @@ class AdminPanel {
         if (element) {
             element.textContent = value + unit;
         }
+        
+        // Update main website
+        this.updateMainWebsite(`stat-${stat}`, { value, unit });
         this.markAsChanged(`${stat}-value`, value);
         this.markAsChanged(`${stat}-unit`, unit);
     }
@@ -328,6 +336,8 @@ class AdminPanel {
             }
         }
 
+        // Update main website
+        this.updateMainWebsite(field, value);
         this.markAsChanged(field, value);
     }
 
@@ -537,6 +547,34 @@ class AdminPanel {
         // This would update the main website projects section
     }
 
+    // Live Update Functions
+    updateMainWebsite(field, value) {
+        // Try to update main website if it's open in another tab
+        try {
+            // Send message to main website if it's open
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'admin-update',
+                    field: field,
+                    value: value
+                }, '*');
+            }
+            
+            // Also try to update any iframes or other windows
+            window.parent.postMessage({
+                type: 'admin-update',
+                field: field,
+                value: value
+            }, '*');
+            
+        } catch (e) {
+            // Silently fail if main website is not accessible
+        }
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(`website-${field}`, JSON.stringify(value));
+    }
+
     // Utility Functions
     markAsChanged(field, value) {
         this.changes[field] = value;
@@ -551,6 +589,18 @@ class AdminPanel {
                 formData[input.id] = input.value;
             }
         });
+        
+        // Also collect statistics data
+        for (let i = 1; i <= 3; i++) {
+            const nameInput = document.getElementById(`stat${i}-name`);
+            const valueInput = document.getElementById(`stat${i}-value`);
+            const unitInput = document.getElementById(`stat${i}-unit`);
+            
+            if (nameInput) formData[`stat${i}-name`] = nameInput.value;
+            if (valueInput) formData[`stat${i}-value`] = valueInput.value;
+            if (unitInput) formData[`stat${i}-unit`] = unitInput.value;
+        }
+        
         return formData;
     }
 
@@ -565,16 +615,80 @@ class AdminPanel {
     }
 
     loadCurrentData() {
-        // Load current website data into admin panel
-        // This would typically fetch from localStorage or server
+        // Load current website data into admin panel from localStorage
+        this.loadHeroData();
+        this.loadStatsData();
+        this.loadContactData();
+    }
+
+    loadHeroData() {
+        // Load hero data from localStorage
+        const heroName = localStorage.getItem('website-hero-name');
+        const heroTitle = localStorage.getItem('website-hero-title');
+        const heroSubtitle = localStorage.getItem('website-hero-subtitle');
+        const heroDescription = localStorage.getItem('website-hero-description');
+
+        if (heroName) document.getElementById('hero-name').value = heroName;
+        if (heroTitle) document.getElementById('hero-title').value = heroTitle;
+        if (heroSubtitle) document.getElementById('hero-subtitle').value = heroSubtitle;
+        if (heroDescription) document.getElementById('hero-description').value = heroDescription;
+    }
+
+    loadStatsData() {
+        // Load statistics data from localStorage
+        for (let i = 1; i <= 3; i++) {
+            const statValue = localStorage.getItem(`website-stat-${i}`);
+            const statLabel = localStorage.getItem(`website-stat-label-${i}`);
+            
+            if (statValue) {
+                const statData = JSON.parse(statValue);
+                document.getElementById(`stat${i}-value`).value = statData.value;
+                document.getElementById(`stat${i}-unit`).value = statData.unit;
+            }
+            if (statLabel) {
+                document.getElementById(`stat${i}-name`).value = statLabel;
+            }
+        }
+    }
+
+    loadContactData() {
+        // Load contact data from localStorage
+        const contactName = localStorage.getItem('website-contact-name');
+        const contactTitle = localStorage.getItem('website-contact-title');
+        const contactLocation = localStorage.getItem('website-contact-location');
+        const contactEmail = localStorage.getItem('website-contact-email');
+        const contactPhone = localStorage.getItem('website-contact-phone');
+
+        if (contactName) document.getElementById('contact-name').value = contactName;
+        if (contactTitle) document.getElementById('contact-title').value = contactTitle;
+        if (contactLocation) document.getElementById('contact-location').value = contactLocation;
+        if (contactEmail) document.getElementById('contact-email').value = contactEmail;
+        if (contactPhone) document.getElementById('contact-phone').value = contactPhone;
     }
 
     // Save and Publish Functions
     saveAllChanges() {
         const changes = this.collectChanges();
-        // Save to localStorage for now
+        
+        // Save all changes to localStorage
+        Object.keys(changes).forEach(key => {
+            localStorage.setItem(`website-${key}`, JSON.stringify(changes[key]));
+        });
+        
+        // Also save the complete data
         localStorage.setItem('websiteData', JSON.stringify(changes));
-        this.showNotification('Alle Änderungen gespeichert', 'success');
+        
+        // Update main website immediately
+        this.updateMainWebsiteFromChanges(changes);
+        
+        this.showNotification('Alle Änderungen gespeichert und synchronisiert', 'success');
+    }
+
+    updateMainWebsiteFromChanges(changes) {
+        // Update main website with all changes
+        Object.keys(changes).forEach(key => {
+            this.updateMainWebsite(key, changes[key]);
+        });
     }
 
     publishChanges() {
