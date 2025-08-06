@@ -207,12 +207,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load all saved website data
     loadSavedWebsiteData();
 
-    // Listen for admin updates
+    // Listen for admin updates and localStorage changes
     window.addEventListener('message', function(event) {
         if (event.data.type === 'admin-update') {
             handleAdminUpdate(event.data.field, event.data.value);
         }
     });
+
+    // Listen for localStorage changes
+    window.addEventListener('storage', function(event) {
+        if (event.key && event.key.startsWith('website-')) {
+            const field = event.key.replace('website-', '');
+            const value = JSON.parse(event.newValue);
+            handleAdminUpdate(field, value);
+        }
+    });
+
+    // Check for updates every 2 seconds
+    setInterval(checkForUpdates, 2000);
+});
 });
 
 // Function to load all saved website data
@@ -310,6 +323,48 @@ function updateElement(selector, value) {
     if (element) {
         element.textContent = value;
     }
+}
+
+// Function to check for updates
+function checkForUpdates() {
+    // Check for statistics updates
+    for (let i = 1; i <= 3; i++) {
+        const statValue = localStorage.getItem(`website-stat${i}-value`);
+        const statLabel = localStorage.getItem(`website-stat${i}-name`);
+        const statUnit = localStorage.getItem(`website-stat${i}-unit`);
+        
+        if (statValue) {
+            const unit = statUnit || '';
+            updateElement(`.stat:nth-child(${i}) .stat-number`, statValue + unit);
+        }
+        if (statLabel) {
+            updateElement(`.stat:nth-child(${i}) .stat-label`, statLabel);
+        }
+    }
+
+    // Check for hero content updates
+    const heroName = localStorage.getItem('website-hero-name');
+    const heroTitle = localStorage.getItem('website-hero-title');
+    const heroSubtitle = localStorage.getItem('website-hero-subtitle');
+    const heroDescription = localStorage.getItem('website-hero-description');
+
+    if (heroName) updateElement('.profile-info h1', heroName);
+    if (heroTitle) updateElement('.profile-info h2', heroTitle);
+    if (heroSubtitle) updateElement('.hero-subtitle', heroSubtitle);
+    if (heroDescription) updateElement('.hero-description', heroDescription);
+
+    // Check for contact updates
+    const contactName = localStorage.getItem('website-contact-name');
+    const contactTitle = localStorage.getItem('website-contact-title');
+    const contactLocation = localStorage.getItem('website-contact-location');
+    const contactEmail = localStorage.getItem('website-contact-email');
+    const contactPhone = localStorage.getItem('website-contact-phone');
+
+    if (contactName) updateElement('.contact-item:nth-child(1) h4', contactName);
+    if (contactTitle) updateElement('.contact-item:nth-child(1) p', contactTitle);
+    if (contactLocation) updateElement('.contact-item:nth-child(2) p', contactLocation);
+    if (contactEmail) updateElement('.contact-item:nth-child(3) p', contactEmail);
+    if (contactPhone) updateElement('.contact-item:nth-child(4) p', contactPhone);
 }
 
 // Service selection in contact form
