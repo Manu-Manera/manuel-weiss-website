@@ -1,7 +1,20 @@
 // Profile Image Management
-function loadSavedProfileImage() {
+async function loadSavedProfileImage() {
     try {
-        // Try multiple localStorage keys
+        // Try Netlify Storage first
+        if (window.netlifyStorage) {
+            const netlifyImage = await window.netlifyStorage.loadProfileImage();
+            if (netlifyImage) {
+                const profileImage = document.getElementById('profile-photo');
+                if (profileImage) {
+                    profileImage.src = netlifyImage;
+                    console.log('✅ Profilbild aus Netlify Storage geladen');
+                    return;
+                }
+            }
+        }
+        
+        // Fallback to localStorage
         let savedImage = localStorage.getItem('profileImage') || 
                         localStorage.getItem('mwps-profile-image') || 
                         localStorage.getItem('current-profile-image');
@@ -23,6 +36,8 @@ function loadSavedProfileImage() {
                 profileImage.src = savedImage;
                 console.log('✅ Profilbild aus localStorage geladen');
             }
+        } else {
+            console.log('ℹ️ Kein gespeichertes Profilbild gefunden');
         }
     } catch (error) {
         console.log('Fehler beim Laden des Profilbilds:', error);
