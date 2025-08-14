@@ -94,6 +94,7 @@ class ImageUploadHandler {
 
     saveProfileImage(imageData) {
         try {
+            // Save with highest priority
             localStorage.setItem('profileImage', imageData);
             localStorage.setItem('mwps-profile-image', imageData);
             
@@ -101,7 +102,10 @@ class ImageUploadHandler {
             websiteData.profileImage = imageData;
             localStorage.setItem('websiteData', JSON.stringify(websiteData));
             
-            console.log('✅ Profilbild in localStorage gespeichert');
+            // Mark as uploaded image (flag to prevent overwriting)
+            localStorage.setItem('profileImageUploaded', 'true');
+            
+            console.log('✅ Profilbild in localStorage gespeichert mit Upload-Flag');
         } catch (error) {
             console.error('❌ Fehler beim Speichern des Profilbilds:', error);
             this.showError('Fehler beim Speichern des Bildes');
