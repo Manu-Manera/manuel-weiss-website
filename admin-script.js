@@ -605,6 +605,92 @@ class AdminPanel {
         if (heroSubtitle) formData.heroSubtitle = heroSubtitle.value;
         if (heroDescription) formData.heroDescription = heroDescription.value;
         
+        // Sammle Profil-Informationen
+        const profileTitle = document.getElementById('profile-title');
+        const profileDescription = document.getElementById('profile-description');
+        const profileAvailability = document.getElementById('profile-availability');
+        
+        if (profileTitle) formData.profileTitle = profileTitle.value;
+        if (profileDescription) formData.profileDescription = profileDescription.value;
+        if (profileAvailability) formData.profileAvailability = profileAvailability.value;
+        
+        // Sammle Services
+        formData.services = [];
+        const serviceCards = document.querySelectorAll('.service-editor-card');
+        serviceCards.forEach((card, index) => {
+            const service = {
+                id: index + 1,
+                icon: card.querySelector('.service-icon')?.value || 'fas fa-cogs',
+                title: card.querySelector('.service-title')?.value || '',
+                description: card.querySelector('.service-description')?.value || '',
+                features: (card.querySelector('.service-features')?.value || '').split(',').map(f => f.trim()).filter(f => f),
+                isPrimary: card.querySelector('.service-primary')?.checked || false
+            };
+            formData.services.push(service);
+        });
+        
+        // Sammle Activities
+        formData.activities = [];
+        const activityCards = document.querySelectorAll('.activity-editor-card');
+        activityCards.forEach((card, index) => {
+            const activity = {
+                id: index + 1,
+                icon: card.querySelector('.activity-icon')?.value || 'fas fa-campground',
+                title: card.querySelector('.activity-title')?.value || '',
+                description: card.querySelector('.activity-description')?.value || '',
+                link: card.querySelector('.activity-link')?.value || ''
+            };
+            formData.activities.push(activity);
+        });
+        
+        // Sammle Projects
+        formData.projects = [];
+        const projectCards = document.querySelectorAll('.project-editor-card');
+        projectCards.forEach((card, index) => {
+            const project = {
+                id: index + 1,
+                title: card.querySelector('.project-title')?.value || '',
+                description: card.querySelector('.project-description')?.value || '',
+                tags: (card.querySelector('.project-tags')?.value || '').split(',').map(t => t.trim()).filter(t => t)
+            };
+            formData.projects.push(project);
+        });
+        
+        // Sammle Kontaktdaten
+        const contactName = document.getElementById('contact-name');
+        const contactTitle = document.getElementById('contact-title');
+        const contactLocation = document.getElementById('contact-location');
+        const contactEmail = document.getElementById('contact-email');
+        const contactPhone = document.getElementById('contact-phone');
+        
+        if (contactName) formData.contactName = contactName.value;
+        if (contactTitle) formData.contactTitle = contactTitle.value;
+        if (contactLocation) formData.contactLocation = contactLocation.value;
+        if (contactEmail) formData.contactEmail = contactEmail.value;
+        if (contactPhone) formData.contactPhone = contactPhone.value;
+        
+        // Sammle Zertifikate
+        formData.certificates = [];
+        const certificateInputs = document.querySelectorAll('.certificate-name');
+        certificateInputs.forEach((input) => {
+            if (input.value.trim()) {
+                formData.certificates.push(input.value.trim());
+            }
+        });
+        
+        // Sammle Design-Einstellungen
+        const primaryColor = document.getElementById('primary-color');
+        const secondaryColor = document.getElementById('secondary-color');
+        const heroGradient = document.getElementById('hero-gradient');
+        const siteTitle = document.getElementById('site-title');
+        const siteDescription = document.getElementById('site-description');
+        
+        if (primaryColor) formData.primaryColor = primaryColor.value;
+        if (secondaryColor) formData.secondaryColor = secondaryColor.value;
+        if (heroGradient) formData.heroGradient = heroGradient.value;
+        if (siteTitle) formData.siteTitle = siteTitle.value;
+        if (siteDescription) formData.siteDescription = siteDescription.value;
+        
         return formData;
     }
 
@@ -626,21 +712,93 @@ class AdminPanel {
             if (savedData) {
                 const data = JSON.parse(savedData);
                 
-                // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
-                const preview = document.getElementById('profile-preview');
-                if (preview) {
-                    const profileImage = data.profileImage || localStorage.getItem('profileImage');
-                    if (profileImage) {
-                        preview.src = profileImage;
-                        console.log('✅ Profilbild aus localStorage geladen');
-                    }
-                }
-                
-                // Lade Hero-Daten
-                if (data.heroName) document.getElementById('hero-name').value = data.heroName;
-                if (data.heroTitle) document.getElementById('hero-title').value = data.heroTitle;
-                if (data.heroSubtitle) document.getElementById('hero-subtitle').value = data.heroSubtitle;
-                if (data.heroDescription) document.getElementById('hero-description').value = data.heroDescription;
+                        // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
+        const preview = document.getElementById('profile-preview');
+        if (preview) {
+            const profileImage = data.profileImage || localStorage.getItem('profileImage');
+            if (profileImage) {
+                preview.src = profileImage;
+                console.log('✅ Profilbild aus localStorage geladen');
+            }
+        }
+        
+        // Lade Hero-Daten
+        if (data.heroName) {
+            const element = document.getElementById('hero-name');
+            if (element) element.value = data.heroName;
+        }
+        if (data.heroTitle) {
+            const element = document.getElementById('hero-title');
+            if (element) element.value = data.heroTitle;
+        }
+        if (data.heroSubtitle) {
+            const element = document.getElementById('hero-subtitle');
+            if (element) element.value = data.heroSubtitle;
+        }
+        if (data.heroDescription) {
+            const element = document.getElementById('hero-description');
+            if (element) element.value = data.heroDescription;
+        }
+        
+        // Lade Profil-Informationen
+        if (data.profileTitle) {
+            const element = document.getElementById('profile-title');
+            if (element) element.value = data.profileTitle;
+        }
+        if (data.profileDescription) {
+            const element = document.getElementById('profile-description');
+            if (element) element.value = data.profileDescription;
+        }
+        if (data.profileAvailability) {
+            const element = document.getElementById('profile-availability');
+            if (element) element.value = data.profileAvailability;
+        }
+        
+        // Lade Kontaktdaten
+        if (data.contactName) {
+            const element = document.getElementById('contact-name');
+            if (element) element.value = data.contactName;
+        }
+        if (data.contactTitle) {
+            const element = document.getElementById('contact-title');
+            if (element) element.value = data.contactTitle;
+        }
+        if (data.contactLocation) {
+            const element = document.getElementById('contact-location');
+            if (element) element.value = data.contactLocation;
+        }
+        if (data.contactEmail) {
+            const element = document.getElementById('contact-email');
+            if (element) element.value = data.contactEmail;
+        }
+        if (data.contactPhone) {
+            const element = document.getElementById('contact-phone');
+            if (element) element.value = data.contactPhone;
+        }
+        
+        // Lade Design-Einstellungen
+        if (data.primaryColor) {
+            const element = document.getElementById('primary-color');
+            if (element) element.value = data.primaryColor;
+        }
+        if (data.secondaryColor) {
+            const element = document.getElementById('secondary-color');
+            if (element) element.value = data.secondaryColor;
+        }
+        if (data.heroGradient) {
+            const element = document.getElementById('hero-gradient');
+            if (element) element.value = data.heroGradient;
+        }
+        if (data.siteTitle) {
+            const element = document.getElementById('site-title');
+            if (element) element.value = data.siteTitle;
+        }
+        if (data.siteDescription) {
+            const element = document.getElementById('site-description');
+            if (element) element.value = data.siteDescription;
+        }
+        
+        console.log('✅ Alle Admin-Daten geladen');
                 
                 // Lade Statistiken
                 if (data.stat1Name) document.getElementById('stat1-name').value = data.stat1Name;

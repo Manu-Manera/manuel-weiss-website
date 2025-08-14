@@ -97,8 +97,22 @@
           "id": 1,
           "title": "Wohnmobil Außenansicht",
           "description": "Modernes Wohnmobil mit Platz für 4 Personen",
-          "filename": "wohnmobil-1.jpg",
+          "filename": "wohnmobil-exterior.jpg",
           "alt": "Wohnmobil Außenansicht"
+        },
+        {
+          "id": 2,
+          "title": "Küche & Wohnbereich",
+          "description": "Vollausgestattete Küche und gemütlicher Wohnbereich",
+          "filename": "wohnmobil-kitchen.jpg",
+          "alt": "Wohnmobil Innenbereich"
+        },
+        {
+          "id": 3,
+          "title": "Schlafbereich",
+          "description": "Bequeme Betten für erholsame Nächte",
+          "filename": "wohnmobil-bedroom.jpg",
+          "alt": "Wohnmobil Schlafbereich"
         }
       ]
     },
@@ -146,10 +160,31 @@
       "images": [
         {
           "id": 4,
-          "title": "SUP Boards",
-          "description": "Stabile Stand-Up-Paddle Boards",
-          "filename": "sup-1.jpg",
-          "alt": "SUP Boards"
+          "title": "SUP Boards Übersicht",
+          "description": "Verschiedene SUP Boards für Anfänger und Fortgeschrittene",
+          "filename": "sup-boards-overview.jpg",
+          "alt": "SUP Boards Übersicht"
+        },
+        {
+          "id": 5,
+          "title": "SUP Board Anfänger (10'6\")",
+          "description": "Stabiles Board perfekt für Einsteiger",
+          "filename": "sup-board-beginner.jpg",
+          "alt": "SUP Board für Anfänger"
+        },
+        {
+          "id": 6,
+          "title": "SUP Board Fortgeschrittene (12'6\")",
+          "description": "Schnelleres Board für erfahrene Paddler",
+          "filename": "sup-board-advanced.jpg",
+          "alt": "SUP Board für Fortgeschrittene"
+        },
+        {
+          "id": 7,
+          "title": "Zubehör-Set",
+          "description": "Paddle, Pumpe, Sicherheitsleine und Transporttasche",
+          "filename": "sup-accessories.jpg",
+          "alt": "SUP Zubehör komplett"
         }
       ]
     }
