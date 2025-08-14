@@ -170,39 +170,304 @@
                 </div>
             </section>
 
-            <!-- Weitere Sektionen ausgeblendet für Einfachheit -->
+            <!-- Profile Section Editor -->
+            <section id="profile" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-user"></i> Profil-Informationen</h3>
+                        <div class="form-group">
+                            <label for="profile-title">Berufsbezeichnung</label>
+                            <input type="text" id="profile-title" value="Senior HR-Tech Consultant & Digitalisierungsexperte">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-description">Beschreibung</label>
+                            <textarea id="profile-description" rows="4">Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-availability">Verfügbarkeit</label>
+                            <input type="text" id="profile-availability" value="Sofort verfügbar">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section Editor -->
             <section id="services" class="editor-section">
-                <div class="editor-card">
-                    <h3>Services werden hier verwaltet</h3>
-                    <p>Funktionalität wird geladen...</p>
+                <div class="editor-header">
+                    <h3>Beratungs-Services bearbeiten</h3>
+                    <button class="btn btn-primary" onclick="addService()">
+                        <i class="fas fa-plus"></i> Service hinzufügen
+                    </button>
+                </div>
+                
+                <div class="services-editor" id="services-container">
+                    <!-- Service 1 -->
+                    <div class="service-editor-card" data-service-id="1">
+                        <div class="service-header">
+                            <h4>Service 1: Prozessmanagement</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeService(1)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="service-content">
+                            <div class="form-group">
+                                <label>Icon (FontAwesome Klasse)</label>
+                                <input type="text" value="fas fa-cogs" class="service-icon">
+                            </div>
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="Prozessmanagement" class="service-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="service-description">Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Leistungen (durch Kommas getrennt)</label>
+                                <input type="text" value="Prozessanalyse & -optimierung, Workflow-Design, Tool-Implementierung" class="service-features">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" checked class="service-primary"> Primärer Service (hervorgehoben)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="service-editor-card" data-service-id="2">
+                        <div class="service-header">
+                            <h4>Service 2: HR-Tech Beratung</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeService(2)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="service-content">
+                            <div class="form-group">
+                                <label>Icon (FontAwesome Klasse)</label>
+                                <input type="text" value="fas fa-users" class="service-icon">
+                            </div>
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="HR-Tech Beratung" class="service-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="service-description">Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Leistungen (durch Kommas getrennt)</label>
+                                <input type="text" value="HR-Systeme Implementierung, Service Delivery Optimierung, Change Management" class="service-features">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" class="service-primary"> Primärer Service (hervorgehoben)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Activities Section Editor -->
             <section id="activities" class="editor-section">
-                <div class="editor-card">
-                    <h3>Aktivitäten werden hier verwaltet</h3>
-                    <p>Funktionalität wird geladen...</p>
+                <div class="editor-header">
+                    <h3>Sonstige Tätigkeiten bearbeiten</h3>
+                    <button class="btn btn-primary" onclick="addActivity()">
+                        <i class="fas fa-plus"></i> Tätigkeit hinzufügen
+                    </button>
+                </div>
+                
+                <div class="activities-editor" id="activities-container">
+                    <!-- Activity 1 -->
+                    <div class="activity-editor-card" data-activity-id="1">
+                        <div class="activity-header">
+                            <h4>Tätigkeit 1: Wohnmobil Vermietung</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeActivity(1)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="activity-content">
+                            <div class="form-group">
+                                <label>Icon (FontAwesome Klasse)</label>
+                                <input type="text" value="fas fa-campground" class="activity-icon">
+                            </div>
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="Wohnmobil Vermietung" class="activity-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="activity-description">Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Link zur Detailseite</label>
+                                <input type="text" value="wohnmobil.html" class="activity-link">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity 2 -->
+                    <div class="activity-editor-card" data-activity-id="2">
+                        <div class="activity-header">
+                            <h4>Tätigkeit 2: Fotobox Vermietung</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeActivity(2)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="activity-content">
+                            <div class="form-group">
+                                <label>Icon (FontAwesome Klasse)</label>
+                                <input type="text" value="fas fa-camera" class="activity-icon">
+                            </div>
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="Fotobox Vermietung" class="activity-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="activity-description">Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Link zur Detailseite</label>
+                                <input type="text" value="fotobox.html" class="activity-link">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Projects Section Editor -->
             <section id="projects" class="editor-section">
-                <div class="editor-card">
-                    <h3>Projekte werden hier verwaltet</h3>
-                    <p>Funktionalität wird geladen...</p>
+                <div class="editor-header">
+                    <h3>Projekte bearbeiten</h3>
+                    <button class="btn btn-primary" onclick="addProject()">
+                        <i class="fas fa-plus"></i> Projekt hinzufügen
+                    </button>
+                </div>
+                
+                <div class="projects-editor" id="projects-container">
+                    <!-- Project 1 -->
+                    <div class="project-editor-card" data-project-id="1">
+                        <div class="project-header">
+                            <h4>Projekt 1: Digitalisierung HR-Prozesse</h4>
+                            <button class="btn btn-danger btn-sm" onclick="removeProject(1)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="project-content">
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" value="Digitalisierung HR-Prozesse" class="project-title">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea rows="3" class="project-description">Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tags (durch Kommas getrennt)</label>
+                                <input type="text" value="HR-Tech, UKG, Change Management" class="project-tags">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Contact Section Editor -->
             <section id="contact" class="editor-section">
-                <div class="editor-card">
-                    <h3>Kontakt wird hier verwaltet</h3>
-                    <p>Funktionalität wird geladen...</p>
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-user"></i> Kontaktdaten</h3>
+                        <div class="form-group">
+                            <label for="contact-name">Name</label>
+                            <input type="text" id="contact-name" value="Manuel Weiss">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-title">Titel</label>
+                            <input type="text" id="contact-title" value="Professional Services">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-location">Standort</label>
+                            <input type="text" id="contact-location" value="Schweiz">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-email">E-Mail</label>
+                            <input type="email" id="contact-email" value="weiss-manuel@gmx.de">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-phone">Telefon</label>
+                            <input type="tel" id="contact-phone" value="+49 173 3993407">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-certificate"></i> Zertifikate</h3>
+                        <div id="certificates-container">
+                            <div class="certificate-item">
+                                <input type="text" value="Scrum Master" class="certificate-name">
+                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="certificate-item">
+                                <input type="text" value="Prince2 Agile" class="certificate-name">
+                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="certificate-item">
+                                <input type="text" value="BPMN 2.0" class="certificate-name">
+                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="addCertificate()">
+                            <i class="fas fa-plus"></i> Zertifikat hinzufügen
+                        </button>
+                    </div>
                 </div>
             </section>
 
+            <!-- Settings Section Editor -->
             <section id="settings" class="editor-section">
-                <div class="editor-card">
-                    <h3>Einstellungen werden hier verwaltet</h3>
-                    <p>Funktionalität wird geladen...</p>
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-palette"></i> Design-Einstellungen</h3>
+                        <div class="form-group">
+                            <label for="primary-color">Primärfarbe</label>
+                            <input type="color" id="primary-color" value="#2563eb">
+                        </div>
+                        <div class="form-group">
+                            <label for="secondary-color">Sekundärfarbe</label>
+                            <input type="color" id="secondary-color" value="#64748b">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-gradient">Hero-Gradient</label>
+                            <select id="hero-gradient">
+                                <option value="blue-purple">Blau-Lila</option>
+                                <option value="green-blue">Grün-Blau</option>
+                                <option value="orange-red">Orange-Rot</option>
+                                <option value="purple-pink">Lila-Rosa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-globe"></i> Website-Einstellungen</h3>
+                        <div class="form-group">
+                            <label for="site-title">Website-Titel</label>
+                            <input type="text" id="site-title" value="Manuel Weiss - Professional Services | Beratung & Vermietung">
+                        </div>
+                        <div class="form-group">
+                            <label for="site-description">Website-Beschreibung</label>
+                            <textarea id="site-description" rows="3">Manuel Weiss bietet professionelle Beratung in Digitalisierung, Prozessmanagement und HR-Tech sowie Vermietung von Wohnmobil, Fotobox, Stand-Up-Paddles und E-Bikes.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-password">Admin-Passwort ändern</label>
+                            <input type="password" id="admin-password" placeholder="Neues Passwort">
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
