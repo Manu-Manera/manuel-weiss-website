@@ -97,17 +97,28 @@ class AdminPanel {
             const preview = document.getElementById('profile-preview');
             preview.src = e.target.result;
             
-            // Update main website image immediately
+            // Update main website image immediately (falls die Seite offen ist)
             const mainImage = document.getElementById('profile-photo');
             if (mainImage) {
                 mainImage.src = e.target.result;
             }
 
-            // Also update any other instances of the profile image
-            const allProfileImages = document.querySelectorAll('img[src*="manuel-weiss-photo"]');
-            allProfileImages.forEach(img => {
-                img.src = e.target.result;
-            });
+            // Speichere das Bild auch als Original-Datei-Ersatz
+            // Damit die Hauptseite das neue Bild lädt
+            try {
+                // Simuliere Server-Update durch localStorage
+                localStorage.setItem('current-profile-image', e.target.result);
+                
+                // Sende Update an Hauptfenster (falls offen)
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        type: 'updateProfileImage',
+                        imageData: e.target.result
+                    }, '*');
+                }
+            } catch (error) {
+                console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+            }
 
             // Save to localStorage for persistence
             localStorage.setItem('profileImage', e.target.result);
@@ -579,7 +590,7 @@ class AdminPanel {
         
         // Sammle aktuelles Profilbild
         const profilePreview = document.getElementById('profile-preview');
-        if (profilePreview && profilePreview.src && !profilePreview.src.includes('manuel-weiss-photo.jpg')) {
+        if (profilePreview && profilePreview.src && !profilePreview.src.includes('manuel-weiss-photo.svg')) {
             formData.profileImage = profilePreview.src;
         }
         

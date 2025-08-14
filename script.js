@@ -1,3 +1,29 @@
+// Profile Image Management
+function loadSavedProfileImage() {
+    const savedImage = localStorage.getItem('current-profile-image') || localStorage.getItem('profileImage');
+    if (savedImage) {
+        const profileImage = document.getElementById('profile-photo');
+        if (profileImage) {
+            profileImage.src = savedImage;
+            console.log('✅ Gespeichertes Profilbild geladen');
+        }
+    }
+}
+
+// Listen for profile image updates from admin panel
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'updateProfileImage') {
+        const profileImage = document.getElementById('profile-photo');
+        if (profileImage) {
+            profileImage.src = event.data.imageData;
+            console.log('✅ Profilbild vom Admin-Panel aktualisiert');
+        }
+    }
+});
+
+// Load saved profile image on page load
+document.addEventListener('DOMContentLoaded', loadSavedProfileImage);
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
