@@ -1,32 +1,8 @@
 {
-  "version": 2,
-  "headers": [
+  "rewrites": [
     {
-      "source": "/admin.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, no-cache, must-revalidate, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/admin-script.js",
-      "headers": [
-        {
-          "key": "Cache-Control", 
-          "value": "no-store, no-cache, must-revalidate, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/admin-styles.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, no-cache, must-revalidate, max-age=0"
-        }
-      ]
+      "source": "/",
+      "destination": "/index.html"
     }
   ]
 }
