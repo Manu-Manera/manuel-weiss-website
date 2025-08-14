@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "title": "Manuel Weiss - Professional Services | Beratung & Vermietung",
+    "description": "Manuel Weiss bietet professionelle Beratung in Digitalisierung, Prozessmanagement und HR-Tech sowie Vermietung von Wohnmobil, Fotobox, Stand-Up-Paddles und E-Bikes.",
+    "keywords": "Manuel Weiss, Beratung, Digitalisierung, Prozessmanagement, HR-Tech, Vermietung, Wohnmobil, Fotobox, E-Bikes, Stand-Up-Paddles",
+    "author": "Manuel Weiss",
+    "language": "de"
+  },
+  "hero": {
+    "name": "Manuel Weiss",
+    "title": "Professional Services",
+    "subtitle": "Digitalisierung • Prozessmanagement • HR-Tech Beratung",
+    "description": "Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen mit pragmatischen Lösungen zu meistern.",
+    "profileImage": "manuel-weiss-photo.jpg",
+    "stats": [
+      {
+        "name": "Jahre Erfahrung",
+        "value": 6,
+        "unit": "+"
+      },
+      {
+        "name": "Projekte geleitet",
+        "value": 30,
+        "unit": "+"
+      },
+      {
+        "name": "Lernkurveneffekt",
+        "value": 100,
+        "unit": "%"
+      }
+    ]
+  },
+  "services": [
+    {
+      "id": 1,
+      "icon": "fas fa-cogs",
+      "title": "Prozessmanagement",
+      "description": "Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.",
+      "features": [
+        "Prozessanalyse & -optimierung",
+        "Workflow-Design",
+        "Tool-Implementierung"
+      ],
+      "isPrimary": true,
+      "category": "beratung"
+    },
+    {
+      "id": 2,
+      "icon": "fas fa-users",
+      "title": "HR-Tech Beratung",
+      "description": "Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.",
+      "features": [
+        "HR-Systeme Implementierung",
+        "Service Delivery Optimierung",
+        "Change Management"
+      ],
+      "isPrimary": false,
+      "category": "beratung"
+    },
+    {
+      "id": 3,
+      "icon": "fas fa-lightbulb",
+      "title": "Design Thinking",
+      "description": "Innovative Lösungsansätze durch Design Thinking Workshops und Business Model Innovation.",
+      "features": [
+        "Workshop-Moderation",
+        "Innovationsprozesse",
+        "Prototyping"
+      ],
+      "isPrimary": false,
+      "category": "beratung"
+    },
+    {
+      "id": 4,
+      "icon": "fas fa-project-diagram",
+      "title": "Projektmanagement",
+      "description": "Erfolgreiche Projektleitung mit agilen und klassischen Methoden (Scrum, Prince2, BPMN).",
+      "features": [
+        "Agile Projektleitung",
+        "Stakeholder-Management",
+        "Risikomanagement"
+      ],
+      "isPrimary": false,
+      "category": "beratung"
+    }
+  ],
+  "rentals": [
+    {
+      "id": 1,
+      "icon": "fas fa-campground",
+      "title": "Wohnmobil Vermietung",
+      "description": "Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.",
+      "link": "wohnmobil.html",
+      "category": "vermietung",
+      "images": [
+        {
+          "id": 1,
+          "title": "Wohnmobil Außenansicht",
+          "description": "Modernes Wohnmobil mit Platz für 4 Personen",
+          "filename": "wohnmobil-1.jpg",
+          "alt": "Wohnmobil Außenansicht"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "fas fa-camera",
+      "title": "Fotobox Vermietung",
+      "description": "Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.",
+      "link": "fotobox.html",
+      "category": "vermietung",
+      "images": [
+        {
+          "id": 2,
+          "title": "Fotobox Setup",
+          "description": "Professionelle Fotobox mit HD-Kamera",
+          "filename": "fotobox-1.jpg",
+          "alt": "Fotobox Setup"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "fas fa-bicycle",
+      "title": "E-Bikes",
+      "description": "Elektrische Fahrräder für komfortable Ausflüge und Touren.",
+      "link": "ebike.html",
+      "category": "vermietung",
+      "images": [
+        {
+          "id": 3,
+          "title": "E-Bike Modell",
+          "description": "Hochwertiges E-Bike für alle Altersgruppen",
+          "filename": "ebike-1.jpg",
+          "alt": "E-Bike Modell"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "fas fa-water",
+      "title": "Stand-Up-Paddles",
+      "description": "Wassersport-Ausrüstung für entspannende Stunden auf dem Wasser.",
+      "link": "sup.html",
+      "category": "vermietung",
+      "images": [
+        {
+          "id": 4,
+          "title": "SUP Boards",
+          "description": "Stabile Stand-Up-Paddle Boards",
+          "filename": "sup-1.jpg",
+          "alt": "SUP Boards"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Digitalisierung HR-Prozesse",
+      "company": "Internationaler Konzern (500+ Mitarbeiter)",
+      "description": "Implementierung von UKG HRSD für einen internationalen Konzern. Entwicklung einer Digitalisierungsroadmap, Prozessanalyse und -optimierung des gesamten Employee Lifecycle. Erfolgreiche Einführung von Self-Service Funktionen und Case Management.",
+      "technologies": ["UKG HRSD", "BPMN 2.0", "Change Management", "Process Mining"],
+      "category": "projekte"
+    },
+    {
+      "id": 2,
+      "title": "Prozessoptimierung Logistik",
+      "company": "Mittelständisches Unternehmen (200+ Mitarbeiter)",
+      "description": "Analyse und Optimierung der Logistikprozesse mit BPMN 2.0. Implementierung von Workflow-Management-Systemen und Einführung von KPIs für kontinuierliche Verbesserung.",
+      "technologies": ["BPMN 2.0", "ADONIS", "Workflow Management", "KPI Dashboard"],
+      "category": "projekte"
+    }
+  ],
+  "contact": {
+    "email": "weiss-manuel@gmx.de",
+    "phone": "+49 173 3993407",
+    "location": "Schweiz",
+    "availability": "Sofort verfügbar"
+  },
+  "settings": {
+    "primaryColor": "#2563eb",
+    "secondaryColor": "#64748b",
+    "backgroundColor": "#f8fafc",
+    "textColor": "#1e293b",
+    "fontFamily": "Inter",
+    "enableAnimations": true,
+    "enableAnalytics": false
+  },
+  "lastUpdated": "2025-01-14T10:00:00.000Z"
+}
