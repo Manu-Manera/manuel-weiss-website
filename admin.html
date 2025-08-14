@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Manuel Weiss Professional Services</title>
-    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="admin-styles-working.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -15,9 +15,6 @@
             <div class="sidebar-header">
                 <h2><i class="fas fa-cog"></i> Admin Panel</h2>
                 <p>Manuel Weiss Professional Services</p>
-                <div class="sync-status">
-                    <span id="sync-indicator" class="sync-live">🟢 Live Updates aktiv</span>
-                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -61,12 +58,11 @@
             <header class="content-header">
                 <h1 id="section-title">Hero-Bereich bearbeiten</h1>
                 <div class="header-actions">
-                    <span id="save-status" class="save-status">Automatisch gespeichert</span>
                     <button class="btn btn-outline" onclick="resetChanges()">
                         <i class="fas fa-undo"></i> Zurücksetzen
                     </button>
                     <button class="btn btn-success" onclick="publishChanges()">
-                        <i class="fas fa-rocket"></i> Live aktualisieren
+                        <i class="fas fa-rocket"></i> Veröffentlichen
                     </button>
                 </div>
             </header>
@@ -75,20 +71,16 @@
             <section id="hero" class="editor-section active">
                 <div class="editor-grid">
                     <div class="editor-card">
-                        <h3><i class="fas fa-user"></i> Profilbild 
-                            <button class="btn btn-sm btn-secondary" onclick="reloadHeroData()" style="margin-left: auto; font-size: 0.7rem;">
-                                <i class="fas fa-sync"></i> Neu laden
-                            </button>
-                        </h3>
+                        <h3><i class="fas fa-user"></i> Profilbild</h3>
                         <div class="image-upload">
-                            <div class="upload-area" id="profile-upload" onclick="document.getElementById('profile-input').click()">
+                            <div class="upload-area" id="profile-upload">
                                 <img src="manuel-weiss-photo.jpg" alt="Profilbild" id="profile-preview">
                                 <div class="upload-overlay">
                                     <i class="fas fa-camera"></i>
                                     <p>Bild ändern</p>
                                 </div>
                             </div>
-                            <input type="file" id="profile-input" accept="image/*" style="display: none;" onchange="handleProfileImageChange(this)">
+                            <input type="file" id="profile-input" accept="image/*" style="display: none;">
                         </div>
                     </div>
 
@@ -113,51 +105,47 @@
                     </div>
 
                     <div class="editor-card">
-                        <h3><i class="fas fa-chart-bar"></i> Expertise-Statistiken</h3>
-                        <div id="hero-stats">
-                            <div class="stat-group">
-                                <div class="form-group">
-                                    <label for="stat1-name">Statistik 1 - Name</label>
-                                    <input type="text" id="stat1-name" value="Jahre Erfahrung">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat1-value">Statistik 1 - Wert</label>
-                                    <input type="number" id="stat1-value" value="6">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat1-unit">Statistik 1 - Einheit</label>
-                                    <input type="text" id="stat1-unit" value="+">
-                                </div>
+                        <h3><i class="fas fa-chart-line"></i> Expertise-Statistiken</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <label>Statistik 1 - Name</label>
+                                <input type="text" id="stat1-name" value="Jahre Erfahrung">
                             </div>
-                            
-                            <div class="stat-group">
-                                <div class="form-group">
-                                    <label for="stat2-name">Statistik 2 - Name</label>
-                                    <input type="text" id="stat2-name" value="Projekte geleitet">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat2-value">Statistik 2 - Wert</label>
-                                    <input type="number" id="stat2-value" value="30">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat2-unit">Statistik 2 - Einheit</label>
-                                    <input type="text" id="stat2-unit" value="+">
-                                </div>
+                            <div class="stat-item">
+                                <label>Statistik 1 - Wert</label>
+                                <input type="number" id="stat1-value" value="6" min="0">
                             </div>
-                            
-                            <div class="stat-group">
-                                <div class="form-group">
-                                    <label for="stat3-name">Statistik 3 - Name</label>
-                                    <input type="text" id="stat3-name" value="Lernkurveneffekt">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat3-value">Statistik 3 - Wert</label>
-                                    <input type="number" id="stat3-value" value="100">
-                                </div>
-                                <div class="form-group">
-                                    <label for="stat3-unit">Statistik 3 - Einheit</label>
-                                    <input type="text" id="stat3-unit" value="%">
-                                </div>
+                            <div class="stat-item">
+                                <label>Statistik 1 - Einheit</label>
+                                <input type="text" id="stat1-unit" value="+" placeholder="+, %, etc.">
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <label>Statistik 2 - Name</label>
+                                <input type="text" id="stat2-name" value="Projekte geleitet">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 2 - Wert</label>
+                                <input type="number" id="stat2-value" value="30" min="0">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 2 - Einheit</label>
+                                <input type="text" id="stat2-unit" value="+" placeholder="+, %, etc.">
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <label>Statistik 3 - Name</label>
+                                <input type="text" id="stat3-name" value="Lernkurveneffekt">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 3 - Wert</label>
+                                <input type="number" id="stat3-value" value="100" min="0" max="100">
+                            </div>
+                            <div class="stat-item">
+                                <label>Statistik 3 - Einheit</label>
+                                <input type="text" id="stat3-unit" value="%" placeholder="+, %, etc.">
                             </div>
                         </div>
                     </div>
@@ -178,65 +166,7 @@
                         </div>
                     </div>
 
-                    <!-- Multiple Image Upload for Activities -->
-                    <div class="editor-card full-width">
-                        <h3><i class="fas fa-images"></i> Bilder für Services hochladen</h3>
-                        <div class="image-upload-section">
-                            <div class="service-image-groups">
-                                <div class="service-group">
-                                    <h4><i class="fas fa-campground"></i> Wohnmobil Bilder</h4>
-                                    <div class="image-drop-zone" data-service="wohnmobil">
-                                        <input type="file" multiple accept="image/*" class="file-input" id="wohnmobil-files">
-                                        <div class="drop-zone-content">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                            <p>Bilder hier ablegen oder klicken zum Auswählen</p>
-                                            <p><small>Mehrere Bilder gleichzeitig möglich</small></p>
-                                        </div>
-                                    </div>
-                                    <div class="uploaded-images" id="wohnmobil-gallery"></div>
-                                </div>
 
-                                <div class="service-group">
-                                    <h4><i class="fas fa-camera"></i> Fotobox Bilder</h4>
-                                    <div class="image-drop-zone" data-service="fotobox">
-                                        <input type="file" multiple accept="image/*" class="file-input" id="fotobox-files">
-                                        <div class="drop-zone-content">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                            <p>Bilder hier ablegen oder klicken zum Auswählen</p>
-                                            <p><small>Mehrere Bilder gleichzeitig möglich</small></p>
-                                        </div>
-                                    </div>
-                                    <div class="uploaded-images" id="fotobox-gallery"></div>
-                                </div>
-
-                                <div class="service-group">
-                                    <h4><i class="fas fa-bicycle"></i> E-Bike Bilder</h4>
-                                    <div class="image-drop-zone" data-service="ebike">
-                                        <input type="file" multiple accept="image/*" class="file-input" id="ebike-files">
-                                        <div class="drop-zone-content">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                            <p>Bilder hier ablegen oder klicken zum Auswählen</p>
-                                            <p><small>Mehrere Bilder gleichzeitig möglich</small></p>
-                                        </div>
-                                    </div>
-                                    <div class="uploaded-images" id="ebike-gallery"></div>
-                                </div>
-
-                                <div class="service-group">
-                                    <h4><i class="fas fa-water"></i> SUP Bilder</h4>
-                                    <div class="image-drop-zone" data-service="sup">
-                                        <input type="file" multiple accept="image/*" class="file-input" id="sup-files">
-                                        <div class="drop-zone-content">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                            <p>Bilder hier ablegen oder klicken zum Auswählen</p>
-                                            <p><small>Mehrere Bilder gleichzeitig möglich</small></p>
-                                        </div>
-                                    </div>
-                                    <div class="uploaded-images" id="sup-gallery"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -278,8 +208,10 @@
         </main>
     </div>
 
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
+
     <!-- Scripts -->
-    <script src="js/data-persistence.js"></script>
-    <script src="admin-script.js"></script>
+    <script src="admin-script-working.js"></script>
 </body>
 </html>
