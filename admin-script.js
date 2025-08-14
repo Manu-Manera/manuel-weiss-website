@@ -112,6 +112,9 @@ class AdminPanel {
             // Save to localStorage for persistence
             localStorage.setItem('profileImage', e.target.result);
 
+            // Automatisch alle Daten speichern nach Bildupload
+            this.saveAllChanges();
+
             this.showNotification('Profilbild erfolgreich aktualisiert', 'success');
             this.markAsChanged('profile-image', e.target.result);
         };
@@ -569,10 +572,17 @@ class AdminPanel {
         const formData = {};
         const inputs = document.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
-            if (input.id) {
+            if (input.id && input.type !== 'file') {
                 formData[input.id] = input.value;
             }
         });
+        
+        // Sammle aktuelles Profilbild
+        const profilePreview = document.getElementById('profile-preview');
+        if (profilePreview && profilePreview.src && !profilePreview.src.includes('manuel-weiss-photo.jpg')) {
+            formData.profileImage = profilePreview.src;
+        }
+        
         return formData;
     }
 
@@ -588,7 +598,46 @@ class AdminPanel {
 
     loadCurrentData() {
         // Load current website data into admin panel
-        // This would typically fetch from localStorage or server
+        try {
+            // Lade gespeicherte Daten aus localStorage
+            const savedData = localStorage.getItem('websiteData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
+                const preview = document.getElementById('profile-preview');
+                if (preview) {
+                    const profileImage = data.profileImage || localStorage.getItem('profileImage');
+                    if (profileImage) {
+                        preview.src = profileImage;
+                        console.log('✅ Profilbild aus localStorage geladen');
+                    }
+                }
+                
+                // Lade Hero-Daten
+                if (data.heroName) document.getElementById('hero-name').value = data.heroName;
+                if (data.heroTitle) document.getElementById('hero-title').value = data.heroTitle;
+                if (data.heroSubtitle) document.getElementById('hero-subtitle').value = data.heroSubtitle;
+                if (data.heroDescription) document.getElementById('hero-description').value = data.heroDescription;
+                
+                // Lade Statistiken
+                if (data.stat1Name) document.getElementById('stat1-name').value = data.stat1Name;
+                if (data.stat1Value) document.getElementById('stat1-value').value = data.stat1Value;
+                if (data.stat1Unit) document.getElementById('stat1-unit').value = data.stat1Unit;
+                
+                if (data.stat2Name) document.getElementById('stat2-name').value = data.stat2Name;
+                if (data.stat2Value) document.getElementById('stat2-value').value = data.stat2Value;
+                if (data.stat2Unit) document.getElementById('stat2-unit').value = data.stat2Unit;
+                
+                if (data.stat3Name) document.getElementById('stat3-name').value = data.stat3Name;
+                if (data.stat3Value) document.getElementById('stat3-value').value = data.stat3Value;
+                if (data.stat3Unit) document.getElementById('stat3-unit').value = data.stat3Unit;
+                
+                console.log('✅ Daten aus localStorage geladen');
+            }
+        } catch (error) {
+            console.log('❌ Fehler beim Laden der Daten:', error);
+        }
     }
 
     // Save and Publish Functions
