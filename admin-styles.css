@@ -639,4 +639,89 @@ body {
 
 .image-action-btn.delete:hover {
     background: rgba(239, 68, 68, 1);
+}
+
+/* Activities Overview */
+.activities-overview {
+    margin-top: 2rem;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.overview-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.overview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+    border-color: #2563eb;
+}
+
+.overview-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.overview-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.overview-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.overview-card p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.overview-info {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.overview-info h4 {
+    color: #2563eb;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.overview-info ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.overview-info li {
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+.overview-info strong {
+    color: #1e293b;
 } 

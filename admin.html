@@ -287,103 +287,70 @@
                 </div>
             </section>
 
-            <!-- Activities Section Editor -->
+            <!-- Activities Overview Section -->
             <section id="activities" class="editor-section">
                 <div class="editor-header">
-                    <h3>Sonstige Tätigkeiten bearbeiten</h3>
-                    <button class="btn btn-primary" onclick="addActivity()">
-                        <i class="fas fa-plus"></i> Tätigkeit hinzufügen
-                    </button>
+                    <h3>Aktivitäten-Übersicht</h3>
+                    <p>Verwalten Sie Ihre sonstigen Tätigkeiten über die individuellen Reiter in der Sidebar.</p>
                 </div>
                 
-                <div class="activities-editor" id="activities-container">
-                    <!-- Activity 1 -->
-                    <div class="activity-editor-card" data-activity-id="1">
-                        <div class="activity-header">
-                            <h4>Tätigkeit 1: Wohnmobil Vermietung</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeActivity(1)">
-                                <i class="fas fa-trash"></i>
+                <div class="activities-overview">
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-campground"></i>
+                            </div>
+                            <h4>Wohnmobil</h4>
+                            <p>Vollausstattung für 2-4 Personen</p>
+                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('wohnmobil')">
+                                <i class="fas fa-edit"></i> Bearbeiten
                             </button>
                         </div>
-                        <div class="activity-content">
-                            <div class="form-group">
-                                <label>Icon (FontAwesome Klasse)</label>
-                                <input type="text" value="fas fa-campground" class="activity-icon">
+                        
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-camera"></i>
                             </div>
-                            <div class="form-group">
-                                <label>Titel</label>
-                                <input type="text" value="Wohnmobil Vermietung" class="activity-title">
+                            <h4>Fotobox</h4>
+                            <p>Professionelle Events & Feiern</p>
+                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('fotobox')">
+                                <i class="fas fa-edit"></i> Bearbeiten
+                            </button>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-water"></i>
                             </div>
-                            <div class="form-group">
-                                <label>Beschreibung</label>
-                                <textarea rows="3" class="activity-description">Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</textarea>
+                            <h4>Stand-Up-Paddle</h4>
+                            <p>Wassersport auf Schweizer Seen</p>
+                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('sup')">
+                                <i class="fas fa-edit"></i> Bearbeiten
+                            </button>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-bicycle"></i>
                             </div>
-                            <div class="form-group">
-                                <label>Link zur Detailseite</label>
-                                <input type="text" value="wohnmobil.html" class="activity-link">
-                            </div>
-                            
-                            <!-- Bilder-Upload für Activity -->
-                            <div class="form-group">
-                                <label>Bilder für diese Aktivität</label>
-                                <div class="activity-images" data-activity="wohnmobil">
-                                    <div class="image-upload">
-                                        <div class="upload-area" onclick="document.getElementById('wohnmobil-upload').click()">
-                                            <div class="upload-placeholder">
-                                                <i class="fas fa-plus"></i>
-                                                <p>Bild hinzufügen</p>
-                                            </div>
-                                        </div>
-                                        <input type="file" id="wohnmobil-upload" accept="image/*" multiple style="display: none;">
-                                    </div>
-                                    <!-- Bereits hochgeladene Bilder werden hier angezeigt -->
-                                </div>
-                            </div>
+                            <h4>E-Bike</h4>
+                            <p>Nachhaltige Mobilität für alle</p>
+                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('ebike')">
+                                <i class="fas fa-edit"></i> Bearbeiten
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Activity 2 -->
-                    <div class="activity-editor-card" data-activity-id="2">
-                        <div class="activity-header">
-                            <h4>Tätigkeit 2: Fotobox Vermietung</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeActivity(2)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="activity-content">
-                            <div class="form-group">
-                                <label>Icon (FontAwesome Klasse)</label>
-                                <input type="text" value="fas fa-camera" class="activity-icon">
-                            </div>
-                            <div class="form-group">
-                                <label>Titel</label>
-                                <input type="text" value="Fotobox Vermietung" class="activity-title">
-                            </div>
-                            <div class="form-group">
-                                <label>Beschreibung</label>
-                                <textarea rows="3" class="activity-description">Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Link zur Detailseite</label>
-                                <input type="text" value="fotobox.html" class="activity-link">
-                            </div>
-                            
-                            <!-- Bilder-Upload für Activity -->
-                            <div class="form-group">
-                                <label>Bilder für diese Aktivität</label>
-                                <div class="activity-images" data-activity="fotobox">
-                                    <div class="image-upload">
-                                        <div class="upload-area" onclick="document.getElementById('fotobox-upload').click()">
-                                            <div class="upload-placeholder">
-                                                <i class="fas fa-plus"></i>
-                                                <p>Bild hinzufügen</p>
-                                            </div>
-                                        </div>
-                                        <input type="file" id="fotobox-upload" accept="image/*" multiple style="display: none;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <div class="overview-info">
+                        <h4><i class="fas fa-info-circle"></i> Hinweis</h4>
+                        <p>Jede Aktivität hat ihren eigenen Editor-Bereich mit vollständigem Baukastenprinzip:</p>
+                        <ul>
+                            <li><strong>Grundinformationen:</strong> Titel, Beschreibung, Icon</li>
+                            <li><strong>Bildergalerie:</strong> Upload mehrerer Bilder</li>
+                            <li><strong>Preise & Details:</strong> Individuelle Preisstrukturen</li>
+                            <li><strong>Features:</strong> Ausstattung und Leistungen</li>
+                        </ul>
+                        <p><strong>Verwenden Sie die Reiter in der Sidebar für die detaillierte Bearbeitung jeder Aktivität.</strong></p>
                     </div>
                 </div>
             </section>
