@@ -2,8 +2,47 @@ class ImageUploadHandler {
     constructor() {
         this.maxFileSize = 5 * 1024 * 1024; // 5MB
         this.allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        this.loadExistingProfileImage(); // Load first!
         this.setupProfileImageUpload();
         this.setupGalleryUploads();
+    }
+
+    loadExistingProfileImage() {
+        const preview = document.getElementById('profile-preview');
+        if (!preview) return;
+
+        try {
+            // Check for uploaded profile image
+            const hasUploadedImage = localStorage.getItem('profileImageUploaded') === 'true';
+            
+            if (hasUploadedImage) {
+                // Try to load uploaded image
+                const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+                const profileImage = websiteData.profileImage || 
+                                   localStorage.getItem('profileImage') || 
+                                   localStorage.getItem('mwps-profile-image');
+                
+                if (profileImage && profileImage.startsWith('data:image/')) {
+                    preview.src = profileImage;
+                    console.log('✅ Hochgeladenes Profilbild beim Start geladen');
+                    return;
+                }
+            }
+            
+            // Load default SVG only if no uploaded image
+            const defaultSrc = preview.getAttribute('data-default');
+            if (defaultSrc) {
+                preview.src = defaultSrc;
+                console.log('ℹ️ Standard-Profilbild geladen');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Laden des Profilbilds:', error);
+            // Fallback to default
+            const defaultSrc = preview.getAttribute('data-default');
+            if (defaultSrc) {
+                preview.src = defaultSrc;
+            }
+        }
     }
 
     setupProfileImageUpload() {
