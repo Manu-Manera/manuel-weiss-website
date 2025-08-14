@@ -75,7 +75,11 @@
             <section id="hero" class="editor-section active">
                 <div class="editor-grid">
                     <div class="editor-card">
-                        <h3><i class="fas fa-user"></i> Profilbild</h3>
+                        <h3><i class="fas fa-user"></i> Profilbild 
+                            <button class="btn btn-sm btn-secondary" onclick="reloadHeroData()" style="margin-left: auto; font-size: 0.7rem;">
+                                <i class="fas fa-sync"></i> Neu laden
+                            </button>
+                        </h3>
                         <div class="image-upload">
                             <div class="upload-area" id="profile-upload" onclick="document.getElementById('profile-input').click()">
                                 <img src="manuel-weiss-photo.jpg" alt="Profilbild" id="profile-preview">
