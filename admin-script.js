@@ -10,7 +10,7 @@ class AdminPanel {
     init() {
         this.setupNavigation();
         this.setupSubmenus();
-        this.setupImageUpload();
+        this.setupProfileImageUpload();
         this.setupAutoSave();
         this.setupFormHandlers();
         this.loadCurrentData();
@@ -26,6 +26,68 @@ class AdminPanel {
                 item.classList.toggle('open');
             });
         });
+    }
+
+    // Profile Image Upload Setup
+    setupProfileImageUpload() {
+        const profileUpload = document.getElementById('profile-upload');
+        const profileInput = document.getElementById('profile-input');
+        
+        if (profileUpload && profileInput) {
+            profileUpload.addEventListener('click', () => {
+                profileInput.click();
+            });
+            
+            profileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    this.showNotification('Bitte wählen Sie eine Bilddatei aus', 'error');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    this.showNotification('Bild ist zu groß (max. 5MB)', 'error');
+                    return;
+                }
+                
+                // Read file
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const imageData = event.target.result;
+                    
+                    // Update preview immediately
+                    const preview = document.getElementById('profile-preview');
+                    if (preview) {
+                        preview.src = imageData;
+                    }
+                    
+                    // Save with Netlify Storage
+                    if (window.netlifyStorage) {
+                        const result = await window.netlifyStorage.saveProfileImage(imageData);
+                        this.showNotification(result.message, result.success ? 'success' : 'warning');
+                    } else {
+                        // Fallback to localStorage
+                        localStorage.setItem('profileImage', imageData);
+                        this.showNotification('Profilbild gespeichert (offline)', 'warning');
+                    }
+                    
+                    // Update main website
+                    try {
+                        window.postMessage({
+                            type: 'updateProfileImage',
+                            imageData: imageData
+                        }, '*');
+                    } catch (error) {
+                        console.log('Cross-window communication nicht verfügbar');
+                    }
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
     }
 
     // Navigation Setup
