@@ -137,8 +137,14 @@ class AdminPanel {
                 console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
             }
 
-            // Save to localStorage for persistence
+            // Save to localStorage for persistence (multiple keys for reliability)
             localStorage.setItem('profileImage', e.target.result);
+            localStorage.setItem('mwps-profile-image', e.target.result);
+            
+            // Also save to main website data
+            const existingData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+            existingData.profileImage = e.target.result;
+            localStorage.setItem('websiteData', JSON.stringify(existingData));
 
             // Automatisch alle Daten speichern nach Bildupload
             this.saveAllChanges();
@@ -867,8 +873,11 @@ class AdminPanel {
                         // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
         const preview = document.getElementById('profile-preview');
         if (preview) {
-            const profileImage = data.profileImage || localStorage.getItem('profileImage');
-            if (profileImage) {
+            // Try multiple sources for profile image
+            const profileImage = data.profileImage || 
+                               localStorage.getItem('profileImage') || 
+                               localStorage.getItem('mwps-profile-image');
+            if (profileImage && profileImage !== 'manuel-weiss-photo.svg') {
                 preview.src = profileImage;
                 console.log('✅ Profilbild aus localStorage geladen');
             }
