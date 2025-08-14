@@ -17,7 +17,12 @@ class SimpleAdminDashboard {
         this.setupNavigation();
         this.setupImageUploads();
         this.setupAutoSave();
-        this.loadHeroData();
+        
+        // Warte kurz und lade dann Daten
+        setTimeout(() => {
+            this.loadHeroData();
+            this.loadFromLocalStorage();
+        }, 500);
         
         console.log('✅ Admin Dashboard bereit!');
     }
@@ -161,6 +166,14 @@ class SimpleAdminDashboard {
                 console.log('Vorschau aktualisiert');
             }
             
+            // Bild im localStorage speichern
+            try {
+                localStorage.setItem('mwps-profile-image', e.target.result);
+                console.log('Bild im localStorage gespeichert');
+            } catch (error) {
+                console.log('Fehler beim Speichern im localStorage:', error);
+            }
+
             // Im Content Manager speichern
             if (this.contentManager && this.contentManager.content && this.contentManager.content.hero) {
                 this.contentManager.content.hero.profileImage = e.target.result;
@@ -264,9 +277,13 @@ class SimpleAdminDashboard {
     }
 
     loadHeroData() {
-        if (!this.contentManager || !this.contentManager.content.hero) return;
+        if (!this.contentManager || !this.contentManager.content.hero) {
+            console.log('Content Manager oder Hero-Daten nicht verfügbar');
+            return;
+        }
 
         const hero = this.contentManager.content.hero;
+        console.log('Lade Hero-Daten:', hero);
         
         // Grunddaten laden
         if (hero.name) document.getElementById('hero-name').value = hero.name;
@@ -290,8 +307,17 @@ class SimpleAdminDashboard {
         }
 
         // Profilbild laden
-        if (hero.profileImage) {
-            document.getElementById('profile-preview').src = hero.profileImage;
+        const preview = document.getElementById('profile-preview');
+        if (preview) {
+            if (hero.profileImage && hero.profileImage !== 'manuel-weiss-photo.jpg') {
+                // Gespeichertes Bild laden
+                preview.src = hero.profileImage;
+                console.log('Gespeichertes Profilbild geladen');
+            } else {
+                // Standard-Bild laden
+                preview.src = 'manuel-weiss-photo.jpg';
+                console.log('Standard Profilbild geladen');
+            }
         }
     }
 
@@ -377,6 +403,22 @@ class SimpleAdminDashboard {
         }
     }
 
+    loadFromLocalStorage() {
+        try {
+            // Versuche Profilbild aus localStorage zu laden
+            const savedProfileImage = localStorage.getItem('mwps-profile-image');
+            if (savedProfileImage) {
+                const preview = document.getElementById('profile-preview');
+                if (preview) {
+                    preview.src = savedProfileImage;
+                    console.log('Profilbild aus localStorage geladen');
+                }
+            }
+        } catch (error) {
+            console.log('Fehler beim Laden aus localStorage:', error);
+        }
+    }
+
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
@@ -431,5 +473,12 @@ function handleProfileImageChange(input) {
     console.log('HTML onchange ausgelöst:', input.files);
     if (input.files && input.files[0] && adminDashboard) {
         adminDashboard.handleProfileImageUpload(input.files[0]);
+    }
+}
+
+function reloadHeroData() {
+    if (adminDashboard) {
+        adminDashboard.loadHeroData();
+        adminDashboard.showNotification('✅ Hero-Daten neu geladen!', 'success');
     }
 }
