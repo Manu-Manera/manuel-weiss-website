@@ -89,25 +89,49 @@ body {
     letter-spacing: 0.05em;
 }
 
-/* Activity Tabs Special Styling */
-.activity-tab {
-    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-    border-left: 3px solid #3b82f6;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    border-radius: 6px;
+/* Submenu Styling */
+.nav-item-with-submenu {
+    position: relative;
 }
 
-.activity-tab:hover {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    transform: translateX(4px);
+.submenu-arrow {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
 }
 
-.activity-tab.active {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+.nav-item-with-submenu.open .submenu-arrow {
+    transform: rotate(180deg);
+}
+
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #f8fafc;
+    border-left: 2px solid #e2e8f0;
+    margin-left: 1rem;
+}
+
+.nav-item-with-submenu.open .submenu {
+    max-height: 300px;
+}
+
+.submenu-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    margin: 0.25rem 0.5rem;
+}
+
+.submenu-link:hover {
+    background: #e2e8f0;
+    color: #2563eb;
+}
+
+.submenu-link.active {
+    background: #2563eb;
     color: white;
-    border-left: 3px solid #fbbf24;
 }
 
 .nav-link i {

@@ -9,10 +9,23 @@ class AdminPanel {
 
     init() {
         this.setupNavigation();
+        this.setupSubmenus();
         this.setupImageUpload();
         this.setupAutoSave();
         this.setupFormHandlers();
         this.loadCurrentData();
+    }
+
+    // Submenu Setup
+    setupSubmenus() {
+        const submenuItems = document.querySelectorAll('.nav-item-with-submenu');
+        submenuItems.forEach(item => {
+            const link = item.querySelector('.nav-link');
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                item.classList.toggle('open');
+            });
+        });
     }
 
     // Navigation Setup
