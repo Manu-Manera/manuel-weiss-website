@@ -1,12 +1,31 @@
 // Profile Image Management
 function loadSavedProfileImage() {
-    const savedImage = localStorage.getItem('current-profile-image') || localStorage.getItem('profileImage');
-    if (savedImage) {
-        const profileImage = document.getElementById('profile-photo');
-        if (profileImage) {
-            profileImage.src = savedImage;
-            console.log('✅ Gespeichertes Profilbild geladen');
+    try {
+        // Try multiple localStorage keys
+        let savedImage = localStorage.getItem('profileImage') || 
+                        localStorage.getItem('mwps-profile-image') || 
+                        localStorage.getItem('current-profile-image');
+        
+        // Also check websiteData
+        const websiteData = localStorage.getItem('websiteData');
+        if (websiteData) {
+            try {
+                const data = JSON.parse(websiteData);
+                if (data.profileImage) {
+                    savedImage = data.profileImage;
+                }
+            } catch (e) {}
         }
+        
+        if (savedImage && savedImage.startsWith('data:image/')) {
+            const profileImage = document.getElementById('profile-photo');
+            if (profileImage) {
+                profileImage.src = savedImage;
+                console.log('✅ Profilbild aus localStorage geladen');
+            }
+        }
+    } catch (error) {
+        console.log('Fehler beim Laden des Profilbilds:', error);
     }
 }
 
