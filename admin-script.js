@@ -77,14 +77,27 @@ class SimpleAdminDashboard {
     }
 
     setupImageUploads() {
-        // Profilbild Upload
-        document.getElementById('profile-upload').addEventListener('click', () => {
-            document.getElementById('profile-input').click();
-        });
+        // Profilbild Upload - mit besserer Fehlerbehandlung
+        const profileUpload = document.getElementById('profile-upload');
+        const profileInput = document.getElementById('profile-input');
+        
+        if (profileUpload && profileInput) {
+            profileUpload.addEventListener('click', (e) => {
+                console.log('Profilbild Upload geklickt');
+                e.preventDefault();
+                e.stopPropagation();
+                profileInput.click();
+            });
 
-        document.getElementById('profile-input').addEventListener('change', (e) => {
-            this.handleProfileImageUpload(e.target.files[0]);
-        });
+            profileInput.addEventListener('change', (e) => {
+                console.log('Datei ausgewählt:', e.target.files);
+                if (e.target.files && e.target.files[0]) {
+                    this.handleProfileImageUpload(e.target.files[0]);
+                }
+            });
+        } else {
+            console.error('Profilbild Upload Elemente nicht gefunden');
+        }
 
         // Service Image Uploads
         ['wohnmobil', 'fotobox', 'ebike', 'sup'].forEach(service => {
@@ -118,19 +131,53 @@ class SimpleAdminDashboard {
     }
 
     handleProfileImageUpload(file) {
-        if (!file) return;
+        if (!file) {
+            console.log('Keine Datei übergeben');
+            return;
+        }
+
+        console.log('Verarbeite Profilbild:', file.name, file.size, file.type);
+
+        // Datei-Validierung
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('❌ Bitte wähle eine Bilddatei aus!', 'error');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) { // 5MB Limit
+            this.showNotification('❌ Bild zu groß! Maximal 5MB erlaubt.', 'error');
+            return;
+        }
 
         const reader = new FileReader();
+        
         reader.onload = (e) => {
-            document.getElementById('profile-preview').src = e.target.result;
+            console.log('Bild erfolgreich geladen');
             
-            if (this.contentManager && this.contentManager.content.hero) {
-                this.contentManager.content.hero.profileImage = e.target.result;
-                this.saveToContentManager();
+            // Bild in Vorschau anzeigen
+            const preview = document.getElementById('profile-preview');
+            if (preview) {
+                preview.src = e.target.result;
+                console.log('Vorschau aktualisiert');
             }
             
-            this.showNotification('✅ Profilbild aktualisiert!', 'success');
+            // Im Content Manager speichern
+            if (this.contentManager && this.contentManager.content && this.contentManager.content.hero) {
+                this.contentManager.content.hero.profileImage = e.target.result;
+                this.saveToContentManager();
+                console.log('Bild im Content Manager gespeichert');
+            } else {
+                console.log('Content Manager nicht verfügbar - Bild nur lokal gesetzt');
+            }
+            
+            this.showNotification('✅ Profilbild erfolgreich aktualisiert!', 'success');
         };
+
+        reader.onerror = (e) => {
+            console.error('Fehler beim Laden des Bildes:', e);
+            this.showNotification('❌ Fehler beim Laden des Bildes!', 'error');
+        };
+
         reader.readAsDataURL(file);
     }
 
@@ -377,5 +424,12 @@ function resetChanges() {
     if (confirm('Möchtest du alle ungespeicherten Änderungen zurücksetzen?')) {
         adminDashboard.loadHeroData();
         adminDashboard.showNotification('Änderungen zurückgesetzt', 'info');
+    }
+}
+
+function handleProfileImageChange(input) {
+    console.log('HTML onchange ausgelöst:', input.files);
+    if (input.files && input.files[0] && adminDashboard) {
+        adminDashboard.handleProfileImageUpload(input.files[0]);
     }
 }

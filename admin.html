@@ -77,14 +77,14 @@
                     <div class="editor-card">
                         <h3><i class="fas fa-user"></i> Profilbild</h3>
                         <div class="image-upload">
-                            <div class="upload-area" id="profile-upload">
+                            <div class="upload-area" id="profile-upload" onclick="document.getElementById('profile-input').click()">
                                 <img src="manuel-weiss-photo.jpg" alt="Profilbild" id="profile-preview">
                                 <div class="upload-overlay">
                                     <i class="fas fa-camera"></i>
                                     <p>Bild ändern</p>
                                 </div>
                             </div>
-                            <input type="file" id="profile-input" accept="image/*" style="display: none;">
+                            <input type="file" id="profile-input" accept="image/*" style="display: none;" onchange="handleProfileImageChange(this)">
                         </div>
                     </div>
 
