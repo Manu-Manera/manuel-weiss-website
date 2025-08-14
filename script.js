@@ -76,6 +76,11 @@ function loadSavedContent() {
                 elements.forEach(el => el.textContent = data.contactPhone);
             }
             
+            // Lade Zertifikate dynamisch
+            if (data.certificates && data.certificates.length > 0) {
+                loadDynamicCertificates(data.certificates);
+            }
+            
             console.log('✅ Alle Website-Inhalte geladen');
         }
     } catch (error) {
@@ -132,6 +137,32 @@ function loadDynamicProjects(projects) {
             </div>
         </div>
     `).join('');
+}
+
+function loadDynamicCertificates(certificates) {
+    // Update im Hero-Bereich (Certification Badges)
+    const heroCertificates = document.querySelector('[data-certificates="hero"]');
+    if (heroCertificates && certificates.length > 0) {
+        heroCertificates.innerHTML = certificates.map(cert => `
+            <div class="badge">
+                <i class="fas fa-certificate"></i>
+                <span>${cert}</span>
+            </div>
+        `).join('');
+        console.log('✅ Zertifikate im Hero-Bereich aktualisiert:', certificates);
+    }
+    
+    // Update im Footer-Bereich (falls vorhanden)
+    const footerCertificates = document.querySelector('[data-certificates="footer"]');
+    if (footerCertificates) {
+        footerCertificates.innerHTML = certificates.map(cert => `<span class="certificate">${cert}</span>`).join(' • ');
+    }
+    
+    // Update in der Kontakt-Sektion (falls vorhanden)
+    const contactCertificates = document.querySelector('[data-certificates="contact"]');
+    if (contactCertificates) {
+        contactCertificates.innerHTML = certificates.map(cert => `<li>${cert}</li>`).join('');
+    }
 }
 
 // Listen for updates from admin panel
