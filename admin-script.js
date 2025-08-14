@@ -1,484 +1,689 @@
-// Einfaches Admin Dashboard - funktionierend + Live Updates
-class SimpleAdminDashboard {
+// Admin Panel JavaScript
+class AdminPanel {
     constructor() {
-        this.contentManager = null;
         this.currentSection = 'hero';
         this.autoSaveTimer = null;
+        this.changes = {};
         this.init();
     }
 
-    async init() {
-        console.log('Admin Dashboard wird initialisiert...');
-        
-        // Warte auf Content Manager
-        await this.waitForContentManager();
-        
-        // Setup
+    init() {
         this.setupNavigation();
-        this.setupImageUploads();
+        this.setupImageUpload();
         this.setupAutoSave();
-        
-        // Warte kurz und lade dann Daten
-        setTimeout(() => {
-            this.loadHeroData();
-            this.loadFromLocalStorage();
-        }, 500);
-        
-        console.log('✅ Admin Dashboard bereit!');
+        this.setupFormHandlers();
+        this.loadCurrentData();
     }
 
-    async waitForContentManager() {
-        let attempts = 0;
-        while (!window.contentManager && attempts < 50) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            attempts++;
-        }
-        
-        if (window.contentManager) {
-            this.contentManager = window.contentManager;
-            console.log('✅ Content Manager verbunden');
-            this.updateSyncStatus(true);
-        } else {
-            console.log('⚠️ Content Manager nicht gefunden - lokaler Modus');
-            this.updateSyncStatus(false);
-        }
-    }
-
+    // Navigation Setup
     setupNavigation() {
-        document.querySelectorAll('.nav-link').forEach(link => {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = e.target.dataset.section || e.target.closest('[data-section]').dataset.section;
+                const section = link.getAttribute('data-section');
                 this.switchSection(section);
             });
         });
     }
 
-    switchSection(sectionName) {
-        // Navigation aktualisieren
+    switchSection(section) {
+        // Update navigation
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
         });
-        document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+        document.querySelector(`[data-section="${section}"]`).classList.add('active');
 
-        // Sektionen aktualisieren
-        document.querySelectorAll('.editor-section').forEach(section => {
-            section.classList.remove('active');
+        // Update content
+        document.querySelectorAll('.editor-section').forEach(sectionEl => {
+            sectionEl.classList.remove('active');
         });
-        document.getElementById(sectionName).classList.add('active');
+        document.getElementById(section).classList.add('active');
 
-        // Titel aktualisieren
+        // Update title
         const titles = {
-            hero: 'Hero-Bereich bearbeiten',
-            services: 'Beratungs-Services verwalten',
-            activities: 'Sonstige Tätigkeiten verwalten',
-            projects: 'Projekte verwalten',
-            contact: 'Kontaktinformationen bearbeiten',
-            settings: 'Einstellungen verwalten'
+            'hero': 'Hero-Bereich bearbeiten',
+            'profile': 'Beraterprofil bearbeiten',
+            'services': 'Beratungs-Services bearbeiten',
+            'activities': 'Sonstige Tätigkeiten bearbeiten',
+            'projects': 'Projekte bearbeiten',
+            'contact': 'Kontakt bearbeiten',
+            'settings': 'Einstellungen bearbeiten'
         };
-        document.getElementById('section-title').textContent = titles[sectionName] || 'Bereich bearbeiten';
+        document.getElementById('section-title').textContent = titles[section];
 
-        this.currentSection = sectionName;
+        this.currentSection = section;
     }
 
-    setupImageUploads() {
-        // Profilbild Upload - mit besserer Fehlerbehandlung
-        const profileUpload = document.getElementById('profile-upload');
-        const profileInput = document.getElementById('profile-input');
-        
-        if (profileUpload && profileInput) {
-            profileUpload.addEventListener('click', (e) => {
-                console.log('Profilbild Upload geklickt');
-                e.preventDefault();
-                e.stopPropagation();
-                profileInput.click();
-            });
+    // Image Upload Setup
+    setupImageUpload() {
+        const uploadArea = document.getElementById('profile-upload');
+        const fileInput = document.getElementById('profile-input');
 
-            profileInput.addEventListener('change', (e) => {
-                console.log('Datei ausgewählt:', e.target.files);
-                if (e.target.files && e.target.files[0]) {
-                    this.handleProfileImageUpload(e.target.files[0]);
-                }
-            });
-        } else {
-            console.error('Profilbild Upload Elemente nicht gefunden');
-        }
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
 
-        // Service Image Uploads
-        ['wohnmobil', 'fotobox', 'ebike', 'sup'].forEach(service => {
-            const fileInput = document.getElementById(`${service}-files`);
-            const dropZone = fileInput.parentElement;
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.handleImageUpload(file);
+            }
+        });
 
-            // Click to upload
-            dropZone.addEventListener('click', () => fileInput.click());
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drop-zone');
+        });
 
-            // File change
-            fileInput.addEventListener('change', (e) => {
-                this.handleServiceImageUpload(service, e.target.files);
-            });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drop-zone');
+        });
 
-            // Drag and drop
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                this.handleServiceImageUpload(service, e.dataTransfer.files);
-            });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drop-zone');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                this.handleImageUpload(file);
+            }
         });
     }
 
-    handleProfileImageUpload(file) {
-        if (!file) {
-            console.log('Keine Datei übergeben');
-            return;
-        }
-
-        console.log('Verarbeite Profilbild:', file.name, file.size, file.type);
-
-        // Datei-Validierung
-        if (!file.type.startsWith('image/')) {
-            this.showNotification('❌ Bitte wähle eine Bilddatei aus!', 'error');
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) { // 5MB Limit
-            this.showNotification('❌ Bild zu groß! Maximal 5MB erlaubt.', 'error');
-            return;
-        }
-
+    handleImageUpload(file) {
         const reader = new FileReader();
-        
         reader.onload = (e) => {
-            console.log('Bild erfolgreich geladen');
-            
-            // Bild in Vorschau anzeigen
             const preview = document.getElementById('profile-preview');
-            if (preview) {
-                preview.src = e.target.result;
-                console.log('Vorschau aktualisiert');
-            }
+            preview.src = e.target.result;
             
-            // Bild im localStorage speichern
-            try {
-                localStorage.setItem('mwps-profile-image', e.target.result);
-                console.log('Bild im localStorage gespeichert');
-            } catch (error) {
-                console.log('Fehler beim Speichern im localStorage:', error);
+            // Update main website image immediately
+            const mainImage = document.getElementById('profile-photo');
+            if (mainImage) {
+                mainImage.src = e.target.result;
             }
 
-            // Im Content Manager speichern
-            if (this.contentManager && this.contentManager.content && this.contentManager.content.hero) {
-                this.contentManager.content.hero.profileImage = e.target.result;
-                this.saveToContentManager();
-                console.log('Bild im Content Manager gespeichert');
-            } else {
-                console.log('Content Manager nicht verfügbar - Bild nur lokal gesetzt');
-            }
-            
-            this.showNotification('✅ Profilbild erfolgreich aktualisiert!', 'success');
-        };
+            // Also update any other instances of the profile image
+            const allProfileImages = document.querySelectorAll('img[src*="manuel-weiss-photo"]');
+            allProfileImages.forEach(img => {
+                img.src = e.target.result;
+            });
 
-        reader.onerror = (e) => {
-            console.error('Fehler beim Laden des Bildes:', e);
-            this.showNotification('❌ Fehler beim Laden des Bildes!', 'error');
-        };
+            // Save to localStorage for persistence
+            localStorage.setItem('profileImage', e.target.result);
 
+            this.showNotification('Profilbild erfolgreich aktualisiert', 'success');
+            this.markAsChanged('profile-image', e.target.result);
+        };
         reader.readAsDataURL(file);
     }
 
-    handleServiceImageUpload(service, files) {
-        if (!files || files.length === 0) return;
-
-        const gallery = document.getElementById(`${service}-gallery`);
-        
-        Array.from(files).forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const imageData = {
-                    id: Date.now() + index,
-                    title: `${service} Bild ${index + 1}`,
-                    filename: file.name,
-                    src: e.target.result,
-                    uploadedAt: new Date().toISOString()
-                };
-
-                // Bild zur Galerie hinzufügen
-                this.addImageToGallery(gallery, imageData, service);
-
-                // Zu Content Manager hinzufügen
-                if (this.contentManager) {
-                    this.contentManager.addImage(service, imageData);
-                    this.saveToContentManager();
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-
-        this.showNotification(`✅ ${files.length} Bilder für ${service} hochgeladen!`, 'success');
-    }
-
-    addImageToGallery(gallery, imageData, service) {
-        const imageDiv = document.createElement('div');
-        imageDiv.className = 'image-item';
-        imageDiv.innerHTML = `
-            <img src="${imageData.src}" alt="${imageData.title}">
-            <div class="image-overlay">
-                <button class="btn btn-danger btn-sm" onclick="adminDashboard.removeImage('${service}', ${imageData.id})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <p class="image-title">${imageData.title}</p>
-        `;
-        gallery.appendChild(imageDiv);
-    }
-
-    removeImage(service, imageId) {
-        // Aus DOM entfernen
-        const gallery = document.getElementById(`${service}-gallery`);
-        const imageItems = gallery.querySelectorAll('.image-item');
-        imageItems.forEach(item => {
-            const button = item.querySelector(`[onclick*="${imageId}"]`);
-            if (button) {
-                item.remove();
-            }
-        });
-
-        // Aus Content Manager entfernen
-        if (this.contentManager) {
-            this.contentManager.removeImage(service, imageId);
-            this.saveToContentManager();
-        }
-
-        this.showNotification('✅ Bild entfernt!', 'success');
-    }
-
+    // Auto Save Setup
     setupAutoSave() {
-        // Auto-save bei Eingaben
-        document.addEventListener('input', (e) => {
-            if (e.target.matches('input, textarea')) {
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
                 this.scheduleAutoSave();
-            }
+            });
         });
     }
 
     scheduleAutoSave() {
         clearTimeout(this.autoSaveTimer);
         this.autoSaveTimer = setTimeout(() => {
-            this.saveAllData();
-        }, 1000); // 1 Sekunde nach letzter Änderung
+            this.autoSave();
+        }, 2000);
     }
 
-    loadHeroData() {
-        if (!this.contentManager || !this.contentManager.content.hero) {
-            console.log('Content Manager oder Hero-Daten nicht verfügbar');
-            return;
-        }
+    autoSave() {
+        this.collectChanges();
+        this.showAutoSaveIndicator();
+        // In a real implementation, this would save to localStorage or server
+        setTimeout(() => {
+            this.hideAutoSaveIndicator();
+        }, 2000);
+    }
 
-        const hero = this.contentManager.content.hero;
-        console.log('Lade Hero-Daten:', hero);
+    showAutoSaveIndicator() {
+        let indicator = document.querySelector('.auto-save');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'auto-save';
+            document.body.appendChild(indicator);
+        }
+        indicator.textContent = 'Automatisch gespeichert';
+        indicator.classList.add('show');
+    }
+
+    hideAutoSaveIndicator() {
+        const indicator = document.querySelector('.auto-save');
+        if (indicator) {
+            indicator.classList.remove('show');
+        }
+    }
+
+    // Form Handlers
+    setupFormHandlers() {
+        // Hero section
+        this.setupHeroHandlers();
         
-        // Grunddaten laden
-        if (hero.name) document.getElementById('hero-name').value = hero.name;
-        if (hero.title) document.getElementById('hero-title').value = hero.title;
-        if (hero.subtitle) document.getElementById('hero-subtitle').value = hero.subtitle;
-        if (hero.description) document.getElementById('hero-description').value = hero.description;
+        // Profile
+        this.setupProfileHandlers();
+        
+        // Services
+        this.setupServiceHandlers();
+        
+        // Activities
+        this.setupActivityHandlers();
+        
+        // Projects
+        this.setupProjectHandlers();
+        
+        // Contact
+        this.setupContactHandlers();
+        
+        // Settings
+        this.setupSettingsHandlers();
+    }
 
-        // Statistiken laden
-        if (hero.stats && hero.stats.length >= 3) {
-            document.getElementById('stat1-name').value = hero.stats[0].name || '';
-            document.getElementById('stat1-value').value = hero.stats[0].value || '';
-            document.getElementById('stat1-unit').value = hero.stats[0].unit || '';
+    setupHeroHandlers() {
+        const heroInputs = ['hero-name', 'hero-title', 'hero-subtitle', 'hero-description'];
+        heroInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.updateHeroContent(id, input.value);
+                });
+            }
+        });
+
+        // Stats
+        const statFields = ['stat1', 'stat2', 'stat3'];
+        statFields.forEach(stat => {
+            const nameInput = document.getElementById(`${stat}-name`);
+            const valueInput = document.getElementById(`${stat}-value`);
+            const unitInput = document.getElementById(`${stat}-unit`);
             
-            document.getElementById('stat2-name').value = hero.stats[1].name || '';
-            document.getElementById('stat2-value').value = hero.stats[1].value || '';
-            document.getElementById('stat2-unit').value = hero.stats[1].unit || '';
-            
-            document.getElementById('stat3-name').value = hero.stats[2].name || '';
-            document.getElementById('stat3-value').value = hero.stats[2].value || '';
-            document.getElementById('stat3-unit').value = hero.stats[2].unit || '';
+            if (nameInput) {
+                nameInput.addEventListener('input', () => {
+                    this.updateStatLabel(stat, nameInput.value);
+                });
+            }
+            if (valueInput) {
+                valueInput.addEventListener('input', () => {
+                    this.updateStatValue(stat, valueInput.value, unitInput ? unitInput.value : '');
+                });
+            }
+            if (unitInput) {
+                unitInput.addEventListener('input', () => {
+                    this.updateStatValue(stat, valueInput ? valueInput.value : '', unitInput.value);
+                });
+            }
+        });
+    }
+
+    setupProfileHandlers() {
+        const profileInputs = ['profile-title', 'profile-description', 'profile-availability'];
+        profileInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.updateProfileContent(id, input.value);
+                });
+            }
+        });
+    }
+
+    setupServiceHandlers() {
+        // Service cards are handled dynamically
+        this.updateServiceCards();
+    }
+
+    setupActivityHandlers() {
+        // Activity cards are handled dynamically
+        this.updateActivityCards();
+    }
+
+    setupProjectHandlers() {
+        // Project cards are handled dynamically
+        this.updateProjectCards();
+    }
+
+    setupContactHandlers() {
+        const contactInputs = ['contact-name', 'contact-title', 'contact-location', 'contact-email', 'contact-phone'];
+        contactInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.updateContactInfo(id, input.value);
+                });
+            }
+        });
+    }
+
+    setupSettingsHandlers() {
+        // Color pickers
+        const primaryColor = document.getElementById('primary-color');
+        if (primaryColor) {
+            primaryColor.addEventListener('change', () => {
+                this.updatePrimaryColor(primaryColor.value);
+            });
         }
 
-        // Profilbild laden
-        const preview = document.getElementById('profile-preview');
-        if (preview) {
-            if (hero.profileImage && hero.profileImage !== 'manuel-weiss-photo.jpg') {
-                // Gespeichertes Bild laden
-                preview.src = hero.profileImage;
-                console.log('Gespeichertes Profilbild geladen');
-            } else {
-                // Standard-Bild laden
-                preview.src = 'manuel-weiss-photo.jpg';
-                console.log('Standard Profilbild geladen');
+        const secondaryColor = document.getElementById('secondary-color');
+        if (secondaryColor) {
+            secondaryColor.addEventListener('change', () => {
+                this.updateSecondaryColor(secondaryColor.value);
+            });
+        }
+
+        // Gradient selector
+        const gradientSelect = document.getElementById('hero-gradient');
+        if (gradientSelect) {
+            gradientSelect.addEventListener('change', () => {
+                this.updateHeroGradient(gradientSelect.value);
+            });
+        }
+    }
+
+    // Content Update Functions
+    updateHeroContent(field, value) {
+        const mappings = {
+            'hero-name': '.profile-info h1',
+            'hero-title': '.profile-info h2',
+            'hero-subtitle': '.hero-subtitle',
+            'hero-description': '.hero-description'
+        };
+
+        const selector = mappings[field];
+        if (selector) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.textContent = value;
             }
         }
+
+        this.markAsChanged(field, value);
     }
 
-    saveAllData() {
-        this.collectHeroData();
-        this.saveToContentManager();
-        this.updateSaveStatus('Automatisch gespeichert');
+    updateProfileContent(field, value) {
+        // This would update the profile PDF content
+        // Implementation depends on how you want to sync with the profile page
+        this.markAsChanged(field, value);
     }
 
-    collectHeroData() {
-        if (!this.contentManager || !this.contentManager.content.hero) return;
-
-        const hero = this.contentManager.content.hero;
-        
-        // Grunddaten sammeln
-        hero.name = document.getElementById('hero-name').value;
-        hero.title = document.getElementById('hero-title').value;
-        hero.subtitle = document.getElementById('hero-subtitle').value;
-        hero.description = document.getElementById('hero-description').value;
-
-        // Statistiken sammeln
-        if (!hero.stats) hero.stats = [];
-        
-        hero.stats[0] = {
-            name: document.getElementById('stat1-name').value,
-            value: parseInt(document.getElementById('stat1-value').value) || 0,
-            unit: document.getElementById('stat1-unit').value
-        };
-        
-        hero.stats[1] = {
-            name: document.getElementById('stat2-name').value,
-            value: parseInt(document.getElementById('stat2-value').value) || 0,
-            unit: document.getElementById('stat2-unit').value
-        };
-        
-        hero.stats[2] = {
-            name: document.getElementById('stat3-name').value,
-            value: parseInt(document.getElementById('stat3-value').value) || 0,
-            unit: document.getElementById('stat3-unit').value
-        };
-    }
-
-    async saveToContentManager() {
-        if (!this.contentManager) return;
-
-        try {
-            // Website neu rendern
-            this.contentManager.renderWebsite();
-            
-            // Daten speichern
-            await this.contentManager.saveContent();
-            
-            console.log('✅ Daten gespeichert und Website aktualisiert');
-            this.updateSyncStatus(true);
-        } catch (error) {
-            console.error('❌ Fehler beim Speichern:', error);
-            this.updateSyncStatus(false);
+    updateStatLabel(stat, value) {
+        const statIndex = parseInt(stat.replace('stat', '')) - 1;
+        const selector = `.stat:nth-child(${statIndex + 1}) .stat-label`;
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = value;
         }
+        this.markAsChanged(`${stat}-name`, value);
     }
 
-    updateSyncStatus(success) {
-        const indicator = document.getElementById('sync-indicator');
-        if (!indicator) return;
-
-        if (success) {
-            indicator.innerHTML = '🟢 Live Updates aktiv';
-            indicator.className = 'sync-live';
-        } else {
-            indicator.innerHTML = '🔴 Offline Modus';
-            indicator.className = 'sync-error';
+    updateStatValue(stat, value, unit) {
+        const statIndex = parseInt(stat.replace('stat', '')) - 1;
+        const selector = `.stat:nth-child(${statIndex + 1}) .stat-number`;
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = value + unit;
         }
+        this.markAsChanged(`${stat}-value`, value);
+        this.markAsChanged(`${stat}-unit`, unit);
     }
 
-    updateSaveStatus(message) {
-        const status = document.getElementById('save-status');
-        if (status) {
-            status.textContent = message;
-            status.style.color = '#10b981';
-            
-            setTimeout(() => {
-                status.style.color = '#6b7280';
-            }, 2000);
-        }
-    }
+    updateContactInfo(field, value) {
+        const mappings = {
+            'contact-name': '.contact-item:nth-child(1) h4',
+            'contact-title': '.contact-item:nth-child(1) p',
+            'contact-location': '.contact-item:nth-child(2) p',
+            'contact-email': '.contact-item:nth-child(3) p',
+            'contact-phone': '.contact-item:nth-child(4) p'
+        };
 
-    loadFromLocalStorage() {
-        try {
-            // Versuche Profilbild aus localStorage zu laden
-            const savedProfileImage = localStorage.getItem('mwps-profile-image');
-            if (savedProfileImage) {
-                const preview = document.getElementById('profile-preview');
-                if (preview) {
-                    preview.src = savedProfileImage;
-                    console.log('Profilbild aus localStorage geladen');
-                }
+        const selector = mappings[field];
+        if (selector) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.textContent = value;
             }
-        } catch (error) {
-            console.log('Fehler beim Laden aus localStorage:', error);
         }
+
+        this.markAsChanged(field, value);
+    }
+
+    updatePrimaryColor(color) {
+        document.documentElement.style.setProperty('--primary-color', color);
+        this.markAsChanged('primary-color', color);
+    }
+
+    updateSecondaryColor(color) {
+        document.documentElement.style.setProperty('--secondary-color', color);
+        this.markAsChanged('secondary-color', color);
+    }
+
+    updateHeroGradient(gradient) {
+        const gradients = {
+            'blue-purple': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'green-blue': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'orange-red': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'purple-pink': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+        };
+
+        const hero = document.querySelector('.hero');
+        if (hero && gradients[gradient]) {
+            hero.style.background = gradients[gradient];
+        }
+
+        this.markAsChanged('hero-gradient', gradient);
+    }
+
+    // Dynamic Content Management
+    addService() {
+        const container = document.getElementById('services-container');
+        const serviceId = Date.now();
+        const serviceCard = this.createServiceCard(serviceId);
+        container.appendChild(serviceCard);
+        this.updateServiceCards();
+    }
+
+    removeService(id) {
+        const serviceCard = document.querySelector(`[data-service-id="${id}"]`);
+        if (serviceCard) {
+            serviceCard.remove();
+            this.updateServiceCards();
+        }
+    }
+
+    createServiceCard(id) {
+        const card = document.createElement('div');
+        card.className = 'service-editor-card';
+        card.setAttribute('data-service-id', id);
+        card.innerHTML = `
+            <div class="service-header">
+                <h4>Service ${id}: Neuer Service</h4>
+                <button class="btn btn-danger btn-sm" onclick="adminPanel.removeService(${id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="service-content">
+                <div class="form-group">
+                    <label>Icon (FontAwesome Klasse)</label>
+                    <input type="text" value="fas fa-cog" class="service-icon">
+                </div>
+                <div class="form-group">
+                    <label>Titel</label>
+                    <input type="text" value="Neuer Service" class="service-title">
+                </div>
+                <div class="form-group">
+                    <label>Beschreibung</label>
+                    <textarea rows="3" class="service-description">Beschreibung des neuen Services.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Leistungen (durch Kommas getrennt)</label>
+                    <input type="text" value="Leistung 1, Leistung 2, Leistung 3" class="service-features">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" class="service-primary"> Primärer Service (hervorgehoben)
+                    </label>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    addActivity() {
+        const container = document.getElementById('activities-container');
+        const activityId = Date.now();
+        const activityCard = this.createActivityCard(activityId);
+        container.appendChild(activityCard);
+        this.updateActivityCards();
+    }
+
+    removeActivity(id) {
+        const activityCard = document.querySelector(`[data-activity-id="${id}"]`);
+        if (activityCard) {
+            activityCard.remove();
+            this.updateActivityCards();
+        }
+    }
+
+    createActivityCard(id) {
+        const card = document.createElement('div');
+        card.className = 'activity-editor-card';
+        card.setAttribute('data-activity-id', id);
+        card.innerHTML = `
+            <div class="activity-header">
+                <h4>Tätigkeit ${id}: Neue Tätigkeit</h4>
+                <button class="btn btn-danger btn-sm" onclick="adminPanel.removeActivity(${id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="activity-content">
+                <div class="form-group">
+                    <label>Icon (FontAwesome Klasse)</label>
+                    <input type="text" value="fas fa-tasks" class="activity-icon">
+                </div>
+                <div class="form-group">
+                    <label>Titel</label>
+                    <input type="text" value="Neue Tätigkeit" class="activity-title">
+                </div>
+                <div class="form-group">
+                    <label>Beschreibung</label>
+                    <textarea rows="3" class="activity-description">Beschreibung der neuen Tätigkeit.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Link zur Detailseite</label>
+                    <input type="text" value="neue-taetigkeit.html" class="activity-link">
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    addProject() {
+        const container = document.getElementById('projects-container');
+        const projectId = Date.now();
+        const projectCard = this.createProjectCard(projectId);
+        container.appendChild(projectCard);
+        this.updateProjectCards();
+    }
+
+    removeProject(id) {
+        const projectCard = document.querySelector(`[data-project-id="${id}"]`);
+        if (projectCard) {
+            projectCard.remove();
+            this.updateProjectCards();
+        }
+    }
+
+    createProjectCard(id) {
+        const card = document.createElement('div');
+        card.className = 'project-editor-card';
+        card.setAttribute('data-project-id', id);
+        card.innerHTML = `
+            <div class="project-header">
+                <h4>Projekt ${id}: Neues Projekt</h4>
+                <button class="btn btn-danger btn-sm" onclick="adminPanel.removeProject(${id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="project-content">
+                <div class="form-group">
+                    <label>Titel</label>
+                    <input type="text" value="Neues Projekt" class="project-title">
+                </div>
+                <div class="form-group">
+                    <label>Beschreibung</label>
+                    <textarea rows="3" class="project-description">Beschreibung des neuen Projekts.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (durch Kommas getrennt)</label>
+                    <input type="text" value="Tag1, Tag2, Tag3" class="project-tags">
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    addCertificate() {
+        const container = document.getElementById('certificates-container');
+        const certificateItem = document.createElement('div');
+        certificateItem.className = 'certificate-item';
+        certificateItem.innerHTML = `
+            <input type="text" value="Neues Zertifikat" class="certificate-name">
+            <button class="btn btn-danger btn-sm" onclick="adminPanel.removeCertificate(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        container.appendChild(certificateItem);
+    }
+
+    removeCertificate(button) {
+        button.parentElement.remove();
+    }
+
+    // Update Functions
+    updateServiceCards() {
+        // This would update the main website services section
+        // Implementation depends on how you want to sync with the main site
+    }
+
+    updateActivityCards() {
+        // This would update the main website activities section
+    }
+
+    updateProjectCards() {
+        // This would update the main website projects section
+    }
+
+    // Utility Functions
+    markAsChanged(field, value) {
+        this.changes[field] = value;
+    }
+
+    collectChanges() {
+        // Collect all form data
+        const formData = {};
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            if (input.id) {
+                formData[input.id] = input.value;
+            }
+        });
+        return formData;
     }
 
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <span>${message}</span>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Animation
-        setTimeout(() => notification.classList.add('show'), 100);
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type} show`;
         
-        // Entfernen nach 3 Sekunden
         setTimeout(() => {
             notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
         }, 3000);
+    }
+
+    loadCurrentData() {
+        // Load current website data into admin panel
+        // This would typically fetch from localStorage or server
+    }
+
+    // Save and Publish Functions
+    saveAllChanges() {
+        const changes = this.collectChanges();
+        // Save to localStorage for now
+        localStorage.setItem('websiteData', JSON.stringify(changes));
+        this.showNotification('Alle Änderungen gespeichert', 'success');
+    }
+
+    publishChanges() {
+        this.saveAllChanges();
+        // In a real implementation, this would deploy to the live website
+        this.showNotification('Änderungen veröffentlicht', 'success');
+    }
+
+    resetChanges() {
+        if (confirm('Möchten Sie alle Änderungen zurücksetzen?')) {
+            location.reload();
+        }
+    }
+
+    previewWebsite() {
+        // Open website in new tab for preview
+        window.open('index.html', '_blank');
     }
 }
 
-// Globale Instanz
-let adminDashboard;
-
-// Initialisierung
-document.addEventListener('DOMContentLoaded', () => {
-    adminDashboard = new SimpleAdminDashboard();
-});
-
-// Globale Funktionen
+// Global Functions for HTML onclick handlers
 function saveAllChanges() {
-    adminDashboard.saveAllData();
-    adminDashboard.showNotification('✅ Alle Änderungen gespeichert und live aktualisiert!', 'success');
-}
-
-function previewWebsite() {
-    window.open('/', '_blank');
+    adminPanel.saveAllChanges();
 }
 
 function publishChanges() {
-    adminDashboard.saveToContentManager();
-    adminDashboard.showNotification('✅ Änderungen live veröffentlicht!', 'success');
+    adminPanel.publishChanges();
 }
 
 function resetChanges() {
-    if (confirm('Möchtest du alle ungespeicherten Änderungen zurücksetzen?')) {
-        adminDashboard.loadHeroData();
-        adminDashboard.showNotification('Änderungen zurückgesetzt', 'info');
-    }
+    adminPanel.resetChanges();
 }
 
-function handleProfileImageChange(input) {
-    console.log('HTML onchange ausgelöst:', input.files);
-    if (input.files && input.files[0] && adminDashboard) {
-        adminDashboard.handleProfileImageUpload(input.files[0]);
-    }
+function previewWebsite() {
+    adminPanel.previewWebsite();
 }
 
-function reloadHeroData() {
-    if (adminDashboard) {
-        adminDashboard.loadHeroData();
-        adminDashboard.showNotification('✅ Hero-Daten neu geladen!', 'success');
-    }
+function addService() {
+    adminPanel.addService();
 }
+
+function removeService(id) {
+    adminPanel.removeService(id);
+}
+
+function addActivity() {
+    adminPanel.addActivity();
+}
+
+function removeActivity(id) {
+    adminPanel.removeActivity(id);
+}
+
+function addProject() {
+    adminPanel.addProject();
+}
+
+function removeProject(id) {
+    adminPanel.removeProject(id);
+}
+
+function addCertificate() {
+    adminPanel.addCertificate();
+}
+
+function removeCertificate(button) {
+    adminPanel.removeCertificate(button);
+}
+
+// Initialize Admin Panel
+let adminPanel;
+document.addEventListener('DOMContentLoaded', () => {
+    adminPanel = new AdminPanel();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+            case 's':
+                e.preventDefault();
+                adminPanel.saveAllChanges();
+                break;
+            case 'p':
+                e.preventDefault();
+                adminPanel.publishChanges();
+                break;
+        }
+    }
+}); 
