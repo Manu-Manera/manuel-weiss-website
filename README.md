@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Manuel Weiss Professional Services
 
 Professionelle Website für Manuel Weiss - Beratung, Vermietung und IT-Projekte.
@@ -53,3 +54,7 @@ Verwende das `deploy.sh` Script für einfaches Deployment.
 ## 📄 Lizenz
 
 Alle Rechte vorbehalten - Manuel Weiss Professional Services 
+=======
+# manuel-weiss-website
+Manuel Weiss Professional Services Website
+>>>>>>> 05774afaa8eb94dc47632ad49d02fe3b67d595c6
