@@ -58,3 +58,4 @@ Alle Rechte vorbehalten - Manuel Weiss Professional Services
 # manuel-weiss-website
 Manuel Weiss Professional Services Website
 >>>>>>> 05774afaa8eb94dc47632ad49d02fe3b67d595c6
+# Force Vercel redeploy
