@@ -82,11 +82,32 @@ body {
 }
 
 .nav-separator span {
-    color: #64748b;
-    font-size: 0.75rem;
-    font-weight: 600;
+    color: #2563eb;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Activity Tabs Special Styling */
+.activity-tab {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    border-left: 3px solid #3b82f6;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 6px;
+}
+
+.activity-tab:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    transform: translateX(4px);
+}
+
+.activity-tab.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border-left: 3px solid #fbbf24;
 }
 
 .nav-link i {
