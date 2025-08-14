@@ -10,8 +10,8 @@ function loadSavedProfileImage() {
     }
 }
 
-// Hero Content Management
-function loadSavedHeroContent() {
+// Content Management
+function loadSavedContent() {
     try {
         const savedData = localStorage.getItem('websiteData');
         if (savedData) {
@@ -49,10 +49,89 @@ function loadSavedHeroContent() {
                     console.log('✅ Hero Description geladen:', data.heroDescription);
                 }
             }
+            
+            // Lade Services dynamisch
+            if (data.services && data.services.length > 0) {
+                loadDynamicServices(data.services);
+            }
+            
+            // Lade Activities dynamisch
+            if (data.activities && data.activities.length > 0) {
+                loadDynamicActivities(data.activities);
+            }
+            
+            // Lade Projects dynamisch
+            if (data.projects && data.projects.length > 0) {
+                loadDynamicProjects(data.projects);
+            }
+            
+            // Lade Contact-Informationen
+            if (data.contactEmail) {
+                const elements = document.querySelectorAll('[data-contact="email"]');
+                elements.forEach(el => el.textContent = data.contactEmail);
+            }
+            
+            if (data.contactPhone) {
+                const elements = document.querySelectorAll('[data-contact="phone"]');
+                elements.forEach(el => el.textContent = data.contactPhone);
+            }
+            
+            console.log('✅ Alle Website-Inhalte geladen');
         }
     } catch (error) {
-        console.log('Fehler beim Laden der Hero-Inhalte:', error);
+        console.log('Fehler beim Laden der Website-Inhalte:', error);
     }
+}
+
+function loadDynamicServices(services) {
+    const servicesContainer = document.querySelector('.services-grid');
+    if (!servicesContainer) return;
+    
+    servicesContainer.innerHTML = services.map(service => `
+        <div class="service-card ${service.isPrimary ? 'primary' : ''}">
+            <div class="service-icon">
+                <i class="${service.icon}"></i>
+            </div>
+            <h3>${service.title}</h3>
+            <p>${service.description}</p>
+            <ul>
+                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
+            </ul>
+        </div>
+    `).join('');
+}
+
+function loadDynamicActivities(activities) {
+    const activitiesContainer = document.querySelector('.activities-grid');
+    if (!activitiesContainer) return;
+    
+    activitiesContainer.innerHTML = activities.map(activity => `
+        <div class="activity-card">
+            <div class="activity-image">
+                <i class="${activity.icon}"></i>
+            </div>
+            <div class="activity-content">
+                <h3>${activity.title}</h3>
+                <p>${activity.description}</p>
+                <a href="${activity.link}" class="btn btn-outline">Details ansehen</a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadDynamicProjects(projects) {
+    const projectsContainer = document.querySelector('.projects-grid');
+    if (!projectsContainer) return;
+    
+    projectsContainer.innerHTML = projects.map(project => `
+        <div class="project-card">
+            <h3>${project.title}</h3>
+            <p>${project.description}</p>
+            <div class="project-tags">
+                ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+        </div>
+    `).join('');
 }
 
 // Listen for updates from admin panel
@@ -66,16 +145,16 @@ window.addEventListener('message', function(event) {
     }
     
     if (event.data.type === 'updateHeroContent') {
-        // Lade die Hero-Inhalte neu
-        loadSavedHeroContent();
-        console.log('✅ Hero-Inhalte vom Admin-Panel aktualisiert');
+        // Lade alle Inhalte neu
+        loadSavedContent();
+        console.log('✅ Website-Inhalte vom Admin-Panel aktualisiert');
     }
 });
 
 // Load saved content on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedProfileImage();
-    loadSavedHeroContent();
+    loadSavedContent();
 });
 
 // Mobile Navigation Toggle
