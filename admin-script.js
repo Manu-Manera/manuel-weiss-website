@@ -691,6 +691,40 @@ class AdminPanel {
         if (siteTitle) formData.siteTitle = siteTitle.value;
         if (siteDescription) formData.siteDescription = siteDescription.value;
         
+        // Sammle Statistiken
+        const stat1Name = document.getElementById('stat1-name');
+        const stat1Value = document.getElementById('stat1-value');
+        const stat1Unit = document.getElementById('stat1-unit');
+        const stat2Name = document.getElementById('stat2-name');
+        const stat2Value = document.getElementById('stat2-value');
+        const stat2Unit = document.getElementById('stat2-unit');
+        const stat3Name = document.getElementById('stat3-name');
+        const stat3Value = document.getElementById('stat3-value');
+        const stat3Unit = document.getElementById('stat3-unit');
+        
+        formData.stats = [];
+        if (stat1Name && stat1Value && stat1Unit) {
+            formData.stats.push({
+                name: stat1Name.value,
+                value: parseInt(stat1Value.value) || 0,
+                unit: stat1Unit.value
+            });
+        }
+        if (stat2Name && stat2Value && stat2Unit) {
+            formData.stats.push({
+                name: stat2Name.value,
+                value: parseInt(stat2Value.value) || 0,
+                unit: stat2Unit.value
+            });
+        }
+        if (stat3Name && stat3Value && stat3Unit) {
+            formData.stats.push({
+                name: stat3Name.value,
+                value: parseInt(stat3Value.value) || 0,
+                unit: stat3Unit.value
+            });
+        }
+        
         return formData;
     }
 
@@ -798,9 +832,22 @@ class AdminPanel {
             if (element) element.value = data.siteDescription;
         }
         
+        // Lade Statistiken
+        if (data.stats && data.stats.length > 0) {
+            data.stats.forEach((stat, index) => {
+                const nameElement = document.getElementById(`stat${index + 1}-name`);
+                const valueElement = document.getElementById(`stat${index + 1}-value`);
+                const unitElement = document.getElementById(`stat${index + 1}-unit`);
+                
+                if (nameElement) nameElement.value = stat.name;
+                if (valueElement) valueElement.value = stat.value;
+                if (unitElement) unitElement.value = stat.unit;
+            });
+        }
+        
         console.log('✅ Alle Admin-Daten geladen');
                 
-                // Lade Statistiken
+                // Legacy Statistiken-Code (wird durch obiges ersetzt)
                 if (data.stat1Name) document.getElementById('stat1-name').value = data.stat1Name;
                 if (data.stat1Value) document.getElementById('stat1-value').value = data.stat1Value;
                 if (data.stat1Unit) document.getElementById('stat1-unit').value = data.stat1Unit;

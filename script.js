@@ -81,6 +81,11 @@ function loadSavedContent() {
                 loadDynamicCertificates(data.certificates);
             }
             
+            // Lade Statistiken dynamisch
+            if (data.stats && data.stats.length > 0) {
+                loadDynamicStats(data.stats);
+            }
+            
             console.log('✅ Alle Website-Inhalte geladen');
         }
     } catch (error) {
@@ -162,6 +167,20 @@ function loadDynamicCertificates(certificates) {
     const contactCertificates = document.querySelector('[data-certificates="contact"]');
     if (contactCertificates) {
         contactCertificates.innerHTML = certificates.map(cert => `<li>${cert}</li>`).join('');
+    }
+}
+
+function loadDynamicStats(stats) {
+    // Update im Hero-Bereich (Expertise Stats)
+    const heroStats = document.querySelector('[data-stats="hero"]');
+    if (heroStats && stats.length > 0) {
+        heroStats.innerHTML = stats.map(stat => `
+            <div class="stat">
+                <span class="stat-number">${stat.value}${stat.unit}</span>
+                <span class="stat-label">${stat.name}</span>
+            </div>
+        `).join('');
+        console.log('✅ Statistiken im Hero-Bereich aktualisiert:', stats);
     }
 }
 
