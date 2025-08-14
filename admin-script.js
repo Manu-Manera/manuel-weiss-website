@@ -873,14 +873,24 @@ class AdminPanel {
                         // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
         const preview = document.getElementById('profile-preview');
         if (preview) {
-            // Try multiple sources for profile image
-            const profileImage = data.profileImage || 
-                               localStorage.getItem('profileImage') || 
-                               localStorage.getItem('mwps-profile-image');
-            if (profileImage && profileImage !== 'manuel-weiss-photo.svg') {
-                preview.src = profileImage;
-                console.log('✅ Profilbild aus localStorage geladen');
+            // Check if user has uploaded an image
+            const hasUploadedImage = localStorage.getItem('profileImageUploaded') === 'true';
+            
+            if (hasUploadedImage) {
+                // Try multiple sources for uploaded profile image
+                const profileImage = data.profileImage || 
+                                   localStorage.getItem('profileImage') || 
+                                   localStorage.getItem('mwps-profile-image');
+                
+                if (profileImage && profileImage.startsWith('data:image/')) {
+                    preview.src = profileImage;
+                    console.log('✅ Hochgeladenes Profilbild aus localStorage geladen');
+                    return; // Important: Exit here to prevent default loading
+                }
             }
+            
+            // Only load default if no uploaded image exists
+            console.log('ℹ️ Kein hochgeladenes Profilbild vorhanden, verwende Standard-SVG');
         }
         
         // Lade Hero-Daten
