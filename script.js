@@ -579,4 +579,22 @@ const debouncedScrollHandler = debounce(() => {
     }
 }, 10);
 
-window.addEventListener('scroll', debouncedScrollHandler); 
+window.addEventListener('scroll', debouncedScrollHandler);
+
+// Listen for updates from admin panel
+window.addEventListener('message', function(event) {
+    console.log('Message received:', event.data);
+    
+    if (event.data.type === 'updateProfileImage') {
+        const imgElement = document.getElementById('profile-photo');
+        if (imgElement && event.data.imageData) {
+            imgElement.src = event.data.imageData;
+            console.log('✅ Profilbild von Admin-Panel aktualisiert');
+        }
+    }
+    
+    if (event.data.type === 'updateHeroContent') {
+        loadSavedContent(); // Reload all content
+        console.log('✅ Website-Inhalte vom Admin-Panel aktualisiert');
+    }
+}); 
