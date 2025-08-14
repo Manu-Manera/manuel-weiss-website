@@ -29,8 +29,26 @@
                         <i class="fas fa-cogs"></i> Beratungs-Services
                     </a></li>
                     <li><a href="#activities" class="nav-link" data-section="activities">
-                        <i class="fas fa-tasks"></i> Sonstige Tätigkeiten
+                        <i class="fas fa-tasks"></i> Aktivitäten-Übersicht
                     </a></li>
+                    
+                    <!-- Separator für Sonstige Tätigkeiten -->
+                    <li class="nav-separator">
+                        <span>Sonstige Tätigkeiten:</span>
+                    </li>
+                    <li><a href="#wohnmobil" class="nav-link" data-section="wohnmobil">
+                        <i class="fas fa-campground"></i> Wohnmobil
+                    </a></li>
+                    <li><a href="#fotobox" class="nav-link" data-section="fotobox">
+                        <i class="fas fa-camera"></i> Fotobox
+                    </a></li>
+                    <li><a href="#sup" class="nav-link" data-section="sup">
+                        <i class="fas fa-water"></i> Stand-Up-Paddle
+                    </a></li>
+                    <li><a href="#ebike" class="nav-link" data-section="ebike">
+                        <i class="fas fa-bicycle"></i> E-Bike
+                    </a></li>
+                    
                     <li><a href="#projects" class="nav-link" data-section="projects">
                         <i class="fas fa-project-diagram"></i> Projekte
                     </a></li>
@@ -304,6 +322,23 @@
                                 <label>Link zur Detailseite</label>
                                 <input type="text" value="wohnmobil.html" class="activity-link">
                             </div>
+                            
+                            <!-- Bilder-Upload für Activity -->
+                            <div class="form-group">
+                                <label>Bilder für diese Aktivität</label>
+                                <div class="activity-images" data-activity="wohnmobil">
+                                    <div class="image-upload">
+                                        <div class="upload-area" onclick="document.getElementById('wohnmobil-upload').click()">
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-plus"></i>
+                                                <p>Bild hinzufügen</p>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="wohnmobil-upload" accept="image/*" multiple style="display: none;">
+                                    </div>
+                                    <!-- Bereits hochgeladene Bilder werden hier angezeigt -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -331,6 +366,22 @@
                             <div class="form-group">
                                 <label>Link zur Detailseite</label>
                                 <input type="text" value="fotobox.html" class="activity-link">
+                            </div>
+                            
+                            <!-- Bilder-Upload für Activity -->
+                            <div class="form-group">
+                                <label>Bilder für diese Aktivität</label>
+                                <div class="activity-images" data-activity="fotobox">
+                                    <div class="image-upload">
+                                        <div class="upload-area" onclick="document.getElementById('fotobox-upload').click()">
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-plus"></i>
+                                                <p>Bild hinzufügen</p>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="fotobox-upload" accept="image/*" multiple style="display: none;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -466,6 +517,246 @@
                         <div class="form-group">
                             <label for="admin-password">Admin-Passwort ändern</label>
                             <input type="password" id="admin-password" placeholder="Neues Passwort">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Wohnmobil Section -->
+            <section id="wohnmobil" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-campground"></i> Wohnmobil - Grundinformationen</h3>
+                        <div class="form-group">
+                            <label for="wohnmobil-title">Titel</label>
+                            <input type="text" id="wohnmobil-title" value="Wohnmobil Vermietung">
+                        </div>
+                        <div class="form-group">
+                            <label for="wohnmobil-subtitle">Untertitel</label>
+                            <input type="text" id="wohnmobil-subtitle" value="Erleben Sie Freiheit und Komfort auf Reisen">
+                        </div>
+                        <div class="form-group">
+                            <label for="wohnmobil-description">Beschreibung</label>
+                            <textarea id="wohnmobil-description" rows="4">Entdecken Sie die Schweiz und Europa mit unserem hochwertigen Wohnmobil. Vollausstattung, flexible Mietdauer und 24/7 Support für unvergessliche Abenteuer.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="wohnmobil-icon">Icon (FontAwesome)</label>
+                            <input type="text" id="wohnmobil-icon" value="fas fa-campground">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
+                        <div class="activity-images" id="wohnmobil-images">
+                            <div class="image-upload">
+                                <div class="upload-area" onclick="document.getElementById('wohnmobil-file-upload').click()">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-plus"></i>
+                                        <p>Bild hinzufügen</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="wohnmobil-file-upload" accept="image/*" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-euro-sign"></i> Preise & Details</h3>
+                        <div class="form-group">
+                            <label for="wohnmobil-price-day">Tagespreis</label>
+                            <input type="text" id="wohnmobil-price-day" value="CHF 150">
+                        </div>
+                        <div class="form-group">
+                            <label for="wohnmobil-price-week">Wochenpreis</label>
+                            <input type="text" id="wohnmobil-price-week" value="CHF 800">
+                        </div>
+                        <div class="form-group">
+                            <label for="wohnmobil-features">Ausstattung (eine pro Zeile)</label>
+                            <textarea id="wohnmobil-features" rows="6">Vollkasko-Versicherung inklusive
+Bequeme Schlafplätze für 2-4 Personen
+Vollausgestattete Küche
+Eigene Dusche und WC
+Heizung und Klimaanlage
+WLAN verfügbar</textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fotobox Section -->
+            <section id="fotobox" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-camera"></i> Fotobox - Grundinformationen</h3>
+                        <div class="form-group">
+                            <label for="fotobox-title">Titel</label>
+                            <input type="text" id="fotobox-title" value="Fotobox Vermietung">
+                        </div>
+                        <div class="form-group">
+                            <label for="fotobox-subtitle">Untertitel</label>
+                            <input type="text" id="fotobox-subtitle" value="Unvergessliche Momente bei Events">
+                        </div>
+                        <div class="form-group">
+                            <label for="fotobox-description">Beschreibung</label>
+                            <textarea id="fotobox-description" rows="4">Professionelle Fotobox für unvergessliche Momente bei Events und Feiern. Mit Touchscreen, sofortigem Druck und individuellen Layouts.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="fotobox-icon">Icon (FontAwesome)</label>
+                            <input type="text" id="fotobox-icon" value="fas fa-camera">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
+                        <div class="activity-images" id="fotobox-images">
+                            <div class="image-upload">
+                                <div class="upload-area" onclick="document.getElementById('fotobox-file-upload').click()">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-plus"></i>
+                                        <p>Bild hinzufügen</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="fotobox-file-upload" accept="image/*" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-euro-sign"></i> Preise & Leistungen</h3>
+                        <div class="form-group">
+                            <label for="fotobox-price">Preis pro Event</label>
+                            <input type="text" id="fotobox-price" value="CHF 250">
+                        </div>
+                        <div class="form-group">
+                            <label for="fotobox-features">Leistungen (eine pro Zeile)</label>
+                            <textarea id="fotobox-features" rows="6">Professionelle HD-Kamera
+Touchscreen-Bedienung
+Sofortiger Fotodruck
+Individuelle Layouts
+Requisiten inklusive
+Aufbau und Betreuung</textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stand-Up-Paddle Section -->
+            <section id="sup" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-water"></i> SUP - Grundinformationen</h3>
+                        <div class="form-group">
+                            <label for="sup-title">Titel</label>
+                            <input type="text" id="sup-title" value="Stand-Up-Paddle Vermietung">
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-subtitle">Untertitel</label>
+                            <input type="text" id="sup-subtitle" value="Entdecken Sie die Schönheit der Schweizer Seen">
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-description">Beschreibung</label>
+                            <textarea id="sup-description" rows="4">Erleben Sie die Freiheit auf dem Wasser mit unseren hochwertigen Stand-Up-Paddles. Verschiedene Größen für Anfänger und Fortgeschrittene.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-icon">Icon (FontAwesome)</label>
+                            <input type="text" id="sup-icon" value="fas fa-water">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
+                        <div class="activity-images" id="sup-images">
+                            <div class="image-upload">
+                                <div class="upload-area" onclick="document.getElementById('sup-file-upload').click()">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-plus"></i>
+                                        <p>Bild hinzufügen</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="sup-file-upload" accept="image/*" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-euro-sign"></i> Preise & Pakete</h3>
+                        <div class="form-group">
+                            <label for="sup-price-half">Halbtagespreis</label>
+                            <input type="text" id="sup-price-half" value="CHF 45">
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-price-full">Tagespreis</label>
+                            <input type="text" id="sup-price-full" value="CHF 75">
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-features">Inklusive Leistungen (eine pro Zeile)</label>
+                            <textarea id="sup-features" rows="6">SUP-Board inklusive
+Paddle und Pumpe
+Sicherheitsleine
+Transporttasche
+Kurze Einweisung
+Wassersicherheitsausrüstung</textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- E-Bike Section -->
+            <section id="ebike" class="editor-section">
+                <div class="editor-grid">
+                    <div class="editor-card">
+                        <h3><i class="fas fa-bicycle"></i> E-Bike - Grundinformationen</h3>
+                        <div class="form-group">
+                            <label for="ebike-title">Titel</label>
+                            <input type="text" id="ebike-title" value="E-Bike Vermietung">
+                        </div>
+                        <div class="form-group">
+                            <label for="ebike-subtitle">Untertitel</label>
+                            <input type="text" id="ebike-subtitle" value="Nachhaltige Mobilität für Stadt und Land">
+                        </div>
+                        <div class="form-group">
+                            <label for="ebike-description">Beschreibung</label>
+                            <textarea id="ebike-description" rows="4">Nachhaltige Mobilität für Stadt und Land mit unseren hochwertigen E-Bikes. Perfekt für Touren und entspannte Fahrten.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="ebike-icon">Icon (FontAwesome)</label>
+                            <input type="text" id="ebike-icon" value="fas fa-bicycle">
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
+                        <div class="activity-images" id="ebike-images">
+                            <div class="image-upload">
+                                <div class="upload-area" onclick="document.getElementById('ebike-file-upload').click()">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-plus"></i>
+                                        <p>Bild hinzufügen</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="ebike-file-upload" accept="image/*" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-card">
+                        <h3><i class="fas fa-euro-sign"></i> Preise & Details</h3>
+                        <div class="form-group">
+                            <label for="ebike-price-day">Tagespreis</label>
+                            <input type="text" id="ebike-price-day" value="CHF 55">
+                        </div>
+                        <div class="form-group">
+                            <label for="ebike-price-week">Wochenpreis</label>
+                            <input type="text" id="ebike-price-week" value="CHF 300">
+                        </div>
+                        <div class="form-group">
+                            <label for="ebike-features">Ausstattung & Service (eine pro Zeile)</label>
+                            <textarea id="ebike-features" rows="6">Hochwertige E-Bikes
+Lange Akkulaufzeit
+Helm inklusive
+Routenberatung
+24/7 Support
+Pannenhilfe</textarea>
                         </div>
                     </div>
                 </div>

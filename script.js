@@ -113,20 +113,28 @@ function loadDynamicServices(services) {
 
 function loadDynamicActivities(activities) {
     const activitiesContainer = document.querySelector('.activities-grid');
-    if (!activitiesContainer) return;
+    if (!activitiesContainer) {
+        console.log('❌ Activities Container nicht gefunden');
+        return;
+    }
     
-    activitiesContainer.innerHTML = activities.map(activity => `
-        <div class="activity-card">
-            <div class="activity-image">
-                <i class="${activity.icon}"></i>
+    if (activities && activities.length > 0) {
+        activitiesContainer.innerHTML = activities.map(activity => `
+            <div class="activity-card">
+                <div class="activity-image">
+                    <i class="${activity.icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <h3>${activity.title}</h3>
+                    <p>${activity.description}</p>
+                    <a href="${activity.link}" class="btn btn-outline">Details ansehen</a>
+                </div>
             </div>
-            <div class="activity-content">
-                <h3>${activity.title}</h3>
-                <p>${activity.description}</p>
-                <a href="${activity.link}" class="btn btn-outline">Details ansehen</a>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+        console.log('✅ Activities dynamisch geladen:', activities);
+    } else {
+        console.log('⚠️ Keine Activities gefunden in den Daten');
+    }
 }
 
 function loadDynamicProjects(projects) {
