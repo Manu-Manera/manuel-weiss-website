@@ -46,6 +46,10 @@ class AdminPanel {
             'profile': 'Beraterprofil bearbeiten',
             'services': 'Beratungs-Services bearbeiten',
             'activities': 'Sonstige Tätigkeiten bearbeiten',
+            'wohnmobil': 'Wohnmobil bearbeiten',
+            'fotobox': 'Fotobox bearbeiten',
+            'sup': 'Stand-Up-Paddle bearbeiten',
+            'ebike': 'E-Bike bearbeiten',
             'projects': 'Projekte bearbeiten',
             'contact': 'Kontakt bearbeiten',
             'settings': 'Einstellungen bearbeiten'
@@ -725,7 +729,108 @@ class AdminPanel {
             });
         }
         
+        // Sammle Daten der neuen Activity-Sektionen
+        this.collectActivityData('wohnmobil', formData);
+        this.collectActivityData('fotobox', formData);
+        this.collectActivityData('sup', formData);
+        this.collectActivityData('ebike', formData);
+        
         return formData;
+    }
+
+    collectActivityData(activityName, formData) {
+        const title = document.getElementById(`${activityName}-title`);
+        const subtitle = document.getElementById(`${activityName}-subtitle`);
+        const description = document.getElementById(`${activityName}-description`);
+        const icon = document.getElementById(`${activityName}-icon`);
+        const features = document.getElementById(`${activityName}-features`);
+        
+        if (title || subtitle || description) {
+            if (!formData.activityDetails) formData.activityDetails = {};
+            formData.activityDetails[activityName] = {
+                title: title?.value || '',
+                subtitle: subtitle?.value || '',
+                description: description?.value || '',
+                icon: icon?.value || '',
+                features: features?.value.split('\n').filter(f => f.trim()) || []
+            };
+            
+            // Sammle spezifische Preisfelder
+            if (activityName === 'wohnmobil') {
+                const priceDay = document.getElementById('wohnmobil-price-day');
+                const priceWeek = document.getElementById('wohnmobil-price-week');
+                if (priceDay || priceWeek) {
+                    formData.activityDetails[activityName].pricing = {
+                        day: priceDay?.value || '',
+                        week: priceWeek?.value || ''
+                    };
+                }
+            } else if (activityName === 'fotobox') {
+                const price = document.getElementById('fotobox-price');
+                if (price) {
+                    formData.activityDetails[activityName].pricing = {
+                        event: price.value || ''
+                    };
+                }
+            } else if (activityName === 'sup') {
+                const priceHalf = document.getElementById('sup-price-half');
+                const priceFull = document.getElementById('sup-price-full');
+                if (priceHalf || priceFull) {
+                    formData.activityDetails[activityName].pricing = {
+                        half: priceHalf?.value || '',
+                        full: priceFull?.value || ''
+                    };
+                }
+            } else if (activityName === 'ebike') {
+                const priceDay = document.getElementById('ebike-price-day');
+                const priceWeek = document.getElementById('ebike-price-week');
+                if (priceDay || priceWeek) {
+                    formData.activityDetails[activityName].pricing = {
+                        day: priceDay?.value || '',
+                        week: priceWeek?.value || ''
+                    };
+                }
+            }
+        }
+    }
+
+    loadActivityData(activityName, activityData) {
+        const title = document.getElementById(`${activityName}-title`);
+        const subtitle = document.getElementById(`${activityName}-subtitle`);
+        const description = document.getElementById(`${activityName}-description`);
+        const icon = document.getElementById(`${activityName}-icon`);
+        const features = document.getElementById(`${activityName}-features`);
+        
+        if (title && activityData.title) title.value = activityData.title;
+        if (subtitle && activityData.subtitle) subtitle.value = activityData.subtitle;
+        if (description && activityData.description) description.value = activityData.description;
+        if (icon && activityData.icon) icon.value = activityData.icon;
+        if (features && activityData.features) features.value = activityData.features.join('\n');
+        
+        // Lade spezifische Preisfelder
+        if (activityData.pricing) {
+            if (activityName === 'wohnmobil') {
+                const priceDay = document.getElementById('wohnmobil-price-day');
+                const priceWeek = document.getElementById('wohnmobil-price-week');
+                if (priceDay && activityData.pricing.day) priceDay.value = activityData.pricing.day;
+                if (priceWeek && activityData.pricing.week) priceWeek.value = activityData.pricing.week;
+            } else if (activityName === 'fotobox') {
+                const price = document.getElementById('fotobox-price');
+                if (price && activityData.pricing.event) price.value = activityData.pricing.event;
+            } else if (activityName === 'sup') {
+                const priceHalf = document.getElementById('sup-price-half');
+                const priceFull = document.getElementById('sup-price-full');
+                if (priceHalf && activityData.pricing.half) priceHalf.value = activityData.pricing.half;
+                if (priceFull && activityData.pricing.full) priceFull.value = activityData.pricing.full;
+            } else if (activityName === 'ebike') {
+                const priceDay = document.getElementById('ebike-price-day');
+                const priceWeek = document.getElementById('ebike-price-week');
+                if (priceDay && activityData.pricing.day) priceDay.value = activityData.pricing.day;
+                if (priceWeek && activityData.pricing.week) priceWeek.value = activityData.pricing.week;
+            }
+        }
+        
+        console.log(`✅ ${activityName} Daten geladen`);
     }
 
     showNotification(message, type = 'info') {
@@ -842,6 +947,13 @@ class AdminPanel {
                 if (nameElement) nameElement.value = stat.name;
                 if (valueElement) valueElement.value = stat.value;
                 if (unitElement) unitElement.value = stat.unit;
+            });
+        }
+        
+        // Lade Activity Details
+        if (data.activityDetails) {
+            Object.keys(data.activityDetails).forEach(activityName => {
+                this.loadActivityData(activityName, data.activityDetails[activityName]);
             });
         }
         
