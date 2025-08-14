@@ -594,6 +594,17 @@ class AdminPanel {
             formData.profileImage = profilePreview.src;
         }
         
+        // Sammle Hero-Texte mit spezifischen Namen für bessere Kompatibilität
+        const heroName = document.getElementById('hero-name');
+        const heroTitle = document.getElementById('hero-title');
+        const heroSubtitle = document.getElementById('hero-subtitle');
+        const heroDescription = document.getElementById('hero-description');
+        
+        if (heroName) formData.heroName = heroName.value;
+        if (heroTitle) formData.heroTitle = heroTitle.value;
+        if (heroSubtitle) formData.heroSubtitle = heroSubtitle.value;
+        if (heroDescription) formData.heroDescription = heroDescription.value;
+        
         return formData;
     }
 
@@ -656,6 +667,19 @@ class AdminPanel {
         const changes = this.collectChanges();
         // Save to localStorage for now
         localStorage.setItem('websiteData', JSON.stringify(changes));
+        
+        // Sende Update an Hauptfenster (falls offen)
+        try {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'updateHeroContent'
+                }, '*');
+                console.log('✅ Update an Hauptseite gesendet');
+            }
+        } catch (error) {
+            console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+        }
+        
         this.showNotification('Alle Änderungen gespeichert', 'success');
     }
 
