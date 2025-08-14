@@ -10,7 +10,52 @@ function loadSavedProfileImage() {
     }
 }
 
-// Listen for profile image updates from admin panel
+// Hero Content Management
+function loadSavedHeroContent() {
+    try {
+        const savedData = localStorage.getItem('websiteData');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            
+            // Lade Hero-Texte
+            if (data.heroName) {
+                const element = document.getElementById('hero-name');
+                if (element) {
+                    element.textContent = data.heroName;
+                    console.log('✅ Hero Name geladen:', data.heroName);
+                }
+            }
+            
+            if (data.heroTitle) {
+                const element = document.getElementById('hero-title');
+                if (element) {
+                    element.textContent = data.heroTitle;
+                    console.log('✅ Hero Title geladen:', data.heroTitle);
+                }
+            }
+            
+            if (data.heroSubtitle) {
+                const element = document.getElementById('hero-subtitle');
+                if (element) {
+                    element.textContent = data.heroSubtitle;
+                    console.log('✅ Hero Subtitle geladen:', data.heroSubtitle);
+                }
+            }
+            
+            if (data.heroDescription) {
+                const element = document.getElementById('hero-description');
+                if (element) {
+                    element.textContent = data.heroDescription;
+                    console.log('✅ Hero Description geladen:', data.heroDescription);
+                }
+            }
+        }
+    } catch (error) {
+        console.log('Fehler beim Laden der Hero-Inhalte:', error);
+    }
+}
+
+// Listen for updates from admin panel
 window.addEventListener('message', function(event) {
     if (event.data.type === 'updateProfileImage') {
         const profileImage = document.getElementById('profile-photo');
@@ -19,10 +64,19 @@ window.addEventListener('message', function(event) {
             console.log('✅ Profilbild vom Admin-Panel aktualisiert');
         }
     }
+    
+    if (event.data.type === 'updateHeroContent') {
+        // Lade die Hero-Inhalte neu
+        loadSavedHeroContent();
+        console.log('✅ Hero-Inhalte vom Admin-Panel aktualisiert');
+    }
 });
 
-// Load saved profile image on page load
-document.addEventListener('DOMContentLoaded', loadSavedProfileImage);
+// Load saved content on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadSavedProfileImage();
+    loadSavedHeroContent();
+});
 
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
