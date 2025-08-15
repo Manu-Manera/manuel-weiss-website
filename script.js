@@ -35,13 +35,57 @@ async function loadSavedProfileImage() {
             if (profileImage) {
                 profileImage.src = savedImage;
                 console.log('✅ Profilbild aus localStorage geladen');
+                return; // Wichtig: Beende hier, wenn Bild geladen wurde
             }
         } else {
-            console.log('ℹ️ Kein gespeichertes Profilbild gefunden');
+            console.log('ℹ️ Kein gespeichertes Profilbild gefunden, verwende Standard');
+        }
+        
+        // Fallback: Verwende Standard-Profilbild
+        const profileImage = document.getElementById('profile-photo');
+        if (profileImage) {
+            // Prüfe, ob das Standard-Bild existiert
+            const standardImage = 'manuel-weiss-photo.svg';
+            profileImage.src = standardImage;
+            console.log('✅ Standard-Profilbild geladen:', standardImage);
+            
+            // Prüfe, ob das Bild erfolgreich geladen wurde
+            profileImage.onload = () => {
+                console.log('✅ Standard-Profilbild erfolgreich geladen');
+            };
+            
+            profileImage.onerror = () => {
+                console.error('❌ Standard-Profilbild konnte nicht geladen werden:', standardImage);
+                // Versuche alternative Bildformate
+                const alternatives = ['manuel-weiss-photo.jpg', 'manuel-weiss-photo.png'];
+                tryAlternativeImage(profileImage, alternatives, 0);
+            };
         }
     } catch (error) {
         console.log('Fehler beim Laden des Profilbilds:', error);
     }
+}
+
+// Hilfsfunktion für alternative Bildformate
+function tryAlternativeImage(profileImage, alternatives, index) {
+    if (index >= alternatives.length) {
+        console.error('❌ Kein alternatives Bildformat funktioniert');
+        return;
+    }
+    
+    const alternative = alternatives[index];
+    console.log(`🔄 Versuche alternatives Bildformat: ${alternative}`);
+    
+    profileImage.src = alternative;
+    profileImage.onload = () => {
+        console.log(`✅ Alternatives Bild erfolgreich geladen: ${alternative}`);
+    };
+    
+    profileImage.onerror = () => {
+        console.log(`❌ Alternatives Bild fehlgeschlagen: ${alternative}`);
+        // Versuche nächstes alternatives Format
+        tryAlternativeImage(profileImage, alternatives, index + 1);
+    };
 }
 
 // Content Management
@@ -353,6 +397,11 @@ window.addEventListener('message', function(event) {
 
 // Load saved content on page load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM geladen, starte Profilbild-Laden...');
+    
+    // Debug: Zeige Profilbild-Status
+    debugProfileImageStatus();
+    
     loadSavedProfileImage();
     loadSavedContent();
     
@@ -361,6 +410,44 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAllActivityHeroImages();
     }, 1000);
 });
+
+// Debug-Funktion für Profilbild-Status
+function debugProfileImageStatus() {
+    console.log('🔍 Debug: Profilbild-Status...');
+    
+    // Prüfe localStorage
+    const profileImage = localStorage.getItem('profileImage');
+    const mwpsImage = localStorage.getItem('mwps-profile-image');
+    const currentImage = localStorage.getItem('current-profile-image');
+    const websiteData = localStorage.getItem('websiteData');
+    
+    console.log('📦 localStorage Status:');
+    console.log('- profileImage:', profileImage ? '✅ vorhanden' : '❌ nicht vorhanden');
+    console.log('- mwps-profile-image:', mwpsImage ? '✅ vorhanden' : '❌ nicht vorhanden');
+    console.log('- current-profile-image:', currentImage ? '✅ vorhanden' : '❌ nicht vorhanden');
+    console.log('- websiteData:', websiteData ? '✅ vorhanden' : '❌ nicht vorhanden');
+    
+    // Prüfe DOM-Element
+    const profilePhoto = document.getElementById('profile-photo');
+    console.log('🖼️ DOM-Element profile-photo:', profilePhoto ? '✅ gefunden' : '❌ nicht gefunden');
+    
+    if (profilePhoto) {
+        console.log('📊 Aktueller src:', profilePhoto.src);
+        console.log('📊 Aktueller alt:', profilePhoto.alt);
+        console.log('📊 Aktuelle Breite:', profilePhoto.width);
+        console.log('📊 Aktuelle Höhe:', profilePhoto.height);
+    }
+    
+    // Prüfe Standard-Bild
+    const standardImage = new Image();
+    standardImage.onload = () => {
+        console.log('✅ Standard-Bild kann geladen werden: manuel-weiss-photo.svg');
+    };
+    standardImage.onerror = () => {
+        console.error('❌ Standard-Bild kann nicht geladen werden: manuel-weiss-photo.svg');
+    };
+    standardImage.src = 'manuel-weiss-photo.svg';
+}
 
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
