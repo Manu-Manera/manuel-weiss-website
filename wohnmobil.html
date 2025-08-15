@@ -198,6 +198,14 @@
         </div>
     </footer>
 
+    <!-- Debug Info - Sichtbar auf der Seite -->
+    <div id="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
+        <strong>Debug Info:</strong><br>
+        <span id="debug-status">Lade...</span><br>
+        <span id="debug-components">Komponenten: Lade...</span><br>
+        <span id="debug-gallery">Galerie: Lade...</span>
+    </div>
+
     <!-- Scripts -->
     <script src="js/image-manager.js?v=2.0"></script>
     <script src="js/content-manager.js?v=2.0"></script>
@@ -220,6 +228,14 @@
         // Verbesserte Initialisierung für bessere Online-Kompatibilität
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Wohnmobil-Seite wird initialisiert...');
+            
+            // Debug-Info aktualisieren
+            const debugStatus = document.getElementById('debug-status');
+            const debugComponents = document.getElementById('debug-components');
+            const debugGallery = document.getElementById('debug-gallery');
+            
+            if (debugStatus) debugStatus.textContent = 'DOM geladen - Initialisiere...';
+            
             console.log('🌐 Online-Status:', navigator.onLine);
             console.log('📸 Image Manager verfügbar:', !!window.imageManager);
             console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
@@ -227,18 +243,29 @@
             
             // Warte kurz, bis alle Skripte geladen sind
             setTimeout(() => {
+                if (debugStatus) debugStatus.textContent = 'Skripte geladen - Prüfe Komponenten...';
+                
                 // Initialisiere andere Komponenten
                 if (window.imageManager) {
                     console.log('✅ Image Manager initialisiert');
                     console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
+                    if (debugComponents) debugComponents.textContent = '✅ Image Manager: OK';
+                } else {
+                    if (debugComponents) debugComponents.textContent = '❌ Image Manager: Fehler';
                 }
                 
                 if (window.activityGallery) {
                     console.log('✅ Activity Gallery initialisiert');
+                    if (debugComponents) debugComponents.textContent += ' | ✅ Activity Gallery: OK';
+                } else {
+                    if (debugComponents) debugComponents.textContent += ' | ❌ Activity Gallery: Fehler';
                 }
                 
                 if (window.contentManager) {
                     console.log('✅ Content Manager initialisiert');
+                    if (debugComponents) debugComponents.textContent += ' | ✅ Content Manager: OK';
+                } else {
+                    if (debugComponents) debugComponents.textContent += ' | ❌ Content Manager: Fehler';
                 }
                 
                 console.log('✅ Wohnmobil-Seite Initialisierung abgeschlossen');
@@ -247,9 +274,22 @@
                 const galleryContainer = document.getElementById('wohnmobil-gallery');
                 if (galleryContainer) {
                     console.log('🎨 Galerie-Container gefunden:', galleryContainer);
+                    if (debugGallery) debugGallery.textContent = '✅ Galerie-Container gefunden';
+                    
+                    // Prüfe, ob Bilder geladen werden
+                    setTimeout(() => {
+                        if (window.activityGallery && window.activityGallery.currentActivity) {
+                            if (debugGallery) debugGallery.textContent += ' | ✅ Activity Gallery aktiv';
+                        } else {
+                            if (debugGallery) debugGallery.textContent += ' | ❌ Activity Gallery nicht aktiv';
+                        }
+                    }, 1000);
                 } else {
                     console.error('❌ Galerie-Container nicht gefunden');
+                    if (debugGallery) debugGallery.textContent = '❌ Galerie-Container nicht gefunden';
                 }
+                
+                if (debugStatus) debugStatus.textContent = 'Initialisierung abgeschlossen';
             }, 100);
         });
         
