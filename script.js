@@ -153,10 +153,14 @@ function loadDynamicActivities(activities) {
     }
     
     if (activities && activities.length > 0) {
+        // Erstelle Activity-Cards mit Platzhaltern für Bilder
         activitiesContainer.innerHTML = activities.map(activity => `
-            <div class="activity-card">
+            <div class="activity-card" data-activity="${activity.adminKey || activity.id}">
                 <div class="activity-image">
-                    <i class="${activity.icon}"></i>
+                    <div class="activity-image-placeholder">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <img class="activity-hero-image" src="" alt="${activity.title}" style="display: none;">
                 </div>
                 <div class="activity-content">
                     <h3>${activity.title}</h3>
@@ -165,10 +169,114 @@ function loadDynamicActivities(activities) {
                 </div>
             </div>
         `).join('');
+        
         console.log('✅ Activities dynamisch geladen:', activities);
+        
+        // Lade Hauptbilder für jede Aktivität
+        activities.forEach(activity => {
+            loadActivityHeroImage(activity);
+        });
+        
     } else {
         console.log('⚠️ Keine Activities gefunden in den Daten');
     }
+}
+
+// Lade Hauptbild für eine Aktivität
+function loadActivityHeroImage(activity) {
+    const activityCard = document.querySelector(`[data-activity="${activity.adminKey || activity.id}"]`);
+    if (!activityCard) return;
+    
+    const imagePlaceholder = activityCard.querySelector('.activity-image-placeholder');
+    const heroImage = activityCard.querySelector('.activity-hero-image');
+    
+    if (!imagePlaceholder || !heroImage) return;
+    
+    // Versuche zuerst ein hochgeladenes Bild zu laden
+    const storageKey = `${activity.adminKey || activity.id}_images`;
+    const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    if (uploadedImages.length > 0) {
+        // Verwende das erste hochgeladene Bild
+        const firstImage = uploadedImages[0];
+        heroImage.src = firstImage.imageData;
+        heroImage.alt = firstImage.title || activity.title;
+        
+        // Verstecke Placeholder und zeige Bild
+        imagePlaceholder.style.display = 'none';
+        heroImage.style.display = 'block';
+        
+        console.log(`🖼️ Hauptbild für ${activity.title} geladen:`, firstImage.title);
+        
+    } else if (activity.images && activity.images.length > 0) {
+        // Verwende Standardbild aus der JSON-Datei
+        const firstImage = activity.images[0];
+        heroImage.src = firstImage.filename;
+        heroImage.alt = firstImage.title || activity.title;
+        
+        // Verstecke Placeholder und zeige Bild
+        imagePlaceholder.style.display = 'none';
+        heroImage.style.display = 'block';
+        
+        console.log(`🖼️ Standardbild für ${activity.title} geladen:`, firstImage.title);
+        
+    } else {
+        // Kein Bild verfügbar, behalte Placeholder
+        console.log(`ℹ️ Kein Bild für ${activity.title} verfügbar`);
+    }
+}
+
+// Aktualisiere das Hauptbild einer Aktivität (wird aufgerufen, wenn neue Bilder hochgeladen werden)
+function updateActivityHeroImage(activityKey) {
+    console.log(`🔄 Aktualisiere Hauptbild für: ${activityKey}`);
+    
+    // Finde die entsprechende Activity-Card
+    const activityCard = document.querySelector(`[data-activity="${activityKey}"]`);
+    if (!activityCard) {
+        console.log(`❌ Activity-Card für ${activityKey} nicht gefunden`);
+        return;
+    }
+    
+    const imagePlaceholder = activityCard.querySelector('.activity-image-placeholder');
+    const heroImage = activityCard.querySelector('.activity-hero-image');
+    
+    if (!imagePlaceholder || !heroImage) return;
+    
+    // Lade das neueste Bild aus dem localStorage
+    const storageKey = `${activityKey}_images`;
+    const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    if (uploadedImages.length > 0) {
+        // Verwende das neueste hochgeladene Bild
+        const latestImage = uploadedImages[uploadedImages.length - 1];
+        heroImage.src = latestImage.imageData;
+        heroImage.alt = latestImage.title || 'Aktivität';
+        
+        // Verstecke Placeholder und zeige Bild
+        imagePlaceholder.style.display = 'none';
+        heroImage.style.display = 'block';
+        
+        console.log(`🖼️ Hauptbild für ${activityKey} aktualisiert:`, latestImage.title);
+        
+    } else {
+        // Kein Bild verfügbar, zeige Placeholder
+        imagePlaceholder.style.display = 'block';
+        heroImage.style.display = 'none';
+        console.log(`ℹ️ Kein Bild für ${activityKey} verfügbar, zeige Placeholder`);
+    }
+}
+
+// Aktualisiere alle Activity-Hauptbilder
+function updateAllActivityHeroImages() {
+    console.log('🔄 Aktualisiere alle Activity-Hauptbilder...');
+    
+    const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+    
+    activities.forEach(activityKey => {
+        updateActivityHeroImage(activityKey);
+    });
+    
+    console.log('✅ Alle Activity-Hauptbilder aktualisiert');
 }
 
 function loadDynamicProjects(projects) {
@@ -247,6 +355,11 @@ window.addEventListener('message', function(event) {
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedProfileImage();
     loadSavedContent();
+    
+    // Aktualisiere Hauptbilder nach kurzer Verzögerung
+    setTimeout(() => {
+        updateAllActivityHeroImages();
+    }, 1000);
 });
 
 // Mobile Navigation Toggle
@@ -646,5 +759,8 @@ window.addEventListener('message', function(event) {
             // Lade die Galerie neu
             window.activityGallery.loadActivityImages();
         }
+        
+        // Aktualisiere auch das Hauptbild auf der Startseite
+        updateActivityHeroImage(event.data.activity);
     }
 }); 
