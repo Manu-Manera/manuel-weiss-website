@@ -1261,8 +1261,33 @@ class AdminPanel {
             
             console.log(`💾 Bild gespeichert: ${filename} für ${activityName}`);
             
+            // VERSUCHE ONLINE-SPEICHERUNG
+            this.saveImageOnline(activityName, images);
+            
         } catch (error) {
             console.error('❌ Fehler beim Speichern des Bildes:', error);
+        }
+    }
+
+    // Neue Online-Speicherung
+    async saveImageOnline(activityName, images) {
+        try {
+            if (window.netlifyStorage) {
+                console.log(`🌐 Versuche Online-Speicherung für ${activityName}...`);
+                const result = await window.netlifyStorage.saveActivityImagesOnline(activityName, images);
+                
+                if (result.success) {
+                    console.log(`✅ ${activityName} Bilder online gespeichert:`, result.message);
+                    this.showNotification(`Bilder online gespeichert: ${result.message}`, 'success');
+                } else {
+                    console.log(`⚠️ ${activityName} Bilder offline gespeichert:`, result.message);
+                    this.showNotification(`Bilder offline gespeichert: ${result.message}`, 'warning');
+                }
+            } else {
+                console.log('⚠️ Netlify Storage nicht verfügbar, verwende nur localStorage');
+            }
+        } catch (error) {
+            console.error('❌ Fehler bei Online-Speicherung:', error);
         }
     }
 
