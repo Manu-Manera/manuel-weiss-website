@@ -5,61 +5,7 @@ class NetlifyStorage {
     }
 
     init() {
-        console.log('🚀 Netlify Storage initialisiert');
-        // Lade gespeicherte Bilder beim Start
-        this.loadAllStoredImages();
-    }
-
-    // Lade alle gespeicherten Bilder aus Netlify-Forms
-    async loadAllStoredImages() {
-        try {
-            console.log('🔄 Lade alle gespeicherten Bilder...');
-            
-            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
-            
-            for (const activity of activities) {
-                await this.loadActivityImagesFromNetlify(activity);
-            }
-            
-            console.log('✅ Alle gespeicherten Bilder geladen');
-        } catch (error) {
-            console.error('❌ Fehler beim Laden der Bilder:', error);
-        }
-    }
-
-    // Lade Aktivitätsbilder aus Netlify-Forms
-    async loadActivityImagesFromNetlify(activityName) {
-        try {
-            console.log(`🔄 Lade ${activityName} Bilder aus Netlify...`);
-            
-            // Verwende Netlify-Form-Daten (falls verfügbar)
-            const netlifyData = this.getNetlifyFormData(activityName);
-            
-            if (netlifyData && netlifyData.length > 0) {
-                console.log(`✅ ${netlifyData.length} Netlify-Bilder für ${activityName} gefunden`);
-                return netlifyData;
-            } else {
-                console.log(`ℹ️ Keine Netlify-Bilder für ${activityName} gefunden`);
-                return [];
-            }
-        } catch (error) {
-            console.error(`❌ Fehler beim Laden der ${activityName} Bilder:`, error);
-            return [];
-        }
-    }
-
-    // Hole Netlify-Form-Daten (Simulation - in der Praxis würden diese von Netlify kommen)
-    getNetlifyFormData(activityName) {
-        // Da Netlify-Forms die Daten nicht direkt zurückgeben können,
-        // verwenden wir eine Kombination aus localStorage und Netlify-Form-Submission
-        try {
-            const storageKey = `${activityName}_netlify_images`;
-            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            return images;
-        } catch (error) {
-            console.error('❌ Fehler beim Laden der Netlify-Form-Daten:', error);
-            return [];
-        }
+        console.log('🚀 Netlify Storage initialisiert - NUR ONLINE SPEICHERUNG');
     }
 
     // Speichere Aktivitätsbilder bei Netlify (Hauptfunktion)
@@ -71,16 +17,10 @@ class NetlifyStorage {
                 throw new Error('Keine Internetverbindung verfügbar');
             }
 
-            // 1. Sende an Netlify-Form
+            // Sende an Netlify-Form
             const formResult = await this.submitToNetlifyForm(activityName, images);
             
             if (formResult.success) {
-                // 2. Speichere auch lokal als Backup (für sofortige Anzeige)
-                this.saveLocalBackup(activityName, images);
-                
-                // 3. Markiere als Netlify-gespeichert
-                this.markAsNetlifySaved(activityName, images);
-                
                 console.log(`✅ ${images.length} Bilder für ${activityName} erfolgreich bei Netlify gespeichert`);
                 return { success: true, message: 'Bilder bei Netlify gespeichert!' };
             } else {
@@ -89,16 +29,15 @@ class NetlifyStorage {
             
         } catch (error) {
             console.error('❌ Fehler bei Netlify-Speicherung:', error);
-            
-            // Fallback: Lokale Speicherung
-            this.saveLocalBackup(activityName, images);
-            return { success: false, message: 'Lokal gespeichert (Netlify-Fehler)' };
+            throw error; // Kein Fallback mehr!
         }
     }
 
     // Sende Daten an Netlify-Form
     async submitToNetlifyForm(activityName, images) {
         try {
+            console.log(`📤 Sende ${images.length} Bilder für ${activityName} an Netlify...`);
+            
             const formData = new FormData();
             formData.append('form-name', 'activity-images');
             formData.append('activity-name', activityName);
@@ -124,20 +63,69 @@ class NetlifyStorage {
         }
     }
 
-    // Speichere lokales Backup
-    saveLocalBackup(activityName, images) {
+    // Lade alle verfügbaren Bilder (NUR aus Netlify)
+    async loadAllActivityImages(activityName) {
         try {
-            const storageKey = `${activityName}_images`;
-            localStorage.setItem(storageKey, JSON.stringify(images));
-            console.log(`💾 Lokales Backup für ${activityName} erstellt`);
+            console.log(`🔄 Lade Bilder für ${activityName} aus Netlify...`);
+            
+            // Versuche, Bilder aus Netlify zu laden
+            const netlifyImages = await this.loadImagesFromNetlify(activityName);
+            
+            if (netlifyImages && netlifyImages.length > 0) {
+                console.log(`✅ ${netlifyImages.length} Netlify-Bilder für ${activityName} geladen`);
+                return netlifyImages;
+            } else {
+                console.log(`ℹ️ Keine Netlify-Bilder für ${activityName} gefunden`);
+                return [];
+            }
+            
         } catch (error) {
-            console.error('❌ Fehler beim lokalen Backup:', error);
+            console.error('❌ Fehler beim Laden der Bilder:', error);
+            return [];
+        }
+    }
+
+    // Lade Bilder aus Netlify (Simulation - da Netlify-Forms keine GET-API haben)
+    async loadImagesFromNetlify(activityName) {
+        try {
+            // Da Netlify-Forms keine direkte GET-API haben, verwenden wir eine andere Strategie:
+            // Wir speichern die Bilder in einer globalen Variable, die beim Laden der Seite verfügbar ist
+            
+            // Versuche, Bilder aus dem globalen Netlify-Speicher zu laden
+            if (window.netlifyImageStorage && window.netlifyImageStorage[activityName]) {
+                return window.netlifyImageStorage[activityName];
+            }
+            
+            // Fallback: Versuche localStorage (aber nur für bereits gespeicherte Netlify-Bilder)
+            const storageKey = `${activityName}_netlify_images`;
+            const netlifyImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            if (netlifyImages.length > 0) {
+                // Initialisiere globalen Speicher
+                if (!window.netlifyImageStorage) {
+                    window.netlifyImageStorage = {};
+                }
+                window.netlifyImageStorage[activityName] = netlifyImages;
+                return netlifyImages;
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Netlify-Bilder:', error);
+            return [];
         }
     }
 
     // Markiere Bilder als Netlify-gespeichert
     markAsNetlifySaved(activityName, images) {
         try {
+            // Speichere in globalem Speicher
+            if (!window.netlifyImageStorage) {
+                window.netlifyImageStorage = {};
+            }
+            window.netlifyImageStorage[activityName] = images;
+            
+            // Speichere auch in localStorage als Backup
             const storageKey = `${activityName}_netlify_images`;
             const netlifyImages = images.map(img => ({
                 ...img,
@@ -145,111 +133,11 @@ class NetlifyStorage {
                 netlifySavedAt: new Date().toISOString()
             }));
             localStorage.setItem(storageKey, JSON.stringify(netlifyImages));
+            
             console.log(`🌐 ${activityName} Bilder als Netlify-gespeichert markiert`);
         } catch (error) {
             console.error('❌ Fehler beim Markieren als Netlify-gespeichert:', error);
         }
-    }
-
-    // Lade alle verfügbaren Bilder (Netlify + Lokal)
-    async loadAllActivityImages(activityName) {
-        try {
-            console.log(`🔄 Lade alle Bilder für ${activityName}...`);
-            
-            let allImages = [];
-            
-            // 1. PRIORITÄT: Netlify-gespeicherte Bilder
-            const netlifyImages = this.getNetlifyFormData(activityName);
-            if (netlifyImages.length > 0) {
-                console.log(`🌐 ${netlifyImages.length} Netlify-Bilder gefunden`);
-                allImages.push(...netlifyImages);
-            }
-            
-            // 2. PRIORITÄT: Lokale Backup-Bilder (falls keine Netlify verfügbar)
-            if (allImages.length === 0) {
-                const localImages = this.getLocalBackup(activityName);
-                if (localImages.length > 0) {
-                    console.log(`📱 ${localImages.length} lokale Backup-Bilder gefunden`);
-                    allImages.push(...localImages);
-                }
-            }
-            
-            // 3. PRIORITÄT: Standard-Bilder (falls gar keine verfügbar)
-            if (allImages.length === 0) {
-                const defaultImages = await this.getDefaultImages(activityName);
-                if (defaultImages.length > 0) {
-                    console.log(`📸 ${defaultImages.length} Standard-Bilder gefunden`);
-                    allImages.push(...defaultImages);
-                }
-            }
-            
-            console.log(`✅ Insgesamt ${allImages.length} Bilder für ${activityName} geladen`);
-            return allImages;
-            
-        } catch (error) {
-            console.error('❌ Fehler beim Laden aller Bilder:', error);
-            return [];
-        }
-    }
-
-    // Hole lokales Backup
-    getLocalBackup(activityName) {
-        try {
-            const storageKey = `${activityName}_images`;
-            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            return images;
-        } catch (error) {
-            console.error('❌ Fehler beim Laden des lokalen Backups:', error);
-            return [];
-        }
-    }
-
-    // Hole Standard-Bilder
-    async getDefaultImages(activityName) {
-        const defaultImages = {
-            'wohnmobil': [
-                {
-                    src: './images/wohnmobil/wohnmobil-exterior.jpg',
-                    alt: 'Wohnmobil Außenansicht',
-                    title: 'Wohnmobil Außenansicht',
-                    description: 'Gemütliches Wohnmobil für Ihre Reisen',
-                    filename: 'wohnmobil-exterior.jpg',
-                    isDefault: true
-                }
-            ],
-            'fotobox': [
-                {
-                    src: './images/fotobox/fotobox-1.jpg',
-                    alt: 'Fotobox',
-                    title: 'Professionelle Fotobox',
-                    description: 'Perfekt für Events und Feiern',
-                    filename: 'fotobox-1.jpg',
-                    isDefault: true
-                }
-            ],
-            'sup': [
-                {
-                    src: './images/sup/sup-1.jpg',
-                    alt: 'Stand-Up-Paddle',
-                    title: 'Stand-Up-Paddle',
-                    description: 'Entdecken Sie das Wasser',
-                    filename: 'sup-1.jpg',
-                    isDefault: true
-                }
-            ],
-            'ebike': [
-                {
-                    src: './images/ebike/ebike-1.jpg',
-                    alt: 'E-Bike',
-                    title: 'E-Bike',
-                    description: 'Elektrisch unterstütztes Radfahren',
-                    filename: 'ebike-1.jpg',
-                    isDefault: true
-                }
-            ]
-        };
-
-        return defaultImages[activityName] || [];
     }
 
     // Save profile image to Netlify
@@ -270,7 +158,7 @@ class NetlifyStorage {
             if (response.ok) {
                 console.log('✅ Profilbild erfolgreich bei Netlify gespeichert');
                 
-                // Also save to localStorage as backup
+                // Speichere auch lokal als Backup
                 localStorage.setItem('profileImage', imageData);
                 localStorage.setItem('profileImageUploaded', 'true');
                 localStorage.setItem('profileImageNetlifyTime', new Date().toISOString());
@@ -281,13 +169,7 @@ class NetlifyStorage {
             }
         } catch (error) {
             console.error('❌ Fehler beim Speichern bei Netlify:', error);
-            
-            // Fallback to localStorage
-            localStorage.setItem('profileImage', imageData);
-            localStorage.setItem('profileImageUploaded', 'true');
-            console.log('💾 Fallback: Profilbild in localStorage gespeichert');
-            
-            return { success: false, message: 'Offline gespeichert (Fallback)' };
+            throw error; // Kein Fallback mehr!
         }
     }
 
@@ -309,7 +191,7 @@ class NetlifyStorage {
             if (response.ok) {
                 console.log('✅ Website-Daten erfolgreich bei Netlify gespeichert');
                 
-                // Also save to localStorage as backup
+                // Speichere auch lokal als Backup
                 localStorage.setItem('websiteData', JSON.stringify(contentData));
                 
                 return { success: true, message: 'Website-Daten gespeichert!' };
@@ -318,12 +200,7 @@ class NetlifyStorage {
             }
         } catch (error) {
             console.error('❌ Fehler beim Speichern bei Netlify:', error);
-            
-            // Fallback to localStorage
-            localStorage.setItem('websiteData', JSON.stringify(contentData));
-            console.log('💾 Fallback: Website-Daten in localStorage gespeichert');
-            
-            return { success: false, message: 'Offline gespeichert (Fallback)' };
+            throw error; // Kein Fallback mehr!
         }
     }
 

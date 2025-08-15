@@ -1741,25 +1741,25 @@ html {
 
 /* Hauptbild auf Homepage */
 .hero-profile .profile-image {
-    position: relative;
     width: 200px;
     height: 200px;
     border-radius: 50%;
     overflow: hidden;
     margin: 0 auto 2rem;
+    border: 4px solid #ffffff;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border: 4px solid white;
+    transition: all 0.3s ease;
+}
+
+.hero-profile .profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
 }
 
 .hero-profile .profile-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.hero-profile .profile-image:hover img {
-    transform: scale(1.1);
 }
 
 /* Responsive Design */
@@ -1944,81 +1944,7 @@ html {
     }
 } 
 
-/* Aktivitätsbilder auf Homepage */
-.activity-images-section {
-    padding: 4rem 0;
-    background: #f8fafc;
-}
 
-.activity-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.activity-image-card {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-align: center;
-}
-
-.activity-image-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.activity-image-card h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #1e293b;
-}
-
-.activity-image-placeholder {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #f1f5f9;
-    border-radius: 12px;
-    color: #64748b;
-}
-
-.activity-image-placeholder i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #94a3b8;
-}
-
-.activity-image-placeholder p {
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-/* Aktivitätsbilder (wenn geladen) */
-.activity-image-loaded {
-    min-height: 200px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-}
-
-.activity-image-loaded img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.activity-image-loaded:hover img {
-    transform: scale(1.05);
-}
 
 /* Online-Badge für online gespeicherte Bilder */
 .online-badge {
@@ -2081,5 +2007,198 @@ html {
     .activity-images-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+} 
+
+/* Aktivitätssektionen mit Bildern */
+.activity-section {
+    padding: 4rem 0;
+    background: #ffffff;
+}
+
+.activity-section:nth-child(even) {
+    background: #f8fafc;
+}
+
+.activity-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.activity-text h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.activity-text p {
+    font-size: 1.1rem;
+    color: #64748b;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+.activity-text .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.activity-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Aktivitätsbild-Kachel */
+.activity-image-tile {
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    background: #f1f5f9;
+}
+
+.activity-image-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Placeholder für Aktivitätsbilder */
+.activity-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    text-align: center;
+    padding: 2rem;
+}
+
+.activity-image-placeholder i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #cbd5e1;
+}
+
+.activity-image-placeholder p {
+    font-size: 1rem;
+    margin: 0;
+    color: #64748b;
+}
+
+/* Geladene Aktivitätsbilder */
+.activity-image-loaded {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.activity-image-loaded img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.activity-image-loaded:hover img {
+    transform: scale(1.05);
+}
+
+/* Netlify-Badge für Aktivitätsbilder */
+.activity-image-tile .online-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(34, 197, 94, 0.9);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* Responsive Design für Aktivitätssektionen */
+@media (max-width: 1024px) {
+    .activity-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .activity-text h2 {
+        font-size: 2rem;
+    }
+    
+    .activity-image-tile {
+        max-width: 350px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .activity-section {
+        padding: 3rem 0;
+    }
+    
+    .activity-text h2 {
+        font-size: 1.8rem;
+    }
+    
+    .activity-text p {
+        font-size: 1rem;
+    }
+    
+    .activity-image-tile {
+        max-width: 300px;
+        height: 200px;
+    }
+    
+    .activity-image-placeholder i {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .activity-section {
+        padding: 2rem 0;
+    }
+    
+    .activity-text h2 {
+        font-size: 1.5rem;
+    }
+    
+    .activity-image-tile {
+        max-width: 280px;
+        height: 180px;
+    }
+    
+    .activity-image-placeholder {
+        padding: 1rem;
+    }
+    
+    .activity-image-placeholder i {
+        font-size: 2.5rem;
+    }
+    
+    .activity-image-placeholder p {
+        font-size: 0.9rem;
     }
 } 
