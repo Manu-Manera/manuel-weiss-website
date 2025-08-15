@@ -1,72 +1,110 @@
-// Profile Image Management
-async function loadSavedProfileImage() {
+// Profile Image Management - EINMALIG und sauber
+let profileImageLoaded = false; // Verhindert mehrfaches Laden
+
+function loadSavedProfileImage() {
+    // Verhindere mehrfaches Laden
+    if (profileImageLoaded) {
+        console.log('🔄 Profilbild bereits geladen, überspringe...');
+        return;
+    }
+    
+    console.log('🚀 Starte Profilbild-Laden...');
+    
     try {
-        // Try Netlify Storage first
-        if (window.netlifyStorage) {
-            const netlifyImage = await window.netlifyStorage.loadProfileImage();
-            if (netlifyImage) {
-                const profileImage = document.getElementById('profile-photo');
-                if (profileImage) {
-                    profileImage.src = netlifyImage;
-                    console.log('✅ Profilbild aus Netlify Storage geladen');
-                    return;
-                }
-            }
+        const profileImage = document.getElementById('profile-photo');
+        if (!profileImage) {
+            console.error('❌ Profilbild-Element nicht gefunden');
+            return;
         }
         
-        // Fallback to localStorage
-        let savedImage = localStorage.getItem('profileImage') || 
-                        localStorage.getItem('mwps-profile-image') || 
-                        localStorage.getItem('current-profile-image');
-        
-        // Also check websiteData
-        const websiteData = localStorage.getItem('websiteData');
-        if (websiteData) {
-            try {
-                const data = JSON.parse(websiteData);
-                if (data.profileImage) {
-                    savedImage = data.profileImage;
-                }
-            } catch (e) {}
+        // Prüfe, ob bereits ein Bild geladen ist
+        if (profileImage.src && profileImage.src !== window.location.href) {
+            console.log('✅ Profilbild bereits gesetzt:', profileImage.src);
+            profileImageLoaded = true;
+            return;
         }
         
-        if (savedImage && savedImage.startsWith('data:image/')) {
-            const profileImage = document.getElementById('profile-photo');
-            if (profileImage) {
-                profileImage.src = savedImage;
-                console.log('✅ Profilbild aus localStorage geladen');
-                return; // Wichtig: Beende hier, wenn Bild geladen wurde
-            }
-        } else {
-            console.log('ℹ️ Kein gespeichertes Profilbild gefunden, verwende Standard');
+        // Lade gespeichertes Profilbild (nur EINMAL)
+        const savedImage = getSavedProfileImage();
+        
+        if (savedImage) {
+            console.log('✅ Lade gespeichertes Profilbild...');
+            profileImage.src = savedImage;
+            profileImageLoaded = true;
+            
+            // Verhindere Überschreibung
+            profileImage.setAttribute('data-loaded', 'true');
+            
+            console.log('✅ Gespeichertes Profilbild erfolgreich geladen');
+            return;
         }
         
-        // Fallback: Verwende Standard-Profilbild
+        // Nur wenn KEIN gespeichertes Bild vorhanden ist, lade Standard
+        console.log('ℹ️ Kein gespeichertes Profilbild, lade Standard...');
+        loadStandardProfileImage(profileImage);
+        
+    } catch (error) {
+        console.error('❌ Fehler beim Laden des Profilbilds:', error);
+        // Fallback: Standard-Bild
         const profileImage = document.getElementById('profile-photo');
         if (profileImage) {
-            // Prüfe, ob das Standard-Bild existiert
-            const standardImage = 'manuel-weiss-photo.svg';
-            profileImage.src = standardImage;
-            console.log('✅ Standard-Profilbild geladen:', standardImage);
-            
-            // Prüfe, ob das Bild erfolgreich geladen wurde
-            profileImage.onload = () => {
-                console.log('✅ Standard-Profilbild erfolgreich geladen');
-            };
-            
-            profileImage.onerror = () => {
-                console.error('❌ Standard-Profilbild konnte nicht geladen werden:', standardImage);
-                // Versuche alternative Bildformate
-                const alternatives = ['manuel-weiss-photo.jpg', 'manuel-weiss-photo.png'];
-                tryAlternativeImage(profileImage, alternatives, 0);
-            };
+            loadStandardProfileImage(profileImage);
         }
-    } catch (error) {
-        console.log('Fehler beim Laden des Profilbilds:', error);
     }
 }
 
-// Hilfsfunktion für alternative Bildformate
+// Hole gespeichertes Profilbild aus allen Quellen
+function getSavedProfileImage() {
+    // Quelle 1: Direktes localStorage
+    let imageData = localStorage.getItem('profileImage');
+    
+    // Quelle 2: Alternative localStorage-Keys
+    if (!imageData) {
+        imageData = localStorage.getItem('mwps-profile-image') || 
+                   localStorage.getItem('current-profile-image');
+    }
+    
+    // Quelle 3: websiteData
+    if (!imageData) {
+        try {
+            const websiteData = localStorage.getItem('websiteData');
+            if (websiteData) {
+                const data = JSON.parse(websiteData);
+                imageData = data.profileImage;
+            }
+        } catch (e) {
+            console.log('ℹ️ websiteData konnte nicht geparst werden');
+        }
+    }
+    
+    // Prüfe, ob es ein gültiges Bild ist
+    if (imageData && imageData.startsWith('data:image/')) {
+        return imageData;
+    }
+    
+    return null;
+}
+
+// Lade Standard-Profilbild (nur EINMAL)
+function loadStandardProfileImage(profileImage) {
+    if (profileImage.getAttribute('data-loaded') === 'true') {
+        console.log('🔄 Standard-Profilbild bereits geladen, überspringe...');
+        return;
+    }
+    
+    console.log('🔄 Lade Standard-Profilbild...');
+    
+    const standardImage = 'manuel-weiss-photo.svg';
+    profileImage.src = standardImage;
+    
+    // Markiere als geladen
+    profileImage.setAttribute('data-loaded', 'true');
+    profileImageLoaded = true;
+    
+    console.log('✅ Standard-Profilbild geladen:', standardImage);
+}
+
+// Einfache Hilfsfunktion für alternative Bildformate (nur als Fallback)
 function tryAlternativeImage(profileImage, alternatives, index) {
     if (index >= alternatives.length) {
         console.error('❌ Kein alternatives Bildformat funktioniert');
@@ -77,15 +115,9 @@ function tryAlternativeImage(profileImage, alternatives, index) {
     console.log(`🔄 Versuche alternatives Bildformat: ${alternative}`);
     
     profileImage.src = alternative;
-    profileImage.onload = () => {
-        console.log(`✅ Alternatives Bild erfolgreich geladen: ${alternative}`);
-    };
+    profileImage.setAttribute('data-loaded', 'true');
     
-    profileImage.onerror = () => {
-        console.log(`❌ Alternatives Bild fehlgeschlagen: ${alternative}`);
-        // Versuche nächstes alternatives Format
-        tryAlternativeImage(profileImage, alternatives, index + 1);
-    };
+    console.log(`✅ Alternatives Bild geladen: ${alternative}`);
 }
 
 // Content Management
@@ -448,195 +480,10 @@ function debugProfileImageStatus() {
     };
     standardImage.src = 'manuel-weiss-photo.svg';
     
-            // Online-spezifische Prüfungen
-        checkOnlineEnvironment();
-    }
-    
-    // Cache-Busting für Netlify
-    function bustNetlifyCache() {
+                    // Einfache Online-Erkennung (nur für Logging)
         if (window.location.hostname.includes('netlify.app')) {
-            console.log('🔄 Netlify-Cache-Busting aktiviert...');
-            
-            // Füge Timestamp zu localStorage-Operationen hinzu
-            const originalSetItem = localStorage.setItem;
-            const originalGetItem = localStorage.getItem;
-            
-            localStorage.setItem = function(key, value) {
-                const timestampedKey = `${key}_${Date.now()}`;
-                originalSetItem.call(this, timestampedKey, value);
-                originalSetItem.call(this, key, value);
-                console.log(`✅ Cache-Busting: ${key} mit Timestamp gespeichert`);
-            };
-            
-            localStorage.getItem = function(key) {
-                let value = originalGetItem.call(this, key);
-                if (!value) {
-                    // Suche nach neuestem Timestamp-Key
-                    const keys = Object.keys(localStorage);
-                    const timestampedKeys = keys.filter(k => k.startsWith(key + '_'));
-                    if (timestampedKeys.length > 0) {
-                        const newestKey = timestampedKeys.sort().pop();
-                        value = originalGetItem.call(this, newestKey);
-                        console.log(`🔄 Cache-Busting: ${key} aus ${newestKey} geladen`);
-                    }
-                }
-                return value;
-            };
-            
-            console.log('✅ Netlify-Cache-Busting aktiviert');
+            console.log('🌐 Netlify-Umgebung erkannt');
         }
-    }
-    
-    // Online-Umgebung prüfen und behandeln
-    function checkOnlineEnvironment() {
-    console.log('🌐 Prüfe Online-Umgebung...');
-    
-    // Prüfe, ob wir auf Netlify sind
-    const isNetlify = window.location.hostname.includes('netlify.app') || 
-                      window.location.hostname.includes('vercel.app') ||
-                      window.location.hostname.includes('github.io');
-    
-    console.log('🌐 Hostname:', window.location.hostname);
-    console.log('🌐 Ist Netlify/Vercel:', isNetlify);
-    
-    if (isNetlify) {
-        console.log('🚨 Netlify-Umgebung erkannt, aktiviere spezielle Behandlung...');
-        bustNetlifyCache();
-        activateNetlifyMode();
-    }
-}
-
-// Netlify-spezifischer Modus
-function activateNetlifyMode() {
-    console.log('🔧 Aktiviere Netlify-Modus...');
-    
-    // Prüfe localStorage-Verfügbarkeit
-    try {
-        localStorage.setItem('netlify-test', 'test');
-        localStorage.removeItem('netlify-test');
-        console.log('✅ localStorage funktioniert auf Netlify');
-    } catch (error) {
-        console.error('❌ localStorage funktioniert NICHT auf Netlify:', error);
-        console.log('🔄 Aktiviere Fallback-Speicherung...');
-        activateFallbackStorage();
-        return;
-    }
-    
-    // Prüfe, ob Profilbild bereits geladen wurde
-    const profilePhoto = document.getElementById('profile-photo');
-    if (profilePhoto && profilePhoto.src && !profilePhoto.src.includes('manuel-weiss-photo.svg')) {
-        console.log('✅ Profilbild bereits geladen:', profilePhoto.src);
-        return;
-    }
-    
-    // Versuche, Profilbild aus verschiedenen Quellen zu laden
-    loadProfileImageFromMultipleSources();
-}
-
-// Fallback-Speicherung für Netlify
-function activateFallbackStorage() {
-    console.log('🔄 Aktiviere Fallback-Speicherung...');
-    
-    // Verwende sessionStorage als Fallback
-    window.fallbackStorage = {
-        setItem: (key, value) => {
-            try {
-                sessionStorage.setItem(key, value);
-                return true;
-            } catch (error) {
-                console.error('❌ Fallback-Speicherung fehlgeschlagen:', error);
-                return false;
-            }
-        },
-        getItem: (key) => {
-            try {
-                return sessionStorage.getItem(key);
-            } catch (error) {
-                console.error('❌ Fallback-Abruf fehlgeschlagen:', error);
-                return null;
-            }
-        }
-    };
-    
-    console.log('✅ Fallback-Speicherung aktiviert');
-}
-
-// Lade Profilbild aus mehreren Quellen
-function loadProfileImageFromMultipleSources() {
-    console.log('🔄 Lade Profilbild aus mehreren Quellen...');
-    
-    const profilePhoto = document.getElementById('profile-photo');
-    if (!profilePhoto) {
-        console.error('❌ Profilbild-Element nicht gefunden');
-        return;
-    }
-    
-    // Quelle 1: Direktes localStorage
-    let imageData = localStorage.getItem('profileImage');
-    
-    // Quelle 2: Alternative localStorage-Keys
-    if (!imageData) {
-        imageData = localStorage.getItem('mwps-profile-image') || 
-                   localStorage.getItem('current-profile-image');
-    }
-    
-    // Quelle 3: websiteData
-    if (!imageData) {
-        try {
-            const websiteData = localStorage.getItem('websiteData');
-            if (websiteData) {
-                const data = JSON.parse(websiteData);
-                imageData = data.profileImage;
-            }
-        } catch (error) {
-            console.error('❌ Fehler beim Parsen von websiteData:', error);
-        }
-    }
-    
-    // Quelle 4: Fallback-Speicherung
-    if (!imageData && window.fallbackStorage) {
-        imageData = window.fallbackStorage.getItem('profileImage');
-    }
-    
-    // Wenn kein Bild gefunden wurde, verwende Standard
-    if (!imageData || !imageData.startsWith('data:image/')) {
-        console.log('ℹ️ Kein hochgeladenes Profilbild gefunden, verwende Standard');
-        loadStandardProfileImage(profilePhoto);
-        return;
-    }
-    
-    // Lade das gefundene Bild
-    console.log('✅ Profilbild aus Quellen geladen');
-    profilePhoto.src = imageData;
-    
-    // Prüfe, ob das Bild erfolgreich geladen wurde
-    profilePhoto.onload = () => {
-        console.log('✅ Hochgeladenes Profilbild erfolgreich geladen');
-    };
-    
-    profilePhoto.onerror = () => {
-        console.error('❌ Hochgeladenes Profilbild konnte nicht geladen werden');
-        loadStandardProfileImage(profilePhoto);
-    };
-}
-
-// Lade Standard-Profilbild
-function loadStandardProfileImage(profilePhoto) {
-    console.log('🔄 Lade Standard-Profilbild...');
-    
-    const standardImage = 'manuel-weiss-photo.svg';
-    profilePhoto.src = standardImage;
-    
-    profilePhoto.onload = () => {
-        console.log('✅ Standard-Profilbild erfolgreich geladen');
-    };
-    
-    profilePhoto.onerror = () => {
-        console.error('❌ Standard-Profilbild konnte nicht geladen werden');
-        // Versuche alternative Formate
-        tryAlternativeImage(profilePhoto, ['manuel-weiss-photo.jpg', 'manuel-weiss-photo.png'], 0);
-    };
-}
 
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
