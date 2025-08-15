@@ -389,5 +389,76 @@
     <script src="js/content-manager.js"></script>
     <script src="js/netlify-storage.js"></script>
     <script src="script.js"></script>
+    
+    <!-- Online-spezifische Fehlerbehandlung -->
+    <script>
+        // Online-Umgebung erkennen und behandeln
+        (function() {
+            console.log('🌐 Hauptseite lädt, prüfe Online-Umgebung...');
+            
+            // Prüfe localStorage-Verfügbarkeit
+            function checkLocalStorage() {
+                try {
+                    localStorage.setItem('online-test', 'test');
+                    localStorage.removeItem('online-test');
+                    console.log('✅ localStorage funktioniert auf Hauptseite');
+                    return true;
+                } catch (error) {
+                    console.error('❌ localStorage nicht verfügbar auf Hauptseite:', error);
+                    return false;
+                }
+            }
+            
+            // Prüfe JavaScript-Module
+            function checkModules() {
+                console.log('📦 Verfügbare Module auf Hauptseite:');
+                console.log('- imageManager:', !!window.imageManager);
+                console.log('- netlifyStorage:', !!window.netlifyStorage);
+                console.log('- contentManager:', !!window.contentManager);
+                
+                // Aktiviere Fallback falls nötig
+                if (!window.imageManager) {
+                    console.warn('⚠️ ImageManager nicht verfügbar, aktiviere Fallback');
+                    activateImageManagerFallback();
+                }
+            }
+            
+            // Fallback für ImageManager
+            function activateImageManagerFallback() {
+                window.imageManager = {
+                    loadActivityImages: async (activityName) => {
+                        console.log(`🔄 Fallback: Lade Bilder für ${activityName}`);
+                        try {
+                            const storageKey = `${activityName}_images`;
+                            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                            console.log(`✅ Fallback: ${images.length} Bilder geladen`);
+                            return images;
+                        } catch (error) {
+                            console.error('❌ Fallback-Fehler:', error);
+                            return [];
+                        }
+                    }
+                };
+                console.log('✅ Fallback ImageManager aktiviert');
+            }
+            
+            // Warte auf DOM-Laden
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    checkLocalStorage();
+                    checkModules();
+                });
+            } else {
+                checkLocalStorage();
+                checkModules();
+            }
+            
+            // Zusätzliche Prüfung nach kurzer Verzögerung
+            setTimeout(() => {
+                checkModules();
+            }, 1000);
+            
+        })();
+    </script>
 </body>
 </html> 
