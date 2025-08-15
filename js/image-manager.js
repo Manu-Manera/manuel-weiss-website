@@ -3,12 +3,41 @@ class ImageManager {
     constructor() {
         this.imageCache = new Map();
         this.fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+';
+        this.isOnline = navigator.onLine;
         this.init();
     }
 
     init() {
         this.setupImageErrorHandling();
+        this.setupOnlineStatusHandling();
         this.preloadCriticalImages();
+    }
+
+    // Überwacht Online/Offline-Status
+    setupOnlineStatusHandling() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            console.log('🌐 Online - Versuche Bilder neu zu laden');
+            this.retryFailedImages();
+        });
+        
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            console.log('📴 Offline - Verwende Fallback-Bilder');
+        });
+    }
+
+    // Versucht fehlgeschlagene Bilder erneut zu laden
+    retryFailedImages() {
+        const failedImages = document.querySelectorAll('img[data-failed]');
+        failedImages.forEach(img => {
+            const originalSrc = img.dataset.originalSrc;
+            if (originalSrc) {
+                img.removeAttribute('data-failed');
+                img.removeAttribute('data-original-src');
+                this.loadImageWithFallback(img, originalSrc);
+            }
+        });
     }
 
     // Behandelt Bildfehler und zeigt Fallback-Bilder an
@@ -24,18 +53,64 @@ class ImageManager {
         if (imgElement.dataset.fallbackHandled) return;
         
         imgElement.dataset.fallbackHandled = 'true';
+        imgElement.dataset.failed = 'true';
+        
+        // Speichere ursprüngliche Quelle für späteren Versuch
+        if (!imgElement.dataset.originalSrc) {
+            imgElement.dataset.originalSrc = imgElement.src;
+        }
+        
+        // Verwende Fallback-Bild
         imgElement.src = this.fallbackImage;
         imgElement.alt = 'Bild nicht verfügbar';
         
         console.log('⚠️ Bildfehler behandelt für:', imgElement.src);
+        
+        // Versuche es später erneut, wenn online
+        if (this.isOnline) {
+            setTimeout(() => {
+                this.retryImage(imgElement);
+            }, 5000); // 5 Sekunden warten
+        }
+    }
+
+    // Versucht ein Bild erneut zu laden
+    async retryImage(imgElement) {
+        const originalSrc = imgElement.dataset.originalSrc;
+        if (!originalSrc || !this.isOnline) return;
+        
+        try {
+            const success = await this.testImageUrl(originalSrc);
+            if (success) {
+                imgElement.src = originalSrc;
+                imgElement.removeAttribute('data-failed');
+                imgElement.removeAttribute('data-original-src');
+                console.log('✅ Bild erfolgreich nachgeladen:', originalSrc);
+            }
+        } catch (error) {
+            console.log('❌ Bild konnte nicht nachgeladen werden:', originalSrc);
+        }
+    }
+
+    // Testet, ob eine Bild-URL verfügbar ist
+    async testImageUrl(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+            
+            // Timeout nach 3 Sekunden
+            setTimeout(() => resolve(false), 3000);
+        });
     }
 
     // Lädt kritische Bilder vor
     async preloadCriticalImages() {
         const criticalImages = [
-            'manuel-weiss-photo.svg',
-            'images/wohnmobil/wohnmobil-exterior.jpg',
-            'images/fotobox/fotobox-1.jpg'
+            './manuel-weiss-photo.svg',
+            './images/wohnmobil/wohnmobil-exterior.jpg',
+            './images/fotobox/fotobox-1.jpg'
         ];
 
         for (const imagePath of criticalImages) {
@@ -58,6 +133,42 @@ class ImageManager {
             img.onerror = () => reject(new Error(`Bild konnte nicht geladen werden: ${src}`));
             img.src = src;
         });
+    }
+
+    // Lädt ein Bild mit Fallback-Logik
+    async loadImageWithFallback(imgElement, src, fallbackSrc = null) {
+        try {
+            // Prüfe Cache
+            if (this.imageCache.has(src)) {
+                imgElement.src = src;
+                return true;
+            }
+
+            // Teste URL-Verfügbarkeit
+            const isAvailable = await this.testImageUrl(src);
+            if (isAvailable) {
+                imgElement.src = src;
+                await this.preloadImage(src);
+                return true;
+            } else {
+                throw new Error('Bild-URL nicht verfügbar');
+            }
+        } catch (error) {
+            console.log('Bild konnte nicht geladen werden:', src);
+            
+            // Versuche Fallback
+            if (fallbackSrc && fallbackSrc !== src) {
+                try {
+                    return await this.loadImageWithFallback(imgElement, fallbackSrc);
+                } catch (fallbackError) {
+                    console.log('Auch Fallback-Bild konnte nicht geladen werden:', fallbackSrc);
+                }
+            }
+            
+            // Verwende Standard-Fallback
+            imgElement.src = this.fallbackImage;
+            return false;
+        }
     }
 
     // Lädt ein Bild mit Fallback-Logik
@@ -91,19 +202,11 @@ class ImageManager {
     // Erstellt ein Bild-Element mit Fehlerbehandlung
     createImageElement(src, alt = '', className = '', fallbackSrc = null) {
         const img = document.createElement('img');
-        img.src = src;
         img.alt = alt;
         if (className) img.className = className;
         
-        // Fehlerbehandlung
-        img.onerror = () => {
-            if (fallbackSrc && fallbackSrc !== src) {
-                img.src = fallbackSrc;
-            } else {
-                img.src = this.fallbackImage;
-                img.alt = 'Bild nicht verfügbar';
-            }
-        };
+        // Lade Bild mit Fallback
+        this.loadImageWithFallback(img, src, fallbackSrc);
         
         return img;
     }

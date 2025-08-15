@@ -27,11 +27,18 @@ class ImageGallery {
             imageItem.dataset.index = index;
             
             // Verwende Placeholder für Demo, da echte Bilder im Admin hochgeladen werden
-            const imageSrc = image.dataUrl || this.createImagePlaceholder(image);
+            let imageSrc = image.dataUrl || image.src || this.createImagePlaceholder(image);
+            
+            // Füge Fallback für relative Pfade hinzu
+            if (imageSrc && !imageSrc.startsWith('data:') && !imageSrc.startsWith('http')) {
+                if (!imageSrc.startsWith('./')) {
+                    imageSrc = `./${imageSrc}`;
+                }
+            }
             
             imageItem.innerHTML = `
                 <div class="gallery-image">
-                    <img src="${imageSrc}" alt="${image.alt}" loading="lazy">
+                    <img src="${imageSrc}" alt="${image.alt}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
                             <h4>${image.title}</h4>

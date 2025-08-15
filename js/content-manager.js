@@ -81,7 +81,7 @@ class ContentManager {
         if (heroSubtitle) heroSubtitle.textContent = hero.subtitle;
         if (heroDescription) heroDescription.textContent = hero.description;
         
-        // Profilbild NUR setzen, wenn es noch nicht geladen wurde
+        // Profilbild mit verbesserter Fehlerbehandlung laden
         if (profileImage && !profileImage.getAttribute('data-loaded')) {
             if (hero.profileImage) {
                 // Prüfe zuerst, ob ein hochgeladenes Profilbild existiert
@@ -91,15 +91,21 @@ class ContentManager {
                     profileImage.setAttribute('data-loaded', 'true');
                     console.log('✅ Hochgeladenes Profilbild verwendet (content-manager)');
                 } else {
-                    // Verwende Standardbild aus JSON
-                    profileImage.src = hero.profileImage;
-                    profileImage.setAttribute('data-loaded', 'true');
-                    console.log('✅ Standard-Profilbild verwendet (content-manager):', hero.profileImage);
+                    // Verwende Image Manager für bessere Fehlerbehandlung
+                    if (window.imageManager) {
+                        const imagePath = hero.profileImage.startsWith('./') ? hero.profileImage : `./${hero.profileImage}`;
+                        window.imageManager.loadImageWithFallback(profileImage, imagePath);
+                        profileImage.setAttribute('data-loaded', 'true');
+                        console.log('✅ Profilbild mit Image Manager geladen:', imagePath);
+                    } else {
+                        // Fallback zur ursprünglichen Methode
+                        profileImage.src = hero.profileImage;
+                        profileImage.setAttribute('data-loaded', 'true');
+                        console.log('✅ Standard-Profilbild verwendet (content-manager):', hero.profileImage);
+                    }
                 }
                 profileImage.alt = hero.name;
             }
-        } else if (profileImage && profileImage.getAttribute('data-loaded')) {
-            console.log('🔄 Profilbild bereits geladen, überspringe content-manager');
         }
 
         // Statistiken rendern
