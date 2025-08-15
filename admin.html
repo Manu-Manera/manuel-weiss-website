@@ -904,135 +904,72 @@ Pannenhilfe</textarea>
     <div id="notification" class="notification"></div>
 
     <!-- Scripts -->
-    <script src="js/netlify-storage.js"></script>
-    <script src="js/image-manager.js"></script>
-    <script src="js/content-manager.js"></script>
-    <script src="admin-script.js"></script>
+    <script src="js/image-manager.js?v=2.0"></script>
+    <script src="js/content-manager.js?v=2.0"></script>
+    <script src="js/activity-gallery.js?v=2.0"></script>
+    <script src="js/image-gallery.js?v=2.0"></script>
+    <script src="js/netlify-storage.js?v=2.0"></script>
+    <script src="js/data-persistence.js?v=2.0"></script>
+    <script src="admin-script.js?v=2.0"></script>
     
-    <!-- Inline JavaScript für Dropdown-Initialisierung (Online-Version) -->
     <script>
-        // Robuste Dropdown-Initialisierung für Online-Version
-        function initializeDropdown() {
-            console.log('Initialisiere Dropdown-Menü...');
+        // Initialisiere Image Manager global
+        window.imageManager = new ImageManager();
+        
+        // Initialisiere Activity Gallery
+        window.activityGallery = new ActivityGallery();
+        
+        // Initialisiere Content Manager
+        window.contentManager = new ContentManager();
+        
+        // Verbesserte Initialisierung für bessere Online-Kompatibilität
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Admin-Panel wird initialisiert...');
+            console.log('🌐 Online-Status:', navigator.onLine);
+            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
+            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
+            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
             
-            // Finde alle Dropdown-Container
-            const submenuItems = document.querySelectorAll('.nav-item-with-submenu');
-            console.log('Gefundene Dropdown-Container:', submenuItems.length);
-            
-            submenuItems.forEach((item, index) => {
-                console.log(`Dropdown ${index + 1}:`, item);
-                
-                const link = item.querySelector('.nav-link');
-                const submenu = item.querySelector('.submenu');
-                const arrow = item.querySelector('.submenu-arrow');
-                
-                console.log(`- Link gefunden:`, !!link);
-                console.log(`- Submenu gefunden:`, !!submenu);
-                console.log(`- Arrow gefunden:`, !!arrow);
-                
-                if (link && submenu) {
-                    // Event-Listener für den Hauptlink
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Dropdown geklickt, toggle open/close');
-                        
-                        const isOpen = item.classList.contains('open');
-                        item.classList.toggle('open');
-                        
-                        console.log(`Dropdown ist jetzt ${item.classList.contains('open') ? 'offen' : 'geschlossen'}`);
-                    });
-                    
-                    // Stelle sicher, dass das Submenu sichtbar ist
-                    if (submenu.style.display === 'none') {
-                        submenu.style.display = 'block';
-                    }
-                }
-            });
-            
-            // Öffne das Dropdown automatisch
+            // Warte kurz, bis alle Skripte geladen sind
             setTimeout(() => {
-                const activitiesSubmenu = document.querySelector('.nav-item-with-submenu');
-                if (activitiesSubmenu) {
-                    activitiesSubmenu.classList.add('open');
-                    console.log('Dropdown automatisch geöffnet');
+                // Initialisiere andere Komponenten
+                if (window.imageManager) {
+                    console.log('✅ Image Manager initialisiert');
+                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
                 }
+                
+                if (window.activityGallery) {
+                    console.log('✅ Activity Gallery initialisiert');
+                }
+                
+                if (window.contentManager) {
+                    console.log('✅ Content Manager initialisiert');
+                }
+                
+                console.log('✅ Admin-Panel Initialisierung abgeschlossen');
+                
+                // Debug: Prüfe Admin-Funktionalität
+                const adminForms = document.querySelectorAll('form');
+                console.log('📝 Admin-Formulare gefunden:', adminForms.length);
+                
+                const imageUploads = document.querySelectorAll('input[type="file"]');
+                console.log('📸 Bild-Upload-Felder gefunden:', imageUploads.length);
             }, 100);
-        }
+        });
         
-        // Mehrfache Initialisierung für maximale Kompatibilität
-        document.addEventListener('DOMContentLoaded', initializeDropdown);
-        window.addEventListener('load', initializeDropdown);
+        // Fehlerbehandlung für globale Fehler
+        window.addEventListener('error', function(e) {
+            console.error('❌ Globaler Fehler:', e.error);
+            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
+        });
         
-        // Fallback: Initialisierung nach kurzer Verzögerung
-        setTimeout(initializeDropdown, 1000);
+        // Fehlerbehandlung für unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
+        });
         
-        // Online-spezifische Fehlerbehandlung
-        function handleOnlineIssues() {
-            console.log('🌐 Online-Umgebung erkannt, aktiviere spezielle Behandlung...');
-            
-            // Prüfe localStorage-Verfügbarkeit
-            try {
-                localStorage.setItem('online-test', 'test');
-                localStorage.removeItem('online-test');
-                console.log('✅ localStorage funktioniert');
-            } catch (error) {
-                console.error('❌ localStorage nicht verfügbar:', error);
-                // Fallback: Verwende sessionStorage oder andere Methoden
-            }
-            
-            // Prüfe JavaScript-Module
-            console.log('📦 Verfügbare Module:');
-            console.log('- imageManager:', !!window.imageManager);
-            console.log('- netlifyStorage:', !!window.netlifyStorage);
-            console.log('- contentManager:', !!window.contentManager);
-            
-            // Aktiviere Notfall-Modi falls nötig
-            if (!window.imageManager) {
-                console.warn('⚠️ ImageManager nicht verfügbar, aktiviere Fallback-Modi');
-                activateFallbackModes();
-            }
-        }
-        
-        // Aktiviere Fallback-Modi
-        function activateFallbackModes() {
-            console.log('🔄 Aktiviere Fallback-Modi...');
-            
-            // Erstelle einfache Fallback-Funktionen
-            if (!window.imageManager) {
-                window.imageManager = {
-                    validateImage: (file) => {
-                        return {
-                            valid: file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024,
-                            error: file.type.startsWith('image/') ? null : 'Nur Bilddateien erlaubt'
-                        };
-                    },
-                    compressImage: async (file) => {
-                        return file; // Keine Komprimierung im Fallback
-                    }
-                };
-                console.log('✅ Fallback ImageManager erstellt');
-            }
-        }
-        
-        // Debug: Zeige alle gefundenen Elemente
-        setTimeout(() => {
-            console.log('=== DROPDOWN DEBUG ===');
-            console.log('nav-item-with-submenu:', document.querySelectorAll('.nav-item-with-submenu').length);
-            console.log('submenu:', document.querySelectorAll('.submenu').length);
-            console.log('submenu-link:', document.querySelectorAll('.submenu-link').length);
-            console.log('submenu-arrow:', document.querySelectorAll('.submenu-arrow').length);
-            
-            const submenu = document.querySelector('.submenu');
-            if (submenu) {
-                console.log('Submenu Styles:', window.getComputedStyle(submenu));
-                console.log('Submenu max-height:', window.getComputedStyle(submenu).maxHeight);
-                console.log('Submenu opacity:', window.getComputedStyle(submenu).opacity);
-            }
-            
-            // Aktiviere Online-Behandlung
-            handleOnlineIssues();
-        }, 2000);
+        // Debug: Log alle verfügbaren globalen Funktionen
+        console.log('🔍 Verfügbare globale Funktionen:', Object.keys(window).filter(key => typeof window[key] === 'function'));
     </script>
 </body>
 </html>
