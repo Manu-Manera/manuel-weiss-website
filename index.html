@@ -523,15 +523,13 @@
                 try {
                     let images = [];
                     
-                    // VERSUCHE NETLIFY-SPEICHERUNG ZUERST
+                    // LADE NUR AUS NETLIFY - KEINE LOKALEN FALLBACKS!
                     if (window.netlifyStorage) {
-                        console.log(`🌐 Lade ${activity} Bilder aus Netlify-Speicher...`);
+                        console.log(`🌐 Lade ${activity} Bilder NUR aus Netlify-Speicher...`);
                         images = await window.netlifyStorage.loadAllActivityImages(activity);
                     } else {
-                        // Fallback: localStorage
-                        console.log(`📱 Lade ${activity} Bilder aus localStorage...`);
-                        const storageKey = `${activity}_images`;
-                        images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                        console.log(`❌ Netlify Storage nicht verfügbar für ${activity}`);
+                        images = [];
                     }
                     
                     if (images.length > 0) {
@@ -561,10 +559,10 @@
                             <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
                             <div class="activity-image-placeholder">
                                 <i class="fas fa-${getActivityIcon(activity)}"></i>
-                                <p>Noch keine Bilder verfügbar</p>
+                                <p>Keine Bilder verfügbar</p>
                             </div>
                         `;
-                        console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
+                        console.log(`⚠️ ${activity}: Keine Netlify-Bilder verfügbar`);
                     }
                 } catch (error) {
                     console.error(`❌ Fehler beim Laden der ${activity} Bilder:`, error);

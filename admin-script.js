@@ -1259,9 +1259,9 @@ class AdminPanel {
             images.push(imageInfo);
             localStorage.setItem(storageKey, JSON.stringify(images));
             
-            console.log(`💾 Bild gespeichert: ${filename} für ${activityName}`);
+            console.log(`💾 Bild lokal gespeichert: ${filename} für ${activityName}`);
             
-            // VERSUCHE ONLINE-SPEICHERUNG
+            // SPEICHERE NUR ONLINE - KEIN FALLBACK!
             this.saveImageOnline(activityName, images);
             
         } catch (error) {
@@ -1269,28 +1269,47 @@ class AdminPanel {
         }
     }
 
-    // Neue Online-Speicherung
+    // Neue Online-Speicherung - NUR ONLINE!
     async saveImageOnline(activityName, images) {
         try {
             if (window.netlifyStorage) {
-                console.log(`🌐 Versuche Netlify-Speicherung für ${activityName}...`);
+                console.log(`🌐 Speichere ${activityName} Bilder NUR online bei Netlify...`);
                 const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
                 
                 if (result.success) {
-                    console.log(`✅ ${activityName} Bilder bei Netlify gespeichert:`, result.message);
-                    this.showNotification(`Bilder bei Netlify gespeichert: ${result.message}`, 'success');
+                    console.log(`✅ ${activityName} Bilder erfolgreich bei Netlify gespeichert`);
+                    this.showNotification(`Bilder erfolgreich online gespeichert!`, 'success');
+                    
+                    // Markiere als Netlify-gespeichert
+                    window.netlifyStorage.markAsNetlifySaved(activityName, images);
                     
                     // Aktualisiere die Anzeige sofort
                     this.refreshActivityImages(activityName);
                 } else {
-                    console.log(`⚠️ ${activityName} Bilder lokal gespeichert:`, result.message);
-                    this.showNotification(`Bilder lokal gespeichert: ${result.message}`, 'warning');
+                    throw new Error('Netlify-Speicherung fehlgeschlagen');
                 }
             } else {
-                console.log('⚠️ Netlify Storage nicht verfügbar, verwende nur localStorage');
+                throw new Error('Netlify Storage nicht verfügbar');
             }
         } catch (error) {
-            console.error('❌ Fehler bei Netlify-Speicherung:', error);
+            console.error('❌ Fehler bei Online-Speicherung:', error);
+            
+            // ENTFERNE ALLE LOKALEN BILDER BEI FEHLER!
+            this.removeLocalImages(activityName);
+            
+            this.showNotification(`Fehler: Bilder konnten nicht online gespeichert werden!`, 'error');
+            throw error; // Kein Fallback mehr!
+        }
+    }
+
+    // Entferne alle lokalen Bilder bei Fehler
+    removeLocalImages(activityName) {
+        try {
+            const storageKey = `${activityName}_images`;
+            localStorage.removeItem(storageKey);
+            console.log(`🗑️ Alle lokalen Bilder für ${activityName} entfernt (Fehler bei Online-Speicherung)`);
+        } catch (error) {
+            console.error('❌ Fehler beim Entfernen lokaler Bilder:', error);
         }
     }
 

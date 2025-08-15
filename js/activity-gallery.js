@@ -82,37 +82,21 @@ class ActivityGallery {
         try {
             console.log(`🔄 Lade Bilder für Aktivität: ${this.currentActivity}`);
             
-            // VERWENDE NEUE ONLINE-SPEICHERUNG MIT PRIORITÄT
+            // LADE NUR AUS NETLIFY - KEINE LOKALEN FALLBACKS!
             if (window.netlifyStorage) {
-                console.log('🌐 Verwende Netlify Storage mit Online-Priorität...');
+                console.log('🌐 Lade Bilder NUR aus Netlify-Speicher...');
                 const allImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
-                console.log('📸 Alle verfügbaren Bilder geladen:', allImages);
+                console.log('📸 Netlify-Bilder geladen:', allImages);
                 
                 if (allImages.length > 0) {
                     this.renderGallery(allImages);
                 } else {
-                    console.log('⚠️ Keine Bilder gefunden');
+                    console.log('⚠️ Keine Netlify-Bilder gefunden');
                     this.showEmptyState();
                 }
             } else {
-                console.log('📸 Verwende Fallback-Methode (localStorage)...');
-                // Fallback zur ursprünglichen Methode
-                const storageKey = `${this.currentActivity}_images`;
-                const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                const defaultImages = await this.getDefaultImages();
-                
-                console.log('📸 Hochgeladene Bilder:', uploadedImages);
-                console.log('📸 Standard-Bilder:', defaultImages);
-                
-                const allImages = [...uploadedImages, ...defaultImages];
-                console.log('📸 Alle kombinierten Bilder:', allImages);
-                
-                if (allImages.length > 0) {
-                    this.renderGallery(allImages);
-                } else {
-                    console.log('⚠️ Keine Bilder gefunden');
-                    this.showEmptyState();
-                }
+                console.log('❌ Netlify Storage nicht verfügbar');
+                this.showEmptyState();
             }
         } catch (error) {
             console.error('❌ Fehler beim Laden der Aktivitätsbilder:', error);
