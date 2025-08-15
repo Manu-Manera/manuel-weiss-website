@@ -80,9 +80,22 @@ class ContentManager {
         if (heroTitle) heroTitle.textContent = hero.title;
         if (heroSubtitle) heroSubtitle.textContent = hero.subtitle;
         if (heroDescription) heroDescription.textContent = hero.description;
-        if (profileImage && hero.profileImage) {
-            profileImage.src = hero.profileImage;
-            profileImage.alt = hero.name;
+        
+        // Profilbild mit Fallback-Logik
+        if (profileImage) {
+            if (hero.profileImage) {
+                // Prüfe zuerst, ob ein hochgeladenes Profilbild existiert
+                const uploadedImage = localStorage.getItem('profileImage');
+                if (uploadedImage && uploadedImage.startsWith('data:image/')) {
+                    profileImage.src = uploadedImage;
+                    console.log('✅ Hochgeladenes Profilbild verwendet');
+                } else {
+                    // Verwende Standardbild aus JSON
+                    profileImage.src = hero.profileImage;
+                    console.log('✅ Standard-Profilbild verwendet:', hero.profileImage);
+                }
+                profileImage.alt = hero.name;
+            }
         }
 
         // Statistiken rendern

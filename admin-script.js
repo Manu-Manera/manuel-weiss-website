@@ -8,12 +8,96 @@ class AdminPanel {
     }
 
     init() {
+        console.log('🚀 Admin Panel wird initialisiert...');
+        
         this.setupNavigation();
         this.setupSubmenus();
         this.setupProfileImageUpload();
         this.setupAutoSave();
         this.setupFormHandlers();
         this.loadCurrentData();
+        
+        // Teste Bildupload-Setup
+        this.testImageUploadSetup();
+        
+        console.log('✅ Admin Panel erfolgreich initialisiert');
+    }
+
+    // Teste Bildupload-Setup
+    testImageUploadSetup() {
+        console.log('🧪 Teste Bildupload-Setup...');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        activities.forEach(activity => {
+            const fileInput = document.getElementById(`${activity}-file-upload`);
+            const imagesContainer = document.getElementById(`${activity}-images`);
+            
+            console.log(`${activity}:`, {
+                fileInput: fileInput ? '✅ gefunden' : '❌ nicht gefunden',
+                imagesContainer: imagesContainer ? '✅ gefunden' : '❌ nicht gefunden'
+            });
+            
+            // Erstelle Notfall-Upload, falls normale Elemente fehlen
+            if (!fileInput || !imagesContainer) {
+                this.createEmergencyUpload(activity);
+            }
+        });
+    }
+
+    // Erstelle Notfall-Upload für fehlende Elemente
+    createEmergencyUpload(activityName) {
+        console.log(`🚨 Erstelle Notfall-Upload für ${activityName}`);
+        
+        // Suche nach dem Aktivitäts-Bereich
+        const activitySection = document.querySelector(`#${activityName}`);
+        if (!activitySection) {
+            console.error(`❌ Aktivitäts-Bereich nicht gefunden: ${activityName}`);
+            return;
+        }
+
+        // Erstelle einfachen Upload-Bereich
+        const emergencyUpload = document.createElement('div');
+        emergencyUpload.className = 'emergency-upload';
+        emergencyUpload.innerHTML = `
+            <div class="editor-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> Notfall-Bildupload für ${activityName}</h3>
+                <div class="emergency-upload-area">
+                    <input type="file" id="emergency-${activityName}-upload" accept="image/*" multiple>
+                    <button onclick="adminPanel.emergencyUpload('${activityName}')" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Bilder hochladen
+                    </button>
+                </div>
+                <div id="emergency-${activityName}-images" class="emergency-images"></div>
+            </div>
+        `;
+
+        // Füge Notfall-Upload hinzu
+        activitySection.appendChild(emergencyUpload);
+        console.log(`✅ Notfall-Upload für ${activityName} erstellt`);
+    }
+
+    // Notfall-Bildupload
+    emergencyUpload(activityName) {
+        const fileInput = document.getElementById(`emergency-${activityName}-upload`);
+        const imagesContainer = document.getElementById(`emergency-${activityName}-images`);
+        
+        if (!fileInput || !imagesContainer) {
+            this.showNotification('Notfall-Upload nicht verfügbar', 'error');
+            return;
+        }
+
+        const files = Array.from(fileInput.files);
+        if (files.length === 0) {
+            this.showNotification('Bitte wählen Sie Bilder aus', 'info');
+            return;
+        }
+
+        files.forEach(file => {
+            this.addImageToGallerySimple(activityName, file);
+        });
+
+        // Datei-Input zurücksetzen
+        fileInput.value = '';
     }
 
     // Submenu Setup
@@ -26,6 +110,15 @@ class AdminPanel {
                 item.classList.toggle('open');
             });
         });
+
+        // Auto-open submenu if a submenu item is active
+        const activeSubmenuItem = document.querySelector('.submenu-link.active');
+        if (activeSubmenuItem) {
+            const parentSubmenu = activeSubmenuItem.closest('.nav-item-with-submenu');
+            if (parentSubmenu) {
+                parentSubmenu.classList.add('open');
+            }
+        }
     }
 
     // Profile Image Upload Setup
@@ -43,50 +136,84 @@ class AdminPanel {
                 if (!file) return;
                 
                 // Validate file
-                if (!file.type.startsWith('image/')) {
-                    this.showNotification('Bitte wählen Sie eine Bilddatei aus', 'error');
-                    return;
-                }
-                
-                if (file.size > 5 * 1024 * 1024) { // 5MB
-                    this.showNotification('Bild ist zu groß (max. 5MB)', 'error');
-                    return;
+                // Verwende den Image Manager für Validierung
+                if (window.imageManager) {
+                    const validation = window.imageManager.validateImage(file);
+                    if (!validation.valid) {
+                        this.showNotification(validation.error, 'error');
+                        return;
+                    }
+                } else {
+                    // Fallback-Validierung
+                    if (!file.type.startsWith('image/')) {
+                        this.showNotification('Bitte wählen Sie eine Bilddatei aus', 'error');
+                        return;
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        this.showNotification('Bild ist zu groß (max. 5MB)', 'error');
+                        return;
+                    }
                 }
                 
                 // Read file
                 const reader = new FileReader();
                 reader.onload = async (event) => {
-                    const imageData = event.target.result;
+                    let imageData = event.target.result;
                     
-                    // Update preview immediately
-                    const preview = document.getElementById('profile-preview');
-                    if (preview) {
-                        preview.src = imageData;
+                    // Komprimiere das Bild, falls der Image Manager verfügbar ist
+                    if (window.imageManager) {
+                        try {
+                            const compressedBlob = await window.imageManager.compressImage(file, 1920, 0.8);
+                            if (compressedBlob) {
+                                const compressedReader = new FileReader();
+                                compressedReader.onload = (e) => {
+                                    imageData = e.target.result;
+                                    this.processUploadedImage(imageData);
+                                };
+                                compressedReader.readAsDataURL(compressedBlob);
+                                return;
+                            }
+                        } catch (error) {
+                            console.log('Bildkomprimierung fehlgeschlagen, verwende Original:', error);
+                        }
                     }
                     
-                    // Save with Netlify Storage
-                    if (window.netlifyStorage) {
-                        const result = await window.netlifyStorage.saveProfileImage(imageData);
-                        this.showNotification(result.message, result.success ? 'success' : 'warning');
-                    } else {
-                        // Fallback to localStorage
-                        localStorage.setItem('profileImage', imageData);
-                        this.showNotification('Profilbild gespeichert (offline)', 'warning');
-                    }
-                    
-                    // Update main website
-                    try {
-                        window.postMessage({
-                            type: 'updateProfileImage',
-                            imageData: imageData
-                        }, '*');
-                    } catch (error) {
-                        console.log('Cross-window communication nicht verfügbar');
-                    }
+                    // Verwende Original, falls Komprimierung fehlschlägt
+                    this.processUploadedImage(imageData);
                 };
                 
                 reader.readAsDataURL(file);
             });
+        }
+    }
+
+    processUploadedImage(imageData) {
+        // Update preview immediately
+        const preview = document.getElementById('profile-preview');
+        if (preview) {
+            preview.src = imageData;
+        }
+        
+        // Save with Netlify Storage
+        if (window.netlifyStorage) {
+            window.netlifyStorage.saveProfileImage(imageData).then(result => {
+                this.showNotification(result.message, result.success ? 'success' : 'warning');
+            });
+        } else {
+            // Fallback to localStorage
+            localStorage.setItem('profileImage', imageData);
+            this.showNotification('Profilbild gespeichert (offline)', 'warning');
+        }
+        
+        // Update main website
+        try {
+            window.postMessage({
+                type: 'updateProfileImage',
+                imageData: imageData
+            }, '*');
+        } catch (error) {
+            console.log('Cross-window communication nicht verfügbar');
         }
     }
 
@@ -341,6 +468,12 @@ class AdminPanel {
     setupActivityHandlers() {
         // Activity cards are handled dynamically
         this.updateActivityCards();
+        
+        // Setup image upload handlers for each activity
+        this.setupActivityImageUpload('wohnmobil');
+        this.setupActivityImageUpload('fotobox');
+        this.setupActivityImageUpload('sup');
+        this.setupActivityImageUpload('ebike');
     }
 
     setupProjectHandlers() {
@@ -912,6 +1045,505 @@ class AdminPanel {
         }
         
         console.log(`✅ ${activityName} Daten geladen`);
+    }
+
+    // Activity Image Upload Setup
+    setupActivityImageUpload(activityName) {
+        console.log(`🔧 Setup Bildupload für ${activityName}`);
+        
+        const fileUploadId = `${activityName}-file-upload`;
+        const imagesContainerId = `${activityName}-images`;
+        
+        const fileInput = document.getElementById(fileUploadId);
+        const imagesContainer = document.getElementById(imagesContainerId);
+        
+        console.log(`📁 Upload-Elemente:`, {
+            fileInput: fileInput ? 'gefunden' : 'nicht gefunden',
+            imagesContainer: imagesContainer ? 'gefunden' : 'nicht gefunden',
+            fileUploadId,
+            imagesContainerId
+        });
+        
+        if (!fileInput || !imagesContainer) {
+            console.error(`❌ Upload-Elemente für ${activityName} nicht gefunden`);
+            console.error(`FileInput: ${fileUploadId}`, fileInput);
+            console.error(`ImagesContainer: ${imagesContainerId}`, imagesContainer);
+            return;
+        }
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            console.log(`📸 Datei ausgewählt für ${activityName}:`, e.target.files);
+            
+            const files = Array.from(e.target.files);
+            if (files.length === 0) {
+                console.log('Keine Dateien ausgewählt');
+                return;
+            }
+
+            files.forEach((file, index) => {
+                console.log(`📁 Verarbeite Datei ${index + 1}:`, {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    lastModified: new Date(file.lastModified)
+                });
+                
+                if (!file.type.startsWith('image/')) {
+                    console.error(`❌ Ungültiger Dateityp: ${file.name} (${file.type})`);
+                    this.showNotification(`Ungültiger Dateityp: ${file.name}`, 'error');
+                    return;
+                }
+
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    console.error(`❌ Datei zu groß: ${file.name} (${file.size} bytes)`);
+                    this.showNotification(`Datei zu groß: ${file.name} (max. 10MB)`, 'error');
+                    return;
+                }
+
+                console.log(`✅ Datei validiert, starte Upload...`);
+                this.addImageToGallery(activityName, file);
+            });
+
+            // Reset file input
+            e.target.value = '';
+            console.log('📁 File input zurückgesetzt');
+        });
+
+        // Load existing images for this activity
+        console.log(`🔄 Lade bestehende Bilder für ${activityName}`);
+        this.loadActivityImages(activityName);
+        
+        console.log(`✅ Bildupload für ${activityName} erfolgreich eingerichtet`);
+    }
+
+    // Vereinfachte und robuste Bildupload-Methode
+    addImageToGallerySimple(activityName, file) {
+        console.log(`🚀 Starte einfachen Bildupload für ${activityName}: ${file.name}`);
+        
+        const imagesContainer = document.getElementById(`${activityName}-images`);
+        if (!imagesContainer) {
+            console.error('❌ Images Container nicht gefunden');
+            this.showNotification('Fehler: Container nicht gefunden', 'error');
+            return;
+        }
+
+        // Einfache Validierung
+        if (!file.type.startsWith('image/')) {
+            this.showNotification(`Nur Bilddateien erlaubt: ${file.name}`, 'error');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            this.showNotification(`Datei zu groß: ${file.name} (max. 10MB)`, 'error');
+            return;
+        }
+
+        // Datei lesen
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const imageData = e.target.result;
+                const imageId = Date.now() + Math.random();
+                
+                console.log(`✅ Bild geladen, erstelle Element...`);
+                
+                // Einfaches Bild-Element erstellen
+                const imageDiv = this.createSimpleImageElement(activityName, imageId, imageData, file.name);
+                
+                // Vor dem Upload-Bereich einfügen
+                const uploadButton = imagesContainer.querySelector('.image-upload');
+                if (uploadButton) {
+                    imagesContainer.insertBefore(imageDiv, uploadButton);
+                } else {
+                    imagesContainer.appendChild(imageDiv);
+                }
+
+                // In localStorage speichern
+                this.saveImageSimple(activityName, imageId, imageData, file.name);
+                
+                this.showNotification(`Bild erfolgreich hinzugefügt: ${file.name}`, 'success');
+                console.log(`🎉 Bild erfolgreich hinzugefügt: ${file.name}`);
+                
+            } catch (error) {
+                console.error('❌ Fehler beim Verarbeiten des Bildes:', error);
+                this.showNotification('Fehler beim Hinzufügen des Bildes', 'error');
+            }
+        };
+        
+        reader.onerror = (error) => {
+            console.error('❌ Fehler beim Lesen der Datei:', error);
+            this.showNotification('Fehler beim Lesen der Bilddatei', 'error');
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    // Einfaches Bild-Element erstellen
+    createSimpleImageElement(activityName, imageId, imageData, filename) {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'activity-image-item';
+        imageDiv.setAttribute('data-image-id', imageId);
+        imageDiv.setAttribute('data-activity', activityName);
+        
+        imageDiv.innerHTML = `
+            <div class="image-preview">
+                <img src="${imageData}" alt="${filename}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="image-overlay">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="adminPanel.removeActivityImage('${activityName}', '${imageId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="image-info">
+                <input type="text" class="image-title" value="${filename}" placeholder="Bildtitel" 
+                       onchange="adminPanel.updateImageTitle('${activityName}', '${imageId}', this.value)">
+                <input type="text" class="image-description" placeholder="Bildbeschreibung" 
+                       onchange="adminPanel.updateImageDescription('${activityName}', '${imageId}', this.value)">
+            </div>
+        `;
+        
+        return imageDiv;
+    }
+
+    // Einfache Bildspeicherung
+    saveImageSimple(activityName, imageId, imageData, filename) {
+        try {
+            const storageKey = `${activityName}_images`;
+            let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            const imageInfo = {
+                id: imageId,
+                filename: filename,
+                title: filename,
+                description: '',
+                imageData: imageData,
+                uploadDate: new Date().toISOString(),
+                isUploaded: true,
+                activity: activityName
+            };
+            
+            images.push(imageInfo);
+            localStorage.setItem(storageKey, JSON.stringify(images));
+            
+            console.log(`💾 Bild gespeichert: ${filename} für ${activityName}`);
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern des Bildes:', error);
+        }
+    }
+
+    addImageToGallery(activityName, file) {
+        // Verwende die robuste, vereinfachte Methode
+        console.log(`🔄 Verwende robuste Bildupload-Methode für ${activityName}`);
+        this.addImageToGallerySimple(activityName, file);
+    }
+
+    finalizeImageAddition(activityName, imageId, imageData, filename) {
+        const imagesContainer = document.getElementById(`${activityName}-images`);
+        if (!imagesContainer) {
+            console.error('❌ Images Container nicht gefunden in finalizeImageAddition');
+            return;
+        }
+
+        console.log(`🎨 Erstelle Bild-Element für ${activityName}`);
+
+        try {
+            // Create image element
+            const imageDiv = this.createImageElement(activityName, imageId, imageData, filename);
+            
+            if (!imageDiv) {
+                console.error('❌ Bild-Element konnte nicht erstellt werden');
+                return;
+            }
+
+            // Insert before the upload button
+            const uploadButton = imagesContainer.querySelector('.image-upload');
+            if (uploadButton) {
+                imagesContainer.insertBefore(imageDiv, uploadButton);
+                console.log('✅ Bild vor Upload-Button eingefügt');
+            } else {
+                imagesContainer.appendChild(imageDiv);
+                console.log('✅ Bild am Ende eingefügt (Upload-Button nicht gefunden)');
+            }
+
+            // Save to localStorage
+            this.saveActivityImage(activityName, imageId, imageData, filename);
+            
+            // Sende Update an Hauptfenster (falls offen)
+            this.notifyMainWindow(activityName, 'imageAdded');
+            
+            this.showNotification(`Bild zu ${activityName} hinzugefügt`, 'success');
+            
+            console.log(`🎉 Bild erfolgreich zu ${activityName} hinzugefügt:`, filename);
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Finalisieren des Bildes:', error);
+            this.showNotification('Fehler beim Hinzufügen des Bildes', 'error');
+        }
+    }
+
+    notifyMainWindow(activityName, action) {
+        try {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'updateActivityImages',
+                    activity: activityName,
+                    action: action,
+                    timestamp: new Date().toISOString()
+                }, '*');
+                console.log('✅ Update an Hauptseite gesendet:', action);
+            }
+        } catch (error) {
+            console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+        }
+    }
+
+    createImageElement(activityName, imageId, imageData, filename) {
+        try {
+            console.log(`🔨 Erstelle Bild-Element: ${filename}`);
+            
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'activity-image-item';
+            imageDiv.setAttribute('data-image-id', imageId);
+            imageDiv.setAttribute('data-activity', activityName);
+            
+            // Sichere HTML-Erstellung
+            const safeFilename = filename.replace(/[<>"']/g, '');
+            const safeImageData = imageData.replace(/[<>"']/g, '');
+            
+            imageDiv.innerHTML = `
+                <div class="image-preview">
+                    <img src="${safeImageData}" alt="${safeFilename}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
+                    <div class="image-overlay">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="adminPanel.removeActivityImage('${activityName}', '${imageId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="adminPanel.editImageTitle('${activityName}', '${imageId}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="image-info">
+                    <input type="text" class="image-title" value="${safeFilename}" placeholder="Bildtitel" 
+                           onchange="adminPanel.updateImageTitle('${activityName}', '${imageId}', this.value)">
+                    <input type="text" class="image-description" placeholder="Bildbeschreibung" 
+                           onchange="adminPanel.updateImageDescription('${activityName}', '${imageId}', this.value)">
+                </div>
+            `;
+            
+            console.log(`✅ Bild-Element erfolgreich erstellt`);
+            return imageDiv;
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Erstellen des Bild-Elements:', error);
+            
+            // Fallback: Einfaches Bild-Element
+            const fallbackDiv = document.createElement('div');
+            fallbackDiv.className = 'activity-image-item';
+            fallbackDiv.setAttribute('data-image-id', imageId);
+            fallbackDiv.innerHTML = `
+                <div class="image-preview">
+                    <img src="${imageData}" alt="${filename}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="image-info">
+                    <p>${filename}</p>
+                    <button onclick="adminPanel.removeActivityImage('${activityName}', '${imageId}')">Löschen</button>
+                </div>
+            `;
+            
+            return fallbackDiv;
+        }
+    }
+
+    saveActivityImage(activityName, imageId, imageData, filename) {
+        const storageKey = `${activityName}_images`;
+        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        const imageInfo = {
+            id: imageId,
+            filename: filename,
+            title: filename,
+            description: '',
+            imageData: imageData,
+            uploadDate: new Date().toISOString(),
+            isUploaded: true,
+            activity: activityName
+        };
+        
+        images.push(imageInfo);
+        localStorage.setItem(storageKey, JSON.stringify(images));
+        
+        // Also save to main website data
+        this.updateWebsiteData();
+        
+        // Speichere auch in der globalen Bilddatenbank
+        this.saveToGlobalImageDatabase(imageInfo);
+        
+        console.log(`✅ Bild gespeichert: ${filename} für ${activityName}`);
+    }
+
+    saveToGlobalImageDatabase(imageInfo) {
+        try {
+            // Speichere in der globalen Bilddatenbank
+            let globalImages = JSON.parse(localStorage.getItem('globalImages') || '[]');
+            
+            // Prüfe, ob das Bild bereits existiert
+            const existingIndex = globalImages.findIndex(img => img.id === imageInfo.id);
+            if (existingIndex >= 0) {
+                globalImages[existingIndex] = imageInfo;
+            } else {
+                globalImages.push(imageInfo);
+            }
+            
+            localStorage.setItem('globalImages', JSON.stringify(globalImages));
+            console.log('✅ Bild in globale Datenbank gespeichert');
+            
+            // Versuche auch bei Netlify zu speichern
+            this.saveToNetlify(imageInfo);
+        } catch (error) {
+            console.error('Fehler beim Speichern in globale Datenbank:', error);
+        }
+    }
+
+    async saveToNetlify(imageInfo) {
+        try {
+            if (window.netlifyStorage) {
+                // Speichere das Bild bei Netlify
+                const result = await window.netlifyStorage.saveActivityImages(
+                    imageInfo.activity, 
+                    [imageInfo]
+                );
+                
+                if (result.success) {
+                    console.log('✅ Bild bei Netlify gespeichert');
+                } else {
+                    console.log('⚠️ Bild nur lokal gespeichert');
+                }
+            }
+        } catch (error) {
+            console.log('Netlify-Speicherung nicht verfügbar, verwende nur localStorage');
+        }
+    }
+
+    loadActivityImages(activityName) {
+        const storageKey = `${activityName}_images`;
+        const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const imagesContainer = document.getElementById(`${activityName}-images`);
+        
+        if (!imagesContainer) return;
+        
+        // Lösche alle bestehenden Bilder (außer dem Upload-Bereich)
+        const existingImages = imagesContainer.querySelectorAll('.activity-image-item');
+        existingImages.forEach(img => img.remove());
+        
+        if (images.length === 0) {
+            console.log(`ℹ️ Keine Bilder für ${activityName} gefunden`);
+            return;
+        }
+        
+        images.forEach(imageInfo => {
+            const imageDiv = this.createImageElement(activityName, imageInfo.id, imageInfo.imageData, imageInfo.title);
+            
+            // Set existing title and description
+            const titleInput = imageDiv.querySelector('.image-title');
+            const descriptionInput = imageDiv.querySelector('.image-description');
+            if (titleInput) titleInput.value = imageInfo.title || imageInfo.filename;
+            if (descriptionInput) descriptionInput.value = imageInfo.description || '';
+            
+            // Insert before upload button
+            const uploadButton = imagesContainer.querySelector('.image-upload');
+            if (uploadButton) {
+                imagesContainer.insertBefore(imageDiv, uploadButton);
+            } else {
+                imagesContainer.appendChild(imageDiv);
+            }
+        });
+        
+        console.log(`✅ ${images.length} Bilder für ${activityName} geladen`);
+    }
+
+    removeActivityImage(activityName, imageId) {
+        if (!confirm('Möchten Sie dieses Bild wirklich löschen?')) return;
+        
+        // Remove from DOM
+        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+        if (imageElement) {
+            imageElement.remove();
+        }
+        
+        // Remove from localStorage
+        const storageKey = `${activityName}_images`;
+        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        images = images.filter(img => img.id !== imageId);
+        localStorage.setItem(storageKey, JSON.stringify(images));
+        
+        // Update website data
+        this.updateWebsiteData();
+        
+        this.showNotification(`Bild aus ${activityName} entfernt`, 'success');
+    }
+
+    updateImageTitle(activityName, imageId, newTitle) {
+        const storageKey = `${activityName}_images`;
+        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        const imageIndex = images.findIndex(img => img.id === imageId);
+        if (imageIndex !== -1) {
+            images[imageIndex].title = newTitle;
+            localStorage.setItem(storageKey, JSON.stringify(images));
+            this.updateWebsiteData();
+        }
+    }
+
+    updateImageDescription(activityName, imageId, newDescription) {
+        const storageKey = `${activityName}_images`;
+        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        const imageIndex = images.findIndex(img => img.id === imageId);
+        if (imageIndex !== -1) {
+            images[imageIndex].description = newDescription;
+            localStorage.setItem(storageKey, JSON.stringify(images));
+            this.updateWebsiteData();
+        }
+    }
+
+    editImageTitle(activityName, imageId) {
+        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+        if (imageElement) {
+            const titleInput = imageElement.querySelector('.image-title');
+            if (titleInput) {
+                titleInput.focus();
+                titleInput.select();
+            }
+        }
+    }
+
+    updateWebsiteData() {
+        // Collect all activity images and update website data
+        const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+        
+        ['wohnmobil', 'fotobox', 'sup', 'ebike'].forEach(activityName => {
+            const storageKey = `${activityName}_images`;
+            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            if (!websiteData.activityImages) websiteData.activityImages = {};
+            websiteData.activityImages[activityName] = images;
+        });
+        
+        localStorage.setItem('websiteData', JSON.stringify(websiteData));
+        
+        // Notify main website if open
+        try {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'updateActivityImages',
+                    data: websiteData.activityImages
+                }, '*');
+            }
+        } catch (error) {
+            console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+        }
     }
 
     showNotification(message, type = 'info') {

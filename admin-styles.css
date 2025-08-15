@@ -92,16 +92,33 @@ body {
 /* Submenu Styling */
 .nav-item-with-submenu {
     position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.nav-item-with-submenu .nav-link {
+    position: relative;
+    z-index: 2;
 }
 
 .submenu-arrow {
     margin-left: auto;
     transition: transform 0.3s ease;
     font-size: 0.8rem;
+    color: #94a3b8;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-item-with-submenu.open .submenu-arrow {
     transform: rotate(180deg);
+    color: #2563eb;
+}
+
+.nav-item-with-submenu:hover .submenu-arrow {
+    color: #2563eb;
 }
 
 .submenu {
@@ -111,10 +128,24 @@ body {
     background: #f8fafc;
     border-left: 2px solid #e2e8f0;
     margin-left: 1rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    border-radius: 0 8px 8px 0;
+    box-shadow: inset 2px 0 4px rgba(0,0,0,0.05);
+    padding: 0.5rem 0;
 }
 
 .nav-item-with-submenu.open .submenu {
     max-height: 300px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nav-item-with-submenu.open .nav-link {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .submenu-link {
@@ -122,16 +153,34 @@ body {
     font-size: 0.9rem;
     border-radius: 4px;
     margin: 0.25rem 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    color: #64748b;
+    font-weight: 400;
 }
 
 .submenu-link:hover {
     background: #e2e8f0;
     color: #2563eb;
+    transform: translateX(5px);
 }
 
 .submenu-link.active {
     background: #2563eb;
     color: white;
+    transform: translateX(5px);
+}
+
+.submenu-link.active::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #2563eb;
+    border-radius: 2px;
 }
 
 .nav-link i {
@@ -594,32 +643,28 @@ body {
 
 /* Activity Images Upload */
 .activity-images {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
 }
 
 .image-upload {
-    position: relative;
-}
-
-.upload-area {
+    width: 200px;
+    height: 200px;
     border: 2px dashed #cbd5e1;
     border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8fafc;
 }
 
-.upload-area:hover {
+.image-upload:hover {
     border-color: #2563eb;
-    background-color: #f8fafc;
+    background: #eff6ff;
 }
 
 .upload-placeholder {
@@ -636,6 +681,119 @@ body {
     font-size: 0.9rem;
     margin: 0;
 }
+
+.activity-image-item {
+    width: 200px;
+    position: relative;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.image-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.image-preview:hover {
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-preview:hover img {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-preview:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-info {
+    margin-top: 0.5rem;
+}
+
+.image-info input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: border-color 0.3s ease;
+}
+
+        .image-info input:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Notfall-Upload Styles */
+        .emergency-upload {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+        }
+
+        .emergency-upload h3 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-upload-area {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .emergency-upload .btn {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .emergency-upload .btn:hover {
+            background: #c82333;
+            border-color: #bd2130;
+        }
 
 .uploaded-image {
     position: relative;
@@ -769,4 +927,171 @@ body {
 
 .overview-info strong {
     color: #1e293b;
-} /* Force deployment trigger */
+}
+
+/* Activity Images Styling */
+.activity-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.activity-image-item {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.activity-image-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.activity-image-item:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay .btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-info {
+    padding: 1rem;
+}
+
+.image-info input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.image-info input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.image-info .image-title {
+    font-weight: 500;
+}
+
+.image-info .image-description {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-placeholder:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.upload-placeholder i {
+    font-size: 2rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.upload-placeholder p {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.upload-placeholder:hover i,
+.upload-placeholder:hover p {
+    color: #2563eb;
+}
+
+/* Image Gallery Animation */
+.activity-image-item {
+    animation: fadeInUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Empty state for image galleries */
+.activity-images:empty::after {
+    content: "Noch keine Bilder hochgeladen. Klicken Sie auf '+' um Bilder hinzuzufügen.";
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 2px dashed #cbd5e1;
+}
+
+/* Responsive Image Gallery */
+@media (max-width: 768px) {
+    .activity-images {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .image-preview {
+        height: 120px;
+    }
+}

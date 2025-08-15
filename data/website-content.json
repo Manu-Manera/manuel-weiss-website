@@ -11,7 +11,7 @@
     "title": "Professional Services",
     "subtitle": "Digitalisierung • Prozessmanagement • HR-Tech Beratung",
     "description": "Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen mit pragmatischen Lösungen zu meistern.",
-    "profileImage": "manuel-weiss-photo.jpg",
+    "profileImage": "manuel-weiss-photo.svg",
     "stats": [
       {
         "name": "Jahre Erfahrung",
@@ -92,26 +92,41 @@
       "description": "Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.",
       "link": "wohnmobil.html",
       "category": "vermietung",
-      "images": [
+      "adminKey": "wohnmobil",
+      "subtitle": "Erleben Sie Freiheit und Komfort auf Reisen",
+      "detailedDescription": "Entdecken Sie die Schweiz und Europa mit unserem hochwertigen Wohnmobil. Vollausstattung, flexible Mietdauer und 24/7 Support für unvergessliche Abenteuer.",
+      "features": [
+        "Vollkasko-Versicherung inklusive",
+        "Bequeme Schlafplätze für 2-4 Personen",
+        "Vollausgestattete Küche",
+        "Eigene Dusche und WC",
+        "Heizung und Klimaanlage",
+        "WLAN verfügbar"
+      ],
+      "pricing": {
+        "day": "CHF 150",
+        "week": "CHF 800"
+      },
+              "images": [
         {
           "id": 1,
           "title": "Wohnmobil Außenansicht",
           "description": "Modernes Wohnmobil mit Platz für 4 Personen",
-          "filename": "wohnmobil-exterior.jpg",
+          "filename": "images/wohnmobil/wohnmobil-exterior.jpg",
           "alt": "Wohnmobil Außenansicht"
         },
         {
           "id": 2,
           "title": "Küche & Wohnbereich",
           "description": "Vollausgestattete Küche und gemütlicher Wohnbereich",
-          "filename": "wohnmobil-kitchen.jpg",
+          "filename": "images/wohnmobil/wohnmobil-kitchen.jpg",
           "alt": "Wohnmobil Innenbereich"
         },
         {
           "id": 3,
           "title": "Schlafbereich",
           "description": "Bequeme Betten für erholsame Nächte",
-          "filename": "wohnmobil-bedroom.jpg",
+          "filename": "images/wohnmobil/wohnmobil-bedroom.jpg",
           "alt": "Wohnmobil Schlafbereich"
         }
       ]
@@ -123,12 +138,26 @@
       "description": "Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.",
       "link": "fotobox.html",
       "category": "vermietung",
+      "adminKey": "fotobox",
+      "subtitle": "Unvergessliche Momente bei Events",
+      "detailedDescription": "Professionelle Fotobox mit HD-Qualität, verschiedenen Themes und Instant-Print. Perfekt für Hochzeiten, Firmenevents, Geburtstage und alle besonderen Anlässe.",
+      "features": [
+        "Professionelle HD-Kamera",
+        "Touchscreen-Bedienung",
+        "Sofortiger Fotodruck",
+        "Individuelle Layouts",
+        "Requisiten inklusive",
+        "Aufbau und Betreuung"
+      ],
+      "pricing": {
+        "event": "CHF 250"
+      },
       "images": [
         {
           "id": 2,
           "title": "Fotobox Setup",
           "description": "Professionelle Fotobox mit HD-Kamera",
-          "filename": "fotobox-1.jpg",
+          "filename": "images/fotobox/fotobox-1.jpg",
           "alt": "Fotobox Setup"
         }
       ]
@@ -136,10 +165,25 @@
     {
       "id": 3,
       "icon": "fas fa-bicycle",
-      "title": "E-Bikes",
+      "title": "E-Bike Vermietung",
       "description": "Elektrische Fahrräder für komfortable Ausflüge und Touren.",
       "link": "ebike.html",
       "category": "vermietung",
+      "adminKey": "ebike",
+      "subtitle": "Nachhaltige Mobilität für Stadt und Land",
+      "detailedDescription": "Nachhaltige Mobilität für Stadt und Land mit unseren hochwertigen E-Bikes. Perfekt für Touren und entspannte Fahrten.",
+      "features": [
+        "Hochwertige E-Bikes",
+        "Lange Akkulaufzeit",
+        "Helm inklusive",
+        "Routenberatung",
+        "24/7 Support",
+        "Pannenhilfe"
+      ],
+      "pricing": {
+        "day": "CHF 55",
+        "week": "CHF 300"
+      },
       "images": [
         {
           "id": 3,
@@ -153,10 +197,25 @@
     {
       "id": 4,
       "icon": "fas fa-water",
-      "title": "Stand-Up-Paddles",
+      "title": "Stand-Up-Paddle Vermietung",
       "description": "Wassersport-Ausrüstung für entspannende Stunden auf dem Wasser.",
       "link": "sup.html",
       "category": "vermietung",
+      "adminKey": "sup",
+      "subtitle": "Entdecken Sie die Schönheit der Schweizer Seen",
+      "detailedDescription": "Erleben Sie die Freiheit auf dem Wasser mit unseren hochwertigen Stand-Up-Paddles. Verschiedene Größen für Anfänger und Fortgeschrittene.",
+      "features": [
+        "SUP-Board inklusive",
+        "Paddle und Pumpe",
+        "Sicherheitsleine",
+        "Transporttasche",
+        "Kurze Einweisung",
+        "Wassersicherheitsausrüstung"
+      ],
+      "pricing": {
+        "half": "CHF 45",
+        "full": "CHF 75"
+      },
       "images": [
         {
           "id": 4,

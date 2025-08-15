@@ -615,6 +615,13 @@ const debouncedScrollHandler = debounce(() => {
 
 window.addEventListener('scroll', debouncedScrollHandler);
 
+// Load profile image and content when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Seite geladen - lade Profilbild...');
+    loadSavedProfileImage();
+    loadSavedContent();
+});
+
 // Listen for updates from admin panel
 window.addEventListener('message', function(event) {
     console.log('Message received:', event.data);
@@ -630,5 +637,14 @@ window.addEventListener('message', function(event) {
     if (event.data.type === 'updateHeroContent') {
         loadSavedContent(); // Reload all content
         console.log('✅ Website-Inhalte vom Admin-Panel aktualisiert');
+    }
+    
+    if (event.data.type === 'updateActivityImages') {
+        // Aktualisiere die entsprechende Galerie
+        if (window.activityGallery && event.data.activity) {
+            console.log('✅ Galerie-Update empfangen für:', event.data.activity);
+            // Lade die Galerie neu
+            window.activityGallery.loadActivityImages();
+        }
     }
 }); 
