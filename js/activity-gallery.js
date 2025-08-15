@@ -108,50 +108,62 @@ class ActivityGallery {
         }
     }
 
-    getDefaultImages() {
-        // Get default images from website-content.json structure
-        try {
-            // Lade zuerst aus der JSON-Datei
-            const response = await fetch('/data/website-content.json');
-            if (response.ok) {
-                const websiteData = await response.json();
-                const rentals = websiteData.rentals || [];
-                const currentRental = rentals.find(rental => rental.adminKey === this.currentActivity);
-                
-                if (currentRental && currentRental.images) {
-                    return currentRental.images.map(img => ({
-                        id: img.id,
-                        title: img.title,
-                        description: img.description,
-                        imageData: img.filename,
-                        isDefault: true
-                    }));
+    async getDefaultImages() {
+        // Standard-Bilder mit korrekten Pfaden
+        const defaultImages = {
+            'wohnmobil': [
+                {
+                    src: './images/wohnmobil/wohnmobil-exterior.jpg',
+                    alt: 'Wohnmobil Außenansicht',
+                    title: 'Wohnmobil Außenansicht',
+                    description: 'Gemütliches Wohnmobil für Ihre Reisen',
+                    filename: 'wohnmobil-exterior.jpg'
+                },
+                {
+                    src: './images/wohnmobil/wohnmobil-bedroom.jpg',
+                    alt: 'Wohnmobil Schlafzimmer',
+                    title: 'Wohnmobil Schlafzimmer',
+                    description: 'Komfortables Schlafzimmer',
+                    filename: 'wohnmobil-bedroom.jpg'
+                },
+                {
+                    src: './images/wohnmobil/wohnmobil-kitchen.jpg',
+                    alt: 'Wohnmobil Küche',
+                    title: 'Wohnmobil Küche',
+                    description: 'Vollausgestattete Küche',
+                    filename: 'wohnmobil-kitchen.jpg'
                 }
-            }
-        } catch (error) {
-            console.log('Could not load default images from JSON:', error);
-            
-            // Fallback: Versuche localStorage
-            try {
-                const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-                const rentals = websiteData.rentals || [];
-                const currentRental = rentals.find(rental => rental.adminKey === this.currentActivity);
-                
-                if (currentRental && currentRental.images) {
-                    return currentRental.images.map(img => ({
-                        id: img.id,
-                        title: img.title,
-                        description: img.description,
-                        imageData: img.filename,
-                        isDefault: true
-                    }));
+            ],
+            'fotobox': [
+                {
+                    src: './images/fotobox/fotobox-1.jpg',
+                    alt: 'Fotobox',
+                    title: 'Professionelle Fotobox',
+                    description: 'Perfekt für Events und Feiern',
+                    filename: 'fotobox-1.jpg'
                 }
-            } catch (localError) {
-                console.log('Could not load default images from localStorage:', localError);
-            }
-        }
-        
-        return [];
+            ],
+            'sup': [
+                {
+                    src: './images/sup/sup-1.jpg',
+                    alt: 'Stand-Up-Paddle',
+                    title: 'Stand-Up-Paddle',
+                    description: 'Entdecken Sie das Wasser',
+                    filename: 'sup-1.jpg'
+                }
+            ],
+            'ebike': [
+                {
+                    src: './images/ebike/ebike-1.jpg',
+                    alt: 'E-Bike',
+                    title: 'E-Bike',
+                    description: 'Elektrisch unterstütztes Radfahren',
+                    filename: 'ebike-1.jpg'
+                }
+            ]
+        };
+
+        return defaultImages[this.currentActivity] || [];
     }
 
     renderGallery(images) {
@@ -163,24 +175,24 @@ class ActivityGallery {
         }
 
         const galleryHTML = images.map(image => {
-            // Bestimme die Bildquelle
-            let imageSrc;
-            if (image.isDefault) {
-                // Standardbild aus JSON
-                imageSrc = image.imageData;
-            } else {
-                // Hochgeladenes Bild (Base64 oder URL)
-                imageSrc = image.imageData;
+            // Bestimme die Bildquelle - verwende das neue src-Feld
+            let imageSrc = image.src || image.imageData || '';
+            
+            // Füge Fallback für relative Pfade hinzu
+            if (imageSrc && !imageSrc.startsWith('data:') && !imageSrc.startsWith('http')) {
+                if (!imageSrc.startsWith('./')) {
+                    imageSrc = `./${imageSrc}`;
+                }
             }
 
             return `
-                <div class="gallery-item" data-image-id="${image.id}" data-image-type="${image.isDefault ? 'default' : 'uploaded'}">
+                <div class="gallery-item" data-image-id="${image.id || Math.random()}" data-image-type="${image.isDefault ? 'default' : 'uploaded'}">
                     <div class="gallery-image">
                         <img src="${imageSrc}" 
-                             alt="${image.title || 'Bild'}" 
+                             alt="${image.alt || image.title || 'Bild'}" 
                              title="${image.title || 'Bild'}"
                              onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'"
-                             onclick="activityGallery.openLightbox('${image.id}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')" />
+                             onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')" />
                         <div class="gallery-overlay">
                             <div class="gallery-info">
                                 <h4>${image.title || 'Bild'}</h4>

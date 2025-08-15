@@ -12,6 +12,25 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
+    <!-- Versteckte Netlify-Formulare für Bild-Uploads -->
+    <form name="profile-images" netlify style="display: none;">
+        <input type="hidden" name="image-data">
+        <input type="hidden" name="filename">
+        <input type="hidden" name="upload-time">
+    </form>
+    
+    <form name="admin-data" netlify style="display: none;">
+        <input type="hidden" name="data-type">
+        <input type="hidden" name="website-content">
+        <input type="hidden" name="timestamp">
+    </form>
+    
+    <form name="activity-images" netlify style="display: none;">
+        <input type="hidden" name="activity-name">
+        <input type="hidden" name="images-data">
+        <input type="hidden" name="timestamp">
+    </form>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -43,7 +62,7 @@
             <div class="hero-content">
                 <div class="hero-profile">
                     <div class="profile-image">
-                        <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" id="profile-photo">
+                        <img src="./manuel-weiss-photo.svg" alt="Manuel Weiss" id="profile-photo" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hbnVlbCBXZWlzcw==';">
                     </div>
                     <div class="profile-info">
                         <h1 id="hero-name">Manuel Weiss</h1>
@@ -384,81 +403,62 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="js/image-manager.js"></script>
-    <script src="js/data-persistence.js"></script>
     <script src="js/content-manager.js"></script>
+    <script src="js/activity-gallery.js"></script>
+    <script src="js/image-gallery.js"></script>
     <script src="js/netlify-storage.js"></script>
+    <script src="js/data-persistence.js"></script>
     <script src="script.js"></script>
     
-    <!-- Online-spezifische Fehlerbehandlung -->
     <script>
-        // Online-Umgebung erkennen und behandeln
-        (function() {
-            console.log('🌐 Hauptseite lädt, prüfe Online-Umgebung...');
+        // Initialisiere Image Manager global
+        window.imageManager = new ImageManager();
+        
+        // Initialisiere Activity Gallery
+        window.activityGallery = new ActivityGallery();
+        
+        // Initialisiere Content Manager
+        window.contentManager = new ContentManager();
+        
+        // Verbesserte Initialisierung für bessere Online-Kompatibilität
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Website wird initialisiert...');
             
-            // Prüfe localStorage-Verfügbarkeit
-            function checkLocalStorage() {
-                try {
-                    localStorage.setItem('online-test', 'test');
-                    localStorage.removeItem('online-test');
-                    console.log('✅ localStorage funktioniert auf Hauptseite');
-                    return true;
-                } catch (error) {
-                    console.error('❌ localStorage nicht verfügbar auf Hauptseite:', error);
-                    return false;
-                }
-            }
-            
-            // Prüfe JavaScript-Module
-            function checkModules() {
-                console.log('📦 Verfügbare Module auf Hauptseite:');
-                console.log('- imageManager:', !!window.imageManager);
-                console.log('- netlifyStorage:', !!window.netlifyStorage);
-                console.log('- contentManager:', !!window.contentManager);
-                
-                // Aktiviere Fallback falls nötig
-                if (!window.imageManager) {
-                    console.warn('⚠️ ImageManager nicht verfügbar, aktiviere Fallback');
-                    activateImageManagerFallback();
-                }
-            }
-            
-            // Fallback für ImageManager
-            function activateImageManagerFallback() {
-                window.imageManager = {
-                    loadActivityImages: async (activityName) => {
-                        console.log(`🔄 Fallback: Lade Bilder für ${activityName}`);
-                        try {
-                            const storageKey = `${activityName}_images`;
-                            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                            console.log(`✅ Fallback: ${images.length} Bilder geladen`);
-                            return images;
-                        } catch (error) {
-                            console.error('❌ Fallback-Fehler:', error);
-                            return [];
-                        }
-                    }
-                };
-                console.log('✅ Fallback ImageManager aktiviert');
-            }
-            
-            // Warte auf DOM-Laden
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    checkLocalStorage();
-                    checkModules();
-                });
-            } else {
-                checkLocalStorage();
-                checkModules();
-            }
-            
-            // Zusätzliche Prüfung nach kurzer Verzögerung
+            // Warte kurz, bis alle Skripte geladen sind
             setTimeout(() => {
-                checkModules();
-            }, 1000);
-            
-        })();
+                // Initialisiere Profilbild
+                if (typeof loadSavedProfileImage === 'function') {
+                    loadSavedProfileImage();
+                }
+                
+                // Initialisiere andere Komponenten
+                if (window.imageManager) {
+                    console.log('✅ Image Manager initialisiert');
+                }
+                
+                if (window.activityGallery) {
+                    console.log('✅ Activity Gallery initialisiert');
+                }
+                
+                if (window.contentManager) {
+                    console.log('✅ Content Manager initialisiert');
+                }
+                
+                console.log('✅ Website-Initialisierung abgeschlossen');
+            }, 100);
+        });
+        
+        // Fehlerbehandlung für globale Fehler
+        window.addEventListener('error', function(e) {
+            console.error('❌ Globaler Fehler:', e.error);
+        });
+        
+        // Fehlerbehandlung für unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
+        });
     </script>
 </body>
 </html> 

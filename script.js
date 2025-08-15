@@ -94,14 +94,21 @@ function loadStandardProfileImage(profileImage) {
     
     console.log('🔄 Lade Standard-Profilbild...');
     
-    const standardImage = 'manuel-weiss-photo.svg';
-    profileImage.src = standardImage;
+    // Verwende Image Manager für bessere Fehlerbehandlung
+    if (window.imageManager) {
+        const standardImagePath = './manuel-weiss-photo.svg';
+        window.imageManager.loadImageWithFallback(profileImage, standardImagePath);
+        console.log('✅ Standard-Profilbild mit Image Manager geladen:', standardImagePath);
+    } else {
+        // Fallback zur ursprünglichen Methode
+        const standardImage = 'manuel-weiss-photo.svg';
+        profileImage.src = standardImage;
+        console.log('✅ Standard-Profilbild geladen (Fallback):', standardImage);
+    }
     
     // Markiere als geladen
     profileImage.setAttribute('data-loaded', 'true');
     profileImageLoaded = true;
-    
-    console.log('✅ Standard-Profilbild geladen:', standardImage);
 }
 
 // Einfache Hilfsfunktion für alternative Bildformate (nur als Fallback)
