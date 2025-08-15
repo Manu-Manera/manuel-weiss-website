@@ -427,10 +427,36 @@ body {
     padding: 3rem;
     text-align: center;
     color: white;
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.activity-image-placeholder {
+    position: relative;
+    z-index: 2;
 }
 
 .activity-image i {
     font-size: 3rem;
+}
+
+.activity-hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.activity-card:hover .activity-hero-image {
+    transform: scale(1.05);
 }
 
 .activity-content {
