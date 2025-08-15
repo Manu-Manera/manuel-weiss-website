@@ -523,9 +523,9 @@
                 try {
                     let images = [];
                     
-                    // VERSUCHE ONLINE-SPEICHERUNG ZUERST
+                    // VERSUCHE NETLIFY-SPEICHERUNG ZUERST
                     if (window.netlifyStorage) {
-                        console.log(`🌐 Lade ${activity} Bilder aus Online-Speicher...`);
+                        console.log(`🌐 Lade ${activity} Bilder aus Netlify-Speicher...`);
                         images = await window.netlifyStorage.loadAllActivityImages(activity);
                     } else {
                         // Fallback: localStorage
@@ -548,7 +548,7 @@
                                     <div class="activity-image-overlay">
                                         <h4>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h4>
                                         <p>${firstImage.description || 'Klicken Sie für mehr Details'}</p>
-                                        ${firstImage.isOnline ? '<span class="online-badge">🌐 Online</span>' : ''}
+                                        ${firstImage.isNetlifySaved ? '<span class="online-badge">🌐 Netlify</span>' : ''}
                                     </p>
                                 </div>
                             </div>

@@ -1273,21 +1273,64 @@ class AdminPanel {
     async saveImageOnline(activityName, images) {
         try {
             if (window.netlifyStorage) {
-                console.log(`🌐 Versuche Online-Speicherung für ${activityName}...`);
-                const result = await window.netlifyStorage.saveActivityImagesOnline(activityName, images);
+                console.log(`🌐 Versuche Netlify-Speicherung für ${activityName}...`);
+                const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
                 
                 if (result.success) {
-                    console.log(`✅ ${activityName} Bilder online gespeichert:`, result.message);
-                    this.showNotification(`Bilder online gespeichert: ${result.message}`, 'success');
+                    console.log(`✅ ${activityName} Bilder bei Netlify gespeichert:`, result.message);
+                    this.showNotification(`Bilder bei Netlify gespeichert: ${result.message}`, 'success');
+                    
+                    // Aktualisiere die Anzeige sofort
+                    this.refreshActivityImages(activityName);
                 } else {
-                    console.log(`⚠️ ${activityName} Bilder offline gespeichert:`, result.message);
-                    this.showNotification(`Bilder offline gespeichert: ${result.message}`, 'warning');
+                    console.log(`⚠️ ${activityName} Bilder lokal gespeichert:`, result.message);
+                    this.showNotification(`Bilder lokal gespeichert: ${result.message}`, 'warning');
                 }
             } else {
                 console.log('⚠️ Netlify Storage nicht verfügbar, verwende nur localStorage');
             }
         } catch (error) {
-            console.error('❌ Fehler bei Online-Speicherung:', error);
+            console.error('❌ Fehler bei Netlify-Speicherung:', error);
+        }
+    }
+
+    // Aktualisiere die Anzeige der Aktivitätsbilder
+    refreshActivityImages(activityName) {
+        try {
+            const imagesContainer = document.getElementById(`${activityName}-images`);
+            if (!imagesContainer) return;
+
+            // Lade aktuelle Bilder
+            const storageKey = `${activityName}_images`;
+            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            // Entferne alle bestehenden Bild-Elemente (außer Upload-Bereich)
+            const existingImages = imagesContainer.querySelectorAll('.activity-image-item');
+            existingImages.forEach(img => img.remove());
+            
+            // Füge alle Bilder neu hinzu
+            images.forEach(image => {
+                const imageDiv = this.createSimpleImageElement(activityName, image.id, image.imageData, image.filename);
+                
+                // Aktualisiere Titel und Beschreibung
+                const titleInput = imageDiv.querySelector('.image-title');
+                const descInput = imageDiv.querySelector('.image-description');
+                
+                if (titleInput) titleInput.value = image.title || image.filename;
+                if (descInput) descInput.value = image.description || '';
+                
+                // Füge vor dem Upload-Bereich ein
+                const uploadButton = imagesContainer.querySelector('.image-upload');
+                if (uploadButton) {
+                    imagesContainer.insertBefore(imageDiv, uploadButton);
+                } else {
+                    imagesContainer.appendChild(imageDiv);
+                }
+            });
+            
+            console.log(`🔄 ${images.length} Bilder für ${activityName} aktualisiert`);
+        } catch (error) {
+            console.error('❌ Fehler beim Aktualisieren der Bilder:', error);
         }
     }
 
