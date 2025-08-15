@@ -434,13 +434,40 @@ document.addEventListener('DOMContentLoaded', function() {
     // Debug: Zeige Profilbild-Status
     debugProfileImageStatus();
     
+    // Profilbild SOFORT laden (höchste Priorität)
     loadSavedProfileImage();
-    loadSavedContent();
     
-    // Aktualisiere Hauptbilder nach kurzer Verzögerung
+    // Kurze Verzögerung für andere Inhalte
     setTimeout(() => {
+        loadSavedContent();
+        
+        // Aktualisiere Hauptbilder
         updateAllActivityHeroImages();
+    }, 500);
+    
+    // Zusätzliche Sicherheit: Profilbild nach 1 Sekunde nochmal prüfen
+    setTimeout(() => {
+        const profilePhoto = document.getElementById('profile-photo');
+        if (profilePhoto && !profilePhoto.getAttribute('data-loaded')) {
+            console.log('🔄 Zusätzliche Sicherheit: Lade Profilbild erneut...');
+            loadSavedProfileImage();
+        }
     }, 1000);
+    
+    // Absolute Sicherheit: Profilbild nach 3 Sekunden erzwingen
+    setTimeout(() => {
+        const profilePhoto = document.getElementById('profile-photo');
+        if (profilePhoto) {
+            console.log('🚨 Absolute Sicherheit: Erzwinge Profilbild-Laden...');
+            
+            // Entferne alle Attribute und lade neu
+            profilePhoto.removeAttribute('data-loaded');
+            profileImageLoaded = false;
+            
+            // Lade Profilbild mit höchster Priorität
+            loadSavedProfileImage();
+        }
+    }, 3000);
 });
 
 // Debug-Funktion für Profilbild-Status
