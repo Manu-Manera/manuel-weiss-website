@@ -1095,3 +1095,194 @@ body {
         height: 120px;
     }
 }
+
+/* Verbesserte Bildanzeige im Admin-Panel */
+.activity-image-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.activity-image-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #2563eb;
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-preview:hover img {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-preview:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay .btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.image-overlay .btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.image-overlay .btn i {
+    color: #dc2626;
+    font-size: 1rem;
+}
+
+.image-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.image-title,
+.image-description {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.image-title:focus,
+.image-description:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.image-title {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.image-description {
+    color: #64748b;
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Bildupload-Bereich */
+.image-upload {
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.image-upload:hover {
+    border-color: #2563eb;
+    background: #f0f9ff;
+}
+
+.image-upload input[type="file"] {
+    display: none;
+}
+
+.image-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.image-upload-label i {
+    font-size: 2rem;
+    color: #94a3b8;
+}
+
+.image-upload-label h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.image-upload-label p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .activity-image-item {
+        padding: 0.75rem;
+    }
+    
+    .image-preview {
+        height: 150px;
+    }
+    
+    .image-upload {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .image-preview {
+        height: 120px;
+    }
+    
+    .image-upload {
+        padding: 1rem;
+    }
+    
+    .image-upload-label i {
+        font-size: 1.5rem;
+    }
+    
+    .image-upload-label h4 {
+        font-size: 1rem;
+    }
+}

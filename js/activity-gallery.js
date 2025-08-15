@@ -82,36 +82,41 @@ class ActivityGallery {
         try {
             console.log(`🔄 Lade Bilder für Aktivität: ${this.currentActivity}`);
             
-            // Verwende den Image Manager für bessere Bildverwaltung
-            if (window.imageManager) {
-                console.log('📸 Verwende Image Manager...');
-                const allImages = await window.imageManager.loadActivityImages(this.currentActivity);
-                console.log('📸 Image Manager Bilder:', allImages);
-                
-                if (allImages.length > 0) {
-                    this.renderGallery(allImages);
-                } else {
-                    console.log('⚠️ Keine Bilder vom Image Manager gefunden');
-                    this.showEmptyState();
-                }
+            // Verwende zuerst localStorage für hochgeladene Bilder (sicherste Methode)
+            const storageKey = `${this.currentActivity}_images`;
+            const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            console.log('📸 Hochgeladene Bilder aus localStorage:', uploadedImages);
+            
+            // Lade Standard-Bilder
+            const defaultImages = await this.getDefaultImages();
+            console.log('📸 Standard-Bilder:', defaultImages);
+            
+            // Kombiniere Bilder: Hochgeladene zuerst, dann Standard
+            const allImages = [...uploadedImages, ...defaultImages];
+            console.log('📸 Alle kombinierten Bilder:', allImages);
+            
+            if (allImages.length > 0) {
+                this.renderGallery(allImages);
             } else {
-                console.log('📸 Verwende Fallback-Methode...');
-                // Fallback zur ursprünglichen Methode
-                const storageKey = `${this.currentActivity}_images`;
-                const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                const defaultImages = await this.getDefaultImages();
-                
-                console.log('📸 Hochgeladene Bilder:', uploadedImages);
-                console.log('📸 Standard-Bilder:', defaultImages);
-                
-                const allImages = [...defaultImages, ...uploadedImages];
-                console.log('📸 Alle kombinierten Bilder:', allImages);
-                
-                if (allImages.length > 0) {
-                    this.renderGallery(allImages);
-                } else {
-                    console.log('⚠️ Keine Bilder gefunden');
-                    this.showEmptyState();
+                console.log('⚠️ Keine Bilder gefunden');
+                this.showEmptyState();
+            }
+            
+            // Optional: Versuche auch Image Manager zu verwenden (für zusätzliche Features)
+            if (window.imageManager) {
+                console.log('📸 Image Manager verfügbar, lade zusätzliche Features...');
+                try {
+                    const imageManagerImages = await window.imageManager.loadActivityImages(this.currentActivity);
+                    console.log('📸 Image Manager zusätzliche Bilder:', imageManagerImages);
+                    
+                    // Aktualisiere Galerie nur wenn neue Bilder gefunden wurden
+                    if (imageManagerImages.length > allImages.length) {
+                        console.log('🔄 Neue Bilder vom Image Manager gefunden, aktualisiere Galerie...');
+                        const combinedImages = [...uploadedImages, ...imageManagerImages];
+                        this.renderGallery(combinedImages);
+                    }
+                } catch (imageManagerError) {
+                    console.log('⚠️ Image Manager Fehler (nicht kritisch):', imageManagerError);
                 }
             }
         } catch (error) {
@@ -195,8 +200,9 @@ class ActivityGallery {
                 // Standard-Bilder mit src-Feld
                 imageSrc = image.src;
             } else if (image.imageData) {
-                // Hochgeladene Bilder (Base64 oder URL)
+                // Hochgeladene Bilder (Base64 oder URL) - das ist der wichtige Teil!
                 imageSrc = image.imageData;
+                console.log(`🔄 Hochgeladenes Bild gefunden: ${image.filename || 'Unbekannt'}`);
             } else if (image.filename) {
                 // Bilder mit Dateinamen
                 imageSrc = `./images/${this.currentActivity}/${image.filename}`;
@@ -213,12 +219,14 @@ class ActivityGallery {
             return {
                 id: image.id || `image-${index}`,
                 src: imageSrc,
-                alt: image.alt || image.title || 'Bild',
-                title: image.title || `Bild ${index + 1}`,
+                alt: image.alt || image.title || image.filename || 'Bild',
+                title: image.title || image.filename || `Bild ${index + 1}`,
                 description: image.description || '',
                 isDefault: image.isDefault || false,
                 uploadDate: image.uploadDate || null,
-                originalImage: image // Behalte Original für Debugging
+                originalImage: image, // Behalte Original für Debugging
+                isUploaded: image.isUploaded || false,
+                filename: image.filename || null
             };
         });
 
