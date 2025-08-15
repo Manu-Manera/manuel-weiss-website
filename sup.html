@@ -151,6 +151,17 @@
         </div>
     </section>
 
+    <!-- Image Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Bildergalerie</h2>
+                <p>Entdecken Sie unsere Stand-Up-Paddles in allen Details</p>
+            </div>
+            <div id="sup-gallery"></div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="contact-section">
         <div class="container">
@@ -194,7 +205,71 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
-    <script src="js/activity-gallery.js"></script>
+    <!-- Scripts -->
+    <script src="js/image-manager.js?v=2.0"></script>
+    <script src="js/content-manager.js?v=2.0"></script>
+    <script src="js/activity-gallery.js?v=2.0"></script>
+    <script src="js/image-gallery.js?v=2.0"></script>
+    <script src="js/netlify-storage.js?v=2.0"></script>
+    <script src="js/data-persistence.js?v=2.0"></script>
+    <script src="script.js?v=2.0"></script>
+    
+    <script>
+        // Initialisiere Image Manager global
+        window.imageManager = new ImageManager();
+        
+        // Initialisiere Activity Gallery
+        window.activityGallery = new ActivityGallery();
+        
+        // Initialisiere Content Manager
+        window.contentManager = new ContentManager();
+        
+        // Verbesserte Initialisierung für bessere Online-Kompatibilität
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 SUP-Seite wird initialisiert...');
+            console.log('🌐 Online-Status:', navigator.onLine);
+            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
+            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
+            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
+            
+            // Warte kurz, bis alle Skripte geladen sind
+            setTimeout(() => {
+                // Initialisiere andere Komponenten
+                if (window.imageManager) {
+                    console.log('✅ Image Manager initialisiert');
+                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
+                }
+                
+                if (window.activityGallery) {
+                    console.log('✅ Activity Gallery initialisiert');
+                }
+                
+                if (window.contentManager) {
+                    console.log('✅ Content Manager initialisiert');
+                }
+                
+                console.log('✅ SUP-Seite Initialisierung abgeschlossen');
+                
+                // Debug: Prüfe Galerie-Container
+                const galleryContainer = document.getElementById('sup-gallery');
+                if (galleryContainer) {
+                    console.log('🎨 Galerie-Container gefunden:', galleryContainer);
+                } else {
+                    console.error('❌ Galerie-Container nicht gefunden');
+                }
+            }, 100);
+        });
+        
+        // Fehlerbehandlung für globale Fehler
+        window.addEventListener('error', function(e) {
+            console.error('❌ Globaler Fehler:', e.error);
+            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
+        });
+        
+        // Fehlerbehandlung für unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
+        });
+    </script>
 </body>
 </html> 
