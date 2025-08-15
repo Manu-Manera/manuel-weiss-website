@@ -7,6 +7,172 @@
     <link rel="stylesheet" href="admin-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Inline CSS für Dropdown-Menü (Online-Version) -->
+    <style>
+        /* Kritische Dropdown-Styles - Online-Version */
+        .nav-item-with-submenu {
+            position: relative !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .nav-item-with-submenu .nav-link {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+
+        .submenu-arrow {
+            margin-left: auto !important;
+            transition: transform 0.3s ease !important;
+            font-size: 0.8rem !important;
+            color: #94a3b8 !important;
+            width: 16px !important;
+            height: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .nav-item-with-submenu.open .submenu-arrow {
+            transform: rotate(180deg) !important;
+            color: #2563eb !important;
+        }
+
+        .nav-item-with-submenu:hover .submenu-arrow {
+            color: #2563eb !important;
+        }
+
+        .submenu {
+            max-height: 0 !important;
+            overflow: hidden !important;
+            transition: max-height 0.3s ease !important;
+            background: #f8fafc !important;
+            border-left: 2px solid #e2e8f0 !important;
+            margin-left: 1rem !important;
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+            border-radius: 0 8px 8px 0 !important;
+            box-shadow: inset 2px 0 4px rgba(0,0,0,0.05) !important;
+            padding: 0.5rem 0 !important;
+        }
+
+        .nav-item-with-submenu.open .submenu {
+            max-height: 300px !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .nav-item-with-submenu.open .nav-link {
+            background: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+        }
+
+        .submenu-link {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem !important;
+            border-radius: 4px !important;
+            margin: 0.25rem 0.5rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            color: #64748b !important;
+            font-weight: 400 !important;
+            display: block !important;
+            text-decoration: none !important;
+        }
+
+        .submenu-link:hover {
+            background: #e2e8f0 !important;
+            color: #2563eb !important;
+            transform: translateX(5px) !important;
+        }
+
+        .submenu-link.active {
+            background: #2563eb !important;
+            color: white !important;
+            transform: translateX(5px) !important;
+        }
+
+        .submenu-link.active::before {
+            content: '' !important;
+            position: absolute !important;
+            left: -0.5rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 3px !important;
+            height: 20px !important;
+            background: #2563eb !important;
+            border-radius: 2px !important;
+        }
+
+        /* Zusätzliche Sichtbarkeit */
+        .nav-item-with-submenu {
+            border: 1px solid transparent !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-item-with-submenu:hover {
+            border-color: #e2e8f0 !important;
+            background: rgba(37, 99, 235, 0.05) !important;
+        }
+        
+        .nav-item-with-submenu.open {
+            border-color: #2563eb !important;
+            background: rgba(37, 99, 235, 0.1) !important;
+        }
+        
+        /* Verbesserte Untermenüeinträge */
+        .submenu {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+            border-left: 3px solid #2563eb !important;
+            margin-top: 0.5rem !important;
+        }
+        
+        .submenu-link {
+            border: 1px solid transparent !important;
+            margin: 0.25rem 0.5rem !important;
+            background: white !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        }
+        
+        .submenu-link:hover {
+            border-color: #2563eb !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2) !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .submenu {
+                margin-left: 0.5rem !important;
+            }
+            
+            .submenu-link {
+                margin: 0.25rem 0.25rem !important;
+                padding: 0.5rem 0.75rem !important;
+            }
+        }
+        
+        /* Kritische Sichtbarkeit - Online-Version */
+        .submenu {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .nav-item-with-submenu.open .submenu {
+            display: block !important;
+            visibility: visible !important;
+            max-height: 300px !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        
+        /* Force display für alle Submenu-Elemente */
+        .submenu-link {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -740,5 +906,80 @@ Pannenhilfe</textarea>
     <!-- Scripts -->
     <script src="js/netlify-storage.js"></script>
     <script src="admin-script.js"></script>
+    
+    <!-- Inline JavaScript für Dropdown-Initialisierung (Online-Version) -->
+    <script>
+        // Robuste Dropdown-Initialisierung für Online-Version
+        function initializeDropdown() {
+            console.log('Initialisiere Dropdown-Menü...');
+            
+            // Finde alle Dropdown-Container
+            const submenuItems = document.querySelectorAll('.nav-item-with-submenu');
+            console.log('Gefundene Dropdown-Container:', submenuItems.length);
+            
+            submenuItems.forEach((item, index) => {
+                console.log(`Dropdown ${index + 1}:`, item);
+                
+                const link = item.querySelector('.nav-link');
+                const submenu = item.querySelector('.submenu');
+                const arrow = item.querySelector('.submenu-arrow');
+                
+                console.log(`- Link gefunden:`, !!link);
+                console.log(`- Submenu gefunden:`, !!submenu);
+                console.log(`- Arrow gefunden:`, !!arrow);
+                
+                if (link && submenu) {
+                    // Event-Listener für den Hauptlink
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Dropdown geklickt, toggle open/close');
+                        
+                        const isOpen = item.classList.contains('open');
+                        item.classList.toggle('open');
+                        
+                        console.log(`Dropdown ist jetzt ${item.classList.contains('open') ? 'offen' : 'geschlossen'}`);
+                    });
+                    
+                    // Stelle sicher, dass das Submenu sichtbar ist
+                    if (submenu.style.display === 'none') {
+                        submenu.style.display = 'block';
+                    }
+                }
+            });
+            
+            // Öffne das Dropdown automatisch
+            setTimeout(() => {
+                const activitiesSubmenu = document.querySelector('.nav-item-with-submenu');
+                if (activitiesSubmenu) {
+                    activitiesSubmenu.classList.add('open');
+                    console.log('Dropdown automatisch geöffnet');
+                }
+            }, 100);
+        }
+        
+        // Mehrfache Initialisierung für maximale Kompatibilität
+        document.addEventListener('DOMContentLoaded', initializeDropdown);
+        window.addEventListener('load', initializeDropdown);
+        
+        // Fallback: Initialisierung nach kurzer Verzögerung
+        setTimeout(initializeDropdown, 1000);
+        
+        // Debug: Zeige alle gefundenen Elemente
+        setTimeout(() => {
+            console.log('=== DROPDOWN DEBUG ===');
+            console.log('nav-item-with-submenu:', document.querySelectorAll('.nav-item-with-submenu').length);
+            console.log('submenu:', document.querySelectorAll('.submenu').length);
+            console.log('submenu-link:', document.querySelectorAll('.submenu-link').length);
+            console.log('submenu-arrow:', document.querySelectorAll('.submenu-arrow').length);
+            
+            const submenu = document.querySelector('.submenu');
+            if (submenu) {
+                console.log('Submenu Styles:', window.getComputedStyle(submenu));
+                console.log('Submenu max-height:', window.getComputedStyle(submenu).maxHeight);
+                console.log('Submenu opacity:', window.getComputedStyle(submenu).opacity);
+            }
+        }, 2000);
+    </script>
 </body>
 </html>

@@ -78,6 +78,59 @@ class NetlifyStorage {
         }
     }
 
+    // Save activity images to Netlify
+    async saveActivityImages(activityName, images) {
+        try {
+            const formData = new FormData();
+            formData.append('form-name', 'activity-images');
+            formData.append('activity-name', activityName);
+            formData.append('images-data', JSON.stringify(images));
+            formData.append('timestamp', new Date().toISOString());
+
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+                console.log(`✅ ${activityName} Bilder erfolgreich bei Netlify gespeichert`);
+                return { success: true, message: `${activityName} Bilder gespeichert!` };
+            } else {
+                throw new Error('Netlify Form submission failed');
+            }
+        } catch (error) {
+            console.error(`❌ Fehler beim Speichern der ${activityName} Bilder bei Netlify:`, error);
+            return { success: false, message: 'Offline gespeichert (Fallback)' };
+        }
+    }
+
+    // Save global image database to Netlify
+    async saveGlobalImageDatabase(images) {
+        try {
+            const formData = new FormData();
+            formData.append('form-name', 'global-images');
+            formData.append('images-data', JSON.stringify(images));
+            formData.append('timestamp', new Date().toISOString());
+
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+                console.log('✅ Globale Bilddatenbank erfolgreich bei Netlify gespeichert');
+                return { success: true, message: 'Bilddatenbank gespeichert!' };
+            } else {
+                throw new Error('Netlify Form submission failed');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern der Bilddatenbank bei Netlify:', error);
+            return { success: false, message: 'Offline gespeichert (Fallback)' };
+        }
+    }
+
     // Load profile image (try Netlify, fallback to localStorage)
     async loadProfileImage() {
         try {
