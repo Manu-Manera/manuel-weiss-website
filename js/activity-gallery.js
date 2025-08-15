@@ -174,7 +174,41 @@ class ActivityGallery {
             return;
         }
 
-        const galleryHTML = images.map(image => {
+        // Erstelle Hauptbild-Sektion (erstes Bild)
+        const mainImage = images[0];
+        const mainImageSrc = mainImage.src || mainImage.imageData || '';
+        const mainImagePath = mainImageSrc && !mainImageSrc.startsWith('data:') && !mainImageSrc.startsWith('http') 
+            ? (mainImageSrc.startsWith('./') ? mainImageSrc : `./${mainImageSrc}`) 
+            : mainImageSrc;
+
+        const mainImageHTML = `
+            <div class="main-image-section">
+                <div class="section-header">
+                    <h3>Hauptbild</h3>
+                    <p>${mainImage.title || 'Hauptbild der Aktivität'}</p>
+                </div>
+                <div class="main-image-container">
+                    <img src="${mainImagePath}" 
+                         alt="${mainImage.alt || mainImage.title || 'Hauptbild'}" 
+                         title="${mainImage.title || 'Hauptbild'}"
+                         onclick="activityGallery.openLightbox('${mainImage.id || Math.random()}', '${mainImagePath}', '${mainImage.title || ''}', '${mainImage.description || ''}')"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
+                    <div class="main-image-overlay">
+                        <div class="main-image-info">
+                            <h4>${mainImage.title || 'Hauptbild'}</h4>
+                            ${mainImage.description ? `<p>${mainImage.description}</p>` : ''}
+                            <button class="main-image-view-btn">
+                                <i class="fas fa-expand"></i> Vergrößern
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Erstelle Galerie-Grid mit den restlichen Bildern (maximal 4 nebeneinander)
+        const remainingImages = images.slice(1);
+        const galleryHTML = remainingImages.map(image => {
             // Bestimme die Bildquelle - verwende das neue src-Feld
             let imageSrc = image.src || image.imageData || '';
             
@@ -191,8 +225,8 @@ class ActivityGallery {
                         <img src="${imageSrc}" 
                              alt="${image.alt || image.title || 'Bild'}" 
                              title="${image.title || 'Bild'}"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'"
-                             onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')" />
+                             onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
                         <div class="gallery-overlay">
                             <div class="gallery-info">
                                 <h4>${image.title || 'Bild'}</h4>
@@ -205,19 +239,32 @@ class ActivityGallery {
                                 </div>
                             </div>
                         </div>
+                        <button class="gallery-view-btn" onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')">
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
                 </div>
             `;
         }).join('');
 
+        // Kombiniere Hauptbild und Galerie
         this.galleryContainer.innerHTML = `
-            <div class="gallery-grid">
-                ${galleryHTML}
-            </div>
+            ${mainImageHTML}
+            ${remainingImages.length > 0 ? `
+                <div class="gallery-section-secondary">
+                    <div class="section-header">
+                        <h3>Weitere Bilder</h3>
+                        <p>${remainingImages.length} weitere Bilder verfügbar</p>
+                    </div>
+                    <div class="gallery-grid">
+                        ${galleryHTML}
+                    </div>
+                </div>
+            ` : ''}
         `;
 
         this.createLightbox();
-        console.log(`🎨 Galerie gerendert mit ${images.length} Bildern`);
+        console.log(`🎨 Galerie gerendert mit ${images.length} Bildern (1 Hauptbild + ${remainingImages.length} weitere)`);
     }
 
     showEmptyState() {
@@ -242,47 +289,74 @@ class ActivityGallery {
         // Create lightbox
         const lightbox = document.createElement('div');
         lightbox.id = 'image-lightbox';
-        lightbox.className = 'lightbox';
+        lightbox.className = 'image-lightbox';
         lightbox.innerHTML = `
             <div class="lightbox-overlay" onclick="activityGallery.closeLightbox()"></div>
             <div class="lightbox-content">
                 <button class="lightbox-close" onclick="activityGallery.closeLightbox()">
                     <i class="fas fa-times"></i>
                 </button>
-                <img id="lightbox-image" src="" alt="" />
+                <div class="lightbox-image-container">
+                    <img class="lightbox-image" src="" alt="">
+                </div>
                 <div class="lightbox-info">
-                    <h3 id="lightbox-title"></h3>
-                    <p id="lightbox-description"></p>
+                    <h3 class="lightbox-title"></h3>
+                    <p class="lightbox-description"></p>
                 </div>
             </div>
         `;
-
+        
         document.body.appendChild(lightbox);
+        
+        // Event-Listener für Tastatur
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeLightbox();
+            }
+        });
+        
+        console.log('✅ Lightbox erstellt');
     }
 
     openLightbox(imageId, imageSrc, title, description) {
-        const lightbox = document.getElementById('image-lightbox');
-        const lightboxImage = document.getElementById('lightbox-image');
-        const lightboxTitle = document.getElementById('lightbox-title');
-        const lightboxDescription = document.getElementById('lightbox-description');
-
-        if (lightbox && lightboxImage) {
-            lightboxImage.src = imageSrc;
-            lightboxImage.alt = title;
-            lightboxTitle.textContent = title;
-            lightboxDescription.textContent = description;
-            
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        console.log('🔍 Öffne Lightbox für:', title);
+        
+        // Erstelle Lightbox falls nicht vorhanden
+        if (!document.getElementById('image-lightbox')) {
+            this.createLightbox();
         }
+        
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxImage = lightbox.querySelector('.lightbox-image');
+        const lightboxTitle = lightbox.querySelector('.lightbox-title');
+        const lightboxDescription = lightbox.querySelector('.lightbox-description');
+        
+        // Setze Bild und Informationen
+        if (lightboxImage) lightboxImage.src = imageSrc;
+        if (lightboxTitle) lightboxTitle.textContent = title || 'Bild';
+        if (lightboxDescription) lightboxDescription.textContent = description || '';
+        
+        // Zeige Lightbox
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Speichere aktuelle Bild-Informationen
+        this.currentLightboxImage = { imageId, imageSrc, title, description };
+        
+        console.log('✅ Lightbox geöffnet');
     }
 
     closeLightbox() {
+        console.log('🔒 Schließe Lightbox');
+        
         const lightbox = document.getElementById('image-lightbox');
         if (lightbox) {
             lightbox.classList.remove('active');
             document.body.style.overflow = '';
         }
+        
+        this.currentLightboxImage = null;
+        console.log('✅ Lightbox geschlossen');
     }
 
     updateGalleries(activityImages) {
