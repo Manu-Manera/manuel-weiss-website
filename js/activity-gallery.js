@@ -80,30 +80,42 @@ class ActivityGallery {
         if (!this.currentActivity || !this.galleryContainer) return;
 
         try {
+            console.log(`🔄 Lade Bilder für Aktivität: ${this.currentActivity}`);
+            
             // Verwende den Image Manager für bessere Bildverwaltung
             if (window.imageManager) {
+                console.log('📸 Verwende Image Manager...');
                 const allImages = await window.imageManager.loadActivityImages(this.currentActivity);
+                console.log('📸 Image Manager Bilder:', allImages);
                 
                 if (allImages.length > 0) {
                     this.renderGallery(allImages);
                 } else {
+                    console.log('⚠️ Keine Bilder vom Image Manager gefunden');
                     this.showEmptyState();
                 }
             } else {
+                console.log('📸 Verwende Fallback-Methode...');
                 // Fallback zur ursprünglichen Methode
                 const storageKey = `${this.currentActivity}_images`;
                 const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
                 const defaultImages = await this.getDefaultImages();
+                
+                console.log('📸 Hochgeladene Bilder:', uploadedImages);
+                console.log('📸 Standard-Bilder:', defaultImages);
+                
                 const allImages = [...defaultImages, ...uploadedImages];
+                console.log('📸 Alle kombinierten Bilder:', allImages);
                 
                 if (allImages.length > 0) {
                     this.renderGallery(allImages);
                 } else {
+                    console.log('⚠️ Keine Bilder gefunden');
                     this.showEmptyState();
                 }
             }
         } catch (error) {
-            console.error('Fehler beim Laden der Aktivitätsbilder:', error);
+            console.error('❌ Fehler beim Laden der Aktivitätsbilder:', error);
             this.showEmptyState();
         }
     }
@@ -174,12 +186,47 @@ class ActivityGallery {
             return;
         }
 
+        // Normalisiere alle Bilder auf ein einheitliches Format
+        const normalizedImages = images.map((image, index) => {
+            // Bestimme die Bildquelle - unterstütze verschiedene Formate
+            let imageSrc = '';
+            
+            if (image.src) {
+                // Standard-Bilder mit src-Feld
+                imageSrc = image.src;
+            } else if (image.imageData) {
+                // Hochgeladene Bilder (Base64 oder URL)
+                imageSrc = image.imageData;
+            } else if (image.filename) {
+                // Bilder mit Dateinamen
+                imageSrc = `./images/${this.currentActivity}/${image.filename}`;
+            }
+            
+            // Füge Fallback für relative Pfade hinzu
+            if (imageSrc && !imageSrc.startsWith('data:') && !imageSrc.startsWith('http')) {
+                if (!imageSrc.startsWith('./')) {
+                    imageSrc = `./${imageSrc}`;
+                }
+            }
+            
+            // Erstelle einheitliches Bild-Objekt
+            return {
+                id: image.id || `image-${index}`,
+                src: imageSrc,
+                alt: image.alt || image.title || 'Bild',
+                title: image.title || `Bild ${index + 1}`,
+                description: image.description || '',
+                isDefault: image.isDefault || false,
+                uploadDate: image.uploadDate || null,
+                originalImage: image // Behalte Original für Debugging
+            };
+        });
+
+        console.log('🔄 Normalisierte Bilder:', normalizedImages);
+
         // Erstelle Hauptbild-Sektion (erstes Bild)
-        const mainImage = images[0];
-        const mainImageSrc = mainImage.src || mainImage.imageData || '';
-        const mainImagePath = mainImageSrc && !mainImageSrc.startsWith('data:') && !mainImageSrc.startsWith('http') 
-            ? (mainImageSrc.startsWith('./') ? mainImageSrc : `./${mainImageSrc}`) 
-            : mainImageSrc;
+        const mainImage = normalizedImages[0];
+        const mainImageSrc = mainImage.src;
 
         const mainImageHTML = `
             <div class="main-image-section">
@@ -188,16 +235,16 @@ class ActivityGallery {
                     <p>${mainImage.title || 'Hauptbild der Aktivität'}</p>
                 </div>
                 <div class="main-image-container">
-                    <img src="${mainImagePath}" 
-                         alt="${mainImage.alt || mainImage.title || 'Hauptbild'}" 
-                         title="${mainImage.title || 'Hauptbild'}"
-                         onclick="activityGallery.openLightbox('${mainImage.id || Math.random()}', '${mainImagePath}', '${mainImage.title || ''}', '${mainImage.description || ''}')"
+                    <img src="${mainImageSrc}" 
+                         alt="${mainImage.alt}" 
+                         title="${mainImage.title}"
+                         onclick="activityGallery.openLightbox('${mainImage.id}', '${mainImageSrc}', '${mainImage.title}', '${mainImage.description}')"
                          onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
                     <div class="main-image-overlay">
                         <div class="main-image-info">
-                            <h4>${mainImage.title || 'Hauptbild'}</h4>
+                            <h4>${mainImage.title}</h4>
                             ${mainImage.description ? `<p>${mainImage.description}</p>` : ''}
-                            <button class="main-image-view-btn">
+                            <button class="main-image-view-btn" onclick="activityGallery.openLightbox('${mainImage.id}', '${mainImageSrc}', '${mainImage.title}', '${mainImage.description}')">
                                 <i class="fas fa-expand"></i> Vergrößern
                             </button>
                         </div>
@@ -207,29 +254,19 @@ class ActivityGallery {
         `;
 
         // Erstelle Galerie-Grid mit den restlichen Bildern (maximal 4 nebeneinander)
-        const remainingImages = images.slice(1);
+        const remainingImages = normalizedImages.slice(1);
         const galleryHTML = remainingImages.map(image => {
-            // Bestimme die Bildquelle - verwende das neue src-Feld
-            let imageSrc = image.src || image.imageData || '';
-            
-            // Füge Fallback für relative Pfade hinzu
-            if (imageSrc && !imageSrc.startsWith('data:') && !imageSrc.startsWith('http')) {
-                if (!imageSrc.startsWith('./')) {
-                    imageSrc = `./${imageSrc}`;
-                }
-            }
-
             return `
-                <div class="gallery-item" data-image-id="${image.id || Math.random()}" data-image-type="${image.isDefault ? 'default' : 'uploaded'}">
+                <div class="gallery-item" data-image-id="${image.id}" data-image-type="${image.isDefault ? 'default' : 'uploaded'}">
                     <div class="gallery-image">
-                        <img src="${imageSrc}" 
-                             alt="${image.alt || image.title || 'Bild'}" 
-                             title="${image.title || 'Bild'}"
-                             onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')"
+                        <img src="${image.src}" 
+                             alt="${image.alt}" 
+                             title="${image.title}"
+                             onclick="activityGallery.openLightbox('${image.id}', '${image.src}', '${image.title}', '${image.description}')"
                              onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJpbGQgbmljaHQgZ2VmdW5kZW48L3RleHQ+PC9zdmc+'">
                         <div class="gallery-overlay">
                             <div class="gallery-info">
-                                <h4>${image.title || 'Bild'}</h4>
+                                <h4>${image.title}</h4>
                                 ${image.description ? `<p>${image.description}</p>` : ''}
                                 <div class="image-meta">
                                     <span class="image-type ${image.isDefault ? 'default' : 'uploaded'}">
@@ -239,7 +276,7 @@ class ActivityGallery {
                                 </div>
                             </div>
                         </div>
-                        <button class="gallery-view-btn" onclick="activityGallery.openLightbox('${image.id || Math.random()}', '${imageSrc}', '${image.title || ''}', '${image.description || ''}')">
+                        <button class="gallery-view-btn" onclick="activityGallery.openLightbox('${image.id}', '${image.src}', '${image.title}', '${image.description}')">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -265,6 +302,7 @@ class ActivityGallery {
 
         this.createLightbox();
         console.log(`🎨 Galerie gerendert mit ${images.length} Bildern (1 Hauptbild + ${remainingImages.length} weitere)`);
+        console.log('📊 Normalisierte Bildstruktur:', normalizedImages);
     }
 
     showEmptyState() {
