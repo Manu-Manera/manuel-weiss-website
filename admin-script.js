@@ -41,7 +41,37 @@ class AdminPanel {
             if (!fileInput || !imagesContainer) {
                 this.createEmergencyUpload(activity);
             }
+            
+            // Teste den Upload-Prozess
+            if (fileInput && imagesContainer) {
+                this.testUploadProcess(activity, fileInput, imagesContainer);
+            }
         });
+    }
+
+    // Teste den Upload-Prozess
+    testUploadProcess(activityName, fileInput, imagesContainer) {
+        console.log(`🧪 Teste Upload-Prozess für ${activityName}`);
+        
+        // Erstelle ein Test-Bild
+        const testCanvas = document.createElement('canvas');
+        testCanvas.width = 100;
+        testCanvas.height = 100;
+        const ctx = testCanvas.getContext('2d');
+        ctx.fillStyle = '#2563eb';
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('TEST', 20, 60);
+        
+        // Konvertiere zu Blob
+        testCanvas.toBlob((blob) => {
+            const testFile = new File([blob], 'test-image.png', { type: 'image/png' });
+            console.log(`📸 Test-Bild erstellt:`, testFile);
+            
+            // Teste den Upload
+            this.addImageToGallerySimple(activityName, testFile);
+        }, 'image/png');
     }
 
     // Erstelle Notfall-Upload für fehlende Elemente
@@ -135,52 +165,30 @@ class AdminPanel {
                 const file = e.target.files[0];
                 if (!file) return;
                 
-                // Validate file
-                // Verwende den Image Manager für Validierung
-                if (window.imageManager) {
-                    const validation = window.imageManager.validateImage(file);
-                    if (!validation.valid) {
-                        this.showNotification(validation.error, 'error');
-                        return;
-                    }
-                } else {
-                    // Fallback-Validierung
-                    if (!file.type.startsWith('image/')) {
-                        this.showNotification('Bitte wählen Sie eine Bilddatei aus', 'error');
-                        return;
-                    }
-                    
-                    if (file.size > 5 * 1024 * 1024) { // 5MB
-                        this.showNotification('Bild ist zu groß (max. 5MB)', 'error');
-                        return;
-                    }
+                console.log('📸 Profilbild-Upload gestartet:', file.name);
+                
+                // Einfache Validierung
+                if (!file.type.startsWith('image/')) {
+                    this.showNotification('Bitte wählen Sie eine Bilddatei aus', 'error');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    this.showNotification('Bild ist zu groß (max. 5MB)', 'error');
+                    return;
                 }
                 
                 // Read file
                 const reader = new FileReader();
-                reader.onload = async (event) => {
-                    let imageData = event.target.result;
-                    
-                    // Komprimiere das Bild, falls der Image Manager verfügbar ist
-                    if (window.imageManager) {
-                        try {
-                            const compressedBlob = await window.imageManager.compressImage(file, 1920, 0.8);
-                            if (compressedBlob) {
-                                const compressedReader = new FileReader();
-                                compressedReader.onload = (e) => {
-                                    imageData = e.target.result;
-                                    this.processUploadedImage(imageData);
-                                };
-                                compressedReader.readAsDataURL(compressedBlob);
-                                return;
-                            }
-                        } catch (error) {
-                            console.log('Bildkomprimierung fehlgeschlagen, verwende Original:', error);
-                        }
-                    }
-                    
-                    // Verwende Original, falls Komprimierung fehlschlägt
+                reader.onload = (event) => {
+                    const imageData = event.target.result;
+                    console.log('✅ Profilbild geladen, verarbeite...');
                     this.processUploadedImage(imageData);
+                };
+                
+                reader.onerror = (error) => {
+                    console.error('❌ Fehler beim Lesen der Profilbild-Datei:', error);
+                    this.showNotification('Fehler beim Lesen der Bilddatei', 'error');
                 };
                 
                 reader.readAsDataURL(file);
@@ -189,32 +197,57 @@ class AdminPanel {
     }
 
     processUploadedImage(imageData) {
+        console.log('🎨 Verarbeite hochgeladenes Profilbild...');
+        
         // Update preview immediately
         const preview = document.getElementById('profile-preview');
         if (preview) {
             preview.src = imageData;
+            console.log('✅ Profilbild-Vorschau aktualisiert');
         }
         
-        // Save with Netlify Storage
+        // Speichere in localStorage (schnell und zuverlässig)
+        localStorage.setItem('profileImage', imageData);
+        localStorage.setItem('mwps-profile-image', imageData);
+        localStorage.setItem('current-profile-image', imageData);
+        
+        // Speichere auch in websiteData
+        try {
+            const existingData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+            existingData.profileImage = imageData;
+            localStorage.setItem('websiteData', JSON.stringify(existingData));
+            console.log('✅ Profilbild in websiteData gespeichert');
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern in websiteData:', error);
+        }
+        
+        // Save with Netlify Storage (falls verfügbar)
         if (window.netlifyStorage) {
             window.netlifyStorage.saveProfileImage(imageData).then(result => {
+                console.log('✅ Profilbild bei Netlify gespeichert:', result.message);
                 this.showNotification(result.message, result.success ? 'success' : 'warning');
+            }).catch(error => {
+                console.log('⚠️ Netlify-Speicherung fehlgeschlagen, verwende localStorage');
+                this.showNotification('Profilbild lokal gespeichert', 'success');
             });
         } else {
-            // Fallback to localStorage
-            localStorage.setItem('profileImage', imageData);
-            this.showNotification('Profilbild gespeichert (offline)', 'warning');
+            this.showNotification('Profilbild erfolgreich gespeichert', 'success');
         }
         
         // Update main website
         try {
-            window.postMessage({
-                type: 'updateProfileImage',
-                imageData: imageData
-            }, '*');
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'updateProfileImage',
+                    imageData: imageData
+                }, '*');
+                console.log('✅ Update an Hauptseite gesendet');
+            }
         } catch (error) {
             console.log('Cross-window communication nicht verfügbar');
         }
+        
+        console.log('🎉 Profilbild erfolgreich verarbeitet und gespeichert');
     }
 
     // Navigation Setup
