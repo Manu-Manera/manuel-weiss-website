@@ -1,0 +1,16 @@
+{
+  "name": "netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions für Aktivitätsbilder",
+  "main": "activity-images.js",
+  "dependencies": {
+    "mongodb": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["netlify", "functions", "images"],
+  "author": "Manuel Weiss",
+  "license": "MIT"
+}

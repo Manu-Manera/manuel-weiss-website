@@ -2020,6 +2020,22 @@ html {
     transform: scale(1.05);
 }
 
+/* Online-Badge für online gespeicherte Bilder */
+.online-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(34, 197, 94, 0.9);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Verbesserte Aktivitätsbilder-Overlays */
 .activity-image-overlay {
     position: absolute;
     bottom: 0;
@@ -2045,7 +2061,7 @@ html {
 .activity-image-overlay p {
     font-size: 0.9rem;
     opacity: 0.9;
-    margin: 0;
+    margin-bottom: 0.5rem;
 }
 
 /* Responsive Design für Aktivitätsbilder */

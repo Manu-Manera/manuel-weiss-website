@@ -82,41 +82,36 @@ class ActivityGallery {
         try {
             console.log(`🔄 Lade Bilder für Aktivität: ${this.currentActivity}`);
             
-            // Verwende zuerst localStorage für hochgeladene Bilder (sicherste Methode)
-            const storageKey = `${this.currentActivity}_images`;
-            const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            console.log('📸 Hochgeladene Bilder aus localStorage:', uploadedImages);
-            
-            // Lade Standard-Bilder
-            const defaultImages = await this.getDefaultImages();
-            console.log('📸 Standard-Bilder:', defaultImages);
-            
-            // Kombiniere Bilder: Hochgeladene zuerst, dann Standard
-            const allImages = [...uploadedImages, ...defaultImages];
-            console.log('📸 Alle kombinierten Bilder:', allImages);
-            
-            if (allImages.length > 0) {
-                this.renderGallery(allImages);
+            // VERWENDE NEUE ONLINE-SPEICHERUNG MIT PRIORITÄT
+            if (window.netlifyStorage) {
+                console.log('🌐 Verwende Netlify Storage mit Online-Priorität...');
+                const allImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
+                console.log('📸 Alle verfügbaren Bilder geladen:', allImages);
+                
+                if (allImages.length > 0) {
+                    this.renderGallery(allImages);
+                } else {
+                    console.log('⚠️ Keine Bilder gefunden');
+                    this.showEmptyState();
+                }
             } else {
-                console.log('⚠️ Keine Bilder gefunden');
-                this.showEmptyState();
-            }
-            
-            // Optional: Versuche auch Image Manager zu verwenden (für zusätzliche Features)
-            if (window.imageManager) {
-                console.log('📸 Image Manager verfügbar, lade zusätzliche Features...');
-                try {
-                    const imageManagerImages = await window.imageManager.loadActivityImages(this.currentActivity);
-                    console.log('📸 Image Manager zusätzliche Bilder:', imageManagerImages);
-                    
-                    // Aktualisiere Galerie nur wenn neue Bilder gefunden wurden
-                    if (imageManagerImages.length > allImages.length) {
-                        console.log('🔄 Neue Bilder vom Image Manager gefunden, aktualisiere Galerie...');
-                        const combinedImages = [...uploadedImages, ...imageManagerImages];
-                        this.renderGallery(combinedImages);
-                    }
-                } catch (imageManagerError) {
-                    console.log('⚠️ Image Manager Fehler (nicht kritisch):', imageManagerError);
+                console.log('📸 Verwende Fallback-Methode (localStorage)...');
+                // Fallback zur ursprünglichen Methode
+                const storageKey = `${this.currentActivity}_images`;
+                const uploadedImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                const defaultImages = await this.getDefaultImages();
+                
+                console.log('📸 Hochgeladene Bilder:', uploadedImages);
+                console.log('📸 Standard-Bilder:', defaultImages);
+                
+                const allImages = [...uploadedImages, ...defaultImages];
+                console.log('📸 Alle kombinierten Bilder:', allImages);
+                
+                if (allImages.length > 0) {
+                    this.renderGallery(allImages);
+                } else {
+                    console.log('⚠️ Keine Bilder gefunden');
+                    this.showEmptyState();
                 }
             }
         } catch (error) {

@@ -516,43 +516,67 @@
             
             const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
             
-            activities.forEach(activity => {
+            activities.forEach(async (activity) => {
                 const cardElement = document.getElementById(`${activity}-home-image`);
                 if (!cardElement) return;
                 
-                // Lade Bilder aus localStorage
-                const storageKey = `${activity}_images`;
-                const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                
-                if (images.length > 0) {
-                    // Verwende das erste Bild als Hauptbild
-                    const firstImage = images[0];
-                    const imageData = firstImage.imageData || firstImage.src;
+                try {
+                    let images = [];
                     
-                    if (imageData) {
-                        cardElement.innerHTML = `
-                            <h3>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
-                            <div class="activity-image-loaded">
-                                <img src="${imageData}" alt="${firstImage.title || activity}" 
-                                     onclick="window.open('${activity}.html', '_blank')">
-                                <div class="activity-image-overlay">
-                                    <h4>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h4>
-                                    <p>${firstImage.description || 'Klicken Sie für mehr Details'}</p>
+                    // VERSUCHE ONLINE-SPEICHERUNG ZUERST
+                    if (window.netlifyStorage) {
+                        console.log(`🌐 Lade ${activity} Bilder aus Online-Speicher...`);
+                        images = await window.netlifyStorage.loadAllActivityImages(activity);
+                    } else {
+                        // Fallback: localStorage
+                        console.log(`📱 Lade ${activity} Bilder aus localStorage...`);
+                        const storageKey = `${activity}_images`;
+                        images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    }
+                    
+                    if (images.length > 0) {
+                        // Verwende das erste Bild als Hauptbild
+                        const firstImage = images[0];
+                        const imageData = firstImage.imageData || firstImage.src;
+                        
+                        if (imageData) {
+                            cardElement.innerHTML = `
+                                <h3>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
+                                <div class="activity-image-loaded">
+                                    <img src="${imageData}" alt="${firstImage.title || activity}" 
+                                         onclick="window.open('${activity}.html', '_blank')">
+                                    <div class="activity-image-overlay">
+                                        <h4>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h4>
+                                        <p>${firstImage.description || 'Klicken Sie für mehr Details'}</p>
+                                        ${firstImage.isOnline ? '<span class="online-badge">🌐 Online</span>' : ''}
+                                    </p>
                                 </div>
                             </div>
                         `;
-                        console.log(`✅ ${activity} Bild geladen:`, firstImage.title || 'Unbekannt');
+                            console.log(`✅ ${activity} Bild geladen:`, firstImage.title || 'Unbekannt');
+                        }
+                    } else {
+                        // Zeige Placeholder
+                        cardElement.innerHTML = `
+                            <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
+                            <div class="activity-image-placeholder">
+                                <i class="fas fa-${getActivityIcon(activity)}"></i>
+                                <p>Noch keine Bilder verfügbar</p>
+                            </div>
+                        `;
+                        console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
                     }
-                } else {
-                    // Zeige Placeholder
+                } catch (error) {
+                    console.error(`❌ Fehler beim Laden der ${activity} Bilder:`, error);
+                    
+                    // Zeige Fehler-Placeholder
                     cardElement.innerHTML = `
                         <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
                         <div class="activity-image-placeholder">
-                            <i class="fas fa-${getActivityIcon(activity)}"></i>
-                            <p>Noch keine Bilder verfügbar</p>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Fehler beim Laden der Bilder</p>
                         </div>
                     `;
-                    console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
                 }
             });
         }
