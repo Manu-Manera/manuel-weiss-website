@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuel Weiss - Professional Services | DROPDOWN ADMIN FERTIG!</title>
     <meta name="description" content="Manuel Weiss bietet professionelle Beratung in Digitalisierung, Prozessmanagement und HR-Tech sowie Vermietung von Wohnmobil, Fotobox, Stand-Up-Paddles und E-Bikes.">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -404,13 +404,13 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-manager.js"></script>
-    <script src="js/content-manager.js"></script>
-    <script src="js/activity-gallery.js"></script>
-    <script src="js/image-gallery.js"></script>
-    <script src="js/netlify-storage.js"></script>
-    <script src="js/data-persistence.js"></script>
-    <script src="script.js"></script>
+    <script src="js/image-manager.js?v=2.0"></script>
+    <script src="js/content-manager.js?v=2.0"></script>
+    <script src="js/activity-gallery.js?v=2.0"></script>
+    <script src="js/image-gallery.js?v=2.0"></script>
+    <script src="js/netlify-storage.js?v=2.0"></script>
+    <script src="js/data-persistence.js?v=2.0"></script>
+    <script src="script.js?v=2.0"></script>
     
     <script>
         // Initialisiere Image Manager global
@@ -425,17 +425,25 @@
         // Verbesserte Initialisierung für bessere Online-Kompatibilität
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Website wird initialisiert...');
+            console.log('🌐 Online-Status:', navigator.onLine);
+            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
+            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
+            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
             
             // Warte kurz, bis alle Skripte geladen sind
             setTimeout(() => {
                 // Initialisiere Profilbild
                 if (typeof loadSavedProfileImage === 'function') {
+                    console.log('🔄 Starte Profilbild-Initialisierung...');
                     loadSavedProfileImage();
+                } else {
+                    console.error('❌ loadSavedProfileImage Funktion nicht verfügbar');
                 }
                 
                 // Initialisiere andere Komponenten
                 if (window.imageManager) {
                     console.log('✅ Image Manager initialisiert');
+                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
                 }
                 
                 if (window.activityGallery) {
@@ -447,18 +455,31 @@
                 }
                 
                 console.log('✅ Website-Initialisierung abgeschlossen');
+                
+                // Debug: Prüfe Profilbild-Element
+                const profileImage = document.getElementById('profile-photo');
+                if (profileImage) {
+                    console.log('📸 Profilbild-Element gefunden:', profileImage.src);
+                    console.log('📸 Profilbild data-loaded:', profileImage.getAttribute('data-loaded'));
+                } else {
+                    console.error('❌ Profilbild-Element nicht gefunden');
+                }
             }, 100);
         });
         
         // Fehlerbehandlung für globale Fehler
         window.addEventListener('error', function(e) {
             console.error('❌ Globaler Fehler:', e.error);
+            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
         });
         
         // Fehlerbehandlung für unhandled promise rejections
         window.addEventListener('unhandledrejection', function(e) {
             console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
         });
+        
+        // Debug: Log alle verfügbaren globalen Funktionen
+        console.log('🔍 Verfügbare globale Funktionen:', Object.keys(window).filter(key => typeof window[key] === 'function'));
     </script>
 </body>
 </html> 
