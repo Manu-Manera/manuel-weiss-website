@@ -1,165 +1,127 @@
 class NetlifyStorage {
     constructor() {
         this.baseUrl = window.location.origin;
-        this.onlineImages = new Map(); // Cache für online gespeicherte Bilder
         this.init();
     }
 
     init() {
-        // Lade online gespeicherte Bilder beim Start
-        this.loadOnlineImages();
-        
-        // Überwache Online/Offline-Status
-        window.addEventListener('online', () => {
-            console.log('🌐 Online - Lade online gespeicherte Bilder neu');
-            this.loadOnlineImages();
-        });
+        console.log('🚀 Netlify Storage initialisiert');
+        // Lade gespeicherte Bilder beim Start
+        this.loadAllStoredImages();
     }
 
-    // Lade alle online gespeicherten Bilder
-    async loadOnlineImages() {
-        if (!navigator.onLine) {
-            console.log('📴 Offline - Verwende gecachte online Bilder');
-            return;
-        }
-
+    // Lade alle gespeicherten Bilder aus Netlify-Forms
+    async loadAllStoredImages() {
         try {
-            console.log('🔄 Lade online gespeicherte Bilder...');
+            console.log('🔄 Lade alle gespeicherten Bilder...');
             
-            // Lade alle Aktivitätsbilder
             const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
             
             for (const activity of activities) {
-                await this.loadActivityImagesFromOnline(activity);
+                await this.loadActivityImagesFromNetlify(activity);
             }
             
-            console.log('✅ Online gespeicherte Bilder geladen');
+            console.log('✅ Alle gespeicherten Bilder geladen');
         } catch (error) {
-            console.error('❌ Fehler beim Laden der online Bilder:', error);
+            console.error('❌ Fehler beim Laden der Bilder:', error);
         }
     }
 
-    // Lade Aktivitätsbilder aus dem Online-Speicher
-    async loadActivityImagesFromOnline(activityName) {
+    // Lade Aktivitätsbilder aus Netlify-Forms
+    async loadActivityImagesFromNetlify(activityName) {
         try {
-            // Versuche, Bilder aus dem Online-Speicher zu laden
-            const onlineImages = await this.getOnlineActivityImages(activityName);
+            console.log(`🔄 Lade ${activityName} Bilder aus Netlify...`);
             
-            if (onlineImages && onlineImages.length > 0) {
-                this.onlineImages.set(activityName, onlineImages);
-                console.log(`✅ ${onlineImages.length} online Bilder für ${activityName} geladen`);
+            // Verwende Netlify-Form-Daten (falls verfügbar)
+            const netlifyData = this.getNetlifyFormData(activityName);
+            
+            if (netlifyData && netlifyData.length > 0) {
+                console.log(`✅ ${netlifyData.length} Netlify-Bilder für ${activityName} gefunden`);
+                return netlifyData;
             } else {
-                console.log(`ℹ️ Keine online Bilder für ${activityName} gefunden`);
+                console.log(`ℹ️ Keine Netlify-Bilder für ${activityName} gefunden`);
+                return [];
             }
         } catch (error) {
-            console.log(`⚠️ Konnte online Bilder für ${activityName} nicht laden:`, error);
-        }
-    }
-
-    // Hole Aktivitätsbilder aus dem Online-Speicher
-    async getOnlineActivityImages(activityName) {
-        try {
-            // Verwende Netlify Functions oder externe API
-            const response = await fetch(`/api/activity-images?activity=${activityName}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data.images || [];
-            } else {
-                // Fallback: Versuche localStorage als Online-Speicher zu verwenden
-                return this.getLocalStorageAsOnline(activityName);
-            }
-        } catch (error) {
-            console.log(`⚠️ Online-API nicht verfügbar für ${activityName}, verwende Fallback`);
-            return this.getLocalStorageAsOnline(activityName);
-        }
-    }
-
-    // Fallback: Verwende localStorage als Online-Speicher
-    getLocalStorageAsOnline(activityName) {
-        try {
-            const storageKey = `${activityName}_images`;
-            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            
-            // Markiere als online gespeichert
-            return images.map(img => ({
-                ...img,
-                isOnline: true,
-                lastSynced: new Date().toISOString()
-            }));
-        } catch (error) {
-            console.error('❌ Fehler beim Laden aus localStorage:', error);
+            console.error(`❌ Fehler beim Laden der ${activityName} Bilder:`, error);
             return [];
         }
     }
 
-    // Speichere Aktivitätsbilder online
-    async saveActivityImagesOnline(activityName, images) {
+    // Hole Netlify-Form-Daten (Simulation - in der Praxis würden diese von Netlify kommen)
+    getNetlifyFormData(activityName) {
+        // Da Netlify-Forms die Daten nicht direkt zurückgeben können,
+        // verwenden wir eine Kombination aus localStorage und Netlify-Form-Submission
         try {
-            if (!navigator.onLine) {
-                console.log('📴 Offline - Speichere Bilder lokal für späteren Upload');
-                this.saveForLaterUpload(activityName, images);
-                return { success: false, message: 'Offline - wird später hochgeladen' };
-            }
-
-            console.log(`🔄 Speichere ${images.length} Bilder für ${activityName} online...`);
-
-            // Versuche Online-Speicherung
-            const response = await fetch('/api/activity-images', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    activity: activityName,
-                    images: images,
-                    timestamp: new Date().toISOString()
-                })
-            });
-
-            if (response.ok) {
-                // Aktualisiere lokalen Cache
-                this.onlineImages.set(activityName, images);
-                
-                // Markiere als online gespeichert
-                const onlineImages = images.map(img => ({
-                    ...img,
-                    isOnline: true,
-                    lastSynced: new Date().toISOString()
-                }));
-
-                // Speichere auch lokal als Backup
-                this.saveLocalBackup(activityName, onlineImages);
-                
-                console.log(`✅ ${images.length} Bilder für ${activityName} online gespeichert`);
-                return { success: true, message: 'Bilder online gespeichert!' };
-            } else {
-                throw new Error('Online-Speicherung fehlgeschlagen');
-            }
+            const storageKey = `${activityName}_netlify_images`;
+            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            return images;
         } catch (error) {
-            console.error('❌ Fehler bei Online-Speicherung:', error);
-            
-            // Fallback: Lokale Speicherung
-            this.saveLocalBackup(activityName, images);
-            return { success: false, message: 'Offline gespeichert (Fallback)' };
+            console.error('❌ Fehler beim Laden der Netlify-Form-Daten:', error);
+            return [];
         }
     }
 
-    // Speichere Bilder für späteren Upload
-    saveForLaterUpload(activityName, images) {
-        const pendingKey = `${activityName}_pending_upload`;
-        const pendingImages = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-        
-        // Füge neue Bilder hinzu
-        const newPendingImages = [...pendingImages, ...images];
-        localStorage.setItem(pendingKey, JSON.stringify(newPendingImages));
-        
-        console.log(`💾 ${images.length} Bilder für späteren Upload gespeichert`);
+    // Speichere Aktivitätsbilder bei Netlify (Hauptfunktion)
+    async saveActivityImagesToNetlify(activityName, images) {
+        try {
+            console.log(`🔄 Speichere ${images.length} Bilder für ${activityName} bei Netlify...`);
+            
+            if (!navigator.onLine) {
+                throw new Error('Keine Internetverbindung verfügbar');
+            }
+
+            // 1. Sende an Netlify-Form
+            const formResult = await this.submitToNetlifyForm(activityName, images);
+            
+            if (formResult.success) {
+                // 2. Speichere auch lokal als Backup (für sofortige Anzeige)
+                this.saveLocalBackup(activityName, images);
+                
+                // 3. Markiere als Netlify-gespeichert
+                this.markAsNetlifySaved(activityName, images);
+                
+                console.log(`✅ ${images.length} Bilder für ${activityName} erfolgreich bei Netlify gespeichert`);
+                return { success: true, message: 'Bilder bei Netlify gespeichert!' };
+            } else {
+                throw new Error('Netlify-Form-Submission fehlgeschlagen');
+            }
+            
+        } catch (error) {
+            console.error('❌ Fehler bei Netlify-Speicherung:', error);
+            
+            // Fallback: Lokale Speicherung
+            this.saveLocalBackup(activityName, images);
+            return { success: false, message: 'Lokal gespeichert (Netlify-Fehler)' };
+        }
+    }
+
+    // Sende Daten an Netlify-Form
+    async submitToNetlifyForm(activityName, images) {
+        try {
+            const formData = new FormData();
+            formData.append('form-name', 'activity-images');
+            formData.append('activity-name', activityName);
+            formData.append('images-data', JSON.stringify(images));
+            formData.append('timestamp', new Date().toISOString());
+            formData.append('image-count', images.length.toString());
+
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+                console.log(`✅ Netlify-Form erfolgreich gesendet für ${activityName}`);
+                return { success: true };
+            } else {
+                throw new Error(`Netlify-Form-Fehler: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Senden an Netlify-Form:', error);
+            throw error;
+        }
     }
 
     // Speichere lokales Backup
@@ -173,25 +135,41 @@ class NetlifyStorage {
         }
     }
 
-    // Lade alle verfügbaren Bilder (Online + Lokal)
+    // Markiere Bilder als Netlify-gespeichert
+    markAsNetlifySaved(activityName, images) {
+        try {
+            const storageKey = `${activityName}_netlify_images`;
+            const netlifyImages = images.map(img => ({
+                ...img,
+                isNetlifySaved: true,
+                netlifySavedAt: new Date().toISOString()
+            }));
+            localStorage.setItem(storageKey, JSON.stringify(netlifyImages));
+            console.log(`🌐 ${activityName} Bilder als Netlify-gespeichert markiert`);
+        } catch (error) {
+            console.error('❌ Fehler beim Markieren als Netlify-gespeichert:', error);
+        }
+    }
+
+    // Lade alle verfügbaren Bilder (Netlify + Lokal)
     async loadAllActivityImages(activityName) {
         try {
             console.log(`🔄 Lade alle Bilder für ${activityName}...`);
             
             let allImages = [];
             
-            // 1. PRIORITÄT: Online gespeicherte Bilder
-            const onlineImages = this.onlineImages.get(activityName) || [];
-            if (onlineImages.length > 0) {
-                console.log(`📸 ${onlineImages.length} online Bilder gefunden`);
-                allImages.push(...onlineImages);
+            // 1. PRIORITÄT: Netlify-gespeicherte Bilder
+            const netlifyImages = this.getNetlifyFormData(activityName);
+            if (netlifyImages.length > 0) {
+                console.log(`🌐 ${netlifyImages.length} Netlify-Bilder gefunden`);
+                allImages.push(...netlifyImages);
             }
             
-            // 2. PRIORITÄT: Lokale Bilder (falls keine online verfügbar)
+            // 2. PRIORITÄT: Lokale Backup-Bilder (falls keine Netlify verfügbar)
             if (allImages.length === 0) {
-                const localImages = this.getLocalStorageAsOnline(activityName);
+                const localImages = this.getLocalBackup(activityName);
                 if (localImages.length > 0) {
-                    console.log(`📸 ${localImages.length} lokale Bilder gefunden`);
+                    console.log(`📱 ${localImages.length} lokale Backup-Bilder gefunden`);
                     allImages.push(...localImages);
                 }
             }
@@ -210,6 +188,18 @@ class NetlifyStorage {
             
         } catch (error) {
             console.error('❌ Fehler beim Laden aller Bilder:', error);
+            return [];
+        }
+    }
+
+    // Hole lokales Backup
+    getLocalBackup(activityName) {
+        try {
+            const storageKey = `${activityName}_images`;
+            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            return images;
+        } catch (error) {
+            console.error('❌ Fehler beim Laden des lokalen Backups:', error);
             return [];
         }
     }
@@ -260,48 +250,6 @@ class NetlifyStorage {
         };
 
         return defaultImages[activityName] || [];
-    }
-
-    // Synchronisiere alle ausstehenden Uploads
-    async syncPendingUploads() {
-        if (!navigator.onLine) {
-            console.log('📴 Offline - Synchronisation nicht möglich');
-            return;
-        }
-
-        try {
-            console.log('🔄 Synchronisiere ausstehende Uploads...');
-            
-            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
-            let totalSynced = 0;
-            
-            for (const activity of activities) {
-                const pendingKey = `${activity}_pending_upload`;
-                const pendingImages = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-                
-                if (pendingImages.length > 0) {
-                    console.log(`📤 Synchronisiere ${pendingImages.length} Bilder für ${activity}...`);
-                    
-                    const result = await this.saveActivityImagesOnline(activity, pendingImages);
-                    
-                    if (result.success) {
-                        // Lösche ausstehende Uploads nach erfolgreicher Synchronisation
-                        localStorage.removeItem(pendingKey);
-                        totalSynced += pendingImages.length;
-                        console.log(`✅ ${pendingImages.length} Bilder für ${activity} synchronisiert`);
-                    }
-                }
-            }
-            
-            if (totalSynced > 0) {
-                console.log(`🎉 Insgesamt ${totalSynced} Bilder synchronisiert`);
-            } else {
-                console.log('ℹ️ Keine ausstehenden Uploads gefunden');
-            }
-            
-        } catch (error) {
-            console.error('❌ Fehler bei der Synchronisation:', error);
-        }
     }
 
     // Save profile image to Netlify

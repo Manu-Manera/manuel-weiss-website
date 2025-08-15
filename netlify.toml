@@ -1,19 +1,9 @@
 [build]
   publish = "."
-  functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-
-# API-Routen für Aktivitätsbilder
-[[redirects]]
-  from = "/api/activity-images"
-  to = "/.netlify/functions/activity-images"
   status = 200
 
 [[headers]]
@@ -75,11 +65,3 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
     Access-Control-Allow-Origin = "*"
-
-# API-Headers
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"
