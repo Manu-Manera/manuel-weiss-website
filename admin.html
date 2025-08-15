@@ -905,6 +905,8 @@ Pannenhilfe</textarea>
 
     <!-- Scripts -->
     <script src="js/netlify-storage.js"></script>
+    <script src="js/image-manager.js"></script>
+    <script src="js/content-manager.js"></script>
     <script src="admin-script.js"></script>
     
     <!-- Inline JavaScript für Dropdown-Initialisierung (Online-Version) -->
@@ -965,6 +967,54 @@ Pannenhilfe</textarea>
         // Fallback: Initialisierung nach kurzer Verzögerung
         setTimeout(initializeDropdown, 1000);
         
+        // Online-spezifische Fehlerbehandlung
+        function handleOnlineIssues() {
+            console.log('🌐 Online-Umgebung erkannt, aktiviere spezielle Behandlung...');
+            
+            // Prüfe localStorage-Verfügbarkeit
+            try {
+                localStorage.setItem('online-test', 'test');
+                localStorage.removeItem('online-test');
+                console.log('✅ localStorage funktioniert');
+            } catch (error) {
+                console.error('❌ localStorage nicht verfügbar:', error);
+                // Fallback: Verwende sessionStorage oder andere Methoden
+            }
+            
+            // Prüfe JavaScript-Module
+            console.log('📦 Verfügbare Module:');
+            console.log('- imageManager:', !!window.imageManager);
+            console.log('- netlifyStorage:', !!window.netlifyStorage);
+            console.log('- contentManager:', !!window.contentManager);
+            
+            // Aktiviere Notfall-Modi falls nötig
+            if (!window.imageManager) {
+                console.warn('⚠️ ImageManager nicht verfügbar, aktiviere Fallback-Modi');
+                activateFallbackModes();
+            }
+        }
+        
+        // Aktiviere Fallback-Modi
+        function activateFallbackModes() {
+            console.log('🔄 Aktiviere Fallback-Modi...');
+            
+            // Erstelle einfache Fallback-Funktionen
+            if (!window.imageManager) {
+                window.imageManager = {
+                    validateImage: (file) => {
+                        return {
+                            valid: file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024,
+                            error: file.type.startsWith('image/') ? null : 'Nur Bilddateien erlaubt'
+                        };
+                    },
+                    compressImage: async (file) => {
+                        return file; // Keine Komprimierung im Fallback
+                    }
+                };
+                console.log('✅ Fallback ImageManager erstellt');
+            }
+        }
+        
         // Debug: Zeige alle gefundenen Elemente
         setTimeout(() => {
             console.log('=== DROPDOWN DEBUG ===');
@@ -979,6 +1029,9 @@ Pannenhilfe</textarea>
                 console.log('Submenu max-height:', window.getComputedStyle(submenu).maxHeight);
                 console.log('Submenu opacity:', window.getComputedStyle(submenu).opacity);
             }
+            
+            // Aktiviere Online-Behandlung
+            handleOnlineIssues();
         }, 2000);
     </script>
 </body>
