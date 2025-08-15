@@ -374,6 +374,46 @@
         </div>
     </section>
 
+    <!-- Aktivitätsbilder auf Homepage -->
+    <section id="aktivitaetsbilder" class="activity-images-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Aktivitätsbilder</h2>
+                <p>Entdecken Sie unsere Angebote in Bildern</p>
+            </div>
+            <div class="activity-images-grid">
+                <div class="activity-image-card" id="wohnmobil-home-image">
+                    <h3>Wohnmobil</h3>
+                    <div class="activity-image-placeholder">
+                        <i class="fas fa-campground"></i>
+                        <p>Bilder werden geladen...</p>
+                    </div>
+                </div>
+                <div class="activity-image-card" id="fotobox-home-image">
+                    <h3>Fotobox</h3>
+                    <div class="activity-image-placeholder">
+                        <i class="fas fa-camera"></i>
+                        <p>Bilder werden geladen...</p>
+                    </div>
+                </div>
+                <div class="activity-image-card" id="sup-home-image">
+                    <h3>Stand-Up-Paddle</h3>
+                    <div class="activity-image-placeholder">
+                        <i class="fas fa-water"></i>
+                        <p>Bilder werden geladen...</p>
+                    </div>
+                </div>
+                <div class="activity-image-card" id="ebike-home-image">
+                    <h3>E-Bike</h3>
+                    <div class="activity-image-placeholder">
+                        <i class="fas fa-bicycle"></i>
+                        <p>Bilder werden geladen...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -454,6 +494,9 @@
                     console.log('✅ Content Manager initialisiert');
                 }
                 
+                // Lade Aktivitätsbilder auf Homepage
+                loadActivityImagesOnHomepage();
+                
                 console.log('✅ Website-Initialisierung abgeschlossen');
                 
                 // Debug: Prüfe Profilbild-Element
@@ -466,6 +509,64 @@
                 }
             }, 100);
         });
+        
+        // Funktion zum Laden der Aktivitätsbilder auf der Homepage
+        function loadActivityImagesOnHomepage() {
+            console.log('🏠 Lade Aktivitätsbilder auf Homepage...');
+            
+            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+            
+            activities.forEach(activity => {
+                const cardElement = document.getElementById(`${activity}-home-image`);
+                if (!cardElement) return;
+                
+                // Lade Bilder aus localStorage
+                const storageKey = `${activity}_images`;
+                const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                
+                if (images.length > 0) {
+                    // Verwende das erste Bild als Hauptbild
+                    const firstImage = images[0];
+                    const imageData = firstImage.imageData || firstImage.src;
+                    
+                    if (imageData) {
+                        cardElement.innerHTML = `
+                            <h3>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
+                            <div class="activity-image-loaded">
+                                <img src="${imageData}" alt="${firstImage.title || activity}" 
+                                     onclick="window.open('${activity}.html', '_blank')">
+                                <div class="activity-image-overlay">
+                                    <h4>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h4>
+                                    <p>${firstImage.description || 'Klicken Sie für mehr Details'}</p>
+                                </div>
+                            </div>
+                        `;
+                        console.log(`✅ ${activity} Bild geladen:`, firstImage.title || 'Unbekannt');
+                    }
+                } else {
+                    // Zeige Placeholder
+                    cardElement.innerHTML = `
+                        <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
+                        <div class="activity-image-placeholder">
+                            <i class="fas fa-${getActivityIcon(activity)}"></i>
+                            <p>Noch keine Bilder verfügbar</p>
+                        </div>
+                    `;
+                    console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
+                }
+            });
+        }
+        
+        // Hilfsfunktion für Aktivitäts-Icons
+        function getActivityIcon(activity) {
+            const icons = {
+                'wohnmobil': 'campground',
+                'fotobox': 'camera',
+                'sup': 'water',
+                'ebike': 'bicycle'
+            };
+            return icons[activity] || 'image';
+        }
         
         // Fehlerbehandlung für globale Fehler
         window.addEventListener('error', function(e) {

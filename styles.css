@@ -1943,3 +1943,126 @@ html {
         grid-template-columns: 1fr;
     }
 } 
+
+/* Aktivitätsbilder auf Homepage */
+.activity-images-section {
+    padding: 4rem 0;
+    background: #f8fafc;
+}
+
+.activity-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.activity-image-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.activity-image-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-image-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.activity-image-placeholder {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 12px;
+    color: #64748b;
+}
+
+.activity-image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #94a3b8;
+}
+
+.activity-image-placeholder p {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Aktivitätsbilder (wenn geladen) */
+.activity-image-loaded {
+    min-height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.activity-image-loaded img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.activity-image-loaded:hover img {
+    transform: scale(1.05);
+}
+
+.activity-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 1rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.activity-image-loaded:hover .activity-image-overlay {
+    transform: translateY(0);
+}
+
+.activity-image-overlay h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.activity-image-overlay p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Responsive Design für Aktivitätsbilder */
+@media (max-width: 768px) {
+    .activity-images-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .activity-image-card {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .activity-images-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+} 
