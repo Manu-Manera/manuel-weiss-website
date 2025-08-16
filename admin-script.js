@@ -11,19 +11,44 @@ class AdminPanel {
     }
 
     init() {
-        console.log('🚀 Admin Panel wird initialisiert...');
+        this.logInfo('Admin Panel wird initialisiert');
         
-        this.setupNavigation();
-        this.setupSubmenus();
-        this.setupProfileImageUpload();
-        this.setupAutoSave();
-        this.setupFormHandlers();
-        this.loadCurrentData();
+        // Mache Bildbereinigung global verfügbar
+        this.makeGlobalFunctionsAvailable();
         
-        // Teste Bildupload-Setup
-        this.testImageUploadSetup();
+        // Initialisiere Admin-Panel
+        this.initializeAdminPanel();
         
-        console.log('✅ Admin Panel erfolgreich initialisiert');
+        // Lade gespeicherte Inhalte
+        this.loadSavedContent();
+        
+        // Lade gespeicherte Bilder
+        this.loadSavedImages();
+        
+        this.logInfo('Admin Panel initialisiert');
+    }
+
+    // Mache wichtige Funktionen global verfügbar
+    makeGlobalFunctionsAvailable() {
+        // Bildbereinigung
+        window.clearAllImages = () => this.clearAllImagesExceptTest();
+        window.createTestImages = () => this.createTestImages();
+        
+        // Log-Export
+        window.exportAdminLogs = () => this.exportLogs();
+        window.clearAdminLogs = () => this.clearLogs();
+        
+        // Direkte Bildverwaltung
+        window.listAllImages = () => this.listAllImages();
+        window.deleteAllImages = () => this.deleteAllImages();
+        
+        console.log('🔧 Admin-Funktionen global verfügbar:');
+        console.log('  - clearAllImages() - Alle Bilder bereinigen');
+        console.log('  - createTestImages() - Testbilder erstellen');
+        console.log('  - exportAdminLogs() - Logs exportieren');
+        console.log('  - clearAdminLogs() - Logs löschen');
+        console.log('  - listAllImages() - Alle Bilder auflisten');
+        console.log('  - deleteAllImages() - Alle Bilder löschen');
     }
 
     // Teste Bildupload-Setup
@@ -2071,6 +2096,15 @@ class AdminPanel {
         
         this.logInfo('Bereinigung abgeschlossen - 3 Testbilder pro Aktivität erstellt');
         this.showNotification('Alle Bilder bereinigt - 3 Testbilder pro Aktivität erstellt', 'success');
+        
+        // Mache Funktion global verfügbar
+        window.clearAllImages = () => this.clearAllImagesExceptTest();
+        window.createTestImages = () => this.createTestImages();
+        
+        console.log('✅ Bildbereinigung abgeschlossen!');
+        console.log('🔧 Globale Funktionen verfügbar:');
+        console.log('  - clearAllImages() - Alle Bilder bereinigen');
+        console.log('  - createTestImages() - Testbilder erstellen');
     }
 
     // Erstelle 3 Testbilder für jede Aktivität
@@ -2162,6 +2196,87 @@ class AdminPanel {
             'ebike': 'E-Bike'
         };
         return displayNames[activity] || activity;
+    }
+
+    // Alle Bilder auflisten
+    listAllImages() {
+        this.logInfo('Liste alle Bilder auf');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        const allImages = {};
+        
+        activities.forEach(activity => {
+            const localKey = `${activity}_images`;
+            const netlifyKey = `${activity}_netlify_images`;
+            
+            const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
+            const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
+            
+            allImages[activity] = {
+                local: localImages.length,
+                netlify: netlifyImages.length,
+                localImages: localImages,
+                netlifyImages: netlifyImages
+            };
+        });
+        
+        console.log('📊 Alle Bilder:', allImages);
+        return allImages;
+    }
+
+    // Alle Bilder löschen (ohne Testbilder zu erstellen)
+    deleteAllImages() {
+        this.logInfo('Lösche alle Bilder ohne Testbilder zu erstellen');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        
+        activities.forEach(activity => {
+            this.logInfo(`Lösche alle ${activity} Bilder`);
+            
+            // Lösche alle lokalen Bilder
+            const localKey = `${activity}_images`;
+            localStorage.removeItem(localKey);
+            
+            // Lösche alle Netlify-Backup-Bilder
+            const netlifyKey = `${activity}_netlify_images`;
+            localStorage.removeItem(netlifyKey);
+            
+            // Lösche alle Netlify-gespeicherten Bilder
+            const netlifySavedKey = `${activity}_netlify_saved`;
+            localStorage.removeItem(netlifySavedKey);
+            
+            this.logInfo(`${activity} Bilder gelöscht`);
+        });
+        
+        this.logInfo('Alle Bilder gelöscht');
+        this.showNotification('Alle Bilder gelöscht', 'success');
+        
+        console.log('✅ Alle Bilder gelöscht!');
+    }
+
+    // Initialisiere Admin-Panel
+    initializeAdminPanel() {
+        this.setupNavigation();
+        this.setupSubmenus();
+        this.setupProfileImageUpload();
+        this.setupAutoSave();
+        this.setupFormHandlers();
+        this.loadCurrentData();
+        
+        // Teste Bildupload-Setup
+        this.testImageUploadSetup();
+    }
+
+    // Lade gespeicherte Inhalte
+    loadSavedContent() {
+        // Implementierung für gespeicherte Inhalte
+        this.logInfo('Lade gespeicherte Inhalte');
+    }
+
+    // Lade gespeicherte Bilder
+    loadSavedImages() {
+        // Implementierung für gespeicherte Bilder
+        this.logInfo('Lade gespeicherte Bilder');
     }
 }
 
