@@ -897,6 +897,25 @@ Pannenhilfe</textarea>
                     </div>
                 </div>
             </section>
+
+            <div class="admin-section">
+                <h3>🔄 System-Verwaltung</h3>
+                <div class="admin-controls">
+                    <button type="button" onclick="adminPanel.clearAllImagesExceptTest()" class="admin-button danger">
+                        🗑️ Alle Bilder bereinigen (3 Testbilder pro Aktivität)
+                    </button>
+                    <button type="button" onclick="adminPanel.exportLogs()" class="admin-button">
+                        📊 Logs exportieren
+                    </button>
+                    <button type="button" onclick="adminPanel.clearLogs()" class="admin-button">
+                        🧹 Logs löschen
+                    </button>
+                </div>
+                <p class="admin-note">
+                    <strong>Hinweis:</strong> Der "Alle Bilder bereinigen" Button entfernt alle hochgeladenen Bilder 
+                    und erstellt stattdessen 3 Testbilder pro Aktivität. Dies ist nützlich für Entwicklung und Tests.
+                </p>
+            </div>
         </main>
     </div>
 

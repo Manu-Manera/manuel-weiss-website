@@ -2041,6 +2041,128 @@ class AdminPanel {
         }
         this.logInfo('Alle Admin-Logs gelöscht');
     }
+
+    // Alle Bilder bis auf 3 Testbilder entfernen
+    clearAllImagesExceptTest() {
+        this.logInfo('Bereinige alle Bilder bis auf 3 Testbilder');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        
+        activities.forEach(activity => {
+            this.logInfo(`Bereinige ${activity} Bilder`);
+            
+            // Lösche alle lokalen Bilder
+            const localKey = `${activity}_images`;
+            localStorage.removeItem(localKey);
+            
+            // Lösche alle Netlify-Backup-Bilder
+            const netlifyKey = `${activity}_netlify_images`;
+            localStorage.removeItem(netlifyKey);
+            
+            // Lösche alle Netlify-gespeicherten Bilder
+            const netlifySavedKey = `${activity}_netlify_saved`;
+            localStorage.removeItem(netlifySavedKey);
+            
+            this.logInfo(`${activity} Bilder gelöscht`);
+        });
+        
+        // Erstelle 3 Testbilder für jede Aktivität
+        this.createTestImages();
+        
+        this.logInfo('Bereinigung abgeschlossen - 3 Testbilder pro Aktivität erstellt');
+        this.showNotification('Alle Bilder bereinigt - 3 Testbilder pro Aktivität erstellt', 'success');
+    }
+
+    // Erstelle 3 Testbilder für jede Aktivität
+    createTestImages() {
+        this.logInfo('Erstelle Testbilder für alle Aktivitäten');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        
+        activities.forEach(activity => {
+            this.logInfo(`Erstelle Testbilder für ${activity}`);
+            
+            const testImages = [
+                {
+                    id: `${activity}_test_1`,
+                    filename: `${activity}-test-1.jpg`,
+                    title: `${this.getActivityDisplayName(activity)} Testbild 1`,
+                    description: 'Testbild für Entwicklung und Tests',
+                    imageData: this.getTestImageData(activity, 1),
+                    uploadDate: new Date().toISOString(),
+                    isUploaded: true,
+                    activity: activity
+                },
+                {
+                    id: `${activity}_test_2`,
+                    filename: `${activity}-test-2.jpg`,
+                    title: `${this.getActivityDisplayName(activity)} Testbild 2`,
+                    description: 'Zweites Testbild für Entwicklung',
+                    imageData: this.getTestImageData(activity, 2),
+                    uploadDate: new Date().toISOString(),
+                    isUploaded: true,
+                    activity: activity
+                },
+                {
+                    id: `${activity}_test_3`,
+                    filename: `${activity}-test-3.jpg`,
+                    title: `${this.getActivityDisplayName(activity)} Testbild 3`,
+                    description: 'Drittes Testbild für Entwicklung',
+                    imageData: this.getTestImageData(activity, 3),
+                    uploadDate: new Date().toISOString(),
+                    isUploaded: true,
+                    activity: activity
+                }
+            ];
+            
+            // Speichere in lokalen Speicher
+            const localKey = `${activity}_images`;
+            localStorage.setItem(localKey, JSON.stringify(testImages));
+            
+            // Speichere in Netlify-Backup
+            const netlifyKey = `${activity}_netlify_images`;
+            localStorage.setItem(netlifyKey, JSON.stringify(testImages));
+            
+            this.logInfo(`${activity}: 3 Testbilder erstellt und gespeichert`);
+        });
+        
+        // Aktualisiere alle Anzeigen
+        activities.forEach(activity => {
+            this.refreshActivityImages(activity);
+        });
+    }
+
+    // Generiere Testbild-Daten (einfache Farbflächen)
+    getTestImageData(activity, imageNumber) {
+        // Erstelle einfache SVG-Farbflächen als Testbilder
+        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+        const color = colors[(activity.charCodeAt(0) + imageNumber) % colors.length];
+        
+        const svg = `
+            <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="300" height="200" fill="${color}"/>
+                <text x="150" y="100" font-family="Arial" font-size="24" fill="white" text-anchor="middle">
+                    ${this.getActivityDisplayName(activity)} Test ${imageNumber}
+                </text>
+                <text x="150" y="130" font-family="Arial" font-size="16" fill="white" text-anchor="middle">
+                    ${activity}
+                </text>
+            </svg>
+        `;
+        
+        return `data:image/svg+xml;base64,${btoa(svg)}`;
+    }
+
+    // Hilfsmethode für Aktivitätsnamen
+    getActivityDisplayName(activity) {
+        const displayNames = {
+            'wohnmobil': 'Wohnmobil',
+            'fotobox': 'Fotobox',
+            'sup': 'Stand-Up-Paddle',
+            'ebike': 'E-Bike'
+        };
+        return displayNames[activity] || activity;
+    }
 }
 
 // Global Functions for HTML onclick handlers
