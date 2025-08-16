@@ -1267,10 +1267,14 @@ class AdminPanel {
             // 2. Speichere auch in Netlify-Speicher (als Backup)
             this.saveImageOnline(activityName, images);
             
-            // 3. Aktualisiere die Anzeige sofort
+            // 3. Speichere auch in Netlify-Backup-Speicher für Homepage-Kompatibilität
+            const netlifyBackupKey = `${activityName}_netlify_images`;
+            localStorage.setItem(netlifyBackupKey, JSON.stringify(images));
+            
+            // 4. Aktualisiere die Anzeige sofort
             this.refreshActivityImages(activityName);
             
-            // 4. Sende Update an alle Fenster
+            // 5. Sende Update an alle Fenster
             this.broadcastUpdate(activityName, images);
             
         } catch (error) {

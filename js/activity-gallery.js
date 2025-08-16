@@ -53,14 +53,38 @@ class ActivityGallery {
         try {
             console.log(`🔄 Prüfe auf Updates für ${this.currentActivity}...`);
             
-            // Lade aktuelle Bilder aus localStorage
-            const storageKey = `${this.currentActivity}_netlify_images`;
-            const currentImages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            // Lade aktuelle Bilder aus verschiedenen Speicherorten
+            let currentImages = [];
+            
+            // 1. Versuche Netlify-Speicher
+            if (window.netlifyStorage) {
+                const netlifyImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
+                if (netlifyImages && netlifyImages.length > 0) {
+                    currentImages = netlifyImages;
+                }
+            }
+            
+            // 2. Fallback: Lokaler Speicher
+            if (currentImages.length === 0) {
+                const localImages = JSON.parse(localStorage.getItem(`${this.currentActivity}_images`) || '[]');
+                if (localImages.length > 0) {
+                    currentImages = localImages;
+                }
+            }
+            
+            // 3. Fallback: Netlify-Backup
+            if (currentImages.length === 0) {
+                const netlifyBackupImages = JSON.parse(localStorage.getItem(`${this.currentActivity}_netlify_images`) || '[]');
+                if (netlifyBackupImages.length > 0) {
+                    currentImages = netlifyBackupImages;
+                }
+            }
             
             // Vergleiche mit aktuell angezeigten Bildern
-            if (this.currentImagesHash !== this.hashImages(currentImages)) {
+            const newHash = this.hashImages(currentImages);
+            if (this.currentImagesHash !== newHash) {
                 console.log(`🔄 Neue Bilder gefunden für ${this.currentActivity}, aktualisiere...`);
-                this.currentImagesHash = this.hashImages(currentImages);
+                this.currentImagesHash = newHash;
                 await this.loadActivityImages();
             }
         } catch (error) {
