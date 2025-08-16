@@ -501,6 +501,82 @@
         // Initialisiere Content Manager
         window.contentManager = new ContentManager();
         
+        // Zentrales Homepage-Logging-System
+        const HomepageLogger = {
+            logs: [],
+            maxLogs: 1000,
+            
+            log(level, message, data = null) {
+                const timestamp = new Date().toISOString();
+                const logEntry = {
+                    timestamp,
+                    level,
+                    message,
+                    data,
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    component: 'Homepage'
+                };
+                
+                this.logs.push(logEntry);
+                
+                // Begrenze Log-Größe
+                if (this.logs.length > this.maxLogs) {
+                    this.logs = this.logs.slice(-this.maxLogs);
+                }
+                
+                // Console-Ausgabe
+                const consoleMethod = level === 'ERROR' ? 'error' : level === 'WARN' ? 'warn' : 'log';
+                console[consoleMethod](`[${timestamp}] [${level}] [HOMEPAGE] ${message}`, data || '');
+                
+                // Speichere Logs in localStorage für spätere Analyse
+                try {
+                    localStorage.setItem('homepage_logs', JSON.stringify(this.logs));
+                } catch (error) {
+                    console.error('Fehler beim Speichern der Homepage-Logs:', error);
+                }
+            },
+            
+            logInfo(message, data = null) { this.log('INFO', message, data); },
+            logWarn(message, data = null) { this.log('WARN', message, data); },
+            logError(message, data = null) { this.log('ERROR', message, data); },
+            logDebug(message, data = null) { this.log('DEBUG', message, data); },
+            
+            exportLogs() {
+                const logData = {
+                    exportTime: new Date().toISOString(),
+                    totalLogs: this.logs.length,
+                    logs: this.logs,
+                    systemInfo: {
+                        url: window.location.href,
+                        userAgent: navigator.userAgent,
+                        screenSize: `${screen.width}x${screen.height}`,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    }
+                };
+                
+                try {
+                    localStorage.setItem('homepage_logs_export', JSON.stringify(logData));
+                    this.logInfo('Homepage-Logs exportiert', { exportSize: JSON.stringify(logData).length });
+                } catch (error) {
+                    this.logError('Fehler beim Exportieren der Homepage-Logs', error);
+                }
+                
+                return logData;
+            },
+            
+            clearLogs() {
+                this.logs = [];
+                try {
+                    localStorage.removeItem('homepage_logs');
+                    localStorage.removeItem('homepage_logs_export');
+                } catch (error) {
+                    console.error('Fehler beim Löschen der Homepage-Logs:', error);
+                }
+                this.logInfo('Alle Homepage-Logs gelöscht');
+            }
+        };
+        
         // Hauptfunktion für Homepage-Initialisierung
         function initializeHomepage() {
             console.log('🏠 Initialisiere Homepage...');

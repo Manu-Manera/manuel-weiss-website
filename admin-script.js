@@ -1,6 +1,9 @@
 // Admin Panel JavaScript
 class AdminPanel {
     constructor() {
+        this.currentActivity = null;
+        this.logs = [];
+        this.maxLogs = 1000;
         this.currentSection = 'hero';
         this.autoSaveTimer = null;
         this.changes = {};
@@ -1944,6 +1947,99 @@ class AdminPanel {
     previewWebsite() {
         // Open website in new tab for preview
         window.open('index.html', '_blank');
+    }
+
+    // Zentrales Admin-Logging-System
+    log(level, message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp,
+            level,
+            message,
+            data,
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            component: 'AdminPanel',
+            activity: this.currentActivity || 'none'
+        };
+        
+        this.logs.push(logEntry);
+        
+        // Begrenze Log-Größe
+        if (this.logs.length > this.maxLogs) {
+            this.logs = this.logs.slice(-this.maxLogs);
+        }
+        
+        // Console-Ausgabe
+        const consoleMethod = level === 'ERROR' ? 'error' : level === 'WARN' ? 'warn' : 'log';
+        console[consoleMethod](`[${timestamp}] [${level}] [ADMIN] ${message}`, data || '');
+        
+        // Speichere Logs in localStorage für spätere Analyse
+        try {
+            localStorage.setItem('admin_logs', JSON.stringify(this.logs));
+        } catch (error) {
+            console.error('Fehler beim Speichern der Admin-Logs:', error);
+        }
+    }
+
+    logInfo(message, data = null) { this.log('INFO', message, data); }
+    logWarn(message, data = null) { this.log('WARN', message, data); }
+    logError(message, data = null) { this.log('ERROR', message, data); }
+    logDebug(message, data = null) { this.log('DEBUG', message, data); }
+
+    // Logs exportieren für Analyse
+    exportLogs() {
+        const logData = {
+            exportTime: new Date().toISOString(),
+            totalLogs: this.logs.length,
+            logs: this.logs,
+            systemInfo: {
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                screenSize: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                localStorage: {
+                    available: typeof(Storage) !== "undefined",
+                    size: this.getLocalStorageSize()
+                }
+            }
+        };
+        
+        try {
+            localStorage.setItem('admin_logs_export', JSON.stringify(logData));
+            this.logInfo('Admin-Logs exportiert', { exportSize: JSON.stringify(logData).length });
+        } catch (error) {
+            this.logError('Fehler beim Exportieren der Admin-Logs', error);
+        }
+        
+        return logData;
+    }
+
+    // Lokale Speichergröße ermitteln
+    getLocalStorageSize() {
+        try {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return total;
+        } catch (error) {
+            return 'unbekannt';
+        }
+    }
+
+    // Alle Logs löschen
+    clearLogs() {
+        this.logs = [];
+        try {
+            localStorage.removeItem('admin_logs');
+            localStorage.removeItem('admin_logs_export');
+        } catch (error) {
+            console.error('Fehler beim Löschen der Admin-Logs:', error);
+        }
+        this.logInfo('Alle Admin-Logs gelöscht');
     }
 }
 
