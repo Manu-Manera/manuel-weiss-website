@@ -534,17 +534,32 @@
             const checkInterval = 200; // Alle 200ms prüfen
             let elapsed = 0;
             
+            console.log('🏠 Warte auf Homepage-Abhängigkeiten...');
+            console.log('📊 Initialer Homepage-Status:');
+            console.log('  - Netlify Storage:', !!window.netlifyStorage);
+            console.log('  - Activity Gallery:', !!window.ActivityGallery);
+            console.log('  - DOM Status:', document.readyState);
+            console.log('  - Window Location:', window.location.href);
+            
             while (elapsed < maxWaitTime) {
                 // Prüfe ob alle notwendigen Skripte geladen sind
                 if (window.netlifyStorage && window.ActivityGallery) {
-                    console.log('✅ Alle Skripte verfügbar');
+                    console.log('✅ Alle Skripte verfügbar nach', elapsed, 'ms');
                     break;
                 }
                 
                 // Prüfe ob DOM vollständig geladen ist
                 if (document.readyState === 'complete') {
-                    console.log('✅ DOM vollständig geladen');
+                    console.log('✅ DOM vollständig geladen nach', elapsed, 'ms');
                     break;
+                }
+                
+                // Debug-Info alle 1000ms
+                if (elapsed % 1000 === 0) {
+                    console.log(`⏳ Homepage wartet... ${elapsed}ms vergangen`);
+                    console.log('  - Netlify Storage:', !!window.netlifyStorage);
+                    console.log('  - Activity Gallery:', !!window.ActivityGallery);
+                    console.log('  - DOM Status:', document.readyState);
                 }
                 
                 await new Promise(resolve => setTimeout(resolve, checkInterval));
@@ -554,6 +569,12 @@
             if (elapsed >= maxWaitTime) {
                 console.warn('⚠️ Timeout beim Warten auf Homepage-Abhängigkeiten');
             }
+            
+            console.log('📊 Finaler Homepage-Status:');
+            console.log('  - Netlify Storage:', !!window.netlifyStorage);
+            console.log('  - Activity Gallery:', !!window.ActivityGallery);
+            console.log('  - DOM Status:', document.readyState);
+            console.log('  - Wartezeit:', elapsed, 'ms');
         }
         
         // Neue automatische Synchronisation

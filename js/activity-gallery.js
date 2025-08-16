@@ -37,17 +37,30 @@ class ActivityGallery {
         const checkInterval = 100; // Alle 100ms prüfen
         let elapsed = 0;
         
+        console.log('🔄 Warte auf Abhängigkeiten...');
+        console.log('📊 Initialer Status:');
+        console.log('  - Netlify Storage:', !!window.netlifyStorage);
+        console.log('  - DOM Status:', document.readyState);
+        console.log('  - Window Location:', window.location.href);
+        
         while (elapsed < maxWaitTime) {
             // Prüfe ob Netlify Storage verfügbar ist
             if (window.netlifyStorage) {
-                console.log('✅ Netlify Storage verfügbar');
+                console.log('✅ Netlify Storage verfügbar nach', elapsed, 'ms');
                 break;
             }
             
             // Prüfe ob DOM geladen ist
             if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                console.log('✅ DOM geladen');
+                console.log('✅ DOM geladen nach', elapsed, 'ms');
                 break;
+            }
+            
+            // Debug-Info alle 500ms
+            if (elapsed % 500 === 0) {
+                console.log(`⏳ Warte... ${elapsed}ms vergangen`);
+                console.log('  - Netlify Storage:', !!window.netlifyStorage);
+                console.log('  - DOM Status:', document.readyState);
             }
             
             await new Promise(resolve => setTimeout(resolve, checkInterval));
@@ -57,6 +70,11 @@ class ActivityGallery {
         if (elapsed >= maxWaitTime) {
             console.warn('⚠️ Timeout beim Warten auf Abhängigkeiten, fahre trotzdem fort...');
         }
+        
+        console.log('📊 Finaler Status:');
+        console.log('  - Netlify Storage:', !!window.netlifyStorage);
+        console.log('  - DOM Status:', document.readyState);
+        console.log('  - Wartezeit:', elapsed, 'ms');
     }
 
     // Neue Methode für automatische Synchronisation

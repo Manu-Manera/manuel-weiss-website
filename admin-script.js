@@ -1243,10 +1243,16 @@ class AdminPanel {
     saveImageSimple(activityName, imageId, imageData, filename) {
         try {
             console.log(`💾 Speichere Bild für ${activityName}: ${filename}`);
+            console.log('📊 Speicher-Details:');
+            console.log('  - Image ID:', imageId);
+            console.log('  - Filename:', filename);
+            console.log('  - Image Data Länge:', imageData ? imageData.length : 'undefined');
+            console.log('  - Activity:', activityName);
             
             // 1. Speichere in lokalem Speicher (HAUPTSPEICHER)
             const storageKey = `${activityName}_images`;
             let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            console.log(`📦 Aktuelle lokale Bilder: ${images.length}`);
             
             const imageInfo = {
                 id: imageId,
@@ -1263,6 +1269,7 @@ class AdminPanel {
             localStorage.setItem(storageKey, JSON.stringify(images));
             
             console.log(`✅ Bild lokal gespeichert: ${filename} für ${activityName}`);
+            console.log(`📊 Lokale Bilder nach Speicherung: ${images.length}`);
             
             // 2. Speichere auch in Netlify-Speicher (als Backup)
             this.saveImageOnline(activityName, images);
@@ -1270,6 +1277,7 @@ class AdminPanel {
             // 3. Speichere auch in Netlify-Backup-Speicher für Homepage-Kompatibilität
             const netlifyBackupKey = `${activityName}_netlify_images`;
             localStorage.setItem(netlifyBackupKey, JSON.stringify(images));
+            console.log(`✅ Netlify-Backup gespeichert: ${netlifyBackupKey}`);
             
             // 4. Aktualisiere die Anzeige sofort
             this.refreshActivityImages(activityName);
@@ -1277,8 +1285,11 @@ class AdminPanel {
             // 5. Sende Update an alle Fenster
             this.broadcastUpdate(activityName, images);
             
+            console.log(`🎉 Bildspeicherung für ${activityName} erfolgreich abgeschlossen`);
+            
         } catch (error) {
             console.error('❌ Fehler beim Speichern des Bildes:', error);
+            console.error('❌ Fehler-Details:', error.stack);
             this.showNotification('Fehler beim Speichern des Bildes', 'error');
         }
     }
