@@ -1341,37 +1341,33 @@ class AdminPanel {
             console.log('PostMessage an aktuelles Fenster fehlgeschlagen');
         }
         
-        // 3. Speichere Update-Zeitstempel für andere Seiten
-        const updateKey = `${activityName}_last_update`;
-        localStorage.setItem(updateKey, new Date().toISOString());
-        
-        // 4. Trigger localStorage Event für andere Tabs
-        this.triggerStorageEvent(activityName, images);
-        
-        console.log(`✅ Update für ${activityName} erfolgreich gesendet`);
-    }
-
-    // Trigger localStorage Event für andere Tabs
-    triggerStorageEvent(activityName, images) {
+        // 3. Trigger localStorage Event für andere Tabs
         try {
-            const storageKey = `${activityName}_netlify_images`;
-            const oldValue = localStorage.getItem(storageKey);
-            const newValue = JSON.stringify(images);
-            
-            // Erstelle ein Storage-Event
-            const storageEvent = new StorageEvent('storage', {
-                key: storageKey,
-                oldValue: oldValue,
-                newValue: newValue,
+            const event = new StorageEvent('storage', {
+                key: `${activityName}_images`,
+                newValue: JSON.stringify(images),
                 url: window.location.href
             });
-            
-            // Dispatch das Event
-            window.dispatchEvent(storageEvent);
-            console.log(`📡 Storage-Event für ${activityName} ausgelöst`);
+            window.dispatchEvent(event);
+            console.log('✅ Storage Event ausgelöst');
         } catch (error) {
-            console.log('Storage-Event konnte nicht ausgelöst werden');
+            console.log('Storage Event fehlgeschlagen');
         }
+        
+        // 4. Trigger auch Netlify-Backup Event
+        try {
+            const netlifyEvent = new StorageEvent('storage', {
+                key: `${activityName}_netlify_images`,
+                newValue: JSON.stringify(images),
+                url: window.location.href
+            });
+            window.dispatchEvent(netlifyEvent);
+            console.log('✅ Netlify-Backup Storage Event ausgelöst');
+        } catch (error) {
+            console.log('Netlify-Backup Storage Event fehlgeschlagen');
+        }
+        
+        console.log(`📡 Update für ${activityName} erfolgreich gesendet`);
     }
 
     // Entferne alle lokalen Bilder bei Fehler
