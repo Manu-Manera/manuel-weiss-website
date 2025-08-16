@@ -581,42 +581,88 @@
         function setupHomepageSync() {
             console.log('🔄 Richte automatische Synchronisation für Homepage ein...');
             
-            // 1. Event-Listener für PostMessage-Updates
+            // Sofortige Homepage-Diagnose
+            runHomepageDiagnostics();
+            
+            // Event-Listener für Updates
             window.addEventListener('message', (event) => {
                 if (event.data.type === 'updateActivityImages') {
-                    console.log('📡 Update von Admin-Panel erhalten:', event.data);
-                    handleActivityUpdate(event.data.data);
+                    console.log('📨 PostMessage Update erhalten:', event.data);
+                    handleActivityUpdate(event.data);
                 }
             });
             
-            // 2. Event-Listener für localStorage-Änderungen (andere Tabs)
+            // Event-Listener für localStorage Änderungen
             window.addEventListener('storage', (event) => {
-                if (event.key && (event.key.includes('_netlify_images') || event.key.includes('_images'))) {
-                    console.log('📡 localStorage-Update erhalten:', event.key);
-                    const activityName = event.key.replace('_netlify_images', '').replace('_images', '');
-                    const images = JSON.parse(event.newValue || '[]');
-                    handleActivityUpdate({ [activityName]: images });
+                console.log('💾 Storage Event erhalten:', event);
+                if (event.key && event.key.includes('_images')) {
+                    const activityName = event.key.replace('_images', '').replace('_netlify', '');
+                    console.log(`🔄 Storage Update für ${activityName} erkannt`);
+                    setTimeout(() => checkForHomepageUpdates(), 100);
                 }
             });
             
-            // 3. Prüfe alle 5 Sekunden auf Updates (häufiger für bessere Reaktionszeit)
+            // Regelmäßige Überprüfung
             setInterval(() => {
                 checkForHomepageUpdates();
             }, 5000);
             
-            // 4. Prüfe bei Fokus auf die Seite
-            window.addEventListener('focus', () => {
-                checkForHomepageUpdates();
-            });
-            
-            // 5. Prüfe bei Sichtbarkeitsänderungen
+            // Prüfe bei Sichtbarkeitsänderungen
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) {
+                    console.log('👁️ Tab wird sichtbar, prüfe auf Updates...');
                     checkForHomepageUpdates();
                 }
             });
+        }
+        
+        // Neue Methode: Homepage-Diagnose
+        function runHomepageDiagnostics() {
+            console.log('🔍 === HOMEPAGE-DIAGNOSE START ===');
+            console.log('📊 Homepage-Status:');
+            console.log('  - URL:', window.location.href);
+            console.log('  - DOM Status:', document.readyState);
+            console.log('  - Netlify Storage:', !!window.netlifyStorage);
+            console.log('  - Activity Gallery:', !!window.ActivityGallery);
             
-            console.log('✅ Automatische Synchronisation eingerichtet');
+            // Prüfe alle Galerie-Container
+            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+            console.log('🏗️ Galerie-Container:');
+            activities.forEach(activity => {
+                const galleryElement = document.getElementById(`${activity}-gallery`);
+                console.log(`  - ${activity}-gallery:`, !!galleryElement);
+                
+                if (galleryElement) {
+                    const galleryItems = galleryElement.querySelectorAll('.gallery-item');
+                    console.log(`    - Gallery Items: ${galleryItems.length}`);
+                    console.log(`    - Inhalt:`, galleryElement.innerHTML.substring(0, 150) + '...');
+                }
+            });
+            
+            // Prüfe alle Speicherorte
+            console.log('📦 Speicherorte:');
+            activities.forEach(activity => {
+                const localKey = `${activity}_images`;
+                const netlifyKey = `${activity}_netlify_images`;
+                
+                const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
+                const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
+                
+                console.log(`  - ${activity}:`);
+                console.log(`    - Lokale Bilder: ${localImages.length}`);
+                console.log(`    - Netlify Bilder: ${netlifyImages.length}`);
+                
+                if (localImages.length > 0) {
+                    console.log(`    - Lokale Bild-Details:`, localImages.map(img => ({
+                        id: img.id,
+                        filename: img.filename,
+                        title: img.title,
+                        dataLength: img.imageData ? img.imageData.length : 'undefined'
+                    })));
+                }
+            });
+            
+            console.log('🔍 === HOMEPAGE-DIAGNOSE ENDE ===');
         }
         
         // Behandle Activity-Updates
@@ -869,4 +915,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
