@@ -1286,3 +1286,46 @@ body {
         font-size: 1rem;
     }
 }
+
+/* System-Verwaltung */
+.admin-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.admin-section h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.admin-button.danger {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.admin-button.danger:hover {
+    background: #c82333;
+    border-color: #bd2130;
+}
+
+.admin-note {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin: 0;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
