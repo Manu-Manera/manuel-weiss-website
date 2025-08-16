@@ -1,15 +1,111 @@
 // Activity Gallery Management
 class ActivityGallery {
     constructor() {
+        this.logs = [];
+        this.maxLogs = 1000;
         this.init();
     }
 
+    // Zentrales Logging-System
+    log(level, message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp,
+            level,
+            message,
+            data,
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            activity: this.currentActivity || 'none'
+        };
+        
+        this.logs.push(logEntry);
+        
+        // Begrenze Log-Größe
+        if (this.logs.length > this.maxLogs) {
+            this.logs = this.logs.slice(-this.maxLogs);
+        }
+        
+        // Console-Ausgabe
+        const consoleMethod = level === 'ERROR' ? 'error' : level === 'WARN' ? 'warn' : 'log';
+        console[consoleMethod](`[${timestamp}] [${level}] ${message}`, data || '');
+        
+        // Speichere Logs in localStorage für spätere Analyse
+        try {
+            localStorage.setItem('activity_gallery_logs', JSON.stringify(this.logs));
+        } catch (error) {
+            console.error('Fehler beim Speichern der Logs:', error);
+        }
+    }
+
+    // Log-Level-Methoden
+    logInfo(message, data = null) { this.log('INFO', message, data); }
+    logWarn(message, data = null) { this.log('WARN', message, data); }
+    logError(message, data = null) { this.log('ERROR', message, data); }
+    logDebug(message, data = null) { this.log('DEBUG', message, data); }
+
+    // Logs exportieren für Analyse
+    exportLogs() {
+        const logData = {
+            exportTime: new Date().toISOString(),
+            totalLogs: this.logs.length,
+            logs: this.logs,
+            systemInfo: {
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                screenSize: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                localStorage: {
+                    available: typeof(Storage) !== "undefined",
+                    size: this.getLocalStorageSize()
+                }
+            }
+        };
+        
+        // Speichere in localStorage
+        try {
+            localStorage.setItem('activity_gallery_logs_export', JSON.stringify(logData));
+            this.logInfo('Logs exportiert', { exportSize: JSON.stringify(logData).length });
+        } catch (error) {
+            this.logError('Fehler beim Exportieren der Logs', error);
+        }
+        
+        return logData;
+    }
+
+    // Lokale Speichergröße ermitteln
+    getLocalStorageSize() {
+        try {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return total;
+        } catch (error) {
+            return 'unbekannt';
+        }
+    }
+
+    // Alle Logs löschen
+    clearLogs() {
+        this.logs = [];
+        try {
+            localStorage.removeItem('activity_gallery_logs');
+            localStorage.removeItem('activity_gallery_logs_export');
+        } catch (error) {
+            console.error('Fehler beim Löschen der Logs:', error);
+        }
+        this.logInfo('Alle Logs gelöscht');
+    }
+
     init() {
-        console.log('🔄 Activity Gallery wird initialisiert...');
+        this.logInfo('Activity Gallery wird initialisiert');
         
         // Warte bis alle Skripte geladen sind
         this.waitForDependencies().then(() => {
-            console.log('✅ Alle Abhängigkeiten geladen, initialisiere Galerien...');
+            this.logInfo('Alle Abhängigkeiten geladen, initialisiere Galerien');
             
             // Initialize galleries for all activity pages
             this.initializeGalleries();
@@ -17,12 +113,14 @@ class ActivityGallery {
             // Listen for updates from admin panel
             window.addEventListener('message', (event) => {
                 if (event.data.type === 'updateActivityImages') {
+                    this.logInfo('PostMessage Update erhalten', event.data);
                     this.updateGalleries(event.data.data);
                 }
             });
             
             // Load images on page load
             document.addEventListener('DOMContentLoaded', () => {
+                this.logInfo('DOM geladen, lade Aktivitätsbilder');
                 this.loadActivityImages();
             });
             
@@ -37,30 +135,33 @@ class ActivityGallery {
         const checkInterval = 100; // Alle 100ms prüfen
         let elapsed = 0;
         
-        console.log('🔄 Warte auf Abhängigkeiten...');
-        console.log('📊 Initialer Status:');
-        console.log('  - Netlify Storage:', !!window.netlifyStorage);
-        console.log('  - DOM Status:', document.readyState);
-        console.log('  - Window Location:', window.location.href);
+        this.logInfo('Warte auf Abhängigkeiten');
+        this.logDebug('Initialer Status', {
+            netlifyStorage: !!window.netlifyStorage,
+            domStatus: document.readyState,
+            url: window.location.href
+        });
         
         while (elapsed < maxWaitTime) {
             // Prüfe ob Netlify Storage verfügbar ist
             if (window.netlifyStorage) {
-                console.log('✅ Netlify Storage verfügbar nach', elapsed, 'ms');
+                this.logInfo('Netlify Storage verfügbar', { waitTime: elapsed });
                 break;
             }
             
             // Prüfe ob DOM geladen ist
             if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                console.log('✅ DOM geladen nach', elapsed, 'ms');
+                this.logInfo('DOM geladen', { waitTime: elapsed });
                 break;
             }
             
             // Debug-Info alle 500ms
             if (elapsed % 500 === 0) {
-                console.log(`⏳ Warte... ${elapsed}ms vergangen`);
-                console.log('  - Netlify Storage:', !!window.netlifyStorage);
-                console.log('  - DOM Status:', document.readyState);
+                this.logDebug('Warte auf Abhängigkeiten', {
+                    elapsed,
+                    netlifyStorage: !!window.netlifyStorage,
+                    domStatus: document.readyState
+                });
             }
             
             await new Promise(resolve => setTimeout(resolve, checkInterval));
@@ -68,18 +169,19 @@ class ActivityGallery {
         }
         
         if (elapsed >= maxWaitTime) {
-            console.warn('⚠️ Timeout beim Warten auf Abhängigkeiten, fahre trotzdem fort...');
+            this.logWarn('Timeout beim Warten auf Abhängigkeiten, fahre trotzdem fort');
         }
         
-        console.log('📊 Finaler Status:');
-        console.log('  - Netlify Storage:', !!window.netlifyStorage);
-        console.log('  - DOM Status:', document.readyState);
-        console.log('  - Wartezeit:', elapsed, 'ms');
+        this.logInfo('Abhängigkeiten-Überprüfung abgeschlossen', {
+            netlifyStorage: !!window.netlifyStorage,
+            domStatus: document.readyState,
+            waitTime: elapsed
+        });
     }
 
     // Neue Methode für automatische Synchronisation
     setupAutoSync() {
-        console.log('🔄 Richte automatische Synchronisation ein...');
+        this.logInfo('Richte automatische Synchronisation ein');
         
         // Sofortige Diagnose
         this.runDiagnostics();
@@ -91,12 +193,14 @@ class ActivityGallery {
         
         // Prüfe auch bei Fokus auf die Seite
         window.addEventListener('focus', () => {
+            this.logDebug('Fokus auf Seite, prüfe auf Updates');
             this.checkForUpdates();
         });
         
         // Prüfe bei Sichtbarkeitsänderungen
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
+                this.logDebug('Tab wird sichtbar, prüfe auf Updates');
                 this.checkForUpdates();
             }
         });
@@ -104,14 +208,15 @@ class ActivityGallery {
 
     // Neue Methode: Automatische Diagnose
     runDiagnostics() {
-        console.log('🔍 === AUTOMATISCHE DIAGNOSE START ===');
-        console.log('📊 System-Status:');
-        console.log('  - Aktuelle Seite:', window.location.href);
-        console.log('  - DOM Status:', document.readyState);
-        console.log('  - Netlify Storage:', !!window.netlifyStorage);
-        console.log('  - Activity Gallery:', !!window.ActivityGallery);
-        console.log('  - Current Activity:', this.currentActivity);
-        console.log('  - Gallery Container:', !!this.galleryContainer);
+        this.logInfo('=== AUTOMATISCHE DIAGNOSE START ===');
+        this.logInfo('System-Status', {
+            currentPage: window.location.href,
+            domStatus: document.readyState,
+            netlifyStorage: !!window.netlifyStorage,
+            activityGallery: !!window.ActivityGallery,
+            currentActivity: this.currentActivity,
+            galleryContainer: !!this.galleryContainer
+        });
         
         // Prüfe alle Speicherorte
         const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
@@ -122,29 +227,25 @@ class ActivityGallery {
             const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
             const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
             
-            console.log(`📦 ${activity}:`);
-            console.log(`    - Lokale Bilder: ${localImages.length}`);
-            console.log(`    - Netlify Bilder: ${netlifyImages.length}`);
-            
-            if (localImages.length > 0) {
-                console.log(`    - Lokale Bild-IDs:`, localImages.map(img => img.id || img.filename));
-            }
-            if (netlifyImages.length > 0) {
-                console.log(`    - Netlify Bild-IDs:`, netlifyImages.map(img => img.id || img.filename));
-            }
+            this.logInfo(`${activity} Speicherstatus`, {
+                localImages: localImages.length,
+                netlifyImages: netlifyImages.length,
+                localImageIds: localImages.map(img => img.id || img.filename),
+                netlifyImageIds: netlifyImages.map(img => img.id || img.filename)
+            });
         });
         
         // Prüfe DOM-Elemente
-        console.log('🏗️ DOM-Elemente:');
+        this.logInfo('DOM-Elemente Status');
         activities.forEach(activity => {
             const galleryElement = document.getElementById(`${activity}-gallery`);
-            console.log(`  - ${activity}-gallery:`, !!galleryElement);
-            if (galleryElement) {
-                console.log(`    - Inhalt:`, galleryElement.innerHTML.substring(0, 100) + '...');
-            }
+            this.logDebug(`${activity}-gallery Element`, {
+                exists: !!galleryElement,
+                content: galleryElement ? galleryElement.innerHTML.substring(0, 100) + '...' : 'nicht gefunden'
+            });
         });
         
-        console.log('🔍 === AUTOMATISCHE DIAGNOSE ENDE ===');
+        this.logInfo('=== AUTOMATISCHE DIAGNOSE ENDE ===');
     }
 
     // Prüfe auf Updates
@@ -152,7 +253,7 @@ class ActivityGallery {
         if (!this.currentActivity) return;
         
         try {
-            console.log(`🔄 Prüfe auf Updates für ${this.currentActivity}...`);
+            this.logDebug(`Prüfe auf Updates für ${this.currentActivity}...`);
             
             // Lade aktuelle Bilder aus verschiedenen Speicherorten
             let currentImages = [];
@@ -184,12 +285,12 @@ class ActivityGallery {
             // Vergleiche mit aktuell angezeigten Bildern
             const newHash = this.hashImages(currentImages);
             if (this.currentImagesHash !== newHash) {
-                console.log(`🔄 Neue Bilder gefunden für ${this.currentActivity}, aktualisiere...`);
+                this.logDebug(`Neue Bilder gefunden für ${this.currentActivity}, aktualisiere...`);
                 this.currentImagesHash = newHash;
                 await this.loadActivityImages();
             }
         } catch (error) {
-            console.error('❌ Fehler beim Prüfen auf Updates:', error);
+            this.logError('Fehler beim Prüfen auf Updates:', error);
         }
     }
 
@@ -228,19 +329,19 @@ class ActivityGallery {
 
     // Neue Methode für Hauptseite
     initializeMainPageGalleries() {
-        console.log('🏠 Initialisiere Galerien für Hauptseite...');
+        this.logInfo('Initialisiere Galerien für Hauptseite...');
         
         const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
         
         activities.forEach(activity => {
             const galleryContainer = document.getElementById(`${activity}-gallery`);
             if (galleryContainer) {
-                console.log(`✅ Galerie-Container gefunden: ${activity}`);
+                this.logInfo(`Galerie-Container gefunden: ${activity}`);
                 this.currentActivity = activity;
                 this.galleryContainer = galleryContainer;
                 this.loadActivityImages();
             } else {
-                console.log(`⚠️ Galerie-Container nicht gefunden: ${activity}`);
+                this.logWarn(`Galerie-Container nicht gefunden: ${activity}`);
             }
         });
     }
@@ -288,36 +389,36 @@ class ActivityGallery {
         if (!this.currentActivity || !this.galleryContainer) return;
 
         try {
-            console.log(`🔄 Lade Bilder für Aktivität: ${this.currentActivity}`);
+            this.logDebug(`Lade Bilder für Aktivität: ${this.currentActivity}`);
             
             // Lade Bilder aus verschiedenen Quellen
             let allImages = [];
             
             // 1. Versuche Netlify-Speicher
             if (window.netlifyStorage) {
-                console.log('🌐 Lade Bilder aus Netlify-Speicher...');
+                this.logDebug('Lade Bilder aus Netlify-Speicher...');
                 const netlifyImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
                 if (netlifyImages && netlifyImages.length > 0) {
                     allImages = netlifyImages;
-                    console.log(`✅ ${netlifyImages.length} Netlify-Bilder geladen`);
+                    this.logDebug(`${netlifyImages.length} Netlify-Bilder geladen`);
                 }
             }
             
             // 2. Fallback: Lokaler Speicher
             if (allImages.length === 0) {
-                console.log('🔄 Versuche lokalen Speicher...');
+                this.logDebug('Versuche lokalen Speicher...');
                 const localImages = JSON.parse(localStorage.getItem(`${this.currentActivity}_images`) || '[]');
                 if (localImages.length > 0) {
                     allImages = localImages;
-                    console.log(`✅ ${localImages.length} lokale Bilder geladen`);
+                    this.logDebug(`${localImages.length} lokale Bilder geladen`);
                 }
             }
             
             // 3. Fallback: Standard-Bilder
             if (allImages.length === 0) {
-                console.log('🔄 Verwende Standard-Bilder...');
+                this.logDebug('Verwende Standard-Bilder...');
                 allImages = await this.getDefaultImages();
-                console.log(`✅ ${allImages.length} Standard-Bilder geladen`);
+                this.logDebug(`${allImages.length} Standard-Bilder geladen`);
             }
             
             if (allImages.length > 0) {
@@ -325,12 +426,12 @@ class ActivityGallery {
                 // Speichere aktuelle Bilder für Hash-Vergleich
                 this.currentImagesHash = this.hashImages(allImages);
             } else {
-                console.log('⚠️ Keine Bilder gefunden');
+                this.logDebug('Keine Bilder gefunden');
                 this.showEmptyState();
             }
             
         } catch (error) {
-            console.error('❌ Fehler beim Laden der Aktivitätsbilder:', error);
+            this.logError('Fehler beim Laden der Aktivitätsbilder:', error);
             this.showEmptyState();
         }
     }
@@ -412,7 +513,7 @@ class ActivityGallery {
             } else if (image.imageData) {
                 // Hochgeladene Bilder (Base64 oder URL) - das ist der wichtige Teil!
                 imageSrc = image.imageData;
-                console.log(`🔄 Hochgeladenes Bild gefunden: ${image.filename || 'Unbekannt'}`);
+                this.logDebug(`Hochgeladenes Bild gefunden: ${image.filename || 'Unbekannt'}`);
             } else if (image.filename) {
                 // Bilder mit Dateinamen
                 imageSrc = `./images/${this.currentActivity}/${image.filename}`;
@@ -440,7 +541,7 @@ class ActivityGallery {
             };
         });
 
-        console.log('🔄 Normalisierte Bilder:', normalizedImages);
+        this.logDebug('Normalisierte Bilder:', normalizedImages);
 
         // Erstelle Hauptbild-Sektion (erstes Bild)
         const mainImage = normalizedImages[0];
@@ -519,8 +620,8 @@ class ActivityGallery {
         `;
 
         this.createLightbox();
-        console.log(`🎨 Galerie gerendert mit ${images.length} Bildern (1 Hauptbild + ${remainingImages.length} weitere)`);
-        console.log('📊 Normalisierte Bildstruktur:', normalizedImages);
+        this.logDebug(`Galerie gerendert mit ${images.length} Bildern (1 Hauptbild + ${remainingImages.length} weitere)`);
+        this.logDebug('Normalisierte Bildstruktur:', normalizedImages);
     }
 
     showEmptyState() {
@@ -571,11 +672,11 @@ class ActivityGallery {
             }
         });
         
-        console.log('✅ Lightbox erstellt');
+        this.logDebug('Lightbox erstellt');
     }
 
     openLightbox(imageId, imageSrc, title, description) {
-        console.log('🔍 Öffne Lightbox für:', title);
+        this.logDebug(`Öffne Lightbox für: ${title}`);
         
         // Erstelle Lightbox falls nicht vorhanden
         if (!document.getElementById('image-lightbox')) {
@@ -599,11 +700,11 @@ class ActivityGallery {
         // Speichere aktuelle Bild-Informationen
         this.currentLightboxImage = { imageId, imageSrc, title, description };
         
-        console.log('✅ Lightbox geöffnet');
+        this.logDebug('Lightbox geöffnet');
     }
 
     closeLightbox() {
-        console.log('🔒 Schließe Lightbox');
+        this.logDebug('Schließe Lightbox');
         
         const lightbox = document.getElementById('image-lightbox');
         if (lightbox) {
@@ -612,7 +713,7 @@ class ActivityGallery {
         }
         
         this.currentLightboxImage = null;
-        console.log('✅ Lightbox geschlossen');
+        this.logDebug('Lightbox geschlossen');
     }
 
     updateGalleries(activityImages) {
