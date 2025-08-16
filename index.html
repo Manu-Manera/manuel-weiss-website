@@ -250,6 +250,45 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Galerien für sonstige Tätigkeiten -->
+            <div class="activity-galleries">
+                <!-- Wohnmobil Galerie -->
+                <div class="activity-gallery-section" id="wohnmobil-gallery-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-campground"></i> Wohnmobil Galerie</h3>
+                        <p>Entdecken Sie unser hochwertiges Wohnmobil</p>
+                    </div>
+                    <div id="wohnmobil-gallery" class="activity-gallery"></div>
+                </div>
+
+                <!-- Fotobox Galerie -->
+                <div class="activity-gallery-section" id="fotobox-gallery-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-camera"></i> Fotobox Galerie</h3>
+                        <p>Professionelle Fotobox für Ihre Events</p>
+                    </div>
+                    <div id="fotobox-gallery" class="activity-gallery"></div>
+                </div>
+
+                <!-- SUP Galerie -->
+                <div class="activity-gallery-section" id="sup-gallery-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-water"></i> Stand-Up-Paddle Galerie</h3>
+                        <p>Entdecken Sie das Wasser aus neuer Perspektive</p>
+                    </div>
+                    <div id="sup-gallery" class="activity-gallery"></div>
+                </div>
+
+                <!-- E-Bike Galerie -->
+                <div class="activity-gallery-section" id="ebike-gallery-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-bicycle"></i> E-Bike Galerie</h3>
+                        <p>Elektrofahrräder für entspannte Ausflüge</p>
+                    </div>
+                    <div id="ebike-gallery" class="activity-gallery"></div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -514,11 +553,163 @@
         function loadActivityImagesOnHomepage() {
             console.log('🏠 Lade Aktivitätsbilder auf Homepage...');
             
+            // Warte bis die Activity Gallery initialisiert ist
+            if (window.activityGallery) {
+                console.log('✅ Activity Gallery verfügbar, initialisiere Galerien...');
+                
+                // Initialisiere alle Galerien
+                if (typeof window.activityGallery.initializeMainPageGalleries === 'function') {
+                    window.activityGallery.initializeMainPageGalleries();
+                } else {
+                    console.log('⚠️ initializeMainPageGalleries nicht verfügbar, verwende Fallback...');
+                    loadActivityImagesFallback();
+                }
+            } else {
+                console.log('⚠️ Activity Gallery nicht verfügbar, verwende Fallback...');
+                loadActivityImagesFallback();
+            }
+            
+            // Neue automatische Synchronisation einrichten
+            setupAutoSync();
+        }
+        
+        // Neue automatische Synchronisation
+        function setupAutoSync() {
+            console.log('🔄 Richte automatische Synchronisation für Homepage ein...');
+            
+            // 1. Event-Listener für PostMessage-Updates
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'updateActivityImages') {
+                    console.log('📡 Update von Admin-Panel erhalten:', event.data);
+                    handleActivityUpdate(event.data.data);
+                }
+            });
+            
+            // 2. Event-Listener für localStorage-Änderungen (andere Tabs)
+            window.addEventListener('storage', (event) => {
+                if (event.key && (event.key.includes('_netlify_images') || event.key.includes('_images'))) {
+                    console.log('📡 localStorage-Update erhalten:', event.key);
+                    const activityName = event.key.replace('_netlify_images', '').replace('_images', '');
+                    const images = JSON.parse(event.newValue || '[]');
+                    handleActivityUpdate({ [activityName]: images });
+                }
+            });
+            
+            // 3. Prüfe alle 5 Sekunden auf Updates (häufiger für bessere Reaktionszeit)
+            setInterval(() => {
+                checkForHomepageUpdates();
+            }, 5000);
+            
+            // 4. Prüfe bei Fokus auf die Seite
+            window.addEventListener('focus', () => {
+                checkForHomepageUpdates();
+            });
+            
+            // 5. Prüfe bei Sichtbarkeitsänderungen
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    checkForHomepageUpdates();
+                }
+            });
+            
+            console.log('✅ Automatische Synchronisation eingerichtet');
+        }
+        
+        // Behandle Activity-Updates
+        function handleActivityUpdate(activityData) {
+            console.log('🔄 Behandle Activity-Update:', activityData);
+            
+            Object.keys(activityData).forEach(activityName => {
+                const images = activityData[activityName];
+                const galleryContainer = document.getElementById(`${activityName}-gallery`);
+                
+                if (galleryContainer && images) {
+                    console.log(`🔄 Aktualisiere Galerie für ${activityName} mit ${images.length} Bildern`);
+                    updateHomepageGallery(activityName, images, galleryContainer);
+                }
+            });
+        }
+        
+        // Aktualisiere Homepage-Galerie
+        function updateHomepageGallery(activityName, images, galleryContainer) {
+            if (images.length === 0) {
+                galleryContainer.innerHTML = `
+                    <div class="gallery-empty">
+                        <i class="fas fa-images"></i>
+                        <h3>Noch keine Bilder verfügbar</h3>
+                        <p>Bilder werden bald hinzugefügt.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Erstelle Galerie-Anzeige
+            const galleryHTML = images.map((image, index) => {
+                const imageData = image.imageData || image.src;
+                return `
+                    <div class="gallery-item" data-image-id="${image.id || index}">
+                        <div class="gallery-image">
+                            <img src="${imageData}" alt="${image.title || image.filename || 'Bild'}" 
+                                 title="${image.title || image.filename || 'Bild'}">
+                            <div class="gallery-overlay">
+                                <div class="gallery-info">
+                                    <h4>${image.title || image.filename || 'Bild'}</h4>
+                                    ${image.description ? `<p>${image.description}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            galleryContainer.innerHTML = `
+                <div class="gallery-grid">
+                    ${galleryHTML}
+                </div>
+            `;
+            
+            console.log(`✅ Galerie für ${activityName} aktualisiert`);
+        }
+        
+        // Prüfe auf Updates für Homepage
+        function checkForHomepageUpdates() {
+            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+            
+            activities.forEach(activityName => {
+                // Prüfe beide Speicherorte
+                const netlifyKey = `${activityName}_netlify_images`;
+                const localKey = `${activityName}_images`;
+                
+                const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
+                const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
+                
+                // Verwende die neuesten Bilder
+                const images = netlifyImages.length > 0 ? netlifyImages : localImages;
+                const galleryContainer = document.getElementById(`${activityName}-gallery`);
+                
+                if (galleryContainer && images.length > 0) {
+                    // Prüfe, ob die Galerie bereits aktuelle Bilder hat
+                    const currentImages = galleryContainer.querySelectorAll('.gallery-item');
+                    if (currentImages.length !== images.length) {
+                        console.log(`🔄 Homepage-Galerie für ${activityName} veraltet, aktualisiere...`);
+                        updateHomepageGallery(activityName, images, galleryContainer);
+                    }
+                }
+            });
+        }
+        
+        // Fallback-Funktion für den Fall, dass Activity Gallery nicht verfügbar ist
+        function loadActivityImagesFallback() {
+            console.log('🔄 Verwende Fallback-Bildlade-Methode...');
+            
             const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
             
             activities.forEach(async (activity) => {
-                const cardElement = document.getElementById(`${activity}-home-image`);
-                if (!cardElement) return;
+                const galleryContainer = document.getElementById(`${activity}-gallery`);
+                if (!galleryContainer) {
+                    console.log(`⚠️ Galerie-Container nicht gefunden: ${activity}`);
+                    return;
+                }
                 
                 try {
                     let images = [];
@@ -533,33 +724,40 @@
                     }
                     
                     if (images.length > 0) {
-                        // Verwende das erste Bild als Hauptbild
-                        const firstImage = images[0];
-                        const imageData = firstImage.imageData || firstImage.src;
+                        console.log(`✅ ${images.length} Bilder für ${activity} geladen`);
                         
-                        if (imageData) {
-                            cardElement.innerHTML = `
-                                <h3>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
-                                <div class="activity-image-loaded">
-                                    <img src="${imageData}" alt="${firstImage.title || activity}" 
-                                         onclick="window.open('${activity}.html', '_blank')">
-                                    <div class="activity-image-overlay">
-                                        <h4>${firstImage.title || activity.charAt(0).toUpperCase() + activity.slice(1)}</h4>
-                                        <p>${firstImage.description || 'Klicken Sie für mehr Details'}</p>
-                                        ${firstImage.isNetlifySaved ? '<span class="online-badge">🌐 Netlify</span>' : ''}
-                                    </p>
+                        // Erstelle einfache Galerie-Anzeige
+                        const galleryHTML = images.map((image, index) => {
+                            const imageData = image.imageData || image.src;
+                            return `
+                                <div class="gallery-item" data-image-id="${image.id || index}">
+                                    <div class="gallery-image">
+                                        <img src="${imageData}" alt="${image.title || image.filename || 'Bild'}" 
+                                             title="${image.title || image.filename || 'Bild'}">
+                                        <div class="gallery-overlay">
+                                            <div class="gallery-info">
+                                                <h4>${image.title || image.filename || 'Bild'}</h4>
+                                                ${image.description ? `<p>${image.description}</p>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                            `;
+                        }).join('');
+                        
+                        galleryContainer.innerHTML = `
+                            <div class="gallery-grid">
+                                ${galleryHTML}
                             </div>
                         `;
-                            console.log(`✅ ${activity} Bild geladen:`, firstImage.title || 'Unbekannt');
-                        }
+                        
                     } else {
-                        // Zeige Placeholder
-                        cardElement.innerHTML = `
-                            <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
-                            <div class="activity-image-placeholder">
-                                <i class="fas fa-${getActivityIcon(activity)}"></i>
-                                <p>Keine Bilder verfügbar</p>
+                        // Zeige leeren Zustand
+                        galleryContainer.innerHTML = `
+                            <div class="gallery-empty">
+                                <i class="fas fa-images"></i>
+                                <h3>Noch keine Bilder verfügbar</h3>
+                                <p>Bilder werden bald hinzugefügt.</p>
                             </div>
                         `;
                         console.log(`⚠️ ${activity}: Keine Netlify-Bilder verfügbar`);
@@ -568,11 +766,11 @@
                     console.error(`❌ Fehler beim Laden der ${activity} Bilder:`, error);
                     
                     // Zeige Fehler-Placeholder
-                    cardElement.innerHTML = `
-                        <h3>${activity.charAt(0).toUpperCase() + activity.slice(1)}</h3>
-                        <div class="activity-image-placeholder">
+                    galleryContainer.innerHTML = `
+                        <div class="gallery-empty">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <p>Fehler beim Laden der Bilder</p>
+                            <h3>Fehler beim Laden der Bilder</h3>
+                            <p>Bitte versuchen Sie es später erneut.</p>
                         </div>
                     `;
                 }

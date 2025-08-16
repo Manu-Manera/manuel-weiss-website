@@ -1242,6 +1242,9 @@ class AdminPanel {
     // Einfache Bildspeicherung
     saveImageSimple(activityName, imageId, imageData, filename) {
         try {
+            console.log(`💾 Speichere Bild für ${activityName}: ${filename}`);
+            
+            // 1. Speichere in lokalem Speicher (HAUPTSPEICHER)
             const storageKey = `${activityName}_images`;
             let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
             
@@ -1259,46 +1262,111 @@ class AdminPanel {
             images.push(imageInfo);
             localStorage.setItem(storageKey, JSON.stringify(images));
             
-            console.log(`💾 Bild lokal gespeichert: ${filename} für ${activityName}`);
+            console.log(`✅ Bild lokal gespeichert: ${filename} für ${activityName}`);
             
-            // SPEICHERE NUR ONLINE - KEIN FALLBACK!
+            // 2. Speichere auch in Netlify-Speicher (als Backup)
             this.saveImageOnline(activityName, images);
+            
+            // 3. Aktualisiere die Anzeige sofort
+            this.refreshActivityImages(activityName);
+            
+            // 4. Sende Update an alle Fenster
+            this.broadcastUpdate(activityName, images);
             
         } catch (error) {
             console.error('❌ Fehler beim Speichern des Bildes:', error);
+            this.showNotification('Fehler beim Speichern des Bildes', 'error');
         }
     }
 
-    // Neue Online-Speicherung - NUR ONLINE!
+    // Neue Online-Speicherung - Robuste Implementierung
     async saveImageOnline(activityName, images) {
         try {
             if (window.netlifyStorage) {
-                console.log(`🌐 Speichere ${activityName} Bilder NUR online bei Netlify...`);
+                console.log(`🌐 Speichere ${activityName} Bilder online...`);
                 const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
                 
                 if (result.success) {
-                    console.log(`✅ ${activityName} Bilder erfolgreich bei Netlify gespeichert`);
-                    this.showNotification(`Bilder erfolgreich online gespeichert!`, 'success');
+                    console.log(`✅ ${activityName} Bilder erfolgreich online gespeichert`);
                     
                     // Markiere als Netlify-gespeichert
                     window.netlifyStorage.markAsNetlifySaved(activityName, images);
                     
-                    // Aktualisiere die Anzeige sofort
-                    this.refreshActivityImages(activityName);
+                    // Speichere auch in Netlify-Backup-Speicher
+                    const netlifyBackupKey = `${activityName}_netlify_images`;
+                    localStorage.setItem(netlifyBackupKey, JSON.stringify(images));
+                    
+                    this.showNotification(result.message, 'success');
                 } else {
-                    throw new Error('Netlify-Speicherung fehlgeschlagen');
+                    throw new Error('Online-Speicherung fehlgeschlagen');
                 }
             } else {
-                throw new Error('Netlify Storage nicht verfügbar');
+                console.log('⚠️ Netlify Storage nicht verfügbar, verwende nur lokalen Speicher');
             }
         } catch (error) {
             console.error('❌ Fehler bei Online-Speicherung:', error);
+            console.log('⚠️ Bilder bleiben im lokalen Speicher erhalten');
+        }
+    }
+
+    // Neue Methode: Sende Updates an alle offenen Fenster
+    broadcastUpdate(activityName, images) {
+        console.log(`📡 Sende Update für ${activityName} an alle Fenster...`);
+        
+        // 1. Versuche, Hauptfenster zu aktualisieren (falls Admin-Panel in neuem Tab geöffnet wurde)
+        try {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'updateActivityImages',
+                    data: { [activityName]: images }
+                }, '*');
+                console.log('✅ Update an Hauptfenster gesendet');
+            }
+        } catch (error) {
+            console.log('Hauptfenster nicht verfügbar');
+        }
+        
+        // 2. Sende Update an alle anderen Tabs/Fenster der gleichen Domain
+        try {
+            window.postMessage({
+                type: 'updateActivityImages',
+                data: { [activityName]: images }
+            }, '*');
+            console.log('✅ Update an aktuelles Fenster gesendet');
+        } catch (error) {
+            console.log('PostMessage an aktuelles Fenster fehlgeschlagen');
+        }
+        
+        // 3. Speichere Update-Zeitstempel für andere Seiten
+        const updateKey = `${activityName}_last_update`;
+        localStorage.setItem(updateKey, new Date().toISOString());
+        
+        // 4. Trigger localStorage Event für andere Tabs
+        this.triggerStorageEvent(activityName, images);
+        
+        console.log(`✅ Update für ${activityName} erfolgreich gesendet`);
+    }
+
+    // Trigger localStorage Event für andere Tabs
+    triggerStorageEvent(activityName, images) {
+        try {
+            const storageKey = `${activityName}_netlify_images`;
+            const oldValue = localStorage.getItem(storageKey);
+            const newValue = JSON.stringify(images);
             
-            // ENTFERNE ALLE LOKALEN BILDER BEI FEHLER!
-            this.removeLocalImages(activityName);
+            // Erstelle ein Storage-Event
+            const storageEvent = new StorageEvent('storage', {
+                key: storageKey,
+                oldValue: oldValue,
+                newValue: newValue,
+                url: window.location.href
+            });
             
-            this.showNotification(`Fehler: Bilder konnten nicht online gespeichert werden!`, 'error');
-            throw error; // Kein Fallback mehr!
+            // Dispatch das Event
+            window.dispatchEvent(storageEvent);
+            console.log(`📡 Storage-Event für ${activityName} ausgelöst`);
+        } catch (error) {
+            console.log('Storage-Event konnte nicht ausgelöst werden');
         }
     }
 
@@ -1668,12 +1736,16 @@ class AdminPanel {
 
     showNotification(message, type = 'info') {
         const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.className = `notification ${type} show`;
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
+        if (notification) {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        } else {
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
     }
 
     loadCurrentData() {
@@ -1684,126 +1756,126 @@ class AdminPanel {
             if (savedData) {
                 const data = JSON.parse(savedData);
                 
-                        // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
-        const preview = document.getElementById('profile-preview');
-        if (preview) {
-            // Check if user has uploaded an image
-            const hasUploadedImage = localStorage.getItem('profileImageUploaded') === 'true';
-            
-            if (hasUploadedImage) {
-                // Try multiple sources for uploaded profile image
-                const profileImage = data.profileImage || 
-                                   localStorage.getItem('profileImage') || 
-                                   localStorage.getItem('mwps-profile-image');
-                
-                if (profileImage && profileImage.startsWith('data:image/')) {
-                    preview.src = profileImage;
-                    console.log('✅ Hochgeladenes Profilbild aus localStorage geladen');
-                    return; // Important: Exit here to prevent default loading
+                // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
+                const preview = document.getElementById('profile-preview');
+                if (preview) {
+                    // Check if user has uploaded an image
+                    const hasUploadedImage = localStorage.getItem('profileImageUploaded') === 'true';
+                    
+                    if (hasUploadedImage) {
+                        // Try multiple sources for uploaded profile image
+                        const profileImage = data.profileImage || 
+                                           localStorage.getItem('profileImage') || 
+                                           localStorage.getItem('mwps-profile-image');
+                        
+                        if (profileImage && profileImage.startsWith('data:image/')) {
+                            preview.src = profileImage;
+                            console.log('✅ Hochgeladenes Profilbild aus localStorage geladen');
+                            return; // Important: Exit here to prevent default loading
+                        }
+                    }
+                    
+                    // Only load default if no uploaded image exists
+                    console.log('ℹ️ Kein hochgeladenes Profilbild vorhanden, verwende Standard-SVG');
                 }
-            }
-            
-            // Only load default if no uploaded image exists
-            console.log('ℹ️ Kein hochgeladenes Profilbild vorhanden, verwende Standard-SVG');
-        }
-        
-        // Lade Hero-Daten
-        if (data.heroName) {
-            const element = document.getElementById('hero-name');
-            if (element) element.value = data.heroName;
-        }
-        if (data.heroTitle) {
-            const element = document.getElementById('hero-title');
-            if (element) element.value = data.heroTitle;
-        }
-        if (data.heroSubtitle) {
-            const element = document.getElementById('hero-subtitle');
-            if (element) element.value = data.heroSubtitle;
-        }
-        if (data.heroDescription) {
-            const element = document.getElementById('hero-description');
-            if (element) element.value = data.heroDescription;
-        }
-        
-        // Lade Profil-Informationen
-        if (data.profileTitle) {
-            const element = document.getElementById('profile-title');
-            if (element) element.value = data.profileTitle;
-        }
-        if (data.profileDescription) {
-            const element = document.getElementById('profile-description');
-            if (element) element.value = data.profileDescription;
-        }
-        if (data.profileAvailability) {
-            const element = document.getElementById('profile-availability');
-            if (element) element.value = data.profileAvailability;
-        }
-        
-        // Lade Kontaktdaten
-        if (data.contactName) {
-            const element = document.getElementById('contact-name');
-            if (element) element.value = data.contactName;
-        }
-        if (data.contactTitle) {
-            const element = document.getElementById('contact-title');
-            if (element) element.value = data.contactTitle;
-        }
-        if (data.contactLocation) {
-            const element = document.getElementById('contact-location');
-            if (element) element.value = data.contactLocation;
-        }
-        if (data.contactEmail) {
-            const element = document.getElementById('contact-email');
-            if (element) element.value = data.contactEmail;
-        }
-        if (data.contactPhone) {
-            const element = document.getElementById('contact-phone');
-            if (element) element.value = data.contactPhone;
-        }
-        
-        // Lade Design-Einstellungen
-        if (data.primaryColor) {
-            const element = document.getElementById('primary-color');
-            if (element) element.value = data.primaryColor;
-        }
-        if (data.secondaryColor) {
-            const element = document.getElementById('secondary-color');
-            if (element) element.value = data.secondaryColor;
-        }
-        if (data.heroGradient) {
-            const element = document.getElementById('hero-gradient');
-            if (element) element.value = data.heroGradient;
-        }
-        if (data.siteTitle) {
-            const element = document.getElementById('site-title');
-            if (element) element.value = data.siteTitle;
-        }
-        if (data.siteDescription) {
-            const element = document.getElementById('site-description');
-            if (element) element.value = data.siteDescription;
-        }
-        
-        // Lade Statistiken
-        if (data.stats && data.stats.length > 0) {
-            data.stats.forEach((stat, index) => {
-                const nameElement = document.getElementById(`stat${index + 1}-name`);
-                const valueElement = document.getElementById(`stat${index + 1}-value`);
-                const unitElement = document.getElementById(`stat${index + 1}-unit`);
                 
-                if (nameElement) nameElement.value = stat.name;
-                if (valueElement) valueElement.value = stat.value;
-                if (unitElement) unitElement.value = stat.unit;
-            });
-        }
-        
-        // Lade Activity Details
-        if (data.activityDetails) {
-            Object.keys(data.activityDetails).forEach(activityName => {
-                this.loadActivityData(activityName, data.activityDetails[activityName]);
-            });
-        }
-        
-        console.log('✅ Alle Admin-Daten geladen');
+                // Lade Hero-Daten
+                if (data.heroName) {
+                    const element = document.getElementById('hero-name');
+                    if (element) element.value = data.heroName;
+                }
+                if (data.heroTitle) {
+                    const element = document.getElementById('hero-title');
+                    if (element) element.value = data.heroTitle;
+                }
+                if (data.heroSubtitle) {
+                    const element = document.getElementById('hero-subtitle');
+                    if (element) element.value = data.heroSubtitle;
+                }
+                if (data.heroDescription) {
+                    const element = document.getElementById('hero-description');
+                    if (element) element.value = data.heroDescription;
+                }
+                
+                // Lade Profil-Informationen
+                if (data.profileTitle) {
+                    const element = document.getElementById('profile-title');
+                    if (element) element.value = data.profileTitle;
+                }
+                if (data.profileDescription) {
+                    const element = document.getElementById('profile-description');
+                    if (element) element.value = data.profileDescription;
+                }
+                if (data.profileAvailability) {
+                    const element = document.getElementById('profile-availability');
+                    if (element) element.value = data.profileAvailability;
+                }
+                
+                // Lade Kontaktdaten
+                if (data.contactName) {
+                    const element = document.getElementById('contact-name');
+                    if (element) element.value = data.contactName;
+                }
+                if (data.contactTitle) {
+                    const element = document.getElementById('contact-title');
+                    if (element) element.value = data.contactTitle;
+                }
+                if (data.contactLocation) {
+                    const element = document.getElementById('contact-location');
+                    if (element) element.value = data.contactLocation;
+                }
+                if (data.contactEmail) {
+                    const element = document.getElementById('contact-email');
+                    if (element) element.value = data.contactEmail;
+                }
+                if (data.contactPhone) {
+                    const element = document.getElementById('contact-phone');
+                    if (element) element.value = data.contactPhone;
+                }
+                
+                // Lade Design-Einstellungen
+                if (data.primaryColor) {
+                    const element = document.getElementById('primary-color');
+                    if (element) element.value = data.primaryColor;
+                }
+                if (data.secondaryColor) {
+                    const element = document.getElementById('secondary-color');
+                    if (element) element.value = data.secondaryColor;
+                }
+                if (data.heroGradient) {
+                    const element = document.getElementById('hero-gradient');
+                    if (element) element.value = data.heroGradient;
+                }
+                if (data.siteTitle) {
+                    const element = document.getElementById('site-title');
+                    if (element) element.value = data.siteTitle;
+                }
+                if (data.siteDescription) {
+                    const element = document.getElementById('site-description');
+                    if (element) element.value = data.siteDescription;
+                }
+                
+                // Lade Statistiken
+                if (data.stats && data.stats.length > 0) {
+                    data.stats.forEach((stat, index) => {
+                        const nameElement = document.getElementById(`stat${index + 1}-name`);
+                        const valueElement = document.getElementById(`stat${index + 1}-value`);
+                        const unitElement = document.getElementById(`stat${index + 1}-unit`);
+                        
+                        if (nameElement) nameElement.value = stat.name;
+                        if (valueElement) valueElement.value = stat.value;
+                        if (unitElement) unitElement.value = stat.unit;
+                    });
+                }
+                
+                // Lade Activity Details
+                if (data.activityDetails) {
+                    Object.keys(data.activityDetails).forEach(activityName => {
+                        this.loadActivityData(activityName, data.activityDetails[activityName]);
+                    });
+                }
+                
+                console.log('✅ Alle Admin-Daten geladen');
                 
                 // Legacy Statistiken-Code (wird durch obiges ersetzt)
                 if (data.stat1Name) document.getElementById('stat1-name').value = data.stat1Name;
@@ -1933,4 +2005,4 @@ document.addEventListener('keydown', (e) => {
                 break;
         }
     }
-}); 
+});
