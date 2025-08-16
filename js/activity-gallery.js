@@ -81,6 +81,9 @@ class ActivityGallery {
     setupAutoSync() {
         console.log('🔄 Richte automatische Synchronisation ein...');
         
+        // Sofortige Diagnose
+        this.runDiagnostics();
+        
         // Prüfe alle 5 Sekunden auf Änderungen
         setInterval(() => {
             this.checkForUpdates();
@@ -97,6 +100,51 @@ class ActivityGallery {
                 this.checkForUpdates();
             }
         });
+    }
+
+    // Neue Methode: Automatische Diagnose
+    runDiagnostics() {
+        console.log('🔍 === AUTOMATISCHE DIAGNOSE START ===');
+        console.log('📊 System-Status:');
+        console.log('  - Aktuelle Seite:', window.location.href);
+        console.log('  - DOM Status:', document.readyState);
+        console.log('  - Netlify Storage:', !!window.netlifyStorage);
+        console.log('  - Activity Gallery:', !!window.ActivityGallery);
+        console.log('  - Current Activity:', this.currentActivity);
+        console.log('  - Gallery Container:', !!this.galleryContainer);
+        
+        // Prüfe alle Speicherorte
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        activities.forEach(activity => {
+            const localKey = `${activity}_images`;
+            const netlifyKey = `${activity}_netlify_images`;
+            
+            const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
+            const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
+            
+            console.log(`📦 ${activity}:`);
+            console.log(`    - Lokale Bilder: ${localImages.length}`);
+            console.log(`    - Netlify Bilder: ${netlifyImages.length}`);
+            
+            if (localImages.length > 0) {
+                console.log(`    - Lokale Bild-IDs:`, localImages.map(img => img.id || img.filename));
+            }
+            if (netlifyImages.length > 0) {
+                console.log(`    - Netlify Bild-IDs:`, netlifyImages.map(img => img.id || img.filename));
+            }
+        });
+        
+        // Prüfe DOM-Elemente
+        console.log('🏗️ DOM-Elemente:');
+        activities.forEach(activity => {
+            const galleryElement = document.getElementById(`${activity}-gallery`);
+            console.log(`  - ${activity}-gallery:`, !!galleryElement);
+            if (galleryElement) {
+                console.log(`    - Inhalt:`, galleryElement.innerHTML.substring(0, 100) + '...');
+            }
+        });
+        
+        console.log('🔍 === AUTOMATISCHE DIAGNOSE ENDE ===');
     }
 
     // Prüfe auf Updates
