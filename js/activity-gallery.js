@@ -5,23 +5,58 @@ class ActivityGallery {
     }
 
     init() {
-        // Initialize galleries for all activity pages
-        this.initializeGalleries();
+        console.log('🔄 Activity Gallery wird initialisiert...');
         
-        // Listen for updates from admin panel
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'updateActivityImages') {
-                this.updateGalleries(event.data.data);
+        // Warte bis alle Skripte geladen sind
+        this.waitForDependencies().then(() => {
+            console.log('✅ Alle Abhängigkeiten geladen, initialisiere Galerien...');
+            
+            // Initialize galleries for all activity pages
+            this.initializeGalleries();
+            
+            // Listen for updates from admin panel
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'updateActivityImages') {
+                    this.updateGalleries(event.data.data);
+                }
+            });
+            
+            // Load images on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                this.loadActivityImages();
+            });
+            
+            // Neue automatische Synchronisation
+            this.setupAutoSync();
+        });
+    }
+
+    // Warte auf alle Abhängigkeiten
+    async waitForDependencies() {
+        const maxWaitTime = 10000; // 10 Sekunden
+        const checkInterval = 100; // Alle 100ms prüfen
+        let elapsed = 0;
+        
+        while (elapsed < maxWaitTime) {
+            // Prüfe ob Netlify Storage verfügbar ist
+            if (window.netlifyStorage) {
+                console.log('✅ Netlify Storage verfügbar');
+                break;
             }
-        });
+            
+            // Prüfe ob DOM geladen ist
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                console.log('✅ DOM geladen');
+                break;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, checkInterval));
+            elapsed += checkInterval;
+        }
         
-        // Load images on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            this.loadActivityImages();
-        });
-        
-        // Neue automatische Synchronisation
-        this.setupAutoSync();
+        if (elapsed >= maxWaitTime) {
+            console.warn('⚠️ Timeout beim Warten auf Abhängigkeiten, fahre trotzdem fort...');
+        }
     }
 
     // Neue Methode für automatische Synchronisation

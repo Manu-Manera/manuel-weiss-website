@@ -501,80 +501,63 @@
         // Initialisiere Content Manager
         window.contentManager = new ContentManager();
         
-        // Verbesserte Initialisierung für bessere Online-Kompatibilität
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Website wird initialisiert...');
-            console.log('🌐 Online-Status:', navigator.onLine);
-            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
-            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
-            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
+        // Hauptfunktion für Homepage-Initialisierung
+        function initializeHomepage() {
+            console.log('🏠 Initialisiere Homepage...');
             
-            // Warte kurz, bis alle Skripte geladen sind
-            setTimeout(() => {
-                // Initialisiere Profilbild
-                if (typeof loadSavedProfileImage === 'function') {
-                    console.log('🔄 Starte Profilbild-Initialisierung...');
-                    loadSavedProfileImage();
+            // Warte bis alle Skripte geladen sind
+            waitForHomepageDependencies().then(() => {
+                console.log('✅ Alle Homepage-Abhängigkeiten geladen');
+                
+                // Initialisiere Activity Gallery
+                if (window.ActivityGallery) {
+                    console.log('✅ Activity Gallery verfügbar, initialisiere...');
+                    new window.ActivityGallery();
                 } else {
-                    console.error('❌ loadSavedProfileImage Funktion nicht verfügbar');
-                }
-                
-                // Initialisiere andere Komponenten
-                if (window.imageManager) {
-                    console.log('✅ Image Manager initialisiert');
-                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
-                }
-                
-                if (window.activityGallery) {
-                    console.log('✅ Activity Gallery initialisiert');
-                }
-                
-                if (window.contentManager) {
-                    console.log('✅ Content Manager initialisiert');
-                }
-                
-                // Lade Aktivitätsbilder auf Homepage
-                loadActivityImagesOnHomepage();
-                
-                console.log('✅ Website-Initialisierung abgeschlossen');
-                
-                // Debug: Prüfe Profilbild-Element
-                const profileImage = document.getElementById('profile-photo');
-                if (profileImage) {
-                    console.log('📸 Profilbild-Element gefunden:', profileImage.src);
-                    console.log('📸 Profilbild data-loaded:', profileImage.getAttribute('data-loaded'));
-                } else {
-                    console.error('❌ Profilbild-Element nicht gefunden');
-                }
-            }, 100);
-        });
-        
-        // Funktion zum Laden der Aktivitätsbilder auf der Homepage
-        function loadActivityImagesOnHomepage() {
-            console.log('🏠 Lade Aktivitätsbilder auf Homepage...');
-            
-            // Warte bis die Activity Gallery initialisiert ist
-            if (window.activityGallery) {
-                console.log('✅ Activity Gallery verfügbar, initialisiere Galerien...');
-                
-                // Initialisiere alle Galerien
-                if (typeof window.activityGallery.initializeMainPageGalleries === 'function') {
-                    window.activityGallery.initializeMainPageGalleries();
-                } else {
-                    console.log('⚠️ initializeMainPageGalleries nicht verfügbar, verwende Fallback...');
+                    console.log('⚠️ Activity Gallery nicht verfügbar, verwende Fallback...');
                     loadActivityImagesFallback();
                 }
-            } else {
-                console.log('⚠️ Activity Gallery nicht verfügbar, verwende Fallback...');
-                loadActivityImagesFallback();
+                
+                // Richte Synchronisation ein
+                setupHomepageSync();
+                
+                // Erste Überprüfung nach kurzer Verzögerung
+                setTimeout(() => {
+                    checkForHomepageUpdates();
+                }, 2000);
+            });
+        }
+        
+        // Warte auf Homepage-Abhängigkeiten
+        async function waitForHomepageDependencies() {
+            const maxWaitTime = 15000; // 15 Sekunden
+            const checkInterval = 200; // Alle 200ms prüfen
+            let elapsed = 0;
+            
+            while (elapsed < maxWaitTime) {
+                // Prüfe ob alle notwendigen Skripte geladen sind
+                if (window.netlifyStorage && window.ActivityGallery) {
+                    console.log('✅ Alle Skripte verfügbar');
+                    break;
+                }
+                
+                // Prüfe ob DOM vollständig geladen ist
+                if (document.readyState === 'complete') {
+                    console.log('✅ DOM vollständig geladen');
+                    break;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, checkInterval));
+                elapsed += checkInterval;
             }
             
-            // Neue automatische Synchronisation einrichten
-            setupAutoSync();
+            if (elapsed >= maxWaitTime) {
+                console.warn('⚠️ Timeout beim Warten auf Homepage-Abhängigkeiten');
+            }
         }
         
         // Neue automatische Synchronisation
-        function setupAutoSync() {
+        function setupHomepageSync() {
             console.log('🔄 Richte automatische Synchronisation für Homepage ein...');
             
             // 1. Event-Listener für PostMessage-Updates
@@ -851,6 +834,18 @@
         
         // Debug: Log alle verfügbaren globalen Funktionen
         console.log('🔍 Verfügbare globale Funktionen:', Object.keys(window).filter(key => typeof window[key] === 'function'));
+
+        // Starte Homepage-Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Homepage DOM geladen, starte Initialisierung...');
+            initializeHomepage();
+        });
+        
+        // Fallback: Falls DOM bereits geladen ist
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            console.log('🚀 Homepage bereits geladen, starte Initialisierung...');
+            initializeHomepage();
+        }
     </script>
 </body>
 </html> 
