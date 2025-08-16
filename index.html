@@ -676,26 +676,59 @@
             const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
             
             activities.forEach(activityName => {
-                // Prüfe beide Speicherorte
+                // Prüfe alle verfügbaren Speicherorte
                 const netlifyKey = `${activityName}_netlify_images`;
                 const localKey = `${activityName}_images`;
                 
                 const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
                 const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
                 
-                // Verwende die neuesten Bilder
+                // Verwende die neuesten Bilder (Netlify hat Priorität, dann lokal)
                 const images = netlifyImages.length > 0 ? netlifyImages : localImages;
                 const galleryContainer = document.getElementById(`${activityName}-gallery`);
                 
-                if (galleryContainer && images.length > 0) {
+                if (galleryContainer) {
                     // Prüfe, ob die Galerie bereits aktuelle Bilder hat
                     const currentImages = galleryContainer.querySelectorAll('.gallery-item');
-                    if (currentImages.length !== images.length) {
-                        console.log(`🔄 Homepage-Galerie für ${activityName} veraltet, aktualisiere...`);
+                    const currentCount = currentImages.length;
+                    const newCount = images.length;
+                    
+                    // Aktualisiere nur wenn sich die Anzahl geändert hat
+                    if (currentCount !== newCount) {
+                        console.log(`🔄 Homepage-Galerie für ${activityName} veraltet (${currentCount} → ${newCount}), aktualisiere...`);
                         updateHomepageGallery(activityName, images, galleryContainer);
+                    }
+                    
+                    // Prüfe auch auf Änderungen in bestehenden Bildern
+                    if (currentCount > 0 && newCount > 0) {
+                        const needsUpdate = checkImageContentChanges(activityName, currentImages, images);
+                        if (needsUpdate) {
+                            console.log(`🔄 Bildinhalt für ${activityName} geändert, aktualisiere...`);
+                            updateHomepageGallery(activityName, images, galleryContainer);
+                        }
                     }
                 }
             });
+        }
+        
+        // Prüfe auf Änderungen in Bildinhalten
+        function checkImageContentChanges(activityName, currentElements, newImages) {
+            if (currentElements.length !== newImages.length) return true;
+            
+            for (let i = 0; i < currentElements.length; i++) {
+                const currentElement = currentElements[i];
+                const newImage = newImages[i];
+                
+                const currentTitle = currentElement.querySelector('h4')?.textContent || '';
+                const newTitle = newImage.title || newImage.filename || '';
+                
+                if (currentTitle !== newTitle) {
+                    console.log(`🔄 Titel geändert für ${activityName}: "${currentTitle}" → "${newTitle}"`);
+                    return true;
+                }
+            }
+            
+            return false;
         }
         
         // Fallback-Funktion für den Fall, dass Activity Gallery nicht verfügbar ist
@@ -714,13 +747,30 @@
                 try {
                     let images = [];
                     
-                    // LADE NUR AUS NETLIFY - KEINE LOKALEN FALLBACKS!
+                    // 1. Versuche Netlify-Speicher
                     if (window.netlifyStorage) {
-                        console.log(`🌐 Lade ${activity} Bilder NUR aus Netlify-Speicher...`);
+                        console.log(`🌐 Lade ${activity} Bilder aus Netlify-Speicher...`);
                         images = await window.netlifyStorage.loadAllActivityImages(activity);
-                    } else {
-                        console.log(`❌ Netlify Storage nicht verfügbar für ${activity}`);
-                        images = [];
+                    }
+                    
+                    // 2. Fallback: Lokaler Speicher
+                    if (images.length === 0) {
+                        console.log(`🔄 Versuche lokalen Speicher für ${activity}...`);
+                        const localImages = JSON.parse(localStorage.getItem(`${activity}_images`) || '[]');
+                        if (localImages.length > 0) {
+                            images = localImages;
+                            console.log(`✅ ${localImages.length} lokale Bilder für ${activity} geladen`);
+                        }
+                    }
+                    
+                    // 3. Fallback: Netlify-Backup-Speicher
+                    if (images.length === 0) {
+                        console.log(`🔄 Versuche Netlify-Backup für ${activity}...`);
+                        const netlifyImages = JSON.parse(localStorage.getItem(`${activity}_netlify_images`) || '[]');
+                        if (netlifyImages.length > 0) {
+                            images = netlifyImages;
+                            console.log(`✅ ${netlifyImages.length} Netlify-Backup-Bilder für ${activity} geladen`);
+                        }
                     }
                     
                     if (images.length > 0) {
@@ -760,7 +810,7 @@
                                 <p>Bilder werden bald hinzugefügt.</p>
                             </div>
                         `;
-                        console.log(`⚠️ ${activity}: Keine Netlify-Bilder verfügbar`);
+                        console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
                     }
                 } catch (error) {
                     console.error(`❌ Fehler beim Laden der ${activity} Bilder:`, error);
