@@ -2078,10 +2078,12 @@ class AdminPanel {
                 'lastSavedData'
             ];
             
+            const timestamp = Date.now();
             keysToUse.forEach(key => {
                 try {
                     localStorage.setItem(key, JSON.stringify(changes));
-                    console.log(`✅ In ${key} gespeichert`);
+                    localStorage.setItem(`${key}_timestamp`, timestamp.toString());
+                    console.log(`✅ In ${key} gespeichert mit Timestamp ${timestamp}`);
                 } catch (error) {
                     console.warn(`⚠️ Fehler beim Speichern in ${key}:`, error);
                 }
@@ -2679,12 +2681,15 @@ class AdminPanel {
                 }
             });
             
-            // Speichere sofort in localStorage
+            // Speichere sofort in localStorage mit Timestamp
+            const timestamp = Date.now();
             localStorage.setItem('websiteData', JSON.stringify(formData));
+            localStorage.setItem('websiteData_timestamp', timestamp.toString());
             localStorage.setItem('autoSaveBackup', JSON.stringify(formData));
+            localStorage.setItem('autoSaveBackup_timestamp', timestamp.toString());
             localStorage.setItem('lastAutoSave', new Date().toISOString());
             
-            console.log('⚡ QUICK SAVE erfolgreich');
+            console.log(`⚡ QUICK SAVE erfolgreich mit Timestamp ${timestamp}`);
             
         } catch (error) {
             console.error('❌ QUICK SAVE fehlgeschlagen:', error);
