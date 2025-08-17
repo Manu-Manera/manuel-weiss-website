@@ -107,29 +107,7 @@
         "day": "CHF 150",
         "week": "CHF 800"
       },
-              "images": [
-        {
-          "id": 1,
-          "title": "Wohnmobil Außenansicht",
-          "description": "Modernes Wohnmobil mit Platz für 4 Personen",
-          "filename": "images/wohnmobil/wohnmobil-exterior.jpg",
-          "alt": "Wohnmobil Außenansicht"
-        },
-        {
-          "id": 2,
-          "title": "Küche & Wohnbereich",
-          "description": "Vollausgestattete Küche und gemütlicher Wohnbereich",
-          "filename": "images/wohnmobil/wohnmobil-kitchen.jpg",
-          "alt": "Wohnmobil Innenbereich"
-        },
-        {
-          "id": 3,
-          "title": "Schlafbereich",
-          "description": "Bequeme Betten für erholsame Nächte",
-          "filename": "images/wohnmobil/wohnmobil-bedroom.jpg",
-          "alt": "Wohnmobil Schlafbereich"
-        }
-      ]
+              "images": []
     },
     {
       "id": 2,
@@ -152,15 +130,7 @@
       "pricing": {
         "event": "CHF 250"
       },
-      "images": [
-        {
-          "id": 2,
-          "title": "Fotobox Setup",
-          "description": "Professionelle Fotobox mit HD-Kamera",
-          "filename": "images/fotobox/fotobox-1.jpg",
-          "alt": "Fotobox Setup"
-        }
-      ]
+      "images": []
     },
     {
       "id": 3,
@@ -184,15 +154,7 @@
         "day": "CHF 55",
         "week": "CHF 300"
       },
-      "images": [
-        {
-          "id": 3,
-          "title": "E-Bike Modell",
-          "description": "Hochwertiges E-Bike für alle Altersgruppen",
-          "filename": "ebike-1.jpg",
-          "alt": "E-Bike Modell"
-        }
-      ]
+      "images": []
     },
     {
       "id": 4,
@@ -216,36 +178,7 @@
         "half": "CHF 45",
         "full": "CHF 75"
       },
-      "images": [
-        {
-          "id": 4,
-          "title": "SUP Boards Übersicht",
-          "description": "Verschiedene SUP Boards für Anfänger und Fortgeschrittene",
-          "filename": "sup-boards-overview.jpg",
-          "alt": "SUP Boards Übersicht"
-        },
-        {
-          "id": 5,
-          "title": "SUP Board Anfänger (10'6\")",
-          "description": "Stabiles Board perfekt für Einsteiger",
-          "filename": "sup-board-beginner.jpg",
-          "alt": "SUP Board für Anfänger"
-        },
-        {
-          "id": 6,
-          "title": "SUP Board Fortgeschrittene (12'6\")",
-          "description": "Schnelleres Board für erfahrene Paddler",
-          "filename": "sup-board-advanced.jpg",
-          "alt": "SUP Board für Fortgeschrittene"
-        },
-        {
-          "id": 7,
-          "title": "Zubehör-Set",
-          "description": "Paddle, Pumpe, Sicherheitsleine und Transporttasche",
-          "filename": "sup-accessories.jpg",
-          "alt": "SUP Zubehör komplett"
-        }
-      ]
+      "images": []
     }
   ],
   "projects": [
