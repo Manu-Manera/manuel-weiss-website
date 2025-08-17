@@ -34,10 +34,11 @@ class AdminPanel {
         this.setupAutoSave();
         
         // Debug-Informationen
-        console.log('🔧 AdminPanel Status:');
+        console.log('🔧 AdminPanel Status (CRITICAL-FIX v3.0):');
         console.log('  - NetlifyStorage verfügbar:', !!window.netlifyStorage);
         console.log('  - localStorage verfügbar:', !!window.localStorage);
         console.log('  - Gespeicherte Daten:', localStorage.getItem('websiteData') ? 'Ja' : 'Nein');
+        console.log('  - CRITICAL-FIX: Deployment Test - ' + new Date().toISOString());
     }
 
     // Mache wichtige Funktionen global verfügbar
