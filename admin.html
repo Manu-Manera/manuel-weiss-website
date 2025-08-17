@@ -937,52 +937,74 @@ Pannenhilfe</textarea>
     <script>
         console.log('🚀 SOFORTIGE Datenladung startet...');
         
-        // Funktion für sofortiges Laden
+        // Funktion für intelligentes Laden (nur wenn Felder leer sind)
         function loadDataImmediately() {
             try {
-                console.log('⚡ Lade Daten SOFORT...');
+                console.log('⚡ INTELLIGENTES Laden startet...');
+                
+                // Prüfe erst ob Felder bereits Werte haben (von vorheriger Sitzung)
+                const testElement = document.getElementById('contact-title');
+                if (testElement && testElement.value && testElement.value.trim() !== '') {
+                    console.log('ℹ️ Felder haben bereits Werte - überspringe Laden');
+                    return;
+                }
                 
                 // Lade aus allen möglichen Speicherorten
                 const possibleKeys = ['websiteData', 'autoSaveBackup', 'emergencyBackup', 'adminPanelData'];
                 let loadedData = null;
+                let newestTimestamp = 0;
+                let newestKey = null;
                 
+                // Finde die neuesten Daten
                 for (const key of possibleKeys) {
                     const savedData = localStorage.getItem(key);
                     if (savedData) {
                         try {
-                            loadedData = JSON.parse(savedData);
-                            console.log(`✅ SOFORT: Daten aus ${key} geladen:`, loadedData);
-                            break;
+                            const data = JSON.parse(savedData);
+                            const timestamp = localStorage.getItem(`${key}_timestamp`) || 
+                                            localStorage.getItem('lastSave') || 
+                                            localStorage.getItem('lastAutoSave') || 0;
+                            
+                            if (parseInt(timestamp) > newestTimestamp) {
+                                newestTimestamp = parseInt(timestamp);
+                                newestKey = key;
+                                loadedData = data;
+                            }
                         } catch (e) {
                             console.warn(`⚠️ Fehler beim Parsen von ${key}:`, e);
                         }
                     }
                 }
                 
-                if (loadedData) {
-                    // Setze alle Felder SOFORT
+                if (loadedData && newestKey) {
+                    console.log(`✅ INTELLIGENTES Laden: Neueste Daten aus ${newestKey}:`, loadedData);
+                    
+                    // Setze alle Felder nur wenn sie leer sind
                     Object.keys(loadedData).forEach(key => {
-                        // Warte bis DOM bereit ist
                         const checkAndSet = () => {
                             const element = document.getElementById(key);
                             if (element && element.type !== 'file') {
-                                element.value = loadedData[key];
-                                console.log(`⚡ SOFORT gesetzt: ${key} = ${loadedData[key]}`);
+                                // Nur setzen wenn Feld leer ist
+                                if (!element.value || element.value.trim() === '') {
+                                    element.value = loadedData[key];
+                                    console.log(`⚡ INTELLIGENT gesetzt: ${key} = ${loadedData[key]}`);
+                                } else {
+                                    console.log(`ℹ️ Feld ${key} hat bereits Wert: ${element.value}`);
+                                }
                             } else if (document.readyState !== 'complete') {
-                                // Versuche nochmal in 50ms
                                 setTimeout(checkAndSet, 50);
                             }
                         };
                         checkAndSet();
                     });
                     
-                    console.log('🎉 SOFORTIGE Datenladung erfolgreich!');
+                    console.log('🎉 INTELLIGENTES Laden erfolgreich!');
                 } else {
-                    console.log('ℹ️ Keine Daten für sofortiges Laden gefunden');
+                    console.log('ℹ️ Keine Daten für intelligentes Laden gefunden');
                 }
                 
             } catch (error) {
-                console.error('❌ SOFORTIGE Datenladung fehlgeschlagen:', error);
+                console.error('❌ INTELLIGENTES Laden fehlgeschlagen:', error);
             }
         }
         
