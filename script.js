@@ -182,15 +182,42 @@ function loadSavedContent() {
                 loadDynamicProjects(data.projects);
             }
             
-            // Lade Contact-Informationen
-            if (data.contactEmail) {
+            // Lade Contact-Informationen (multiple Formate unterstützen)
+            const email = data.contactEmail || data['contact-email'];
+            if (email) {
                 const elements = document.querySelectorAll('[data-contact="email"]');
-                elements.forEach(el => el.textContent = data.contactEmail);
+                elements.forEach(el => {
+                    el.textContent = email;
+                    console.log('✅ Email aktualisiert:', email);
+                });
             }
             
-            if (data.contactPhone) {
+            const phone = data.contactPhone || data['contact-phone'];
+            if (phone) {
                 const elements = document.querySelectorAll('[data-contact="phone"]');
-                elements.forEach(el => el.textContent = data.contactPhone);
+                elements.forEach(el => {
+                    el.textContent = phone;
+                    console.log('✅ Telefon aktualisiert:', phone);
+                });
+            }
+            
+            // Lade Kontakt-Name und -Titel
+            const contactName = data.contactName || data['contact-name'];
+            if (contactName) {
+                const elements = document.querySelectorAll('[data-contact="name"]');
+                elements.forEach(el => {
+                    el.textContent = contactName;
+                    console.log('✅ Kontakt-Name aktualisiert:', contactName);
+                });
+            }
+            
+            const contactTitle = data.contactTitle || data['contact-title'];
+            if (contactTitle) {
+                const elements = document.querySelectorAll('[data-contact="title"]');
+                elements.forEach(el => {
+                    el.textContent = contactTitle;
+                    console.log('✅ Kontakt-Titel aktualisiert:', contactTitle);
+                });
             }
             
             // Lade Zertifikate dynamisch
@@ -887,9 +914,15 @@ window.addEventListener('scroll', debouncedScrollHandler);
 
 // Load profile image and content when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Seite geladen - lade Profilbild...');
+    console.log('🚀 Seite geladen - lade Profilbild und Content...');
     loadSavedProfileImage();
     loadSavedContent();
+    
+    // Zusätzliche Ladung nach kurzer Verzögerung für DOM-Stabilität
+    setTimeout(() => {
+        console.log('🔄 Zusätzliche Content-Ladung...');
+        loadSavedContent();
+    }, 1000);
 });
 
 // Listen for updates from admin panel
