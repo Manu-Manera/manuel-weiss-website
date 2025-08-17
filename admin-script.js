@@ -30,6 +30,9 @@ class AdminPanel {
         // Event Listener werden jetzt zentral am Ende der Datei verwaltet
         // Keine zusätzlichen Event Listener hier - zu komplex!
         
+        // AUTOSAVE: Speichere automatisch bei Änderungen
+        this.setupAutoSave();
+        
         // Debug-Informationen
         console.log('🔧 AdminPanel Status:');
         console.log('  - NetlifyStorage verfügbar:', !!window.netlifyStorage);
@@ -2631,11 +2634,106 @@ class AdminPanel {
             }, 100);
         }
     }
+    
+    // Setup Autosave
+    setupAutoSave() {
+        console.log('🔄 Setup Autosave...');
+        
+        // Autosave bei jeder Eingabe
+        document.addEventListener('input', (e) => {
+            if (e.target.id && e.target.type !== 'file') {
+                console.log(`💾 AUTOSAVE: ${e.target.id} = ${e.target.value}`);
+                
+                // Debounce: Warte 1 Sekunde nach letzter Eingabe
+                clearTimeout(this.autoSaveTimer);
+                this.autoSaveTimer = setTimeout(() => {
+                    this.quickSave();
+                }, 1000);
+            }
+        });
+        
+        console.log('✅ Autosave aktiviert');
+    }
+    
+    // Schnelle Speicherung
+    quickSave() {
+        console.log('⚡ QUICK SAVE...');
+        
+        try {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.id && input.type !== 'file') {
+                    formData[input.id] = input.value;
+                }
+            });
+            
+            // Speichere sofort in localStorage
+            localStorage.setItem('websiteData', JSON.stringify(formData));
+            localStorage.setItem('autoSaveBackup', JSON.stringify(formData));
+            localStorage.setItem('lastAutoSave', new Date().toISOString());
+            
+            console.log('⚡ QUICK SAVE erfolgreich');
+            
+        } catch (error) {
+            console.error('❌ QUICK SAVE fehlgeschlagen:', error);
+        }
+    }
 }
 
 // Global Functions for HTML onclick handlers
 function saveAllChanges() {
-    adminPanel.saveAllChanges();
+    console.log('🔥 SAVE BUTTON GEKLICKT!');
+    
+    if (!adminPanel) {
+        console.error('❌ AdminPanel noch nicht initialisiert! Initialisiere jetzt...');
+        adminPanel = new AdminPanel();
+        
+        // Warte kurz und versuche erneut
+        setTimeout(() => {
+            if (adminPanel && adminPanel.saveAllChanges) {
+                console.log('🔄 Versuche Speichern nach Initialisierung...');
+                adminPanel.saveAllChanges();
+            } else {
+                console.error('❌ AdminPanel immer noch nicht verfügbar!');
+                // NOTFALL: Direkte localStorage-Speicherung
+                emergencySave();
+            }
+        }, 100);
+    } else {
+        console.log('✅ AdminPanel verfügbar, speichere...');
+        adminPanel.saveAllChanges();
+    }
+}
+
+// NOTFALL-Speicherfunktion
+function emergencySave() {
+    console.log('🚨 NOTFALL-SPEICHERUNG aktiviert!');
+    
+    try {
+        const formData = {};
+        const inputs = document.querySelectorAll('input, textarea, select');
+        
+        inputs.forEach(input => {
+            if (input.id && input.type !== 'file' && input.value) {
+                formData[input.id] = input.value;
+                console.log(`🚨 NOTFALL: ${input.id} = ${input.value}`);
+            }
+        });
+        
+        // Speichere in localStorage
+        localStorage.setItem('websiteData', JSON.stringify(formData));
+        localStorage.setItem('emergencyBackup', JSON.stringify(formData));
+        localStorage.setItem('lastSave', new Date().toISOString());
+        
+        console.log('🚨 NOTFALL-SPEICHERUNG erfolgreich!');
+        alert('NOTFALL-SPEICHERUNG erfolgreich! Daten in localStorage gesichert.');
+        
+    } catch (error) {
+        console.error('❌ NOTFALL-SPEICHERUNG fehlgeschlagen:', error);
+        alert('KRITISCHER FEHLER: Speicherung komplett fehlgeschlagen!');
+    }
 }
 
 function publishChanges() {
