@@ -183,36 +183,17 @@ class ActivityGallery {
         if (!this.currentActivity || !this.galleryContainer) return;
 
         try {
-            console.log(`Lade Bilder für Aktivität: ${this.currentActivity}`);
+            console.log(`Lade Bilder für Aktivität: ${this.currentActivity} von Netlify...`);
             
-            // Lade Bilder aus verschiedenen Quellen
+            // Lade Bilder nur noch von Netlify
             let allImages = [];
             
-            // 1. Versuche Netlify-Speicher
             if (window.netlifyStorage) {
-                console.log('Lade Bilder aus Netlify-Speicher...');
-                const netlifyImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
-                if (netlifyImages && netlifyImages.length > 0) {
-                    allImages = netlifyImages;
-                    console.log(`${netlifyImages.length} Netlify-Bilder geladen`);
+                console.log('Lade Bilder von Netlify...');
+                allImages = await window.netlifyStorage.loadAllActivityImages(this.currentActivity);
+                if (allImages && allImages.length > 0) {
+                    console.log(`${allImages.length} Bilder von Netlify geladen`);
                 }
-            }
-            
-            // 2. Fallback: Lokaler Speicher
-            if (allImages.length === 0) {
-                console.log('Versuche lokalen Speicher...');
-                const localImages = JSON.parse(localStorage.getItem(`${this.currentActivity}_images`) || '[]');
-                if (localImages.length > 0) {
-                    allImages = localImages;
-                    console.log(`${localImages.length} lokale Bilder geladen`);
-                }
-            }
-            
-            // 3. Fallback: Standard-Bilder
-            if (allImages.length === 0) {
-                console.log('Verwende Standard-Bilder...');
-                allImages = await this.getDefaultImages();
-                console.log(`${allImages.length} Standard-Bilder geladen`);
             }
             
             if (allImages.length > 0) {
@@ -220,72 +201,19 @@ class ActivityGallery {
                 // Speichere aktuelle Bilder für Hash-Vergleich
                 this.currentImagesHash = this.hashImages(allImages);
             } else {
-                console.log('Keine Bilder gefunden');
+                console.log('Keine Bilder von Netlify gefunden');
                 this.showEmptyState();
             }
             
         } catch (error) {
-            console.error('Fehler beim Laden der Aktivitätsbilder:', error);
+            console.error('Fehler beim Laden der Aktivitätsbilder von Netlify:', error);
             this.showEmptyState();
         }
     }
 
     async getDefaultImages() {
-        // Standard-Bilder mit korrekten Pfaden
-        const defaultImages = {
-            'wohnmobil': [
-                {
-                    src: './images/wohnmobil/wohnmobil-exterior.jpg',
-                    alt: 'Wohnmobil Außenansicht',
-                    title: 'Wohnmobil Außenansicht',
-                    description: 'Gemütliches Wohnmobil für Ihre Reisen',
-                    filename: 'wohnmobil-exterior.jpg'
-                },
-                {
-                    src: './images/wohnmobil/wohnmobil-bedroom.jpg',
-                    alt: 'Wohnmobil Schlafzimmer',
-                    title: 'Wohnmobil Schlafzimmer',
-                    description: 'Komfortables Schlafzimmer',
-                    filename: 'wohnmobil-bedroom.jpg'
-                },
-                {
-                    src: './images/wohnmobil/wohnmobil-kitchen.jpg',
-                    alt: 'Wohnmobil Küche',
-                    title: 'Wohnmobil Küche',
-                    description: 'Vollausgestattete Küche',
-                    filename: 'wohnmobil-kitchen.jpg'
-                }
-            ],
-            'fotobox': [
-                {
-                    src: './images/fotobox/fotobox-1.jpg',
-                    alt: 'Fotobox',
-                    title: 'Professionelle Fotobox',
-                    description: 'Perfekt für Events und Feiern',
-                    filename: 'fotobox-1.jpg'
-                }
-            ],
-            'sup': [
-                {
-                    src: './images/sup/sup-1.jpg',
-                    alt: 'Stand-Up-Paddle',
-                    title: 'Stand-Up-Paddle',
-                    description: 'Entdecken Sie das Wasser',
-                    filename: 'sup-1.jpg'
-                }
-            ],
-            'ebike': [
-                {
-                    src: './images/ebike/ebike-1.jpg',
-                    alt: 'E-Bike',
-                    title: 'E-Bike',
-                    description: 'Elektrisch unterstütztes Radfahren',
-                    filename: 'ebike-1.jpg'
-                }
-            ]
-        };
-
-        return defaultImages[this.currentActivity] || [];
+        // Keine Standard-Bilder mehr - nur noch echte hochgeladene Bilder
+        return [];
     }
 
     renderGallery(images) {
@@ -421,7 +349,12 @@ class ActivityGallery {
             <div class="gallery-empty">
                 <i class="fas fa-images"></i>
                 <h3>Noch keine Bilder verfügbar</h3>
-                <p>Bilder werden bald hinzugefügt.</p>
+                <p>Fügen Sie über das Admin-Panel Bilder hinzu, um Ihre ${this.getActivityDisplayName()} zu präsentieren.</p>
+                <div class="gallery-empty-actions">
+                    <a href="admin.html" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-upload"></i> Bilder hochladen
+                    </a>
+                </div>
             </div>
         `;
     }

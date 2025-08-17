@@ -108,9 +108,7 @@ class ImageManager {
     // Lädt kritische Bilder vor
     async preloadCriticalImages() {
         const criticalImages = [
-            './manuel-weiss-photo.svg',
-            './images/wohnmobil/wohnmobil-exterior.jpg',
-            './images/fotobox/fotobox-1.jpg'
+            './manuel-weiss-photo.svg'
         ];
 
         for (const imagePath of criticalImages) {

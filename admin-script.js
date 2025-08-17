@@ -26,13 +26,28 @@ class AdminPanel {
         this.loadSavedImages();
         
         this.logInfo('Admin Panel initialisiert');
+        
+        // Zusätzlicher Event Listener für DOM-Bereitschaft
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.logInfo('DOM geladen - lade Daten erneut');
+                this.loadSavedContent();
+            });
+        }
+        
+        // Debug-Informationen
+        console.log('🔧 AdminPanel Status:');
+        console.log('  - NetlifyStorage verfügbar:', !!window.netlifyStorage);
+        console.log('  - localStorage verfügbar:', !!window.localStorage);
+        console.log('  - Gespeicherte Daten:', localStorage.getItem('websiteData') ? 'Ja' : 'Nein');
     }
 
     // Mache wichtige Funktionen global verfügbar
     makeGlobalFunctionsAvailable() {
         // Bildbereinigung
-        window.clearAllImages = () => this.clearAllImagesExceptTest();
-        window.createTestImages = () => this.createTestImages();
+        window.clearAllImages = () => this.clearAllImages();
+        window.removeAllTestImages = () => this.removeAllTestImages();
+        window.performFinalCleanup = () => this.performFinalCleanup();
         
         // Log-Export
         window.exportAdminLogs = () => this.exportLogs();
@@ -42,13 +57,20 @@ class AdminPanel {
         window.listAllImages = () => this.listAllImages();
         window.deleteAllImages = () => this.deleteAllImages();
         
+        // Debug-Funktionen
+        window.debugAdminPanel = () => this.debugAdminPanel();
+        window.checkSavedData = () => this.checkSavedData();
+        
         console.log('🔧 Admin-Funktionen global verfügbar:');
         console.log('  - clearAllImages() - Alle Bilder bereinigen');
-        console.log('  - createTestImages() - Testbilder erstellen');
+        console.log('  - removeAllTestImages() - Alle Testbilder entfernen');
+        console.log('  - performFinalCleanup() - Finale Bereinigung durchführen');
         console.log('  - exportAdminLogs() - Logs exportieren');
         console.log('  - clearAdminLogs() - Logs löschen');
         console.log('  - listAllImages() - Alle Bilder auflisten');
         console.log('  - deleteAllImages() - Alle Bilder löschen');
+        console.log('  - debugAdminPanel() - AdminPanel debuggen');
+        console.log('  - checkSavedData() - Gespeicherte Daten prüfen');
     }
 
     // Teste Bildupload-Setup
@@ -81,25 +103,8 @@ class AdminPanel {
     testUploadProcess(activityName, fileInput, imagesContainer) {
         console.log(`🧪 Teste Upload-Prozess für ${activityName}`);
         
-        // Erstelle ein Test-Bild
-        const testCanvas = document.createElement('canvas');
-        testCanvas.width = 100;
-        testCanvas.height = 100;
-        const ctx = testCanvas.getContext('2d');
-        ctx.fillStyle = '#2563eb';
-        ctx.fillRect(0, 0, 100, 100);
-        ctx.fillStyle = 'white';
-        ctx.font = '20px Arial';
-        ctx.fillText('TEST', 20, 60);
-        
-        // Konvertiere zu Blob
-        testCanvas.toBlob((blob) => {
-            const testFile = new File([blob], 'test-image.png', { type: 'image/png' });
-            console.log(`📸 Test-Bild erstellt:`, testFile);
-            
-            // Teste den Upload
-            this.addImageToGallerySimple(activityName, testFile);
-        }, 'image/png');
+        // Keine Testbilder mehr erstellen - nur noch echte Uploads
+        console.log(`✅ Upload-Prozess für ${activityName} bereit`);
     }
 
     // Erstelle Notfall-Upload für fehlende Elemente
@@ -224,58 +229,45 @@ class AdminPanel {
         }
     }
 
-    processUploadedImage(imageData) {
-        console.log('🎨 Verarbeite hochgeladenes Profilbild...');
+    // Verarbeite hochgeladenes Profilbild - nur noch Netlify
+    async processUploadedImage(imageData) {
+        console.log('🎨 Verarbeite hochgeladenes Profilbild für Netlify...');
         
-        // Update preview immediately
-        const preview = document.getElementById('profile-preview');
-        if (preview) {
-            preview.src = imageData;
-            console.log('✅ Profilbild-Vorschau aktualisiert');
-        }
-        
-        // Speichere in localStorage (schnell und zuverlässig)
-        localStorage.setItem('profileImage', imageData);
-        localStorage.setItem('mwps-profile-image', imageData);
-        localStorage.setItem('current-profile-image', imageData);
-        
-        // Speichere auch in websiteData
         try {
-            const existingData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-            existingData.profileImage = imageData;
-            localStorage.setItem('websiteData', JSON.stringify(existingData));
-            console.log('✅ Profilbild in websiteData gespeichert');
-        } catch (error) {
-            console.error('❌ Fehler beim Speichern in websiteData:', error);
-        }
-        
-        // Save with Netlify Storage (falls verfügbar)
-        if (window.netlifyStorage) {
-            window.netlifyStorage.saveProfileImage(imageData).then(result => {
+            // Update preview immediately
+            const preview = document.getElementById('profile-preview');
+            if (preview) {
+                preview.src = imageData;
+                console.log('✅ Profilbild-Vorschau aktualisiert');
+            }
+            
+            // Save with Netlify Storage
+            if (window.netlifyStorage) {
+                const result = await window.netlifyStorage.saveProfileImage(imageData);
                 console.log('✅ Profilbild bei Netlify gespeichert:', result.message);
-                this.showNotification(result.message, result.success ? 'success' : 'warning');
-            }).catch(error => {
-                console.log('⚠️ Netlify-Speicherung fehlgeschlagen, verwende localStorage');
-                this.showNotification('Profilbild lokal gespeichert', 'success');
-            });
-        } else {
-            this.showNotification('Profilbild erfolgreich gespeichert', 'success');
-        }
-        
-        // Update main website
-        try {
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                    type: 'updateProfileImage',
-                    imageData: imageData
-                }, '*');
-                console.log('✅ Update an Hauptseite gesendet');
+                this.showNotification(result.message, 'success');
+                
+                // Update main website
+                try {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage({
+                            type: 'updateProfileImage',
+                            imageData: imageData
+                        }, '*');
+                        console.log('✅ Update an Hauptseite gesendet');
+                    }
+                } catch (error) {
+                    console.log('Cross-window communication nicht verfügbar');
+                }
+                
+                console.log('🎉 Profilbild erfolgreich bei Netlify gespeichert');
+            } else {
+                throw new Error('Netlify Storage nicht verfügbar');
             }
         } catch (error) {
-            console.log('Cross-window communication nicht verfügbar');
+            console.error('❌ Fehler beim Speichern des Profilbilds bei Netlify:', error);
+            this.showNotification('Fehler beim Speichern des Profilbilds bei Netlify', 'error');
         }
-        
-        console.log('🎉 Profilbild erfolgreich verarbeitet und gespeichert');
     }
 
     // Navigation Setup
@@ -358,49 +350,49 @@ class AdminPanel {
         });
     }
 
-    handleImageUpload(file) {
+    // Verarbeite Profilbild-Upload - nur noch Netlify
+    async handleImageUpload(file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const preview = document.getElementById('profile-preview');
-            preview.src = e.target.result;
-            
-            // Update main website image immediately (falls die Seite offen ist)
-            const mainImage = document.getElementById('profile-photo');
-            if (mainImage) {
-                mainImage.src = e.target.result;
-            }
-
-            // Speichere das Bild auch als Original-Datei-Ersatz
-            // Damit die Hauptseite das neue Bild lädt
+        reader.onload = async (e) => {
             try {
-                // Simuliere Server-Update durch localStorage
-                localStorage.setItem('current-profile-image', e.target.result);
+                const preview = document.getElementById('profile-preview');
+                preview.src = e.target.result;
                 
+                // Update main website image immediately (falls die Seite offen ist)
+                const mainImage = document.getElementById('profile-photo');
+                if (mainImage) {
+                    mainImage.src = e.target.result;
+                }
+
                 // Sende Update an Hauptfenster (falls offen)
-                if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({
-                        type: 'updateProfileImage',
-                        imageData: e.target.result
-                    }, '*');
+                try {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage({
+                            type: 'updateProfileImage',
+                            imageData: e.target.result
+                        }, '*');
+                    }
+                } catch (error) {
+                    console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+                }
+
+                // Speichere bei Netlify
+                if (window.netlifyStorage) {
+                    await window.netlifyStorage.saveProfileImage(e.target.result);
+                    console.log('✅ Profilbild bei Netlify gespeichert');
+                    
+                    // Automatisch alle Daten speichern nach Bildupload
+                    await this.saveAllChanges();
+
+                    this.showNotification('Profilbild erfolgreich bei Netlify gespeichert', 'success');
+                    this.markAsChanged('profile-image', e.target.result);
+                } else {
+                    throw new Error('Netlify Storage nicht verfügbar');
                 }
             } catch (error) {
-                console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+                console.error('❌ Fehler beim Speichern des Profilbilds bei Netlify:', error);
+                this.showNotification('Fehler beim Speichern des Profilbilds bei Netlify', 'error');
             }
-
-            // Save to localStorage for persistence (multiple keys for reliability)
-            localStorage.setItem('profileImage', e.target.result);
-            localStorage.setItem('mwps-profile-image', e.target.result);
-            
-            // Also save to main website data
-            const existingData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-            existingData.profileImage = e.target.result;
-            localStorage.setItem('websiteData', JSON.stringify(existingData));
-
-            // Automatisch alle Daten speichern nach Bildupload
-            this.saveAllChanges();
-
-            this.showNotification('Profilbild erfolgreich aktualisiert', 'success');
-            this.markAsChanged('profile-image', e.target.result);
         };
         reader.readAsDataURL(file);
     }
@@ -867,7 +859,7 @@ class AdminPanel {
             }
         });
         
-        // Sammle aktuelles Profilbild
+        // Sammle aktuelles Profilbild (wird direkt bei Netlify gespeichert)
         const profilePreview = document.getElementById('profile-preview');
         if (profilePreview && profilePreview.src && !profilePreview.src.includes('manuel-weiss-photo.svg')) {
             formData.profileImage = profilePreview.src;
@@ -1267,20 +1259,15 @@ class AdminPanel {
         return imageDiv;
     }
 
-    // Einfache Bildspeicherung
-    saveImageSimple(activityName, imageId, imageData, filename) {
+    // Einfache Bildspeicherung - nur noch Netlify
+    async saveImageSimple(activityName, imageId, imageData, filename) {
         try {
-            console.log(`💾 Speichere Bild für ${activityName}: ${filename}`);
+            console.log(`💾 Speichere Bild für ${activityName}: ${filename} bei Netlify...`);
             console.log('📊 Speicher-Details:');
             console.log('  - Image ID:', imageId);
             console.log('  - Filename:', filename);
             console.log('  - Image Data Länge:', imageData ? imageData.length : 'undefined');
             console.log('  - Activity:', activityName);
-            
-            // 1. Speichere in lokalem Speicher (HAUPTSPEICHER)
-            const storageKey = `${activityName}_images`;
-            let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            console.log(`📦 Aktuelle lokale Bilder: ${images.length}`);
             
             const imageInfo = {
                 id: imageId,
@@ -1290,67 +1277,49 @@ class AdminPanel {
                 imageData: imageData,
                 uploadDate: new Date().toISOString(),
                 isUploaded: true,
-                activity: activityName
+                activity: activityName,
+                isNetlifySaved: true
             };
             
-            images.push(imageInfo);
-            localStorage.setItem(storageKey, JSON.stringify(images));
+            // Lade aktuelle Bilder von Netlify
+            let currentImages = [];
+            if (window.netlifyStorage) {
+                currentImages = await window.netlifyStorage.loadAllActivityImages(activityName);
+            }
             
-            console.log(`✅ Bild lokal gespeichert: ${filename} für ${activityName}`);
-            console.log(`📊 Lokale Bilder nach Speicherung: ${images.length}`);
+            // Füge neues Bild hinzu
+            currentImages.push(imageInfo);
             
-            // 2. Speichere auch in Netlify-Speicher (als Backup)
-            this.saveImageOnline(activityName, images);
-            
-            // 3. Speichere auch in Netlify-Backup-Speicher für Homepage-Kompatibilität
-            const netlifyBackupKey = `${activityName}_netlify_images`;
-            localStorage.setItem(netlifyBackupKey, JSON.stringify(images));
-            console.log(`✅ Netlify-Backup gespeichert: ${netlifyBackupKey}`);
-            
-            // 4. Aktualisiere die Anzeige sofort
-            this.refreshActivityImages(activityName);
-            
-            // 5. Sende Update an alle Fenster
-            this.broadcastUpdate(activityName, images);
-            
-            console.log(`🎉 Bildspeicherung für ${activityName} erfolgreich abgeschlossen`);
+            // Speichere alle Bilder bei Netlify
+            if (window.netlifyStorage) {
+                const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, currentImages);
+                
+                if (result.success) {
+                    console.log(`✅ Bild erfolgreich bei Netlify gespeichert: ${filename}`);
+                    this.showNotification(`Bild erfolgreich gespeichert: ${filename}`, 'success');
+                    
+                    // Aktualisiere die Anzeige
+                    this.refreshActivityImages(activityName);
+                    
+                    // Sende Update an alle Fenster
+                    this.broadcastUpdate(activityName, currentImages);
+                    
+                    console.log(`🎉 Bildspeicherung für ${activityName} erfolgreich abgeschlossen`);
+                } else {
+                    throw new Error('Netlify-Speicherung fehlgeschlagen');
+                }
+            } else {
+                throw new Error('Netlify Storage nicht verfügbar');
+            }
             
         } catch (error) {
-            console.error('❌ Fehler beim Speichern des Bildes:', error);
+            console.error('❌ Fehler beim Speichern des Bildes bei Netlify:', error);
             console.error('❌ Fehler-Details:', error.stack);
-            this.showNotification('Fehler beim Speichern des Bildes', 'error');
+            this.showNotification('Fehler beim Speichern des Bildes bei Netlify', 'error');
         }
     }
 
-    // Neue Online-Speicherung - Robuste Implementierung
-    async saveImageOnline(activityName, images) {
-        try {
-            if (window.netlifyStorage) {
-                console.log(`🌐 Speichere ${activityName} Bilder online...`);
-                const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
-                
-                if (result.success) {
-                    console.log(`✅ ${activityName} Bilder erfolgreich online gespeichert`);
-                    
-                    // Markiere als Netlify-gespeichert
-                    window.netlifyStorage.markAsNetlifySaved(activityName, images);
-                    
-                    // Speichere auch in Netlify-Backup-Speicher
-                    const netlifyBackupKey = `${activityName}_netlify_images`;
-                    localStorage.setItem(netlifyBackupKey, JSON.stringify(images));
-                    
-                    this.showNotification(result.message, 'success');
-                } else {
-                    throw new Error('Online-Speicherung fehlgeschlagen');
-                }
-            } else {
-                console.log('⚠️ Netlify Storage nicht verfügbar, verwende nur lokalen Speicher');
-            }
-        } catch (error) {
-            console.error('❌ Fehler bei Online-Speicherung:', error);
-            console.log('⚠️ Bilder bleiben im lokalen Speicher erhalten');
-        }
-    }
+
 
     // Neue Methode: Sende Updates an alle offenen Fenster
     broadcastUpdate(activityName, images) {
@@ -1420,15 +1389,17 @@ class AdminPanel {
         }
     }
 
-    // Aktualisiere die Anzeige der Aktivitätsbilder
-    refreshActivityImages(activityName) {
+    // Aktualisiere die Anzeige der Aktivitätsbilder von Netlify
+    async refreshActivityImages(activityName) {
         try {
             const imagesContainer = document.getElementById(`${activityName}-images`);
             if (!imagesContainer) return;
 
-            // Lade aktuelle Bilder
-            const storageKey = `${activityName}_images`;
-            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            // Lade aktuelle Bilder von Netlify
+            let images = [];
+            if (window.netlifyStorage) {
+                images = await window.netlifyStorage.loadAllActivityImages(activityName);
+            }
             
             // Entferne alle bestehenden Bild-Elemente (außer Upload-Bereich)
             const existingImages = imagesContainer.querySelectorAll('.activity-image-item');
@@ -1454,9 +1425,9 @@ class AdminPanel {
                 }
             });
             
-            console.log(`🔄 ${images.length} Bilder für ${activityName} aktualisiert`);
+            console.log(`🔄 ${images.length} Bilder für ${activityName} von Netlify aktualisiert`);
         } catch (error) {
-            console.error('❌ Fehler beim Aktualisieren der Bilder:', error);
+            console.error('❌ Fehler beim Aktualisieren der Bilder von Netlify:', error);
         }
     }
 
@@ -1653,85 +1624,137 @@ class AdminPanel {
         }
     }
 
-    loadActivityImages(activityName) {
-        const storageKey = `${activityName}_images`;
-        const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    // Lade Aktivitätsbilder von Netlify
+    async loadActivityImages(activityName) {
         const imagesContainer = document.getElementById(`${activityName}-images`);
         
         if (!imagesContainer) return;
         
-        // Lösche alle bestehenden Bilder (außer dem Upload-Bereich)
-        const existingImages = imagesContainer.querySelectorAll('.activity-image-item');
-        existingImages.forEach(img => img.remove());
-        
-        if (images.length === 0) {
-            console.log(`ℹ️ Keine Bilder für ${activityName} gefunden`);
-            return;
-        }
-        
-        images.forEach(imageInfo => {
-            const imageDiv = this.createImageElement(activityName, imageInfo.id, imageInfo.imageData, imageInfo.title);
-            
-            // Set existing title and description
-            const titleInput = imageDiv.querySelector('.image-title');
-            const descriptionInput = imageDiv.querySelector('.image-description');
-            if (titleInput) titleInput.value = imageInfo.title || imageInfo.filename;
-            if (descriptionInput) descriptionInput.value = imageInfo.description || '';
-            
-            // Insert before upload button
-            const uploadButton = imagesContainer.querySelector('.image-upload');
-            if (uploadButton) {
-                imagesContainer.insertBefore(imageDiv, uploadButton);
-            } else {
-                imagesContainer.appendChild(imageDiv);
+        try {
+            // Lade aktuelle Bilder von Netlify
+            let images = [];
+            if (window.netlifyStorage) {
+                images = await window.netlifyStorage.loadAllActivityImages(activityName);
             }
-        });
-        
-        console.log(`✅ ${images.length} Bilder für ${activityName} geladen`);
+            
+            // Lösche alle bestehenden Bilder (außer dem Upload-Bereich)
+            const existingImages = imagesContainer.querySelectorAll('.activity-image-item');
+            existingImages.forEach(img => img.remove());
+            
+            if (images.length === 0) {
+                console.log(`ℹ️ Keine Bilder für ${activityName} von Netlify gefunden`);
+                return;
+            }
+            
+            images.forEach(imageInfo => {
+                const imageDiv = this.createImageElement(activityName, imageInfo.id, imageInfo.imageData, imageInfo.title);
+                
+                // Set existing title and description
+                const titleInput = imageDiv.querySelector('.image-title');
+                const descriptionInput = imageDiv.querySelector('.image-description');
+                if (titleInput) titleInput.value = imageInfo.title || imageInfo.filename;
+                if (descriptionInput) descriptionInput.value = imageInfo.description || '';
+                
+                // Insert before upload button
+                const uploadButton = imagesContainer.querySelector('.image-upload');
+                if (uploadButton) {
+                    imagesContainer.insertBefore(imageDiv, uploadButton);
+                } else {
+                    imagesContainer.appendChild(imageDiv);
+                }
+            });
+            
+            console.log(`✅ ${images.length} Bilder für ${activityName} von Netlify geladen`);
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Bilder von Netlify:', error);
+        }
     }
 
-    removeActivityImage(activityName, imageId) {
+    // Entferne Aktivitätsbild von Netlify
+    async removeActivityImage(activityName, imageId) {
         if (!confirm('Möchten Sie dieses Bild wirklich löschen?')) return;
         
-        // Remove from DOM
-        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
-        if (imageElement) {
-            imageElement.remove();
+        try {
+            // Remove from DOM
+            const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+            if (imageElement) {
+                imageElement.remove();
+            }
+            
+            // Lade aktuelle Bilder von Netlify
+            let images = [];
+            if (window.netlifyStorage) {
+                images = await window.netlifyStorage.loadAllActivityImages(activityName);
+            }
+            
+            // Entferne das Bild aus der Liste
+            images = images.filter(img => img.id !== imageId);
+            
+            // Speichere aktualisierte Liste bei Netlify
+            if (window.netlifyStorage) {
+                const result = await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
+                
+                if (result.success) {
+                    this.showNotification(`Bild aus ${activityName} erfolgreich entfernt`, 'success');
+                    console.log(`✅ Bild ${imageId} aus ${activityName} bei Netlify entfernt`);
+                } else {
+                    throw new Error('Netlify-Löschung fehlgeschlagen');
+                }
+            } else {
+                throw new Error('Netlify Storage nicht verfügbar');
+            }
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Entfernen des Bildes von Netlify:', error);
+            this.showNotification('Fehler beim Entfernen des Bildes', 'error');
         }
-        
-        // Remove from localStorage
-        const storageKey = `${activityName}_images`;
-        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        images = images.filter(img => img.id !== imageId);
-        localStorage.setItem(storageKey, JSON.stringify(images));
-        
-        // Update website data
-        this.updateWebsiteData();
-        
-        this.showNotification(`Bild aus ${activityName} entfernt`, 'success');
     }
 
-    updateImageTitle(activityName, imageId, newTitle) {
-        const storageKey = `${activityName}_images`;
-        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        
-        const imageIndex = images.findIndex(img => img.id === imageId);
-        if (imageIndex !== -1) {
-            images[imageIndex].title = newTitle;
-            localStorage.setItem(storageKey, JSON.stringify(images));
-            this.updateWebsiteData();
+    // Aktualisiere Bildtitel bei Netlify
+    async updateImageTitle(activityName, imageId, newTitle) {
+        try {
+            // Lade aktuelle Bilder von Netlify
+            let images = [];
+            if (window.netlifyStorage) {
+                images = await window.netlifyStorage.loadAllActivityImages(activityName);
+            }
+            
+            const imageIndex = images.findIndex(img => img.id === imageId);
+            if (imageIndex !== -1) {
+                images[imageIndex].title = newTitle;
+                
+                // Speichere aktualisierte Bilder bei Netlify
+                if (window.netlifyStorage) {
+                    await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
+                    console.log(`✅ Bildtitel für ${imageId} bei Netlify aktualisiert`);
+                }
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Aktualisieren des Bildtitels bei Netlify:', error);
         }
     }
 
-    updateImageDescription(activityName, imageId, newDescription) {
-        const storageKey = `${activityName}_images`;
-        let images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        
-        const imageIndex = images.findIndex(img => img.id === imageId);
-        if (imageIndex !== -1) {
-            images[imageIndex].description = newDescription;
-            localStorage.setItem(storageKey, JSON.stringify(images));
-            this.updateWebsiteData();
+    // Aktualisiere Bildbeschreibung bei Netlify
+    async updateImageDescription(activityName, imageId, newDescription) {
+        try {
+            // Lade aktuelle Bilder von Netlify
+            let images = [];
+            if (window.netlifyStorage) {
+                images = await window.netlifyStorage.loadAllActivityImages(activityName);
+            }
+            
+            const imageIndex = images.findIndex(img => img.id === imageId);
+            if (imageIndex !== -1) {
+                images[imageIndex].description = newDescription;
+                
+                // Speichere aktualisierte Bilder bei Netlify
+                if (window.netlifyStorage) {
+                    await window.netlifyStorage.saveActivityImagesToNetlify(activityName, images);
+                    console.log(`✅ Bildbeschreibung für ${imageId} bei Netlify aktualisiert`);
+                }
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Aktualisieren der Bildbeschreibung bei Netlify:', error);
         }
     }
 
@@ -1746,30 +1769,43 @@ class AdminPanel {
         }
     }
 
-    updateWebsiteData() {
-        // Collect all activity images and update website data
-        const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-        
-        ['wohnmobil', 'fotobox', 'sup', 'ebike'].forEach(activityName => {
-            const storageKey = `${activityName}_images`;
-            const images = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            
-            if (!websiteData.activityImages) websiteData.activityImages = {};
-            websiteData.activityImages[activityName] = images;
-        });
-        
-        localStorage.setItem('websiteData', JSON.stringify(websiteData));
-        
-        // Notify main website if open
+    // Aktualisiere Website-Daten von Netlify
+    async updateWebsiteData() {
         try {
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                    type: 'updateActivityImages',
-                    data: websiteData.activityImages
-                }, '*');
+            // Sammle alle Aktivitätsbilder von Netlify
+            const websiteData = {};
+            websiteData.activityImages = {};
+            
+            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+            
+            for (const activityName of activities) {
+                if (window.netlifyStorage) {
+                    const images = await window.netlifyStorage.loadAllActivityImages(activityName);
+                    websiteData.activityImages[activityName] = images;
+                }
             }
+            
+            // Speichere Website-Daten bei Netlify
+            if (window.netlifyStorage) {
+                await window.netlifyStorage.saveWebsiteContent(websiteData);
+                console.log('✅ Website-Daten bei Netlify aktualisiert');
+            }
+            
+            // Notify main website if open
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        type: 'updateActivityImages',
+                        data: websiteData.activityImages
+                    }, '*');
+                }
+            } catch (error) {
+                console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+            }
+            
+            console.log('✅ Website-Daten aktualisiert mit allen Aktivitätsbildern von Netlify');
         } catch (error) {
-            console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+            console.error('❌ Fehler beim Aktualisieren der Website-Daten bei Netlify:', error);
         }
     }
 
@@ -1787,174 +1823,251 @@ class AdminPanel {
         }
     }
 
-    loadCurrentData() {
-        // Load current website data into admin panel
+    // Lade aktuelle Daten von Netlify + localStorage Backup
+    async loadCurrentData() {
         try {
-            // Lade gespeicherte Daten aus localStorage
-            const savedData = localStorage.getItem('websiteData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                
-                // Lade Profilbild (zuerst aus websiteData, dann aus separatem Key)
-                const preview = document.getElementById('profile-preview');
-                if (preview) {
-                    // Check if user has uploaded an image
-                    const hasUploadedImage = localStorage.getItem('profileImageUploaded') === 'true';
-                    
-                    if (hasUploadedImage) {
-                        // Try multiple sources for uploaded profile image
-                        const profileImage = data.profileImage || 
-                                           localStorage.getItem('profileImage') || 
-                                           localStorage.getItem('mwps-profile-image');
-                        
-                        if (profileImage && profileImage.startsWith('data:image/')) {
-                            preview.src = profileImage;
-                            console.log('✅ Hochgeladenes Profilbild aus localStorage geladen');
-                            return; // Important: Exit here to prevent default loading
-                        }
+            console.log('🔄 Starte Laden aller gespeicherten Daten...');
+            
+            // Lade Profilbild von Netlify (optional)
+            const preview = document.getElementById('profile-preview');
+            if (preview && window.netlifyStorage && typeof window.netlifyStorage.loadProfileImage === 'function') {
+                try {
+                    const profileImage = await window.netlifyStorage.loadProfileImage();
+                    if (profileImage) {
+                        preview.src = profileImage;
+                        console.log('✅ Hochgeladenes Profilbild von Netlify geladen');
+                    } else {
+                        console.log('ℹ️ Kein Profilbild von Netlify verfügbar');
                     }
-                    
-                    // Only load default if no uploaded image exists
-                    console.log('ℹ️ Kein hochgeladenes Profilbild vorhanden, verwende Standard-SVG');
+                } catch (error) {
+                    console.log('ℹ️ Profilbild konnte nicht von Netlify geladen werden:', error);
                 }
-                
-                // Lade Hero-Daten
-                if (data.heroName) {
-                    const element = document.getElementById('hero-name');
-                    if (element) element.value = data.heroName;
-                }
-                if (data.heroTitle) {
-                    const element = document.getElementById('hero-title');
-                    if (element) element.value = data.heroTitle;
-                }
-                if (data.heroSubtitle) {
-                    const element = document.getElementById('hero-subtitle');
-                    if (element) element.value = data.heroSubtitle;
-                }
-                if (data.heroDescription) {
-                    const element = document.getElementById('hero-description');
-                    if (element) element.value = data.heroDescription;
-                }
-                
-                // Lade Profil-Informationen
-                if (data.profileTitle) {
-                    const element = document.getElementById('profile-title');
-                    if (element) element.value = data.profileTitle;
-                }
-                if (data.profileDescription) {
-                    const element = document.getElementById('profile-description');
-                    if (element) element.value = data.profileDescription;
-                }
-                if (data.profileAvailability) {
-                    const element = document.getElementById('profile-availability');
-                    if (element) element.value = data.profileAvailability;
-                }
-                
-                // Lade Kontaktdaten
-                if (data.contactName) {
-                    const element = document.getElementById('contact-name');
-                    if (element) element.value = data.contactName;
-                }
-                if (data.contactTitle) {
-                    const element = document.getElementById('contact-title');
-                    if (element) element.value = data.contactTitle;
-                }
-                if (data.contactLocation) {
-                    const element = document.getElementById('contact-location');
-                    if (element) element.value = data.contactLocation;
-                }
-                if (data.contactEmail) {
-                    const element = document.getElementById('contact-email');
-                    if (element) element.value = data.contactEmail;
-                }
-                if (data.contactPhone) {
-                    const element = document.getElementById('contact-phone');
-                    if (element) element.value = data.contactPhone;
-                }
-                
-                // Lade Design-Einstellungen
-                if (data.primaryColor) {
-                    const element = document.getElementById('primary-color');
-                    if (element) element.value = data.primaryColor;
-                }
-                if (data.secondaryColor) {
-                    const element = document.getElementById('secondary-color');
-                    if (element) element.value = data.secondaryColor;
-                }
-                if (data.heroGradient) {
-                    const element = document.getElementById('hero-gradient');
-                    if (element) element.value = data.heroGradient;
-                }
-                if (data.siteTitle) {
-                    const element = document.getElementById('site-title');
-                    if (element) element.value = data.siteTitle;
-                }
-                if (data.siteDescription) {
-                    const element = document.getElementById('site-description');
-                    if (element) element.value = data.siteDescription;
-                }
-                
-                // Lade Statistiken
-                if (data.stats && data.stats.length > 0) {
-                    data.stats.forEach((stat, index) => {
-                        const nameElement = document.getElementById(`stat${index + 1}-name`);
-                        const valueElement = document.getElementById(`stat${index + 1}-value`);
-                        const unitElement = document.getElementById(`stat${index + 1}-unit`);
-                        
-                        if (nameElement) nameElement.value = stat.name;
-                        if (valueElement) valueElement.value = stat.value;
-                        if (unitElement) unitElement.value = stat.unit;
-                    });
-                }
-                
-                // Lade Activity Details
-                if (data.activityDetails) {
-                    Object.keys(data.activityDetails).forEach(activityName => {
-                        this.loadActivityData(activityName, data.activityDetails[activityName]);
-                    });
-                }
-                
-                console.log('✅ Alle Admin-Daten geladen');
-                
-                // Legacy Statistiken-Code (wird durch obiges ersetzt)
-                if (data.stat1Name) document.getElementById('stat1-name').value = data.stat1Name;
-                if (data.stat1Value) document.getElementById('stat1-value').value = data.stat1Value;
-                if (data.stat1Unit) document.getElementById('stat1-unit').value = data.stat1Unit;
-                
-                if (data.stat2Name) document.getElementById('stat2-name').value = data.stat2Name;
-                if (data.stat2Value) document.getElementById('stat2-value').value = data.stat2Value;
-                if (data.stat2Unit) document.getElementById('stat2-unit').value = data.stat2Unit;
-                
-                if (data.stat3Name) document.getElementById('stat3-name').value = data.stat3Name;
-                if (data.stat3Value) document.getElementById('stat3-value').value = data.stat3Value;
-                if (data.stat3Unit) document.getElementById('stat3-unit').value = data.stat3Unit;
-                
-                console.log('✅ Daten aus localStorage geladen');
             }
+            
+            // Lade Website-Daten aus localStorage (HAUPTQUELLE)
+            try {
+                const savedData = localStorage.getItem('websiteData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    console.log('✅ Website-Daten aus localStorage geladen:', data);
+                    
+                    // Lade alle Formularfelder
+                    this.loadFormData(data);
+                    
+                    // Zeige Erfolgsmeldung
+                    console.log('🎉 Alle gespeicherten Daten erfolgreich wiederhergestellt!');
+                    
+                } else {
+                    console.log('ℹ️ Keine gespeicherten Daten in localStorage gefunden');
+                    this.showNotification('Keine gespeicherten Daten gefunden', 'info');
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Laden der localStorage-Daten:', error);
+                this.showNotification('Fehler beim Laden der gespeicherten Daten', 'error');
+            }
+            
+            // Zeige Status der letzten Netlify-Synchronisation
+            const lastSync = localStorage.getItem('lastNetlifySync');
+            if (lastSync) {
+                console.log('🔄 Letzte Netlify-Synchronisation:', new Date(lastSync).toLocaleString());
+            }
+            
+            console.log('✅ Admin-Panel bereit für Netlify-Integration + lokales Backup');
+            
         } catch (error) {
-            console.log('❌ Fehler beim Laden der Daten:', error);
+            console.error('❌ Kritischer Fehler beim Laden der Daten:', error);
+            this.showNotification('Kritischer Fehler beim Laden der Daten', 'error');
         }
     }
 
-    // Save and Publish Functions
-    saveAllChanges() {
-        const changes = this.collectChanges();
-        // Save to localStorage for now
-        localStorage.setItem('websiteData', JSON.stringify(changes));
-        
-        // Sende Update an Hauptfenster (falls offen)
+    // Lade Formulardaten in die UI
+    loadFormData(data) {
         try {
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                    type: 'updateHeroContent'
-                }, '*');
-                console.log('✅ Update an Hauptseite gesendet');
+            // Lade Hero-Daten
+            if (data.heroName) {
+                const element = document.getElementById('hero-name');
+                if (element) element.value = data.heroName;
             }
+            if (data.heroTitle) {
+                const element = document.getElementById('hero-title');
+                if (element) element.value = data.heroTitle;
+            }
+            if (data.heroSubtitle) {
+                const element = document.getElementById('hero-subtitle');
+                if (element) element.value = data.heroSubtitle;
+            }
+            if (data.heroDescription) {
+                const element = document.getElementById('hero-description');
+                if (element) element.value = data.heroDescription;
+            }
+            
+            // Lade Profil-Informationen
+            if (data.profileTitle) {
+                const element = document.getElementById('profile-title');
+                if (element) element.value = data.profileTitle;
+            }
+            if (data.profileDescription) {
+                const element = document.getElementById('profile-description');
+                if (element) element.value = data.profileDescription;
+            }
+            if (data.profileAvailability) {
+                const element = document.getElementById('profile-availability');
+                if (element) element.value = data.profileAvailability;
+            }
+            
+            // Lade Kontaktdaten
+            if (data.contactName) {
+                const element = document.getElementById('contact-name');
+                if (element) element.value = data.contactName;
+            }
+            if (data.contactTitle) {
+                const element = document.getElementById('contact-title');
+                if (element) element.value = data.contactTitle;
+            }
+            if (data.contactLocation) {
+                const element = document.getElementById('contact-location');
+                if (element) element.value = data.contactLocation;
+            }
+            if (data.contactEmail) {
+                const element = document.getElementById('contact-email');
+                if (element) element.value = data.contactEmail;
+            }
+            if (data.contactPhone) {
+                const element = document.getElementById('contact-phone');
+                if (element) element.value = data.contactPhone;
+            }
+            
+            // Lade Design-Einstellungen
+            if (data.primaryColor) {
+                const element = document.getElementById('primary-color');
+                if (element) element.value = data.primaryColor;
+            }
+            if (data.secondaryColor) {
+                const element = document.getElementById('secondary-color');
+                if (element) element.value = data.secondaryColor;
+            }
+            if (data.heroGradient) {
+                const element = document.getElementById('hero-gradient');
+                if (element) element.value = data.heroGradient;
+            }
+            if (data.siteTitle) {
+                const element = document.getElementById('site-title');
+                if (element) element.value = data.siteTitle;
+            }
+            if (data.siteDescription) {
+                const element = document.getElementById('site-description');
+                if (element) element.value = data.siteDescription;
+            }
+            
+            // Lade Statistiken
+            if (data.stats && data.stats.length > 0) {
+                data.stats.forEach((stat, index) => {
+                    const nameElement = document.getElementById(`stat${index + 1}-name`);
+                    const valueElement = document.getElementById(`stat${index + 1}-unit`);
+                    const unitElement = document.getElementById(`stat${index + 1}-unit`);
+                    
+                    if (nameElement) nameElement.value = stat.name;
+                    if (valueElement) valueElement.value = stat.value;
+                    if (unitElement) unitElement.value = stat.unit;
+                });
+            }
+            
+            // Legacy Statistiken-Code
+            if (data.stat1Name) {
+                const element = document.getElementById('stat1-name');
+                if (element) element.value = data.stat1Name;
+            }
+            if (data.stat1Value) {
+                const element = document.getElementById('stat1-value');
+                if (element) element.value = data.stat1Value;
+            }
+            if (data.stat1Unit) {
+                const element = document.getElementById('stat1-unit');
+                if (element) element.value = data.stat1Unit;
+            }
+            
+            if (data.stat2Name) {
+                const element = document.getElementById('stat2-name');
+                if (element) element.value = data.stat2Name;
+            }
+            if (data.stat2Value) {
+                const element = document.getElementById('stat2-value');
+                if (element) element.value = data.stat2Value;
+            }
+            if (data.stat2Unit) {
+                const element = document.getElementById('stat2-unit');
+                if (element) element.value = data.stat2Unit;
+            }
+            
+            if (data.stat3Name) {
+                const element = document.getElementById('stat3-name');
+                if (element) element.value = data.stat3Name;
+            }
+            if (data.stat3Value) {
+                const element = document.getElementById('stat3-value');
+                if (element) element.value = data.stat3Value;
+            }
+            if (data.stat3Unit) {
+                const element = document.getElementById('stat3-unit');
+                if (element) element.value = data.stat3Unit;
+            }
+            
+            console.log('✅ Alle Formulardaten erfolgreich geladen');
+            
         } catch (error) {
-            console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+            console.error('❌ Fehler beim Laden der Formulardaten:', error);
         }
-        
-        this.showNotification('Alle Änderungen gespeichert', 'success');
+    }
+
+    // Save and Publish Functions - Robuste Hybrid-Lösung
+    async saveAllChanges() {
+        try {
+            console.log('💾 Starte Speicherung aller Änderungen...');
+            const changes = this.collectChanges();
+            console.log('📊 Gesammelte Änderungen:', changes);
+            
+            // IMMER zuerst lokal speichern (für sofortige Persistenz)
+            localStorage.setItem('websiteData', JSON.stringify(changes));
+            console.log('✅ Änderungen sofort lokal gespeichert');
+            
+            // Versuche Netlify-Speicherung (optional)
+            if (window.netlifyStorage && typeof window.netlifyStorage.saveWebsiteContent === 'function') {
+                try {
+                    console.log('🌐 Versuche Netlify-Speicherung...');
+                    await window.netlifyStorage.saveWebsiteContent(changes);
+                    console.log('✅ Alle Änderungen bei Netlify gespeichert');
+                    
+                    // Markiere als Netlify-gespeichert
+                    localStorage.setItem('lastNetlifySync', new Date().toISOString());
+                    
+                } catch (netlifyError) {
+                    console.warn('⚠️ Netlify-Speicherung fehlgeschlagen, verwende lokale Speicherung:', netlifyError);
+                    localStorage.setItem('netlifyError', netlifyError.message);
+                }
+            } else {
+                console.log('ℹ️ Netlify Storage nicht verfügbar, verwende lokale Speicherung');
+            }
+            
+            // Sende Update an Hauptfenster (falls offen)
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        type: 'updateHeroContent'
+                    }, '*');
+                    console.log('✅ Update an Hauptseite gesendet');
+                }
+            } catch (error) {
+                console.log('Kommunikation mit Hauptfenster nicht möglich:', error);
+            }
+            
+            // Erfolgsmeldung
+            this.showNotification('Alle Änderungen erfolgreich gespeichert!', 'success');
+            console.log('🎉 Speicherung erfolgreich abgeschlossen');
+            
+        } catch (error) {
+            console.error('❌ Kritischer Fehler beim Speichern:', error);
+            this.showNotification('Kritischer Fehler beim Speichern!', 'error');
+        }
     }
 
     publishChanges() {
@@ -2067,9 +2180,9 @@ class AdminPanel {
         this.logInfo('Alle Admin-Logs gelöscht');
     }
 
-    // Alle Bilder bis auf 3 Testbilder entfernen
-    clearAllImagesExceptTest() {
-        this.logInfo('Bereinige alle Bilder bis auf 3 Testbilder');
+    // Alle Bilder entfernen
+    clearAllImages() {
+        this.logInfo('Bereinige alle Bilder');
         
         const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
         
@@ -2091,101 +2204,15 @@ class AdminPanel {
             this.logInfo(`${activity} Bilder gelöscht`);
         });
         
-        // Erstelle 3 Testbilder für jede Aktivität
-        this.createTestImages();
-        
-        this.logInfo('Bereinigung abgeschlossen - 3 Testbilder pro Aktivität erstellt');
-        this.showNotification('Alle Bilder bereinigt - 3 Testbilder pro Aktivität erstellt', 'success');
-        
-        // Mache Funktion global verfügbar
-        window.clearAllImages = () => this.clearAllImagesExceptTest();
-        window.createTestImages = () => this.createTestImages();
+        this.logInfo('Bereinigung abgeschlossen - alle Bilder entfernt');
+        this.showNotification('Alle Bilder bereinigt', 'success');
         
         console.log('✅ Bildbereinigung abgeschlossen!');
         console.log('🔧 Globale Funktionen verfügbar:');
         console.log('  - clearAllImages() - Alle Bilder bereinigen');
-        console.log('  - createTestImages() - Testbilder erstellen');
     }
 
-    // Erstelle 3 Testbilder für jede Aktivität
-    createTestImages() {
-        this.logInfo('Erstelle Testbilder für alle Aktivitäten');
-        
-        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
-        
-        activities.forEach(activity => {
-            this.logInfo(`Erstelle Testbilder für ${activity}`);
-            
-            const testImages = [
-                {
-                    id: `${activity}_test_1`,
-                    filename: `${activity}-test-1.jpg`,
-                    title: `${this.getActivityDisplayName(activity)} Testbild 1`,
-                    description: 'Testbild für Entwicklung und Tests',
-                    imageData: this.getTestImageData(activity, 1),
-                    uploadDate: new Date().toISOString(),
-                    isUploaded: true,
-                    activity: activity
-                },
-                {
-                    id: `${activity}_test_2`,
-                    filename: `${activity}-test-2.jpg`,
-                    title: `${this.getActivityDisplayName(activity)} Testbild 2`,
-                    description: 'Zweites Testbild für Entwicklung',
-                    imageData: this.getTestImageData(activity, 2),
-                    uploadDate: new Date().toISOString(),
-                    isUploaded: true,
-                    activity: activity
-                },
-                {
-                    id: `${activity}_test_3`,
-                    filename: `${activity}-test-3.jpg`,
-                    title: `${this.getActivityDisplayName(activity)} Testbild 3`,
-                    description: 'Drittes Testbild für Entwicklung',
-                    imageData: this.getTestImageData(activity, 3),
-                    uploadDate: new Date().toISOString(),
-                    isUploaded: true,
-                    activity: activity
-                }
-            ];
-            
-            // Speichere in lokalen Speicher
-            const localKey = `${activity}_images`;
-            localStorage.setItem(localKey, JSON.stringify(testImages));
-            
-            // Speichere in Netlify-Backup
-            const netlifyKey = `${activity}_netlify_images`;
-            localStorage.setItem(netlifyKey, JSON.stringify(testImages));
-            
-            this.logInfo(`${activity}: 3 Testbilder erstellt und gespeichert`);
-        });
-        
-        // Aktualisiere alle Anzeigen
-        activities.forEach(activity => {
-            this.refreshActivityImages(activity);
-        });
-    }
 
-    // Generiere Testbild-Daten (einfache Farbflächen)
-    getTestImageData(activity, imageNumber) {
-        // Erstelle einfache SVG-Farbflächen als Testbilder
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-        const color = colors[(activity.charCodeAt(0) + imageNumber) % colors.length];
-        
-        const svg = `
-            <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-                <rect width="300" height="200" fill="${color}"/>
-                <text x="150" y="100" font-family="Arial" font-size="24" fill="white" text-anchor="middle">
-                    ${this.getActivityDisplayName(activity)} Test ${imageNumber}
-                </text>
-                <text x="150" y="130" font-family="Arial" font-size="16" fill="white" text-anchor="middle">
-                    ${activity}
-                </text>
-            </svg>
-        `;
-        
-        return `data:image/svg+xml;base64,${btoa(svg)}`;
-    }
 
     // Hilfsmethode für Aktivitätsnamen
     getActivityDisplayName(activity) {
@@ -2224,9 +2251,9 @@ class AdminPanel {
         return allImages;
     }
 
-    // Alle Bilder löschen (ohne Testbilder zu erstellen)
+    // Alle Bilder löschen
     deleteAllImages() {
-        this.logInfo('Lösche alle Bilder ohne Testbilder zu erstellen');
+        this.logInfo('Lösche alle Bilder');
         
         const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
         
@@ -2245,7 +2272,23 @@ class AdminPanel {
             const netlifySavedKey = `${activity}_netlify_saved`;
             localStorage.removeItem(netlifySavedKey);
             
+            // Lösche alle persistenten Bilder
+            const persistentKey = `${activity}_persistent_images`;
+            localStorage.removeItem(persistentKey);
+            
             this.logInfo(`${activity} Bilder gelöscht`);
+        });
+        
+        // Lösche auch alle Website-Daten
+        const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+        if (websiteData.activityImages) {
+            delete websiteData.activityImages;
+            localStorage.setItem('websiteData', JSON.stringify(websiteData));
+        }
+        
+        // Aktualisiere alle Galerien
+        activities.forEach(activity => {
+            this.refreshActivityImages(activity);
         });
         
         this.logInfo('Alle Bilder gelöscht');
@@ -2268,15 +2311,162 @@ class AdminPanel {
     }
 
     // Lade gespeicherte Inhalte
-    loadSavedContent() {
-        // Implementierung für gespeicherte Inhalte
+    async loadSavedContent() {
         this.logInfo('Lade gespeicherte Inhalte');
+        // Lade alle gespeicherten Daten beim Start
+        await this.loadCurrentData();
     }
 
     // Lade gespeicherte Bilder
     loadSavedImages() {
         // Implementierung für gespeicherte Bilder
         this.logInfo('Lade gespeicherte Bilder');
+    }
+    
+    // Entferne alle Testbilder und bereinige Galerien
+    removeAllTestImages() {
+        this.logInfo('Entferne alle Testbilder und bereinige Galerien');
+        
+        const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
+        
+        activities.forEach(activity => {
+            this.logInfo(`Bereinige ${activity} Galerie`);
+            
+            // Lösche alle Bilder aus dem localStorage
+            const keysToRemove = [
+                `${activity}_images`,
+                `${activity}_netlify_images`,
+                `${activity}_netlify_saved`,
+                `${activity}_persistent_images`
+            ];
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                this.logInfo(`Key gelöscht: ${key}`);
+            });
+            
+            // Aktualisiere die Anzeige
+            this.refreshActivityImages(activity);
+        });
+        
+        // Lösche auch alle Website-Daten
+        const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+        if (websiteData.activityImages) {
+            delete websiteData.activityImages;
+            localStorage.setItem('websiteData', JSON.stringify(websiteData));
+        }
+        
+        // Lösche auch alle globalen Bilddaten
+        localStorage.removeItem('globalImages');
+        localStorage.removeItem('globalImageDatabase');
+        
+        // Lösche auch alle Testbilder-Referenzen
+        const allKeys = Object.keys(localStorage);
+        allKeys.forEach(key => {
+            if (key.includes('test') || key.includes('Test')) {
+                localStorage.removeItem(key);
+                this.logInfo(`Test-Key gelöscht: ${key}`);
+            }
+        });
+        
+        this.logInfo('Alle Testbilder entfernt und Galerien bereinigt');
+        this.showNotification('Alle Testbilder entfernt', 'success');
+        
+        // Mache Funktion global verfügbar
+        window.removeAllTestImages = () => this.removeAllTestImages();
+        
+        console.log('✅ Testbilder-Bereinigung abgeschlossen!');
+        console.log('🔧 Neue globale Funktion verfügbar:');
+        console.log('  - removeAllTestImages() - Alle Testbilder entfernen');
+        
+        // Führe finale Bereinigung durch
+        this.performFinalCleanup();
+    }
+    
+    // Führe finale Bereinigung durch
+    performFinalCleanup() {
+        this.logInfo('Führe finale Bereinigung durch...');
+        
+        try {
+            // Lösche alle verbleibenden Testbilder-Referenzen
+            const allKeys = Object.keys(localStorage);
+            let finalCleanupCount = 0;
+            
+            allKeys.forEach(key => {
+                // Lösche alle Keys, die Testbilder enthalten könnten
+                if (key.includes('test') || 
+                    key.includes('Test') || 
+                    key.includes('default') || 
+                    key.includes('Default') ||
+                    key.includes('sample') ||
+                    key.includes('Sample') ||
+                    key.includes('placeholder') ||
+                    key.includes('Placeholder')) {
+                    localStorage.removeItem(key);
+                    finalCleanupCount++;
+                    this.logInfo(`Finaler Cleanup: ${key} gelöscht`);
+                }
+            });
+            
+            // Lösche auch alle verbleibenden Bilddaten
+            const remainingKeys = [
+                'globalImages',
+                'globalImageDatabase',
+                'testImages',
+                'sampleImages',
+                'defaultImages'
+            ];
+            
+            remainingKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    finalCleanupCount++;
+                    this.logInfo(`Finaler Cleanup: ${key} gelöscht`);
+                }
+            });
+            
+            if (finalCleanupCount > 0) {
+                this.logInfo(`Finale Bereinigung abgeschlossen: ${finalCleanupCount} weitere Einträge entfernt`);
+            } else {
+                this.logInfo('Finale Bereinigung: Keine weiteren Einträge gefunden');
+            }
+            
+        } catch (error) {
+            this.logError('Fehler bei der finalen Bereinigung:', error);
+        }
+    }
+    
+    // Debug-Methoden
+    debugAdminPanel() {
+        console.log('🔧 AdminPanel Debug-Informationen:');
+        console.log('  - NetlifyStorage verfügbar:', !!window.netlifyStorage);
+        console.log('  - localStorage verfügbar:', !!window.localStorage);
+        console.log('  - Gespeicherte Daten vorhanden:', !!localStorage.getItem('websiteData'));
+        console.log('  - Letzte Netlify-Sync:', localStorage.getItem('lastNetlifySync') || 'Nie');
+        console.log('  - Netlify-Fehler:', localStorage.getItem('netlifyError') || 'Keine');
+        
+        if (window.netlifyStorage) {
+            console.log('  - NetlifyStorage Methoden:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.netlifyStorage)));
+        }
+        
+        this.showNotification('Debug-Informationen in der Konsole angezeigt', 'info');
+    }
+    
+    checkSavedData() {
+        try {
+            const savedData = localStorage.getItem('websiteData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                console.log('📊 Gespeicherte Daten gefunden:', data);
+                this.showNotification('Gespeicherte Daten in der Konsole angezeigt', 'success');
+            } else {
+                console.log('ℹ️ Keine gespeicherten Daten gefunden');
+                this.showNotification('Keine gespeicherten Daten gefunden', 'info');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Prüfen der gespeicherten Daten:', error);
+            this.showNotification('Fehler beim Prüfen der Daten', 'error');
+        }
     }
 }
 
