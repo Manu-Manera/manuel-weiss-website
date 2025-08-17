@@ -60,6 +60,8 @@ class AdminPanel {
         // Debug-Funktionen
         window.debugAdminPanel = () => this.debugAdminPanel();
         window.checkSavedData = () => this.checkSavedData();
+        window.forceReload = () => this.loadCurrentData();
+        window.testPersistence = () => this.testPersistence();
         
         console.log('🔧 Admin-Funktionen global verfügbar:');
         console.log('  - clearAllImages() - Alle Bilder bereinigen');
@@ -2003,7 +2005,7 @@ class AdminPanel {
             if (data.stats && data.stats.length > 0) {
                 data.stats.forEach((stat, index) => {
                     const nameElement = document.getElementById(`stat${index + 1}-name`);
-                    const valueElement = document.getElementById(`stat${index + 1}-unit`);
+                    const valueElement = document.getElementById(`stat${index + 1}-value`);
                     const unitElement = document.getElementById(`stat${index + 1}-unit`);
                     
                     if (nameElement) nameElement.value = stat.name;
@@ -2529,6 +2531,39 @@ class AdminPanel {
             this.showNotification('Fehler beim Prüfen der Daten', 'error');
         }
     }
+    
+    testPersistence() {
+        console.log('🧪 Teste Persistenz...');
+        
+        // Ändere das contact-title Feld probeweise
+        const contactTitle = document.getElementById('contact-title');
+        if (contactTitle) {
+            const originalValue = contactTitle.value;
+            contactTitle.value = 'TEST_PERSISTENCE_' + Date.now();
+            
+            // Speichere
+            this.saveAllChanges();
+            
+            // Warte kurz und lade neu
+            setTimeout(() => {
+                this.loadCurrentData();
+                
+                // Prüfe ob Änderung erhalten blieb
+                setTimeout(() => {
+                    if (contactTitle.value.includes('TEST_PERSISTENCE')) {
+                        console.log('✅ Persistenz funktioniert!');
+                        this.showNotification('Persistenz funktioniert!', 'success');
+                        // Stelle ursprünglichen Wert wieder her
+                        contactTitle.value = originalValue;
+                        this.saveAllChanges();
+                    } else {
+                        console.error('❌ Persistenz fehlgeschlagen!');
+                        this.showNotification('Persistenz fehlgeschlagen!', 'error');
+                    }
+                }, 100);
+            }, 100);
+        }
+    }
 }
 
 // Global Functions for HTML onclick handlers
@@ -2584,6 +2619,14 @@ function removeCertificate(button) {
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
     adminPanel = new AdminPanel();
+    
+    // KRITISCH: Daten laden nachdem DOM vollständig geladen ist
+    setTimeout(() => {
+        if (adminPanel && adminPanel.loadCurrentData) {
+            console.log('🔄 Erzwinge Datenladung nach DOM-Load...');
+            adminPanel.loadCurrentData();
+        }
+    }, 500);
 });
 
 // Keyboard shortcuts
