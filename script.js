@@ -918,12 +918,145 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSavedProfileImage();
     loadSavedContent();
     
+    // SOFORTIGE TELEFONNUMMER-SYNC (GARANTIERT)
+    forcePhoneSync();
+    
     // Zusätzliche Ladung nach kurzer Verzögerung für DOM-Stabilität
     setTimeout(() => {
         console.log('🔄 Zusätzliche Content-Ladung...');
         loadSavedContent();
+        forcePhoneSync(); // Nochmal!
     }, 1000);
+    
+    // AGGRESSIVE Ladung alle 2 Sekunden für die ersten 10 Sekunden
+    for (let i = 2; i <= 10; i += 2) {
+        setTimeout(() => {
+            console.log(`🔄 Aggressive Sync Versuch ${i/2}...`);
+            forcePhoneSync();
+            loadSavedContent();
+        }, i * 1000);
+    }
 });
+
+// GARANTIERTE Telefonnummer-Synchronisation
+function forcePhoneSync() {
+    try {
+        console.log('📞 FORCE PHONE SYNC startet...');
+        
+        // Alle möglichen Quellen prüfen
+        const sources = [
+            'websiteData',
+            'autoSaveBackup', 
+            'emergencyBackup',
+            'adminPanelData',
+            'currentWebsiteData',
+            'lastSavedData'
+        ];
+        
+        let phone = null;
+        
+        for (const source of sources) {
+            const data = localStorage.getItem(source);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    phone = parsed['contact-phone'] || parsed.contactPhone;
+                    if (phone) {
+                        console.log(`📞 Telefon gefunden in ${source}: ${phone}`);
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`Fehler beim Parsen von ${source}`);
+                }
+            }
+        }
+        
+        // Auch einzelne Felder prüfen
+        if (!phone) {
+            phone = localStorage.getItem('field_contact-phone');
+            if (phone) {
+                try {
+                    phone = JSON.parse(phone);
+                    console.log(`📞 Telefon aus Einzelfeld: ${phone}`);
+                } catch (e) {
+                    console.log(`📞 Telefon direkt: ${phone}`);
+                }
+            }
+        }
+        
+        if (phone) {
+            // SETZE IN ALLE MÖGLICHEN ELEMENTE
+            const selectors = [
+                '[data-contact="phone"]',
+                '#contact-phone',
+                '.contact-phone',
+                '[data-phone]'
+            ];
+            
+            let updated = 0;
+            selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                    el.textContent = phone;
+                    updated++;
+                    console.log(`📞 FORCE UPDATE: ${selector} → ${phone}`);
+                });
+            });
+            
+            console.log(`📞 FORCE PHONE SYNC: ${updated} Elemente aktualisiert mit ${phone}`);
+            return true;
+        } else {
+            console.log('📞 FORCE PHONE SYNC: Keine Telefonnummer gefunden');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('📞 FORCE PHONE SYNC Fehler:', error);
+        return false;
+    }
+}
+
+// GLOBALE DEBUG-FUNKTIONEN
+window.debugPhone = function() {
+    console.log('🔍 DEBUG TELEFONNUMMER:');
+    
+    // Zeige alle localStorage Daten
+    const sources = ['websiteData', 'autoSaveBackup', 'emergencyBackup', 'adminPanelData'];
+    sources.forEach(source => {
+        const data = localStorage.getItem(source);
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                const phone = parsed['contact-phone'] || parsed.contactPhone;
+                console.log(`${source}: ${phone || 'NICHT GEFUNDEN'}`);
+            } catch (e) {
+                console.log(`${source}: PARSE FEHLER`);
+            }
+        } else {
+            console.log(`${source}: LEER`);
+        }
+    });
+    
+    // Zeige Einzelfeld
+    const singleField = localStorage.getItem('field_contact-phone');
+    console.log(`field_contact-phone: ${singleField || 'NICHT GEFUNDEN'}`);
+    
+    // Zeige HTML-Elemente
+    const phoneElements = document.querySelectorAll('[data-contact="phone"]');
+    console.log(`HTML-Elemente mit [data-contact="phone"]: ${phoneElements.length}`);
+    phoneElements.forEach((el, i) => {
+        console.log(`  Element ${i+1}: "${el.textContent}"`);
+    });
+    
+    // Force Update
+    forcePhoneSync();
+};
+
+window.forceUpdatePhone = function() {
+    console.log('🔥 FORCE UPDATE TELEFONNUMMER!');
+    forcePhoneSync();
+    loadSavedContent();
+};
 
 // Listen for updates from admin panel
 window.addEventListener('message', function(event) {
