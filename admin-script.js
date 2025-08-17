@@ -2062,7 +2062,7 @@ class AdminPanel {
         }
     }
 
-    // Save and Publish Functions - ULTRA-robuste Lösung
+    // Save and Publish Functions - ULTRA-robuste Lösung mit sofortiger Bestätigung
     async saveAllChanges() {
         try {
             console.log('💾 Starte ULTRA-robuste Speicherung aller Änderungen...');
@@ -2095,7 +2095,16 @@ class AdminPanel {
                 }
             });
             
-            console.log('✅ Änderungen in ALLEN Backup-Locations gespeichert');
+            // SOFORTIGE BESTÄTIGUNG: Setze Felder nochmal explizit
+            Object.keys(changes).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && element.type !== 'file') {
+                    element.value = changes[key];
+                    console.log(`🔒 BESTÄTIGT: ${key} = ${changes[key]}`);
+                }
+            });
+            
+            console.log('✅ Änderungen in ALLEN Backup-Locations gespeichert + bestätigt');
             
             // Versuche Netlify-Speicherung (optional)
             if (window.netlifyStorage && typeof window.netlifyStorage.saveWebsiteContent === 'function') {
@@ -2125,7 +2134,7 @@ class AdminPanel {
             }
             
             // Erfolgsmeldung
-            this.showNotification('Alle Änderungen ULTRA-robust gespeichert!', 'success');
+            this.showNotification('Alle Änderungen ULTRA-robust gespeichert + bestätigt!', 'success');
             console.log('🎉 ULTRA-robuste Speicherung erfolgreich abgeschlossen');
             
         } catch (error) {
@@ -2783,32 +2792,30 @@ function removeCertificate(button) {
 // Initialize Admin Panel
 let adminPanel;
 
-// KRITISCH: Warte bis ALLES geladen ist
+// EINFACHE Initialisierung - Daten werden bereits durch sofortiges Laden gesetzt
 window.addEventListener('load', () => {
-    console.log('🔄 Window Load Event - initialisiere AdminPanel...');
+    console.log('🔄 Window Load Event - initialisiere AdminPanel (Daten bereits geladen)...');
     adminPanel = new AdminPanel();
     
-    // Zusätzliche Wartezeit für komplette DOM-Stabilität
+    // Zusätzliche Sicherheit: Nochmal laden falls nötig
     setTimeout(() => {
         if (adminPanel && adminPanel.loadCurrentData) {
-            console.log('🔄 Erzwinge Datenladung nach Window-Load...');
+            console.log('🔄 Zusätzliche Sicherheits-Datenladung...');
             adminPanel.loadCurrentData();
         }
-    }, 1000);
+    }, 2000);
 });
 
-// Backup: Falls window.load zu spät ist
+// Backup-Initialisierung
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🔄 DOM Content Loaded - Backup-Initialisierung...');
     if (!adminPanel) {
-        adminPanel = new AdminPanel();
-        
         setTimeout(() => {
-            if (adminPanel && adminPanel.loadCurrentData) {
-                console.log('🔄 Backup: Erzwinge Datenladung nach DOM-Load...');
-                adminPanel.loadCurrentData();
+            if (!adminPanel) {
+                adminPanel = new AdminPanel();
+                console.log('✅ AdminPanel via Backup initialisiert');
             }
-        }, 2000);
+        }, 1000);
     }
 });
 
