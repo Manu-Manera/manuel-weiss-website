@@ -567,23 +567,23 @@
                         <h3><i class="fas fa-user"></i> Kontaktdaten</h3>
                         <div class="form-group">
                             <label for="contact-name">Name</label>
-                            <input type="text" id="contact-name" value="Manuel Weiss">
+                            <input type="text" id="contact-name" value="">
                         </div>
                         <div class="form-group">
                             <label for="contact-title">Titel</label>
-                            <input type="text" id="contact-title" value="Professional Services">
+                            <input type="text" id="contact-title" value="">
                         </div>
                         <div class="form-group">
                             <label for="contact-location">Standort</label>
-                            <input type="text" id="contact-location" value="Schweiz">
+                            <input type="text" id="contact-location" value="">
                         </div>
                         <div class="form-group">
                             <label for="contact-email">E-Mail</label>
-                            <input type="email" id="contact-email" value="weiss-manuel@gmx.de">
+                            <input type="email" id="contact-email" value="">
                         </div>
                         <div class="form-group">
                             <label for="contact-phone">Telefon</label>
-                            <input type="tel" id="contact-phone" value="+49 173 3993407">
+                            <input type="tel" id="contact-phone" value="">
                         </div>
                     </div>
 
@@ -942,12 +942,8 @@ Pannenhilfe</textarea>
             try {
                 console.log('⚡ INTELLIGENTES Laden startet...');
                 
-                // Prüfe erst ob Felder bereits Werte haben (von vorheriger Sitzung)
-                const testElement = document.getElementById('contact-title');
-                if (testElement && testElement.value && testElement.value.trim() !== '') {
-                    console.log('ℹ️ Felder haben bereits Werte - überspringe Laden');
-                    return;
-                }
+                // AGGRESSIVE LADUNG - KEINE Prüfung auf bestehende Werte!
+                console.log('🔥 FORCE LOADING - Lade IMMER alle Daten!');
                 
                 // Lade aus allen möglichen Speicherorten
                 const possibleKeys = ['websiteData', 'autoSaveBackup', 'emergencyBackup', 'adminPanelData'];
