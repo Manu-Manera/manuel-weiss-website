@@ -944,14 +944,21 @@ class AdminPanel {
         if (contactEmail) formData.contactEmail = contactEmail.value;
         if (contactPhone) formData.contactPhone = contactPhone.value;
         
-        // Sammle Zertifikate
+        // Sammle Zertifikate (ERWEITERT für Persistenz)
         formData.certificates = [];
         const certificateInputs = document.querySelectorAll('.certificate-name');
-        certificateInputs.forEach((input) => {
+        certificateInputs.forEach((input, index) => {
             if (input.value.trim()) {
-                formData.certificates.push(input.value.trim());
+                const certName = input.value.trim();
+                formData.certificates.push(certName);
+                
+                // Speichere auch als einzelnes Feld für bessere Persistenz
+                formData[`certificate-${index + 1}-name`] = certName;
+                console.log(`📝 SAMMLE ZERTIFIKAT: certificate-${index + 1}-name = ${certName}`);
             }
         });
+        
+        console.log('📝 SAMMLE ZERTIFIKATE:', formData.certificates);
         
         // Sammle Design-Einstellungen
         const primaryColor = document.getElementById('primary-color');
@@ -2056,7 +2063,32 @@ class AdminPanel {
                 if (element) element.value = data.stat3Unit;
             }
             
-            console.log('✅ Alle Formulardaten erfolgreich geladen');
+            // Lade Zertifikate
+            if (data.certificates && Array.isArray(data.certificates)) {
+                const certificateInputs = document.querySelectorAll('.certificate-name');
+                data.certificates.forEach((certName, index) => {
+                    if (certificateInputs[index]) {
+                        certificateInputs[index].value = certName;
+                        console.log(`✅ Zertifikat ${index + 1} geladen: ${certName}`);
+                    }
+                });
+            }
+            
+            // Lade auch einzelne Zertifikat-Felder (Fallback)
+            Object.keys(data).forEach(key => {
+                if (key.startsWith('certificate-') && key.endsWith('-name')) {
+                    const certIndex = key.match(/certificate-(\d+)-name/)?.[1];
+                    if (certIndex) {
+                        const input = document.querySelector(`.certificate-item:nth-child(${certIndex}) .certificate-name`);
+                        if (input) {
+                            input.value = data[key];
+                            console.log(`✅ Einzelnes Zertifikat-Feld geladen: ${key} = ${data[key]}`);
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Alle Formulardaten erfolgreich geladen (inkl. Zertifikate)');
             
         } catch (error) {
             console.error('❌ Fehler beim Laden der Formulardaten:', error);
@@ -2651,10 +2683,21 @@ class AdminPanel {
     setupAutoSave() {
         console.log('🔄 Setup Autosave...');
         
-        // Autosave bei jeder Eingabe
+        // Autosave bei jeder Eingabe (inkl. Zertifikate)
         document.addEventListener('input', (e) => {
+            // Normale Felder mit ID
             if (e.target.id && e.target.type !== 'file') {
                 console.log(`💾 AUTOSAVE: ${e.target.id} = ${e.target.value}`);
+                
+                // Debounce: Warte 1 Sekunde nach letzter Eingabe
+                clearTimeout(this.autoSaveTimer);
+                this.autoSaveTimer = setTimeout(() => {
+                    this.quickSave();
+                }, 1000);
+            }
+            // Zertifikat-Felder (haben keine ID, nur Klassen)
+            else if (e.target.classList.contains('certificate-name')) {
+                console.log(`💾 AUTOSAVE ZERTIFIKAT: ${e.target.value}`);
                 
                 // Debounce: Warte 1 Sekunde nach letzter Eingabe
                 clearTimeout(this.autoSaveTimer);
