@@ -932,6 +932,75 @@ Pannenhilfe</textarea>
     <script src="js/image-gallery.js?v=2.0"></script>
     <script src="js/netlify-storage.js?v=2.0"></script>
     <script src="js/data-persistence.js?v=2.0"></script>
+    
+    <!-- SOFORTIGE Datenladung VOR AdminPanel -->
+    <script>
+        console.log('🚀 SOFORTIGE Datenladung startet...');
+        
+        // Funktion für sofortiges Laden
+        function loadDataImmediately() {
+            try {
+                console.log('⚡ Lade Daten SOFORT...');
+                
+                // Lade aus allen möglichen Speicherorten
+                const possibleKeys = ['websiteData', 'autoSaveBackup', 'emergencyBackup', 'adminPanelData'];
+                let loadedData = null;
+                
+                for (const key of possibleKeys) {
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        try {
+                            loadedData = JSON.parse(savedData);
+                            console.log(`✅ SOFORT: Daten aus ${key} geladen:`, loadedData);
+                            break;
+                        } catch (e) {
+                            console.warn(`⚠️ Fehler beim Parsen von ${key}:`, e);
+                        }
+                    }
+                }
+                
+                if (loadedData) {
+                    // Setze alle Felder SOFORT
+                    Object.keys(loadedData).forEach(key => {
+                        // Warte bis DOM bereit ist
+                        const checkAndSet = () => {
+                            const element = document.getElementById(key);
+                            if (element && element.type !== 'file') {
+                                element.value = loadedData[key];
+                                console.log(`⚡ SOFORT gesetzt: ${key} = ${loadedData[key]}`);
+                            } else if (document.readyState !== 'complete') {
+                                // Versuche nochmal in 50ms
+                                setTimeout(checkAndSet, 50);
+                            }
+                        };
+                        checkAndSet();
+                    });
+                    
+                    console.log('🎉 SOFORTIGE Datenladung erfolgreich!');
+                } else {
+                    console.log('ℹ️ Keine Daten für sofortiges Laden gefunden');
+                }
+                
+            } catch (error) {
+                console.error('❌ SOFORTIGE Datenladung fehlgeschlagen:', error);
+            }
+        }
+        
+        // Starte sofortiges Laden
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadDataImmediately);
+        } else {
+            loadDataImmediately();
+        }
+        
+        // Zusätzlich bei window.load
+        window.addEventListener('load', loadDataImmediately);
+        
+        // Zusätzlich nach kurzer Verzögerung
+        setTimeout(loadDataImmediately, 500);
+        setTimeout(loadDataImmediately, 1500);
+    </script>
+    
     <script src="admin-script.js?v=2.0"></script>
     
     <script>
