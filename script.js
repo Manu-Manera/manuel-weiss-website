@@ -984,31 +984,35 @@ function forcePhoneSync() {
             }
         }
         
-        if (phone) {
-            // SETZE IN ALLE MÖGLICHEN ELEMENTE
-            const selectors = [
-                '[data-contact="phone"]',
-                '#contact-phone',
-                '.contact-phone',
-                '[data-phone]'
-            ];
-            
-            let updated = 0;
-            selectors.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => {
-                    el.textContent = phone;
-                    updated++;
-                    console.log(`📞 FORCE UPDATE: ${selector} → ${phone}`);
-                });
-            });
-            
-            console.log(`📞 FORCE PHONE SYNC: ${updated} Elemente aktualisiert mit ${phone}`);
-            return true;
-        } else {
-            console.log('📞 FORCE PHONE SYNC: Keine Telefonnummer gefunden');
-            return false;
+        // DEFAULT Telefonnummer wenn nichts gefunden
+        if (!phone) {
+            phone = '+49 173 3993407'; // Default
+            console.log('📞 Verwende DEFAULT Telefonnummer');
         }
+        
+        // SETZE IN ALLE MÖGLICHEN ELEMENTE
+        const selectors = [
+            '[data-contact="phone"]',
+            '#contact-phone',
+            '.contact-phone',
+            '[data-phone]'
+        ];
+        
+        let updated = 0;
+        selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                el.textContent = phone;
+                updated++;
+                console.log(`📞 FORCE UPDATE: ${selector} → ${phone}`);
+                
+                // Zusätzlich: Setze auch innerHTML für Sicherheit
+                el.innerHTML = phone;
+            });
+        });
+        
+        console.log(`📞 FORCE PHONE SYNC: ${updated} Elemente aktualisiert mit ${phone}`);
+        return true;
         
     } catch (error) {
         console.error('📞 FORCE PHONE SYNC Fehler:', error);
