@@ -1823,10 +1823,10 @@ class AdminPanel {
         }
     }
 
-    // Lade aktuelle Daten von Netlify + localStorage Backup
+    // Lade aktuelle Daten - ULTRA-robuste Lösung
     async loadCurrentData() {
         try {
-            console.log('🔄 Starte Laden aller gespeicherten Daten...');
+            console.log('🔄 Starte ULTRA-robustes Laden aller gespeicherten Daten...');
             
             // Lade Profilbild von Netlify (optional)
             const preview = document.getElementById('profile-preview');
@@ -1844,26 +1844,66 @@ class AdminPanel {
                 }
             }
             
-            // Lade Website-Daten aus localStorage (HAUPTQUELLE)
-            try {
-                const savedData = localStorage.getItem('websiteData');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    console.log('✅ Website-Daten aus localStorage geladen:', data);
-                    
-                    // Lade alle Formularfelder
-                    this.loadFormData(data);
-                    
-                    // Zeige Erfolgsmeldung
-                    console.log('🎉 Alle gespeicherten Daten erfolgreich wiederhergestellt!');
-                    
-                } else {
-                    console.log('ℹ️ Keine gespeicherten Daten in localStorage gefunden');
-                    this.showNotification('Keine gespeicherten Daten gefunden', 'info');
+            // ULTRA-robustes Laden: Versuche ALLE möglichen localStorage-Keys
+            const possibleKeys = [
+                'websiteData',
+                'adminPanelData', 
+                'currentWebsiteData',
+                'lastSavedData'
+            ];
+            
+            let dataLoaded = false;
+            let loadedData = null;
+            
+            for (const key of possibleKeys) {
+                try {
+                    const savedData = localStorage.getItem(key);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        console.log(`✅ Daten aus ${key} geladen:`, data);
+                        loadedData = data;
+                        dataLoaded = true;
+                        break;
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Laden aus ${key}:`, error);
                 }
-            } catch (error) {
-                console.error('❌ Fehler beim Laden der localStorage-Daten:', error);
-                this.showNotification('Fehler beim Laden der gespeicherten Daten', 'error');
+            }
+            
+            // Falls keine Daten gefunden, versuche einzelne Felder zu laden
+            if (!dataLoaded) {
+                console.log('🔄 Versuche Laden einzelner Felder...');
+                const fieldData = {};
+                const allKeys = Object.keys(localStorage);
+                
+                allKeys.forEach(key => {
+                    if (key.startsWith('field_')) {
+                        try {
+                            const fieldName = key.replace('field_', '');
+                            const fieldValue = JSON.parse(localStorage.getItem(key));
+                            fieldData[fieldName] = fieldValue;
+                            console.log(`✅ Feld ${fieldName} geladen:`, fieldValue);
+                        } catch (error) {
+                            console.warn(`⚠️ Fehler beim Laden von ${key}:`, error);
+                        }
+                    }
+                });
+                
+                if (Object.keys(fieldData).length > 0) {
+                    loadedData = fieldData;
+                    dataLoaded = true;
+                    console.log('✅ Einzelne Felder erfolgreich geladen:', fieldData);
+                }
+            }
+            
+            if (dataLoaded && loadedData) {
+                // Lade alle Formularfelder
+                this.loadFormData(loadedData);
+                console.log('🎉 Alle gespeicherten Daten ULTRA-robust wiederhergestellt!');
+                this.showNotification('Alle Daten erfolgreich wiederhergestellt!', 'success');
+            } else {
+                console.log('ℹ️ Keine gespeicherten Daten gefunden');
+                this.showNotification('Keine gespeicherten Daten gefunden', 'info');
             }
             
             // Zeige Status der letzten Netlify-Synchronisation
@@ -1872,7 +1912,7 @@ class AdminPanel {
                 console.log('🔄 Letzte Netlify-Synchronisation:', new Date(lastSync).toLocaleString());
             }
             
-            console.log('✅ Admin-Panel bereit für Netlify-Integration + lokales Backup');
+            console.log('✅ Admin-Panel ULTRA-robust bereit!');
             
         } catch (error) {
             console.error('❌ Kritischer Fehler beim Laden der Daten:', error);
@@ -2019,16 +2059,40 @@ class AdminPanel {
         }
     }
 
-    // Save and Publish Functions - Robuste Hybrid-Lösung
+    // Save and Publish Functions - ULTRA-robuste Lösung
     async saveAllChanges() {
         try {
-            console.log('💾 Starte Speicherung aller Änderungen...');
+            console.log('💾 Starte ULTRA-robuste Speicherung aller Änderungen...');
             const changes = this.collectChanges();
             console.log('📊 Gesammelte Änderungen:', changes);
             
-            // IMMER zuerst lokal speichern (für sofortige Persistenz)
-            localStorage.setItem('websiteData', JSON.stringify(changes));
-            console.log('✅ Änderungen sofort lokal gespeichert');
+            // KRITISCH: Speichere in MEHREREN localStorage-Keys für maximale Sicherheit
+            const keysToUse = [
+                'websiteData',
+                'adminPanelData',
+                'currentWebsiteData',
+                'lastSavedData'
+            ];
+            
+            keysToUse.forEach(key => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(changes));
+                    console.log(`✅ In ${key} gespeichert`);
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Speichern in ${key}:`, error);
+                }
+            });
+            
+            // Speichere auch alle einzelnen Felder separat
+            Object.keys(changes).forEach(field => {
+                try {
+                    localStorage.setItem(`field_${field}`, JSON.stringify(changes[field]));
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Speichern von ${field}:`, error);
+                }
+            });
+            
+            console.log('✅ Änderungen in ALLEN Backup-Locations gespeichert');
             
             // Versuche Netlify-Speicherung (optional)
             if (window.netlifyStorage && typeof window.netlifyStorage.saveWebsiteContent === 'function') {
@@ -2036,10 +2100,7 @@ class AdminPanel {
                     console.log('🌐 Versuche Netlify-Speicherung...');
                     await window.netlifyStorage.saveWebsiteContent(changes);
                     console.log('✅ Alle Änderungen bei Netlify gespeichert');
-                    
-                    // Markiere als Netlify-gespeichert
                     localStorage.setItem('lastNetlifySync', new Date().toISOString());
-                    
                 } catch (netlifyError) {
                     console.warn('⚠️ Netlify-Speicherung fehlgeschlagen, verwende lokale Speicherung:', netlifyError);
                     localStorage.setItem('netlifyError', netlifyError.message);
@@ -2061,8 +2122,8 @@ class AdminPanel {
             }
             
             // Erfolgsmeldung
-            this.showNotification('Alle Änderungen erfolgreich gespeichert!', 'success');
-            console.log('🎉 Speicherung erfolgreich abgeschlossen');
+            this.showNotification('Alle Änderungen ULTRA-robust gespeichert!', 'success');
+            console.log('🎉 ULTRA-robuste Speicherung erfolgreich abgeschlossen');
             
         } catch (error) {
             console.error('❌ Kritischer Fehler beim Speichern:', error);
