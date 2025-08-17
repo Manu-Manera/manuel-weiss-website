@@ -62,6 +62,7 @@ class AdminPanel {
         window.checkSavedData = () => this.checkSavedData();
         window.forceReload = () => this.loadCurrentData();
         window.testPersistence = () => this.testPersistence();
+        window.simpleTest = () => this.simpleTest();
         
         console.log('🔧 Admin-Funktionen global verfügbar:');
         console.log('  - clearAllImages() - Alle Bilder bereinigen');
@@ -858,6 +859,7 @@ class AdminPanel {
         inputs.forEach(input => {
             if (input.id && input.type !== 'file') {
                 formData[input.id] = input.value;
+                console.log(`📝 SAMMLE: ${input.id} = ${input.value}`);
             }
         });
         
@@ -2376,7 +2378,45 @@ class AdminPanel {
     // Lade gespeicherte Inhalte
     async loadSavedContent() {
         this.logInfo('Lade gespeicherte Inhalte');
-        // Lade alle gespeicherten Daten beim Start
+        
+        // DIREKTER ANSATZ: Lade localStorage-Daten sofort
+        try {
+            const savedData = localStorage.getItem('websiteData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                console.log('📊 DIREKT: Lade gespeicherte Daten:', data);
+                
+                // DIREKTE Feldmappings ohne Umwege
+                if (data['contact-title']) {
+                    const element = document.getElementById('contact-title');
+                    if (element) {
+                        element.value = data['contact-title'];
+                        console.log('✅ DIREKT: contact-title gesetzt auf:', data['contact-title']);
+                    }
+                }
+                
+                if (data.contactTitle) {
+                    const element = document.getElementById('contact-title');
+                    if (element) {
+                        element.value = data.contactTitle;
+                        console.log('✅ DIREKT: contactTitle gesetzt auf:', data.contactTitle);
+                    }
+                }
+                
+                // Alle anderen Felder auch direkt
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element && element.type !== 'file') {
+                        element.value = data[key];
+                        console.log(`✅ DIREKT: ${key} gesetzt auf:`, data[key]);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('❌ DIREKTER Ansatz fehlgeschlagen:', error);
+        }
+        
+        // Zusätzlich: Lade alle gespeicherten Daten beim Start
         await this.loadCurrentData();
     }
 
@@ -2561,6 +2601,37 @@ class AdminPanel {
                         this.showNotification('Persistenz fehlgeschlagen!', 'error');
                     }
                 }, 100);
+            }, 100);
+        }
+    }
+    
+    simpleTest() {
+        console.log('🧪 EINFACHER TEST startet...');
+        
+        // 1. Ändere das Feld
+        const contactTitle = document.getElementById('contact-title');
+        if (contactTitle) {
+            contactTitle.value = 'Prince 2';
+            console.log('✅ Feld geändert auf: Prince 2');
+            
+            // 2. Speichere DIREKT
+            const formData = {};
+            formData['contact-title'] = contactTitle.value;
+            localStorage.setItem('websiteData', JSON.stringify(formData));
+            console.log('✅ DIREKT in localStorage gespeichert');
+            
+            // 3. Teste Reload
+            setTimeout(() => {
+                const savedData = localStorage.getItem('websiteData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    contactTitle.value = data['contact-title'] || '';
+                    console.log('✅ DIREKT aus localStorage geladen:', data['contact-title']);
+                    this.showNotification('Einfacher Test erfolgreich!', 'success');
+                } else {
+                    console.error('❌ Keine Daten gefunden');
+                    this.showNotification('Test fehlgeschlagen!', 'error');
+                }
             }, 100);
         }
     }
