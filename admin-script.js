@@ -19,21 +19,16 @@ class AdminPanel {
         // Initialisiere Admin-Panel
         this.initializeAdminPanel();
         
-        // Lade gespeicherte Inhalte
-        this.loadSavedContent();
+        // NICHT hier laden - zu früh! Event Listener macht das später
+        // this.loadSavedContent();
         
         // Lade gespeicherte Bilder
         this.loadSavedImages();
         
         this.logInfo('Admin Panel initialisiert');
         
-        // Zusätzlicher Event Listener für DOM-Bereitschaft
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.logInfo('DOM geladen - lade Daten erneut');
-                this.loadSavedContent();
-            });
-        }
+        // Event Listener werden jetzt zentral am Ende der Datei verwaltet
+        // Keine zusätzlichen Event Listener hier - zu komplex!
         
         // Debug-Informationen
         console.log('🔧 AdminPanel Status:');
@@ -63,6 +58,7 @@ class AdminPanel {
         window.forceReload = () => this.loadCurrentData();
         window.testPersistence = () => this.testPersistence();
         window.simpleTest = () => this.simpleTest();
+        window.loadDataNow = () => this.loadSavedContent();
         
         console.log('🔧 Admin-Funktionen global verfügbar:');
         console.log('  - clearAllImages() - Alle Bilder bereinigen');
@@ -2688,16 +2684,34 @@ function removeCertificate(button) {
 
 // Initialize Admin Panel
 let adminPanel;
-document.addEventListener('DOMContentLoaded', () => {
+
+// KRITISCH: Warte bis ALLES geladen ist
+window.addEventListener('load', () => {
+    console.log('🔄 Window Load Event - initialisiere AdminPanel...');
     adminPanel = new AdminPanel();
     
-    // KRITISCH: Daten laden nachdem DOM vollständig geladen ist
+    // Zusätzliche Wartezeit für komplette DOM-Stabilität
     setTimeout(() => {
         if (adminPanel && adminPanel.loadCurrentData) {
-            console.log('🔄 Erzwinge Datenladung nach DOM-Load...');
+            console.log('🔄 Erzwinge Datenladung nach Window-Load...');
             adminPanel.loadCurrentData();
         }
-    }, 500);
+    }, 1000);
+});
+
+// Backup: Falls window.load zu spät ist
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔄 DOM Content Loaded - Backup-Initialisierung...');
+    if (!adminPanel) {
+        adminPanel = new AdminPanel();
+        
+        setTimeout(() => {
+            if (adminPanel && adminPanel.loadCurrentData) {
+                console.log('🔄 Backup: Erzwinge Datenladung nach DOM-Load...');
+                adminPanel.loadCurrentData();
+            }
+        }, 2000);
+    }
 });
 
 // Keyboard shortcuts
