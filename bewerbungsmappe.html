@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbung - Manuel Weiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: var(--line-height);
+            font-size: var(--font-size);
+        }
+
+        /* Dynamic CSS Variables for Design Customization */
+        :root {
+            --font-family: 'Inter', sans-serif;
+            --font-size: 14px;
+            --line-height: 1.6;
+            --primary-color: #2c3e50;
+            --secondary-color: #f39c12;
+            --text-color: #1a1a1a;
+            --background-color: #f5f5f5;
+        }
+
+        .application-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Cover Page - Like a real application folder */
+        .cover-page {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark, #34495e) 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover-subtitle {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .company-name {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--secondary-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .cover-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .cover-info-item {
+            text-align: center;
+        }
+
+        .cover-info-item i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .cover-info-item p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Content Pages */
+        .content-page {
+            padding: 40px;
+            display: none;
+            min-height: 100vh;
+        }
+
+        .content-page.active {
+            display: block;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        /* Paper-like content */
+        .content-section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Navigation */
+        .page-navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color-dark, #34495e);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Page indicator */
+        .page-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Content styles */
+        .cover-letter {
+            text-align: justify;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .experience-item {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+        }
+
+        .experience-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .experience-company {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .experience-date {
+            font-size: 0.9rem;
+            color: #868e96;
+            margin-bottom: 10px;
+        }
+
+        .experience-description {
+            color: #495057;
+            line-height: 1.7;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2c3e50;
+        }
+
+        .skill-category h4 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 5px 0;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .skill-list li::before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .contact-item i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            width: 30px;
+        }
+
+        .contact-item div h4 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .contact-item div p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .application-container {
+                box-shadow: none;
+                max-width: none;
+            }
+            
+            .page-navigation,
+            .page-indicator {
+                display: none;
+            }
+            
+            .content-page {
+                display: block !important;
+                page-break-after: always;
+            }
+            
+            .cover-page {
+                page-break-after: always;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cover-title {
+                font-size: 2.5rem;
+            }
+            
+            .cover-subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .company-name {
+                font-size: 1.8rem;
+            }
+            
+            .cover-info {
+                gap: 20px;
+            }
+            
+            .page-navigation {
+                bottom: 20px;
+                right: 20px;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .page-indicator {
+                bottom: 20px;
+                left: 20px;
+            }
+        }
+
+        /* Page transition animation */
+        .content-page {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="application-container">
+        <!-- Cover Page -->
+        <div class="cover-page" id="cover-page">
+            <div class="cover-content">
+                <h1 class="cover-title">Bewerbung</h1>
+                <h2 class="cover-subtitle">Manuel Weiss</h2>
+                <div class="company-name" id="company-name">Firmenname</div>
+                
+                <div class="cover-info">
+                    <div class="cover-info-item">
+                        <i class="fas fa-user"></i>
+                        <p>Senior HR-Tech Consultant</p>
+                    </div>
+                    <div class="cover-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Schweiz</p>
+                    </div>
+                    <div class="cover-info-item">
+                        <i class="fas fa-calendar"></i>
+                        <p id="application-date">Datum</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cover Letter Page -->
+        <div class="content-page" id="page1">
+            <div class="page-header">
+                <h1>Anschreiben</h1>
+                <h2 id="page1-company">Firmenname</h2>
+            </div>
+            
+            <div class="content-section">
+                <div class="cover-letter" id="cover-letter-content">
+                    Sehr geehrte Damen und Herren,
+
+                    mit großem Interesse habe ich Ihre Stellenausschreibung gelesen und bewerbe mich hiermit um die ausgeschriebene Position.
+
+                    Als erfahrener HR-Tech Consultant mit über 6 Jahren Erfahrung in der digitalen Transformation von HR-Prozessen bringe ich umfassende Expertise in der Implementierung von UKG HRSD, BPMN 2.0 und agilen Projektmethoden mit.
+
+                    Meine Stärken liegen in der strategischen Beratung und pragmatischen Umsetzung komplexer Digitalisierungsprojekte. Ich habe erfolgreich internationale Konzerne und Schweizer Banken bei der Optimierung ihrer HR-Prozesse begleitet und dabei nachhaltige Effizienzsteigerungen erzielt.
+
+                    Besonders überzeugt mich an Ihrer Position die Möglichkeit, innovative HR-Lösungen zu entwickeln und Unternehmen bei ihrer digitalen Transformation zu unterstützen. Meine Erfahrung in Change Management und Stakeholder-Kommunikation würde ich gerne in Ihr Team einbringen.
+
+                    Ich freue mich darauf, Sie in einem persönlichen Gespräch von meinen Fähigkeiten zu überzeugen und mehr über Ihre Anforderungen zu erfahren.
+
+                    Mit freundlichen Grüßen
+                    Manuel Weiss
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience Page -->
+        <div class="content-page" id="page2">
+            <div class="page-header">
+                <h1>Berufserfahrung</h1>
+                <h2>Projekte & Erfolge</h2>
+            </div>
+            
+            <div class="content-section">
+                <h3 class="section-title">Berufserfahrung</h3>
+                
+                <div class="experience-item">
+                    <div class="experience-title">Senior HR-Tech Consultant</div>
+                    <div class="experience-company">Freelancer | Schweiz</div>
+                    <div class="experience-date">2020 - Heute</div>
+                    <div class="experience-description">
+                        Beratung und Implementierung von HR-Tech Lösungen für internationale Unternehmen. Spezialisierung auf UKG HRSD, Prozessoptimierung und digitale Transformation. Erfolgreiche Durchführung von 30+ Projekten mit Fokus auf Change Management und Stakeholder-Kommunikation.
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-title">Prozessmanagement Consultant</div>
+                    <div class="experience-company">Diverse Kunden | Schweiz/Deutschland</div>
+                    <div class="experience-date">2019 - 2020</div>
+                    <div class="experience-description">
+                        Implementierung von BPMN 2.0 und ADONIS für Schweizer Banken. Entwicklung von Prozesslandkarten und Aufbau von Wissensdatenbanken für nachhaltige Prozessdokumentation.
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-title">HR Digitalisierung Specialist</div>
+                    <div class="experience-company">Internationaler Konzern | 500+ Mitarbeiter</div>
+                    <div class="experience-date">2018 - 2019</div>
+                    <div class="experience-description">
+                        Implementierung von UKG HRSD für einen internationalen Konzern. Entwicklung einer Digitalisierungsroadmap und Optimierung des gesamten Employee Lifecycle. Einführung von Self-Service Funktionen und Case Management.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills & Education Page -->
+        <div class="content-page" id="page3">
+            <div class="page-header">
+                <h1>Qualifikationen</h1>
+                <h2>Skills & Ausbildung</h2>
+            </div>
+            
+            <div class="content-section">
+                <h3 class="section-title">Fachkompetenzen</h3>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h4>HR-Tech</h4>
+                        <ul class="skill-list">
+                            <li>UKG HRSD</li>
+                            <li>Service Delivery</li>
+                            <li>Change Management</li>
+                            <li>Self-Service Portale</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Prozessmanagement</h4>
+                        <ul class="skill-list">
+                            <li>BPMN 2.0</li>
+                            <li>ADONIS</li>
+                            <li>Workflow Design</li>
+                            <li>Process Mining</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Projektmanagement</h4>
+                        <ul class="skill-list">
+                            <li>Scrum Master</li>
+                            <li>Prince2 Agile</li>
+                            <li>Stakeholder Management</li>
+                            <li>Agile Methoden</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Digitale Transformation</h4>
+                        <ul class="skill-list">
+                            <li>Design Thinking</li>
+                            <li>Digitalisierungsroadmaps</li>
+                            <li>Innovationsprozesse</li>
+                            <li>Organizational Change</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">Ausbildung & Zertifikate</h3>
+                <div class="experience-item">
+                    <div class="experience-title">Bachelor HR Management</div>
+                    <div class="experience-company">Hochschule</div>
+                    <div class="experience-date">2015 - 2018</div>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-title">Supply Chain Management</div>
+                    <div class="experience-company">Zusatzqualifikation</div>
+                    <div class="experience-date">2018</div>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-title">Service Management</div>
+                    <div class="experience-company">Zertifikat</div>
+                    <div class="experience-date">2019</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div class="content-page" id="page4">
+            <div class="page-header">
+                <h1>Kontakt</h1>
+                <h2>Referenzen & Kontaktdaten</h2>
+            </div>
+            
+            <div class="content-section">
+                <h3 class="section-title">Kontaktdaten</h3>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>E-Mail</h4>
+                            <p>weiss-manuel@gmx.de</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p>+49 173 3993407</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Standort</h4>
+                            <p>Schweiz</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Verfügbarkeit</h4>
+                            <p>Sofort verfügbar</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-language"></i>
+                        <div>
+                            <h4>Sprachen</h4>
+                            <p>Deutsch (Muttersprache)<br>Englisch (C1)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-location-arrow"></i>
+                        <div>
+                            <h4>Arbeitsweise</h4>
+                            <p>Remote & On-Site<br>Flexibel verfügbar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">Referenzprojekte</h3>
+                <div class="experience-item">
+                    <div class="experience-title">Digitalisierung HR-Prozesse</div>
+                    <div class="experience-company">Internationaler Konzern (500+ Mitarbeiter)</div>
+                    <div class="experience-description">
+                        Implementierung von UKG HRSD, Entwicklung einer Digitalisierungsroadmap und Optimierung des gesamten Employee Lifecycle. Erfolgreiche Einführung von Self-Service Funktionen und Case Management.
+                    </div>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-title">Prozessoptimierung mit ADONIS</div>
+                    <div class="experience-company">Schweizer Bank</div>
+                    <div class="experience-description">
+                        Einführung eines ganzheitlichen Prozessmanagements, Implementierung von ADONIS und Erstellung von Prozesslandkarten. Aufbau einer Wissensdatenbank für nachhaltige Prozessdokumentation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="page-navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousPage()">
+            <i class="fas fa-chevron-left"></i> Zurück
+        </button>
+        <button class="nav-btn" id="nextBtn" onclick="nextPage()">
+            Weiter <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="page-indicator" id="page-indicator">Seite 1 von 4</div>
+
+    <script>
+        let currentPage = 0; // 0 = Cover, 1-4 = Content pages
+        const totalPages = 4;
+
+        // Load application data from URL parameters or localStorage
+        function loadApplicationData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const companyName = urlParams.get('company') || 'Firmenname';
+            const applicationDate = urlParams.get('date') || new Date().toLocaleDateString('de-DE');
+            const coverLetter = urlParams.get('coverLetter') || '';
+
+            // Update cover page
+            document.getElementById('company-name').textContent = companyName;
+            document.getElementById('application-date').textContent = applicationDate;
+            document.getElementById('page1-company').textContent = companyName;
+
+            // Update cover letter if provided
+            if (coverLetter) {
+                document.getElementById('cover-letter-content').textContent = coverLetter;
+            }
+        }
+
+        // Load design settings from URL parameters
+        function loadDesignSettings() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Get design parameters
+            const fontFamily = urlParams.get('fontFamily') || 'Inter';
+            const fontSize = urlParams.get('fontSize') || '14';
+            const lineHeight = urlParams.get('lineHeight') || '1.6';
+            const primaryColor = urlParams.get('primaryColor') || '#2c3e50';
+            const secondaryColor = urlParams.get('secondaryColor') || '#f39c12';
+            const textColor = urlParams.get('textColor') || '#1a1a1a';
+            const backgroundColor = urlParams.get('backgroundColor') || '#f5f5f5';
+
+            // Convert hex to RGB for rgba usage
+            const hexToRgb = (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '44, 62, 80';
+            };
+
+            // Apply design settings to CSS variables
+            document.documentElement.style.setProperty('--font-family', `'${fontFamily}', sans-serif`);
+            document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+            document.documentElement.style.setProperty('--line-height', lineHeight);
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--background-color', backgroundColor);
+            document.documentElement.style.setProperty('--primary-color-rgb', hexToRgb(primaryColor));
+
+            // Load Google Fonts if needed
+            if (fontFamily !== 'Inter') {
+                const link = document.createElement('link');
+                link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(' ', '+')}:wght@300;400;500;600;700&display=swap`;
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+            }
+        }
+
+        function showPage(pageNumber) {
+            // Hide all content pages
+            for (let i = 1; i <= totalPages; i++) {
+                document.getElementById(`page${i}`).classList.remove('active');
+            }
+
+            // Show cover page or content page
+            if (pageNumber === 0) {
+                document.getElementById('cover-page').style.display = 'flex';
+                for (let i = 1; i <= totalPages; i++) {
+                    document.getElementById(`page${i}`).style.display = 'none';
+                }
+            } else {
+                document.getElementById('cover-page').style.display = 'none';
+                document.getElementById(`page${pageNumber}`).style.display = 'block';
+                document.getElementById(`page${pageNumber}`).classList.add('active');
+            }
+
+            updateNavigation();
+            updatePageIndicator();
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === totalPages;
+
+            if (currentPage === totalPages) {
+                nextBtn.innerHTML = '<i class="fas fa-check"></i> Fertig';
+            } else {
+                nextBtn.innerHTML = 'Weiter <i class="fas fa-chevron-right"></i>';
+            }
+        }
+
+        function updatePageIndicator() {
+            const indicator = document.getElementById('page-indicator');
+            if (currentPage === 0) {
+                indicator.textContent = 'Deckblatt';
+            } else {
+                indicator.textContent = `Seite ${currentPage} von ${totalPages}`;
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextPage();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousPage();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDesignSettings();
+            loadApplicationData();
+            showPage(0);
+        });
+    </script>
+</body>
+</html>
