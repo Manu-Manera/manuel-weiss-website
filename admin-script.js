@@ -3353,7 +3353,7 @@ function applyDesignToApplication() {
         // ========================================
 
         // Show section function
-        function showSection(sectionName) {
+        window.showSection = function(sectionName) {
             console.log('🔍 Zeige Sektion:', sectionName);
             
             // Hide all sections
