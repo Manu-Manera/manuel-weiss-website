@@ -1517,6 +1517,14 @@ body {
 #application-design {
     min-width: 800px; /* Ensure minimum width for content */
     overflow-x: auto;
+    display: none; /* Initially hidden */
+}
+
+#applications.active,
+#new-application.active,
+#application-templates.active,
+#application-design.active {
+    display: block; /* Show when active */
 }
 
 .editor-grid {
