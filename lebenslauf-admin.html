@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebenslauf Admin - Manuel Weiss Professional Services</title>
+    <meta name="description" content="Admin-Panel für den interaktiven Lebenslauf">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Spezielle Styles für Lebenslauf Admin */
+        .cv-admin-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+
+        .cv-sidebar {
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .cv-main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .cv-nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .cv-nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cv-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+            border: 2px solid transparent;
+        }
+
+        .cv-nav-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .cv-nav-item.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .cv-nav-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cv-content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .cv-section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .cv-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .cv-section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cv-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cv-form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .cv-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .cv-form-group input,
+        .cv-form-group textarea,
+        .cv-form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .cv-form-group input:focus,
+        .cv-form-group textarea:focus,
+        .cv-form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .cv-color-picker {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .cv-color-input {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .cv-color-label {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .cv-experience-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cv-experience-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .cv-experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .cv-experience-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .cv-experience-company {
+            color: #2563eb;
+            font-size: 0.9rem;
+        }
+
+        .cv-experience-date {
+            background: #e2e8f0;
+            color: #64748b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .cv-experience-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .cv-skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .cv-skill-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cv-skill-tag .remove-skill {
+            cursor: pointer;
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .cv-preview {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .cv-preview h3 {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .cv-preview-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .cv-preview-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .cv-save-status {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .cv-save-status.show {
+            transform: translateX(0);
+        }
+
+        .cv-save-status.error {
+            background: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .cv-module-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cv-toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .cv-toggle-switch.active {
+            background: #2563eb;
+        }
+
+        .cv-toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .cv-toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        @media (max-width: 768px) {
+            .cv-admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cv-sidebar {
+                order: 2;
+                border-right: none;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .cv-main-content {
+                order: 1;
+            }
+
+            .cv-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cv-admin-container">
+        <!-- Sidebar Navigation -->
+        <div class="cv-sidebar">
+            <div class="cv-nav-section">
+                <div class="cv-nav-title">
+                    <i class="fas fa-cog"></i>
+                    Lebenslauf Admin
+                </div>
+                <div class="cv-nav-item active" data-section="general">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Allgemeine Einstellungen</span>
+                </div>
+                <div class="cv-nav-item" data-section="colors">
+                    <i class="fas fa-palette"></i>
+                    <span>Farben & Design</span>
+                </div>
+                <div class="cv-nav-item" data-section="modules">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span>Module aktivieren</span>
+                </div>
+            </div>
+
+            <div class="cv-nav-section">
+                <div class="cv-nav-title">
+                    <i class="fas fa-edit"></i>
+                    Inhalte bearbeiten
+                </div>
+                <div class="cv-nav-item" data-section="personal">
+                    <i class="fas fa-user"></i>
+                    <span>Persönliche Daten</span>
+                </div>
+                <div class="cv-nav-item" data-section="education">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Ausbildung</span>
+                </div>
+                <div class="cv-nav-item" data-section="experience">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Berufserfahrung</span>
+                </div>
+                <div class="cv-nav-item" data-section="projects">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Projekte</span>
+                </div>
+                <div class="cv-nav-item" data-section="certificates">
+                    <i class="fas fa-certificate"></i>
+                    <span>Zertifikate</span>
+                </div>
+                <div class="cv-nav-item" data-section="skills">
+                    <i class="fas fa-tools"></i>
+                    <span>Skills</span>
+                </div>
+            </div>
+
+            <div class="cv-nav-section">
+                <div class="cv-nav-title">
+                    <i class="fas fa-eye"></i>
+                    Vorschau & Export
+                </div>
+                <div class="cv-nav-item" data-section="preview">
+                    <i class="fas fa-eye"></i>
+                    <span>Vorschau</span>
+                </div>
+                <div class="cv-nav-item" data-section="export">
+                    <i class="fas fa-download"></i>
+                    <span>Export</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="cv-main-content">
+            <!-- Allgemeine Einstellungen -->
+            <div id="general" class="cv-content-section">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Allgemeine Einstellungen</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-primary" onclick="saveGeneralSettings()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cv-form-grid">
+                    <div class="cv-form-group">
+                        <label>Lebenslauf Titel</label>
+                        <input type="text" id="cv-title" value="Interaktiver Lebenslauf" placeholder="Titel der Lebenslauf-Seite">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Untertitel</label>
+                        <input type="text" id="cv-subtitle" value="Entdecken Sie meine Erfahrungen, Projekte und Qualifikationen in einer interaktiven Präsentation" placeholder="Untertitel">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Navigation Position</label>
+                        <select id="nav-position">
+                            <option value="left">Links</option>
+                            <option value="right">Rechts</option>
+                            <option value="top">Oben</option>
+                        </select>
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Animationen</label>
+                        <select id="animations">
+                            <option value="smooth">Sanft</option>
+                            <option value="fast">Schnell</option>
+                            <option value="none">Keine</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farben & Design -->
+            <div id="colors" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Farben & Design</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="resetColors()">
+                            <i class="fas fa-undo"></i> Zurücksetzen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveColors()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cv-form-grid">
+                    <div class="cv-form-group">
+                        <label>Primärfarbe</label>
+                        <div class="cv-color-picker">
+                            <input type="color" id="primary-color" class="cv-color-input" value="#2563eb">
+                            <span class="cv-color-label">Hauptfarbe für Buttons und Links</span>
+                        </div>
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Sekundärfarbe</label>
+                        <div class="cv-color-picker">
+                            <input type="color" id="secondary-color" class="cv-color-input" value="#8b5cf6">
+                            <span class="cv-color-label">Akzentfarbe für Highlights</span>
+                        </div>
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Hintergrundfarbe</label>
+                        <div class="cv-color-picker">
+                            <input type="color" id="bg-color" class="cv-color-input" value="#f8fafc">
+                            <span class="cv-color-label">Haupt-Hintergrundfarbe</span>
+                        </div>
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Textfarbe</label>
+                        <div class="cv-color-picker">
+                            <input type="color" id="text-color" class="cv-color-input" value="#1e293b">
+                            <span class="cv-color-label">Haupt-Textfarbe</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cv-preview">
+                    <h3>Farbvorschau</h3>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                        <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 8px;">Primär</div>
+                        <div style="background: var(--secondary-color); color: white; padding: 0.5rem 1rem; border-radius: 8px;">Sekundär</div>
+                        <div style="background: var(--bg-color); color: var(--text-color); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">Hintergrund</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module aktivieren -->
+            <div id="modules" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Module aktivieren</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-primary" onclick="saveModules()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cv-form-grid">
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="education"></div>
+                        <span>Ausbildung anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="experience"></div>
+                        <span>Berufserfahrung anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="projects"></div>
+                        <span>Projekte anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="certificates"></div>
+                        <span>Zertifikate anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="skills"></div>
+                        <span>Skills anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="navigation"></div>
+                        <span>Navigation anzeigen</span>
+                    </div>
+                    <div class="cv-module-toggle">
+                        <div class="cv-toggle-switch active" data-module="progress"></div>
+                        <span>Progress-Indikator anzeigen</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persönliche Daten -->
+            <div id="personal" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Persönliche Daten</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-primary" onclick="savePersonalData()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cv-form-grid">
+                    <div class="cv-form-group">
+                        <label>Name</label>
+                        <input type="text" id="personal-name" value="Manuel Weiss" placeholder="Vollständiger Name">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Titel</label>
+                        <input type="text" id="personal-title" value="Senior Consultant Digitalisierung" placeholder="Beruflicher Titel">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>E-Mail</label>
+                        <input type="email" id="personal-email" value="weiss-manuel@gmx.de" placeholder="E-Mail-Adresse">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="personal-phone" value="+41 XX XXX XX XX" placeholder="Telefonnummer">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Standort</label>
+                        <input type="text" id="personal-location" value="Schweiz" placeholder="Standort">
+                    </div>
+                    <div class="cv-form-group">
+                        <label>LinkedIn</label>
+                        <input type="url" id="personal-linkedin" placeholder="LinkedIn-Profil URL">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ausbildung -->
+            <div id="education" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Ausbildung</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="addEducation()">
+                            <i class="fas fa-plus"></i> Hinzufügen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveEducation()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div id="education-list">
+                    <div class="cv-experience-card">
+                        <div class="cv-experience-header">
+                            <div>
+                                <div class="cv-experience-title">Bachelor of Science in Wirtschaftsinformatik</div>
+                                <div class="cv-experience-company">Hochschule für Wirtschaft und Recht Berlin</div>
+                            </div>
+                            <div class="cv-experience-date">2018 - 2021</div>
+                        </div>
+                        <div class="cv-experience-actions">
+                            <button class="btn btn-small" onclick="editEducation(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteEducation(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cv-skill-tags">
+                            <span class="cv-skill-tag">Wirtschaftsinformatik <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Digitale Transformation <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Prozessmanagement <span class="remove-skill">×</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Berufserfahrung -->
+            <div id="experience" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Berufserfahrung</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="addExperience()">
+                            <i class="fas fa-plus"></i> Hinzufügen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveExperience()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div id="experience-list">
+                    <div class="cv-experience-card">
+                        <div class="cv-experience-header">
+                            <div>
+                                <div class="cv-experience-title">Senior Consultant Digitalisierung</div>
+                                <div class="cv-experience-company">Accenture Schweiz</div>
+                            </div>
+                            <div class="cv-experience-date">2021 - 2024</div>
+                        </div>
+                        <div class="cv-experience-actions">
+                            <button class="btn btn-small" onclick="editExperience(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteExperience(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cv-skill-tags">
+                            <span class="cv-skill-tag">HR-Tech <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">UKG HRSD <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Change Management <span class="remove-skill">×</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projekte -->
+            <div id="projects" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Projekte</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="addProject()">
+                            <i class="fas fa-plus"></i> Hinzufügen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveProjects()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div id="projects-list">
+                    <div class="cv-experience-card">
+                        <div class="cv-experience-header">
+                            <div>
+                                <div class="cv-experience-title">UKG HRSD Implementation</div>
+                                <div class="cv-experience-company">Internationaler Konzern</div>
+                            </div>
+                            <div class="cv-experience-date">2023</div>
+                        </div>
+                        <div class="cv-experience-actions">
+                            <button class="btn btn-small" onclick="editProject(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteProject(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cv-skill-tags">
+                            <span class="cv-skill-tag">UKG HRSD <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">HR-Tech <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Change Management <span class="remove-skill">×</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zertifikate -->
+            <div id="certificates" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Zertifikate</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="addCertificate()">
+                            <i class="fas fa-plus"></i> Hinzufügen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveCertificates()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div id="certificates-list">
+                    <div class="cv-experience-card">
+                        <div class="cv-experience-header">
+                            <div>
+                                <div class="cv-experience-title">Scrum Master Certified</div>
+                                <div class="cv-experience-company">Scrum Alliance</div>
+                            </div>
+                            <div class="cv-experience-date">2023</div>
+                        </div>
+                        <div class="cv-experience-actions">
+                            <button class="btn btn-small" onclick="editCertificate(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteCertificate(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cv-skill-tags">
+                            <span class="cv-skill-tag">Scrum <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Agile <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Teamführung <span class="remove-skill">×</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div id="skills" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Skills</h2>
+                    <div class="cv-section-actions">
+                        <button class="btn btn-secondary" onclick="addSkillCategory()">
+                            <i class="fas fa-plus"></i> Kategorie hinzufügen
+                        </button>
+                        <button class="btn btn-primary" onclick="saveSkills()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                    </div>
+                </div>
+
+                <div id="skills-list">
+                    <div class="cv-experience-card">
+                        <div class="cv-experience-header">
+                            <div>
+                                <div class="cv-experience-title">HR-Tech & Systeme</div>
+                            </div>
+                        </div>
+                        <div class="cv-experience-actions">
+                            <button class="btn btn-small" onclick="editSkillCategory(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="deleteSkillCategory(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cv-skill-tags">
+                            <span class="cv-skill-tag">UKG HRSD <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">SAP SuccessFactors <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">Workday <span class="remove-skill">×</span></span>
+                            <span class="cv-skill-tag">ServiceNow <span class="remove-skill">×</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vorschau -->
+            <div id="preview" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Vorschau</h2>
+                    <div class="cv-section-actions">
+                        <button class="cv-preview-btn" onclick="openPreview()">
+                            <i class="fas fa-external-link-alt"></i> Vorschau öffnen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cv-preview">
+                    <h3>Lebenslauf Vorschau</h3>
+                    <p>Klicken Sie auf "Vorschau öffnen" um den aktuellen Lebenslauf in einem neuen Tab zu öffnen.</p>
+                    <div style="margin-top: 2rem;">
+                        <iframe id="preview-frame" src="lebenslauf.html" style="width: 100%; height: 600px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div id="export" class="cv-content-section" style="display: none;">
+                <div class="cv-section-header">
+                    <h2 class="cv-section-title">Export</h2>
+                </div>
+
+                <div class="cv-form-grid">
+                    <div class="cv-form-group">
+                        <label>Export Format</label>
+                        <select id="export-format">
+                            <option value="pdf">PDF</option>
+                            <option value="html">HTML</option>
+                            <option value="json">JSON (Daten)</option>
+                        </select>
+                    </div>
+                    <div class="cv-form-group">
+                        <label>Export Optionen</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label><input type="checkbox" checked> Alle Sektionen einschließen</label>
+                            <label><input type="checkbox" checked> Farben und Design</label>
+                            <label><input type="checkbox" checked> Navigation</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cv-preview">
+                    <button class="cv-preview-btn" onclick="exportCV()">
+                        <i class="fas fa-download"></i> Lebenslauf exportieren
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Status -->
+    <div id="save-status" class="cv-save-status">
+        <i class="fas fa-check"></i> Änderungen gespeichert!
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.cv-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        });
+
+        // Module Toggles
+        document.querySelectorAll('.cv-toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Show Section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.cv-content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+            }
+
+            // Update navigation
+            document.querySelectorAll('.cv-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        // Save Functions
+        function saveGeneralSettings() {
+            const settings = {
+                title: document.getElementById('cv-title').value,
+                subtitle: document.getElementById('cv-subtitle').value,
+                navPosition: document.getElementById('nav-position').value,
+                animations: document.getElementById('animations').value
+            };
+            
+            localStorage.setItem('cv-general-settings', JSON.stringify(settings));
+            showSaveStatus();
+        }
+
+        function saveColors() {
+            const colors = {
+                primary: document.getElementById('primary-color').value,
+                secondary: document.getElementById('secondary-color').value,
+                background: document.getElementById('bg-color').value,
+                text: document.getElementById('text-color').value
+            };
+            
+            localStorage.setItem('cv-colors', JSON.stringify(colors));
+            showSaveStatus();
+        }
+
+        function saveModules() {
+            const modules = {};
+            document.querySelectorAll('.cv-toggle-switch').forEach(toggle => {
+                const module = toggle.getAttribute('data-module');
+                modules[module] = toggle.classList.contains('active');
+            });
+            
+            localStorage.setItem('cv-modules', JSON.stringify(modules));
+            showSaveStatus();
+        }
+
+        function savePersonalData() {
+            const personal = {
+                name: document.getElementById('personal-name').value,
+                title: document.getElementById('personal-title').value,
+                email: document.getElementById('personal-email').value,
+                phone: document.getElementById('personal-phone').value,
+                location: document.getElementById('personal-location').value,
+                linkedin: document.getElementById('personal-linkedin').value
+            };
+            
+            localStorage.setItem('cv-personal', JSON.stringify(personal));
+            showSaveStatus();
+        }
+
+        // Show Save Status
+        function showSaveStatus(message = 'Änderungen gespeichert!', isError = false) {
+            const status = document.getElementById('save-status');
+            status.textContent = message;
+            status.className = `cv-save-status ${isError ? 'error' : ''}`;
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 3000);
+        }
+
+        // Reset Colors
+        function resetColors() {
+            document.getElementById('primary-color').value = '#2563eb';
+            document.getElementById('secondary-color').value = '#8b5cf6';
+            document.getElementById('bg-color').value = '#f8fafc';
+            document.getElementById('text-color').value = '#1e293b';
+        }
+
+        // Open Preview
+        function openPreview() {
+            window.open('lebenslauf.html', '_blank');
+        }
+
+        // Export CV
+        function exportCV() {
+            const format = document.getElementById('export-format').value;
+            
+            if (format === 'pdf') {
+                window.open('lebenslauf.html', '_blank');
+            } else if (format === 'json') {
+                const data = {
+                    general: JSON.parse(localStorage.getItem('cv-general-settings') || '{}'),
+                    colors: JSON.parse(localStorage.getItem('cv-colors') || '{}'),
+                    modules: JSON.parse(localStorage.getItem('cv-modules') || '{}'),
+                    personal: JSON.parse(localStorage.getItem('cv-personal') || '{}')
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'lebenslauf-data.json';
+                a.click();
+            }
+        }
+
+        // Load saved data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load general settings
+            const generalSettings = JSON.parse(localStorage.getItem('cv-general-settings') || '{}');
+            if (generalSettings.title) document.getElementById('cv-title').value = generalSettings.title;
+            if (generalSettings.subtitle) document.getElementById('cv-subtitle').value = generalSettings.subtitle;
+            if (generalSettings.navPosition) document.getElementById('nav-position').value = generalSettings.navPosition;
+            if (generalSettings.animations) document.getElementById('animations').value = generalSettings.animations;
+
+            // Load colors
+            const colors = JSON.parse(localStorage.getItem('cv-colors') || '{}');
+            if (colors.primary) document.getElementById('primary-color').value = colors.primary;
+            if (colors.secondary) document.getElementById('secondary-color').value = colors.secondary;
+            if (colors.background) document.getElementById('bg-color').value = colors.background;
+            if (colors.text) document.getElementById('text-color').value = colors.text;
+
+            // Load personal data
+            const personal = JSON.parse(localStorage.getItem('cv-personal') || '{}');
+            if (personal.name) document.getElementById('personal-name').value = personal.name;
+            if (personal.title) document.getElementById('personal-title').value = personal.title;
+            if (personal.email) document.getElementById('personal-email').value = personal.email;
+            if (personal.phone) document.getElementById('personal-phone').value = personal.phone;
+            if (personal.location) document.getElementById('personal-location').value = personal.location;
+            if (personal.linkedin) document.getElementById('personal-linkedin').value = personal.linkedin;
+        });
+    </script>
+</body>
+</html>

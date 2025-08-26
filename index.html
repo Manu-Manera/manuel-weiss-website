@@ -44,6 +44,7 @@
                 </a></li>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#beratung">Beratung</a></li>
+                <li><a href="#bewerbungen">Bewerbungen</a></li>
                 <li><a href="#projekte">Projekte</a></li>
                 <li><a href="#sonstige">Sonstige Tätigkeiten</a></li>
                 <li><a href="#kontakt">Kontakt</a></li>
@@ -287,6 +288,69 @@
                         <p>Elektrofahrräder für entspannte Ausflüge</p>
                     </div>
                     <div id="ebike-gallery" class="activity-gallery"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bewerbungen Section -->
+    <section id="bewerbungen" class="applications">
+        <div class="container">
+            <div class="section-header">
+                <h2>Bewerbungsunterlagen</h2>
+                <p>Interaktive Präsentation meiner Qualifikationen und Erfahrungen</p>
+            </div>
+
+            <div class="applications-grid">
+                <div class="application-card primary" onclick="window.open('bewerbungsmappe.html', '_blank')" style="cursor: pointer;">
+                    <div class="application-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>Interaktive Bewerbungsmappe</h3>
+                    <p>Eine moderne, digitale Bewerbungsmappe mit 3D-Umblätter-Effekt und interaktiven Elementen. Präsentiert meine Erfahrungen, Projekte und Qualifikationen in einem ansprechenden Format.</p>
+                    <div class="application-features">
+                        <span><i class="fas fa-check"></i> 5 interaktive Seiten</span>
+                        <span><i class="fas fa-check"></i> 3D-Umblätter-Effekt</span>
+                        <span><i class="fas fa-check"></i> Mobile-optimiert</span>
+                        <span><i class="fas fa-check"></i> Touch-Gesten</span>
+                    </div>
+                    <div class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Bewerbungsmappe öffnen
+                    </div>
+                </div>
+
+                <div class="application-card" onclick="window.open('beraterprofil.html', '_blank')" style="cursor: pointer;">
+                    <div class="application-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Beraterprofil PDF</h3>
+                    <p>Klassisches Beraterprofil als PDF-Dokument. Ideal für traditionelle Bewerbungsverfahren und zum Ausdrucken.</p>
+                    <div class="application-features">
+                        <span><i class="fas fa-check"></i> Druckoptimiert</span>
+                        <span><i class="fas fa-check"></i> Professionelles Layout</span>
+                        <span><i class="fas fa-check"></i> Vollständige Dokumentation</span>
+                        <span><i class="fas fa-check"></i> Sofort verfügbar</span>
+                    </div>
+                    <div class="btn btn-secondary" onclick="event.stopPropagation(); generateBeraterprofilPDF();">
+                        <i class="fas fa-download"></i> PDF herunterladen
+                    </div>
+                </div>
+
+                <div class="application-card" onclick="window.open('lebenslauf.html', '_blank')" style="cursor: pointer;">
+                    <div class="application-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>Lebenslauf</h3>
+                    <p>Detaillierter Lebenslauf mit allen relevanten Informationen zu Ausbildung, Berufserfahrung und Qualifikationen.</p>
+                    <div class="application-features">
+                        <span><i class="fas fa-check"></i> Detaillierte Erfahrungen</span>
+                        <span><i class="fas fa-check"></i> Zertifikate & Qualifikationen</span>
+                        <span><i class="fas fa-check"></i> Projektübersicht</span>
+                        <span><i class="fas fa-check"></i> Kontaktdaten</span>
+                    </div>
+                    <div class="btn btn-secondary">
+                        <i class="fas fa-file-pdf"></i> Lebenslauf öffnen
+                    </div>
                 </div>
             </div>
         </div>
@@ -774,6 +838,40 @@
             console.log('🚀 Homepage bereits geladen, starte Initialisierung...');
             initializeHomepage();
         }
+        
+        // PDF-Generierung für Beraterprofil
+        function generateBeraterprofilPDF() {
+            console.log('📄 Generiere Beraterprofil PDF...');
+            
+            // Öffne die Beraterprofil-Seite in einem neuen Tab
+            const newWindow = window.open('beraterprofil.html', '_blank');
+            
+            // Warte kurz und dann starte den PDF-Download
+            setTimeout(() => {
+                if (newWindow) {
+                    // Versuche den PDF-Download zu starten
+                    try {
+                        newWindow.print();
+                    } catch (error) {
+                        console.log('🔄 Drucken nicht möglich, verwende alternative Methode...');
+                        // Alternative: Öffne die Seite und lade das PDF
+                        window.open('beraterprofil.pdf', '_blank');
+                    }
+                } else {
+                    // Fallback: Direkter PDF-Download
+                    window.open('beraterprofil.pdf', '_blank');
+                }
+            }, 1000);
+        }
     </script>
+    
+    <!-- JavaScript Libraries -->
+    <script src="js/image-manager.js?v=2.0"></script>
+    <script src="js/content-manager.js?v=2.0"></script>
+    <script src="js/activity-gallery.js?v=2.0"></script>
+    <script src="js/image-gallery.js?v=2.0"></script>
+    <script src="js/netlify-storage.js?v=2.0"></script>
+    <script src="js/data-persistence.js?v=2.0"></script>
+    <script src="script.js?v=2.0"></script>
 </body>
 </html>
