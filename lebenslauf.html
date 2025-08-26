@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiver Lebenslauf - Manuel Weiss</title>
+    <meta name="description" content="Interaktiver Lebenslauf von Manuel Weiss mit detaillierten Erfahrungen und Projekten.">
+    <link rel="stylesheet" href="styles.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Spezielle Styles für Lebenslauf-Seite */
+        .cv-hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cv-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cv-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cv-navigation {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+
+        .cv-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+            border: 2px solid transparent;
+        }
+
+        .cv-nav-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .cv-nav-item.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .cv-nav-item i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cv-section {
+            padding: 4rem 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .cv-section:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .cv-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .cv-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .experience-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .experience-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .experience-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #2563eb;
+        }
+
+        .experience-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #8b5cf6);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .experience-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .experience-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .experience-company {
+            font-size: 1.1rem;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .experience-date {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .experience-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .experience-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .experience-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .experience-card.expanded .experience-details {
+            display: block;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .cv-progress {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 60px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin: 0.5rem auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #2563eb;
+            transform: scale(1.2);
+        }
+
+        .progress-dot:hover {
+            background: #2563eb;
+            transform: scale(1.1);
+        }
+
+        .cv-footer {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .cv-footer h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cv-footer p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .cv-contact {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .contact-item i {
+            color: #60a5fa;
+        }
+
+        @media (max-width: 768px) {
+            .cv-navigation {
+                position: static;
+                transform: none;
+                margin: 2rem auto;
+                max-width: 100%;
+            }
+
+            .cv-progress {
+                position: static;
+                transform: none;
+                margin: 2rem auto;
+                width: auto;
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .progress-dot {
+                margin: 0;
+            }
+
+            .cv-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .cv-section h2 {
+                font-size: 2rem;
+            }
+
+            .experience-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Manuel Weiss</h2>
+                <span>Professional Services</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#beratung">Beratung</a></li>
+                <li><a href="index.html#bewerbungen">Bewerbungen</a></li>
+                <li><a href="index.html#projekte">Projekte</a></li>
+                <li><a href="index.html#kontakt">Kontakt</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="cv-hero">
+        <div class="container">
+            <h1>Interaktiver Lebenslauf</h1>
+            <p>Entdecken Sie meine Erfahrungen, Projekte und Qualifikationen in einer interaktiven Präsentation</p>
+        </div>
+    </section>
+
+    <!-- Navigation Sidebar -->
+    <div class="cv-navigation">
+        <h3 style="margin-bottom: 1rem; color: #1e293b; font-size: 1.1rem;">Navigation</h3>
+        <div class="cv-nav-item active" data-section="berufserfahrung">
+            <i class="fas fa-briefcase"></i>
+            <span>Berufserfahrung</span>
+        </div>
+        <div class="cv-nav-item" data-section="projekte">
+            <i class="fas fa-project-diagram"></i>
+            <span>Projekte</span>
+        </div>
+        <div class="cv-nav-item" data-section="skills">
+            <i class="fas fa-tools"></i>
+            <span>Skills</span>
+        </div>
+        <div class="cv-nav-item" data-section="zertifikate">
+            <i class="fas fa-certificate"></i>
+            <span>Zertifikate</span>
+        </div>
+        <div class="cv-nav-item" data-section="ausbildung">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Ausbildung</span>
+        </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="cv-progress">
+        <div class="progress-dot active" data-section="berufserfahrung"></div>
+        <div class="progress-dot" data-section="projekte"></div>
+        <div class="progress-dot" data-section="skills"></div>
+        <div class="progress-dot" data-section="zertifikate"></div>
+        <div class="progress-dot" data-section="ausbildung"></div>
+    </div>
+
+    <!-- Berufserfahrung Section -->
+    <section id="berufserfahrung" class="cv-section">
+        <div class="cv-content">
+            <h2><i class="fas fa-briefcase"></i> Berufserfahrung</h2>
+            <div class="experience-grid">
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Senior Consultant Digitalisierung</div>
+                            <div class="experience-company">Accenture Schweiz</div>
+                        </div>
+                        <div class="experience-date">2021 - 2024</div>
+                    </div>
+                    <div class="experience-description">
+                        Beratung von Unternehmen bei der digitalen Transformation mit Fokus auf 
+                        HR-Tech und Prozessoptimierung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">HR-Tech</span>
+                        <span class="skill-tag">UKG HRSD</span>
+                        <span class="skill-tag">Change Management</span>
+                        <span class="skill-tag">Prozessoptimierung</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Hauptprojekte</h4>
+                            <p>Implementierung von UKG HRSD für internationalen Konzern (500+ Mitarbeiter), 
+                            Prozessoptimierung für Schweizer Bank, HR-System-Migration für Pharmaunternehmen</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Verantwortlichkeiten</h4>
+                            <p>Projektleitung, Stakeholder-Management, System-Design, 
+                            Change Management, Schulungen und Workshops</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Erfolge</h4>
+                            <p>30% Effizienzsteigerung in HR-Prozessen, 95% Benutzerzufriedenheit, 
+                            erfolgreiche Migration von 3 Legacy-Systemen</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">IT-Consultant</div>
+                            <div class="experience-company">Deutsche Telekom AG</div>
+                        </div>
+                        <div class="experience-date">2018 - 2021</div>
+                    </div>
+                    <div class="experience-description">
+                        Beratung und Implementierung von IT-Lösungen für Geschäftskunden 
+                        mit Schwerpunkt auf Cloud-Services und Digitalisierung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Cloud-Services</span>
+                        <span class="skill-tag">Digitalisierung</span>
+                        <span class="skill-tag">Kundenberatung</span>
+                        <span class="skill-tag">Projektmanagement</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Schwerpunkte</h4>
+                            <p>Cloud-Migration, Digital Workplace, Collaboration Tools, 
+                            IT-Infrastruktur, Sicherheitslösungen</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Kundenportfolio</h4>
+                            <p>Betreuung von 50+ Geschäftskunden, von Startups bis Großunternehmen, 
+                            branchenübergreifende Projekte</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projekte Section -->
+    <section id="projekte" class="cv-section">
+        <div class="cv-content">
+            <h2><i class="fas fa-project-diagram"></i> Wichtige Projekte</h2>
+            <div class="experience-grid">
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">UKG HRSD Implementation</div>
+                            <div class="experience-company">Internationaler Konzern</div>
+                        </div>
+                        <div class="experience-date">2023</div>
+                    </div>
+                    <div class="experience-description">
+                        Vollständige Implementierung von UKG HRSD für einen internationalen 
+                        Konzern mit über 500 Mitarbeitenden in 12 Ländern.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">UKG HRSD</span>
+                        <span class="skill-tag">HR-Tech</span>
+                        <span class="skill-tag">Change Management</span>
+                        <span class="skill-tag">International</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Projektumfang</h4>
+                            <p>12 Länder, 500+ Mitarbeiter, 15 Module, 8 Monate Projektlaufzeit, 
+                            Budget: 2.5 Mio. CHF</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Herausforderungen</h4>
+                            <p>Verschiedene Arbeitsrechtssysteme, Legacy-System-Migration, 
+                            Mehrsprachigkeit, Compliance-Anforderungen</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Ergebnisse</h4>
+                            <p>30% Effizienzsteigerung, 95% Benutzerzufriedenheit, 
+                            erfolgreiche Go-Live in allen Ländern</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">ADONIS Prozessmanagement</div>
+                            <div class="experience-company">Schweizer Bank</div>
+                        </div>
+                        <div class="experience-date">2022</div>
+                    </div>
+                    <div class="experience-description">
+                        Einführung eines ganzheitlichen Prozessmanagements mit ADONIS 
+                        für eine führende Schweizer Bank.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">ADONIS</span>
+                        <span class="skill-tag">BPMN 2.0</span>
+                        <span class="skill-tag">Banking</span>
+                        <span class="skill-tag">Prozessmodellierung</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Projektumfang</h4>
+                            <p>200+ Prozesse modelliert, 150 Benutzer geschult, 
+                            6 Monate Projektlaufzeit</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Methodik</h4>
+                            <p>BPMN 2.0, Design Thinking Workshops, Stakeholder-Interviews, 
+                            Prozessanalyse und -optimierung</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zertifikate Section -->
+    <section id="zertifikate" class="cv-section">
+        <div class="cv-content">
+            <h2><i class="fas fa-certificate"></i> Zertifikate & Qualifikationen</h2>
+            <div class="experience-grid">
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Scrum Master Certified</div>
+                            <div class="experience-company">Scrum Alliance</div>
+                        </div>
+                        <div class="experience-date">2023</div>
+                    </div>
+                    <div class="experience-description">
+                        Zertifizierung als Scrum Master mit umfassenden Kenntnissen 
+                        in agilen Methoden und Teamführung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Scrum</span>
+                        <span class="skill-tag">Agile</span>
+                        <span class="skill-tag">Teamführung</span>
+                        <span class="skill-tag">Projektmanagement</span>
+                    </div>
+                </div>
+
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Prince2 Agile Practitioner</div>
+                            <div class="experience-company">AXELOS</div>
+                        </div>
+                        <div class="experience-date">2022</div>
+                    </div>
+                    <div class="experience-description">
+                        Zertifizierung in Prince2 Agile für die Kombination aus 
+                        strukturiertem Projektmanagement und agilen Methoden.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Prince2</span>
+                        <span class="skill-tag">Agile</span>
+                        <span class="skill-tag">Projektmanagement</span>
+                        <span class="skill-tag">Methodik</span>
+                    </div>
+                </div>
+
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">BPMN 2.0 Specialist</div>
+                            <div class="experience-company">OMG</div>
+                        </div>
+                        <div class="experience-date">2021</div>
+                    </div>
+                    <div class="experience-description">
+                        Spezialisierung in Business Process Model and Notation 2.0 
+                        für professionelle Prozessmodellierung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">BPMN 2.0</span>
+                        <span class="skill-tag">Prozessmodellierung</span>
+                        <span class="skill-tag">Business Analysis</span>
+                        <span class="skill-tag">OMG</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="cv-section">
+        <div class="cv-content">
+            <h2><i class="fas fa-tools"></i> Technische Skills</h2>
+            <div class="experience-grid">
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">HR-Tech & Systeme</div>
+                        </div>
+                    </div>
+                    <div class="experience-description">
+                        Umfassende Erfahrung mit modernen HR-Systemen und -Technologien.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">UKG HRSD</span>
+                        <span class="skill-tag">SAP SuccessFactors</span>
+                        <span class="skill-tag">Workday</span>
+                        <span class="skill-tag">ServiceNow</span>
+                        <span class="skill-tag">Zendesk</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Prozessmanagement</div>
+                        </div>
+                    </div>
+                    <div class="experience-description">
+                        Expertise in Prozessmodellierung, -optimierung und -management.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">ADONIS</span>
+                        <span class="skill-tag">BPMN 2.0</span>
+                        <span class="skill-tag">ARIS</span>
+                        <span class="skill-tag">Process Mining</span>
+                        <span class="skill-tag">Workflow Design</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Projektmanagement</div>
+                        </div>
+                    </div>
+                    <div class="experience-description">
+                        Erprobte Methoden und Tools für erfolgreiche Projektleitung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Scrum</span>
+                        <span class="skill-tag">Prince2</span>
+                        <span class="skill-tag">Jira</span>
+                        <span class="skill-tag">Confluence</span>
+                        <span class="skill-tag">MS Project</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Collaboration & Communication</div>
+                        </div>
+                    </div>
+                    <div class="experience-description">
+                        Moderne Tools für effektive Zusammenarbeit und Kommunikation.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">MS Teams</span>
+                        <span class="skill-tag">Slack</span>
+                        <span class="skill-tag">SharePoint</span>
+                        <span class="skill-tag">Zoom</span>
+                        <span class="skill-tag">Miro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ausbildung Section -->
+    <section id="ausbildung" class="cv-section">
+        <div class="cv-content">
+            <h2><i class="fas fa-graduation-cap"></i> Ausbildung</h2>
+            <div class="experience-grid">
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Bachelor of Science in Wirtschaftsinformatik</div>
+                            <div class="experience-company">Hochschule für Wirtschaft und Recht Berlin</div>
+                        </div>
+                        <div class="experience-date">2018 - 2021</div>
+                    </div>
+                    <div class="experience-description">
+                        Studium der Wirtschaftsinformatik mit Fokus auf digitale Transformation, 
+                        Prozessmanagement und IT-Systeme. Abschluss mit Auszeichnung.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">Wirtschaftsinformatik</span>
+                        <span class="skill-tag">Digitale Transformation</span>
+                        <span class="skill-tag">Prozessmanagement</span>
+                        <span class="skill-tag">IT-Systeme</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Schwerpunkte</h4>
+                            <p>Digitale Transformation, Business Process Management, Enterprise Resource Planning, 
+                            Datenbankmanagement, Software Engineering</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Bachelorarbeit</h4>
+                            <p>"Implementierung von BPMN 2.0 in mittelständischen Unternehmen - 
+                            Eine Analyse der Erfolgsfaktoren und Herausforderungen"</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Notendurchschnitt</h4>
+                            <p>1.8 (sehr gut)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="experience-card" onclick="toggleDetails(this)">
+                    <div class="experience-header">
+                        <div>
+                            <div class="experience-title">Ausbildung zum IT-Systemkaufmann</div>
+                            <div class="experience-company">Deutsche Telekom AG</div>
+                        </div>
+                        <div class="experience-date">2015 - 2018</div>
+                    </div>
+                    <div class="experience-description">
+                        Duale Ausbildung im Bereich IT-Systeme und -Dienstleistungen mit 
+                        praktischer Erfahrung in verschiedenen Abteilungen.
+                    </div>
+                    <div class="experience-skills">
+                        <span class="skill-tag">IT-Systeme</span>
+                        <span class="skill-tag">Kundenberatung</span>
+                        <span class="skill-tag">Projektmanagement</span>
+                        <span class="skill-tag">Telekommunikation</span>
+                    </div>
+                    <div class="experience-details">
+                        <div class="detail-item">
+                            <h4>Einsatzbereiche</h4>
+                            <p>IT-Support, Kundenberatung, Projektmanagement, Systemadministration, 
+                            Netzwerkmanagement</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Besondere Leistungen</h4>
+                            <p>Auszeichnung als bester Auszubildender des Jahrgangs, 
+                            Übernahme nach erfolgreichem Abschluss</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="cv-footer">
+        <div class="container">
+            <h3>Interessiert an einer Zusammenarbeit?</h3>
+            <p>Lassen Sie uns über Ihr Projekt sprechen und wie ich Ihnen helfen kann.</p>
+            <div class="cv-contact">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>weiss-manuel@gmx.de</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Schweiz</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+41 XX XXX XX XX</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.cv-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                navigateToSection(section);
+            });
+        });
+
+        // Progress Dots
+        document.querySelectorAll('.progress-dot').forEach(dot => {
+            dot.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                navigateToSection(section);
+            });
+        });
+
+        // Smooth Navigation
+        function navigateToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+                updateActiveNavigation(sectionId);
+            }
+        }
+
+        // Update Active Navigation
+        function updateActiveNavigation(sectionId) {
+            // Update nav items
+            document.querySelectorAll('.cv-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+            // Update progress dots
+            document.querySelectorAll('.progress-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+            document.querySelector(`.progress-dot[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        // Toggle Experience Details
+        function toggleDetails(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Scroll Spy
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.cv-section');
+            let currentSection = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            if (currentSection) {
+                updateActiveNavigation(currentSection);
+            }
+        });
+
+        // Mobile Navigation Toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', function(e) {
+            const sections = ['berufserfahrung', 'projekte', 'skills', 'zertifikate', 'ausbildung'];
+            const currentSection = document.querySelector('.cv-nav-item.active').getAttribute('data-section');
+            const currentIndex = sections.indexOf(currentSection);
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextIndex = (currentIndex + 1) % sections.length;
+                navigateToSection(sections[nextIndex]);
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevIndex = currentIndex === 0 ? sections.length - 1 : currentIndex - 1;
+                navigateToSection(sections[prevIndex]);
+            }
+        });
+    </script>
+</body>
+</html>
