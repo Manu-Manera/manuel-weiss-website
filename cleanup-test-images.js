@@ -123,6 +123,145 @@ function aggressiveCleanupAllImages() {
     return totalRemoved;
 }
 
+// VERCEL-SPEZIFISCHE BEREINIGUNG - Lösche auch Vercel-Cache
+function cleanupVercelData() {
+    console.log('🚀 VERCEL-BEREINIGUNG - Lösche Vercel-spezifische Daten...');
+    
+    let totalRemoved = 0;
+    
+    // Lösche alle Keys, die mit Vercel zu tun haben
+    const vercelKeys = [
+        'vercel_cache',
+        'vercel_images',
+        'vercel_data',
+        'vercel_storage',
+        'vercel_uploads',
+        'vercel_files'
+    ];
+    
+    vercelKeys.forEach(key => {
+        if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+            console.log(`🗑️ VERCEL GELÖSCHT: ${key}`);
+            totalRemoved++;
+        }
+    });
+    
+    // Lösche auch alle anderen möglichen Vercel-Referenzen
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+        if (key.includes('vercel') || key.includes('Vercel')) {
+            localStorage.removeItem(key);
+            console.log(`🗑️ VERCEL GELÖSCHT: ${key}`);
+            totalRemoved++;
+        }
+    });
+    
+    // Lösche auch alle Bilddaten, die möglicherweise von Vercel gecacht wurden
+    allKeys.forEach(key => {
+        const data = localStorage.getItem(key);
+        if (data && typeof data === 'string' && (data.includes('vercel') || data.includes('Vercel'))) {
+            localStorage.removeItem(key);
+            console.log(`🗑️ VERCEL CACHE GELÖSCHT: ${key}`);
+            totalRemoved++;
+        }
+    });
+    
+    console.log(`🚀 VERCEL-BEREINIGUNG ABGESCHLOSSEN!`);
+    console.log(`🗑️ ${totalRemoved} Vercel-Daten gelöscht!`);
+    
+    return totalRemoved;
+}
+
+// WEBSITE-SPEZIFISCHE BEREINIGUNG - Lösche auch die Hauptseiten-Bilder
+function cleanupWebsiteImages() {
+    console.log('🌐 WEBSITE-SPEZIFISCHE BEREINIGUNG - Lösche Hauptseiten-Bilder...');
+    
+    let totalRemoved = 0;
+    
+    // Lösche alle Keys, die mit der Hauptseite zu tun haben
+    const websiteKeys = [
+        'mwps-website-data',
+        'websiteData',
+        'homepageImages',
+        'mainPageImages',
+        'indexImages',
+        'activityImages',
+        'homeImages',
+        'mainImages'
+    ];
+    
+    websiteKeys.forEach(key => {
+        if (localStorage.getItem(key)) {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data && (data.activityImages || data.images || data.gallery)) {
+                delete data.activityImages;
+                delete data.images;
+                delete data.gallery;
+                localStorage.setItem(key, JSON.stringify(data));
+                console.log(`🗑️ GELÖSCHT: ${key} Bilddaten`);
+                totalRemoved++;
+            }
+        }
+    });
+    
+    // Lösche auch alle anderen möglichen Website-Bilddaten
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+        if (key.includes('mwps') || key.includes('website') || key.includes('homepage') || key.includes('main')) {
+            const data = localStorage.getItem(key);
+            if (data && data.includes('image') || data.includes('gallery') || data.includes('photo')) {
+                localStorage.removeItem(key);
+                console.log(`🗑️ GELÖSCHT: ${key}`);
+                totalRemoved++;
+            }
+        }
+    });
+    
+    console.log(`🌐 WEBSITE-BEREINIGUNG ABGESCHLOSSEN!`);
+    console.log(`🗑️ ${totalRemoved} Website-Bilddaten gelöscht!`);
+    
+    return totalRemoved;
+}
+
+// KOMPLETTE BEREINIGUNG - Lösche ALLE Bilder von überall
+function completeImageCleanup() {
+    console.log('💥 KOMPLETTE BEREINIGUNG - Lösche ALLE Bilder von überall...');
+    
+    // 1. Aggressive Bereinigung
+    const aggressiveRemoved = aggressiveCleanupAllImages();
+    
+    // 2. Vercel-spezifische Bereinigung
+    const vercelRemoved = cleanupVercelData();
+    
+    // 3. Website-spezifische Bereinigung
+    const websiteRemoved = cleanupWebsiteImages();
+    
+    // 4. Lösche auch alle verbleibenden Bild-Referenzen
+    const allKeys = Object.keys(localStorage);
+    let finalRemoved = 0;
+    
+    allKeys.forEach(key => {
+        const data = localStorage.getItem(key);
+        if (data && typeof data === 'string' && data.includes('image')) {
+            localStorage.removeItem(key);
+            console.log(`🗑️ FINAL GELÖSCHT: ${key}`);
+            finalRemoved++;
+        }
+    });
+    
+    const totalRemoved = aggressiveRemoved + vercelRemoved + websiteRemoved + finalRemoved;
+    
+    console.log(`💥 KOMPLETTE BEREINIGUNG ABGESCHLOSSEN!`);
+    console.log(`🗑️ ${totalRemoved} Einträge komplett gelöscht!`);
+    console.log(`🔥 Aggressive: ${aggressiveRemoved}`);
+    console.log(`🚀 Vercel: ${vercelRemoved}`);
+    console.log(`🌐 Website: ${websiteRemoved}`);
+    console.log(`⚡ Final: ${finalRemoved}`);
+    
+    return totalRemoved;
+}
+
 // Funktion zum Hinzufügen von jeweils 1 echten Bild pro Aktivität
 function addOneRealImagePerActivity() {
     console.log('🖼️ Füge jeweils 1 echtes Bild pro Aktivität hinzu...');
@@ -182,8 +321,8 @@ function addOneRealImagePerActivity() {
 function hardCleanupAndAddOneImage() {
     console.log('💥 HARTE BEREINIGUNG - Lösche ALLE Bilder und füge nur 1 pro Aktivität hinzu...');
     
-    // 1. AGGRESSIVE BEREINIGUNG - Lösche ALLE Bilder
-    const removedCount = aggressiveCleanupAllImages();
+    // 1. KOMPLETTE BEREINIGUNG - Lösche ALLE Bilder von überall
+    const removedCount = completeImageCleanup();
     
     // 2. Füge nur 1 Bild pro Aktivität hinzu
     addOneRealImagePerActivity();
@@ -218,6 +357,9 @@ function nuclearCleanup() {
 
 // Mache Funktionen global verfügbar
 window.aggressiveCleanupAllImages = aggressiveCleanupAllImages;
+window.cleanupVercelData = cleanupVercelData;
+window.cleanupWebsiteImages = cleanupWebsiteImages;
+window.completeImageCleanup = completeImageCleanup;
 window.addOneRealImagePerActivity = addOneRealImagePerActivity;
 window.hardCleanupAndAddOneImage = hardCleanupAndAddOneImage;
 window.nuclearCleanup = nuclearCleanup;
@@ -225,6 +367,9 @@ window.nuclearCleanup = nuclearCleanup;
 console.log('🔥 AGGRESSIVE Cleanup-Funktionen geladen!');
 console.log('Verfügbare Funktionen:');
 console.log('- aggressiveCleanupAllImages() - Lösche alle Bilddaten');
+console.log('- cleanupVercelData() - Lösche Vercel-spezifische Daten');
+console.log('- cleanupWebsiteImages() - Lösche Website-spezifische Bilder');
+console.log('- completeImageCleanup() - Komplette Bereinigung');
 console.log('- addOneRealImagePerActivity() - Füge 1 Bild pro Aktivität hinzu');
 console.log('- hardCleanupAndAddOneImage() - HARTE BEREINIGUNG (empfohlen)');
 console.log('- nuclearCleanup() - ☢️ NUCLEAR OPTION (löscht ALLES)');
