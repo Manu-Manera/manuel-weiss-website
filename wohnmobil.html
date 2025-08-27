@@ -3,167 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wohnmobil Vermietung - Manuel Weiss Professional Services</title>
-    <meta name="description" content="Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil. Flexible Mietdauer und 24/7 Support.">
+    <title>Wohnmobil Vermietung - Manuel Weiss</title>
+    <meta name="description" content="Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil. Flexible Mietdauer und persönlicher Service.">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Wohnmobil Vermietung - Manuel Weiss">
+    <meta property="og:description" content="Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil">
+    <meta property="og:image" content="images/wohnmobil/wohnmobil-exterior.jpg">
+    <meta property="og:url" content="https://manuel-weiss.ch/wohnmobil.html">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>Manuel Weiss</h2>
-                <span>Professional Services</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html#home">Home</a></li>
-                <li><a href="index.html#beratung">Beratung</a></li>
-                <li><a href="index.html#projekte">Projekte</a></li>
-                <li><a href="index.html#sonstige">Sonstige Tätigkeiten</a></li>
-                <li><a href="index.html#kontakt">Kontakt</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- Modern Navigation -->
+    <nav class="nav-modern" id="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <img src="manuel-weiss-photo.svg" alt="MW">
+                    <span>Manuel Weiss</span>
+                </a>
+                
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html#home" class="nav-link">Home</a></li>
+                    <li><a href="index.html#services" class="nav-link">Services</a></li>
+                    <li><a href="index.html#projects" class="nav-link">Projekte</a></li>
+                    <li><a href="index.html#about" class="nav-link">Über mich</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Kontakt</a></li>
+                </ul>
+                
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="page-hero">
+    <section class="activity-hero">
+        <div class="hero-background">
+            <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil Exterior" class="hero-image">
+            <div class="hero-overlay"></div>
+        </div>
         <div class="container">
-            <div class="hero-content">
-                <h1>Wohnmobil Vermietung</h1>
-                <p class="hero-subtitle">Erleben Sie Freiheit und Komfort auf Reisen</p>
-                <p class="hero-description">
-                    Entdecken Sie die Schweiz und Europa mit unserem hochwertigen Wohnmobil. 
-                    Vollausstattung, flexible Mietdauer und 24/7 Support für unvergessliche Abenteuer.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#details" class="btn btn-primary">Details ansehen</a>
-                    <a href="index.html#kontakt" class="btn btn-secondary">Jetzt anfragen</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-card">
-                    <div class="card-icon">
-                        <i class="fas fa-campground"></i>
-                    </div>
-                    <h3>Vollausstattung</h3>
-                    <p>Alles was Sie für Ihre Reise brauchen</p>
+            <div class="hero-content text-center">
+                <h1 class="display-1 mb-4 fade-in">Wohnmobil Vermietung</h1>
+                <p class="lead mb-5 fade-in-delay-1">Erleben Sie grenzenlose Freiheit auf vier Rädern</p>
+                <div class="hero-cta fade-in-delay-2">
+                    <a href="#booking" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-check"></i>
+                        Jetzt anfragen
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-info-circle"></i>
+                        Mehr erfahren
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Details Section -->
-    <section id="details" class="details-section">
+    <!-- Features Section -->
+    <section class="section" id="features">
         <div class="container">
-            <div class="section-header">
-                <h2>Wohnmobil Details</h2>
-                <p>Alles über unser hochwertiges Wohnmobil</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Ihr Zuhause auf Rädern</h2>
+                <p class="lead">Modernste Ausstattung für unvergessliche Reiseerlebnisse</p>
             </div>
-
-            <div class="details-grid">
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-bed"></i>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <h3>Komfortable Schlafplätze</h3>
+                        <p>Platz für bis zu 4 Personen mit hochwertigen Matratzen</p>
                     </div>
-                    <h3>Schlafplätze</h3>
-                    <p>Bequeme Schlafplätze für 2-4 Personen</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-utensils"></i>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-kitchen-set"></i>
+                        </div>
+                        <h3>Voll ausgestattete Küche</h3>
+                        <p>Kühlschrank, Herd, Spüle und komplettes Geschirr</p>
                     </div>
-                    <h3>Küche</h3>
-                    <p>Vollausgestattete Küche mit Herd, Kühlschrank und Spüle</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-shower"></i>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shower"></i>
+                        </div>
+                        <h3>Bad & WC</h3>
+                        <p>Eigenes Badezimmer mit Dusche und WC</p>
                     </div>
-                    <h3>Sanitär</h3>
-                    <p>Eigene Dusche und WC an Bord</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-wifi"></i>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-solar-panel"></i>
+                        </div>
+                        <h3>Autark unterwegs</h3>
+                        <p>Solaranlage und große Batterien für Unabhängigkeit</p>
                     </div>
-                    <h3>Komfort</h3>
-                    <p>Heizung, Klimaanlage und WLAN verfügbar</p>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="pricing-section">
-                <h3>Preise & Verfügbarkeit</h3>
-                <div class="pricing-grid">
+    <!-- Gallery Section -->
+    <section class="section bg-light">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Eindrücke</h2>
+                <p class="lead">Werfen Sie einen Blick in unser Wohnmobil</p>
+            </div>
+            
+            <div class="image-gallery" id="wohnmobilGallery">
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil Außenansicht" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="images/wohnmobil/wohnmobil-kitchen.jpg" alt="Wohnmobil Küche" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="images/wohnmobil/wohnmobil-bedroom.jpg" alt="Wohnmobil Schlafbereich" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Preise & Konditionen</h2>
+                <p class="lead">Transparente Preisgestaltung für Ihre Reiseplanung</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
                     <div class="pricing-card">
-                        <h4>Tagesmiete</h4>
-                        <div class="price">CHF 150</div>
-                        <p>Mindestmietdauer: 2 Tage</p>
-                        <ul>
-                            <li>Vollkasko-Versicherung inklusive</li>
-                            <li>Kilometerpauschale: 200 km/Tag</li>
-                            <li>Kaution: CHF 1'000</li>
-                        </ul>
-                    </div>
-
-                    <div class="pricing-card featured">
-                        <h4>Wochenmiete</h4>
-                        <div class="price">CHF 800</div>
-                        <p>7 Tage - Sparen Sie CHF 250</p>
-                        <ul>
-                            <li>Vollkasko-Versicherung inklusive</li>
-                            <li>Kilometerpauschale: 1'400 km/Woche</li>
-                            <li>Kaution: CHF 1'000</li>
-                            <li>Gratis Reinigung</li>
-                        </ul>
-                    </div>
-
-                    <div class="pricing-card">
-                        <h4>Monatsmiete</h4>
-                        <div class="price">CHF 2'800</div>
-                        <p>30 Tage - Sparen Sie CHF 1'700</p>
-                        <ul>
-                            <li>Vollkasko-Versicherung inklusive</li>
-                            <li>Unbegrenzte Kilometer</li>
-                            <li>Kaution: CHF 1'000</li>
-                            <li>Gratis Reinigung & Wartung</li>
-                        </ul>
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h3 class="mb-4">Mietpreise</h3>
+                                <ul class="price-list">
+                                    <li><i class="fas fa-check text-primary"></i> Tagesmiete: <strong>CHF 150.-</strong></li>
+                                    <li><i class="fas fa-check text-primary"></i> Wochenende (Fr-So): <strong>CHF 400.-</strong></li>
+                                    <li><i class="fas fa-check text-primary"></i> Wochenmiete: <strong>CHF 900.-</strong></li>
+                                    <li><i class="fas fa-check text-primary"></i> Langzeitmiete: <strong>auf Anfrage</strong></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="mb-4">Inklusive</h3>
+                                <ul class="price-list">
+                                    <li><i class="fas fa-check text-success"></i> Vollkasko-Versicherung</li>
+                                    <li><i class="fas fa-check text-success"></i> Unbegrenzte Kilometer</li>
+                                    <li><i class="fas fa-check text-success"></i> Campingausstattung</li>
+                                    <li><i class="fas fa-check text-success"></i> 24/7 Pannenhilfe</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-5">
+                            <p class="text-muted mb-0">Kaution: CHF 1'500.- (wird nach Rückgabe zurückerstattet)</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Image Gallery Section -->
-    <section class="gallery-section">
+    <!-- Booking Section -->
+    <section class="section bg-primary text-white" id="booking">
         <div class="container">
-            <div class="section-header">
-                <h2>Bildergalerie</h2>
-                <p>Entdecken Sie unser hochwertiges Wohnmobil in allen Details</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Verfügbarkeit anfragen</h2>
+                <p class="lead">Senden Sie uns Ihre Anfrage für Ihren Wunschzeitraum</p>
             </div>
-            <div id="wohnmobil-gallery"></div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact-section">
-        <div class="container">
-            <div class="contact-content">
-                <h2>Interesse an der Wohnmobil-Vermietung?</h2>
-                <p>Kontaktieren Sie mich für weitere Informationen und Buchungsanfragen.</p>
-                <div class="contact-buttons">
-                    <a href="index.html#kontakt" class="btn btn-primary">Kontakt aufnehmen</a>
-                    <a href="index.html#sonstige" class="btn btn-outline">Zurück zu allen Tätigkeiten</a>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form class="booking-form" id="bookingForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="startDate">Von</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="endDate">Bis</label>
+                                    <input type="date" class="form-control" id="endDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">E-Mail</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="message">Nachricht (optional)</label>
+                                    <textarea class="form-control" id="message" rows="4" placeholder="Teilen Sie uns Ihre Reisepläne oder spezielle Wünsche mit..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-light btn-lg w-100">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Anfrage senden
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -172,137 +252,71 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4>Manuel Weiss</h4>
                     <p>Professional Services</p>
-                    <p>Beratung • Vermietung • Projekte</p>
+                    <div class="social-links mt-3">
+                        <a href="https://linkedin.com/in/manuel-weiss-526592131" target="_blank" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li><a href="index.html#beratung">Beratung</a></li>
-                        <li><a href="index.html#sonstige">Sonstige Tätigkeiten</a></li>
-                        <li><a href="index.html#projekte">Projekte</a></li>
+                <div class="col-lg-4 mb-4">
+                    <h5>Weitere Vermietungen</h5>
+                    <ul class="footer-links">
+                        <li><a href="fotobox.html">Fotobox</a></li>
+                        <li><a href="sup.html">Stand-Up Paddle</a></li>
+                        <li><a href="ebike.html">E-Bikes</a></li>
                     </ul>
                 </div>
-                <div class="footer-section">
-                    <h4>Kontakt</h4>
-                    <p>weiss-manuel@gmx.de</p>
-                    <p>+49 173 3993407</p>
+                <div class="col-lg-4 mb-4">
+                    <h5>Kontakt</h5>
+                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
+                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss Professional Services. Alle Rechte vorbehalten.</p>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Debug Info - Sichtbar auf der Seite -->
-    <div id="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
-        <strong>Debug Info:</strong><br>
-        <span id="debug-status">Lade...</span><br>
-        <span id="debug-components">Komponenten: Lade...</span><br>
-        <span id="debug-gallery">Galerie: Lade...</span>
-    </div>
-
     <!-- Scripts -->
-    <script src="js/image-manager.js?v=2.0"></script>
-    <script src="js/content-manager.js?v=2.0"></script>
-    <script src="js/activity-gallery.js?v=2.0"></script>
-    <script src="js/image-gallery.js?v=2.0"></script>
-    <script src="js/netlify-storage.js?v=2.0"></script>
-    <script src="js/data-persistence.js?v=2.0"></script>
-    <script src="script.js?v=2.0"></script>
-    
+    <script src="js/image-gallery.js"></script>
+    <script src="script.js"></script>
     <script>
-        // Initialisiere Image Manager global
-        window.imageManager = new ImageManager();
-        
-        // Initialisiere Activity Gallery
-        window.activityGallery = new ActivityGallery();
-        
-        // Initialisiere Content Manager
-        window.contentManager = new ContentManager();
-        
-        // Verbesserte Initialisierung für bessere Online-Kompatibilität
+        // Initialize gallery for this page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Wohnmobil-Seite wird initialisiert...');
-            
-            // Debug-Info aktualisieren
-            const debugStatus = document.getElementById('debug-status');
-            const debugComponents = document.getElementById('debug-components');
-            const debugGallery = document.getElementById('debug-gallery');
-            
-            if (debugStatus) debugStatus.textContent = 'DOM geladen - Initialisiere...';
-            
-            console.log('🌐 Online-Status:', navigator.onLine);
-            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
-            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
-            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
-            
-            // Warte kurz, bis alle Skripte geladen sind
-            setTimeout(() => {
-                if (debugStatus) debugStatus.textContent = 'Skripte geladen - Prüfe Komponenten...';
-                
-                // Initialisiere andere Komponenten
-                if (window.imageManager) {
-                    console.log('✅ Image Manager initialisiert');
-                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
-                    if (debugComponents) debugComponents.textContent = '✅ Image Manager: OK';
-                } else {
-                    if (debugComponents) debugComponents.textContent = '❌ Image Manager: Fehler';
-                }
-                
-                if (window.activityGallery) {
-                    console.log('✅ Activity Gallery initialisiert');
-                    if (debugComponents) debugComponents.textContent += ' | ✅ Activity Gallery: OK';
-                } else {
-                    if (debugComponents) debugComponents.textContent += ' | ❌ Activity Gallery: Fehler';
-                }
-                
-                if (window.contentManager) {
-                    console.log('✅ Content Manager initialisiert');
-                    if (debugComponents) debugComponents.textContent += ' | ✅ Content Manager: OK';
-                } else {
-                    if (debugComponents) debugComponents.textContent += ' | ❌ Content Manager: Fehler';
-                }
-                
-                console.log('✅ Wohnmobil-Seite Initialisierung abgeschlossen');
-                
-                // Debug: Prüfe Galerie-Container
-                const galleryContainer = document.getElementById('wohnmobil-gallery');
-                if (galleryContainer) {
-                    console.log('🎨 Galerie-Container gefunden:', galleryContainer);
-                    if (debugGallery) debugGallery.textContent = '✅ Galerie-Container gefunden';
+            // Booking form handling
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
                     
-                    // Prüfe, ob Bilder geladen werden
-                    setTimeout(() => {
-                        if (window.activityGallery && window.activityGallery.currentActivity) {
-                            if (debugGallery) debugGallery.textContent += ' | ✅ Activity Gallery aktiv';
-                        } else {
-                            if (debugGallery) debugGallery.textContent += ' | ❌ Activity Gallery nicht aktiv';
-                        }
-                    }, 1000);
-                } else {
-                    console.error('❌ Galerie-Container nicht gefunden');
-                    if (debugGallery) debugGallery.textContent = '❌ Galerie-Container nicht gefunden';
-                }
-                
-                if (debugStatus) debugStatus.textContent = 'Initialisierung abgeschlossen';
-            }, 100);
-        });
-        
-        // Fehlerbehandlung für globale Fehler
-        window.addEventListener('error', function(e) {
-            console.error('❌ Globaler Fehler:', e.error);
-            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
-        });
-        
-        // Fehlerbehandlung für unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
+                    const formData = {
+                        startDate: document.getElementById('startDate').value,
+                        endDate: document.getElementById('endDate').value,
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        message: document.getElementById('message').value,
+                        rental: 'Wohnmobil'
+                    };
+                    
+                    // Show success message
+                    alert('Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
+                    bookingForm.reset();
+                });
+            }
         });
     </script>
 </body>
-</html> 
+</html>

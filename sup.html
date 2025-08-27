@@ -3,174 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stand-Up-Paddle Vermietung - Manuel Weiss Professional Services</title>
-    <meta name="description" content="Entdecken Sie die Schönheit der Schweizer Seen mit unseren hochwertigen Stand-Up-Paddles. Verschiedene Größen für Anfänger und Fortgeschrittene.">
+    <title>Stand-Up Paddle Vermietung - Manuel Weiss</title>
+    <meta name="description" content="Hochwertige Stand-Up Paddle Boards für unvergessliche Momente auf dem Wasser. Inklusive Zubehör und flexibler Mietdauer.">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Stand-Up Paddle Vermietung - Manuel Weiss">
+    <meta property="og:description" content="Hochwertige SUP-Boards für Ihr Wasserabenteuer">
+    <meta property="og:url" content="https://manuel-weiss.ch/sup.html">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>Manuel Weiss</h2>
-                <span>Professional Services</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html#home">Home</a></li>
-                <li><a href="index.html#beratung">Beratung</a></li>
-                <li><a href="index.html#projekte">Projekte</a></li>
-                <li><a href="index.html#sonstige">Sonstige Tätigkeiten</a></li>
-                <li><a href="index.html#kontakt">Kontakt</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- Modern Navigation -->
+    <nav class="nav-modern" id="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <img src="manuel-weiss-photo.svg" alt="MW">
+                    <span>Manuel Weiss</span>
+                </a>
+                
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html#home" class="nav-link">Home</a></li>
+                    <li><a href="index.html#services" class="nav-link">Services</a></li>
+                    <li><a href="index.html#projects" class="nav-link">Projekte</a></li>
+                    <li><a href="index.html#about" class="nav-link">Über mich</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Kontakt</a></li>
+                </ul>
+                
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="page-hero">
+    <section class="activity-hero gradient-ocean">
         <div class="container">
-            <div class="hero-content">
-                <h1>Stand-Up-Paddle Vermietung</h1>
-                <p class="hero-subtitle">Entdecken Sie die Schönheit der Schweizer Seen</p>
-                <p class="hero-description">
-                    Erleben Sie die Freiheit auf dem Wasser mit unseren hochwertigen Stand-Up-Paddles. 
-                    Verschiedene Größen für Anfänger und Fortgeschrittene. Perfekt für einen entspannten 
-                    Tag auf dem See oder für sportliche Aktivitäten.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#details" class="btn btn-primary">Details ansehen</a>
-                    <a href="index.html#kontakt" class="btn btn-secondary">Jetzt anfragen</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-card">
-                    <div class="card-icon">
+            <div class="hero-content text-center">
+                <h1 class="display-1 mb-4 fade-in">Stand-Up Paddle</h1>
+                <p class="lead mb-5 fade-in-delay-1">Erleben Sie die Schweizer Seen aus einer neuen Perspektive</p>
+                <div class="hero-cta fade-in-delay-2">
+                    <a href="#booking" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-check"></i>
+                        Jetzt mieten
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">
                         <i class="fas fa-water"></i>
-                    </div>
-                    <h3>Wassererlebnis</h3>
-                    <p>Entspannung und Sport auf dem Wasser</p>
+                        Mehr erfahren
+                    </a>
                 </div>
             </div>
         </div>
+        <div class="hero-waves">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+                <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
     </section>
 
-    <!-- Details Section -->
-    <section id="details" class="details-section">
+    <!-- Features Section -->
+    <section class="section" id="features">
         <div class="container">
-            <div class="section-header">
-                <h2>Stand-Up-Paddle Details</h2>
-                <p>Alles über unsere hochwertigen SUP-Boards</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Premium SUP-Boards</h2>
+                <p class="lead">Hochwertige Ausrüstung für maximalen Spass auf dem Wasser</p>
             </div>
-
-            <div class="details-grid">
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-ruler"></i>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <h3>Stabile Boards</h3>
+                        <p>Hochwertige aufblasbare SUPs für Anfänger und Fortgeschrittene</p>
                     </div>
-                    <h3>Verschiedene Größen</h3>
-                    <p>Boards für Anfänger (10'6") und Fortgeschrittene (12'6") verfügbar</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-shield-alt"></i>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-toolbox"></i>
+                        </div>
+                        <h3>Komplettset</h3>
+                        <p>Paddel, Pumpe, Leash und wasserdichte Tasche inklusive</p>
                     </div>
-                    <h3>Hochwertige Materialien</h3>
-                    <p>Inflatable Boards aus robustem PVC-Material mit Sicherheitsventil</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-tools"></i>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-life-ring"></i>
+                        </div>
+                        <h3>Sicherheit</h3>
+                        <p>Schwimmwesten in allen Grössen kostenlos dazu</p>
                     </div>
-                    <h3>Vollausstattung</h3>
-                    <p>Paddle, Pumpe, Sicherheitsleine und Transporttasche inklusive</p>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h3>Anfängerfreundlich</h3>
-                    <p>Kurze Einweisung und Tipps für sicheres Paddeln inklusive</p>
-                </div>
-            </div>
-
-            <div class="pricing-section">
-                <h3>Preise & Pakete</h3>
-                <div class="pricing-grid">
-                    <div class="pricing-card">
-                        <h4>Halbtagesmiete</h4>
-                        <div class="price">CHF 45</div>
-                        <p>4 Stunden SUP-Miete</p>
-                        <ul>
-                            <li>1 SUP-Board inklusive</li>
-                            <li>Paddle und Pumpe</li>
-                            <li>Sicherheitsleine</li>
-                            <li>Transporttasche</li>
-                        </ul>
-                    </div>
-
-                    <div class="pricing-card featured">
-                        <h4>Tagesmiete</h4>
-                        <div class="price">CHF 75</div>
-                        <p>8 Stunden SUP-Miete</p>
-                        <ul>
-                            <li>1 SUP-Board inklusive</li>
-                            <li>Paddle und Pumpe</li>
-                            <li>Sicherheitsleine</li>
-                            <li>Transporttasche</li>
-                            <li>Kurze Einweisung</li>
-                            <li>Wassersicherheitsausrüstung</li>
-                        </ul>
-                    </div>
-
-                    <div class="pricing-card">
-                        <h4>Wochenendmiete</h4>
-                        <div class="price">CHF 120</div>
-                        <p>2 Tage SUP-Miete</p>
-                        <ul>
-                            <li>1 SUP-Board inklusive</li>
-                            <li>Paddle und Pumpe</li>
-                            <li>Sicherheitsleine</li>
-                            <li>Transporttasche</li>
-                            <li>Kurze Einweisung</li>
-                            <li>Wassersicherheitsausrüstung</li>
-                            <li>Gratis Reinigung</li>
-                        </ul>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3>Tipps & Routen</h3>
+                        <p>Empfehlungen für die schönsten SUP-Spots der Region</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Image Gallery Section -->
-    <section class="gallery-section">
+    <!-- Gallery Section -->
+    <section class="section bg-light">
         <div class="container">
-            <div class="section-header">
-                <h2>Bildergalerie</h2>
-                <p>Entdecken Sie unsere Stand-Up-Paddles in allen Details</p>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">SUP-Abenteuer</h2>
+                <p class="lead">Impressionen vom Wasser</p>
             </div>
-            <div id="sup-gallery"></div>
+            
+            <div class="image-gallery" id="supGallery">
+                <div class="gallery-grid">
+                    <!-- Gallery images will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="text-muted">Weitere Bilder folgen in Kürze</p>
+            </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="contact-section">
+    <!-- Pricing Section -->
+    <section class="section">
         <div class="container">
-            <div class="contact-content">
-                <h2>Interesse an der SUP-Vermietung?</h2>
-                <p>Kontaktieren Sie mich für weitere Informationen und Buchungsanfragen.</p>
-                <div class="contact-buttons">
-                    <a href="index.html#kontakt" class="btn btn-primary">Kontakt aufnehmen</a>
-                    <a href="index.html#sonstige" class="btn btn-outline">Zurück zu allen Tätigkeiten</a>
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Mietpreise</h2>
+                <p class="lead">Flexible Mietdauer für jeden Bedarf</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="pricing-card text-center">
+                        <div class="pricing-header">
+                            <h3>Halbtag</h3>
+                            <p class="text-muted">4 Stunden</p>
+                        </div>
+                        <div class="pricing-body">
+                            <div class="price">
+                                <span class="currency">CHF</span>
+                                <span class="amount">40</span>
+                            </div>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> 1 SUP-Board</li>
+                                <li><i class="fas fa-check"></i> Komplette Ausrüstung</li>
+                                <li><i class="fas fa-check"></i> Einweisung</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="pricing-card text-center featured">
+                        <div class="pricing-header">
+                            <h3>Ganztag</h3>
+                            <p class="text-muted">8 Stunden</p>
+                        </div>
+                        <div class="pricing-body">
+                            <div class="price">
+                                <span class="currency">CHF</span>
+                                <span class="amount">60</span>
+                            </div>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> 1 SUP-Board</li>
+                                <li><i class="fas fa-check"></i> Komplette Ausrüstung</li>
+                                <li><i class="fas fa-check"></i> Einweisung</li>
+                                <li><i class="fas fa-check"></i> Routentipps</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="pricing-card text-center">
+                        <div class="pricing-header">
+                            <h3>Wochenende</h3>
+                            <p class="text-muted">Fr-So</p>
+                        </div>
+                        <div class="pricing-body">
+                            <div class="price">
+                                <span class="currency">CHF</span>
+                                <span class="amount">120</span>
+                            </div>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> 1 SUP-Board</li>
+                                <li><i class="fas fa-check"></i> Komplette Ausrüstung</li>
+                                <li><i class="fas fa-check"></i> Einweisung</li>
+                                <li><i class="fas fa-check"></i> Transport-Tipps</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="h5">Gruppenrabatte ab 3 Boards verfügbar!</p>
+                <p class="text-muted">Kontaktieren Sie uns für ein individuelles Angebot</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="section bg-primary text-white" id="booking">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">SUP-Board reservieren</h2>
+                <p class="lead">Sichern Sie sich Ihr Board für das nächste Abenteuer</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form class="booking-form" id="bookingForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="startDate">Abholdatum</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="duration">Mietdauer</label>
+                                    <select class="form-control" id="duration" required>
+                                        <option value="">Bitte wählen...</option>
+                                        <option value="halbtag">Halbtag (4h)</option>
+                                        <option value="ganztag">Ganztag (8h)</option>
+                                        <option value="wochenende">Wochenende</option>
+                                        <option value="andere">Andere Dauer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="boards">Anzahl Boards</label>
+                                    <input type="number" class="form-control" id="boards" min="1" max="6" value="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Telefon</label>
+                                    <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">E-Mail</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="message">Zusätzliche Informationen</label>
+                                    <textarea class="form-control" id="message" rows="3" placeholder="Gewünschte Abholzeit, besondere Wünsche..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-light btn-lg w-100">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Anfrage senden
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="display-3 mb-4">Wichtige Informationen</h2>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fas fa-clock text-primary"></i>
+                            <div>
+                                <h4>Abholung & Rückgabe</h4>
+                                <p>Flexible Zeiten nach Vereinbarung in Rüschlikon</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                            <div>
+                                <h4>Kaution</h4>
+                                <p>CHF 200.- pro Board (bar oder Twint)</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-car text-primary"></i>
+                            <div>
+                                <h4>Transport</h4>
+                                <p>Transporttaschen inklusive - passt in jeden Kofferraum</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-water text-primary"></i>
+                            <div>
+                                <h4>Empfohlene Spots</h4>
+                                <p>Zürichsee, Greifensee, Sihlsee - Karten auf Anfrage</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="info-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-water"></i>
+                            <p>SUP-Abenteuer erwarten Sie</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,97 +345,73 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4>Manuel Weiss</h4>
                     <p>Professional Services</p>
-                    <p>Beratung • Vermietung • Projekte</p>
+                    <div class="social-links mt-3">
+                        <a href="https://linkedin.com/in/manuel-weiss-526592131" target="_blank" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li><a href="index.html#beratung">Beratung</a></li>
-                        <li><a href="index.html#sonstige">Sonstige Tätigkeiten</a></li>
-                        <li><a href="index.html#projekte">Projekte</a></li>
+                <div class="col-lg-4 mb-4">
+                    <h5>Weitere Vermietungen</h5>
+                    <ul class="footer-links">
+                        <li><a href="wohnmobil.html">Wohnmobil</a></li>
+                        <li><a href="fotobox.html">Fotobox</a></li>
+                        <li><a href="ebike.html">E-Bikes</a></li>
                     </ul>
                 </div>
-                <div class="footer-section">
-                    <h4>Kontakt</h4>
-                    <p>weiss-manuel@gmx.de</p>
-                    <p>+49 173 3993407</p>
+                <div class="col-lg-4 mb-4">
+                    <h5>Kontakt</h5>
+                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
+                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss Professional Services. Alle Rechte vorbehalten.</p>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-manager.js?v=2.0"></script>
-    <script src="js/content-manager.js?v=2.0"></script>
-    <script src="js/activity-gallery.js?v=2.0"></script>
-    <script src="js/image-gallery.js?v=2.0"></script>
-    <script src="js/netlify-storage.js?v=2.0"></script>
-    <script src="js/data-persistence.js?v=2.0"></script>
-    <script src="script.js?v=2.0"></script>
-    
+    <script src="js/image-gallery.js"></script>
+    <script src="script.js"></script>
     <script>
-        // Initialisiere Image Manager global
-        window.imageManager = new ImageManager();
-        
-        // Initialisiere Activity Gallery
-        window.activityGallery = new ActivityGallery();
-        
-        // Initialisiere Content Manager
-        window.contentManager = new ContentManager();
-        
-        // Verbesserte Initialisierung für bessere Online-Kompatibilität
+        // Initialize page functionality
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 SUP-Seite wird initialisiert...');
-            console.log('🌐 Online-Status:', navigator.onLine);
-            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
-            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
-            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
-            
-            // Warte kurz, bis alle Skripte geladen sind
-            setTimeout(() => {
-                // Initialisiere andere Komponenten
-                if (window.imageManager) {
-                    console.log('✅ Image Manager initialisiert');
-                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
-                }
-                
-                if (window.activityGallery) {
-                    console.log('✅ Activity Gallery initialisiert');
-                }
-                
-                if (window.contentManager) {
-                    console.log('✅ Content Manager initialisiert');
-                }
-                
-                console.log('✅ SUP-Seite Initialisierung abgeschlossen');
-                
-                // Debug: Prüfe Galerie-Container
-                const galleryContainer = document.getElementById('sup-gallery');
-                if (galleryContainer) {
-                    console.log('🎨 Galerie-Container gefunden:', galleryContainer);
-                } else {
-                    console.error('❌ Galerie-Container nicht gefunden');
-                }
-            }, 100);
-        });
-        
-        // Fehlerbehandlung für globale Fehler
-        window.addEventListener('error', function(e) {
-            console.error('❌ Globaler Fehler:', e.error);
-            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
-        });
-        
-        // Fehlerbehandlung für unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
+            // Booking form handling
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        startDate: document.getElementById('startDate').value,
+                        duration: document.getElementById('duration').value,
+                        boards: document.getElementById('boards').value,
+                        phone: document.getElementById('phone').value,
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        message: document.getElementById('message').value,
+                        rental: 'Stand-Up Paddle'
+                    };
+                    
+                    // Show success message
+                    alert('Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
+                    bookingForm.reset();
+                });
+            }
         });
     </script>
 </body>
-</html> 
+</html>
