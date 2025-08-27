@@ -6,8 +6,7 @@
   "scripts": {
     "start": "python3 -m http.server 8000",
     "dev": "python3 -m http.server 8000",
-    "build": "echo 'Static site - no build required'",
-
+    "build": "echo 'Static site - no build required'"
   },
   "keywords": [
     "website",
@@ -25,4 +24,4 @@
   "engines": {
     "node": ">=14.0.0"
   }
-} 
+}
