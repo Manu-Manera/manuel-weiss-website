@@ -3,34 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuel Weiss - Professional Services | DROPDOWN ADMIN FERTIG!</title>
-    <meta name="description" content="Manuel Weiss bietet professionelle Beratung in Digitalisierung, Prozessmanagement und HR-Tech sowie Vermietung von Wohnmobil, Fotobox, Stand-Up-Paddles und E-Bikes.">
-    <link rel="stylesheet" href="styles.css?v=2.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Manuel Weiss - Professional Services</title>
+    <meta name="description" content="Manuel Weiss Professional Services - Digitalisierung, Prozessmanagement, HR-Tech Beratung und Vermietung">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=3.0">
 </head>
 <body>
-    <!-- Versteckte Netlify-Formulare für Bild-Uploads -->
-    <form name="profile-images" netlify style="display: none;">
-        <input type="hidden" name="image-data">
-        <input type="hidden" name="filename">
-        <input type="hidden" name="upload-time">
-    </form>
-    
-    <form name="admin-data" netlify style="display: none;">
-        <input type="hidden" name="data-type">
-        <input type="hidden" name="website-content">
-        <input type="hidden" name="timestamp">
-    </form>
-    
-    <form name="activity-images" netlify style="display: none;">
-        <input type="hidden" name="activity-name">
-        <input type="hidden" name="images-data">
-        <input type="hidden" name="timestamp">
-    </form>
-
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -39,14 +18,10 @@
                 <span>Professional Services</span>
             </div>
             <ul class="nav-menu">
-                <li><a href="beraterprofil.html" target="_blank" class="download-link">
-                    <i class="fas fa-download"></i> Beraterprofil
-                </a></li>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#beratung">Beratung</a></li>
-                <li><a href="#bewerbungen">Bewerbungen</a></li>
+                <li><a href="#vermietung">Vermietung</a></li>
                 <li><a href="#projekte">Projekte</a></li>
-                <li><a href="#sonstige">Sonstige Tätigkeiten</a></li>
                 <li><a href="#kontakt">Kontakt</a></li>
             </ul>
             <div class="hamburger">
@@ -59,35 +34,44 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-container">
+        <div class="hero-background">
+            <div class="hero-gradient"></div>
+            <div class="hero-pattern"></div>
+        </div>
+        <div class="container">
             <div class="hero-content">
-                <div class="hero-profile">
-                    <div class="profile-image">
-                        <img src="./manuel-weiss-photo.svg" alt="Manuel Weiss" id="profile-photo" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hbnVlbCBXZWlzcw==';">
-                    </div>
-                    <div class="profile-info">
-                        <h1 id="hero-name">Manuel Weiss</h1>
-                        <h2 id="hero-title">Professional Services</h2>
-                        <p class="hero-subtitle" id="hero-subtitle">Digitalisierung • Prozessmanagement • HR-Tech Beratung</p>
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="hero-highlight">Manuel Weiss</span>
+                        <br>Professional Services
+                    </h1>
+                    <p class="hero-subtitle">
+                        Digitalisierung • Prozessmanagement • HR-Tech Beratung
+                    </p>
+                    <p class="hero-description">
+                        Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. 
+                        Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen 
+                        mit pragmatischen Lösungen zu meistern.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#beratung" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i>
+                            Beratung entdecken
+                        </a>
+                        <a href="#vermietung" class="btn btn-outline">
+                            <i class="fas fa-cube"></i>
+                            Vermietung
+                        </a>
                     </div>
                 </div>
-                <p class="hero-description" id="hero-description">
-                    Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. 
-                    Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen 
-                    mit pragmatischen Lösungen zu meistern.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#beratung" class="btn btn-primary">Beratung entdecken</a>
-                    <a href="#sonstige" class="btn btn-secondary">Sonstige Tätigkeiten</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-card">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Digitale Transformation</h3>
+                        <p>Strategische Beratung und Implementierung</p>
                     </div>
-                    <h3>Digitale Transformation</h3>
-                    <p>Strategische Beratung und Implementierung</p>
                 </div>
             </div>
         </div>
@@ -102,29 +86,29 @@
             </div>
             
             <div class="services-grid">
-                <div class="service-card primary">
+                <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-cogs"></i>
                     </div>
                     <h3>Prozessmanagement</h3>
                     <p>Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.</p>
-                    <ul>
-                        <li>Prozessanalyse & -optimierung</li>
-                        <li>Workflow-Design</li>
-                        <li>Tool-Implementierung</li>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Prozessanalyse & -optimierung</li>
+                        <li><i class="fas fa-check"></i> Workflow-Design</li>
+                        <li><i class="fas fa-check"></i> Tool-Implementierung</li>
                     </ul>
                 </div>
 
-                <div class="service-card">
+                <div class="service-card featured">
                     <div class="service-icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-users-cog"></i>
                     </div>
                     <h3>HR-Tech Beratung</h3>
                     <p>Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.</p>
-                    <ul>
-                        <li>HR-Systeme Implementierung</li>
-                        <li>Service Delivery Optimierung</li>
-                        <li>Change Management</li>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> HR-Systeme Implementierung</li>
+                        <li><i class="fas fa-check"></i> Service Delivery Optimierung</li>
+                        <li><i class="fas fa-check"></i> Change Management</li>
                     </ul>
                 </div>
 
@@ -134,23 +118,23 @@
                     </div>
                     <h3>Design Thinking</h3>
                     <p>Innovative Lösungsansätze durch Design Thinking Workshops und Business Model Innovation.</p>
-                    <ul>
-                        <li>Workshop-Moderation</li>
-                        <li>Innovationsprozesse</li>
-                        <li>Prototyping</li>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Workshop-Moderation</li>
+                        <li><i class="fas fa-check"></i> Innovationsprozesse</li>
+                        <li><i class="fas fa-check"></i> Prototyping</li>
                     </ul>
                 </div>
 
                 <div class="service-card">
                     <div class="service-icon">
-                        <i class="fas fa-project-diagram"></i>
+                        <i class="fas fa-tasks"></i>
                     </div>
                     <h3>Projektmanagement</h3>
                     <p>Erfolgreiche Projektleitung mit agilen und klassischen Methoden (Scrum, Prince2, BPMN).</p>
-                    <ul>
-                        <li>Agile Projektleitung</li>
-                        <li>Stakeholder-Management</li>
-                        <li>Risikomanagement</li>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Agile Projektleitung</li>
+                        <li><i class="fas fa-check"></i> Stakeholder-Management</li>
+                        <li><i class="fas fa-check"></i> Risikomanagement</li>
                     </ul>
                 </div>
             </div>
@@ -158,37 +142,33 @@
             <div class="expertise-section">
                 <div class="expertise-content">
                     <h3>Meine Expertise</h3>
-                    <p>
-                        Mit über 6 Jahren Erfahrung in IT- und Digitalisierungsprojekten habe ich zahlreiche 
-                        Unternehmen unterschiedlicher Größe erfolgreich begleitet. Meine Stärke liegt in der 
-                        Kombination aus technischem Verständnis und pragmatischer Umsetzung.
-                    </p>
-                    <div class="expertise-stats hero-stats" data-stats="hero">
-                        <div class="stat">
-                            <span class="stat-number">6+</span>
-                            <span class="stat-label">Jahre Erfahrung</span>
+                    <p>Mit über 6 Jahren Erfahrung in IT- und Digitalisierungsprojekten habe ich zahlreiche Unternehmen unterschiedlicher Größe erfolgreich begleitet. Meine Stärke liegt in der Kombination aus technischem Verständnis und pragmatischer Umsetzung.</p>
+                    
+                    <div class="expertise-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">6+</div>
+                            <div class="stat-label">Jahre Erfahrung</div>
                         </div>
-                        <div class="stat">
-                            <span class="stat-number">30+</span>
-                            <span class="stat-label">Projekte geleitet</span>
+                        <div class="stat-item">
+                            <div class="stat-number">30+</div>
+                            <div class="stat-label">Projekte geleitet</div>
                         </div>
-                        <div class="stat">
-                            <span class="stat-number">100%</span>
-                            <span class="stat-label">Lernkurveneffekt</span>
+                        <div class="stat-item">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Lernkurveneffekt</div>
                         </div>
                     </div>
-                </div>
-                <div class="expertise-image">
-                    <div class="certification-badges" data-certificates="hero">
-                        <div class="badge">
+
+                    <div class="certifications">
+                        <div class="certification-item">
                             <i class="fas fa-certificate"></i>
                             <span>Scrum Master</span>
                         </div>
-                        <div class="badge">
+                        <div class="certification-item">
                             <i class="fas fa-certificate"></i>
                             <span>Prince2 Agile</span>
                         </div>
-                        <div class="badge">
+                        <div class="certification-item">
                             <i class="fas fa-certificate"></i>
                             <span>BPMN 2.0</span>
                         </div>
@@ -198,158 +178,56 @@
         </div>
     </section>
 
-    <!-- Sonstige Tätigkeiten Section -->
-    <section id="sonstige" class="other-activities">
+    <!-- Vermietung Section -->
+    <section id="vermietung" class="rental">
         <div class="container">
             <div class="section-header">
-                <h2>Sonstige Tätigkeiten</h2>
+                <h2>Vermietung & Services</h2>
                 <p>Weitere Dienstleistungen und Angebote</p>
             </div>
 
-            <div class="activities-grid">
-                <div class="activity-card">
-                    <div class="activity-image">
-                        <i class="fas fa-campground"></i>
+            <div class="rental-grid">
+                <div class="rental-card">
+                    <div class="rental-image">
+                        <i class="fas fa-home"></i>
                     </div>
-                    <div class="activity-content">
+                    <div class="rental-content">
                         <h3>Wohnmobil Vermietung</h3>
                         <p>Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</p>
                         <a href="wohnmobil.html" class="btn btn-outline">Details ansehen</a>
                     </div>
                 </div>
 
-                <div class="activity-card">
-                    <div class="activity-image">
+                <div class="rental-card">
+                    <div class="rental-image">
                         <i class="fas fa-camera"></i>
                     </div>
-                    <div class="activity-content">
+                    <div class="rental-content">
                         <h3>Fotobox Vermietung</h3>
                         <p>Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.</p>
                         <a href="fotobox.html" class="btn btn-outline">Details ansehen</a>
                     </div>
                 </div>
 
-                <div class="activity-card">
-                    <div class="activity-image">
+                <div class="rental-card">
+                    <div class="rental-image">
                         <i class="fas fa-water"></i>
                     </div>
-                    <div class="activity-content">
+                    <div class="rental-content">
                         <h3>Stand-Up-Paddle Vermietung</h3>
                         <p>Entdecken Sie Seen und Flüsse aus einer neuen Perspektive mit unseren SUP-Boards.</p>
                         <a href="sup.html" class="btn btn-outline">Details ansehen</a>
                     </div>
                 </div>
 
-                <div class="activity-card">
-                    <div class="activity-image">
+                <div class="rental-card">
+                    <div class="rental-image">
                         <i class="fas fa-bicycle"></i>
                     </div>
-                    <div class="activity-content">
+                    <div class="rental-content">
                         <h3>E-Bike Vermietung</h3>
                         <p>Elektrofahrräder für entspannte Ausflüge und sportliche Touren.</p>
                         <a href="ebike.html" class="btn btn-outline">Details ansehen</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Galerien für sonstige Tätigkeiten -->
-            <div class="activity-galleries">
-                <!-- Wohnmobil Galerie -->
-                <div class="activity-gallery-section" id="wohnmobil-gallery-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-campground"></i> Wohnmobil Galerie</h3>
-                        <p>Entdecken Sie unser hochwertiges Wohnmobil</p>
-                    </div>
-                    <div id="wohnmobil-gallery" class="activity-gallery"></div>
-                </div>
-
-                <!-- Fotobox Galerie -->
-                <div class="activity-gallery-section" id="fotobox-gallery-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-camera"></i> Fotobox Galerie</h3>
-                        <p>Professionelle Fotobox für Ihre Events</p>
-                    </div>
-                    <div id="fotobox-gallery" class="activity-gallery"></div>
-                </div>
-
-                <!-- SUP Galerie -->
-                <div class="activity-gallery-section" id="sup-gallery-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-water"></i> Stand-Up-Paddle Galerie</h3>
-                        <p>Entdecken Sie das Wasser aus neuer Perspektive</p>
-                    </div>
-                    <div id="sup-gallery" class="activity-gallery"></div>
-                </div>
-
-                <!-- E-Bike Galerie -->
-                <div class="activity-gallery-section" id="ebike-gallery-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-bicycle"></i> E-Bike Galerie</h3>
-                        <p>Elektrofahrräder für entspannte Ausflüge</p>
-                    </div>
-                    <div id="ebike-gallery" class="activity-gallery"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Bewerbungen Section -->
-    <section id="bewerbungen" class="applications">
-        <div class="container">
-            <div class="section-header">
-                <h2>Bewerbungsunterlagen</h2>
-                <p>Interaktive Präsentation meiner Qualifikationen und Erfahrungen</p>
-            </div>
-
-            <div class="applications-grid">
-                <div class="application-card primary" onclick="window.open('bewerbungsmappe.html', '_blank')" style="cursor: pointer;">
-                    <div class="application-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <h3>Interaktive Bewerbungsmappe</h3>
-                    <p>Eine moderne, digitale Bewerbungsmappe mit 3D-Umblätter-Effekt und interaktiven Elementen. Präsentiert meine Erfahrungen, Projekte und Qualifikationen in einem ansprechenden Format.</p>
-                    <div class="application-features">
-                        <span><i class="fas fa-check"></i> 5 interaktive Seiten</span>
-                        <span><i class="fas fa-check"></i> 3D-Umblätter-Effekt</span>
-                        <span><i class="fas fa-check"></i> Mobile-optimiert</span>
-                        <span><i class="fas fa-check"></i> Touch-Gesten</span>
-                    </div>
-                    <div class="btn btn-primary">
-                        <i class="fas fa-external-link-alt"></i> Bewerbungsmappe öffnen
-                    </div>
-                </div>
-
-                <div class="application-card" onclick="window.open('beraterprofil.html', '_blank')" style="cursor: pointer;">
-                    <div class="application-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3>Beraterprofil PDF</h3>
-                    <p>Klassisches Beraterprofil als PDF-Dokument. Ideal für traditionelle Bewerbungsverfahren und zum Ausdrucken.</p>
-                    <div class="application-features">
-                        <span><i class="fas fa-check"></i> Druckoptimiert</span>
-                        <span><i class="fas fa-check"></i> Professionelles Layout</span>
-                        <span><i class="fas fa-check"></i> Vollständige Dokumentation</span>
-                        <span><i class="fas fa-check"></i> Sofort verfügbar</span>
-                    </div>
-                    <div class="btn btn-secondary" onclick="event.stopPropagation(); generateBeraterprofilPDF();">
-                        <i class="fas fa-download"></i> PDF herunterladen
-                    </div>
-                </div>
-
-                <div class="application-card" onclick="window.open('lebenslauf.html', '_blank')" style="cursor: pointer;">
-                    <div class="application-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <h3>Lebenslauf</h3>
-                    <p>Detaillierter Lebenslauf mit allen relevanten Informationen zu Ausbildung, Berufserfahrung und Qualifikationen.</p>
-                    <div class="application-features">
-                        <span><i class="fas fa-check"></i> Detaillierte Erfahrungen</span>
-                        <span><i class="fas fa-check"></i> Zertifikate & Qualifikationen</span>
-                        <span><i class="fas fa-check"></i> Projektübersicht</span>
-                        <span><i class="fas fa-check"></i> Kontaktdaten</span>
-                    </div>
-                    <div class="btn btn-secondary">
-                        <i class="fas fa-file-pdf"></i> Lebenslauf öffnen
                     </div>
                 </div>
             </div>
@@ -366,39 +244,61 @@
 
             <div class="projects-grid">
                 <div class="project-card">
-                    <div class="project-content">
+                    <div class="project-header">
                         <h3>Digitalisierung HR-Prozesse</h3>
-                        <p>Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden.</p>
                         <div class="project-tags">
-                            <span>HR-Tech</span>
-                            <span>UKG</span>
-                            <span>Change Management</span>
+                            <span class="tag">HR-Tech</span>
+                            <span class="tag">UKG</span>
+                            <span class="tag">Change Management</span>
                         </div>
                     </div>
+                    <p>Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden.</p>
                 </div>
 
                 <div class="project-card">
-                    <div class="project-content">
+                    <div class="project-header">
                         <h3>Prozessoptimierung mit ADONIS</h3>
-                        <p>Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank.</p>
                         <div class="project-tags">
-                            <span>BPMN</span>
-                            <span>ADONIS</span>
-                            <span>Banking</span>
+                            <span class="tag">BPMN</span>
+                            <span class="tag">ADONIS</span>
+                            <span class="tag">Banking</span>
                         </div>
                     </div>
+                    <p>Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank.</p>
                 </div>
 
                 <div class="project-card">
-                    <div class="project-content">
+                    <div class="project-header">
                         <h3>Upcycling Workshop</h3>
-                        <p>Nachhaltige IT-Lösungen durch Wiederverwendung von Hardware und Software.</p>
                         <div class="project-tags">
-                            <span>Nachhaltigkeit</span>
-                            <span>Workshop</span>
-                            <span>IT</span>
+                            <span class="tag">Nachhaltigkeit</span>
+                            <span class="tag">Workshop</span>
+                            <span class="tag">IT</span>
                         </div>
                     </div>
+                    <p>Nachhaltige IT-Lösungen durch Wiederverwendung von Hardware und Software.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bewerbungen Section (Klein und unauffällig) -->
+    <section id="bewerbungen" class="applications-mini">
+        <div class="container">
+            <div class="applications-content">
+                <div class="applications-text">
+                    <h3>Bewerbungsunterlagen</h3>
+                    <p>Interaktive Präsentation meiner Qualifikationen und Erfahrungen</p>
+                </div>
+                <div class="applications-links">
+                    <a href="bewerbungsmappe.html" target="_blank" class="btn btn-small">
+                        <i class="fas fa-book-open"></i>
+                        Bewerbungsmappe
+                    </a>
+                    <a href="lebenslauf.html" target="_blank" class="btn btn-small btn-outline">
+                        <i class="fas fa-file-alt"></i>
+                        Lebenslauf
+                    </a>
                 </div>
             </div>
         </div>
@@ -415,45 +315,58 @@
             <div class="contact-content">
                 <div class="contact-info">
                     <div class="contact-item">
-                        <i class="fas fa-user"></i>
-                        <div>
-                            <h4 data-contact="name">Manuel Weiss</h4>
-                            <p data-contact="title">Professional Services</p>
+                        <div class="contact-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Manuel Weiss</h4>
+                            <p>Professional Services</p>
                         </div>
                     </div>
+
                     <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
                             <h4>Standort</h4>
                             <p>Schweiz</p>
                         </div>
                     </div>
+
                     <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
                             <h4>E-Mail</h4>
-                            <p data-contact="email">weiss-manuel@gmx.de</p>
+                            <p>weiss-manuel@gmx.de</p>
                         </div>
                     </div>
+
                     <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
                             <h4>Telefon</h4>
-                            <p data-contact="phone">Wird geladen...</p>
+                            <p id="phone-number">Wird geladen...</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="contact-form">
-                    <form>
+                    <form id="contact-form">
                         <div class="form-group">
                             <label for="name">Name *</label>
                             <input type="text" id="name" name="name" required>
                         </div>
+
                         <div class="form-group">
                             <label for="email">E-Mail *</label>
                             <input type="email" id="email" name="email" required>
                         </div>
+
                         <div class="form-group">
                             <label for="service">Service</label>
                             <select id="service" name="service">
@@ -466,52 +379,17 @@
                                 <option value="projekt">IT/Upcycling Projekt</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label for="message">Nachricht *</label>
                             <textarea id="message" name="message" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Nachricht senden</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Aktivitätsbilder auf Homepage -->
-    <section id="aktivitaetsbilder" class="activity-images-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Aktivitätsbilder</h2>
-                <p>Entdecken Sie unsere Angebote in Bildern</p>
-            </div>
-            <div class="activity-images-grid">
-                <div class="activity-image-card" id="wohnmobil-home-image">
-                    <h3>Wohnmobil</h3>
-                    <div class="activity-image-placeholder">
-                        <i class="fas fa-campground"></i>
-                        <p>Bilder werden geladen...</p>
-                    </div>
-                </div>
-                <div class="activity-image-card" id="fotobox-home-image">
-                    <h3>Fotobox</h3>
-                    <div class="activity-image-placeholder">
-                        <i class="fas fa-camera"></i>
-                        <p>Bilder werden geladen...</p>
-                    </div>
-                </div>
-                <div class="activity-image-card" id="sup-home-image">
-                    <h3>Stand-Up-Paddle</h3>
-                    <div class="activity-image-placeholder">
-                        <i class="fas fa-water"></i>
-                        <p>Bilder werden geladen...</p>
-                    </div>
-                </div>
-                <div class="activity-image-card" id="ebike-home-image">
-                    <h3>E-Bike</h3>
-                    <div class="activity-image-placeholder">
-                        <i class="fas fa-bicycle"></i>
-                        <p>Bilder werden geladen...</p>
-                    </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Nachricht senden
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -526,6 +404,7 @@
                     <p>Professional Services</p>
                     <p>Beratung • Vermietung • Projekte</p>
                 </div>
+
                 <div class="footer-section">
                     <h4>Services</h4>
                     <ul>
@@ -534,12 +413,14 @@
                         <li><a href="#projekte">Projekte</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-section">
                     <h4>Kontakt</h4>
-                    <p data-contact="email">weiss-manuel@gmx.de</p>
-                    <p data-contact="phone">Wird geladen...</p>
+                    <p>weiss-manuel@gmx.de</p>
+                    <p id="footer-phone">Wird geladen...</p>
                 </div>
             </div>
+
             <div class="footer-bottom">
                 <p>&copy; 2025 Manuel Weiss Professional Services. Alle Rechte vorbehalten.</p>
             </div>
@@ -547,331 +428,12 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-manager.js?v=2.0"></script>
-    <script src="js/content-manager.js?v=2.0"></script>
-    <script src="js/activity-gallery.js?v=2.0"></script>
-    <script src="js/image-gallery.js?v=2.0"></script>
-    <script src="js/netlify-storage.js?v=2.0"></script>
-    <script src="js/data-persistence.js?v=2.0"></script>
-    <script src="script.js?v=2.0"></script>
-    
-    <script>
-        // Initialisiere Image Manager global
-        window.imageManager = new ImageManager();
-        
-        // Initialisiere Activity Gallery
-        window.activityGallery = new ActivityGallery();
-        
-        // Initialisiere Content Manager
-        window.contentManager = new ContentManager();
-        
-        // Einfache Homepage-Initialisierung
-        function initializeHomepage() {
-            console.log('🏠 Initialisiere Homepage...');
-            
-            // Initialisiere Activity Gallery
-            if (window.ActivityGallery) {
-                console.log('✅ Activity Gallery verfügbar, initialisiere...');
-                new window.ActivityGallery();
-            } else {
-                console.log('⚠️ Activity Gallery nicht verfügbar, verwende Fallback...');
-                loadActivityImagesFallback();
-            }
-            
-            // Richte einfache Synchronisation ein
-            setupHomepageSync();
-            
-            // Erste Überprüfung nach kurzer Verzögerung
-            setTimeout(() => {
-                checkForHomepageUpdates();
-            }, 2000);
-        }
-        
-        // Einfache Synchronisation
-        function setupHomepageSync() {
-            console.log('🔄 Richte einfache Synchronisation für Homepage ein...');
-            
-            // Event-Listener für Updates
-            window.addEventListener('message', (event) => {
-                if (event.data.type === 'updateActivityImages') {
-                    console.log('📨 PostMessage Update erhalten:', event.data);
-                    handleActivityUpdate(event.data);
-                }
-            });
-            
-            // Event-Listener für localStorage Änderungen
-            window.addEventListener('storage', (event) => {
-                console.log('💾 Storage Event erhalten:', event);
-                if (event.key && event.key.includes('_images')) {
-                    const activityName = event.key.replace('_images', '').replace('_netlify', '');
-                    console.log(`🔄 Storage Update für ${activityName} erkannt`);
-                    setTimeout(() => checkForHomepageUpdates(), 100);
-                }
-            });
-            
-            // Regelmäßige Überprüfung alle 5 Sekunden
-            setInterval(() => {
-                checkForHomepageUpdates();
-            }, 5000);
-        }
-        
-        // Behandle Activity-Updates
-        function handleActivityUpdate(activityData) {
-            console.log('🔄 Behandle Activity-Update:', activityData);
-            
-            Object.keys(activityData).forEach(activityName => {
-                const images = activityData[activityName];
-                const galleryContainer = document.getElementById(`${activityName}-gallery`);
-                
-                if (galleryContainer && images) {
-                    console.log(`🔄 Aktualisiere Galerie für ${activityName} mit ${images.length} Bildern`);
-                    updateHomepageGallery(activityName, images, galleryContainer);
-                }
-            });
-        }
-        
-        // Aktualisiere Homepage-Galerie
-        function updateHomepageGallery(activityName, images, galleryContainer) {
-            if (images.length === 0) {
-                galleryContainer.innerHTML = `
-                    <div class="gallery-empty">
-                        <i class="fas fa-images"></i>
-                        <h3>Noch keine Bilder verfügbar</h3>
-                        <p>Bilder werden bald hinzugefügt.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Erstelle Galerie-Anzeige
-            const galleryHTML = images.map((image, index) => {
-                const imageData = image.imageData || image.src;
-                return `
-                    <div class="gallery-item" data-image-id="${image.id || index}">
-                        <div class="gallery-image">
-                            <img src="${imageData}" alt="${image.title || image.filename || 'Bild'}" 
-                                 title="${image.title || image.filename || 'Bild'}">
-                            <div class="gallery-overlay">
-                                <div class="gallery-info">
-                                    <h4>${image.title || image.filename || 'Bild'}</h4>
-                                    ${image.description ? `<p>${image.description}</p>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            galleryContainer.innerHTML = `
-                <div class="gallery-grid">
-                    ${galleryHTML}
-                </div>
-            `;
-            
-            console.log(`✅ Galerie für ${activityName} aktualisiert`);
-        }
-        
-        // Prüfe auf Updates für Homepage
-        function checkForHomepageUpdates() {
-            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
-            
-            activities.forEach(activityName => {
-                // Prüfe alle verfügbaren Speicherorte
-                const netlifyKey = `${activityName}_netlify_images`;
-                const localKey = `${activityName}_images`;
-                
-                const netlifyImages = JSON.parse(localStorage.getItem(netlifyKey) || '[]');
-                const localImages = JSON.parse(localStorage.getItem(localKey) || '[]');
-                
-                // Verwende die neuesten Bilder (Netlify hat Priorität, dann lokal)
-                const images = netlifyImages.length > 0 ? netlifyImages : localImages;
-                const galleryContainer = document.getElementById(`${activityName}-gallery`);
-                
-                if (galleryContainer) {
-                    // Prüfe, ob die Galerie bereits aktuelle Bilder hat
-                    const currentImages = galleryContainer.querySelectorAll('.gallery-item');
-                    const currentCount = currentImages.length;
-                    const newCount = images.length;
-                    
-                    // Aktualisiere nur wenn sich die Anzahl geändert hat
-                    if (currentCount !== newCount) {
-                        console.log(`🔄 Homepage-Galerie für ${activityName} veraltet (${currentCount} → ${newCount}), aktualisiere...`);
-                        updateHomepageGallery(activityName, images, galleryContainer);
-                    }
-                    
-                    // Prüfe auch auf Änderungen in bestehenden Bildern
-                    if (currentCount > 0 && newCount > 0) {
-                        const needsUpdate = checkImageContentChanges(activityName, currentImages, images);
-                        if (needsUpdate) {
-                            console.log(`🔄 Bildinhalt für ${activityName} geändert, aktualisiere...`);
-                            updateHomepageGallery(activityName, images, galleryContainer);
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Prüfe auf Änderungen in Bildinhalten
-        function checkImageContentChanges(activityName, currentElements, newImages) {
-            if (currentElements.length !== newImages.length) return true;
-            
-            for (let i = 0; i < currentElements.length; i++) {
-                const currentElement = currentElements[i];
-                const newImage = newImages[i];
-                
-                const currentTitle = currentElement.querySelector('h4')?.textContent || '';
-                const newTitle = newImage.title || newImage.filename || '';
-                
-                if (currentTitle !== newTitle) {
-                    console.log(`🔄 Titel geändert für ${activityName}: "${currentTitle}" → "${newTitle}"`);
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-        
-        // Fallback-Funktion für den Fall, dass Activity Gallery nicht verfügbar ist
-        function loadActivityImagesFallback() {
-            console.log('🔄 Verwende Fallback-Bildlade-Methode...');
-            
-            const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
-            
-            activities.forEach(async (activity) => {
-                const galleryContainer = document.getElementById(`${activity}-gallery`);
-                if (!galleryContainer) {
-                    console.log(`⚠️ Galerie-Container nicht gefunden: ${activity}`);
-                    return;
-                }
-                
-                try {
-                    let images = [];
-                    
-                    // 1. Versuche Netlify-Speicher
-                    if (window.netlifyStorage) {
-                        console.log(`🌐 Lade ${activity} Bilder aus Netlify-Speicher...`);
-                        images = await window.netlifyStorage.loadAllActivityImages(activity);
-                    }
-                    
-                    // 2. Fallback: Lokaler Speicher
-                    if (images.length === 0) {
-                        console.log(`🔄 Versuche lokalen Speicher für ${activity}...`);
-                        const localImages = JSON.parse(localStorage.getItem(`${activity}_images`) || '[]');
-                        if (localImages.length > 0) {
-                            images = localImages;
-                            console.log(`✅ ${localImages.length} lokale Bilder für ${activity} geladen`);
-                        }
-                    }
-                    
-                    // 3. Fallback: Netlify-Backup-Speicher
-                    if (images.length === 0) {
-                        console.log(`🔄 Versuche Netlify-Backup für ${activity}...`);
-                        const netlifyImages = JSON.parse(localStorage.getItem(`${activity}_netlify_images`) || '[]');
-                        if (netlifyImages.length > 0) {
-                            images = netlifyImages;
-                            console.log(`✅ ${netlifyImages.length} Netlify-Backup-Bilder für ${activity} geladen`);
-                        }
-                    }
-                    
-                    if (images.length > 0) {
-                        console.log(`✅ ${images.length} Bilder für ${activity} geladen`);
-                        
-                        // Erstelle einfache Galerie-Anzeige
-                        const galleryHTML = images.map((image, index) => {
-                            const imageData = image.imageData || image.src;
-                            return `
-                                <div class="gallery-item" data-image-id="${image.id || index}">
-                                    <div class="gallery-image">
-                                        <img src="${imageData}" alt="${image.title || image.filename || 'Bild'}" 
-                                             title="${image.title || image.filename || 'Bild'}">
-                                        <div class="gallery-overlay">
-                                            <div class="gallery-info">
-                                                <h4>${image.title || image.filename || 'Bild'}</h4>
-                                                ${image.description ? `<p>${image.description}</p>` : ''}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                        
-                        galleryContainer.innerHTML = `
-                            <div class="gallery-grid">
-                                ${galleryHTML}
-                            </div>
-                        `;
-                        
-                    } else {
-                        // Zeige leeren Zustand
-                        galleryContainer.innerHTML = `
-                            <div class="gallery-empty">
-                                <i class="fas fa-images"></i>
-                                <h3>Noch keine Bilder verfügbar</h3>
-                                <p>Bilder werden bald hinzugefügt.</p>
-                            </div>
-                        `;
-                        console.log(`⚠️ ${activity}: Keine Bilder verfügbar`);
-                    }
-                } catch (error) {
-                    console.error(`❌ Fehler beim Laden der ${activity} Bilder:`, error);
-                    
-                    // Zeige Fehler-Placeholder
-                    galleryContainer.innerHTML = `
-                        <div class="gallery-empty">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>Fehler beim Laden der Bilder</h3>
-                            <p>Bitte versuchen Sie es später erneut.</p>
-                        </div>
-                    `;
-                }
-            });
-        }
-        
-        // Starte Homepage-Initialisierung
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Homepage DOM geladen, starte Initialisierung...');
-            initializeHomepage();
-        });
-        
-        // Fallback: Falls DOM bereits geladen ist
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            console.log('🚀 Homepage bereits geladen, starte Initialisierung...');
-            initializeHomepage();
-        }
-        
-        // PDF-Generierung für Beraterprofil
-        function generateBeraterprofilPDF() {
-            console.log('📄 Generiere Beraterprofil PDF...');
-            
-            // Öffne die Beraterprofil-Seite in einem neuen Tab
-            const newWindow = window.open('beraterprofil.html', '_blank');
-            
-            // Warte kurz und dann starte den PDF-Download
-            setTimeout(() => {
-                if (newWindow) {
-                    // Versuche den PDF-Download zu starten
-                    try {
-                        newWindow.print();
-                    } catch (error) {
-                        console.log('🔄 Drucken nicht möglich, verwende alternative Methode...');
-                        // Alternative: Öffne die Seite und lade das PDF
-                        window.open('beraterprofil.pdf', '_blank');
-                    }
-                } else {
-                    // Fallback: Direkter PDF-Download
-                    window.open('beraterprofil.pdf', '_blank');
-                }
-            }, 1000);
-        }
-    </script>
-    
-    <!-- JavaScript Libraries -->
-    <script src="js/image-manager.js?v=2.0"></script>
-    <script src="js/content-manager.js?v=2.0"></script>
-    <script src="js/activity-gallery.js?v=2.0"></script>
-    <script src="js/image-gallery.js?v=2.0"></script>
-    <script src="js/netlify-storage.js?v=2.0"></script>
-    <script src="js/data-persistence.js?v=2.0"></script>
-    <script src="script.js?v=2.0"></script>
+    <script src="js/image-manager.js?v=3.0"></script>
+    <script src="js/content-manager.js?v=3.0"></script>
+    <script src="js/activity-gallery.js?v=3.0"></script>
+    <script src="js/image-gallery.js?v=3.0"></script>
+    <script src="js/netlify-storage.js?v=3.0"></script>
+    <script src="js/data-persistence.js?v=3.0"></script>
+    <script src="script.js?v=3.0"></script>
 </body>
 </html>
