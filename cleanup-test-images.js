@@ -1,17 +1,49 @@
-// Cleanup-Funktion für Testbilder
+// AGGRESSIVE Cleanup-Funktion für ALLE Testbilder
 // Diese Datei kann in der Browser-Konsole ausgeführt werden
 
-function cleanupAllTestImages() {
-    console.log('🧹 Starte Bereinigung aller Testbilder...');
+function aggressiveCleanupAllImages() {
+    console.log('🔥 AGGRESSIVE BEREINIGUNG - Lösche ALLE Bilder...');
     
     const activities = ['wohnmobil', 'fotobox', 'sup', 'ebike'];
     let totalRemoved = 0;
     
+    // 1. Lösche ALLE Keys, die Bilder enthalten könnten
+    const allKeys = Object.keys(localStorage);
+    
+    allKeys.forEach(key => {
+        // Lösche ALLE Keys, die mit Bildern zu tun haben
+        if (key.includes('image') || 
+            key.includes('Image') || 
+            key.includes('gallery') || 
+            key.includes('Gallery') ||
+            key.includes('photo') ||
+            key.includes('Photo') ||
+            key.includes('picture') ||
+            key.includes('Picture') ||
+            key.includes('upload') ||
+            key.includes('Upload') ||
+            key.includes('file') ||
+            key.includes('File') ||
+            key.includes('test') ||
+            key.includes('Test') ||
+            key.includes('sample') ||
+            key.includes('Sample') ||
+            key.includes('default') ||
+            key.includes('Default') ||
+            key.includes('placeholder') ||
+            key.includes('Placeholder') ||
+            key.includes('demo') ||
+            key.includes('Demo')) {
+            
+            localStorage.removeItem(key);
+            console.log(`🗑️ GELÖSCHT: ${key}`);
+            totalRemoved++;
+        }
+    });
+    
+    // 2. Lösche spezifisch alle Aktivitäts-bezogenen Keys
     activities.forEach(activity => {
-        console.log(`📸 Bereinige ${activity} Galerie...`);
-        
-        // Alle möglichen Keys für diese Aktivität
-        const keysToRemove = [
+        const specificKeys = [
             `${activity}_images`,
             `${activity}_netlify_images`,
             `${activity}_netlify_saved`,
@@ -19,78 +51,74 @@ function cleanupAllTestImages() {
             `${activity}_test_images`,
             `${activity}_sample_images`,
             `${activity}_default_images`,
-            `${activity}_placeholder_images`
+            `${activity}_placeholder_images`,
+            `${activity}_gallery`,
+            `${activity}_photos`,
+            `${activity}_uploads`,
+            `${activity}_files`
         ];
         
-        // Lösche alle Keys
-        keysToRemove.forEach(key => {
+        specificKeys.forEach(key => {
             if (localStorage.getItem(key)) {
                 localStorage.removeItem(key);
-                console.log(`🗑️ Gelöscht: ${key}`);
-                totalRemoved++;
-            }
-        });
-        
-        // Lösche auch alle Keys, die diese Aktivität enthalten
-        const allKeys = Object.keys(localStorage);
-        allKeys.forEach(key => {
-            if (key.includes(activity) && (key.includes('test') || key.includes('Test') || key.includes('sample') || key.includes('Sample') || key.includes('default') || key.includes('Default') || key.includes('placeholder') || key.includes('Placeholder'))) {
-                localStorage.removeItem(key);
-                console.log(`🗑️ Gelöscht: ${key}`);
+                console.log(`🗑️ GELÖSCHT: ${key}`);
                 totalRemoved++;
             }
         });
     });
     
-    // Lösche globale Testbilder-Keys
-    const globalKeysToRemove = [
+    // 3. Lösche globale Bild-Keys
+    const globalImageKeys = [
         'globalImages',
         'globalImageDatabase',
         'testImages',
         'sampleImages',
         'defaultImages',
         'placeholderImages',
-        'demoImages'
+        'demoImages',
+        'imageDatabase',
+        'galleryData',
+        'photoData',
+        'uploadData',
+        'fileData'
     ];
     
-    globalKeysToRemove.forEach(key => {
+    globalImageKeys.forEach(key => {
         if (localStorage.getItem(key)) {
             localStorage.removeItem(key);
-            console.log(`🗑️ Gelöscht: ${key}`);
+            console.log(`🗑️ GELÖSCHT: ${key}`);
             totalRemoved++;
         }
     });
     
-    // Lösche alle verbleibenden Testbilder-Referenzen
-    const allKeys = Object.keys(localStorage);
-    allKeys.forEach(key => {
-        if (key.includes('test') || 
-            key.includes('Test') || 
-            key.includes('default') || 
-            key.includes('Default') ||
-            key.includes('sample') ||
-            key.includes('Sample') ||
-            key.includes('placeholder') ||
-            key.includes('Placeholder') ||
-            key.includes('demo') ||
-            key.includes('Demo')) {
-            localStorage.removeItem(key);
-            console.log(`🗑️ Gelöscht: ${key}`);
-            totalRemoved++;
-        }
-    });
-    
-    // Lösche auch websiteData.activityImages falls vorhanden
+    // 4. Lösche websiteData komplett und erstelle neu
     const websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-    if (websiteData.activityImages) {
+    if (websiteData.activityImages || websiteData.images || websiteData.gallery) {
         delete websiteData.activityImages;
+        delete websiteData.images;
+        delete websiteData.gallery;
         localStorage.setItem('websiteData', JSON.stringify(websiteData));
-        console.log('🗑️ Gelöscht: websiteData.activityImages');
+        console.log('🗑️ GELÖSCHT: websiteData Bilddaten');
         totalRemoved++;
     }
     
-    console.log(`✅ Bereinigung abgeschlossen! ${totalRemoved} Einträge entfernt.`);
-    console.log('🔄 Bitte lade die Seite neu, um die Änderungen zu sehen.');
+    // 5. Lösche auch alle anderen möglichen Bild-Referenzen
+    const remainingKeys = Object.keys(localStorage);
+    remainingKeys.forEach(key => {
+        if (key.toLowerCase().includes('img') || 
+            key.toLowerCase().includes('pic') || 
+            key.toLowerCase().includes('photo') ||
+            key.toLowerCase().includes('gallery') ||
+            key.toLowerCase().includes('upload')) {
+            localStorage.removeItem(key);
+            console.log(`🗑️ GELÖSCHT: ${key}`);
+            totalRemoved++;
+        }
+    });
+    
+    console.log(`🔥 AGGRESSIVE BEREINIGUNG ABGESCHLOSSEN!`);
+    console.log(`🗑️ ${totalRemoved} Einträge komplett gelöscht!`);
+    console.log('🔄 Alle Bilddaten wurden hart gelöscht!');
     
     return totalRemoved;
 }
@@ -150,20 +178,21 @@ function addOneRealImagePerActivity() {
     console.log('✅ Alle echten Bilder hinzugefügt!');
 }
 
-// Hauptfunktion: Bereinige und füge echte Bilder hinzu
-function cleanupAndAddRealImages() {
-    console.log('🚀 Starte vollständige Bereinigung...');
+// HARTE BEREINIGUNG: Lösche ALLES und füge nur 1 Bild pro Aktivität hinzu
+function hardCleanupAndAddOneImage() {
+    console.log('💥 HARTE BEREINIGUNG - Lösche ALLE Bilder und füge nur 1 pro Aktivität hinzu...');
     
-    // 1. Lösche alle Testbilder
-    const removedCount = cleanupAllTestImages();
+    // 1. AGGRESSIVE BEREINIGUNG - Lösche ALLE Bilder
+    const removedCount = aggressiveCleanupAllImages();
     
-    // 2. Füge jeweils 1 echtes Bild hinzu
+    // 2. Füge nur 1 Bild pro Aktivität hinzu
     addOneRealImagePerActivity();
     
-    console.log(`🎉 Vollständige Bereinigung abgeschlossen!`);
-    console.log(`🗑️ ${removedCount} Testbilder entfernt`);
-    console.log(`🖼️ 4 echte Bilder hinzugefügt (1 pro Aktivität)`);
+    console.log(`💥 HARTE BEREINIGUNG ABGESCHLOSSEN!`);
+    console.log(`🗑️ ${removedCount} Bilder komplett gelöscht`);
+    console.log(`🖼️ Nur noch 4 Bilder vorhanden (1 pro Aktivität)`);
     console.log('🔄 Bitte lade alle Seiten neu, um die Änderungen zu sehen.');
+    console.log('⚠️ WARNUNG: Alle anderen Bilder sind unwiderruflich gelöscht!');
     
     return {
         removed: removedCount,
@@ -171,13 +200,31 @@ function cleanupAndAddRealImages() {
     };
 }
 
-// Mache Funktionen global verfügbar
-window.cleanupAllTestImages = cleanupAllTestImages;
-window.addOneRealImagePerActivity = addOneRealImagePerActivity;
-window.cleanupAndAddRealImages = cleanupAndAddRealImages;
+// NUCLEAR OPTION: Lösche ALLE localStorage Daten komplett
+function nuclearCleanup() {
+    console.log('☢️ NUCLEAR OPTION - Lösche ALLE localStorage Daten...');
+    
+    const allKeys = Object.keys(localStorage);
+    console.log(`🗑️ Lösche ${allKeys.length} localStorage Einträge...`);
+    
+    localStorage.clear();
+    
+    console.log('☢️ NUCLEAR CLEANUP ABGESCHLOSSEN!');
+    console.log('🗑️ ALLE localStorage Daten gelöscht!');
+    console.log('🔄 Website wird komplett zurückgesetzt!');
+    
+    return allKeys.length;
+}
 
-console.log('🧹 Cleanup-Funktionen geladen!');
+// Mache Funktionen global verfügbar
+window.aggressiveCleanupAllImages = aggressiveCleanupAllImages;
+window.addOneRealImagePerActivity = addOneRealImagePerActivity;
+window.hardCleanupAndAddOneImage = hardCleanupAndAddOneImage;
+window.nuclearCleanup = nuclearCleanup;
+
+console.log('🔥 AGGRESSIVE Cleanup-Funktionen geladen!');
 console.log('Verfügbare Funktionen:');
-console.log('- cleanupAllTestImages() - Nur Testbilder entfernen');
-console.log('- addOneRealImagePerActivity() - Nur echte Bilder hinzufügen');
-console.log('- cleanupAndAddRealImages() - Vollständige Bereinigung (empfohlen)');
+console.log('- aggressiveCleanupAllImages() - Lösche alle Bilddaten');
+console.log('- addOneRealImagePerActivity() - Füge 1 Bild pro Aktivität hinzu');
+console.log('- hardCleanupAndAddOneImage() - HARTE BEREINIGUNG (empfohlen)');
+console.log('- nuclearCleanup() - ☢️ NUCLEAR OPTION (löscht ALLES)');
