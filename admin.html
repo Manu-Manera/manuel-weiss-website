@@ -4,1081 +4,418 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Manuel Weiss Professional Services</title>
-    <link rel="stylesheet" href="admin-modern.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Inline CSS für Dropdown-Menü (Online-Version) -->
-    <style>
-        /* Kritische Dropdown-Styles - Online-Version */
-        .nav-item-with-submenu {
-            position: relative !important;
-            margin-bottom: 0.5rem !important;
-        }
-
-        .nav-item-with-submenu .nav-link {
-            position: relative !important;
-            z-index: 2 !important;
-        }
-
-        .submenu-arrow {
-            margin-left: auto !important;
-            transition: transform 0.3s ease !important;
-            font-size: 0.8rem !important;
-            color: #94a3b8 !important;
-            width: 16px !important;
-            height: 16px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .nav-item-with-submenu.open .submenu-arrow {
-            transform: rotate(180deg) !important;
-            color: #2563eb !important;
-        }
-
-        .nav-item-with-submenu:hover .submenu-arrow {
-            color: #2563eb !important;
-        }
-
-        .submenu {
-            max-height: 0 !important;
-            overflow: hidden !important;
-            transition: max-height 0.3s ease !important;
-            background: #f8fafc !important;
-            border-left: 2px solid #e2e8f0 !important;
-            margin-left: 1rem !important;
-            opacity: 0 !important;
-            transform: translateY(-10px) !important;
-            border-radius: 0 8px 8px 0 !important;
-            box-shadow: inset 2px 0 4px rgba(0,0,0,0.05) !important;
-            padding: 0.5rem 0 !important;
-        }
-
-        .nav-item-with-submenu.open .submenu {
-            max-height: 300px !important;
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-
-        .nav-item-with-submenu.open .nav-link {
-            background: #2563eb !important;
-            color: white !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-        }
-
-        .submenu-link {
-            padding: 0.5rem 1rem !important;
-            font-size: 0.9rem !important;
-            border-radius: 4px !important;
-            margin: 0.25rem 0.5rem !important;
-            transition: all 0.3s ease !important;
-            position: relative !important;
-            color: #64748b !important;
-            font-weight: 400 !important;
-            display: block !important;
-            text-decoration: none !important;
-        }
-
-        .submenu-link:hover {
-            background: #e2e8f0 !important;
-            color: #2563eb !important;
-            transform: translateX(5px) !important;
-        }
-
-        .submenu-link.active {
-            background: #2563eb !important;
-            color: white !important;
-            transform: translateX(5px) !important;
-        }
-
-        .submenu-link.active::before {
-            content: '' !important;
-            position: absolute !important;
-            left: -0.5rem !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            width: 3px !important;
-            height: 20px !important;
-            background: #2563eb !important;
-            border-radius: 2px !important;
-        }
-
-        /* Zusätzliche Sichtbarkeit */
-        .nav-item-with-submenu {
-            border: 1px solid transparent !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-        }
-        
-        .nav-item-with-submenu:hover {
-            border-color: #e2e8f0 !important;
-            background: rgba(37, 99, 235, 0.05) !important;
-        }
-        
-        .nav-item-with-submenu.open {
-            border-color: #2563eb !important;
-            background: rgba(37, 99, 235, 0.1) !important;
-        }
-        
-        /* Verbesserte Untermenüeinträge */
-        .submenu {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-            border-left: 3px solid #2563eb !important;
-            margin-top: 0.5rem !important;
-        }
-        
-        .submenu-link {
-            border: 1px solid transparent !important;
-            margin: 0.25rem 0.5rem !important;
-            background: white !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-        }
-        
-        .submenu-link:hover {
-            border-color: #2563eb !important;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2) !important;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .submenu {
-                margin-left: 0.5rem !important;
-            }
-            
-            .submenu-link {
-                margin: 0.25rem 0.25rem !important;
-                padding: 0.5rem 0.75rem !important;
-            }
-        }
-        
-        /* Kritische Sichtbarkeit - Online-Version */
-        .submenu {
-            display: block !important;
-            visibility: visible !important;
-        }
-        
-        .nav-item-with-submenu.open .submenu {
-            display: block !important;
-            visibility: visible !important;
-            max-height: 300px !important;
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-        
-        /* Force display für alle Submenu-Elemente */
-        .submenu-link {
-            display: block !important;
-            visibility: visible !important;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles.css?v=3.0">
 </head>
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar-modern">
+        <div class="admin-sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-cog"></i> Admin Panel</h2>
-                <p>Manuel Weiss Professional Services - DROPDOWN FERTIG!</p>
+                <p>Manuel Weiss Professional Services</p>
             </div>
             
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="#hero" class="nav-link active" data-section="hero">
-                        <i class="fas fa-home"></i> Hero-Bereich
-                    </a></li>
-                    <li><a href="#profile" class="nav-link" data-section="profile">
-                        <i class="fas fa-file-pdf"></i> Beraterprofil
-                    </a></li>
-                    <li><a href="#services" class="nav-link" data-section="services">
-                        <i class="fas fa-cogs"></i> Beratungs-Services
-                    </a></li>
-                    <li class="nav-item-with-submenu">
-                        <a href="#activities" class="nav-link" data-section="activities">
-                            <i class="fas fa-tasks"></i> Sonstige Tätigkeiten
-                            <i class="fas fa-chevron-down submenu-arrow"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="#activities" class="nav-link submenu-link" data-section="activities">
-                                <i class="fas fa-list"></i> Übersicht
-                            </a></li>
-                            <li><a href="#wohnmobil" class="nav-link submenu-link" data-section="wohnmobil">
-                                <i class="fas fa-campground"></i> Wohnmobil
-                            </a></li>
-                            <li><a href="#fotobox" class="nav-link submenu-link" data-section="fotobox">
-                                <i class="fas fa-camera"></i> Fotobox
-                            </a></li>
-                            <li><a href="#sup" class="nav-link submenu-link" data-section="sup">
-                                <i class="fas fa-water"></i> Stand-Up-Paddle
-                            </a></li>
-                            <li><a href="#ebike" class="nav-link submenu-link" data-section="ebike">
-                                <i class="fas fa-bicycle"></i> E-Bike
-                            </a></li>
-                        </ul>
+                    <li class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
                     </li>
-                    
-                    <li><a href="#projects" class="nav-link" data-section="projects">
-                        <i class="fas fa-project-diagram"></i> Projekte
-                    </a></li>
-                    <li><a href="#contact" class="nav-link" data-section="contact">
-                        <i class="fas fa-envelope"></i> Kontakt
-                    </a></li>
-                    <li><a href="#settings" class="nav-link" data-section="settings">
-                        <i class="fas fa-cog"></i> Einstellungen
-                    </a></li>
+                    <li class="nav-item" data-section="content">
+                        <i class="fas fa-edit"></i>
+                        <span>Content Management</span>
+                    </li>
+                    <li class="nav-item" data-section="images">
+                        <i class="fas fa-images"></i>
+                        <span>Bildverwaltung</span>
+                    </li>
+                    <li class="nav-item" data-section="applications">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Bewerbungsverwaltung</span>
+                    </li>
+                    <li class="nav-item" data-section="settings">
+                        <i class="fas fa-cogs"></i>
+                        <span>Einstellungen</span>
+                    </li>
                 </ul>
             </nav>
-            
-            <div class="sidebar-footer">
-                <button class="btn btn-primary" onclick="saveAllChanges()">
-                    <i class="fas fa-save"></i> Alle Änderungen speichern
-                </button>
-                <button class="btn btn-secondary" onclick="previewWebsite()">
-                    <i class="fas fa-eye"></i> Website anzeigen
-                </button>
-            </div>
-        </aside>
+        </div>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <header class="content-header">
-                <h1 id="section-title">Hero-Bereich bearbeiten</h1>
-                <div class="header-actions">
-                    <button class="btn btn-outline" onclick="resetChanges()">
-                        <i class="fas fa-undo"></i> Zurücksetzen
+        <div class="admin-main">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="admin-section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                    <p>Übersicht über Ihre Website und Bewerbungen</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Website Status</h3>
+                            <p class="card-value">Online</p>
+                            <p class="card-description">Website ist verfügbar</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Bewerbungen</h3>
+                            <p class="card-value" id="applications-count">0</p>
+                            <p class="card-description">Aktive Bewerbungsmappen</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Bilder</h3>
+                            <p class="card-value" id="images-count">0</p>
+                            <p class="card-description">Gespeicherte Bilder</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Verlinkungen</h3>
+                            <p class="card-value" id="links-count">0</p>
+                            <p class="card-description">Aktive Bewerbungslinks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" onclick="openSection('applications')">
+                        <i class="fas fa-plus"></i>
+                        Neue Bewerbung erstellen
                     </button>
-                    <button class="btn btn-success" onclick="publishChanges()">
-                        <i class="fas fa-rocket"></i> Veröffentlichen
-                    </button>
-                </div>
-            </header>
-
-            <!-- Hero Section Editor -->
-            <section id="hero" class="editor-section active">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-user"></i> Profilbild</h3>
-                        <div class="image-upload">
-                            <div class="upload-area" id="profile-upload">
-                                <img src="manuel-weiss-photo.svg" alt="Profilbild" id="profile-preview">
-                                <div class="upload-overlay">
-                                    <i class="fas fa-camera"></i>
-                                    <p>Bild ändern</p>
-                                </div>
-                            </div>
-                            <input type="file" id="profile-input" accept="image/*" style="display: none;">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-edit"></i> Persönliche Informationen</h3>
-                        <div class="form-group">
-                            <label for="hero-name">Name</label>
-                            <input type="text" id="hero-name" value="Manuel Weiss">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-title">Titel</label>
-                            <input type="text" id="hero-title" value="Professional Services">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-subtitle">Untertitel</label>
-                            <input type="text" id="hero-subtitle" value="Digitalisierung • Prozessmanagement • HR-Tech Beratung">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-description">Beschreibung</label>
-                            <textarea id="hero-description" rows="4">Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen mit pragmatischen Lösungen zu meistern.</textarea>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-chart-line"></i> Expertise-Statistiken</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <label>Statistik 1 - Name</label>
-                                <input type="text" id="stat1-name" value="Jahre Erfahrung">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 1 - Wert</label>
-                                <input type="number" id="stat1-value" value="6" min="0">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 1 - Einheit</label>
-                                <input type="text" id="stat1-unit" value="+" placeholder="+, %, etc.">
-                            </div>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <label>Statistik 2 - Name</label>
-                                <input type="text" id="stat2-name" value="Projekte geleitet">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 2 - Wert</label>
-                                <input type="number" id="stat2-value" value="30" min="0">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 2 - Einheit</label>
-                                <input type="text" id="stat2-unit" value="+" placeholder="+, %, etc.">
-                            </div>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <label>Statistik 3 - Name</label>
-                                <input type="text" id="stat3-name" value="Lernkurveneffekt">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 3 - Wert</label>
-                                <input type="number" id="stat3-value" value="100" min="0" max="100">
-                            </div>
-                            <div class="stat-item">
-                                <label>Statistik 3 - Einheit</label>
-                                <input type="text" id="stat3-unit" value="%" placeholder="+, %, etc.">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-info-circle"></i> Profil-Informationen</h3>
-                        <div class="form-group">
-                            <label for="profile-title">Berufsbezeichnung</label>
-                            <input type="text" id="profile-title" value="Senior Berater für Digitalisierung">
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-description">Beschreibung</label>
-                            <textarea id="profile-description" rows="4">Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-availability">Verfügbarkeit</label>
-                            <input type="text" id="profile-availability" value="Sofort verfügbar">
-                        </div>
-                    </div>
-
-
-                </div>
-            </section>
-
-            <!-- Profile Section Editor -->
-            <section id="profile" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-user"></i> Profil-Informationen</h3>
-                        <div class="form-group">
-                            <label for="profile-title">Berufsbezeichnung</label>
-                            <input type="text" id="profile-title" value="Senior HR-Tech Consultant & Digitalisierungsexperte">
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-description">Beschreibung</label>
-                            <textarea id="profile-description" rows="4">Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-availability">Verfügbarkeit</label>
-                            <input type="text" id="profile-availability" value="Sofort verfügbar">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Services Section Editor -->
-            <section id="services" class="editor-section">
-                <div class="editor-header">
-                    <h3>Beratungs-Services bearbeiten</h3>
-                    <button class="btn btn-primary" onclick="addService()">
-                        <i class="fas fa-plus"></i> Service hinzufügen
+                    <button class="btn btn-outline" onclick="openSection('images')">
+                        <i class="fas fa-upload"></i>
+                        Bilder hochladen
                     </button>
                 </div>
-                
-                <div class="services-editor" id="services-container">
-                    <!-- Service 1 -->
-                    <div class="service-editor-card" data-service-id="1">
-                        <div class="service-header">
-                            <h4>Service 1: Prozessmanagement</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeService(1)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="service-content">
-                            <div class="form-group">
-                                <label>Icon (FontAwesome Klasse)</label>
-                                <input type="text" value="fas fa-cogs" class="service-icon">
-                            </div>
-                            <div class="form-group">
-                                <label>Titel</label>
-                                <input type="text" value="Prozessmanagement" class="service-title">
-                            </div>
-                            <div class="form-group">
-                                <label>Beschreibung</label>
-                                <textarea rows="3" class="service-description">Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Leistungen (durch Kommas getrennt)</label>
-                                <input type="text" value="Prozessanalyse & -optimierung, Workflow-Design, Tool-Implementierung" class="service-features">
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" checked class="service-primary"> Primärer Service (hervorgehoben)
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Service 2 -->
-                    <div class="service-editor-card" data-service-id="2">
-                        <div class="service-header">
-                            <h4>Service 2: HR-Tech Beratung</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeService(2)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="service-content">
-                            <div class="form-group">
-                                <label>Icon (FontAwesome Klasse)</label>
-                                <input type="text" value="fas fa-users" class="service-icon">
-                            </div>
-                            <div class="form-group">
-                                <label>Titel</label>
-                                <input type="text" value="HR-Tech Beratung" class="service-title">
-                            </div>
-                            <div class="form-group">
-                                <label>Beschreibung</label>
-                                <textarea rows="3" class="service-description">Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Leistungen (durch Kommas getrennt)</label>
-                                <input type="text" value="HR-Systeme Implementierung, Service Delivery Optimierung, Change Management" class="service-features">
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" class="service-primary"> Primärer Service (hervorgehoben)
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Activities Overview Section -->
-            <section id="activities" class="editor-section">
-                <div class="editor-header">
-                    <h3>Aktivitäten-Übersicht</h3>
-                    <p>Verwalten Sie Ihre sonstigen Tätigkeiten über die individuellen Reiter in der Sidebar.</p>
-                </div>
-                
-                <div class="activities-overview">
-                    <div class="overview-grid">
-                        <div class="overview-card">
-                            <div class="overview-icon">
-                                <i class="fas fa-campground"></i>
-                            </div>
-                            <h4>Wohnmobil</h4>
-                            <p>Vollausstattung für 2-4 Personen</p>
-                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('wohnmobil')">
-                                <i class="fas fa-edit"></i> Bearbeiten
-                            </button>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="overview-icon">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                            <h4>Fotobox</h4>
-                            <p>Professionelle Events & Feiern</p>
-                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('fotobox')">
-                                <i class="fas fa-edit"></i> Bearbeiten
-                            </button>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="overview-icon">
-                                <i class="fas fa-water"></i>
-                            </div>
-                            <h4>Stand-Up-Paddle</h4>
-                            <p>Wassersport auf Schweizer Seen</p>
-                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('sup')">
-                                <i class="fas fa-edit"></i> Bearbeiten
-                            </button>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="overview-icon">
-                                <i class="fas fa-bicycle"></i>
-                            </div>
-                            <h4>E-Bike</h4>
-                            <p>Nachhaltige Mobilität für alle</p>
-                            <button class="btn btn-primary btn-sm" onclick="adminPanel.switchSection('ebike')">
-                                <i class="fas fa-edit"></i> Bearbeiten
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="overview-info">
-                        <h4><i class="fas fa-info-circle"></i> Hinweis</h4>
-                        <p>Jede Aktivität hat ihren eigenen Editor-Bereich mit vollständigem Baukastenprinzip:</p>
-                        <ul>
-                            <li><strong>Grundinformationen:</strong> Titel, Beschreibung, Icon</li>
-                            <li><strong>Bildergalerie:</strong> Upload mehrerer Bilder</li>
-                            <li><strong>Preise & Details:</strong> Individuelle Preisstrukturen</li>
-                            <li><strong>Features:</strong> Ausstattung und Leistungen</li>
-                        </ul>
-                        <p><strong>Verwenden Sie die Reiter in der Sidebar für die detaillierte Bearbeitung jeder Aktivität.</strong></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Projects Section Editor -->
-            <section id="projects" class="editor-section">
-                <div class="editor-header">
-                    <h3>Projekte bearbeiten</h3>
-                    <button class="btn btn-primary" onclick="addProject()">
-                        <i class="fas fa-plus"></i> Projekt hinzufügen
-                    </button>
-                </div>
-                
-                <div class="projects-editor" id="projects-container">
-                    <!-- Project 1 -->
-                    <div class="project-editor-card" data-project-id="1">
-                        <div class="project-header">
-                            <h4>Projekt 1: Digitalisierung HR-Prozesse</h4>
-                            <button class="btn btn-danger btn-sm" onclick="removeProject(1)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="project-content">
-                            <div class="form-group">
-                                <label>Titel</label>
-                                <input type="text" value="Digitalisierung HR-Prozesse" class="project-title">
-                            </div>
-                            <div class="form-group">
-                                <label>Beschreibung</label>
-                                <textarea rows="3" class="project-description">Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden.</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Tags (durch Kommas getrennt)</label>
-                                <input type="text" value="HR-Tech, UKG, Change Management" class="project-tags">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Contact Section Editor -->
-            <section id="contact" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-user"></i> Kontaktdaten</h3>
-                        <div class="form-group">
-                            <label for="contact-name">Name</label>
-                            <input type="text" id="contact-name" value="">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-title">Titel</label>
-                            <input type="text" id="contact-title" value="">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-location">Standort</label>
-                            <input type="text" id="contact-location" value="">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-email">E-Mail</label>
-                            <input type="email" id="contact-email" value="">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-phone">Telefon</label>
-                            <input type="tel" id="contact-phone" value="">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-certificate"></i> Zertifikate</h3>
-                        <div id="certificates-container">
-                            <div class="certificate-item">
-                                <input type="text" value="Scrum Master" class="certificate-name">
-                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            <div class="certificate-item">
-                                <input type="text" value="Prince2 Agile" class="certificate-name">
-                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            <div class="certificate-item">
-                                <input type="text" value="BPMN 2.0" class="certificate-name">
-                                <button class="btn btn-danger btn-sm" onclick="removeCertificate(this)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary" onclick="addCertificate()">
-                            <i class="fas fa-plus"></i> Zertifikat hinzufügen
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Settings Section Editor -->
-            <section id="settings" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-palette"></i> Design-Einstellungen</h3>
-                        <div class="form-group">
-                            <label for="primary-color">Primärfarbe</label>
-                            <input type="color" id="primary-color" value="#2563eb">
-                        </div>
-                        <div class="form-group">
-                            <label for="secondary-color">Sekundärfarbe</label>
-                            <input type="color" id="secondary-color" value="#64748b">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-gradient">Hero-Gradient</label>
-                            <select id="hero-gradient">
-                                <option value="blue-purple">Blau-Lila</option>
-                                <option value="green-blue">Grün-Blau</option>
-                                <option value="orange-red">Orange-Rot</option>
-                                <option value="purple-pink">Lila-Rosa</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-globe"></i> Website-Einstellungen</h3>
-                        <div class="form-group">
-                            <label for="site-title">Website-Titel</label>
-                            <input type="text" id="site-title" value="Manuel Weiss - Professional Services | Beratung & Vermietung">
-                        </div>
-                        <div class="form-group">
-                            <label for="site-description">Website-Beschreibung</label>
-                            <textarea id="site-description" rows="3">Manuel Weiss bietet professionelle Beratung in Digitalisierung, Prozessmanagement und HR-Tech sowie Vermietung von Wohnmobil, Fotobox, Stand-Up-Paddles und E-Bikes.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="admin-password">Admin-Passwort ändern</label>
-                            <input type="password" id="admin-password" placeholder="Neues Passwort">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Wohnmobil Section -->
-            <section id="wohnmobil" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-campground"></i> Wohnmobil - Grundinformationen</h3>
-                        <div class="form-group">
-                            <label for="wohnmobil-title">Titel</label>
-                            <input type="text" id="wohnmobil-title" value="Wohnmobil Vermietung">
-                        </div>
-                        <div class="form-group">
-                            <label for="wohnmobil-subtitle">Untertitel</label>
-                            <input type="text" id="wohnmobil-subtitle" value="Erleben Sie Freiheit und Komfort auf Reisen">
-                        </div>
-                        <div class="form-group">
-                            <label for="wohnmobil-description">Beschreibung</label>
-                            <textarea id="wohnmobil-description" rows="4">Entdecken Sie die Schweiz und Europa mit unserem hochwertigen Wohnmobil. Vollausstattung, flexible Mietdauer und 24/7 Support für unvergessliche Abenteuer.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="wohnmobil-icon">Icon (FontAwesome)</label>
-                            <input type="text" id="wohnmobil-icon" value="fas fa-campground">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
-                        <div class="activity-images" id="wohnmobil-images">
-                            <div class="image-upload">
-                                <div class="upload-area" onclick="document.getElementById('wohnmobil-file-upload').click()">
-                                    <div class="upload-placeholder">
-                                        <i class="fas fa-plus"></i>
-                                        <p>Bild hinzufügen</p>
-                                    </div>
-                                </div>
-                                <input type="file" id="wohnmobil-file-upload" accept="image/*" multiple style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-euro-sign"></i> Preise & Details</h3>
-                        <div class="form-group">
-                            <label for="wohnmobil-price-day">Tagespreis</label>
-                            <input type="text" id="wohnmobil-price-day" value="CHF 150">
-                        </div>
-                        <div class="form-group">
-                            <label for="wohnmobil-price-week">Wochenpreis</label>
-                            <input type="text" id="wohnmobil-price-week" value="CHF 800">
-                        </div>
-                        <div class="form-group">
-                            <label for="wohnmobil-features">Ausstattung (eine pro Zeile)</label>
-                            <textarea id="wohnmobil-features" rows="6">Vollkasko-Versicherung inklusive
-Bequeme Schlafplätze für 2-4 Personen
-Vollausgestattete Küche
-Eigene Dusche und WC
-Heizung und Klimaanlage
-WLAN verfügbar</textarea>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Fotobox Section -->
-            <section id="fotobox" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-camera"></i> Fotobox - Grundinformationen</h3>
-                        <div class="form-group">
-                            <label for="fotobox-title">Titel</label>
-                            <input type="text" id="fotobox-title" value="Fotobox Vermietung">
-                        </div>
-                        <div class="form-group">
-                            <label for="fotobox-subtitle">Untertitel</label>
-                            <input type="text" id="fotobox-subtitle" value="Unvergessliche Momente bei Events">
-                        </div>
-                        <div class="form-group">
-                            <label for="fotobox-description">Beschreibung</label>
-                            <textarea id="fotobox-description" rows="4">Professionelle Fotobox für unvergessliche Momente bei Events und Feiern. Mit Touchscreen, sofortigem Druck und individuellen Layouts.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="fotobox-icon">Icon (FontAwesome)</label>
-                            <input type="text" id="fotobox-icon" value="fas fa-camera">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
-                        <div class="activity-images" id="fotobox-images">
-                            <div class="image-upload">
-                                <div class="upload-area" onclick="document.getElementById('fotobox-file-upload').click()">
-                                    <div class="upload-placeholder">
-                                        <i class="fas fa-plus"></i>
-                                        <p>Bild hinzufügen</p>
-                                    </div>
-                                </div>
-                                <input type="file" id="fotobox-file-upload" accept="image/*" multiple style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-euro-sign"></i> Preise & Leistungen</h3>
-                        <div class="form-group">
-                            <label for="fotobox-price">Preis pro Event</label>
-                            <input type="text" id="fotobox-price" value="CHF 250">
-                        </div>
-                        <div class="form-group">
-                            <label for="fotobox-features">Leistungen (eine pro Zeile)</label>
-                            <textarea id="fotobox-features" rows="6">Professionelle HD-Kamera
-Touchscreen-Bedienung
-Sofortiger Fotodruck
-Individuelle Layouts
-Requisiten inklusive
-Aufbau und Betreuung</textarea>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Stand-Up-Paddle Section -->
-            <section id="sup" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-water"></i> SUP - Grundinformationen</h3>
-                        <div class="form-group">
-                            <label for="sup-title">Titel</label>
-                            <input type="text" id="sup-title" value="Stand-Up-Paddle Vermietung">
-                        </div>
-                        <div class="form-group">
-                            <label for="sup-subtitle">Untertitel</label>
-                            <input type="text" id="sup-subtitle" value="Entdecken Sie die Schönheit der Schweizer Seen">
-                        </div>
-                        <div class="form-group">
-                            <label for="sup-description">Beschreibung</label>
-                            <textarea id="sup-description" rows="4">Erleben Sie die Freiheit auf dem Wasser mit unseren hochwertigen Stand-Up-Paddles. Verschiedene Größen für Anfänger und Fortgeschrittene.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="sup-icon">Icon (FontAwesome)</label>
-                            <input type="text" id="sup-icon" value="fas fa-water">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
-                        <div class="activity-images" id="sup-images">
-                            <div class="image-upload">
-                                <div class="upload-area" onclick="document.getElementById('sup-file-upload').click()">
-                                    <div class="upload-placeholder">
-                                        <i class="fas fa-plus"></i>
-                                        <p>Bild hinzufügen</p>
-                                    </div>
-                                </div>
-                                <input type="file" id="sup-file-upload" accept="image/*" multiple style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-euro-sign"></i> Preise & Pakete</h3>
-                        <div class="form-group">
-                            <label for="sup-price-half">Halbtagespreis</label>
-                            <input type="text" id="sup-price-half" value="CHF 45">
-                        </div>
-                        <div class="form-group">
-                            <label for="sup-price-full">Tagespreis</label>
-                            <input type="text" id="sup-price-full" value="CHF 75">
-                        </div>
-                        <div class="form-group">
-                            <label for="sup-features">Inklusive Leistungen (eine pro Zeile)</label>
-                            <textarea id="sup-features" rows="6">SUP-Board inklusive
-Paddle und Pumpe
-Sicherheitsleine
-Transporttasche
-Kurze Einweisung
-Wassersicherheitsausrüstung</textarea>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- E-Bike Section -->
-            <section id="ebike" class="editor-section">
-                <div class="editor-grid">
-                    <div class="editor-card">
-                        <h3><i class="fas fa-bicycle"></i> E-Bike - Grundinformationen</h3>
-                        <div class="form-group">
-                            <label for="ebike-title">Titel</label>
-                            <input type="text" id="ebike-title" value="E-Bike Vermietung">
-                        </div>
-                        <div class="form-group">
-                            <label for="ebike-subtitle">Untertitel</label>
-                            <input type="text" id="ebike-subtitle" value="Nachhaltige Mobilität für Stadt und Land">
-                        </div>
-                        <div class="form-group">
-                            <label for="ebike-description">Beschreibung</label>
-                            <textarea id="ebike-description" rows="4">Nachhaltige Mobilität für Stadt und Land mit unseren hochwertigen E-Bikes. Perfekt für Touren und entspannte Fahrten.</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="ebike-icon">Icon (FontAwesome)</label>
-                            <input type="text" id="ebike-icon" value="fas fa-bicycle">
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-images"></i> Bildergalerie</h3>
-                        <div class="activity-images" id="ebike-images">
-                            <div class="image-upload">
-                                <div class="upload-area" onclick="document.getElementById('ebike-file-upload').click()">
-                                    <div class="upload-placeholder">
-                                        <i class="fas fa-plus"></i>
-                                        <p>Bild hinzufügen</p>
-                                    </div>
-                                </div>
-                                <input type="file" id="ebike-file-upload" accept="image/*" multiple style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-card">
-                        <h3><i class="fas fa-euro-sign"></i> Preise & Details</h3>
-                        <div class="form-group">
-                            <label for="ebike-price-day">Tagespreis</label>
-                            <input type="text" id="ebike-price-day" value="CHF 55">
-                        </div>
-                        <div class="form-group">
-                            <label for="ebike-price-week">Wochenpreis</label>
-                            <input type="text" id="ebike-price-week" value="CHF 300">
-                        </div>
-                        <div class="form-group">
-                            <label for="ebike-features">Ausstattung & Service (eine pro Zeile)</label>
-                            <textarea id="ebike-features" rows="6">Hochwertige E-Bikes
-Lange Akkulaufzeit
-Helm inklusive
-Routenberatung
-24/7 Support
-Pannenhilfe</textarea>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="admin-section">
-                <h3>🔄 System-Verwaltung</h3>
-                <div class="admin-controls">
-                    <button type="button" onclick="adminPanel.removeAllTestImages()" class="admin-button warning">
-                        🧹 Alle Testbilder entfernen
-                    </button>
-                    <button type="button" onclick="adminPanel.clearAllImages()" class="admin-button danger">
-                        🗑️ Alle Bilder löschen
-                    </button>
-                    <button type="button" onclick="adminPanel.exportLogs()" class="admin-button">
-                        📊 Logs exportieren
-                    </button>
-                    <button type="button" onclick="adminPanel.clearLogs()" class="admin-button">
-                        🧹 Logs löschen
-                    </button>
-                </div>
-                <p class="admin-note">
-                    <strong>Hinweis:</strong> Der "Alle Testbilder entfernen" Button entfernt alle Testbilder sicher. 
-                    Der "Alle Bilder löschen" Button löscht alle Bilder komplett (Vorsicht!).
-                </p>
             </div>
-        </main>
+
+            <!-- Content Management Section -->
+            <div id="content" class="admin-section">
+                <div class="section-header">
+                    <h1>Content Management</h1>
+                    <p>Verwalten Sie den Inhalt Ihrer Website</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>Hero Section</h3>
+                        <form id="hero-form">
+                            <div class="form-group">
+                                <label for="hero-title">Titel</label>
+                                <input type="text" id="hero-title" name="title" placeholder="Manuel Weiss">
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-subtitle">Untertitel</label>
+                                <input type="text" id="hero-subtitle" name="subtitle" placeholder="Professional Services">
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-description">Beschreibung</label>
+                                <textarea id="hero-description" name="description" rows="4" placeholder="Beschreibung eingeben..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </form>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Kontaktinformationen</h3>
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="contact-email">E-Mail</label>
+                                <input type="email" id="contact-email" name="email" placeholder="weiss-manuel@gmx.de">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-phone">Telefon</label>
+                                <input type="tel" id="contact-phone" name="phone" placeholder="+41 XX XXX XX XX">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-location">Standort</label>
+                                <input type="text" id="contact-location" name="location" placeholder="Schweiz">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Management Section -->
+            <div id="images" class="admin-section">
+                <div class="section-header">
+                    <h1>Bildverwaltung</h1>
+                    <p>Verwalten Sie Bilder für Ihre Aktivitäten</p>
+                </div>
+
+                <div class="image-management">
+                    <div class="image-upload-section">
+                        <h3>Bilder hochladen</h3>
+                        <div class="upload-area" id="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Bilder hier hineinziehen oder klicken zum Auswählen</p>
+                            <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
+                        </div>
+                        <div class="upload-options">
+                            <select id="activity-select">
+                                <option value="">Aktivität auswählen</option>
+                                <option value="wohnmobil">Wohnmobil</option>
+                                <option value="fotobox">Fotobox</option>
+                                <option value="sup">Stand-Up-Paddle</option>
+                                <option value="ebike">E-Bike</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="uploadImages()">
+                                <i class="fas fa-upload"></i>
+                                Hochladen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="image-gallery-section">
+                        <h3>Bildergalerie</h3>
+                        <div class="gallery-filters">
+                            <select id="gallery-filter">
+                                <option value="all">Alle Aktivitäten</option>
+                                <option value="wohnmobil">Wohnmobil</option>
+                                <option value="fotobox">Fotobox</option>
+                                <option value="sup">Stand-Up-Paddle</option>
+                                <option value="ebike">E-Bike</option>
+                            </select>
+                            <button class="btn btn-outline" onclick="cleanupImages()">
+                                <i class="fas fa-trash"></i>
+                                Bereinigen
+                            </button>
+                        </div>
+                        <div id="image-gallery" class="image-gallery"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Management Section -->
+            <div id="applications" class="admin-section">
+                <div class="section-header">
+                    <h1>Bewerbungsverwaltung</h1>
+                    <p>Erstellen und verwalten Sie individuelle Bewerbungsmappen</p>
+                </div>
+
+                <div class="applications-management">
+                    <!-- Create New Application -->
+                    <div class="application-create">
+                        <h3>Neue Bewerbung erstellen</h3>
+                        <form id="new-application-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="company-name">Firmenname *</label>
+                                    <input type="text" id="company-name" name="companyName" required placeholder="z.B. TechCorp AG">
+                                </div>
+                                <div class="form-group">
+                                    <label for="position-title">Position *</label>
+                                    <input type="text" id="position-title" name="positionTitle" required placeholder="z.B. Senior Consultant">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="application-type">Bewerbungstyp</label>
+                                    <select id="application-type" name="applicationType">
+                                        <option value="interactive">Interaktive Bewerbungsmappe</option>
+                                        <option value="traditional">Traditionelle Bewerbung</option>
+                                        <option value="custom">Individuelle Anpassung</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="application-theme">Design-Theme</label>
+                                    <select id="application-theme" name="applicationTheme">
+                                        <option value="modern">Modern</option>
+                                        <option value="corporate">Corporate</option>
+                                        <option value="creative">Kreativ</option>
+                                        <option value="minimal">Minimalistisch</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company-colors">Firmenfarben (Hex-Codes)</label>
+                                <div class="color-inputs">
+                                    <input type="color" id="primary-color" name="primaryColor" value="#2563eb">
+                                    <input type="color" id="secondary-color" name="secondaryColor" value="#10b981">
+                                    <input type="color" id="accent-color" name="accentColor" value="#8b5cf6">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="custom-message">Individuelle Nachricht</label>
+                                <textarea id="custom-message" name="customMessage" rows="4" placeholder="Persönliche Nachricht an das Unternehmen..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="included-sections">Einzubeziehende Sektionen</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="sections" value="experience" checked>
+                                        <span>Berufserfahrung</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="sections" value="projects" checked>
+                                        <span>Projekte</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="sections" value="skills" checked>
+                                        <span>Skills</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="sections" value="education" checked>
+                                        <span>Ausbildung</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="sections" value="certificates" checked>
+                                        <span>Zertifikate</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    Bewerbung erstellen
+                                </button>
+                                <button type="button" class="btn btn-outline" onclick="previewApplication()">
+                                    <i class="fas fa-eye"></i>
+                                    Vorschau
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Applications List -->
+                    <div class="applications-list">
+                        <h3>Erstellte Bewerbungen</h3>
+                        <div id="applications-list" class="applications-grid">
+                            <!-- Applications will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="admin-section">
+                <div class="section-header">
+                    <h1>Einstellungen</h1>
+                    <p>Konfigurieren Sie Ihre Website-Einstellungen</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>Website-Einstellungen</h3>
+                        <form id="website-settings-form">
+                            <div class="form-group">
+                                <label for="site-title">Website-Titel</label>
+                                <input type="text" id="site-title" name="siteTitle" value="Manuel Weiss - Professional Services">
+                            </div>
+                            <div class="form-group">
+                                <label for="site-description">Website-Beschreibung</label>
+                                <textarea id="site-description" name="siteDescription" rows="3">Manuel Weiss Professional Services - Digitalisierung, Prozessmanagement, HR-Tech Beratung und Vermietung</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Bewerbungs-Einstellungen</h3>
+                        <form id="application-settings-form">
+                            <div class="form-group">
+                                <label for="default-theme">Standard-Theme</label>
+                                <select id="default-theme" name="defaultTheme">
+                                    <option value="modern">Modern</option>
+                                    <option value="corporate">Corporate</option>
+                                    <option value="creative">Kreativ</option>
+                                    <option value="minimal">Minimalistisch</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="link-expiry">Link-Ablaufzeit (Tage)</label>
+                                <input type="number" id="link-expiry" name="linkExpiry" value="30" min="1" max="365">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="track-analytics" name="trackAnalytics" checked>
+                                    <span>Analytics für Bewerbungslinks aktivieren</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Notification System -->
-    <div id="notification" class="notification"></div>
+    <!-- Modals -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bewerbungsvorschau</h3>
+                <button class="modal-close" onclick="closeModal('preview-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="preview-iframe" src="" width="100%" height="600px"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="link-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bewerbungslink</h3>
+                <button class="modal-close" onclick="closeModal('link-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="link-info">
+                    <h4>Ihr individueller Bewerbungslink:</h4>
+                    <div class="link-display">
+                        <input type="text" id="application-link" readonly>
+                        <button class="btn btn-primary" onclick="copyLink()">
+                            <i class="fas fa-copy"></i>
+                            Kopieren
+                        </button>
+                    </div>
+                    <p class="link-note">
+                        <i class="fas fa-info-circle"></i>
+                        Dieser Link ist speziell für <span id="link-company"></span> erstellt und kann direkt an das Unternehmen gesendet werden.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
-    <script src="js/image-manager.js?v=2.0"></script>
-    <script src="js/content-manager.js?v=2.0"></script>
-    <script src="js/activity-gallery.js?v=2.0"></script>
-    <script src="js/image-gallery.js?v=2.0"></script>
-    <script src="js/netlify-storage.js?v=2.0"></script>
-    <script src="js/data-persistence.js?v=2.0"></script>
-    
-    <!-- SOFORTIGE Datenladung VOR AdminPanel -->
-    <script>
-        console.log('🚀 SOFORTIGE Datenladung startet...');
-        
-        // Funktion für intelligentes Laden (nur wenn Felder leer sind)
-        function loadDataImmediately() {
-            try {
-                console.log('⚡ INTELLIGENTES Laden startet...');
-                
-                // AGGRESSIVE LADUNG - KEINE Prüfung auf bestehende Werte!
-                console.log('🔥 FORCE LOADING - Lade IMMER alle Daten!');
-                
-                // Lade aus allen möglichen Speicherorten
-                const possibleKeys = ['websiteData', 'autoSaveBackup', 'emergencyBackup', 'adminPanelData'];
-                let loadedData = null;
-                let newestTimestamp = 0;
-                let newestKey = null;
-                
-                // Finde die neuesten Daten
-                for (const key of possibleKeys) {
-                    const savedData = localStorage.getItem(key);
-                    if (savedData) {
-                        try {
-                            const data = JSON.parse(savedData);
-                            const timestamp = localStorage.getItem(`${key}_timestamp`) || 
-                                            localStorage.getItem('lastSave') || 
-                                            localStorage.getItem('lastAutoSave') || 0;
-                            
-                            if (parseInt(timestamp) > newestTimestamp) {
-                                newestTimestamp = parseInt(timestamp);
-                                newestKey = key;
-                                loadedData = data;
-                            }
-                        } catch (e) {
-                            console.warn(`⚠️ Fehler beim Parsen von ${key}:`, e);
-                        }
-                    }
-                }
-                
-                if (loadedData && newestKey) {
-                    console.log(`✅ INTELLIGENTES Laden: Neueste Daten aus ${newestKey}:`, loadedData);
-                    
-                    // Setze alle Felder nur wenn sie leer sind
-                    Object.keys(loadedData).forEach(key => {
-                        const checkAndSet = () => {
-                            const element = document.getElementById(key);
-                            if (element && element.type !== 'file') {
-                                // Nur setzen wenn Feld leer ist
-                                if (!element.value || element.value.trim() === '') {
-                                    element.value = loadedData[key];
-                                    console.log(`⚡ INTELLIGENT gesetzt: ${key} = ${loadedData[key]}`);
-                                } else {
-                                    console.log(`ℹ️ Feld ${key} hat bereits Wert: ${element.value}`);
-                                }
-                            } else if (document.readyState !== 'complete') {
-                                setTimeout(checkAndSet, 50);
-                            }
-                        };
-                        checkAndSet();
-                    });
-                    
-                    console.log('🎉 INTELLIGENTES Laden erfolgreich!');
-                } else {
-                    console.log('ℹ️ Keine Daten für intelligentes Laden gefunden');
-                }
-                
-            } catch (error) {
-                console.error('❌ INTELLIGENTES Laden fehlgeschlagen:', error);
-            }
-        }
-        
-        // Starte sofortiges Laden
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadDataImmediately);
-        } else {
-            loadDataImmediately();
-        }
-        
-        // Zusätzlich bei window.load
-        window.addEventListener('load', loadDataImmediately);
-        
-        // Zusätzlich nach kurzer Verzögerung
-        setTimeout(loadDataImmediately, 500);
-        setTimeout(loadDataImmediately, 1500);
-    </script>
-    
-    <script src="admin-script.js?v=3.0-CRITICAL-FIX"></script>
-    
-    <script>
-        // Initialisiere Image Manager global
-        window.imageManager = new ImageManager();
-        
-        // Initialisiere Activity Gallery
-        window.activityGallery = new ActivityGallery();
-        
-        // Initialisiere Content Manager
-        window.contentManager = new ContentManager();
-        
-        // Verbesserte Initialisierung für bessere Online-Kompatibilität
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Admin-Panel wird initialisiert...');
-            console.log('🌐 Online-Status:', navigator.onLine);
-            console.log('📸 Image Manager verfügbar:', !!window.imageManager);
-            console.log('🎨 Activity Gallery verfügbar:', !!window.activityGallery);
-            console.log('📝 Content Manager verfügbar:', !!window.contentManager);
-            
-            // Warte kurz, bis alle Skripte geladen sind
-            setTimeout(() => {
-                // Initialisiere andere Komponenten
-                if (window.imageManager) {
-                    console.log('✅ Image Manager initialisiert');
-                    console.log('📊 Bild-Cache Größe:', window.imageManager.imageCache.size);
-                }
-                
-                if (window.activityGallery) {
-                    console.log('✅ Activity Gallery initialisiert');
-                }
-                
-                if (window.contentManager) {
-                    console.log('✅ Content Manager initialisiert');
-                }
-                
-                console.log('✅ Admin-Panel Initialisierung abgeschlossen');
-                
-                // Debug: Prüfe Admin-Funktionalität
-                const adminForms = document.querySelectorAll('form');
-                console.log('📝 Admin-Formulare gefunden:', adminForms.length);
-                
-                const imageUploads = document.querySelectorAll('input[type="file"]');
-                console.log('📸 Bild-Upload-Felder gefunden:', imageUploads.length);
-            }, 100);
-        });
-        
-        // Fehlerbehandlung für globale Fehler
-        window.addEventListener('error', function(e) {
-            console.error('❌ Globaler Fehler:', e.error);
-            console.error('❌ Fehlerquelle:', e.filename, 'Zeile:', e.lineno);
-        });
-        
-        // Fehlerbehandlung für unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('❌ Unbehandelte Promise-Ablehnung:', e.reason);
-        });
-        
-        // Debug: Log alle verfügbaren globalen Funktionen
-        console.log('🔍 Verfügbare globale Funktionen:', Object.keys(window).filter(key => typeof window[key] === 'function'));
-    </script>
+    <script src="js/image-manager.js?v=3.0"></script>
+    <script src="js/content-manager.js?v=3.0"></script>
+    <script src="js/activity-gallery.js?v=3.0"></script>
+    <script src="js/image-gallery.js?v=3.0"></script>
+    <script src="js/netlify-storage.js?v=3.0"></script>
+    <script src="js/data-persistence.js?v=3.0"></script>
+    <script src="admin-script.js?v=3.0"></script>
 </body>
 </html>

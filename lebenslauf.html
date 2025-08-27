@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiver Lebenslauf - Manuel Weiss</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        /* Tisch-Oberfläche */
+        .table-surface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+            transform: rotateX(60deg) scale(2);
+            transform-origin: center top;
+            z-index: -1;
+        }
+
+        /* Holz-Textur für Tisch */
+        .table-surface::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.1) 2px,
+                    rgba(0,0,0,0.1) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.05) 2px,
+                    rgba(0,0,0,0.05) 4px
+                );
+        }
+
+        /* Container für die Mappe */
+        .portfolio-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+        }
+
+        /* Die Mappe selbst */
+        .portfolio {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(-5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .portfolio:hover {
+            transform: rotateX(10deg) rotateY(-2deg) scale(1.02);
+        }
+
+        /* Mappen-Deckel */
+        .portfolio-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 10px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: rotateY(0deg);
+            transform-origin: left;
+            transition: transform 1s ease;
+            z-index: 10;
+        }
+
+        .portfolio-cover.open {
+            transform: rotateY(-180deg);
+        }
+
+        /* Mappen-Titel */
+        .portfolio-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ecf0f1;
+            text-align: center;
+            z-index: 11;
+        }
+
+        .portfolio-title h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .portfolio-title p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Öffnen-Button */
+        .open-portfolio {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 12;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .open-portfolio:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Mappen-Inhalt */
+        .portfolio-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        /* Seiten-Container */
+        .pages-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* Einzelne Seite */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            transform-origin: left;
+            transition: transform 1s ease;
+            box-shadow: 
+                0 2px 10px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            overflow: hidden;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Seiten-Inhalt */
+        .page-content {
+            padding: 3rem;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .page-content h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Berufserfahrung Karten */
+        .experience-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 5px solid #3498db;
+        }
+
+        .experience-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .experience-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .experience-company {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .experience-date {
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .experience-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .experience-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: #3498db;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .page-navigation {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 20;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Seiten-Indikator */
+        .page-indicator {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(52, 73, 94, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 20;
+        }
+
+        /* Schließen-Button */
+        .close-portfolio {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-portfolio:hover {
+            background: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .portfolio {
+                width: 90vw;
+                height: 70vh;
+                transform: rotateX(10deg) rotateY(-2deg);
+            }
+
+            .portfolio-title h1 {
+                font-size: 1.8rem;
+            }
+
+            .page-content {
+                padding: 2rem;
+            }
+
+            .experience-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Animationen */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Scrollbar Styling */
+        .page-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .page-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .page-content::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+
+        .page-content::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tisch-Oberfläche -->
+    <div class="table-surface"></div>
+
+    <!-- Mappen-Container -->
+    <div class="portfolio-container">
+        <div class="portfolio">
+            <!-- Mappen-Deckel -->
+            <div class="portfolio-cover" id="portfolio-cover">
+                <div class="portfolio-title">
+                    <h1>Manuel Weiss</h1>
+                    <p>Interaktiver Lebenslauf</p>
+                </div>
+                <button class="open-portfolio" onclick="openPortfolio()">
+                    <i class="fas fa-folder-open"></i> Mappe öffnen
+                </button>
+            </div>
+
+            <!-- Mappen-Inhalt -->
+            <div class="portfolio-content" id="portfolio-content" style="display: none;">
+                <div class="pages-container">
+                    <!-- Seite 1: Berufserfahrung -->
+                    <div class="page" id="page-1">
+                        <div class="page-content">
+                            <h2><i class="fas fa-briefcase"></i> Berufserfahrung</h2>
+                            
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">Senior HR-Tech Consultant</div>
+                                        <div class="experience-company">Manuel Weiss Professional Services</div>
+                                    </div>
+                                    <div class="experience-date">2021 - Heute</div>
+                                </div>
+                                <div class="experience-description">
+                                    Beratung von Unternehmen bei der digitalen Transformation ihrer HR-Prozesse. 
+                                    Spezialisierung auf HR-Tech Implementierungen, Prozessoptimierung und Change Management.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">HR-Tech</span>
+                                    <span class="skill-tag">Digitale Transformation</span>
+                                    <span class="skill-tag">Prozessoptimierung</span>
+                                    <span class="skill-tag">Change Management</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">HR-System Administrator</div>
+                                        <div class="experience-company">Deutsche Telekom AG</div>
+                                    </div>
+                                    <div class="experience-date">2018 - 2021</div>
+                                </div>
+                                <div class="experience-description">
+                                    Verwaltung und Optimierung von HR-Systemen für über 200.000 Mitarbeiter. 
+                                    Implementierung neuer HR-Tech Lösungen und Schulung von Endnutzern.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">HR-Systeme</span>
+                                    <span class="skill-tag">SAP SuccessFactors</span>
+                                    <span class="skill-tag">Systemadministration</span>
+                                    <span class="skill-tag">Schulung</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">IT-Systemkaufmann</div>
+                                        <div class="experience-company">Deutsche Telekom AG</div>
+                                    </div>
+                                    <div class="experience-date">2015 - 2018</div>
+                                </div>
+                                <div class="experience-description">
+                                    Duale Ausbildung im Bereich IT-Systeme und -Dienstleistungen. 
+                                    Praktische Erfahrung in IT-Support, Kundenberatung und Projektmanagement.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">IT-Support</span>
+                                    <span class="skill-tag">Kundenberatung</span>
+                                    <span class="skill-tag">Projektmanagement</span>
+                                    <span class="skill-tag">Systemadministration</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seite 2: Projekte -->
+                    <div class="page" id="page-2" style="transform: rotateY(-180deg);">
+                        <div class="page-content">
+                            <h2><i class="fas fa-project-diagram"></i> Wichtige Projekte</h2>
+                            
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">HR-Digitalisierung bei DAX-Konzern</div>
+                                        <div class="experience-company">Großer Automobilhersteller</div>
+                                    </div>
+                                    <div class="experience-date">2022 - 2023</div>
+                                </div>
+                                <div class="experience-description">
+                                    Komplette Digitalisierung der HR-Prozesse für 50.000+ Mitarbeiter. 
+                                    Implementierung von SAP SuccessFactors und Integration mit bestehenden Systemen.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">SAP SuccessFactors</span>
+                                    <span class="skill-tag">Systemintegration</span>
+                                    <span class="skill-tag">Change Management</span>
+                                    <span class="skill-tag">Prozessdesign</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">HR-Tech Startup Beratung</div>
+                                        <div class="experience-company">Verschiedene Startups</div>
+                                    </div>
+                                    <div class="experience-date">2021 - Heute</div>
+                                </div>
+                                <div class="experience-description">
+                                    Beratung von HR-Tech Startups bei der Produktentwicklung und Markteinführung. 
+                                    Unterstützung bei der Definition von Anforderungen und User Experience Design.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">Produktentwicklung</span>
+                                    <span class="skill-tag">UX Design</span>
+                                    <span class="skill-tag">Markteinführung</span>
+                                    <span class="skill-tag">Anforderungsanalyse</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seite 3: Skills -->
+                    <div class="page" id="page-3" style="transform: rotateY(-180deg);">
+                        <div class="page-content">
+                            <h2><i class="fas fa-tools"></i> Technische Skills</h2>
+                            
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">HR-Systeme & Tools</div>
+                                    </div>
+                                </div>
+                                <div class="experience-description">
+                                    Umfassende Erfahrung mit modernen HR-Systemen und -Tools.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">SAP SuccessFactors</span>
+                                    <span class="skill-tag">Workday</span>
+                                    <span class="skill-tag">BambooHR</span>
+                                    <span class="skill-tag">Personio</span>
+                                    <span class="skill-tag">Recruitee</span>
+                                    <span class="skill-tag">Greenhouse</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">Technologien & Methoden</div>
+                                    </div>
+                                </div>
+                                <div class="experience-description">
+                                    Moderne Technologien und agile Methoden für erfolgreiche Projekte.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">Agile/Scrum</span>
+                                    <span class="skill-tag">Design Thinking</span>
+                                    <span class="skill-tag">Prozessmodellierung</span>
+                                    <span class="skill-tag">API Integration</span>
+                                    <span class="skill-tag">Data Analytics</span>
+                                    <span class="skill-tag">Cloud Computing</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">Sprachen</div>
+                                    </div>
+                                </div>
+                                <div class="experience-description">
+                                    Mehrsprachige Kommunikation für internationale Projekte.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">Deutsch (Muttersprache)</span>
+                                    <span class="skill-tag">Englisch (Verhandlungssicher)</span>
+                                    <span class="skill-tag">Französisch (Grundkenntnisse)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seite 4: Ausbildung -->
+                    <div class="page" id="page-4" style="transform: rotateY(-180deg);">
+                        <div class="page-content">
+                            <h2><i class="fas fa-graduation-cap"></i> Ausbildung</h2>
+                            
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">Bachelor of Science in Wirtschaftsinformatik</div>
+                                        <div class="experience-company">Hochschule für Wirtschaft und Recht Berlin</div>
+                                    </div>
+                                    <div class="experience-date">2018 - 2021</div>
+                                </div>
+                                <div class="experience-description">
+                                    Studium der Wirtschaftsinformatik mit Fokus auf digitale Transformation, 
+                                    Prozessmanagement und IT-Systeme. Abschluss mit Auszeichnung.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">Wirtschaftsinformatik</span>
+                                    <span class="skill-tag">Digitale Transformation</span>
+                                    <span class="skill-tag">Prozessmanagement</span>
+                                    <span class="skill-tag">IT-Systeme</span>
+                                </div>
+                            </div>
+
+                            <div class="experience-card fade-in">
+                                <div class="experience-header">
+                                    <div>
+                                        <div class="experience-title">Ausbildung zum IT-Systemkaufmann</div>
+                                        <div class="experience-company">Deutsche Telekom AG</div>
+                                    </div>
+                                    <div class="experience-date">2015 - 2018</div>
+                                </div>
+                                <div class="experience-description">
+                                    Duale Ausbildung im Bereich IT-Systeme und -Dienstleistungen mit 
+                                    praktischer Erfahrung in verschiedenen Abteilungen.
+                                </div>
+                                <div class="experience-skills">
+                                    <span class="skill-tag">IT-Systeme</span>
+                                    <span class="skill-tag">Kundenberatung</span>
+                                    <span class="skill-tag">Projektmanagement</span>
+                                    <span class="skill-tag">Telekommunikation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="page-navigation">
+                    <button class="nav-btn" id="prev-btn" onclick="prevPage()" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" id="next-btn" onclick="nextPage()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Seiten-Indikator -->
+                <div class="page-indicator">
+                    <span id="current-page">1</span> / <span id="total-pages">4</span>
+                </div>
+
+                <!-- Schließen-Button -->
+                <button class="close-portfolio" onclick="closePortfolio()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 4;
+
+        // Mappe öffnen
+        function openPortfolio() {
+            document.getElementById('portfolio-cover').classList.add('open');
+            setTimeout(() => {
+                document.getElementById('portfolio-content').style.display = 'block';
+                document.getElementById('portfolio-cover').style.display = 'none';
+            }, 500);
+        }
+
+        // Mappe schließen
+        function closePortfolio() {
+            document.getElementById('portfolio-content').style.display = 'none';
+            document.getElementById('portfolio-cover').style.display = 'block';
+            document.getElementById('portfolio-cover').classList.remove('open');
+            currentPage = 1;
+            updatePageDisplay();
+        }
+
+        // Nächste Seite
+        function nextPage() {
+            if (currentPage < totalPages) {
+                const currentPageElement = document.getElementById(`page-${currentPage}`);
+                currentPageElement.classList.add('flipped');
+                currentPage++;
+                updatePageDisplay();
+            }
+        }
+
+        // Vorherige Seite
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                const currentPageElement = document.getElementById(`page-${currentPage}`);
+                currentPageElement.classList.remove('flipped');
+                updatePageDisplay();
+            }
+        }
+
+        // Seiten-Anzeige aktualisieren
+        function updatePageDisplay() {
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('portfolio-content').style.display === 'block') {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    nextPage();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevPage();
+                } else if (e.key === 'Escape') {
+                    closePortfolio();
+                }
+            }
+        });
+
+        // Touch/Swipe Navigation
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe nach links = nächste Seite
+                    nextPage();
+                } else {
+                    // Swipe nach rechts = vorherige Seite
+                    prevPage();
+                }
+            }
+        }
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePageDisplay();
+        });
+    </script>
+</body>
+</html>
