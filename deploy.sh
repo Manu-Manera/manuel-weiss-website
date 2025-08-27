@@ -28,41 +28,16 @@ if ! check_command "npm"; then
     exit 1
 fi
 
-if ! check_command "vercel"; then
-    echo -e "${YELLOW}⚠️  Vercel CLI ist nicht installiert. Installiere es jetzt...${NC}"
-    npm install -g vercel
-fi
-
 # Deployment-Optionen
 echo -e "${BLUE}📋 Wähle deine Deployment-Option:${NC}"
-echo "1) Vercel (empfohlen)"
-echo "2) Netlify (Alternative)"
-echo "3) GitHub Pages"
-echo "4) Lokaler Server (für Tests)"
+echo "1) Netlify (empfohlen)"
+echo "2) GitHub Pages"
+echo "3) Lokaler Server (für Tests)"
 
-read -p "Wähle eine Option (1-4): " choice
+read -p "Wähle eine Option (1-3): " choice
 
 case $choice in
     1)
-        echo -e "${BLUE}🚀 Deploye auf Vercel...${NC}"
-        
-        # Überprüfe Login-Status
-        if [ ! -d "$HOME/.vercel" ]; then
-            echo -e "${YELLOW}🔐 Du musst dich bei Vercel anmelden.${NC}"
-            echo "Führe folgende Schritte aus:"
-            echo "1. Gehe zu https://vercel.com"
-            echo "2. Erstelle ein Konto oder melde dich an"
-            echo "3. Verwende deine E-Mail: manuelvonweiss@icloud.com"
-            echo "4. Führe dann 'vercel login' aus"
-            echo ""
-            read -p "Drücke Enter, wenn du bereit bist..."
-        fi
-        
-        echo -e "${GREEN}📦 Deploye Website auf Vercel...${NC}"
-        vercel --prod
-        ;;
-        
-    2)
         echo -e "${BLUE}🚀 Deploye auf Netlify...${NC}"
         echo -e "${YELLOW}📋 Anleitung für Netlify:${NC}"
         echo "1. Gehe zu https://netlify.com"
@@ -73,7 +48,7 @@ case $choice in
         echo -e "${GREEN}✅ Netlify-Konfiguration ist bereits erstellt (netlify.toml)${NC}"
         ;;
         
-    3)
+    2)
         echo -e "${BLUE}🚀 Deploye auf GitHub Pages...${NC}"
         echo -e "${YELLOW}📋 Anleitung für GitHub Pages:${NC}"
         echo "1. Pushe deinen Code zu GitHub"
@@ -83,7 +58,7 @@ case $choice in
         echo "5. Deine Website wird unter https://username.github.io/repository verfügbar sein"
         ;;
         
-    4)
+    3)
         echo -e "${BLUE}🚀 Starte lokalen Server...${NC}"
         echo -e "${GREEN}🌐 Server läuft auf http://localhost:8000${NC}"
         echo "Drücke Ctrl+C zum Beenden"
