@@ -2883,3 +2883,551 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// ========================================
+// BEWERBUNGSVERWALTUNG
+// ========================================
+
+// Bewerbungen im localStorage speichern
+let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+
+// Neue Bewerbung erstellen
+function createNewApplication() {
+    // Setze Datum auf heute
+    document.getElementById('application-date').value = new Date().toISOString().split('T')[0];
+    
+    // Wechsle zur neuen Bewerbung
+    showSection('new-application');
+    
+    // Setze Titel
+    document.getElementById('section-title').textContent = 'Neue Bewerbung erstellen';
+}
+
+// Bewerbung speichern
+function saveApplication() {
+    const application = {
+        id: Date.now(),
+        companyName: document.getElementById('company-name').value,
+        positionTitle: document.getElementById('position-title').value,
+        applicationDate: document.getElementById('application-date').value,
+        coverLetter: document.getElementById('cover-letter').value,
+        cvNotes: document.getElementById('cv-notes').value,
+        applicationNotes: document.getElementById('application-notes').value,
+        template: document.getElementById('application-template').value,
+        createdAt: new Date().toISOString(),
+        status: 'draft'
+    };
+    
+    applications.push(application);
+    localStorage.setItem('applications', JSON.stringify(applications));
+    
+    showNotification('Bewerbung erfolgreich gespeichert!', 'success');
+    loadApplicationsList();
+}
+
+// Bewerbungen Liste laden
+function loadApplicationsList() {
+    const applicationsList = document.getElementById('applications-list');
+    
+    if (applications.length === 0) {
+        applicationsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-briefcase"></i>
+                <h4>Keine Bewerbungen vorhanden</h4>
+                <p>Erstellen Sie Ihre erste Bewerbung</p>
+            </div>
+        `;
+        return;
+    }
+    
+    applicationsList.innerHTML = applications.map(app => `
+        <div class="application-item">
+            <div class="application-header">
+                <h4>${app.companyName || 'Unbekannte Firma'}</h4>
+                <span class="application-date">${app.applicationDate || 'Kein Datum'}</span>
+            </div>
+            <div class="application-details">
+                <p><strong>Position:</strong> ${app.positionTitle || 'Nicht angegeben'}</p>
+                <p><strong>Status:</strong> <span class="status-${app.status}">${getStatusText(app.status)}</span></p>
+            </div>
+            <div class="application-actions">
+                <button class="btn btn-sm btn-primary" onclick="editApplication(${app.id})">
+                    <i class="fas fa-edit"></i> Bearbeiten
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="previewApplication(${app.id})">
+                    <i class="fas fa-eye"></i> Vorschau
+                </button>
+                <button class="btn btn-sm btn-success" onclick="generateApplicationPDF(${app.id})">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteApplication(${app.id})">
+                    <i class="fas fa-trash"></i> Löschen
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Bewerbung bearbeiten
+function editApplication(id) {
+    const application = applications.find(app => app.id === id);
+    if (!application) return;
+    
+    // Fülle Formular
+    document.getElementById('company-name').value = application.companyName || '';
+    document.getElementById('position-title').value = application.positionTitle || '';
+    document.getElementById('application-date').value = application.applicationDate || '';
+    document.getElementById('cover-letter').value = application.coverLetter || '';
+    document.getElementById('cv-notes').value = application.cvNotes || '';
+    document.getElementById('application-notes').value = application.applicationNotes || '';
+    document.getElementById('application-template').value = application.template || '';
+    
+    // Wechsle zur Bearbeitung
+    showSection('new-application');
+    document.getElementById('section-title').textContent = `Bewerbung bearbeiten - ${application.companyName}`;
+}
+
+// Bewerbung löschen
+function deleteApplication(id) {
+    if (confirm('Sind Sie sicher, dass Sie diese Bewerbung löschen möchten?')) {
+        applications = applications.filter(app => app.id !== id);
+        localStorage.setItem('applications', JSON.stringify(applications));
+        loadApplicationsList();
+        showNotification('Bewerbung gelöscht!', 'success');
+    }
+}
+
+// Vorlage verwenden
+function useTemplate(templateType) {
+    let coverLetter = '';
+    
+    switch (templateType) {
+        case 'hr-tech':
+            coverLetter = document.getElementById('hr-tech-cover-letter').value;
+            break;
+        case 'process-management':
+            coverLetter = document.getElementById('process-management-cover-letter').value;
+            break;
+        default:
+            coverLetter = '';
+    }
+    
+    document.getElementById('cover-letter').value = coverLetter;
+    document.getElementById('application-template').value = templateType;
+    
+    showNotification('Vorlage erfolgreich angewendet!', 'success');
+}
+
+// Bewerbung Vorschau
+function previewApplication(id = null) {
+    let application;
+    
+    if (id) {
+        application = applications.find(app => app.id === id);
+    } else {
+        // Aktuelle Formulardaten verwenden
+        application = {
+            companyName: document.getElementById('company-name').value,
+            positionTitle: document.getElementById('position-title').value,
+            applicationDate: document.getElementById('application-date').value,
+            coverLetter: document.getElementById('cover-letter').value
+        };
+    }
+    
+    if (!application) {
+        showNotification('Keine Bewerbungsdaten gefunden!', 'error');
+        return;
+    }
+    
+    // Öffne Vorschau in neuem Tab
+    const previewWindow = window.open('', '_blank');
+    previewWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Bewerbung Vorschau - ${application.companyName}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                .header { text-align: center; margin-bottom: 40px; }
+                .company-info { margin-bottom: 30px; }
+                .cover-letter { text-align: justify; }
+                @media print { body { margin: 20px; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Bewerbung</h1>
+                <h2>${application.companyName || 'Firmenname'}</h2>
+            </div>
+            
+            <div class="company-info">
+                <p><strong>Firma:</strong> ${application.companyName || 'Nicht angegeben'}</p>
+                <p><strong>Position:</strong> ${application.positionTitle || 'Nicht angegeben'}</p>
+                <p><strong>Datum:</strong> ${application.applicationDate || 'Nicht angegeben'}</p>
+            </div>
+            
+            <div class="cover-letter">
+                ${application.coverLetter || 'Kein Anschreiben vorhanden'}
+            </div>
+        </body>
+        </html>
+    `);
+    previewWindow.document.close();
+}
+
+// PDF generieren
+function generateApplicationPDF(id = null) {
+    showNotification('PDF-Generierung wird implementiert...', 'info');
+    // Hier würde die PDF-Generierung implementiert werden
+}
+
+// Status Text
+function getStatusText(status) {
+    const statusMap = {
+        'draft': 'Entwurf',
+        'sent': 'Versendet',
+        'interview': 'Interview',
+        'accepted': 'Angenommen',
+        'rejected': 'Abgelehnt'
+    };
+    return statusMap[status] || status;
+}
+
+// Initialisiere Bewerbungsverwaltung
+document.addEventListener('DOMContentLoaded', function() {
+    loadApplicationsList();
+    
+    // Event Listener für Vorlagen-Auswahl
+    document.getElementById('application-template')?.addEventListener('change', function() {
+        if (this.value) {
+            useTemplate(this.value);
+        }
+    });
+});
+
+// ========================================
+// DESIGN-ANPASSUNG
+// ========================================
+
+// Design-Einstellungen im localStorage speichern
+let designSettings = JSON.parse(localStorage.getItem('applicationDesign') || JSON.stringify({
+    fontFamily: 'Inter',
+    fontSize: 14,
+    lineHeight: 1.6,
+    primaryColor: '#2c3e50',
+    secondaryColor: '#f39c12',
+    textColor: '#1a1a1a',
+    backgroundColor: '#f5f5f5'
+}));
+
+// Design-Vorlagen
+const designTemplates = {
+    professional: {
+        fontFamily: 'Inter',
+        fontSize: 14,
+        lineHeight: 1.6,
+        primaryColor: '#2c3e50',
+        secondaryColor: '#34495e',
+        textColor: '#1a1a1a',
+        backgroundColor: '#f5f5f5'
+    },
+    modern: {
+        fontFamily: 'Roboto',
+        fontSize: 15,
+        lineHeight: 1.7,
+        primaryColor: '#2196F3',
+        secondaryColor: '#FF5722',
+        textColor: '#212121',
+        backgroundColor: '#fafafa'
+    },
+    creative: {
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        lineHeight: 1.8,
+        primaryColor: '#9C27B0',
+        secondaryColor: '#FF9800',
+        textColor: '#333333',
+        backgroundColor: '#f0f0f0'
+    },
+    elegant: {
+        fontFamily: 'Montserrat',
+        fontSize: 14,
+        lineHeight: 1.6,
+        primaryColor: '#2E7D32',
+        secondaryColor: '#D84315',
+        textColor: '#1a1a1a',
+        backgroundColor: '#f8f9fa'
+    }
+};
+
+// Design-Einstellungen laden
+function loadDesignSettings() {
+    document.getElementById('font-family').value = designSettings.fontFamily;
+    document.getElementById('font-size-base').value = designSettings.fontSize;
+    document.getElementById('line-height').value = designSettings.lineHeight;
+    document.getElementById('primary-color').value = designSettings.primaryColor;
+    document.getElementById('secondary-color').value = designSettings.secondaryColor;
+    document.getElementById('text-color').value = designSettings.textColor;
+    document.getElementById('background-color').value = designSettings.backgroundColor;
+    
+    updateFontSizeDisplay();
+    updateLineHeightDisplay();
+    updateDesignPreview();
+}
+
+// Design-Vorschau aktualisieren
+function updateDesignPreview() {
+    const preview = document.getElementById('design-preview');
+    if (!preview) return;
+    
+    const fontFamily = document.getElementById('font-family').value;
+    const fontSize = document.getElementById('font-size-base').value;
+    const lineHeight = document.getElementById('line-height').value;
+    const primaryColor = document.getElementById('primary-color').value;
+    const secondaryColor = document.getElementById('secondary-color').value;
+    const textColor = document.getElementById('text-color').value;
+    const backgroundColor = document.getElementById('background-color').value;
+    
+    preview.style.cssText = `
+        font-family: '${fontFamily}', sans-serif;
+        font-size: ${fontSize}px;
+        line-height: ${lineHeight};
+        color: ${textColor};
+        background: ${backgroundColor};
+    `;
+    
+    // Update cover preview
+    const coverPreview = preview.querySelector('.preview-cover');
+    if (coverPreview) {
+        coverPreview.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${adjustBrightness(primaryColor, -20)} 100%)`;
+    }
+    
+    // Update company name color
+    const companyName = preview.querySelector('.company-name');
+    if (companyName) {
+        companyName.style.color = secondaryColor;
+    }
+    
+    // Update headings
+    const headings = preview.querySelectorAll('h1, h2, h3');
+    headings.forEach(heading => {
+        heading.style.color = primaryColor;
+    });
+}
+
+// Helligkeit anpassen (für Gradient-Effekte)
+function adjustBrightness(hex, percent) {
+    const num = parseInt(hex.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+}
+
+// Font-Size Display aktualisieren
+function updateFontSizeDisplay() {
+    const fontSize = document.getElementById('font-size-base').value;
+    document.getElementById('font-size-display').textContent = `${fontSize}px`;
+}
+
+// Line-Height Display aktualisieren
+function updateLineHeightDisplay() {
+    const lineHeight = document.getElementById('line-height').value;
+    document.getElementById('line-height-display').textContent = lineHeight;
+}
+
+// Design-Einstellungen speichern
+function saveDesignSettings() {
+    designSettings = {
+        fontFamily: document.getElementById('font-family').value,
+        fontSize: parseInt(document.getElementById('font-size-base').value),
+        lineHeight: parseFloat(document.getElementById('line-height').value),
+        primaryColor: document.getElementById('primary-color').value,
+        secondaryColor: document.getElementById('secondary-color').value,
+        textColor: document.getElementById('text-color').value,
+        backgroundColor: document.getElementById('background-color').value
+    };
+    
+    localStorage.setItem('applicationDesign', JSON.stringify(designSettings));
+    showNotification('Design-Einstellungen gespeichert!', 'success');
+}
+
+// Design-Einstellungen zurücksetzen
+function resetDesignSettings() {
+    if (confirm('Möchten Sie die Design-Einstellungen auf die Standardwerte zurücksetzen?')) {
+        designSettings = {
+            fontFamily: 'Inter',
+            fontSize: 14,
+            lineHeight: 1.6,
+            primaryColor: '#2c3e50',
+            secondaryColor: '#f39c12',
+            textColor: '#1a1a1a',
+            backgroundColor: '#f5f5f5'
+        };
+        
+        loadDesignSettings();
+        saveDesignSettings();
+        showNotification('Design-Einstellungen zurückgesetzt!', 'success');
+    }
+}
+
+// Design-Vorlage anwenden
+function applyDesignTemplate(templateName) {
+    if (designTemplates[templateName]) {
+        const template = designTemplates[templateName];
+        
+        document.getElementById('font-family').value = template.fontFamily;
+        document.getElementById('font-size-base').value = template.fontSize;
+        document.getElementById('line-height').value = template.lineHeight;
+        document.getElementById('primary-color').value = template.primaryColor;
+        document.getElementById('secondary-color').value = template.secondaryColor;
+        document.getElementById('text-color').value = template.textColor;
+        document.getElementById('background-color').value = template.backgroundColor;
+        
+        updateFontSizeDisplay();
+        updateLineHeightDisplay();
+        updateDesignPreview();
+        
+        showNotification(`${templateName.charAt(0).toUpperCase() + templateName.slice(1)} Design angewendet!`, 'success');
+    }
+}
+
+// Design auf Bewerbung anwenden
+function applyDesignToApplication() {
+    saveDesignSettings();
+    
+    // Öffne Bewerbungsmappe mit Design-Parametern
+    const params = new URLSearchParams({
+        fontFamily: designSettings.fontFamily,
+        fontSize: designSettings.fontSize,
+        lineHeight: designSettings.lineHeight,
+        primaryColor: designSettings.primaryColor,
+        secondaryColor: designSettings.secondaryColor,
+        textColor: designSettings.textColor,
+        backgroundColor: designSettings.backgroundColor
+    });
+    
+    window.open(`bewerbungsmappe.html?${params.toString()}`, '_blank');
+    showNotification('Design auf Bewerbung angewendet!', 'success');
+}
+
+        // Event Listeners für Design-Anpassung
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load existing design settings
+            loadDesignSettings();
+            
+            // Font family change
+            document.getElementById('font-family')?.addEventListener('change', updateDesignPreview);
+            
+            // Font size change
+            document.getElementById('font-size-base')?.addEventListener('input', function() {
+                updateFontSizeDisplay();
+                updateDesignPreview();
+            });
+            
+            // Line height change
+            document.getElementById('line-height')?.addEventListener('input', function() {
+                updateLineHeightDisplay();
+                updateDesignPreview();
+            });
+            
+            // Color changes
+            ['primary-color', 'secondary-color', 'text-color', 'background-color'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', updateDesignPreview);
+            });
+            
+            // Design template clicks
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const template = this.dataset.template;
+                    applyDesignTemplate(template);
+                });
+            });
+        });
+
+        // ========================================
+        // NAVIGATION FUNCTIONS
+        // ========================================
+
+        // Show section function
+        window.showSection = function(sectionName) {
+            console.log('🔍 Zeige Sektion:', sectionName);
+            
+            // Hide all sections
+            const allSections = document.querySelectorAll('.editor-section');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            
+            // Show target section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.style.display = 'block';
+                console.log('✅ Sektion angezeigt:', sectionName);
+            } else {
+                console.error('❌ Sektion nicht gefunden:', sectionName);
+            }
+            
+            // Update section title
+            const titles = {
+                'hero': 'Hero-Bereich bearbeiten',
+                'profile': 'Beraterprofil bearbeiten',
+                'services': 'Beratungs-Services bearbeiten',
+                'activities': 'Sonstige Tätigkeiten bearbeiten',
+                'wohnmobil': 'Wohnmobil bearbeiten',
+                'fotobox': 'Fotobox bearbeiten',
+                'sup': 'Stand-Up-Paddle bearbeiten',
+                'ebike': 'E-Bike bearbeiten',
+                'projects': 'Projekte bearbeiten',
+                'contact': 'Kontakt bearbeiten',
+                'settings': 'Einstellungen bearbeiten',
+                'applications': 'Bewerbungen Übersicht',
+                'new-application': 'Neue Bewerbung erstellen',
+                'application-templates': 'Bewerbungsvorlagen',
+                'application-design': 'Design anpassen'
+            };
+            
+            const sectionTitle = document.getElementById('section-title');
+            if (sectionTitle && titles[sectionName]) {
+                sectionTitle.textContent = titles[sectionName];
+            }
+            
+            // Update navigation active state
+            updateNavigationActiveState(sectionName);
+        }
+
+        // Update navigation active state
+        function updateNavigationActiveState(activeSection) {
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to current section
+            const activeLink = document.querySelector(`[data-section="${activeSection}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listeners to all navigation links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    if (section) {
+                        showSection(section);
+                    }
+                });
+            });
+            
+            // Show default section (hero)
+            showSection('hero');
+        });
