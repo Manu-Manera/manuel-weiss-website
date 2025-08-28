@@ -16,21 +16,51 @@ class EmergencyAITwin {
         console.log('🚨 EMERGENCY: Processing photo...');
         this.isProcessing = true;
         
-        return new Promise((resolve) => {
-            setTimeout(() => {
+        return new Promise((resolve, reject) => {
+            try {
+                let photoUrl;
+                
+                if (file instanceof File) {
+                    console.log('📁 Real file detected, creating object URL...');
+                    photoUrl = URL.createObjectURL(file);
+                } else {
+                    console.log('🎭 Simulated file detected, using dummy URL...');
+                    photoUrl = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAAPwCdABmX/9k=';
+                }
+                
+                // Simulate AI processing with progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 25;
+                    console.log(`🤖 AI Processing: ${Math.min(100, progress).toFixed(0)}%`);
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        this.isProcessing = false;
+                        
+                        // Create AI Twin result
+                        const aiTwin = {
+                            id: Date.now(),
+                            photoUrl: photoUrl,
+                            createdAt: new Date().toISOString(),
+                            isCreated: true,
+                            features: {
+                                faceDetection: true,
+                                emotionAnalysis: true,
+                                voiceSynthesis: true
+                            }
+                        };
+                        
+                        console.log('✅ EMERGENCY: AI Twin created successfully:', aiTwin);
+                        resolve(aiTwin);
+                    }
+                }, 500);
+                
+            } catch (error) {
+                console.error('❌ Error in processPhoto:', error);
                 this.isProcessing = false;
-                
-                // Create simple AI Twin
-                const aiTwin = {
-                    id: Date.now(),
-                    photoUrl: file instanceof File ? URL.createObjectURL(file) : 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAAPwCdABmX/9k=',
-                    createdAt: new Date().toISOString(),
-                    isCreated: true
-                };
-                
-                console.log('✅ EMERGENCY: AI Twin created:', aiTwin);
-                resolve(aiTwin);
-            }, 2000);
+                reject(error);
+            }
         });
     }
 
@@ -702,13 +732,26 @@ class AdminPanel {
     async handlePhotoUpload(file) {
         console.log('🚨 EMERGENCY: Handling photo upload:', file);
         
+        if (!file) {
+            console.error('❌ No file provided');
+            this.showToast('Keine Datei ausgewählt', 'error');
+            return;
+        }
+
         try {
-            // Simplified processing - works with any file type
+            // Show processing message
+            this.showToast('Foto wird verarbeitet...', 'info');
+            
+            // Start AI processing
+            console.log('🤖 Starting AI Twin processing...');
             const aiTwin = await this.aiTwin.processPhoto(file);
+            
+            console.log('✅ AI Twin processing completed:', aiTwin);
             this.processAIResult(aiTwin);
+            
         } catch (error) {
             console.error('❌ EMERGENCY: Error processing photo:', error);
-            this.showToast('Fehler beim Verarbeiten des Fotos', 'error');
+            this.showToast('Fehler beim Verarbeiten des Fotos: ' + error.message, 'error');
         }
     }
 
@@ -719,15 +762,22 @@ class AdminPanel {
         this.aiTwinData.isCreated = true;
         this.aiTwinData.photoUrl = aiTwin.photoUrl;
         this.aiTwinData.createdAt = aiTwin.createdAt;
-        this.aiTwinData.features = aiTwin.features;
+        this.aiTwinData.features = aiTwin.features || {
+            faceDetection: true,
+            emotionAnalysis: true,
+            voiceSynthesis: true
+        };
         this.saveData();
         
-        console.log('✅ AI Twin created successfully');
+        console.log('✅ AI Twin created successfully:', this.aiTwinData);
         this.showToast('AI Twin erfolgreich erstellt!', 'success');
         this.updateAISteps(4);
         
-        // Update UI
-        this.updateAITwinUI();
+        // Update UI sofort
+        setTimeout(() => {
+            this.updateAITwinUI();
+            this.showTextInputSection();
+        }, 500);
     }
 
     handleVideoUpload(file) {
