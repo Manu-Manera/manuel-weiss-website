@@ -91,10 +91,10 @@ class AdminPanel {
     // Data Management mit Fallback für private Fenster
     loadData() {
         try {
-            this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-            this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
-            this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
-            this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+        this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
+        this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
+        this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
         } catch (error) {
             console.warn('⚠️ Local Storage not available (private window?), using defaults');
             this.websiteData = {};
@@ -106,10 +106,10 @@ class AdminPanel {
 
     saveData() {
         try {
-            localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
-            localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
-            localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
-            localStorage.setItem('notifications', JSON.stringify(this.notifications));
+        localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
+        localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
+        localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
+        localStorage.setItem('notifications', JSON.stringify(this.notifications));
         } catch (error) {
             console.warn('⚠️ Could not save to Local Storage (private window?)');
         }
@@ -442,9 +442,13 @@ class AdminPanel {
     setupAITwinUpload() {
         console.log('🔧 Setting up AI Twin upload handlers...');
         
-        // Photo upload
-        const photoUpload = document.getElementById('photoUpload');
-        const photoInput = document.getElementById('photoInput');
+        // Photo upload - Versuche verschiedene Selektoren
+        let photoUpload = document.getElementById('photoUpload') || 
+                         document.querySelector('.upload-zone:first-child') ||
+                         document.querySelector('[data-upload="photo"]');
+        
+        let photoInput = document.getElementById('photoInput') ||
+                        document.querySelector('input[type="file"][accept*="image"]');
         
         console.log('📸 Photo elements:', { photoUpload, photoInput });
         
@@ -487,6 +491,12 @@ class AdminPanel {
             console.log('✅ Photo upload event listeners set successfully');
         } else {
             console.error('❌ Photo upload elements not found:', { photoUpload, photoInput });
+            
+            // Versuche alternative Selektoren
+            setTimeout(() => {
+                console.log('🔄 Retrying photo upload setup...');
+                this.setupAITwinUpload();
+            }, 1000);
         }
         
         // Video upload (optional)
@@ -633,7 +643,7 @@ class AdminPanel {
         this.showToast('Test: Video Upload gestartet', 'info');
         
         // Simuliere Video-Upload
-        setTimeout(() => {
+            setTimeout(() => {
             this.handleVideoUpload({
                 type: 'video/mp4',
                 name: 'test-video.mp4',
@@ -645,7 +655,7 @@ class AdminPanel {
     testAIProcessing() {
         console.log('🧪 Testing AI processing...');
         this.showToast('Test: AI Processing gestartet', 'info');
-        this.startAIProcessing();
+                this.startAIProcessing();
     }
 
     async testDownload() {
@@ -660,7 +670,7 @@ class AdminPanel {
                 console.error('❌ Test download failed:', error);
                 this.showToast('Download Test fehlgeschlagen', 'error');
             }
-        }, 1000);
+            }, 1000);
     }
 
     async handlePhotoUpload(file) {
@@ -1070,23 +1080,23 @@ class AdminPanel {
         }
         
         try {
-            // Erstelle Download-Link
+        // Erstelle Download-Link
             const blob = new Blob([presentation.text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
             link.download = `${presentation.title || 'presentation'}-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
             
             // Füge Link zum DOM hinzu und klicke ihn
             document.body.appendChild(link);
-            link.click();
+        link.click();
             
             // Cleanup
             document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
+        URL.revokeObjectURL(url);
+        
             console.log('✅ Presentation download started');
-            this.showToast('Präsentation heruntergeladen', 'success');
+        this.showToast('Präsentation heruntergeladen', 'success');
         } catch (error) {
             console.error('❌ Download failed:', error);
             this.showToast('Download fehlgeschlagen: ' + error.message, 'error');
@@ -1417,13 +1427,13 @@ class AdminPanel {
 
     async downloadTwin() {
         console.log('📥 Downloading AI Twin...');
-        
+
         if (!this.aiTwinData || !this.aiTwinData.photoUrl) {
             console.error('❌ No AI Twin data available for download');
             this.showToast('Kein AI Twin zum Herunterladen verfügbar', 'error');
             return;
         }
-
+        
         try {
             // Konvertiere Data URL zu Blob für Download
             const response = await fetch(this.aiTwinData.photoUrl);
@@ -1431,13 +1441,13 @@ class AdminPanel {
             
             // Erstelle Download-Link
             const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
+        const link = document.createElement('a');
             link.href = url;
             link.download = `ai-twin-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.jpg`;
             
             // Füge Link zum DOM hinzu und klicke ihn
             document.body.appendChild(link);
-            link.click();
+        link.click();
             
             // Cleanup
             document.body.removeChild(link);
@@ -1547,15 +1557,42 @@ class AdminPanel {
 (function() {
     console.log('🚨 EMERGENCY: Admin Panel loading...');
     
-    // Force immediate initialization
-    setTimeout(() => {
+    // Warte auf DOM und initialisiere sofort
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeAdminPanel);
+    } else {
+        setTimeout(initializeAdminPanel, 100);
+    }
+    
+    function initializeAdminPanel() {
         try {
-            adminPanel = new AdminPanel();
+            console.log('🚨 EMERGENCY: Initializing Admin Panel...');
+    adminPanel = new AdminPanel();
             window.adminPanel = adminPanel;
-            console.log('✅ EMERGENCY: Admin Panel initialized');
+            console.log('✅ EMERGENCY: Admin Panel initialized successfully');
+            
+            // Teste sofort die Upload-Funktionalität
+            setTimeout(() => {
+                if (window.adminPanel && window.adminPanel.setupAITwinUpload) {
+                    window.adminPanel.setupAITwinUpload();
+                    console.log('✅ AI Twin Upload setup completed');
+                }
+            }, 500);
+            
         } catch (error) {
             console.error('❌ EMERGENCY: Error initializing Admin Panel:', error);
+            
+            // Fallback: Versuche nochmals nach 1 Sekunde
+            setTimeout(() => {
+                try {
+                    adminPanel = new AdminPanel();
+                    window.adminPanel = adminPanel;
+                    console.log('✅ EMERGENCY: Admin Panel initialized on retry');
+                } catch (retryError) {
+                    console.error('❌ EMERGENCY: Retry failed:', retryError);
+                }
+            }, 1000);
         }
-    }, 100);
+    }
 })();
 
