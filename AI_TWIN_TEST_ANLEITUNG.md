@@ -33,16 +33,17 @@
 3. Die Schritte 1-4 sind jetzt **grün markiert**
 
 ### 📝 **Schritt 6: Präsentation erstellen**
-1. Scrollen Sie nach unten zum **Text-Eingabebereich**
+1. **Scrollen Sie nach unten** - Sie sehen jetzt einen **Text-Eingabebereich**
 2. Geben Sie einen **Text ein**, den Ihr Twin vortragen soll
 3. Beispiel: *"Hallo, ich bin Manuel Weiss. Ich bin HR-Berater für AI und Transformation..."*
-4. Klicken Sie auf **"Präsentation starten"**
+4. Klicken Sie auf **"🎬 Präsentation starten"**
 
 ### 🎬 **Schritt 7: Präsentation ansehen**
-1. Ein **Modal-Fenster** öffnet sich
-2. Ihr Twin **"spricht"** den eingegebenen Text
-3. Der Text wird **wortweise hervorgehoben**
-4. Sie können die Präsentation **wiederholen** oder **herunterladen**
+1. Ein **Modal-Fenster** öffnet sich mit zwei Bereichen:
+   - **Links**: Ihr AI Twin mit "🎤 AI Twin spricht..."
+   - **Rechts**: Der Text wird **wortweise hervorgehoben**
+2. Der Text wird **automatisch vorgelesen** (simuliert)
+3. Sie können die Präsentation **wiederholen** oder **herunterladen**
 
 ## 🔧 **Troubleshooting**
 
@@ -64,6 +65,22 @@
 - **Lösung**: Laden Sie die Seite neu
 - **Alternative**: Verwenden Sie einen anderen Browser
 
+### ❌ **Text-Eingabebereich erscheint nicht**
+- **Lösung**: Scrollen Sie nach unten im AI Twin Bereich
+- **Alternative**: Laden Sie die Seite neu (F5)
+
+### ❌ **Präsentation startet nicht**
+- **Prüfen Sie**: Haben Sie Text eingegeben?
+- **Lösung**: Geben Sie mindestens 10 Wörter ein
+- **Alternative**: Verwenden Sie die Debug-Buttons
+
+## 🧪 **Debug-Buttons (oben rechts)**
+
+Falls etwas nicht funktioniert, verwenden Sie die **Debug-Buttons**:
+- **Test Photo**: Simuliert Foto-Upload
+- **Test Video**: Simuliert Video-Upload
+- **Test AI**: Startet AI-Verarbeitung direkt
+
 ## 🎯 **Erwartete Ergebnisse**
 
 ### ✅ **Erfolgreicher Test**
@@ -71,14 +88,19 @@
 - Foto/Video wird hochgeladen
 - AI-Verarbeitung läuft durch
 - Digital Twin wird erstellt
+- Text-Eingabebereich erscheint
 - Präsentation kann gestartet werden
+- Modal-Fenster öffnet sich
+- Text wird wortweise hervorgehoben
 
 ### 📊 **Test-Status**
 - **Navigation**: ✅ Funktioniert
 - **Upload**: ✅ Funktioniert  
 - **AI-Verarbeitung**: ✅ Funktioniert
 - **Twin-Erstellung**: ✅ Funktioniert
+- **Text-Eingabe**: ✅ Funktioniert
 - **Präsentation**: ✅ Funktioniert
+- **Text-Hervorhebung**: ✅ Funktioniert
 
 ## 🚀 **Nächste Schritte**
 
@@ -87,6 +109,7 @@ Nach erfolgreichem Test können Sie:
 2. **Bewerbungstexte** eingeben
 3. **Vorträge simulieren**
 4. **Den Twin herunterladen**
+5. **Präsentationen wiederholen**
 
 ## 📞 **Support**
 
