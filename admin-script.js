@@ -330,6 +330,9 @@ class AdminPanel {
             // Reset steps
             this.updateAISteps(1);
         }
+        
+        // Always show text input section
+        this.showTextInputSection();
     }
 
     setupAITwinUpload() {
