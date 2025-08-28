@@ -1047,6 +1047,7 @@ let adminPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     adminPanel = new AdminPanel();
+    window.adminPanel = adminPanel; // Setze globale Referenz korrekt
     console.log('Admin Panel initialized successfully');
 });
 // Global function definitions for onclick handlers
