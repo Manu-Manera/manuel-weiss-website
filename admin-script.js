@@ -645,7 +645,7 @@ class AdminPanel {
         this.startAIProcessing();
     }
 
-    handlePhotoUpload(file) {
+    async handlePhotoUpload(file) {
         console.log('🖼️ Handling photo upload:', file);
         
         // Prüfe ob es eine echte Datei oder simulierte Datei ist
@@ -659,38 +659,50 @@ class AdminPanel {
             return;
         }
 
-        // Für simulierte Dateien erstelle einen Dummy-DataURL
-        if (file instanceof File) {
-            console.log('📁 Real file detected, reading with FileReader...');
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.processPhotoUpload(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            console.log('🎭 Simulated file detected, creating dummy data...');
-            // Erstelle einen Dummy-DataURL für simulierte Dateien
-            const dummyDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAAPwCdABmX/9k=';
-            this.processPhotoUpload(dummyDataURL);
+        try {
+            // Verwende AI Twin Klasse für Verarbeitung
+            if (file instanceof File) {
+                console.log('📁 Real file detected, processing with AI Twin...');
+                const aiTwin = await this.aiTwin.processPhoto(file);
+                this.processAIResult(aiTwin);
+            } else {
+                console.log('🎭 Simulated file detected, creating dummy AI Twin...');
+                // Erstelle einen Dummy-DataURL für simulierte Dateien
+                const dummyDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAAPwCdABmX/9k=';
+                const aiTwin = {
+                    id: Date.now(),
+                    photoUrl: dummyDataURL,
+                    createdAt: new Date().toISOString(),
+                    features: {
+                        faceDetection: true,
+                        emotionAnalysis: true,
+                        voiceSynthesis: true
+                    }
+                };
+                this.processAIResult(aiTwin);
+            }
+        } catch (error) {
+            console.error('❌ Error processing photo:', error);
+            this.showToast('Fehler beim Verarbeiten des Fotos', 'error');
         }
     }
 
-    processPhotoUpload(dataURL) {
-        console.log('🔄 Processing photo upload...');
+    processAIResult(aiTwin) {
+        console.log('🔄 Processing AI result...');
         
         this.aiTwinData = this.aiTwinData || {};
-        this.aiTwinData.photoUrl = dataURL;
+        this.aiTwinData.isCreated = true;
+        this.aiTwinData.photoUrl = aiTwin.photoUrl;
+        this.aiTwinData.createdAt = aiTwin.createdAt;
+        this.aiTwinData.features = aiTwin.features;
         this.saveData();
         
-        console.log('✅ Photo uploaded successfully');
-        this.showToast('Foto erfolgreich hochgeladen', 'success');
-        this.updateAISteps(2);
+        console.log('✅ AI Twin created successfully');
+        this.showToast('AI Twin erfolgreich erstellt!', 'success');
+        this.updateAISteps(4);
         
-        // Start AI processing immediately after photo upload
-        setTimeout(() => {
-            console.log('🚀 Starting AI processing...');
-            this.startAIProcessing();
-        }, 1000);
+        // Update UI
+        this.updateAITwinUI();
     }
 
     handleVideoUpload(file) {
