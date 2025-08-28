@@ -635,11 +635,79 @@ class AdminPanel {
     // AI Twin Section
     loadAITwinSection() {
         console.log('Loading AI Twin section...');
-        this.setupAITwinUpload();
-        this.updateAITwinsUI(); // Verwende neue Multi-Twin UI
         
-        // Initialize twin gallery
+        // Setup upload funktionalität sofort
+        setTimeout(() => {
+            this.setupAITwinUpload();
+        }, 100);
+        
+        // Update UI
+        this.updateAITwinsUI();
         this.showTwinGallery();
+        
+        // Sicherstellen dass Upload-Bereich sichtbar ist
+        setTimeout(() => {
+            this.ensureUploadAreaVisible();
+        }, 500);
+    }
+
+    ensureUploadAreaVisible() {
+        console.log('🔧 Ensuring upload area is visible...');
+        
+        // Falls keine Twins existieren, zeige Upload-Bereich
+        if (this.aiTwins.length === 0) {
+            const uploadArea = document.getElementById('aiUploadArea');
+            if (uploadArea) {
+                uploadArea.style.display = 'block';
+                console.log('✅ Upload area made visible');
+            }
+        }
+        
+        // Falls Upload-Bereiche fehlen, erstelle sie
+        this.createUploadAreaIfMissing();
+    }
+
+    createUploadAreaIfMissing() {
+        const uploadArea = document.getElementById('aiUploadArea');
+        if (!uploadArea) {
+            console.log('🆕 Creating missing upload area...');
+            
+            const aiTwinContent = document.querySelector('.ai-twin-content') || 
+                                 document.querySelector('#aiTwinSection') ||
+                                 document.body;
+            
+            const uploadDiv = document.createElement('div');
+            uploadDiv.id = 'aiUploadArea';
+            uploadDiv.style.cssText = `
+                margin: 20px 0;
+                padding: 20px;
+                border: 2px dashed #007bff;
+                border-radius: 8px;
+                text-align: center;
+                background: #f8f9fa;
+            `;
+            
+            uploadDiv.innerHTML = `
+                <h4>📷 AI Twin erstellen</h4>
+                <div class="upload-zones" style="display: flex; gap: 20px; justify-content: center; margin-top: 15px;">
+                    <div id="photoUpload" style="padding: 30px; border: 2px dashed #28a745; border-radius: 8px; cursor: pointer; background: white;">
+                        <i class="fas fa-camera" style="font-size: 24px; color: #28a745;"></i>
+                        <p style="margin: 10px 0 0 0; color: #28a745;">Foto hochladen</p>
+                    </div>
+                    <div id="videoUpload" style="padding: 30px; border: 2px dashed #dc3545; border-radius: 8px; cursor: pointer; background: white;">
+                        <i class="fas fa-video" style="font-size: 24px; color: #dc3545;"></i>
+                        <p style="margin: 10px 0 0 0; color: #dc3545;">Video hochladen</p>
+                    </div>
+                </div>
+            `;
+            
+            aiTwinContent.appendChild(uploadDiv);
+            
+            // Setup upload functionality
+            setTimeout(() => {
+                this.setupAITwinUpload();
+            }, 100);
+        }
     }
 
     updateAITwinUI() {
@@ -706,31 +774,13 @@ class AdminPanel {
             document.body.appendChild(photoInput);
         }
         
-        // Falls kein Upload-Element gefunden wurde, erstelle eines
+        // Sicherstellen dass Upload-Elemente existieren
         if (!photoUpload) {
             console.log('📸 Creating photo upload element...');
-            photoUpload = document.createElement('div');
-            photoUpload.id = 'photoUpload';
-            photoUpload.className = 'upload-zone';
-            photoUpload.innerHTML = `
-                <i class="fas fa-camera"></i>
-                <p>Foto hierher ziehen oder klicken</p>
-            `;
-            photoUpload.style.cssText = `
-                border: 2px dashed #007bff;
-                border-radius: 8px;
-                padding: 20px;
-                text-align: center;
-                cursor: pointer;
-                margin: 10px 0;
-                background: #f8f9fa;
-            `;
+            this.createUploadAreaIfMissing();
             
-            // Füge zu AI Twin Sektion hinzu
-            const aiTwinSection = document.querySelector('.ai-twin-content') || 
-                                 document.querySelector('#aiTwinSection') ||
-                                 document.body;
-            aiTwinSection.appendChild(photoUpload);
+            // Erneut versuchen nach Erstellung
+            photoUpload = document.getElementById('photoUpload');
         }
         
         console.log('📸 Photo elements:', { photoUpload, photoInput });
@@ -844,8 +894,8 @@ class AdminPanel {
             console.error('❌ Video upload elements not found:', { videoUpload, videoInput });
         }
         
-        // Test-Buttons für Debugging
-        this.addDebugButtons();
+        // Debug buttons nur bei Bedarf
+        // this.addDebugButtons();
     }
 
     addDebugButtons() {
@@ -2644,11 +2694,6 @@ class AdminPanel {
                         if (typeof window.adminPanel.setupAITwinUpload === 'function') {
                             window.adminPanel.setupAITwinUpload();
                         }
-                        
-                        // Debug Buttons mit Retry
-                        if (typeof window.adminPanel.addDebugButtons === 'function') {
-                            window.adminPanel.addDebugButtons();
-                        }
                     } else {
                         console.error('❌ ULTRA-SAFE: Admin Panel lost reference, retrying...');
                         setTimeout(safeInit, 1000);
@@ -2673,54 +2718,11 @@ class AdminPanel {
     setTimeout(safeInit, 2000);
     setTimeout(safeInit, 5000);
     
-    // EMERGENCY OVERRIDE - Direkte Funktionen am Window-Objekt
+    // Emergency override nur bei echten Fehlern
     setTimeout(() => {
         if (!window.adminPanel) {
-            console.log('🚨 EMERGENCY OVERRIDE: Creating direct functions...');
-            
-            window.emergencyUpload = function() {
-                console.log('🚨 EMERGENCY UPLOAD: Direct function called');
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        alert('Datei ausgewählt: ' + file.name);
-                        console.log('📁 File selected:', file);
-                    }
-                };
-                input.click();
-            };
-            
-            window.emergencyInit = function() {
-                console.log('🚨 EMERGENCY INIT: Direct function called');
-                location.reload();
-            };
-            
-            // Erstelle Emergency Panel
-            const emergencyDiv = document.createElement('div');
-            emergencyDiv.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: red;
-                color: white;
-                padding: 20px;
-                border-radius: 10px;
-                z-index: 99999;
-                text-align: center;
-            `;
-            emergencyDiv.innerHTML = `
-                <h3>🚨 EMERGENCY MODE</h3>
-                <p>Admin Panel nicht geladen</p>
-                <button onclick="window.emergencyUpload()" style="margin: 5px; padding: 10px; background: orange; color: white; border: none; border-radius: 5px; cursor: pointer;">EMERGENCY UPLOAD</button>
-                <button onclick="window.emergencyInit()" style="margin: 5px; padding: 10px; background: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">RELOAD PAGE</button>
-                <button onclick="this.parentElement.remove()" style="margin: 5px; padding: 10px; background: gray; color: white; border: none; border-radius: 5px; cursor: pointer;">CLOSE</button>
-            `;
-            document.body.appendChild(emergencyDiv);
+            console.log('⚠️ Admin Panel not loaded after 30 seconds, user can reload manually if needed');
         }
-    }, 10000);
+    }, 30000);
 })();
 
