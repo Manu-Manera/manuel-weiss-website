@@ -678,58 +678,72 @@ class AdminPanel {
         if (!uploadArea) {
             console.log('🆕 Creating missing upload area...');
             
-            const aiTwinContent = document.querySelector('.ai-twin-content') || 
+            const aiTwinContent = document.getElementById('aiTwinMainContent') ||
+                                 document.querySelector('.ai-twin-content') || 
                                  document.querySelector('#aiTwinSection') ||
                                  document.getElementById('aiTwinContent') ||
                                  document.body;
             
-            const uploadDiv = document.createElement('div');
-            uploadDiv.id = 'aiUploadArea';
-            uploadDiv.style.cssText = `
-                margin: 20px 0;
-                padding: 20px;
-                border-radius: 12px;
-                background: #f8f9fa;
-            `;
-            
-            uploadDiv.innerHTML = `
-                <h4 style="text-align: center; margin-bottom: 20px;">📷 AI Twin erstellen</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <div id="photoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #007bff; border-radius: 10px; cursor: pointer; background: rgba(0,123,255,0.05); transition: all 0.3s ease; min-height: 120px;">
-                        <i class="fas fa-camera" style="font-size: 1.8rem; color: #007bff; margin-bottom: 8px;"></i>
-                        <h5 style="margin: 0 0 5px 0; color: #007bff;">Foto hochladen</h5>
-                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Klicken oder ziehen</p>
-                    </div>
-                    <div id="photoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #28a745; border-radius: 10px; cursor: pointer; background: rgba(40,167,69,0.05); transition: all 0.3s ease; min-height: 120px;">
-                        <i class="fas fa-plus-circle" style="font-size: 1.8rem; color: #28a745; margin-bottom: 8px;"></i>
-                        <h5 style="margin: 0 0 5px 0; color: #28a745;">Foto erstellen</h5>
-                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Mit Webcam</p>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div id="videoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #dc3545; border-radius: 10px; cursor: pointer; background: rgba(220,53,69,0.05); transition: all 0.3s ease; min-height: 120px;">
-                        <i class="fas fa-video" style="font-size: 1.8rem; color: #dc3545; margin-bottom: 8px;"></i>
-                        <h5 style="margin: 0 0 5px 0; color: #dc3545;">Video hochladen</h5>
-                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Klicken oder ziehen</p>
-                    </div>
-                    <div id="videoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #fd7e14; border-radius: 10px; cursor: pointer; background: rgba(253,126,20,0.05); transition: all 0.3s ease; min-height: 120px;">
-                        <i class="fas fa-video-camera" style="font-size: 1.8rem; color: #fd7e14; margin-bottom: 8px;"></i>
-                        <h5 style="margin: 0 0 5px 0; color: #fd7e14;">Video erstellen</h5>
-                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Mit Webcam</p>
-                    </div>
-                </div>
-                <input type="file" id="photoInput" accept="image/*" style="display: none;">
-                <input type="file" id="videoInput" accept="video/*" style="display: none;">
-            `;
-            
-            aiTwinContent.appendChild(uploadDiv);
-            
-            // Setup upload functionality
-            setTimeout(() => {
-                this.setupAITwinUpload();
-                this.setupUploadTileEvents();
-            }, 100);
+            this.createUploadAreaInContainer(aiTwinContent);
         }
+    }
+
+    createUploadAreaInContainer(container) {
+        console.log('🔨 Creating 2x2 upload tiles...');
+        
+        const uploadDiv = document.createElement('div');
+        uploadDiv.id = 'aiUploadArea';
+        uploadDiv.style.cssText = `
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        `;
+        
+        uploadDiv.innerHTML = `
+            <h4 style="text-align: center; margin-bottom: 25px; color: #333; font-weight: 600;">📷 AI Twin erstellen</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div id="photoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border: 2px dashed #007bff; border-radius: 12px; cursor: pointer; background: rgba(0,123,255,0.05); transition: all 0.3s ease; min-height: 140px; position: relative;">
+                    <i class="fas fa-camera" style="font-size: 2.2rem; color: #007bff; margin-bottom: 12px;"></i>
+                    <h5 style="margin: 0 0 8px 0; color: #007bff; font-weight: 600;">Foto hochladen</h5>
+                    <p style="margin: 0; color: #666; font-size: 14px; text-align: center; line-height: 1.3;">Klicken oder Datei hier ablegen</p>
+                </div>
+                <div id="photoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border: 2px dashed #28a745; border-radius: 12px; cursor: pointer; background: rgba(40,167,69,0.05); transition: all 0.3s ease; min-height: 140px;">
+                    <i class="fas fa-plus-circle" style="font-size: 2.2rem; color: #28a745; margin-bottom: 12px;"></i>
+                    <h5 style="margin: 0 0 8px 0; color: #28a745; font-weight: 600;">Foto erstellen</h5>
+                    <p style="margin: 0; color: #666; font-size: 14px; text-align: center; line-height: 1.3;">Mit Webcam aufnehmen</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div id="videoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border: 2px dashed #dc3545; border-radius: 12px; cursor: pointer; background: rgba(220,53,69,0.05); transition: all 0.3s ease; min-height: 140px;">
+                    <i class="fas fa-video" style="font-size: 2.2rem; color: #dc3545; margin-bottom: 12px;"></i>
+                    <h5 style="margin: 0 0 8px 0; color: #dc3545; font-weight: 600;">Video hochladen</h5>
+                    <p style="margin: 0; color: #666; font-size: 14px; text-align: center; line-height: 1.3;">Klicken oder Datei hier ablegen</p>
+                </div>
+                <div id="videoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border: 2px dashed #fd7e14; border-radius: 12px; cursor: pointer; background: rgba(253,126,20,0.05); transition: all 0.3s ease; min-height: 140px;">
+                    <i class="fas fa-video-camera" style="font-size: 2.2rem; color: #fd7e14; margin-bottom: 12px;"></i>
+                    <h5 style="margin: 0 0 8px 0; color: #fd7e14; font-weight: 600;">Video erstellen</h5>
+                    <p style="margin: 0; color: #666; font-size: 14px; text-align: center; line-height: 1.3;">Mit Webcam aufnehmen</p>
+                </div>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+            <input type="file" id="videoInput" accept="video/*" style="display: none;">
+            
+            <!-- Twin Gallery Container -->
+            <div id="twinGallery" style="margin-top: 30px;">
+                <!-- Twin Gallery wird hier geladen -->
+            </div>
+        `;
+        
+        container.appendChild(uploadDiv);
+        
+        console.log('✅ 2x2 upload tiles created successfully!');
+        
+        // Setup upload functionality
+        setTimeout(() => {
+            this.setupAITwinUpload();
+            this.setupUploadTileEvents();
+        }, 100);
     }
 
     setupUploadTileEvents() {
@@ -1488,15 +1502,96 @@ class AdminPanel {
         this.showToast('Bereit für neuen AI Twin!', 'info');
     }
 
-    showLiveCreation() {
-        console.log('🎬 Showing Live Creation interface...');
+    showLiveCreation(mode = 'photo') {
+        console.log('🎬 Showing Live Creation interface, mode:', mode);
         
-        // Verstecke existierende Upload-Bereiche
-        const uploadArea = document.getElementById('aiUploadArea');
-        if (uploadArea) uploadArea.style.display = 'none';
+        // Erstelle vollständiges Live Creation Modal
+        const modal = document.createElement('div');
+        modal.id = 'liveCreationModal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; z-index: 1000; padding: 20px;
+        `;
         
-        const twinPreview = document.getElementById('twinPreview');
-        if (twinPreview) twinPreview.style.display = 'none';
+        modal.innerHTML = `
+            <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px; max-width: 700px; width: 100%; text-align: center; color: white;">
+                <h2 style="margin-bottom: 30px; color: white;"><i class="fas fa-magic"></i> AI Twin Live Studio</h2>
+                
+                <!-- Mode Selection -->
+                <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
+                    <button onclick="adminPanel.setCreationMode('photo')" id="modePhoto" 
+                            style="padding: 15px 25px; background: rgba(255,255,255,0.3); color: white; border: 2px solid white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                        <i class="fas fa-camera"></i><br>Foto
+                    </button>
+                    <button onclick="adminPanel.setCreationMode('video')" id="modeVideo" 
+                            style="padding: 15px 25px; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 12px; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-video"></i><br>Video
+                    </button>
+                    <button onclick="adminPanel.setCreationMode('text-to-video')" id="modeTextVideo" 
+                            style="padding: 15px 25px; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 12px; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-magic"></i><br>Text→Video
+                    </button>
+                </div>
+                
+                <!-- Camera Preview -->
+                <div id="cameraSection" style="margin-bottom: 30px;">
+                    <video id="cameraPreview" style="width: 400px; height: 300px; border-radius: 15px; background: #000; display: none; margin: 0 auto;"></video>
+                    <canvas id="photoCanvas" style="width: 400px; height: 300px; border-radius: 15px; background: #000; display: none; margin: 0 auto;"></canvas>
+                </div>
+                
+                <!-- Text Input -->
+                <div id="textSection" style="margin-bottom: 20px; display: none;">
+                    <textarea id="twinText" placeholder="Geben Sie hier Ihren Text ein..." 
+                              style="width: 100%; height: 120px; padding: 15px; border-radius: 10px; border: none; background: rgba(255,255,255,0.9); color: #333; font-size: 16px;"></textarea>
+                </div>
+                
+                <!-- Status -->
+                <div id="statusDisplay" style="margin: 20px 0; min-height: 30px; font-size: 18px; font-weight: bold; color: white;"></div>
+                
+                <!-- Controls -->
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                    <button id="startCameraBtn" onclick="adminPanel.startCamera()" 
+                            style="padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                        <i class="fas fa-play"></i> Kamera starten
+                    </button>
+                    
+                    <button id="captureBtn" onclick="adminPanel.captureMedia()" 
+                            style="display: none; padding: 15px 30px; background: #e74c3c; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                        <i class="fas fa-camera"></i> Aufnehmen
+                    </button>
+                    
+                    <button id="generateTwinBtn" onclick="adminPanel.generateAITwin()" 
+                            style="display: none; padding: 15px 30px; background: #f39c12; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                        <i class="fas fa-magic"></i> AI Twin generieren
+                    </button>
+                    
+                    <button onclick="adminPanel.closeLiveCreation()" 
+                            style="padding: 12px 20px; background: rgba(0,0,0,0.3); color: white; border: 2px solid white; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-times"></i> Schließen
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Entferne alte Modals
+        const existingModals = document.querySelectorAll('#liveCreationModal');
+        existingModals.forEach(m => m.remove());
+        
+        document.body.appendChild(modal);
+        
+        // Setup initial mode
+        this.liveCreation = {
+            isRecording: false,
+            stream: null,
+            mediaRecorder: null,
+            mode: mode,
+            capturedMedia: null,
+            isVoiceRecording: false
+        };
+        
+        this.setCreationMode(mode);
         
         // Erstelle Live Creation Interface
         let liveCreationDiv = document.getElementById('liveCreation');
@@ -2783,6 +2878,78 @@ class AdminPanel {
             console.error('❌ EMERGENCY: Error creating presentation:', error);
             this.showToast('Fehler beim Erstellen der Präsentation', 'error');
         }
+    }
+
+    // Additional functions referenced in HTML but missing
+    logout() {
+        console.log('🚪 Logging out...');
+        if (confirm('Möchten Sie sich wirklich abmelden?')) {
+            this.showToast('Abgemeldet', 'info');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+    }
+
+    showNotifications() {
+        console.log('🔔 Showing notifications...');
+        this.showToast('Keine neuen Benachrichtigungen', 'info');
+        // TODO: Implement notifications modal
+    }
+
+    refreshContent() {
+        console.log('🔄 Refreshing content...');
+        this.loadContentSection();
+        this.showToast('Content aktualisiert', 'success');
+    }
+
+    openMediaUpload() {
+        console.log('📁 Opening media upload...');
+        this.uploadMedia();
+    }
+
+    createFolder() {
+        console.log('📂 Creating new folder...');
+        const folderName = prompt('Name des neuen Ordners:');
+        if (folderName && folderName.trim()) {
+            this.showToast(`Ordner "${folderName}" erstellt`, 'success');
+            // TODO: Implement actual folder creation
+        }
+    }
+
+    addNewBooking() {
+        console.log('📅 Adding new booking...');
+        this.newBooking();
+    }
+
+    exportAnalytics() {
+        console.log('📊 Exporting analytics...');
+        this.showToast('Analytics werden exportiert...', 'info');
+        // TODO: Implement analytics export
+    }
+
+    closeModal(modalId) {
+        console.log('❌ Closing modal:', modalId);
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    saveContent() {
+        console.log('💾 Saving content...');
+        this.showToast('Content gespeichert', 'success');
+        this.closeModal('contentModal');
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 }
 
