@@ -366,102 +366,220 @@ class AdminPanel {
     }
 
     setupAITwinUpload() {
-        console.log('Setting up AI Twin upload handlers...');
+        console.log('🔧 Setting up AI Twin upload handlers...');
         
         // Photo upload
         const photoUpload = document.getElementById('photoUpload');
         const photoInput = document.getElementById('photoInput');
         
+        console.log('📸 Photo elements:', { photoUpload, photoInput });
+        
         if (photoUpload && photoInput) {
-            console.log('Photo upload elements found, setting up event listeners...');
+            console.log('✅ Photo upload elements found, setting up event listeners...');
             
-            photoUpload.addEventListener('click', () => {
-                console.log('Photo upload clicked');
+            // Entferne alte Event-Listener falls vorhanden
+            photoUpload.replaceWith(photoUpload.cloneNode(true));
+            const newPhotoUpload = document.getElementById('photoUpload');
+            
+            newPhotoUpload.addEventListener('click', (e) => {
+                console.log('📸 Photo upload clicked!');
+                e.preventDefault();
+                e.stopPropagation();
                 photoInput.click();
             });
             
-            photoUpload.addEventListener('dragover', (e) => {
+            newPhotoUpload.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                photoUpload.classList.add('dragover');
+                newPhotoUpload.classList.add('dragover');
             });
             
-            photoUpload.addEventListener('dragleave', () => {
-                photoUpload.classList.remove('dragover');
+            newPhotoUpload.addEventListener('dragleave', () => {
+                newPhotoUpload.classList.remove('dragover');
             });
             
-            photoUpload.addEventListener('drop', (e) => {
+            newPhotoUpload.addEventListener('drop', (e) => {
                 e.preventDefault();
-                photoUpload.classList.remove('dragover');
-                console.log('Photo dropped:', e.dataTransfer.files[0]);
+                e.stopPropagation();
+                newPhotoUpload.classList.remove('dragover');
+                console.log('📸 Photo dropped:', e.dataTransfer.files[0]);
                 this.handlePhotoUpload(e.dataTransfer.files[0]);
             });
             
             photoInput.addEventListener('change', (e) => {
-                console.log('Photo selected:', e.target.files[0]);
+                console.log('📸 Photo selected:', e.target.files[0]);
                 this.handlePhotoUpload(e.target.files[0]);
             });
+            
+            console.log('✅ Photo upload event listeners set successfully');
         } else {
-            console.error('Photo upload elements not found:', { photoUpload, photoInput });
+            console.error('❌ Photo upload elements not found:', { photoUpload, photoInput });
         }
         
         // Video upload (optional)
         const videoUpload = document.getElementById('videoUpload');
         const videoInput = document.getElementById('videoInput');
         
+        console.log('🎥 Video elements:', { videoUpload, videoInput });
+        
         if (videoUpload && videoInput) {
-            console.log('Video upload elements found, setting up event listeners...');
+            console.log('✅ Video upload elements found, setting up event listeners...');
             
-            videoUpload.addEventListener('click', () => {
-                console.log('Video upload clicked');
+            // Entferne alte Event-Listener falls vorhanden
+            videoUpload.replaceWith(videoUpload.cloneNode(true));
+            const newVideoUpload = document.getElementById('videoUpload');
+            
+            newVideoUpload.addEventListener('click', (e) => {
+                console.log('🎥 Video upload clicked!');
+                e.preventDefault();
+                e.stopPropagation();
                 videoInput.click();
             });
             
-            videoUpload.addEventListener('dragover', (e) => {
+            newVideoUpload.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                videoUpload.classList.add('dragover');
+                newVideoUpload.classList.add('dragover');
             });
             
-            videoUpload.addEventListener('dragleave', () => {
-                videoUpload.classList.remove('dragover');
+            newVideoUpload.addEventListener('dragleave', () => {
+                newVideoUpload.classList.remove('dragover');
             });
             
-            videoUpload.addEventListener('drop', (e) => {
+            newVideoUpload.addEventListener('drop', (e) => {
                 e.preventDefault();
-                videoUpload.classList.remove('dragover');
-                console.log('Video dropped:', e.dataTransfer.files[0]);
+                e.stopPropagation();
+                newVideoUpload.classList.remove('dragover');
+                console.log('🎥 Video dropped:', e.dataTransfer.files[0]);
                 this.handleVideoUpload(e.dataTransfer.files[0]);
             });
             
             videoInput.addEventListener('change', (e) => {
-                console.log('Video selected:', e.target.files[0]);
+                console.log('🎥 Video selected:', e.target.files[0]);
                 this.handleVideoUpload(e.target.files[0]);
             });
+            
+            console.log('✅ Video upload event listeners set successfully');
         } else {
-            console.error('Video upload elements not found:', { videoUpload, videoInput });
+            console.error('❌ Video upload elements not found:', { videoUpload, videoInput });
         }
+        
+        // Test-Buttons für Debugging
+        this.addDebugButtons();
+    }
+
+    addDebugButtons() {
+        console.log('🔧 Adding debug buttons...');
+        
+        // Entferne alte Debug-Buttons falls vorhanden
+        const oldDebug = document.getElementById('debugContainer');
+        if (oldDebug) oldDebug.remove();
+        
+        // Füge Debug-Buttons hinzu
+        const debugContainer = document.createElement('div');
+        debugContainer.id = 'debugContainer';
+        debugContainer.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 9999;
+            font-size: 12px;
+        `;
+        
+        debugContainer.innerHTML = `
+            <div style="margin-bottom: 10px;"><strong>Debug Panel</strong></div>
+            <button onclick="adminPanel.testPhotoUpload()" style="margin: 2px; padding: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Test Photo</button>
+            <button onclick="adminPanel.testVideoUpload()" style="margin: 2px; padding: 5px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">Test Video</button>
+            <button onclick="adminPanel.testAIProcessing()" style="margin: 2px; padding: 5px; background: #ffc107; color: black; border: none; border-radius: 3px; cursor: pointer;">Test AI</button>
+            <button onclick="this.parentElement.remove()" style="margin: 2px; padding: 5px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Close</button>
+        `;
+        
+        document.body.appendChild(debugContainer);
+        console.log('✅ Debug buttons added');
+    }
+
+    testPhotoUpload() {
+        console.log('🧪 Testing photo upload...');
+        this.showToast('Test: Photo Upload gestartet', 'info');
+        
+        // Simuliere Foto-Upload
+        setTimeout(() => {
+            this.handlePhotoUpload({
+                type: 'image/jpeg',
+                name: 'test-photo.jpg',
+                size: 1024
+            });
+        }, 1000);
+    }
+
+    testVideoUpload() {
+        console.log('🧪 Testing video upload...');
+        this.showToast('Test: Video Upload gestartet', 'info');
+        
+        // Simuliere Video-Upload
+        setTimeout(() => {
+            this.handleVideoUpload({
+                type: 'video/mp4',
+                name: 'test-video.mp4',
+                size: 2048
+            });
+        }, 1000);
+    }
+
+    testAIProcessing() {
+        console.log('🧪 Testing AI processing...');
+        this.showToast('Test: AI Processing gestartet', 'info');
+        this.startAIProcessing();
     }
 
     handlePhotoUpload(file) {
-        console.log('Handling photo upload:', file);
-        if (!file || !file.type.startsWith('image/')) {
+        console.log('🖼️ Handling photo upload:', file);
+        
+        // Prüfe ob es eine echte Datei oder simulierte Datei ist
+        if (file && file.type && file.type.startsWith('image/')) {
+            console.log('✅ Valid image file detected');
+        } else if (file && file.type === 'image/jpeg') {
+            console.log('✅ Simulated image file detected');
+        } else {
+            console.error('❌ Invalid file type:', file?.type);
             this.showToast('Bitte wähle ein gültiges Bild aus', 'error');
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.aiTwinData = this.aiTwinData || {};
-            this.aiTwinData.photoUrl = e.target.result;
-            this.saveData();
-            this.showToast('Foto erfolgreich hochgeladen', 'success');
-            this.updateAISteps(2);
-            
-            // Start AI processing immediately after photo upload
-            setTimeout(() => {
-                this.startAIProcessing();
-            }, 1000);
-        };
-        reader.readAsDataURL(file);
+        // Für simulierte Dateien erstelle einen Dummy-DataURL
+        if (file instanceof File) {
+            console.log('📁 Real file detected, reading with FileReader...');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.processPhotoUpload(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.log('🎭 Simulated file detected, creating dummy data...');
+            // Erstelle einen Dummy-DataURL für simulierte Dateien
+            const dummyDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAAPwCdABmX/9k=';
+            this.processPhotoUpload(dummyDataURL);
+        }
+    }
+
+    processPhotoUpload(dataURL) {
+        console.log('🔄 Processing photo upload...');
+        
+        this.aiTwinData = this.aiTwinData || {};
+        this.aiTwinData.photoUrl = dataURL;
+        this.saveData();
+        
+        console.log('✅ Photo uploaded successfully');
+        this.showToast('Foto erfolgreich hochgeladen', 'success');
+        this.updateAISteps(2);
+        
+        // Start AI processing immediately after photo upload
+        setTimeout(() => {
+            console.log('🚀 Starting AI processing...');
+            this.startAIProcessing();
+        }, 1000);
     }
 
     handleVideoUpload(file) {
