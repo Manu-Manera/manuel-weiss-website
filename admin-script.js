@@ -450,6 +450,17 @@ class AdminPanel {
         let photoInput = document.getElementById('photoInput') ||
                         document.querySelector('input[type="file"][accept*="image"]');
         
+        // Erstelle Input falls nicht vorhanden
+        if (!photoInput) {
+            console.log('📸 Creating photo input element...');
+            photoInput = document.createElement('input');
+            photoInput.type = 'file';
+            photoInput.id = 'photoInput';
+            photoInput.accept = 'image/*';
+            photoInput.style.display = 'none';
+            document.body.appendChild(photoInput);
+        }
+        
         console.log('📸 Photo elements:', { photoUpload, photoInput });
         
         if (photoUpload && photoInput) {
@@ -499,9 +510,24 @@ class AdminPanel {
             }, 1000);
         }
         
-        // Video upload (optional)
-        const videoUpload = document.getElementById('videoUpload');
-        const videoInput = document.getElementById('videoInput');
+        // Video upload (optional) - Versuche verschiedene Selektoren
+        let videoUpload = document.getElementById('videoUpload') ||
+                         document.querySelector('.upload-zone:last-child') ||
+                         document.querySelector('[data-upload="video"]');
+        
+        let videoInput = document.getElementById('videoInput') ||
+                        document.querySelector('input[type="file"][accept*="video"]');
+        
+        // Erstelle Video Input falls nicht vorhanden
+        if (!videoInput) {
+            console.log('🎥 Creating video input element...');
+            videoInput = document.createElement('input');
+            videoInput.type = 'file';
+            videoInput.id = 'videoInput';
+            videoInput.accept = 'video/*';
+            videoInput.style.display = 'none';
+            document.body.appendChild(videoInput);
+        }
         
         console.log('🎥 Video elements:', { videoUpload, videoInput });
         
