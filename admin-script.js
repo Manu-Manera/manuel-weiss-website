@@ -1102,11 +1102,29 @@ class AdminPanel {
 let adminPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Initializing Admin Panel...');
     adminPanel = new AdminPanel();
     window.adminPanel = adminPanel; // Setze globale Referenz korrekt
     console.log('Admin Panel initialized successfully');
     console.log('Global adminPanel reference set:', window.adminPanel);
+    
+    // Test-Funktion für Debugging
+    window.testAdminPanel = function() {
+        console.log('Testing adminPanel...');
+        console.log('window.adminPanel:', window.adminPanel);
+        console.log('adminPanel instance:', adminPanel);
+        if (window.adminPanel) {
+            console.log('adminPanel methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.adminPanel)));
+            window.adminPanel.showToast('Test erfolgreich!', 'success');
+        } else {
+            console.error('adminPanel is null!');
+        }
+    };
+    
+    // Test nach 2 Sekunden
+    setTimeout(() => {
+        console.log('Running delayed test...');
+        window.testAdminPanel();
+    }, 2000);
 });
-// Global function definitions for onclick handlers
-window.adminPanel = null; // Will be set after DOM loads
 
