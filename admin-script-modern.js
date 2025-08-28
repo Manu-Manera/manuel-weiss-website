@@ -1,4 +1,4 @@
-// Modern Admin Panel Script
+// Modern Admin Panel with AI Twin Integration
 'use strict';
 
 class ModernAdminPanel {
@@ -6,7 +6,7 @@ class ModernAdminPanel {
         this.currentSection = 'dashboard';
         this.websiteData = null;
         this.mediaFiles = [];
-        this.charts = {};
+        this.aiTwinData = null;
         this.unsavedChanges = false;
         this.init();
     }
@@ -14,16 +14,15 @@ class ModernAdminPanel {
     init() {
         this.loadWebsiteData();
         this.setupEventListeners();
-        this.initializeCharts();
         this.checkAuthentication();
         this.hideLoading();
+        this.loadAITwinData();
     }
 
     // Authentication
     checkAuthentication() {
         const isAuthenticated = localStorage.getItem('adminAuthenticated');
         if (!isAuthenticated) {
-            // In production, redirect to login
             console.log('Admin Panel - Demo Mode');
         }
     }
@@ -35,7 +34,6 @@ class ModernAdminPanel {
             if (savedData) {
                 this.websiteData = JSON.parse(savedData);
             } else {
-                // Load from website-content.json
                 fetch('data/website-content.json')
                     .then(res => res.json())
                     .then(data => {
@@ -48,9 +46,16 @@ class ModernAdminPanel {
                     });
             }
             this.updateDashboard();
-            this.loadContentSection();
         } catch (error) {
             console.error('Error in loadWebsiteData:', error);
+        }
+    }
+
+    loadAITwinData() {
+        const savedTwinData = localStorage.getItem('aiTwinData');
+        if (savedTwinData) {
+            this.aiTwinData = JSON.parse(savedTwinData);
+            this.updateAITwinUI();
         }
     }
 
@@ -65,35 +70,47 @@ class ModernAdminPanel {
         }
     }
 
+    saveAITwinData() {
+        try {
+            localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
+            this.showToast('AI Twin Daten gespeichert', 'success');
+        } catch (error) {
+            console.error('Error saving AI Twin data:', error);
+            this.showToast('Fehler beim Speichern der AI Twin Daten', 'error');
+        }
+    }
+
     // Event Listeners
     setupEventListeners() {
-        // Sidebar Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = item.dataset.section;
+                const section = link.dataset.section;
                 this.showSection(section);
             });
         });
 
-        // Sidebar Toggle
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                document.getElementById('adminSidebar').classList.toggle('collapsed');
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                document.querySelector('.main-nav').classList.toggle('mobile-open');
             });
         }
 
-        // Mobile Menu
-        this.setupMobileMenu();
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleDarkMode();
+            });
+        }
 
-        // Dark Mode
-        this.setupDarkMode();
+        // AI Twin Upload
+        this.setupAITwinUpload();
 
-        // Upload Area
-        this.setupUploadArea();
-
-        // Form Auto-Save
+        // Auto Save
         this.setupAutoSave();
 
         // Window Events
@@ -108,38 +125,19 @@ class ModernAdminPanel {
     // Section Management
     showSection(sectionId) {
         // Update active nav
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.toggle('active', item.dataset.section === sectionId);
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.toggle('active', link.dataset.section === sectionId);
         });
 
         // Update sections
-        document.querySelectorAll('.admin-section').forEach(section => {
+        document.querySelectorAll('.content-section').forEach(section => {
             section.classList.toggle('active', section.id === sectionId);
         });
-
-        // Update breadcrumb
-        this.updateBreadcrumb(sectionId);
 
         // Load section-specific content
         this.loadSectionContent(sectionId);
 
         this.currentSection = sectionId;
-    }
-
-    updateBreadcrumb(sectionId) {
-        const titles = {
-            dashboard: 'Dashboard',
-            content: 'Inhalte verwalten',
-            media: 'Medien',
-            rentals: 'Vermietungen',
-            bookings: 'Buchungen',
-            applications: 'Bewerbungen',
-            analytics: 'Analytics',
-            settings: 'Einstellungen'
-        };
-
-        document.getElementById('sectionTitle').textContent = titles[sectionId] || sectionId;
-        document.getElementById('breadcrumbCurrent').textContent = titles[sectionId] || sectionId;
     }
 
     loadSectionContent(sectionId) {
@@ -150,55 +148,39 @@ class ModernAdminPanel {
             case 'content':
                 this.loadContentSection();
                 break;
+            case 'ai-twin':
+                this.loadAITwinSection();
+                break;
             case 'media':
                 this.loadMediaSection();
                 break;
             case 'rentals':
                 this.loadRentalsSection();
                 break;
-            case 'bookings':
-                this.loadBookingsSection();
-                break;
-            case 'applications':
-                this.loadApplicationsSection();
-                break;
-            case 'analytics':
-                this.updateAnalytics();
-                break;
-            case 'settings':
-                this.loadSettingsSection();
-                break;
         }
     }
 
     // Dashboard
     updateDashboard() {
-        // Update stats (mock data for demo)
-        const stats = {
-            views: '12,453',
-            bookings: '24',
-            inquiries: '87',
-            projects: '6'
-        };
-
         // Update activity feed
         this.updateActivityFeed();
     }
 
     updateActivityFeed() {
-        // Mock activity data
         const activities = [
-            { icon: 'fa-file-alt', text: 'Neue Bewerbung eingegangen', time: 'vor 2 Stunden' },
-            { icon: 'fa-calendar-check', text: 'Wohnmobil-Buchung bestätigt', time: 'vor 5 Stunden' },
-            { icon: 'fa-edit', text: 'Projektseite aktualisiert', time: 'gestern' }
+            { icon: 'fa-robot', text: 'AI Twin wurde aktualisiert', time: 'vor 2 Stunden' },
+            { icon: 'fa-calendar-check', text: 'Neue Buchung eingegangen', time: 'vor 5 Stunden' },
+            { icon: 'fa-edit', text: 'Content aktualisiert', time: 'gestern' }
         ];
 
         const activityList = document.querySelector('.activity-list');
         if (activityList) {
             activityList.innerHTML = activities.map(activity => `
                 <div class="activity-item">
-                    <i class="fas ${activity.icon}"></i>
-                    <div>
+                    <div class="activity-icon">
+                        <i class="fas ${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
                         <p>${activity.text}</p>
                         <span>${activity.time}</span>
                     </div>
@@ -227,7 +209,6 @@ class ModernAdminPanel {
                 <p>${item.description || item.subtitle || ''}</p>
                 <div class="content-meta">
                     <span class="badge">${item.category || 'general'}</span>
-                    ${item.lastUpdated ? `<span class="text-muted">Aktualisiert: ${new Date(item.lastUpdated).toLocaleDateString('de-DE')}</span>` : ''}
                 </div>
             </div>
         `).join('');
@@ -264,18 +245,6 @@ class ModernAdminPanel {
                     <label>Beschreibung</label>
                     <textarea class="form-control" name="description" rows="4" required>${content.description || ''}</textarea>
                 </div>
-                ${content.features ? `
-                    <div class="form-group">
-                        <label>Features (eine pro Zeile)</label>
-                        <textarea class="form-control" name="features" rows="6">${content.features.join('\n')}</textarea>
-                    </div>
-                ` : ''}
-                ${content.link ? `
-                    <div class="form-group">
-                        <label>Link</label>
-                        <input type="text" class="form-control" name="link" value="${content.link}">
-                    </div>
-                ` : ''}
                 <input type="hidden" name="id" value="${content.id}">
                 <input type="hidden" name="category" value="${category}">
             </form>
@@ -284,54 +253,258 @@ class ModernAdminPanel {
         modal.classList.add('active');
     }
 
+    // AI Twin Management
+    loadAITwinSection() {
+        this.updateAITwinUI();
+    }
+
+    updateAITwinUI() {
+        if (this.aiTwinData && this.aiTwinData.isCreated) {
+            // Show twin preview
+            document.getElementById('aiUploadArea').style.display = 'none';
+            document.getElementById('twinPreview').style.display = 'block';
+            document.getElementById('presentationCreator').style.display = 'block';
+            
+            // Update video source
+            const twinVideo = document.getElementById('twinVideo');
+            if (twinVideo && this.aiTwinData.videoUrl) {
+                twinVideo.src = this.aiTwinData.videoUrl;
+            }
+            
+            // Update steps
+            this.updateAISteps(4);
+        } else {
+            // Show upload area
+            document.getElementById('aiUploadArea').style.display = 'block';
+            document.getElementById('twinPreview').style.display = 'none';
+            document.getElementById('presentationCreator').style.display = 'none';
+            
+            // Reset steps
+            this.updateAISteps(1);
+        }
+    }
+
+    setupAITwinUpload() {
+        // Photo upload
+        const photoUpload = document.getElementById('photoUpload');
+        const photoInput = document.getElementById('photoInput');
+        
+        if (photoUpload && photoInput) {
+            photoUpload.addEventListener('click', () => photoInput.click());
+            photoUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                photoUpload.classList.add('dragover');
+            });
+            photoUpload.addEventListener('dragleave', () => {
+                photoUpload.classList.remove('dragover');
+            });
+            photoUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                photoUpload.classList.remove('dragover');
+                this.handlePhotoUpload(e.dataTransfer.files[0]);
+            });
+            photoInput.addEventListener('change', (e) => {
+                this.handlePhotoUpload(e.target.files[0]);
+            });
+        }
+
+        // Video upload
+        const videoUpload = document.getElementById('videoUpload');
+        const videoInput = document.getElementById('videoInput');
+        
+        if (videoUpload && videoInput) {
+            videoUpload.addEventListener('click', () => videoInput.click());
+            videoUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                videoUpload.classList.add('dragover');
+            });
+            videoUpload.addEventListener('dragleave', () => {
+                videoUpload.classList.remove('dragover');
+            });
+            videoUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                videoUpload.classList.remove('dragover');
+                this.handleVideoUpload(e.dataTransfer.files[0]);
+            });
+            videoInput.addEventListener('change', (e) => {
+                this.handleVideoUpload(e.target.files[0]);
+            });
+        }
+    }
+
+    handlePhotoUpload(file) {
+        if (!file || !file.type.startsWith('image/')) {
+            this.showToast('Bitte wähle ein gültiges Bild aus', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.aiTwinData = this.aiTwinData || {};
+            this.aiTwinData.photoUrl = e.target.result;
+            this.saveAITwinData();
+            this.showToast('Foto erfolgreich hochgeladen', 'success');
+            this.updateAISteps(2);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    handleVideoUpload(file) {
+        if (!file || !file.type.startsWith('video/')) {
+            this.showToast('Bitte wähle ein gültiges Video aus', 'error');
+            return;
+        }
+
+        // Check video duration
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+            if (video.duration > 30) {
+                this.showToast('Video darf maximal 30 Sekunden lang sein', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.aiTwinData = this.aiTwinData || {};
+                this.aiTwinData.videoUrl = e.target.result;
+                this.saveAITwinData();
+                this.showToast('Video erfolgreich hochgeladen', 'success');
+                this.startAIProcessing();
+            };
+            reader.readAsDataURL(file);
+        };
+        video.src = URL.createObjectURL(file);
+    }
+
+    startAIProcessing() {
+        // Show processing UI
+        document.getElementById('aiUploadArea').style.display = 'none';
+        document.getElementById('aiProcessing').style.display = 'block';
+        
+        this.updateAISteps(2);
+        
+        // Simulate AI processing
+        let progress = 0;
+        const progressBar = document.getElementById('aiProgress');
+        const progressText = document.getElementById('progressText');
+        
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                this.completeAIProcessing();
+            }
+            
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (progressText) progressText.textContent = Math.round(progress) + '%';
+        }, 500);
+    }
+
+    completeAIProcessing() {
+        // Hide processing UI
+        document.getElementById('aiProcessing').style.display = 'none';
+        
+        // Create AI Twin
+        this.aiTwinData.isCreated = true;
+        this.aiTwinData.createdAt = new Date().toISOString();
+        this.saveAITwinData();
+        
+        this.updateAISteps(3);
+        
+        // Show twin preview
+        setTimeout(() => {
+            this.updateAITwinUI();
+            this.showToast('AI Twin erfolgreich erstellt!', 'success');
+        }, 1000);
+    }
+
+    updateAISteps(activeStep) {
+        document.querySelectorAll('.step').forEach((step, index) => {
+            const stepNumber = index + 1;
+            step.classList.toggle('active', stepNumber <= activeStep);
+        });
+    }
+
+    createNewPresentation() {
+        document.getElementById('presentationCreator').style.display = 'block';
+    }
+
+    generatePresentation() {
+        const text = document.getElementById('presentationText').value;
+        const mood = document.getElementById('presentationMood').value;
+        const language = document.getElementById('presentationLanguage').value;
+        
+        if (!text.trim()) {
+            this.showToast('Bitte gib einen Text ein', 'error');
+            return;
+        }
+        
+        // Simulate presentation generation
+        this.showToast('Präsentation wird generiert...', 'info');
+        
+        setTimeout(() => {
+            // In a real implementation, this would call the AI service
+            this.showToast('Präsentation erfolgreich generiert!', 'success');
+            
+            // Save presentation data
+            const presentation = {
+                id: Date.now(),
+                text: text,
+                mood: mood,
+                language: language,
+                createdAt: new Date().toISOString()
+            };
+            
+            this.aiTwinData.presentations = this.aiTwinData.presentations || [];
+            this.aiTwinData.presentations.push(presentation);
+            this.saveAITwinData();
+        }, 3000);
+    }
+
+    previewPresentation() {
+        const text = document.getElementById('presentationText').value;
+        if (!text.trim()) {
+            this.showToast('Bitte gib einen Text ein', 'error');
+            return;
+        }
+        
+        this.showToast('Vorschau wird generiert...', 'info');
+    }
+
+    downloadTwin() {
+        if (!this.aiTwinData || !this.aiTwinData.videoUrl) {
+            this.showToast('Kein Twin zum Herunterladen verfügbar', 'error');
+            return;
+        }
+        
+        const link = document.createElement('a');
+        link.href = this.aiTwinData.videoUrl;
+        link.download = 'ai-twin-' + new Date().toISOString().split('T')[0] + '.mp4';
+        link.click();
+        this.showToast('Twin wird heruntergeladen', 'success');
+    }
+
     // Media Management
     loadMediaSection() {
         this.loadMediaGallery();
     }
 
-    setupUploadArea() {
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-
-        if (!uploadArea || !fileInput) return;
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            this.handleFiles(e.dataTransfer.files);
-        });
-
-        // Click to select
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            this.handleFiles(e.target.files);
-        });
+    openMediaUpload() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.accept = 'image/*,video/*';
+        input.onchange = (e) => {
+            Array.from(e.target.files).forEach(file => {
+                this.uploadMedia(file);
+            });
+        };
+        input.click();
     }
 
-    handleFiles(files) {
-        Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
-                this.uploadImage(file);
-            } else {
-                this.showToast(`${file.name} ist kein Bild`, 'warning');
-            }
-        });
-    }
-
-    uploadImage(file) {
+    uploadMedia(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const mediaItem = {
@@ -343,7 +516,6 @@ class ModernAdminPanel {
                 uploadDate: new Date().toISOString()
             };
 
-            // Save to localStorage (in production, upload to server)
             let savedMedia = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
             savedMedia.push(mediaItem);
             localStorage.setItem('mediaFiles', JSON.stringify(savedMedia));
@@ -367,7 +539,10 @@ class ModernAdminPanel {
 
         gallery.innerHTML = savedMedia.map(media => `
             <div class="media-item" data-id="${media.id}">
-                <img src="${media.url}" alt="${media.name}">
+                ${media.type.startsWith('image/') ? 
+                    `<img src="${media.url}" alt="${media.name}">` :
+                    `<video src="${media.url}" controls></video>`
+                }
                 <div class="media-overlay">
                     <button class="btn-icon" onclick="adminPanel.deleteMedia(${media.id})">
                         <i class="fas fa-trash"></i>
@@ -378,21 +553,23 @@ class ModernAdminPanel {
     }
 
     deleteMedia(id) {
-        if (confirm('Möchten Sie dieses Bild wirklich löschen?')) {
+        if (confirm('Möchten Sie dieses Medium wirklich löschen?')) {
             let savedMedia = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
             savedMedia = savedMedia.filter(m => m.id !== id);
             localStorage.setItem('mediaFiles', JSON.stringify(savedMedia));
-            this.showToast('Bild gelöscht', 'success');
+            this.showToast('Medium gelöscht', 'success');
             this.loadMediaGallery();
         }
     }
 
+    createFolder() {
+        this.showToast('Ordner-Funktion kommt bald', 'info');
+    }
+
     // Rentals Management
     loadRentalsSection() {
-        // Load first rental tab by default
         this.loadRentalContent('wohnmobil');
 
-        // Setup tab clicks
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -426,93 +603,21 @@ class ModernAdminPanel {
                     <label>Beschreibung</label>
                     <textarea class="form-control" name="description" rows="4">${rental.description}</textarea>
                 </div>
-                <div class="form-group">
-                    <label>Detaillierte Beschreibung</label>
-                    <textarea class="form-control" name="detailedDescription" rows="6">${rental.detailedDescription || ''}</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Features (eine pro Zeile)</label>
-                    <textarea class="form-control" name="features" rows="6">${rental.features ? rental.features.join('\n') : ''}</textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Preis pro Tag</label>
-                        <input type="text" class="form-control" name="priceDay" value="${rental.pricing?.day || ''}">
-                    </div>
-                    <div class="form-group">
-                        <label>Preis pro Woche</label>
-                        <input type="text" class="form-control" name="priceWeek" value="${rental.pricing?.week || ''}">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Bilder</label>
-                    <div class="rental-images" id="${rentalType}Images">
-                        ${this.renderRentalImages(rental)}
-                    </div>
-                    <button type="button" class="btn btn-outline" onclick="adminPanel.addRentalImage('${rentalType}')">
-                        <i class="fas fa-plus"></i> Bild hinzufügen
-                    </button>
-                </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Speichern</button>
                 </div>
             </form>
         `;
 
-        // Setup form submit
         document.getElementById('rentalEditForm').addEventListener('submit', (e) => {
             e.preventDefault();
             this.saveRentalData(rentalType, e.target);
         });
     }
 
-    renderRentalImages(rental) {
-        if (!rental.images || rental.images.length === 0) {
-            return '<p class="text-muted">Keine Bilder vorhanden</p>';
-        }
-
-        return rental.images.map((img, index) => `
-            <div class="rental-image">
-                <img src="${img}" alt="Bild ${index + 1}">
-                <button class="btn-remove" onclick="adminPanel.removeRentalImage('${rental.adminKey}', ${index})">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `).join('');
-    }
-
-    // Charts
-    initializeCharts() {
-        // Initialize charts when analytics section is loaded
-        if (typeof Chart !== 'undefined') {
-            this.initVisitorsChart();
-            this.initPagesChart();
-            this.initDevicesChart();
-            this.initRentalsChart();
-        }
-    }
-
-    initVisitorsChart() {
-        const ctx = document.getElementById('visitorsChart');
-        if (!ctx) return;
-
-        this.charts.visitors = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-                datasets: [{
-                    label: 'Besucher',
-                    data: [120, 150, 180, 200, 170, 250, 300],
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+    saveRentalData(rentalType, form) {
+        // Save rental data logic
+        this.showToast('Vermietungsdaten gespeichert', 'success');
     }
 
     // Utility Functions
@@ -534,55 +639,24 @@ class ModernAdminPanel {
     }
 
     hideLoading() {
-        const loading = document.getElementById('adminLoading');
+        const loading = document.getElementById('loadingScreen');
         if (loading) {
             loading.classList.add('hidden');
             setTimeout(() => loading.remove(), 300);
         }
     }
 
-    // Dark Mode
-    setupDarkMode() {
-        const darkModeBtn = document.querySelector('[onclick="toggleDarkMode()"]');
-        if (darkModeBtn) {
-            darkModeBtn.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const isDark = document.body.classList.contains('dark-mode');
-                localStorage.setItem('adminDarkMode', isDark);
-                document.getElementById('darkModeIcon').className = `fas fa-${isDark ? 'sun' : 'moon'}`;
-            });
-        }
-
-        // Load saved preference
-        if (localStorage.getItem('adminDarkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeIcon').className = 'fas fa-sun';
+    toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('adminDarkMode', isDark);
+        
+        const themeIcon = document.querySelector('#themeToggle i');
+        if (themeIcon) {
+            themeIcon.className = `fas fa-${isDark ? 'sun' : 'moon'}`;
         }
     }
 
-    // Mobile Menu
-    setupMobileMenu() {
-        const sidebar = document.getElementById('adminSidebar');
-        const overlay = document.createElement('div');
-        overlay.className = 'sidebar-overlay';
-        document.body.appendChild(overlay);
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        });
-
-        // Mobile toggle
-        const mobileToggle = document.getElementById('sidebarToggle');
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-            });
-        }
-    }
-
-    // Auto Save
     setupAutoSave() {
         let saveTimer;
         document.addEventListener('input', (e) => {
@@ -597,13 +671,16 @@ class ModernAdminPanel {
     }
 
     autoSave() {
-        // Auto-save logic based on current section
         console.log('Auto-saving...');
         this.saveWebsiteData();
     }
 
-    // Export data
-    exportData() {
+    // Global function definitions for onclick handlers
+    createNewContent() {
+        this.showToast('Neuer Inhalt wird erstellt...', 'info');
+    }
+
+    exportContent() {
         const dataStr = JSON.stringify(this.websiteData, null, 2);
         const dataBlob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(dataBlob);
@@ -614,45 +691,26 @@ class ModernAdminPanel {
         URL.revokeObjectURL(url);
         this.showToast('Daten exportiert', 'success');
     }
-}
 
-// Global functions for onclick handlers
-window.adminPanel = null;
+    saveContent() {
+        const form = document.getElementById('contentEditForm');
+        if (form) {
+            this.showToast('Inhalt gespeichert', 'success');
+            this.closeModal('contentModal');
+        }
+    }
+
+    closeModal(modalId) {
+        document.getElementById(modalId)?.classList.remove('active');
+    }
+}
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.adminPanel = new ModernAdminPanel();
 });
 
-// Global function definitions
+// Global function definitions for onclick handlers
 window.showSection = (section) => adminPanel?.showSection(section);
 window.toggleDarkMode = () => adminPanel?.toggleDarkMode();
 window.showNotifications = () => adminPanel?.showToast('3 neue Benachrichtigungen', 'info');
-window.logout = () => {
-    if (confirm('Möchten Sie sich wirklich abmelden?')) {
-        localStorage.removeItem('adminAuthenticated');
-        window.location.href = 'index.html';
-    }
-};
-window.addNewContent = () => adminPanel?.showContentModal({}, 'new');
-window.refreshContent = () => adminPanel?.loadContentSection();
-window.openMediaUpload = () => document.getElementById('fileInput')?.click();
-window.selectFiles = () => document.getElementById('fileInput')?.click();
-window.createFolder = () => adminPanel?.showToast('Ordner-Funktion kommt bald', 'info');
-window.addNewBooking = () => adminPanel?.showToast('Buchungs-Funktion kommt bald', 'info');
-window.createNewApplication = () => adminPanel?.showToast('Bewerbungs-Funktion kommt bald', 'info');
-window.manageCompanies = () => adminPanel?.showToast('Firmen-Verwaltung kommt bald', 'info');
-window.manageTemplates = () => adminPanel?.showToast('Vorlagen-Verwaltung kommt bald', 'info');
-window.exportAnalytics = () => adminPanel?.showToast('Analytics-Export kommt bald', 'info');
-window.exportData = () => adminPanel?.exportData();
-window.saveContent = () => {
-    const form = document.getElementById('contentEditForm');
-    if (form) {
-        // Save logic here
-        adminPanel?.showToast('Inhalt gespeichert', 'success');
-        closeModal('contentModal');
-    }
-};
-window.closeModal = (modalId) => {
-    document.getElementById(modalId)?.classList.remove('active');
-};
