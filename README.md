@@ -37,6 +37,8 @@ Das Projekt wird automatisch auf Netlify deployed:
 - **Live URL**: https://mawps.netlify.app
 - **Admin Panel**: https://mawps.netlify.app/admin
 
+**Hinweis**: Alle Vercel-Verbindungen wurden entfernt. Das Projekt nutzt nur noch GitHub → Netlify Deployment.
+
 ## 📝 Letzte Updates
 - ✅ Admin Panel vollständig funktionsfähig
 - ✅ AI Twin Upload und Verarbeitung
