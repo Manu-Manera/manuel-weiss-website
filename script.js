@@ -173,7 +173,7 @@ function initContactForm() {
                 // Show success notification
                 showNotification('Nachricht erfolgreich gesendet!', 'success');
                 
-            } catch (error) {
+    } catch (error) {
                 // Error
                 submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler!';
                 submitBtn.style.background = 'var(--danger)';
@@ -192,22 +192,22 @@ function initContactForm() {
 
 // Smooth scroll
 function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
             
-            if (target) {
+        if (target) {
                 const offset = 80; // Navbar height
                 const targetPosition = target.offsetTop - offset;
                 
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
-                });
-            }
-        });
+            });
+        }
     });
+});
 }
 
 // Typing effect for hero title
@@ -266,9 +266,9 @@ function showNotification(message, type = 'info') {
         padding: 1rem 2rem;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         z-index: 1000;
         opacity: 0;
         transform: translateX(100%);
@@ -315,9 +315,9 @@ function animateCounters() {
         };
         
         // Start animation when in viewport
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
                     updateCounter();
                     observer.unobserve(entry.target);
                 }
@@ -424,8 +424,8 @@ document.querySelectorAll('.service-card, .rental-card').forEach(card => {
 // Timeline animation
 const timelineItems = document.querySelectorAll('.timeline-item');
 const timelineObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
         }
