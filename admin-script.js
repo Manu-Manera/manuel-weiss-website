@@ -332,8 +332,11 @@ class AdminPanel {
     }
 
     updateAITwinUI() {
-        console.log('Updating AI Twin UI...');
+        console.log('🔄 Updating AI Twin UI...');
+        
         if (this.aiTwinData && this.aiTwinData.isCreated) {
+            console.log('✅ AI Twin exists, showing preview...');
+            
             // Show twin preview
             const uploadArea = document.getElementById('aiUploadArea');
             const twinPreview = document.getElementById('twinPreview');
@@ -343,13 +346,16 @@ class AdminPanel {
             
             // Update video source
             const twinVideo = document.getElementById('twinVideo');
-            if (twinVideo && this.aiTwinData.videoUrl) {
-                twinVideo.src = this.aiTwinData.videoUrl;
+            if (twinVideo && this.aiTwinData.photoUrl) {
+                twinVideo.src = this.aiTwinData.photoUrl;
+                console.log('✅ Video source updated');
             }
             
             // Update steps
             this.updateAISteps(4);
         } else {
+            console.log('📤 No AI Twin exists, showing upload area...');
+            
             // Show upload area
             const uploadArea = document.getElementById('aiUploadArea');
             const twinPreview = document.getElementById('twinPreview');
@@ -362,6 +368,7 @@ class AdminPanel {
         }
         
         // Always show text input section
+        console.log('📝 Showing text input section...');
         this.showTextInputSection();
     }
 
@@ -776,46 +783,125 @@ class AdminPanel {
     }
 
     startPresentation(presentation) {
-        console.log('Starting presentation:', presentation);
+        console.log('🎭 Starting presentation:', presentation);
+        
+        // Entferne alte Präsentations-Modals
+        const oldModals = document.querySelectorAll('.presentation-modal');
+        oldModals.forEach(modal => modal.remove());
+        
         const presentationModal = document.createElement('div');
         presentationModal.className = 'modal-overlay presentation-modal';
+        presentationModal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+        
         presentationModal.innerHTML = `
-            <div class="modal-content presentation-content">
-                <div class="modal-header">
-                    <h3>${presentation.title}</h3>
-                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
-                        <i class="fas fa-times"></i>
+            <div class="modal-content presentation-content" style="
+                background: white;
+                border-radius: 8px;
+                max-width: 800px;
+                width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                padding: 20px;
+            ">
+                <div class="modal-header" style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                ">
+                    <h3 style="margin: 0; color: #333;">${presentation.title}</h3>
+                    <button 
+                        onclick="this.closest('.modal-overlay').remove()"
+                        style="
+                            background: none;
+                            border: none;
+                            font-size: 20px;
+                            cursor: pointer;
+                            color: #666;
+                        "
+                    >
+                        ✕
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="presentation-container">
+                    <div class="presentation-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="twin-video-section">
-                            <h4>Ihr AI Twin präsentiert:</h4>
-                            <div class="video-container">
-                                <video id="presentationVideo" controls autoplay>
-                                    <source src="${this.aiTwinData.videoUrl || this.aiTwinData.photoUrl}" type="video/mp4">
-                                </video>
-                                <div class="video-overlay">
-                                    <div class="presentation-status">
-                                        <i class="fas fa-microphone"></i>
-                                        <span>AI Twin spricht...</span>
-                                    </div>
+                            <h4 style="margin-bottom: 15px; color: #333;">🤖 Ihr AI Twin präsentiert:</h4>
+                            <div class="video-container" style="
+                                background: #f8f9fa;
+                                border-radius: 8px;
+                                padding: 20px;
+                                text-align: center;
+                                border: 2px dashed #dee2e6;
+                            ">
+                                <div style="font-size: 48px; margin-bottom: 10px;">🤖</div>
+                                <div style="color: #666; margin-bottom: 15px;">AI Twin Simulation</div>
+                                <div class="presentation-status" style="
+                                    background: #007bff;
+                                    color: white;
+                                    padding: 10px;
+                                    border-radius: 4px;
+                                    display: inline-block;
+                                ">
+                                    🎤 AI Twin spricht...
                                 </div>
                             </div>
                         </div>
                         <div class="text-section">
-                            <h4>Vorgetragener Text:</h4>
-                            <div class="text-content">
-                                <p>${presentation.text}</p>
+                            <h4 style="margin-bottom: 15px; color: #333;">📝 Vorgetragener Text:</h4>
+                            <div class="text-content" style="
+                                background: #f8f9fa;
+                                padding: 15px;
+                                border-radius: 4px;
+                                border-left: 4px solid #007bff;
+                                max-height: 300px;
+                                overflow-y: auto;
+                            ">
+                                <p style="margin: 0; line-height: 1.6; color: #333;">${presentation.text}</p>
                             </div>
-                            <div class="presentation-controls">
-                                <button class="btn btn-primary" onclick="adminPanel.replayPresentation()">
-                                    <i class="fas fa-redo"></i>
-                                    Wiederholen
+                            <div class="presentation-controls" style="
+                                margin-top: 20px;
+                                display: flex;
+                                gap: 10px;
+                            ">
+                                <button 
+                                    onclick="adminPanel.replayPresentation()"
+                                    style="
+                                        padding: 10px 20px;
+                                        background: #28a745;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 4px;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    🔄 Wiederholen
                                 </button>
-                                <button class="btn btn-secondary" onclick="adminPanel.downloadPresentation('${presentation.id}')">
-                                    <i class="fas fa-download"></i>
-                                    Herunterladen
+                                <button 
+                                    onclick="adminPanel.downloadPresentation('${presentation.id}')"
+                                    style="
+                                        padding: 10px 20px;
+                                        background: #6c757d;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 4px;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    📥 Herunterladen
                                 </button>
                             </div>
                         </div>
@@ -825,46 +911,39 @@ class AdminPanel {
         `;
         
         document.body.appendChild(presentationModal);
+        console.log('✅ Presentation modal created and displayed');
         
-        // Video-Wiedergabe simulieren
-        const video = presentationModal.querySelector('#presentationVideo');
-        if (video) {
-            video.addEventListener('loadedmetadata', () => {
-                this.simulateVideoPlayback(video, presentation.text);
-            });
-        }
+        // Simuliere Text-Hervorhebung
+        this.simulateTextHighlighting(presentation.text);
+        
+        this.showToast('Präsentation gestartet!', 'success');
     }
 
-    simulateVideoPlayback(video, text) {
-        // Simuliere Video-Wiedergabe mit Text-Synchronisation
-        const words = text.split(' ');
-        const wordDuration = 300; // 300ms pro Wort
+    simulateTextHighlighting(text) {
+        console.log('✨ Simulating text highlighting...');
         
+        const textElement = document.querySelector('.text-content p');
+        if (!textElement) return;
+        
+        const words = text.split(' ');
         let currentWordIndex = 0;
-        const textElement = video.parentElement.querySelector('.text-content p');
         
         const interval = setInterval(() => {
             if (currentWordIndex < words.length) {
                 // Markiere aktuelles Wort
                 const highlightedText = words.map((word, index) => {
-                    return index === currentWordIndex ? `<span class="highlight">${word}</span>` : word;
+                    return index === currentWordIndex ? 
+                        `<span style="background: #ffeb3b; padding: 2px 4px; border-radius: 2px;">${word}</span>` : 
+                        word;
                 }).join(' ');
                 
                 textElement.innerHTML = highlightedText;
                 currentWordIndex++;
             } else {
                 clearInterval(interval);
-                this.showToast('Präsentation abgeschlossen', 'success');
+                this.showToast('Präsentation abgeschlossen!', 'success');
             }
-        }, wordDuration);
-        
-        // Video-Loop für längere Texte
-        video.addEventListener('ended', () => {
-            if (currentWordIndex < words.length) {
-                video.currentTime = 0;
-                video.play();
-            }
-        });
+        }, 300); // 300ms pro Wort
     }
 
     replayPresentation() {
@@ -1230,25 +1309,45 @@ class AdminPanel {
     }
 
     showTextInputSection() {
-        console.log('Showing text input section...');
+        console.log('📝 Creating text input section...');
+        
         // Erstelle Text-Input-Sektion falls sie nicht existiert
         let textInputSection = document.getElementById('textInputSection');
+        
         if (!textInputSection) {
+            console.log('🆕 Creating new text input section...');
             textInputSection = document.createElement('div');
             textInputSection.id = 'textInputSection';
             textInputSection.className = 'text-input-section';
+            textInputSection.style.cssText = `
+                margin-top: 20px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #dee2e6;
+            `;
+            
             textInputSection.innerHTML = `
-                <h4>Text für Präsentation eingeben</h4>
+                <h4 style="margin-bottom: 15px; color: #333;">📝 Text für Präsentation eingeben</h4>
                 <div class="text-input-container">
-                    <textarea id="presentationText" placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." rows="6"></textarea>
-                    <div class="text-input-actions">
-                        <button class="btn btn-primary" onclick="adminPanel.startPresentationFromText()">
-                            <i class="fas fa-play"></i>
-                            Präsentation starten
+                    <textarea 
+                        id="presentationText" 
+                        placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." 
+                        rows="6"
+                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; resize: vertical;"
+                    ></textarea>
+                    <div class="text-input-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button 
+                            onclick="adminPanel.startPresentationFromText()"
+                            style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                        >
+                            🎬 Präsentation starten
                         </button>
-                        <button class="btn btn-secondary" onclick="adminPanel.createNewPresentation()">
-                            <i class="fas fa-plus"></i>
-                            Neue Präsentation
+                        <button 
+                            onclick="adminPanel.createNewPresentation()"
+                            style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                        >
+                            ➕ Neue Präsentation
                         </button>
                     </div>
                 </div>
@@ -1258,18 +1357,33 @@ class AdminPanel {
             const aiTwinContent = document.querySelector('.ai-twin-content');
             if (aiTwinContent) {
                 aiTwinContent.appendChild(textInputSection);
+                console.log('✅ Text input section added to AI Twin content');
+            } else {
+                console.error('❌ AI Twin content not found');
             }
         }
+        
         textInputSection.style.display = 'block';
+        console.log('✅ Text input section is now visible');
     }
 
     startPresentationFromText() {
-        console.log('Starting presentation from text...');
+        console.log('🎬 Starting presentation from text...');
+        
         const textarea = document.getElementById('presentationText');
-        if (!textarea || !textarea.value.trim()) {
+        if (!textarea) {
+            console.error('❌ Textarea not found');
+            this.showToast('Text-Eingabefeld nicht gefunden', 'error');
+            return;
+        }
+        
+        if (!textarea.value.trim()) {
+            console.error('❌ No text entered');
             this.showToast('Bitte geben Sie einen Text ein', 'error');
             return;
         }
+
+        console.log('📝 Text content:', textarea.value.trim());
 
         const presentation = {
             id: Date.now(),
@@ -1278,10 +1392,14 @@ class AdminPanel {
             createdAt: new Date().toISOString()
         };
 
+        console.log('📋 Created presentation:', presentation);
+
         // Speichere Präsentation
         this.aiTwinData.presentations = this.aiTwinData.presentations || [];
         this.aiTwinData.presentations.push(presentation);
         this.saveData();
+
+        console.log('💾 Presentation saved');
 
         // Starte Präsentation
         this.startPresentation(presentation);
