@@ -38,18 +38,31 @@ class EmergencyAITwin {
                         clearInterval(progressInterval);
                         this.isProcessing = false;
                         
-                        // Create AI Twin result
+                        // Create AI Twin result with validation
                         const aiTwin = {
                             id: Date.now(),
                             photoUrl: photoUrl,
                             createdAt: new Date().toISOString(),
                             isCreated: true,
+                            status: 'completed',
                             features: {
                                 faceDetection: true,
                                 emotionAnalysis: true,
                                 voiceSynthesis: true
+                            },
+                            processing: {
+                                stages: ['upload', 'analysis', 'synthesis', 'completion'],
+                                currentStage: 'completion',
+                                progress: 100
                             }
                         };
+                        
+                        // Validiere das Ergebnis
+                        if (!aiTwin.photoUrl || !aiTwin.id) {
+                            console.error('❌ Invalid AI Twin data created');
+                            reject(new Error('AI Twin creation failed - invalid data'));
+                            return;
+                        }
                         
                         console.log('✅ EMERGENCY: AI Twin created successfully:', aiTwin);
                         resolve(aiTwin);
@@ -662,6 +675,7 @@ class AdminPanel {
             <button onclick="adminPanel.forceInit()" style="margin: 3px; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">FORCE INIT</button>
             <button onclick="adminPanel.emergencyUpload()" style="margin: 3px; padding: 8px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">EMERGENCY UPLOAD</button>
             <button onclick="adminPanel.testPhotoUpload()" style="margin: 3px; padding: 8px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Photo</button>
+            <button onclick="adminPanel.debugStatus()" style="margin: 3px; padding: 8px; background: #6f42c1; color: white; border: none; border-radius: 5px; cursor: pointer;">Debug Status</button>
             <button onclick="adminPanel.testPresentation()" style="margin: 3px; padding: 8px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Präsentation</button>
             <button onclick="adminPanel.testDownload()" style="margin: 3px; padding: 8px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Download</button>
             <button onclick="this.parentElement.remove()" style="margin: 3px; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
@@ -736,6 +750,44 @@ class AdminPanel {
         };
         
         this.startPresentation(testPresentation);
+    }
+
+    debugStatus() {
+        console.log('🔍 DEBUG STATUS:');
+        console.log('AI Twin Data:', this.aiTwinData);
+        console.log('Upload Area:', document.getElementById('aiUploadArea'));
+        console.log('Twin Preview:', document.getElementById('twinPreview'));
+        console.log('Steps:', document.querySelectorAll('[data-step]'));
+        
+        // Show status in UI
+        const statusDiv = document.createElement('div');
+        statusDiv.style.cssText = `
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 9999;
+            font-size: 12px;
+            max-width: 300px;
+        `;
+        statusDiv.innerHTML = `
+            <strong>Debug Status:</strong><br>
+            AI Twin Created: ${this.aiTwinData?.isCreated ? '✅ Yes' : '❌ No'}<br>
+            Photo URL: ${this.aiTwinData?.photoUrl ? '✅ Yes' : '❌ No'}<br>
+            Upload Area: ${document.getElementById('aiUploadArea') ? '✅ Found' : '❌ Missing'}<br>
+            Twin Preview: ${document.getElementById('twinPreview') ? '✅ Found' : '❌ Missing'}<br>
+            <button onclick="this.parentElement.remove()" style="margin-top: 5px; background: red; color: white; border: none; padding: 2px 5px;">Close</button>
+        `;
+        document.body.appendChild(statusDiv);
+        
+        return {
+            aiTwinData: this.aiTwinData,
+            uploadArea: document.getElementById('aiUploadArea'),
+            twinPreview: document.getElementById('twinPreview')
+        };
     }
 
     async testPhotoUpload() {
@@ -819,28 +871,87 @@ class AdminPanel {
     }
 
     processAIResult(aiTwin) {
-        console.log('🔄 Processing AI result...');
+        console.log('🔄 Processing AI result...', aiTwin);
         
-        this.aiTwinData = this.aiTwinData || {};
-        this.aiTwinData.isCreated = true;
-        this.aiTwinData.photoUrl = aiTwin.photoUrl;
-        this.aiTwinData.createdAt = aiTwin.createdAt;
-        this.aiTwinData.features = aiTwin.features || {
-            faceDetection: true,
-            emotionAnalysis: true,
-            voiceSynthesis: true
-        };
-        this.saveData();
-        
-        console.log('✅ AI Twin created successfully:', this.aiTwinData);
-        this.showToast('AI Twin erfolgreich erstellt!', 'success');
-        this.updateAISteps(4);
-        
-        // Update UI sofort
-        setTimeout(() => {
+        try {
+            // Validiere AI Twin Daten
+            if (!aiTwin || !aiTwin.photoUrl) {
+                throw new Error('Invalid AI Twin data');
+            }
+            
+            this.aiTwinData = this.aiTwinData || {};
+            this.aiTwinData.isCreated = true;
+            this.aiTwinData.photoUrl = aiTwin.photoUrl;
+            this.aiTwinData.createdAt = aiTwin.createdAt || new Date().toISOString();
+            this.aiTwinData.features = aiTwin.features || {
+                faceDetection: true,
+                emotionAnalysis: true,
+                voiceSynthesis: true
+            };
+            this.aiTwinData.id = aiTwin.id || Date.now();
+            
+            // Speichere sofort
+            this.saveData();
+            
+            console.log('✅ AI Twin created successfully:', this.aiTwinData);
+            this.showToast('🤖 AI Twin erfolgreich erstellt!', 'success');
+            
+            // Update Steps und UI
+            this.updateAISteps(4);
             this.updateAITwinUI();
-            this.showTextInputSection();
-        }, 500);
+            
+            // Text Input Section nach kurzer Verzögerung
+            setTimeout(() => {
+                this.showTextInputSection();
+                console.log('📝 Text input section should be visible now');
+            }, 1000);
+            
+            // Zusätzliche UI-Updates
+            setTimeout(() => {
+                this.forceUIUpdate();
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Error processing AI result:', error);
+            this.showToast('Fehler beim Erstellen des AI Twins: ' + error.message, 'error');
+        }
+    }
+
+    forceUIUpdate() {
+        console.log('🔄 Forcing UI update...');
+        
+        // Verstecke Upload-Area
+        const uploadArea = document.getElementById('aiUploadArea');
+        if (uploadArea) {
+            uploadArea.style.display = 'none';
+            console.log('✅ Upload area hidden');
+        }
+        
+        // Zeige Twin Preview
+        const twinPreview = document.getElementById('twinPreview');
+        if (twinPreview) {
+            twinPreview.style.display = 'block';
+            console.log('✅ Twin preview shown');
+            
+            // Update video source
+            const twinVideo = document.getElementById('twinVideo');
+            if (twinVideo && this.aiTwinData && this.aiTwinData.photoUrl) {
+                twinVideo.src = this.aiTwinData.photoUrl;
+                console.log('✅ Video source updated to:', this.aiTwinData.photoUrl);
+            }
+        }
+        
+        // Update alle Steps
+        for (let i = 1; i <= 4; i++) {
+            const step = document.querySelector(`[data-step="${i}"]`);
+            if (step) {
+                step.classList.remove('active', 'completed');
+                if (i <= 4) step.classList.add('completed');
+                if (i === 4) step.classList.add('active');
+            }
+        }
+        
+        console.log('✅ Force UI update completed');
     }
 
     handleVideoUpload(file) {
