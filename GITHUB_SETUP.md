@@ -30,11 +30,14 @@ git branch -M main
 git push -u origin main
 ```
 
-## Schritt 3: Deployment auf Vercel
+## Schritt 3: Deployment auf Netlify
 
-Nachdem du das Repository gepusht hast:
+**Automatisches Deployment ist bereits eingerichtet**
 
-1. **Gehe zu https://vercel.com**
+Das Projekt wird automatisch über GitHub → Netlify deployed:
+- **Live URL**: https://mawps.netlify.app
+
+**Vercel wird nicht mehr verwendet!**
 2. **Klicke "New Project"**
 3. **Importiere dein GitHub-Repository**
 4. **Wähle den Ordner aus** (falls nötig)

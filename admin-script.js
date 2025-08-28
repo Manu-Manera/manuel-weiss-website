@@ -636,19 +636,29 @@ class AdminPanel {
     loadAITwinSection() {
         console.log('Loading AI Twin section...');
         
-        // Setup upload funktionalität sofort
+        const mainContent = document.getElementById('mainContent');
+        mainContent.innerHTML = `
+            <div class="content-header">
+                <h1>AI Twin Management</h1>
+                <p>Erstellen und verwalten Sie Ihre digitalen Zwillinge</p>
+            </div>
+            <div id="aiTwinContent" class="ai-twin-section">
+                <!-- Upload Area wird hier geladen -->
+            </div>
+        `;
+        
+        // Erstelle Upload-Bereich sofort
+        this.createUploadAreaIfMissing();
+        
+        // Setup upload funktionalität
         setTimeout(() => {
             this.setupAITwinUpload();
+            this.setupUploadTileEvents();
         }, 100);
         
-        // Update UI
+        // Update UI und zeige Galerie
         this.updateAITwinsUI();
         this.showTwinGallery();
-        
-        // Sicherstellen dass Upload-Bereich sichtbar ist
-        setTimeout(() => {
-            this.ensureUploadAreaVisible();
-        }, 500);
     }
 
     ensureUploadAreaVisible() {
@@ -674,6 +684,7 @@ class AdminPanel {
             
             const aiTwinContent = document.querySelector('.ai-twin-content') || 
                                  document.querySelector('#aiTwinSection') ||
+                                 document.getElementById('aiTwinContent') ||
                                  document.body;
             
             const uploadDiv = document.createElement('div');
@@ -681,24 +692,38 @@ class AdminPanel {
             uploadDiv.style.cssText = `
                 margin: 20px 0;
                 padding: 20px;
-                border: 2px dashed #007bff;
-                border-radius: 8px;
-                text-align: center;
+                border-radius: 12px;
                 background: #f8f9fa;
             `;
             
             uploadDiv.innerHTML = `
-                <h4>📷 AI Twin erstellen</h4>
-                <div class="upload-zones" style="display: flex; gap: 20px; justify-content: center; margin-top: 15px;">
-                    <div id="photoUpload" style="padding: 30px; border: 2px dashed #28a745; border-radius: 8px; cursor: pointer; background: white;">
-                        <i class="fas fa-camera" style="font-size: 24px; color: #28a745;"></i>
-                        <p style="margin: 10px 0 0 0; color: #28a745;">Foto hochladen</p>
+                <h4 style="text-align: center; margin-bottom: 20px;">📷 AI Twin erstellen</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div id="photoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #007bff; border-radius: 10px; cursor: pointer; background: rgba(0,123,255,0.05); transition: all 0.3s ease; min-height: 120px;">
+                        <i class="fas fa-camera" style="font-size: 1.8rem; color: #007bff; margin-bottom: 8px;"></i>
+                        <h5 style="margin: 0 0 5px 0; color: #007bff;">Foto hochladen</h5>
+                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Klicken oder ziehen</p>
                     </div>
-                    <div id="videoUpload" style="padding: 30px; border: 2px dashed #dc3545; border-radius: 8px; cursor: pointer; background: white;">
-                        <i class="fas fa-video" style="font-size: 24px; color: #dc3545;"></i>
-                        <p style="margin: 10px 0 0 0; color: #dc3545;">Video hochladen</p>
+                    <div id="photoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #28a745; border-radius: 10px; cursor: pointer; background: rgba(40,167,69,0.05); transition: all 0.3s ease; min-height: 120px;">
+                        <i class="fas fa-plus-circle" style="font-size: 1.8rem; color: #28a745; margin-bottom: 8px;"></i>
+                        <h5 style="margin: 0 0 5px 0; color: #28a745;">Foto erstellen</h5>
+                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Mit Webcam</p>
                     </div>
                 </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div id="videoUpload" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #dc3545; border-radius: 10px; cursor: pointer; background: rgba(220,53,69,0.05); transition: all 0.3s ease; min-height: 120px;">
+                        <i class="fas fa-video" style="font-size: 1.8rem; color: #dc3545; margin-bottom: 8px;"></i>
+                        <h5 style="margin: 0 0 5px 0; color: #dc3545;">Video hochladen</h5>
+                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Klicken oder ziehen</p>
+                    </div>
+                    <div id="videoCreate" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; border: 2px dashed #fd7e14; border-radius: 10px; cursor: pointer; background: rgba(253,126,20,0.05); transition: all 0.3s ease; min-height: 120px;">
+                        <i class="fas fa-video-camera" style="font-size: 1.8rem; color: #fd7e14; margin-bottom: 8px;"></i>
+                        <h5 style="margin: 0 0 5px 0; color: #fd7e14;">Video erstellen</h5>
+                        <p style="margin: 0; color: #666; font-size: 13px; text-align: center;">Mit Webcam</p>
+                    </div>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
             `;
             
             aiTwinContent.appendChild(uploadDiv);
@@ -706,8 +731,111 @@ class AdminPanel {
             // Setup upload functionality
             setTimeout(() => {
                 this.setupAITwinUpload();
+                this.setupUploadTileEvents();
             }, 100);
         }
+    }
+
+    setupUploadTileEvents() {
+        console.log('🔧 Setting up upload tile events...');
+        
+        // Foto hochladen
+        const photoUpload = document.getElementById('photoUpload');
+        const photoInput = document.getElementById('photoInput');
+        
+        if (photoUpload && photoInput) {
+            photoUpload.addEventListener('click', () => {
+                console.log('📸 Photo upload tile clicked');
+                photoInput.click();
+            });
+            
+            photoUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                photoUpload.style.background = 'rgba(0,123,255,0.15)';
+                photoUpload.style.borderColor = '#0056b3';
+            });
+            
+            photoUpload.addEventListener('dragleave', () => {
+                photoUpload.style.background = 'rgba(0,123,255,0.05)';
+                photoUpload.style.borderColor = '#007bff';
+            });
+            
+            photoUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                photoUpload.style.background = 'rgba(0,123,255,0.05)';
+                photoUpload.style.borderColor = '#007bff';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    this.handlePhotoUpload(file);
+                }
+            });
+            
+            photoInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    console.log('📸 Photo selected:', e.target.files[0]);
+                    this.handlePhotoUpload(e.target.files[0]);
+                }
+            });
+        }
+        
+        // Foto erstellen
+        const photoCreate = document.getElementById('photoCreate');
+        if (photoCreate) {
+            photoCreate.addEventListener('click', () => {
+                console.log('📷 Photo create tile clicked');
+                this.showLiveCreation('photo');
+            });
+        }
+        
+        // Video hochladen
+        const videoUpload = document.getElementById('videoUpload');
+        const videoInput = document.getElementById('videoInput');
+        
+        if (videoUpload && videoInput) {
+            videoUpload.addEventListener('click', () => {
+                console.log('🎥 Video upload tile clicked');
+                videoInput.click();
+            });
+            
+            videoUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                videoUpload.style.background = 'rgba(220,53,69,0.15)';
+                videoUpload.style.borderColor = '#c82333';
+            });
+            
+            videoUpload.addEventListener('dragleave', () => {
+                videoUpload.style.background = 'rgba(220,53,69,0.05)';
+                videoUpload.style.borderColor = '#dc3545';
+            });
+            
+            videoUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                videoUpload.style.background = 'rgba(220,53,69,0.05)';
+                videoUpload.style.borderColor = '#dc3545';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    this.handleVideoUpload(file);
+                }
+            });
+            
+            videoInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    console.log('🎥 Video selected:', e.target.files[0]);
+                    this.handleVideoUpload(e.target.files[0]);
+                }
+            });
+        }
+        
+        // Video erstellen
+        const videoCreate = document.getElementById('videoCreate');
+        if (videoCreate) {
+            videoCreate.addEventListener('click', () => {
+                console.log('🎬 Video create tile clicked');
+                this.showLiveCreation('video');
+            });
+        }
+        
+        console.log('✅ Upload tile events setup completed');
     }
 
     updateAITwinUI() {
@@ -1234,7 +1362,8 @@ class AdminPanel {
             galleryContainer.className = 'twin-gallery';
             
             // Füge zur AI Twin Sektion hinzu
-            const aiTwinContent = document.querySelector('.ai-twin-content') || 
+            const aiTwinContent = document.getElementById('aiTwinContent') || 
+                                 document.querySelector('.ai-twin-content') || 
                                  document.querySelector('#aiTwinSection') ||
                                  document.body;
             aiTwinContent.appendChild(galleryContainer);
@@ -2661,68 +2790,34 @@ class AdminPanel {
     }
 }
 
-// ULTRA-SAFE INITIALIZATION
+// CLEAN INITIALIZATION
 (function() {
-    console.log('🚨 ULTRA-SAFE: Admin Panel loading...');
+    console.log('🚀 Admin Panel initializing...');
     
-    // Mehrfache Initialisierung für maximale Sicherheit
-    function safeInit() {
+    function init() {
         try {
-            console.log('🚨 ULTRA-SAFE: Attempting initialization...');
-            
             if (typeof AdminPanel === 'undefined') {
-                console.error('❌ AdminPanel class not found, retrying...');
-                setTimeout(safeInit, 500);
+                console.error('❌ AdminPanel class not found');
                 return;
             }
             
             if (!window.adminPanel) {
-    adminPanel = new AdminPanel();
-                window.adminPanel = adminPanel;
-                console.log('✅ ULTRA-SAFE: Admin Panel initialized successfully');
-                
-                // Setze globale Referenz mehrfach
+                adminPanel = new AdminPanel();
                 window.adminPanel = adminPanel;
                 globalThis.adminPanel = adminPanel;
-                
-                // Test alle wichtigen Funktionen
-                setTimeout(() => {
-                    if (window.adminPanel) {
-                        console.log('✅ ULTRA-SAFE: Admin Panel is accessible');
-                        
-                        // Setup Upload mit Retry
-                        if (typeof window.adminPanel.setupAITwinUpload === 'function') {
-                            window.adminPanel.setupAITwinUpload();
-                        }
-                    } else {
-                        console.error('❌ ULTRA-SAFE: Admin Panel lost reference, retrying...');
-                        setTimeout(safeInit, 1000);
-                    }
-                }, 1000);
+                console.log('✅ Admin Panel initialized successfully');
             }
             
         } catch (error) {
-            console.error('❌ ULTRA-SAFE: Initialization failed:', error);
-            setTimeout(safeInit, 1000);
+            console.error('❌ Initialization failed:', error);
         }
     }
     
-    // Starte Initialisierung
+    // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => setTimeout(safeInit, 100));
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-        setTimeout(safeInit, 100);
+        init();
     }
-    
-    // Backup Initialisierung
-    setTimeout(safeInit, 2000);
-    setTimeout(safeInit, 5000);
-    
-    // Emergency override nur bei echten Fehlern
-    setTimeout(() => {
-        if (!window.adminPanel) {
-            console.log('⚠️ Admin Panel not loaded after 30 seconds, user can reload manually if needed');
-        }
-    }, 30000);
 })();
 
