@@ -1692,46 +1692,116 @@ class AdminPanel {
     }
 }
 
-// IMMEDIATE INITIALIZATION - NO WAITING
+// ULTRA-SAFE INITIALIZATION
 (function() {
-    console.log('🚨 EMERGENCY: Admin Panel loading...');
+    console.log('🚨 ULTRA-SAFE: Admin Panel loading...');
     
-    // Warte auf DOM und initialisiere sofort
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeAdminPanel);
-    } else {
-        setTimeout(initializeAdminPanel, 100);
-    }
-    
-    function initializeAdminPanel() {
+    // Mehrfache Initialisierung für maximale Sicherheit
+    function safeInit() {
         try {
-            console.log('🚨 EMERGENCY: Initializing Admin Panel...');
-    adminPanel = new AdminPanel();
-            window.adminPanel = adminPanel;
-            console.log('✅ EMERGENCY: Admin Panel initialized successfully');
+            console.log('🚨 ULTRA-SAFE: Attempting initialization...');
             
-            // Teste sofort die Upload-Funktionalität
-            setTimeout(() => {
-                if (window.adminPanel && window.adminPanel.setupAITwinUpload) {
-                    window.adminPanel.setupAITwinUpload();
-                    console.log('✅ AI Twin Upload setup completed');
-                }
-            }, 500);
+            if (typeof AdminPanel === 'undefined') {
+                console.error('❌ AdminPanel class not found, retrying...');
+                setTimeout(safeInit, 500);
+                return;
+            }
+            
+            if (!window.adminPanel) {
+    adminPanel = new AdminPanel();
+                window.adminPanel = adminPanel;
+                console.log('✅ ULTRA-SAFE: Admin Panel initialized successfully');
+                
+                // Setze globale Referenz mehrfach
+                window.adminPanel = adminPanel;
+                globalThis.adminPanel = adminPanel;
+                
+                // Test alle wichtigen Funktionen
+                setTimeout(() => {
+                    if (window.adminPanel) {
+                        console.log('✅ ULTRA-SAFE: Admin Panel is accessible');
+                        
+                        // Setup Upload mit Retry
+                        if (typeof window.adminPanel.setupAITwinUpload === 'function') {
+                            window.adminPanel.setupAITwinUpload();
+                        }
+                        
+                        // Debug Buttons mit Retry
+                        if (typeof window.adminPanel.addDebugButtons === 'function') {
+                            window.adminPanel.addDebugButtons();
+                        }
+                    } else {
+                        console.error('❌ ULTRA-SAFE: Admin Panel lost reference, retrying...');
+                        setTimeout(safeInit, 1000);
+                    }
+                }, 1000);
+            }
             
         } catch (error) {
-            console.error('❌ EMERGENCY: Error initializing Admin Panel:', error);
-            
-            // Fallback: Versuche nochmals nach 1 Sekunde
-            setTimeout(() => {
-                try {
-                    adminPanel = new AdminPanel();
-                    window.adminPanel = adminPanel;
-                    console.log('✅ EMERGENCY: Admin Panel initialized on retry');
-                } catch (retryError) {
-                    console.error('❌ EMERGENCY: Retry failed:', retryError);
-                }
-            }, 1000);
+            console.error('❌ ULTRA-SAFE: Initialization failed:', error);
+            setTimeout(safeInit, 1000);
         }
     }
+    
+    // Starte Initialisierung
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(safeInit, 100));
+    } else {
+        setTimeout(safeInit, 100);
+    }
+    
+    // Backup Initialisierung
+    setTimeout(safeInit, 2000);
+    setTimeout(safeInit, 5000);
+    
+    // EMERGENCY OVERRIDE - Direkte Funktionen am Window-Objekt
+    setTimeout(() => {
+        if (!window.adminPanel) {
+            console.log('🚨 EMERGENCY OVERRIDE: Creating direct functions...');
+            
+            window.emergencyUpload = function() {
+                console.log('🚨 EMERGENCY UPLOAD: Direct function called');
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        alert('Datei ausgewählt: ' + file.name);
+                        console.log('📁 File selected:', file);
+                    }
+                };
+                input.click();
+            };
+            
+            window.emergencyInit = function() {
+                console.log('🚨 EMERGENCY INIT: Direct function called');
+                location.reload();
+            };
+            
+            // Erstelle Emergency Panel
+            const emergencyDiv = document.createElement('div');
+            emergencyDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: red;
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 99999;
+                text-align: center;
+            `;
+            emergencyDiv.innerHTML = `
+                <h3>🚨 EMERGENCY MODE</h3>
+                <p>Admin Panel nicht geladen</p>
+                <button onclick="window.emergencyUpload()" style="margin: 5px; padding: 10px; background: orange; color: white; border: none; border-radius: 5px; cursor: pointer;">EMERGENCY UPLOAD</button>
+                <button onclick="window.emergencyInit()" style="margin: 5px; padding: 10px; background: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">RELOAD PAGE</button>
+                <button onclick="this.parentElement.remove()" style="margin: 5px; padding: 10px; background: gray; color: white; border: none; border-radius: 5px; cursor: pointer;">CLOSE</button>
+            `;
+            document.body.appendChild(emergencyDiv);
+        }
+    }, 10000);
 })();
 
