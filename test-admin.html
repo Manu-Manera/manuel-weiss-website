@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #4f46e5;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Admin Panel Test</h1>
+        
+        <h2>Test Buttons</h2>
+        <button class="test-button" onclick="testButton1()">Test Button 1</button>
+        <button class="test-button" onclick="testButton2()">Test Button 2</button>
+        <button class="test-button" onclick="testAdminPanel()">Test Admin Panel</button>
+        <button class="test-button" onclick="clearLog()">Clear Log</button>
+        
+        <h2>Console Log</h2>
+        <div id="log" class="log"></div>
+        
+        <h2>Admin Panel Status</h2>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Console Log Capture
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('log');
+        
+        function addToLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.color = type === 'error' ? 'red' : 'black';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+        
+        function clearLog() {
+            logDiv.innerHTML = '';
+        }
+        
+        function testButton1() {
+            console.log('Test Button 1 clicked');
+            alert('Test Button 1 funktioniert!');
+        }
+        
+        function testButton2() {
+            console.log('Test Button 2 clicked');
+            alert('Test Button 2 funktioniert!');
+        }
+        
+        function testAdminPanel() {
+            console.log('Testing adminPanel...');
+            console.log('window.adminPanel:', window.adminPanel);
+            
+            const statusDiv = document.getElementById('status');
+            if (window.adminPanel) {
+                statusDiv.innerHTML = '<p style="color: green;">✅ adminPanel ist verfügbar</p>';
+                console.log('adminPanel methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.adminPanel)));
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">❌ adminPanel ist NICHT verfügbar</p>';
+            }
+        }
+        
+        // Test beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Test page loaded');
+            setTimeout(testAdminPanel, 1000);
+        });
+    </script>
+</body>
+</html>
