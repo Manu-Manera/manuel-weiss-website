@@ -1,4 +1,4 @@
-// Modern Admin Panel - Fixed Version
+// Modern Admin Panel - Fixed Version v2.0
 'use strict';
 
 // Globale Variable für Admin Panel
@@ -1170,32 +1170,27 @@ class AdminPanel {
     }
 }
 
-// Initialize Admin Panel
-console.log('Admin Panel script loaded');
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - Initializing Admin Panel...');
-    const adminPanel = new AdminPanel();
-    window.adminPanel = adminPanel; // Setze globale Referenz korrekt
-    console.log('Admin Panel initialized successfully');
-    console.log('Global adminPanel reference set:', window.adminPanel);
+// Sofortige Initialisierung für bessere Kompatibilität
+(function() {
+    console.log('Admin Panel script loading...');
     
-    // Test-Funktion für Debugging
-    window.testAdminPanel = function() {
-        console.log('Testing adminPanel...');
-        console.log('window.adminPanel:', window.adminPanel);
-        if (window.adminPanel) {
-            console.log('adminPanel methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.adminPanel)));
-            window.adminPanel.showToast('Test erfolgreich!', 'success');
-        } else {
-            console.error('adminPanel is null!');
+    // Warte auf DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeAdminPanel);
+    } else {
+        initializeAdminPanel();
+    }
+    
+    function initializeAdminPanel() {
+        console.log('Initializing Admin Panel...');
+        try {
+            adminPanel = new AdminPanel();
+            window.adminPanel = adminPanel;
+            console.log('✅ Admin Panel successfully initialized');
+            console.log('Global adminPanel reference:', window.adminPanel);
+        } catch (error) {
+            console.error('❌ Error initializing Admin Panel:', error);
         }
-    };
-    
-    // Test nach 2 Sekunden
-    setTimeout(() => {
-        console.log('Running delayed test...');
-        window.testAdminPanel();
-    }, 2000);
-});
+    }
+})();
 
