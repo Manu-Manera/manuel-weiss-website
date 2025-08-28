@@ -1040,6 +1040,62 @@ class AdminPanel {
         link.click();
         this.showToast('Twin wird heruntergeladen', 'success');
     }
+
+    showTextInputSection() {
+        // Erstelle Text-Input-Sektion falls sie nicht existiert
+        let textInputSection = document.getElementById('textInputSection');
+        if (!textInputSection) {
+            textInputSection = document.createElement('div');
+            textInputSection.id = 'textInputSection';
+            textInputSection.className = 'text-input-section';
+            textInputSection.innerHTML = `
+                <h4>Text für Präsentation eingeben</h4>
+                <div class="text-input-container">
+                    <textarea id="presentationText" placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." rows="6"></textarea>
+                    <div class="text-input-actions">
+                        <button class="btn btn-primary" onclick="adminPanel.startPresentationFromText()">
+                            <i class="fas fa-play"></i>
+                            Präsentation starten
+                        </button>
+                        <button class="btn btn-secondary" onclick="adminPanel.createNewPresentation()">
+                            <i class="fas fa-plus"></i>
+                            Neue Präsentation
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Füge zur AI Twin Sektion hinzu
+            const aiTwinContent = document.querySelector('.ai-twin-content');
+            if (aiTwinContent) {
+                aiTwinContent.appendChild(textInputSection);
+            }
+        }
+        textInputSection.style.display = 'block';
+    }
+
+    startPresentationFromText() {
+        const textarea = document.getElementById('presentationText');
+        if (!textarea || !textarea.value.trim()) {
+            this.showToast('Bitte geben Sie einen Text ein', 'error');
+            return;
+        }
+
+        const presentation = {
+            id: Date.now(),
+            title: 'Präsentation ' + new Date().toLocaleTimeString(),
+            text: textarea.value.trim(),
+            createdAt: new Date().toISOString()
+        };
+
+        // Speichere Präsentation
+        this.aiTwinData.presentations = this.aiTwinData.presentations || [];
+        this.aiTwinData.presentations.push(presentation);
+        this.saveData();
+
+        // Starte Präsentation
+        this.startPresentation(presentation);
+    }
 }
 
 // Initialize Admin Panel
@@ -1049,6 +1105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     adminPanel = new AdminPanel();
     window.adminPanel = adminPanel; // Setze globale Referenz korrekt
     console.log('Admin Panel initialized successfully');
+    console.log('Global adminPanel reference set:', window.adminPanel);
 });
 // Global function definitions for onclick handlers
 window.adminPanel = null; // Will be set after DOM loads
