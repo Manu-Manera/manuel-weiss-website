@@ -1,4 +1,4 @@
-// Modern Admin Panel - Fixed Version v3.0 with Open Source AI Twin
+// Modern Admin Panel - Fixed Version v2.0
 'use strict';
 
 // Globale Variable für Admin Panel
@@ -102,6 +102,10 @@ class AdminPanel {
         this.mediaFiles = [];
         this.aiTwinData = null;
         this.notifications = [];
+        
+        // Initialize AI Twin
+        this.aiTwin = new AITwin();
+        
         this.init();
     }
 
@@ -121,19 +125,31 @@ class AdminPanel {
         console.log('Global adminPanel reference set in init():', window.adminPanel);
     }
 
-    // Data Management
+    // Data Management mit Fallback für private Fenster
     loadData() {
-        this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-        this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
-        this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
-        this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        try {
+            this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+            this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
+            this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
+            this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        } catch (error) {
+            console.warn('⚠️ Local Storage not available (private window?), using defaults');
+            this.websiteData = {};
+            this.mediaFiles = [];
+            this.aiTwinData = {};
+            this.notifications = [];
+        }
     }
 
     saveData() {
-        localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
-        localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
-        localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
-        localStorage.setItem('notifications', JSON.stringify(this.notifications));
+        try {
+            localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
+            localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
+            localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
+            localStorage.setItem('notifications', JSON.stringify(this.notifications));
+        } catch (error) {
+            console.warn('⚠️ Could not save to Local Storage (private window?)');
+        }
     }
 
     // Event Listeners
