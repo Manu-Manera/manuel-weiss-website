@@ -611,17 +611,22 @@ class AdminPanel {
         console.log('✅ Debug buttons added');
     }
 
-    testPhotoUpload() {
+    async testPhotoUpload() {
         console.log('🧪 Testing photo upload...');
         this.showToast('Test: Photo Upload gestartet', 'info');
         
         // Simuliere Foto-Upload
-        setTimeout(() => {
-            this.handlePhotoUpload({
-                type: 'image/jpeg',
-                name: 'test-photo.jpg',
-                size: 1024
-            });
+        setTimeout(async () => {
+            try {
+                await this.handlePhotoUpload({
+                    type: 'image/jpeg',
+                    name: 'test-photo.jpg',
+                    size: 1024
+                });
+            } catch (error) {
+                console.error('❌ Test photo upload failed:', error);
+                this.showToast('Test fehlgeschlagen', 'error');
+            }
         }, 1000);
     }
 
@@ -1483,7 +1488,7 @@ class AdminPanel {
         console.log('✅ Text input section is now visible');
     }
 
-    startPresentationFromText() {
+    async startPresentationFromText() {
         console.log('🎬 Starting presentation from text...');
         
         const textarea = document.getElementById('presentationText');
@@ -1499,26 +1504,36 @@ class AdminPanel {
             return;
         }
 
+        if (!this.aiTwinData || !this.aiTwinData.isCreated) {
+            console.error('❌ No AI Twin available');
+            this.showToast('Bitte erstellen Sie zuerst einen AI Twin', 'error');
+            return;
+        }
+
         console.log('📝 Text content:', textarea.value.trim());
 
-        const presentation = {
-            id: Date.now(),
-            title: 'Präsentation ' + new Date().toLocaleTimeString(),
-            text: textarea.value.trim(),
-            createdAt: new Date().toISOString()
-        };
+        try {
+            // Verwende AI Twin Klasse für Präsentation
+            const presentation = await this.aiTwin.createPresentation(
+                textarea.value.trim(), 
+                this.aiTwinData
+            );
 
-        console.log('📋 Created presentation:', presentation);
+            console.log('📋 Created presentation:', presentation);
 
-        // Speichere Präsentation
-        this.aiTwinData.presentations = this.aiTwinData.presentations || [];
-        this.aiTwinData.presentations.push(presentation);
-        this.saveData();
+            // Speichere Präsentation
+            this.aiTwinData.presentations = this.aiTwinData.presentations || [];
+            this.aiTwinData.presentations.push(presentation);
+            this.saveData();
 
-        console.log('💾 Presentation saved');
+            console.log('💾 Presentation saved');
 
-        // Starte Präsentation
-        this.startPresentation(presentation);
+            // Starte Präsentation
+            this.startPresentation(presentation);
+        } catch (error) {
+            console.error('❌ Error creating presentation:', error);
+            this.showToast('Fehler beim Erstellen der Präsentation', 'error');
+        }
     }
 }
 
