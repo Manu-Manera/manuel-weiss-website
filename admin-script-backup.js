@@ -1,9 +1,8 @@
-// Modern Admin Panel - Fixed Version
+// Modern Admin Panel - Modular JavaScript
 'use strict';
 
 class AdminPanel {
     constructor() {
-        console.log('AdminPanel constructor called');
         this.currentSection = 'dashboard';
         this.isDarkMode = false;
         this.isSidebarCollapsed = false;
@@ -15,7 +14,6 @@ class AdminPanel {
     }
 
     init() {
-        console.log('AdminPanel.init() called');
         this.loadData();
         this.setupEventListeners();
         this.setupNavigation();
@@ -25,9 +23,8 @@ class AdminPanel {
         this.loadTheme();
         this.setupSettingsTabs();
         
-        // Set global reference immediately
+        // Set global reference
         window.adminPanel = this;
-        console.log('Global adminPanel reference set in init():', window.adminPanel);
     }
 
     // Data Management
@@ -47,37 +44,25 @@ class AdminPanel {
 
     // Event Listeners
     setupEventListeners() {
-        console.log('Setting up event listeners...');
-        
         // Sidebar toggle
         const sidebarToggle = document.getElementById('sidebarToggle');
         if (sidebarToggle) {
-            console.log('Sidebar toggle found, adding event listener');
             sidebarToggle.addEventListener('click', () => this.toggleSidebar());
-        } else {
-            console.error('Sidebar toggle not found');
         }
 
         // Dark mode toggle
         const darkModeBtn = document.getElementById('darkModeIcon');
         if (darkModeBtn) {
-            console.log('Dark mode button found, adding event listener');
             darkModeBtn.addEventListener('click', () => this.toggleDarkMode());
-        } else {
-            console.error('Dark mode button not found');
         }
 
         // Search functionality
         const searchInput = document.querySelector('.search-input');
         if (searchInput) {
-            console.log('Search input found, adding event listener');
             searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
-        } else {
-            console.error('Search input not found');
         }
 
         // AI Twin upload handlers
-        console.log('Setting up AI Twin upload handlers...');
         this.setupAITwinUpload();
     }
 
@@ -86,7 +71,6 @@ class AdminPanel {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 const section = item.dataset.section;
-                console.log('Navigation clicked:', section);
                 this.showSection(section);
             });
         });
@@ -137,8 +121,6 @@ class AdminPanel {
 
     // Navigation
     showSection(section) {
-        console.log('Showing section:', section);
-        
         // Update navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
@@ -187,7 +169,6 @@ class AdminPanel {
     }
 
     loadSectionContent(section) {
-        console.log('Loading section content:', section);
         switch (section) {
             case 'dashboard':
                 this.loadDashboard();
@@ -324,19 +305,14 @@ class AdminPanel {
 
     // AI Twin Section
     loadAITwinSection() {
-        console.log('Loading AI Twin section...');
         this.updateAITwinUI();
     }
 
     updateAITwinUI() {
-        console.log('Updating AI Twin UI...');
         if (this.aiTwinData && this.aiTwinData.isCreated) {
             // Show twin preview
-            const uploadArea = document.getElementById('aiUploadArea');
-            const twinPreview = document.getElementById('twinPreview');
-            
-            if (uploadArea) uploadArea.style.display = 'none';
-            if (twinPreview) twinPreview.style.display = 'block';
+            document.getElementById('aiUploadArea').style.display = 'none';
+            document.getElementById('twinPreview').style.display = 'block';
             
             // Update video source
             const twinVideo = document.getElementById('twinVideo');
@@ -348,11 +324,8 @@ class AdminPanel {
             this.updateAISteps(4);
         } else {
             // Show upload area
-            const uploadArea = document.getElementById('aiUploadArea');
-            const twinPreview = document.getElementById('twinPreview');
-            
-            if (uploadArea) uploadArea.style.display = 'block';
-            if (twinPreview) twinPreview.style.display = 'none';
+            document.getElementById('aiUploadArea').style.display = 'block';
+            document.getElementById('twinPreview').style.display = 'none';
             
             // Reset steps
             this.updateAISteps(1);
@@ -363,42 +336,27 @@ class AdminPanel {
     }
 
     setupAITwinUpload() {
-        console.log('Setting up AI Twin upload handlers...');
-        
         // Photo upload
         const photoUpload = document.getElementById('photoUpload');
         const photoInput = document.getElementById('photoInput');
         
         if (photoUpload && photoInput) {
-            console.log('Photo upload elements found, setting up event listeners...');
-            
-            photoUpload.addEventListener('click', () => {
-                console.log('Photo upload clicked');
-                photoInput.click();
-            });
-            
+            photoUpload.addEventListener('click', () => photoInput.click());
             photoUpload.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 photoUpload.classList.add('dragover');
             });
-            
             photoUpload.addEventListener('dragleave', () => {
                 photoUpload.classList.remove('dragover');
             });
-            
             photoUpload.addEventListener('drop', (e) => {
                 e.preventDefault();
                 photoUpload.classList.remove('dragover');
-                console.log('Photo dropped:', e.dataTransfer.files[0]);
                 this.handlePhotoUpload(e.dataTransfer.files[0]);
             });
-            
             photoInput.addEventListener('change', (e) => {
-                console.log('Photo selected:', e.target.files[0]);
                 this.handlePhotoUpload(e.target.files[0]);
             });
-        } else {
-            console.error('Photo upload elements not found:', { photoUpload, photoInput });
         }
         
         // Video upload (optional)
@@ -406,40 +364,26 @@ class AdminPanel {
         const videoInput = document.getElementById('videoInput');
         
         if (videoUpload && videoInput) {
-            console.log('Video upload elements found, setting up event listeners...');
-            
-            videoUpload.addEventListener('click', () => {
-                console.log('Video upload clicked');
-                videoInput.click();
-            });
-            
+            videoUpload.addEventListener('click', () => videoInput.click());
             videoUpload.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 videoUpload.classList.add('dragover');
             });
-            
             videoUpload.addEventListener('dragleave', () => {
                 videoUpload.classList.remove('dragover');
             });
-            
             videoUpload.addEventListener('drop', (e) => {
                 e.preventDefault();
                 videoUpload.classList.remove('dragover');
-                console.log('Video dropped:', e.dataTransfer.files[0]);
                 this.handleVideoUpload(e.dataTransfer.files[0]);
             });
-            
             videoInput.addEventListener('change', (e) => {
-                console.log('Video selected:', e.target.files[0]);
                 this.handleVideoUpload(e.target.files[0]);
             });
-        } else {
-            console.error('Video upload elements not found:', { videoUpload, videoInput });
         }
     }
 
     handlePhotoUpload(file) {
-        console.log('Handling photo upload:', file);
         if (!file || !file.type.startsWith('image/')) {
             this.showToast('Bitte wähle ein gültiges Bild aus', 'error');
             return;
@@ -462,7 +406,6 @@ class AdminPanel {
     }
 
     handleVideoUpload(file) {
-        console.log('Handling video upload:', file);
         if (!file || !file.type.startsWith('video/')) {
             this.showToast('Bitte wähle ein gültiges Video aus', 'error');
             return;
@@ -494,12 +437,8 @@ class AdminPanel {
     }
 
     startAIProcessing() {
-        console.log('Starting AI processing...');
-        const uploadArea = document.getElementById('aiUploadArea');
-        const processingArea = document.getElementById('aiProcessing');
-        
-        if (uploadArea) uploadArea.style.display = 'none';
-        if (processingArea) processingArea.style.display = 'block';
+        document.getElementById('aiUploadArea').style.display = 'none';
+        document.getElementById('aiProcessing').style.display = 'block';
         
         this.updateAISteps(2);
         
@@ -521,9 +460,7 @@ class AdminPanel {
     }
 
     completeAIProcessing() {
-        console.log('AI processing completed');
-        const processingArea = document.getElementById('aiProcessing');
-        if (processingArea) processingArea.style.display = 'none';
+        document.getElementById('aiProcessing').style.display = 'none';
         
         this.aiTwinData.isCreated = true;
         this.aiTwinData.createdAt = new Date().toISOString();
@@ -538,74 +475,14 @@ class AdminPanel {
     }
 
     updateAISteps(activeStep) {
-        console.log('Updating AI steps to:', activeStep);
         document.querySelectorAll('.step').forEach((step, index) => {
             const stepNumber = index + 1;
             step.classList.toggle('active', stepNumber <= activeStep);
         });
     }
 
-    showTextInputSection() {
-        console.log('Showing text input section...');
-        // Erstelle Text-Input-Sektion falls sie nicht existiert
-        let textInputSection = document.getElementById('textInputSection');
-        if (!textInputSection) {
-            textInputSection = document.createElement('div');
-            textInputSection.id = 'textInputSection';
-            textInputSection.className = 'text-input-section';
-            textInputSection.innerHTML = `
-                <h4>Text für Präsentation eingeben</h4>
-                <div class="text-input-container">
-                    <textarea id="presentationText" placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." rows="6"></textarea>
-                    <div class="text-input-actions">
-                        <button class="btn btn-primary" onclick="adminPanel.startPresentationFromText()">
-                            <i class="fas fa-play"></i>
-                            Präsentation starten
-                        </button>
-                        <button class="btn btn-secondary" onclick="adminPanel.createNewPresentation()">
-                            <i class="fas fa-plus"></i>
-                            Neue Präsentation
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Füge zur AI Twin Sektion hinzu
-            const aiTwinContent = document.querySelector('.ai-twin-content');
-            if (aiTwinContent) {
-                aiTwinContent.appendChild(textInputSection);
-            }
-        }
-        textInputSection.style.display = 'block';
-    }
-
-    startPresentationFromText() {
-        console.log('Starting presentation from text...');
-        const textarea = document.getElementById('presentationText');
-        if (!textarea || !textarea.value.trim()) {
-            this.showToast('Bitte geben Sie einen Text ein', 'error');
-            return;
-        }
-
-        const presentation = {
-            id: Date.now(),
-            title: 'Präsentation ' + new Date().toLocaleTimeString(),
-            text: textarea.value.trim(),
-            createdAt: new Date().toISOString()
-        };
-
-        // Speichere Präsentation
-        this.aiTwinData.presentations = this.aiTwinData.presentations || [];
-        this.aiTwinData.presentations.push(presentation);
-        this.saveData();
-
-        // Starte Präsentation
-        this.startPresentation(presentation);
-    }
-
     // Präsentationen und Text-Eingabe
     createNewPresentation() {
-        console.log('Creating new presentation...');
         const presentationModal = document.createElement('div');
         presentationModal.className = 'modal-overlay';
         presentationModal.innerHTML = `
@@ -713,7 +590,6 @@ class AdminPanel {
     }
 
     startPresentation(presentation) {
-        console.log('Starting presentation:', presentation);
         const presentationModal = document.createElement('div');
         presentationModal.className = 'modal-overlay presentation-modal';
         presentationModal.innerHTML = `
@@ -989,7 +865,6 @@ class AdminPanel {
     }
 
     showToast(message, type = 'info') {
-        console.log('Showing toast:', message, type);
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerHTML = `
@@ -1006,10 +881,6 @@ class AdminPanel {
             setTimeout(() => {
                 toast.remove();
             }, 5000);
-        } else {
-            console.error('Toast container not found');
-            // Fallback: alert
-            alert(message);
         }
     }
 
@@ -1153,6 +1024,10 @@ class AdminPanel {
         }
     }
 
+    createNewPresentation() {
+        this.showToast('Neue Präsentation wird erstellt...', 'info');
+    }
+
     downloadTwin() {
         if (!this.aiTwinData || !this.aiTwinData.photoUrl) {
             this.showToast('Kein Twin zum Herunterladen verfügbar', 'error');
@@ -1165,14 +1040,70 @@ class AdminPanel {
         link.click();
         this.showToast('Twin wird heruntergeladen', 'success');
     }
+
+    showTextInputSection() {
+        // Erstelle Text-Input-Sektion falls sie nicht existiert
+        let textInputSection = document.getElementById('textInputSection');
+        if (!textInputSection) {
+            textInputSection = document.createElement('div');
+            textInputSection.id = 'textInputSection';
+            textInputSection.className = 'text-input-section';
+            textInputSection.innerHTML = `
+                <h4>Text für Präsentation eingeben</h4>
+                <div class="text-input-container">
+                    <textarea id="presentationText" placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." rows="6"></textarea>
+                    <div class="text-input-actions">
+                        <button class="btn btn-primary" onclick="adminPanel.startPresentationFromText()">
+                            <i class="fas fa-play"></i>
+                            Präsentation starten
+                        </button>
+                        <button class="btn btn-secondary" onclick="adminPanel.createNewPresentation()">
+                            <i class="fas fa-plus"></i>
+                            Neue Präsentation
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Füge zur AI Twin Sektion hinzu
+            const aiTwinContent = document.querySelector('.ai-twin-content');
+            if (aiTwinContent) {
+                aiTwinContent.appendChild(textInputSection);
+            }
+        }
+        textInputSection.style.display = 'block';
+    }
+
+    startPresentationFromText() {
+        const textarea = document.getElementById('presentationText');
+        if (!textarea || !textarea.value.trim()) {
+            this.showToast('Bitte geben Sie einen Text ein', 'error');
+            return;
+        }
+
+        const presentation = {
+            id: Date.now(),
+            title: 'Präsentation ' + new Date().toLocaleTimeString(),
+            text: textarea.value.trim(),
+            createdAt: new Date().toISOString()
+        };
+
+        // Speichere Präsentation
+        this.aiTwinData.presentations = this.aiTwinData.presentations || [];
+        this.aiTwinData.presentations.push(presentation);
+        this.saveData();
+
+        // Starte Präsentation
+        this.startPresentation(presentation);
+    }
 }
 
 // Initialize Admin Panel
-console.log('Admin Panel script loaded');
+let adminPanel;
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing Admin Panel...');
-    const adminPanel = new AdminPanel();
+    adminPanel = new AdminPanel();
     window.adminPanel = adminPanel; // Setze globale Referenz korrekt
     console.log('Admin Panel initialized successfully');
     console.log('Global adminPanel reference set:', window.adminPanel);
@@ -1181,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.testAdminPanel = function() {
         console.log('Testing adminPanel...');
         console.log('window.adminPanel:', window.adminPanel);
+        console.log('adminPanel instance:', adminPanel);
         if (window.adminPanel) {
             console.log('adminPanel methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.adminPanel)));
             window.adminPanel.showToast('Test erfolgreich!', 'success');
@@ -1195,3 +1127,4 @@ document.addEventListener('DOMContentLoaded', function() {
         window.testAdminPanel();
     }, 2000);
 });
+
