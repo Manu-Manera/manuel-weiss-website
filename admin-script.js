@@ -77,6 +77,182 @@ class EmergencyAITwin {
         });
     }
 
+    // Video processing
+    async processVideo(videoBlob, videoUrl) {
+        console.log('🎥 EMERGENCY: Processing video...');
+        this.isProcessing = true;
+        
+        return new Promise((resolve, reject) => {
+            try {
+                // Simulate video AI processing
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    console.log(`🎥 Video Processing: ${Math.min(100, progress).toFixed(0)}%`);
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        this.isProcessing = false;
+                        
+                        const aiTwin = {
+                            id: Date.now(),
+                            photoUrl: videoUrl, // Use video as preview
+                            videoUrl: videoUrl,
+                            videoBlob: videoBlob,
+                            createdAt: new Date().toISOString(),
+                            isCreated: true,
+                            type: 'video',
+                            features: {
+                                faceDetection: true,
+                                emotionAnalysis: true,
+                                voiceSynthesis: true,
+                                motionCapture: true
+                            }
+                        };
+                        
+                        console.log('✅ EMERGENCY: Video AI Twin created:', aiTwin);
+                        resolve(aiTwin);
+                    }
+                }, 700);
+                
+            } catch (error) {
+                console.error('❌ Error in processVideo:', error);
+                this.isProcessing = false;
+                reject(error);
+            }
+        });
+    }
+
+    // Text-to-Video AI generation
+    async generateFromText(text) {
+        console.log('🪄 EMERGENCY: Generating AI Twin from text...');
+        this.isProcessing = true;
+        
+        return new Promise((resolve, reject) => {
+            try {
+                // Simulate text-to-video AI generation
+                let progress = 0;
+                const stages = [
+                    'Textanalyse...',
+                    'Avatar-Design...',
+                    'Gesichtssynthese...',
+                    'Bewegungsanimation...',
+                    'Video-Rendering...'
+                ];
+                let currentStage = 0;
+                
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 10;
+                    
+                    if (progress > (currentStage + 1) * 20 && currentStage < stages.length - 1) {
+                        currentStage++;
+                    }
+                    
+                    console.log(`🪄 ${stages[currentStage]} ${Math.min(100, progress).toFixed(0)}%`);
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        this.isProcessing = false;
+                        
+                        // Generate synthetic avatar based on text
+                        const syntheticImageData = this.generateSyntheticAvatar(text);
+                        
+                        const aiTwin = {
+                            id: Date.now(),
+                            photoUrl: syntheticImageData,
+                            generatedFromText: text,
+                            createdAt: new Date().toISOString(),
+                            isCreated: true,
+                            type: 'text-generated',
+                            features: {
+                                faceDetection: true,
+                                emotionAnalysis: true,
+                                voiceSynthesis: true,
+                                textToSpeech: true,
+                                aiGenerated: true
+                            },
+                            metadata: {
+                                sourceText: text,
+                                generationType: 'text-to-avatar'
+                            }
+                        };
+                        
+                        console.log('✅ EMERGENCY: Text-to-Video AI Twin created:', aiTwin);
+                        resolve(aiTwin);
+                    }
+                }, 800);
+                
+            } catch (error) {
+                console.error('❌ Error in generateFromText:', error);
+                this.isProcessing = false;
+                reject(error);
+            }
+        });
+    }
+
+    // Generate synthetic avatar image
+    generateSyntheticAvatar(text) {
+        // Create a colorful gradient avatar based on text
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 400;
+        const ctx = canvas.getContext('2d');
+        
+        // Generate colors based on text hash
+        const hash = this.hashCode(text);
+        const hue1 = Math.abs(hash) % 360;
+        const hue2 = (hue1 + 120) % 360;
+        
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, `hsl(${hue1}, 70%, 60%)`);
+        gradient.addColorStop(1, `hsl(${hue2}, 70%, 40%)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add abstract face-like shapes
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.beginPath();
+        ctx.arc(200, 150, 80, 0, Math.PI * 2); // Head
+        ctx.fill();
+        
+        // Eyes
+        ctx.fillStyle = `hsl(${hue1}, 50%, 30%)`;
+        ctx.beginPath();
+        ctx.arc(170, 130, 15, 0, Math.PI * 2);
+        ctx.arc(230, 130, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Mouth
+        ctx.strokeStyle = `hsl(${hue2}, 60%, 30%)`;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(200, 170, 20, 0, Math.PI);
+        ctx.stroke();
+        
+        // Add text overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('AI Generated', 200, 320);
+        ctx.font = '12px Arial';
+        ctx.fillText('from: ' + text.substring(0, 30) + '...', 200, 340);
+        
+        return canvas.toDataURL('image/jpeg', 0.8);
+    }
+
+    // Simple hash function for text
+    hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
     // Simplified presentation creation
     async createPresentation(text, aiTwin) {
         console.log('🚨 EMERGENCY: Creating presentation...');
@@ -113,6 +289,15 @@ class AdminPanel {
         
         // Initialize AI Twin
         this.aiTwin = new EmergencyAITwin();
+        
+        // Initialize Live Creation
+        this.liveCreation = {
+            isRecording: false,
+            stream: null,
+            mediaRecorder: null,
+            recordedChunks: [],
+            currentMode: 'photo' // 'photo', 'video', 'audio'
+        };
         
         this.init();
     }
@@ -1031,9 +1216,14 @@ class AdminPanel {
                 <h4 style="margin: 0; color: #333;">
                     <i class="fas fa-users"></i> Meine AI Twins (${this.aiTwins.length})
                 </h4>
-                <button onclick="adminPanel.resetUploadArea()" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    <i class="fas fa-plus"></i> Neuen Twin erstellen
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="adminPanel.resetUploadArea()" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Foto/Video hochladen
+                    </button>
+                    <button onclick="adminPanel.showLiveCreation()" style="padding: 5px 10px; background: #ff6b35; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-video"></i> Live erstellen
+                    </button>
+                </div>
             </div>
             <div class="twins-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
                 ${this.aiTwins.map(twin => this.renderTwinCard(twin)).join('')}
@@ -1123,6 +1313,113 @@ class AdminPanel {
         this.showToast('Bereit für neuen AI Twin!', 'info');
     }
 
+    showLiveCreation() {
+        console.log('🎬 Showing Live Creation interface...');
+        
+        // Verstecke existierende Upload-Bereiche
+        const uploadArea = document.getElementById('aiUploadArea');
+        if (uploadArea) uploadArea.style.display = 'none';
+        
+        const twinPreview = document.getElementById('twinPreview');
+        if (twinPreview) twinPreview.style.display = 'none';
+        
+        // Erstelle Live Creation Interface
+        let liveCreationDiv = document.getElementById('liveCreation');
+        if (!liveCreationDiv) {
+            liveCreationDiv = document.createElement('div');
+            liveCreationDiv.id = 'liveCreation';
+            
+            const aiTwinContent = document.querySelector('.ai-twin-content') || 
+                                 document.querySelector('#aiTwinSection') ||
+                                 document.body;
+            aiTwinContent.appendChild(liveCreationDiv);
+        }
+        
+        liveCreationDiv.style.cssText = `
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        `;
+        
+        liveCreationDiv.innerHTML = `
+            <h3 style="margin-bottom: 20px; color: white;">
+                <i class="fas fa-magic"></i> AI Twin Live Creation Studio
+            </h3>
+            
+            <div class="creation-modes" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;">
+                <button onclick="adminPanel.setCreationMode('photo')" id="modePhoto" style="padding: 10px 15px; background: rgba(255,255,255,0.2); color: white; border: 2px solid white; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-camera"></i><br>Foto aufnehmen
+                </button>
+                <button onclick="adminPanel.setCreationMode('video')" id="modeVideo" style="padding: 10px 15px; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-video"></i><br>Video aufnehmen
+                </button>
+                <button onclick="adminPanel.setCreationMode('text-to-video')" id="modeTextVideo" style="padding: 10px 15px; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-magic"></i><br>Text zu Video
+                </button>
+            </div>
+            
+            <!-- Camera Preview -->
+            <div id="cameraPreview" style="display: none; margin-bottom: 20px;">
+                <video id="previewVideo" autoplay muted style="width: 100%; max-width: 400px; border-radius: 8px; border: 3px solid white;"></video>
+                <canvas id="photoCanvas" style="display: none;"></canvas>
+            </div>
+            
+            <!-- Text Input for Text-to-Video -->
+            <div id="textToVideoSection" style="display: none; margin-bottom: 20px;">
+                <h4 style="color: white; margin-bottom: 15px;">Text für AI Twin eingeben:</h4>
+                <textarea id="twinText" placeholder="Beschreiben Sie, was Ihr AI Twin sagen oder tun soll..." 
+                         style="width: 100%; max-width: 500px; height: 100px; padding: 10px; border: none; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                
+                <div style="margin-top: 15px;">
+                    <label style="display: flex; align-items: center; justify-content: center; gap: 10px; color: white; margin-bottom: 10px;">
+                        <input type="checkbox" id="useVoiceInput" onchange="adminPanel.toggleVoiceInput()">
+                        <i class="fas fa-microphone"></i> Spracheingabe verwenden
+                    </label>
+                    
+                    <button id="voiceRecordBtn" onclick="adminPanel.toggleVoiceRecording()" 
+                            style="display: none; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px;">
+                        <i class="fas fa-microphone"></i> Aufnahme starten
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Control Buttons -->
+            <div class="creation-controls" style="margin-top: 20px;">
+                <button id="startCameraBtn" onclick="adminPanel.startCamera()" style="padding: 12px 25px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px;">
+                    <i class="fas fa-play"></i> Kamera starten
+                </button>
+                
+                <button id="captureBtn" onclick="adminPanel.captureMedia()" style="display: none; padding: 12px 25px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px;">
+                    <i class="fas fa-camera"></i> Aufnehmen
+                </button>
+                
+                <button id="generateTwinBtn" onclick="adminPanel.generateAITwin()" style="display: none; padding: 12px 25px; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px;">
+                    <i class="fas fa-magic"></i> AI Twin generieren
+                </button>
+                
+                <button onclick="adminPanel.closeLiveCreation()" style="padding: 8px 15px; background: rgba(0,0,0,0.3); color: white; border: 1px solid white; border-radius: 8px; cursor: pointer; margin: 5px;">
+                    <i class="fas fa-times"></i> Schließen
+                </button>
+            </div>
+            
+            <div id="creationStatus" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; display: none;">
+                <div id="statusText">Bereit...</div>
+                <div id="progressBar" style="width: 100%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin-top: 10px; overflow: hidden;">
+                    <div id="progressFill" style="width: 0%; height: 100%; background: #2ecc71; transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+        `;
+        
+        // Set default mode
+        this.setCreationMode('photo');
+        
+        liveCreationDiv.style.display = 'block';
+        this.showToast('🎬 Live Creation Studio geöffnet!', 'info');
+    }
+
     renameTwin(twinId) {
         const twin = this.aiTwins.find(t => t.id === twinId);
         if (!twin) return;
@@ -1189,6 +1486,280 @@ class AdminPanel {
             console.log('🗑️ Twin deleted:', twin.name);
             console.log('📊 Remaining twins:', this.aiTwins.length);
         }
+    }
+
+    // Live Creation Functions
+    setCreationMode(mode) {
+        console.log('🎯 Setting creation mode:', mode);
+        this.liveCreation.currentMode = mode;
+        
+        // Update button styles
+        ['modePhoto', 'modeVideo', 'modeTextVideo'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.style.border = id === `mode${mode.charAt(0).toUpperCase() + mode.slice(1).replace('-', '')}` ? 
+                    '2px solid white' : '2px solid rgba(255,255,255,0.5)';
+            }
+        });
+        
+        // Show/hide relevant sections
+        const cameraPreview = document.getElementById('cameraPreview');
+        const textSection = document.getElementById('textToVideoSection');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const generateBtn = document.getElementById('generateTwinBtn');
+        
+        if (mode === 'text-to-video') {
+            if (cameraPreview) cameraPreview.style.display = 'none';
+            if (textSection) textSection.style.display = 'block';
+            if (startCameraBtn) startCameraBtn.style.display = 'none';
+            if (generateBtn) generateBtn.style.display = 'inline-block';
+        } else {
+            if (cameraPreview) cameraPreview.style.display = 'none';
+            if (textSection) textSection.style.display = 'none';
+            if (startCameraBtn) startCameraBtn.style.display = 'inline-block';
+            if (generateBtn) generateBtn.style.display = 'none';
+        }
+        
+        this.updateStatus(`${mode === 'photo' ? 'Foto' : mode === 'video' ? 'Video' : 'Text-zu-Video'} Modus aktiviert`);
+    }
+
+    async startCamera() {
+        console.log('📷 Starting camera...');
+        
+        try {
+            this.updateStatus('Kamera wird gestartet...', 10);
+            
+            // Request camera access
+            const constraints = {
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: 'user'
+                },
+                audio: this.liveCreation.currentMode === 'video'
+            };
+            
+            this.liveCreation.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            
+            // Show preview
+            const previewVideo = document.getElementById('previewVideo');
+            const cameraPreview = document.getElementById('cameraPreview');
+            
+            if (previewVideo && cameraPreview) {
+                previewVideo.srcObject = this.liveCreation.stream;
+                cameraPreview.style.display = 'block';
+                
+                // Show capture button
+                const captureBtn = document.getElementById('captureBtn');
+                const startCameraBtn = document.getElementById('startCameraBtn');
+                if (captureBtn) captureBtn.style.display = 'inline-block';
+                if (startCameraBtn) startCameraBtn.style.display = 'none';
+                
+                this.updateStatus('Kamera bereit - Klicken Sie "Aufnehmen"', 100);
+                this.showToast('📷 Kamera gestartet!', 'success');
+            }
+            
+        } catch (error) {
+            console.error('❌ Camera access failed:', error);
+            this.updateStatus('Kamera-Zugriff fehlgeschlagen');
+            this.showToast('Kamera-Zugriff verweigert. Bitte Berechtigung erteilen.', 'error');
+        }
+    }
+
+    async captureMedia() {
+        console.log('📸 Capturing media...');
+        
+        if (this.liveCreation.currentMode === 'photo') {
+            await this.capturePhoto();
+        } else if (this.liveCreation.currentMode === 'video') {
+            await this.captureVideo();
+        }
+    }
+
+    async capturePhoto() {
+        console.log('📸 Capturing photo...');
+        
+        const previewVideo = document.getElementById('previewVideo');
+        const canvas = document.getElementById('photoCanvas');
+        
+        if (!previewVideo || !canvas) return;
+        
+        // Set canvas dimensions
+        canvas.width = previewVideo.videoWidth || 640;
+        canvas.height = previewVideo.videoHeight || 480;
+        
+        // Draw video frame to canvas
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(previewVideo, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to blob
+        canvas.toBlob(async (blob) => {
+            if (blob) {
+                console.log('📷 Photo captured, creating AI Twin...');
+                this.updateStatus('Foto aufgenommen, AI Twin wird erstellt...', 50);
+                
+                // Create AI Twin from captured photo
+                const aiTwin = await this.aiTwin.processPhoto(blob);
+                this.processAIResult(aiTwin);
+                
+                this.closeLiveCreation();
+                this.showToast('📸 Foto aufgenommen und AI Twin erstellt!', 'success');
+            }
+        }, 'image/jpeg', 0.8);
+    }
+
+    async captureVideo() {
+        console.log('🎥 Starting video capture...');
+        
+        if (this.liveCreation.isRecording) {
+            this.stopVideoRecording();
+        } else {
+            this.startVideoRecording();
+        }
+    }
+
+    startVideoRecording() {
+        console.log('🎥 Starting video recording...');
+        
+        try {
+            this.liveCreation.recordedChunks = [];
+            this.liveCreation.mediaRecorder = new MediaRecorder(this.liveCreation.stream);
+            
+            this.liveCreation.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.liveCreation.recordedChunks.push(event.data);
+                }
+            };
+            
+            this.liveCreation.mediaRecorder.onstop = () => {
+                this.processVideoRecording();
+            };
+            
+            this.liveCreation.mediaRecorder.start();
+            this.liveCreation.isRecording = true;
+            
+            // Update UI
+            const captureBtn = document.getElementById('captureBtn');
+            if (captureBtn) {
+                captureBtn.innerHTML = '<i class="fas fa-stop"></i> Aufnahme stoppen';
+                captureBtn.style.background = '#e74c3c';
+            }
+            
+            this.updateStatus('Video wird aufgenommen...', 0);
+            this.showToast('🎥 Video-Aufnahme gestartet!', 'info');
+            
+        } catch (error) {
+            console.error('❌ Video recording failed:', error);
+            this.showToast('Video-Aufnahme fehlgeschlagen', 'error');
+        }
+    }
+
+    stopVideoRecording() {
+        console.log('🛑 Stopping video recording...');
+        
+        if (this.liveCreation.mediaRecorder) {
+            this.liveCreation.mediaRecorder.stop();
+            this.liveCreation.isRecording = false;
+            
+            // Update UI
+            const captureBtn = document.getElementById('captureBtn');
+            if (captureBtn) {
+                captureBtn.innerHTML = '<i class="fas fa-video"></i> Video aufnehmen';
+                captureBtn.style.background = '#27ae60';
+            }
+            
+            this.updateStatus('Video wird verarbeitet...', 75);
+        }
+    }
+
+    async processVideoRecording() {
+        console.log('🎬 Processing video recording...');
+        
+        const blob = new Blob(this.liveCreation.recordedChunks, { type: 'video/webm' });
+        
+        // Create video URL for preview
+        const videoUrl = URL.createObjectURL(blob);
+        
+        // Create AI Twin with video
+        const aiTwin = await this.aiTwin.processVideo(blob, videoUrl);
+        this.processAIResult(aiTwin);
+        
+        this.closeLiveCreation();
+        this.showToast('🎥 Video aufgenommen und AI Twin erstellt!', 'success');
+    }
+
+    toggleVoiceInput() {
+        const checkbox = document.getElementById('useVoiceInput');
+        const voiceBtn = document.getElementById('voiceRecordBtn');
+        
+        if (checkbox && voiceBtn) {
+            voiceBtn.style.display = checkbox.checked ? 'inline-block' : 'none';
+        }
+    }
+
+    async generateAITwin() {
+        console.log('🪄 Generating AI Twin from text...');
+        
+        const textArea = document.getElementById('twinText');
+        if (!textArea || !textArea.value.trim()) {
+            this.showToast('Bitte geben Sie einen Text ein', 'error');
+            return;
+        }
+        
+        this.updateStatus('AI Twin wird aus Text generiert...', 25);
+        
+        try {
+            // Simulate text-to-video AI generation
+            const textToVideoResult = await this.aiTwin.generateFromText(textArea.value.trim());
+            this.processAIResult(textToVideoResult);
+            
+            this.closeLiveCreation();
+            this.showToast('🪄 AI Twin aus Text generiert!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Text-to-video generation failed:', error);
+            this.showToast('Text-zu-Video Generation fehlgeschlagen', 'error');
+        }
+    }
+
+    closeLiveCreation() {
+        console.log('🚪 Closing Live Creation...');
+        
+        // Stop camera stream
+        if (this.liveCreation.stream) {
+            this.liveCreation.stream.getTracks().forEach(track => track.stop());
+            this.liveCreation.stream = null;
+        }
+        
+        // Hide live creation interface
+        const liveCreationDiv = document.getElementById('liveCreation');
+        if (liveCreationDiv) {
+            liveCreationDiv.style.display = 'none';
+        }
+        
+        // Show upload area again
+        this.resetUploadArea();
+        
+        // Reset state
+        this.liveCreation.isRecording = false;
+        this.liveCreation.mediaRecorder = null;
+        this.liveCreation.recordedChunks = [];
+        
+        this.showToast('Live Creation geschlossen', 'info');
+    }
+
+    updateStatus(message, progress = null) {
+        const statusText = document.getElementById('statusText');
+        const statusDiv = document.getElementById('creationStatus');
+        const progressFill = document.getElementById('progressFill');
+        
+        if (statusText) statusText.textContent = message;
+        if (statusDiv) statusDiv.style.display = 'block';
+        if (progressFill && progress !== null) {
+            progressFill.style.width = `${progress}%`;
+        }
+        
+        console.log('📊 Status:', message, progress ? `(${progress}%)` : '');
     }
 
     handleVideoUpload(file) {
