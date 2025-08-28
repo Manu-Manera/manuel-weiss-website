@@ -1,61 +1,56 @@
-<<<<<<< HEAD
-# Manuel Weiss Professional Services
+# Manuel Weiss - Professional Services
 
-Professionelle Website für Manuel Weiss - Beratung, Vermietung und IT-Projekte.
+## 🚀 Live Website
+**https://mawps.netlify.app**
 
-## 🌟 Über mich
+## 📋 Über das Projekt
+Professionelle Website für Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse.
 
-Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen mit pragmatischen Lösungen zu meistern.
+## 🛠️ Features
+- **Responsive Design** - Optimiert für alle Geräte
+- **Admin Panel** - Vollständiges Content Management System
+- **AI Twin** - Digitaler Zwilling für Präsentationen
+- **Vermietung** - Wohnmobil, Fotobox, E-Bikes, SUP
+- **Moderne UI/UX** - Clean Design mit Dark Mode
 
-## 🚀 Services
-
-### Beratung
-- **Prozessmanagement**: Optimierung und Digitalisierung von Geschäftsprozessen
-- **Digitalisierung**: Strategische Beratung und Implementierung
-- **HR-Tech**: Moderne HR-Lösungen und -Tools
-
-### Vermietung
-- **Fotobox**: Professionelle Fotobox für Events und Feiern
-- **Wohnmobil**: Komfortable Reiseerlebnisse
-- **E-Bikes**: Elektrische Fahrräder für Ausflüge
-- **Stand-Up-Paddles**: Wassersport-Ausrüstung
-
-## 🛠️ Technologien
-
-- HTML5, CSS3, JavaScript
+## 🔧 Technologien
+- HTML5, CSS3, JavaScript (ES6+)
 - Responsive Design
-- Moderne UI/UX
-- Optimiert für Performance
+- Local Storage für Datenpersistenz
+- Netlify Deployment
 
-## 📱 Features
-
-- Responsive Design für alle Geräte
-- Moderne, professionelle Gestaltung
-- Optimierte Performance
-- SEO-optimiert
-- Kontaktformulare
-- Download-Bereiche für Dokumente
+## 📁 Projektstruktur
+```
+├── index.html              # Hauptseite
+├── admin.html              # Admin Panel
+├── admin-script.js         # Admin Panel JavaScript
+├── admin-styles.css        # Admin Panel Styles
+├── styles.css              # Hauptseite Styles
+├── script.js               # Hauptseite JavaScript
+├── images/                 # Bildergalerie
+├── js/                     # JavaScript Module
+└── data/                   # JSON Daten
+```
 
 ## 🚀 Deployment
+Das Projekt wird automatisch auf Netlify deployed:
+- **Live URL**: https://mawps.netlify.app
+- **Admin Panel**: https://mawps.netlify.app/admin
 
-Diese Website kann auf verschiedenen Plattformen deployed werden:
+## 📝 Letzte Updates
+- ✅ Admin Panel vollständig funktionsfähig
+- ✅ AI Twin Upload und Verarbeitung
+- ✅ Alle Buttons funktionieren
+- ✅ Debug-Buttons für Tests hinzugefügt
+- ✅ Verbesserte Event-Listener
+- ✅ Cache-Busting implementiert
 
-- **Vercel** (empfohlen)
-- **Netlify**
-- **GitHub Pages**
+## 🤖 AI Twin Features
+- Foto/Video Upload
+- AI-Verarbeitung
+- Präsentations-Erstellung
+- Text-zu-Speech Simulation
+- Download-Funktionalität
 
-Verwende das `deploy.sh` Script für einfaches Deployment.
-
-## 📞 Kontakt
-
-- **E-Mail**: weiss-manuel@gmx.de
-- **Telefon**: +49 173 3993407
-
-## 📄 Lizenz
-
-Alle Rechte vorbehalten - Manuel Weiss Professional Services 
-=======
-# manuel-weiss-website
-Manuel Weiss Professional Services Website
->>>>>>> 05774afaa8eb94dc47632ad49d02fe3b67d595c6
-# Force Vercel redeploy
+---
+**Entwickelt mit ❤️ für Manuel Weiss**
