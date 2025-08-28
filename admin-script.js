@@ -475,6 +475,232 @@ class AdminPanel {
         });
     }
 
+    // Präsentationen und Text-Eingabe
+    createNewPresentation() {
+        const presentationModal = document.createElement('div');
+        presentationModal.className = 'modal-overlay';
+        presentationModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Neue Präsentation erstellen</h3>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="presentationForm">
+                        <div class="form-group">
+                            <label>Titel der Präsentation</label>
+                            <input type="text" name="title" class="form-control" placeholder="z.B. Bewerbung für HR-Position" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Text zum Vortragen</label>
+                            <textarea name="text" class="form-control" rows="8" placeholder="Geben Sie hier den Text ein, den Ihr AI Twin vortragen soll..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Oder Datei hochladen</label>
+                            <input type="file" name="file" accept=".txt,.doc,.docx,.pdf" class="form-control">
+                            <small>Unterstützte Formate: TXT, DOC, DOCX, PDF</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i>
+                                Präsentation starten
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(presentationModal);
+        
+        // Form submission handler
+        document.getElementById('presentationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handlePresentationSubmit(e.target);
+        });
+        
+        // File upload handler
+        const fileInput = presentationModal.querySelector('input[type="file"]');
+        fileInput.addEventListener('change', (e) => {
+            this.handleFileUpload(e.target.files[0], presentationModal.querySelector('textarea[name="text"]'));
+        });
+    }
+
+    handleFileUpload(file, textarea) {
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let content = e.target.result;
+            
+            // Einfache Text-Extraktion (für bessere Ergebnisse würde man eine Bibliothek verwenden)
+            if (file.type === 'application/pdf') {
+                content = 'PDF-Inhalt wird extrahiert... (Simulation)';
+            } else if (file.type.includes('word') || file.type.includes('document')) {
+                content = 'Word-Dokument wird extrahiert... (Simulation)';
+            }
+            
+            textarea.value = content;
+            this.showToast('Datei erfolgreich geladen', 'success');
+        };
+        
+        if (file.type === 'text/plain') {
+            reader.readAsText(file);
+        } else {
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    handlePresentationSubmit(form) {
+        const formData = new FormData(form);
+        const title = formData.get('title');
+        const text = formData.get('text');
+        
+        if (!text.trim()) {
+            this.showToast('Bitte geben Sie einen Text ein', 'error');
+            return;
+        }
+        
+        // Präsentation speichern
+        this.aiTwinData.presentations = this.aiTwinData.presentations || [];
+        const presentation = {
+            id: Date.now(),
+            title: title,
+            text: text,
+            createdAt: new Date().toISOString()
+        };
+        
+        this.aiTwinData.presentations.push(presentation);
+        this.saveData();
+        
+        // Modal schließen
+        form.closest('.modal-overlay').remove();
+        
+        // Präsentation starten
+        this.startPresentation(presentation);
+    }
+
+    startPresentation(presentation) {
+        const presentationModal = document.createElement('div');
+        presentationModal.className = 'modal-overlay presentation-modal';
+        presentationModal.innerHTML = `
+            <div class="modal-content presentation-content">
+                <div class="modal-header">
+                    <h3>${presentation.title}</h3>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="presentation-container">
+                        <div class="twin-video-section">
+                            <h4>Ihr AI Twin präsentiert:</h4>
+                            <div class="video-container">
+                                <video id="presentationVideo" controls autoplay>
+                                    <source src="${this.aiTwinData.videoUrl || this.aiTwinData.photoUrl}" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="presentation-status">
+                                        <i class="fas fa-microphone"></i>
+                                        <span>AI Twin spricht...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-section">
+                            <h4>Vorgetragener Text:</h4>
+                            <div class="text-content">
+                                <p>${presentation.text}</p>
+                            </div>
+                            <div class="presentation-controls">
+                                <button class="btn btn-primary" onclick="adminPanel.replayPresentation()">
+                                    <i class="fas fa-redo"></i>
+                                    Wiederholen
+                                </button>
+                                <button class="btn btn-secondary" onclick="adminPanel.downloadPresentation('${presentation.id}')">
+                                    <i class="fas fa-download"></i>
+                                    Herunterladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(presentationModal);
+        
+        // Video-Wiedergabe simulieren
+        const video = presentationModal.querySelector('#presentationVideo');
+        if (video) {
+            video.addEventListener('loadedmetadata', () => {
+                this.simulateVideoPlayback(video, presentation.text);
+            });
+        }
+    }
+
+    simulateVideoPlayback(video, text) {
+        // Simuliere Video-Wiedergabe mit Text-Synchronisation
+        const words = text.split(' ');
+        const wordDuration = 300; // 300ms pro Wort
+        
+        let currentWordIndex = 0;
+        const textElement = video.parentElement.querySelector('.text-content p');
+        
+        const interval = setInterval(() => {
+            if (currentWordIndex < words.length) {
+                // Markiere aktuelles Wort
+                const highlightedText = words.map((word, index) => {
+                    return index === currentWordIndex ? `<span class="highlight">${word}</span>` : word;
+                }).join(' ');
+                
+                textElement.innerHTML = highlightedText;
+                currentWordIndex++;
+            } else {
+                clearInterval(interval);
+                this.showToast('Präsentation abgeschlossen', 'success');
+            }
+        }, wordDuration);
+        
+        // Video-Loop für längere Texte
+        video.addEventListener('ended', () => {
+            if (currentWordIndex < words.length) {
+                video.currentTime = 0;
+                video.play();
+            }
+        });
+    }
+
+    replayPresentation() {
+        const video = document.querySelector('#presentationVideo');
+        if (video) {
+            video.currentTime = 0;
+            video.play();
+        }
+    }
+
+    downloadPresentation(presentationId) {
+        const presentation = this.aiTwinData.presentations?.find(p => p.id == presentationId);
+        if (!presentation) {
+            this.showToast('Präsentation nicht gefunden', 'error');
+            return;
+        }
+        
+        // Erstelle Download-Link
+        const blob = new Blob([presentation.text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${presentation.title}.txt`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        this.showToast('Präsentation heruntergeladen', 'success');
+    }
+
     // Media Management
     loadMediaSection() {
         this.renderMediaGallery();
