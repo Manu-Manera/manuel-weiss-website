@@ -30,92 +30,134 @@
         .test-button:hover {
             background: #4f46e5;
         }
-        .log {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 10px;
+        .status {
             margin: 10px 0;
+            padding: 10px;
             border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
         }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
     </style>
 </head>
 <body>
     <div class="test-container">
         <h1>Admin Panel Test</h1>
         
-        <h2>Test Buttons</h2>
-        <button class="test-button" onclick="testButton1()">Test Button 1</button>
-        <button class="test-button" onclick="testButton2()">Test Button 2</button>
-        <button class="test-button" onclick="testAdminPanel()">Test Admin Panel</button>
-        <button class="test-button" onclick="clearLog()">Clear Log</button>
+        <div id="status" class="status info">Initialisiere Test...</div>
         
-        <h2>Console Log</h2>
-        <div id="log" class="log"></div>
+        <h3>Test-Buttons:</h3>
+        <button class="test-button" onclick="testAdminPanel()">Admin Panel Test</button>
+        <button class="test-button" onclick="testToast()">Toast Test</button>
+        <button class="test-button" onclick="testNavigation()">Navigation Test</button>
+        <button class="test-button" onclick="testAITwin()">AI Twin Test</button>
         
-        <h2>Admin Panel Status</h2>
-        <div id="status"></div>
+        <h3>Console Output:</h3>
+        <div id="console" style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; height: 200px; overflow-y: auto;"></div>
     </div>
 
     <script>
-        // Console Log Capture
+        // Console Log Interceptor
         const originalLog = console.log;
         const originalError = console.error;
-        const logDiv = document.getElementById('log');
+        const consoleDiv = document.getElementById('console');
         
-        function addToLog(message, type = 'log') {
+        function addToConsole(message, type = 'log') {
             const timestamp = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.style.color = type === 'error' ? 'red' : 'black';
-            logEntry.textContent = `[${timestamp}] ${message}`;
-            logDiv.appendChild(logEntry);
-            logDiv.scrollTop = logDiv.scrollHeight;
+            const color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black';
+            consoleDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
         
         console.log = function(...args) {
             originalLog.apply(console, args);
-            addToLog(args.join(' '));
+            addToConsole(args.join(' '));
         };
         
         console.error = function(...args) {
             originalError.apply(console, args);
-            addToLog(args.join(' '), 'error');
+            addToConsole(args.join(' '), 'error');
         };
-        
-        function clearLog() {
-            logDiv.innerHTML = '';
-        }
-        
-        function testButton1() {
-            console.log('Test Button 1 clicked');
-            alert('Test Button 1 funktioniert!');
-        }
-        
-        function testButton2() {
-            console.log('Test Button 2 clicked');
-            alert('Test Button 2 funktioniert!');
-        }
-        
-        function testAdminPanel() {
-            console.log('Testing adminPanel...');
-            console.log('window.adminPanel:', window.adminPanel);
-            
+
+        // Test Functions
+        function updateStatus(message, type = 'info') {
             const statusDiv = document.getElementById('status');
-            if (window.adminPanel) {
-                statusDiv.innerHTML = '<p style="color: green;">✅ adminPanel ist verfügbar</p>';
-                console.log('adminPanel methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.adminPanel)));
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function testAdminPanel() {
+            console.log('=== Admin Panel Test ===');
+            
+            if (typeof window.adminPanel === 'undefined' || window.adminPanel === null) {
+                updateStatus('❌ Admin Panel ist nicht verfügbar!', 'error');
+                console.error('adminPanel ist null oder undefined');
+                return;
+            }
+            
+            updateStatus('✅ Admin Panel ist verfügbar!', 'success');
+            console.log('Admin Panel verfügbar:', window.adminPanel);
+            
+            // Teste Methoden
+            const methods = ['showToast', 'toggleDarkMode', 'showSection'];
+            methods.forEach(method => {
+                if (typeof window.adminPanel[method] === 'function') {
+                    console.log(`✅ Methode ${method} verfügbar`);
+                } else {
+                    console.error(`❌ Methode ${method} nicht verfügbar`);
+                }
+            });
+        }
+
+        function testToast() {
+            console.log('=== Toast Test ===');
+            
+            if (window.adminPanel && typeof window.adminPanel.showToast === 'function') {
+                window.adminPanel.showToast('Test Toast erfolgreich!', 'success');
+                updateStatus('✅ Toast Test erfolgreich!', 'success');
             } else {
-                statusDiv.innerHTML = '<p style="color: red;">❌ adminPanel ist NICHT verfügbar</p>';
+                updateStatus('❌ Toast Test fehlgeschlagen!', 'error');
+                console.error('showToast Methode nicht verfügbar');
             }
         }
-        
-        // Test beim Laden
+
+        function testNavigation() {
+            console.log('=== Navigation Test ===');
+            
+            if (window.adminPanel && typeof window.adminPanel.showSection === 'function') {
+                window.adminPanel.showSection('ai-twin');
+                updateStatus('✅ Navigation Test erfolgreich!', 'success');
+            } else {
+                updateStatus('❌ Navigation Test fehlgeschlagen!', 'error');
+                console.error('showSection Methode nicht verfügbar');
+            }
+        }
+
+        function testAITwin() {
+            console.log('=== AI Twin Test ===');
+            
+            if (window.adminPanel && typeof window.adminPanel.updateAITwinUI === 'function') {
+                window.adminPanel.updateAITwinUI();
+                updateStatus('✅ AI Twin Test erfolgreich!', 'success');
+            } else {
+                updateStatus('❌ AI Twin Test fehlgeschlagen!', 'error');
+                console.error('updateAITwinUI Methode nicht verfügbar');
+            }
+        }
+
+        // Initialisiere Test
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Test page loaded');
-            setTimeout(testAdminPanel, 1000);
+            console.log('Test-Seite geladen');
+            updateStatus('Test-Seite bereit. Klicken Sie auf einen Test-Button.', 'info');
+            
+            // Warte auf Admin Panel
+            setTimeout(() => {
+                if (window.adminPanel) {
+                    updateStatus('✅ Admin Panel automatisch erkannt!', 'success');
+                } else {
+                    updateStatus('⚠️ Admin Panel nicht automatisch erkannt. Versuchen Sie den Test-Button.', 'info');
+                }
+            }, 3000);
         });
     </script>
 </body>
