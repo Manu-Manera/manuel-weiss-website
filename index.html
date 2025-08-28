@@ -4,27 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuel Weiss - Professional Services</title>
-    <meta name="description" content="Manuel Weiss Professional Services - Digitalisierung, Prozessmanagement, HR-Tech Beratung und Vermietung">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=3.0">
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
+    <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Manuel Weiss - Professional Services">
+    <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <h2>Manuel Weiss</h2>
-                <span>Professional Services</span>
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#beratung">Beratung</a></li>
-                <li><a href="#vermietung">Vermietung</a></li>
-                <li><a href="#projekte">Projekte</a></li>
-                <li><a href="#kontakt">Kontakt</a></li>
-            </ul>
-            <div class="hamburger">
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#about" class="nav-link">Über mich</a>
+                <a href="#contact" class="nav-link">Kontakt</a>
+                <a href="admin.html" class="nav-link admin-link" target="_blank">
+                    <i class="fas fa-cog"></i>
+                    Admin
+                </a>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -34,143 +54,152 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="hero-gradient"></div>
-            <div class="hero-pattern"></div>
-        </div>
-        <div class="container">
+        <div class="hero-container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="hero-highlight">Manuel Weiss</span>
-                        <br>Professional Services
-                    </h1>
-                    <p class="hero-subtitle">
-                        Digitalisierung • Prozessmanagement • HR-Tech Beratung
-                    </p>
-                    <p class="hero-description">
-                    Seit über 6 Jahren begleite ich Unternehmen bei ihrer digitalen Transformation. 
-                    Von der Strategie bis zur Implementierung – ich helfe Ihnen, komplexe Herausforderungen 
-                    mit pragmatischen Lösungen zu meistern.
+                <h1 class="hero-title">
+                    HR Berater für 
+                    <span class="gradient-text">AI & Transformation</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Innovative Lösungen für moderne Unternehmen. 
+                    Digitalisierung, Geschäftsprozesse und Personalwesen.
                 </p>
-                    <div class="hero-actions">
-                        <a href="#beratung" class="btn btn-primary">
-                            <i class="fas fa-rocket"></i>
-                            Beratung entdecken
-                        </a>
-                        <a href="#vermietung" class="btn btn-outline">
-                            <i class="fas fa-cube"></i>
-                            Vermietung
-                        </a>
-                    </div>
+                <div class="hero-actions">
+                    <a href="#services" class="btn btn-primary">Services entdecken</a>
+                    <a href="#contact" class="btn btn-outline">Kontakt aufnehmen</a>
                 </div>
-                <div class="hero-visual">
-                <div class="hero-card">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-image">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image">
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Jahre Erfahrung</span>
                     </div>
-                    <h3>Digitale Transformation</h3>
-                    <p>Strategische Beratung und Implementierung</p>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Projekte</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Zufriedenheit</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Beratung Section -->
-    <section id="beratung" class="services">
+    <!-- Services Section -->
+    <section id="services" class="services">
         <div class="container">
             <div class="section-header">
-                <h2>Professionelle Beratung</h2>
-                <p>Meine Kernkompetenzen im Überblick</p>
+                <h2 class="section-title">Meine Services</h2>
+                <p class="section-subtitle">
+                    Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse
+                </p>
             </div>
             
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI & Digitalisierung</h3>
+                    <p>Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe.</p>
+                    <ul class="service-features">
+                        <li>KI-Strategieentwicklung</li>
+                        <li>Prozessautomatisierung</li>
+                        <li>Digital Workplace</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>HR Transformation</h3>
+                    <p>Moderne HR-Strukturen und -Prozesse für zukunftsfähige Unternehmen.</p>
+                    <ul class="service-features">
+                        <li>HR-Strategie</li>
+                        <li>Organisationsentwicklung</li>
+                        <li>Change Management</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
                         <i class="fas fa-cogs"></i>
                     </div>
-                    <h3>Prozessmanagement</h3>
-                    <p>Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.</p>
+                    <h3>Geschäftsprozesse</h3>
+                    <p>Optimierung und Restrukturierung von Geschäftsprozessen für maximale Effizienz.</p>
                     <ul class="service-features">
-                        <li><i class="fas fa-check"></i> Prozessanalyse & -optimierung</li>
-                        <li><i class="fas fa-check"></i> Workflow-Design</li>
-                        <li><i class="fas fa-check"></i> Tool-Implementierung</li>
-                    </ul>
-                </div>
-
-                <div class="service-card featured">
-                    <div class="service-icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <h3>HR-Tech Beratung</h3>
-                    <p>Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.</p>
-                    <ul class="service-features">
-                        <li><i class="fas fa-check"></i> HR-Systeme Implementierung</li>
-                        <li><i class="fas fa-check"></i> Service Delivery Optimierung</li>
-                        <li><i class="fas fa-check"></i> Change Management</li>
-                    </ul>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3>Design Thinking</h3>
-                    <p>Innovative Lösungsansätze durch Design Thinking Workshops und Business Model Innovation.</p>
-                    <ul class="service-features">
-                        <li><i class="fas fa-check"></i> Workshop-Moderation</li>
-                        <li><i class="fas fa-check"></i> Innovationsprozesse</li>
-                        <li><i class="fas fa-check"></i> Prototyping</li>
-                    </ul>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3>Projektmanagement</h3>
-                    <p>Erfolgreiche Projektleitung mit agilen und klassischen Methoden (Scrum, Prince2, BPMN).</p>
-                    <ul class="service-features">
-                        <li><i class="fas fa-check"></i> Agile Projektleitung</li>
-                        <li><i class="fas fa-check"></i> Stakeholder-Management</li>
-                        <li><i class="fas fa-check"></i> Risikomanagement</li>
+                        <li>Prozessanalyse</li>
+                        <li>Workflow-Optimierung</li>
+                        <li>Performance Management</li>
                     </ul>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="expertise-section">
-                <div class="expertise-content">
-                    <h3>Meine Expertise</h3>
-                    <p>Mit über 6 Jahren Erfahrung in IT- und Digitalisierungsprojekten habe ich zahlreiche Unternehmen unterschiedlicher Größe erfolgreich begleitet. Meine Stärke liegt in der Kombination aus technischem Verständnis und pragmatischer Umsetzung.</p>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">Über mich</h2>
+                    <p class="about-description">
+                        Als erfahrener HR-Berater mit Fokus auf AI und Transformation helfe ich Unternehmen dabei, 
+                        ihre HR-Prozesse zu modernisieren und die Vorteile der Digitalisierung zu nutzen.
+                    </p>
                     
-                    <div class="expertise-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">6+</div>
-                            <div class="stat-label">Jahre Erfahrung</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">30+</div>
-                            <div class="stat-label">Projekte geleitet</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label">Lernkurveneffekt</div>
+                    <div class="expertise-areas">
+                        <h3>Meine Expertise</h3>
+                        <div class="expertise-grid">
+                            <div class="expertise-item">
+                                <i class="fas fa-brain"></i>
+                                <span>KI-Integration</span>
+                            </div>
+                            <div class="expertise-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Strategische Planung</span>
+                            </div>
+                            <div class="expertise-item">
+                                <i class="fas fa-handshake"></i>
+                                <span>Change Management</span>
+                            </div>
+                            <div class="expertise-item">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Innovation</span>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="certifications">
-                        <div class="certification-item">
-                            <i class="fas fa-certificate"></i>
-                            <span>Scrum Master</span>
+                </div>
+                
+                <div class="about-visual">
+                    <div class="experience-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>2023 - Heute</h4>
+                                <p>Senior HR Consultant</p>
+                            </div>
                         </div>
-                        <div class="certification-item">
-                            <i class="fas fa-certificate"></i>
-                            <span>Prince2 Agile</span>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>2020 - 2023</h4>
+                                <p>HR Transformation Specialist</p>
+                            </div>
                         </div>
-                        <div class="certification-item">
-                            <i class="fas fa-certificate"></i>
-                            <span>BPMN 2.0</span>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>2018 - 2020</h4>
+                                <p>HR Analyst</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,213 +207,124 @@
         </div>
     </section>
 
-    <!-- Vermietung Section -->
-    <section id="vermietung" class="rental">
+    <!-- Activities Section -->
+    <section class="activities">
         <div class="container">
             <div class="section-header">
-                <h2>Vermietung & Services</h2>
-                <p>Weitere Dienstleistungen und Angebote</p>
+                <h2 class="section-title">Aktivitäten & Vermietungen</h2>
+                <p class="section-subtitle">
+                    Entdecke meine verschiedenen Angebote und Aktivitäten
+                </p>
             </div>
-
-            <div class="rental-grid">
-                <div class="rental-card">
-                    <div class="rental-image">
-                        <i class="fas fa-home"></i>
+            
+            <div class="activities-grid">
+                <a href="wohnmobil.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil">
                     </div>
-                    <div class="rental-content">
-                        <h3>Wohnmobil Vermietung</h3>
-                        <p>Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil.</p>
-                        <a href="wohnmobil.html" class="btn btn-outline">Details ansehen</a>
+                    <div class="activity-content">
+                        <h3>Wohnmobil</h3>
+                        <p>Komfortable Reisen mit unserem modernen Wohnmobil</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
                     </div>
-                </div>
-
-                <div class="rental-card">
-                    <div class="rental-image">
-                        <i class="fas fa-camera"></i>
+                </a>
+                
+                <a href="fotobox.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox">
                     </div>
-                    <div class="rental-content">
-                        <h3>Fotobox Vermietung</h3>
-                        <p>Professionelle Fotobox für unvergessliche Momente bei Events und Feiern.</p>
-                        <a href="fotobox.html" class="btn btn-outline">Details ansehen</a>
+                    <div class="activity-content">
+                        <h3>Fotobox</h3>
+                        <p>Professionelle Fotobox für Events und Feiern</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
                     </div>
-                </div>
-
-                <div class="rental-card">
-                    <div class="rental-image">
-                        <i class="fas fa-water"></i>
+                </a>
+                
+                <a href="ebike.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/ebike/ebike-1.jpg" alt="E-Bikes" onerror="this.style.display='none'">
                     </div>
-                    <div class="rental-content">
-                        <h3>Stand-Up-Paddle Vermietung</h3>
-                        <p>Entdecken Sie Seen und Flüsse aus einer neuen Perspektive mit unseren SUP-Boards.</p>
-                        <a href="sup.html" class="btn btn-outline">Details ansehen</a>
+                    <div class="activity-content">
+                        <h3>E-Bikes</h3>
+                        <p>Elektrofahrräder für umweltfreundliche Mobilität</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
                     </div>
-                </div>
-
-                <div class="rental-card">
-                    <div class="rental-image">
-                        <i class="fas fa-bicycle"></i>
+                </a>
+                
+                <a href="sup.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/sup/sup-1.jpg" alt="SUP" onerror="this.style.display='none'">
                     </div>
-                    <div class="rental-content">
-                        <h3>E-Bike Vermietung</h3>
-                        <p>Elektrofahrräder für entspannte Ausflüge und sportliche Touren.</p>
-                        <a href="ebike.html" class="btn btn-outline">Details ansehen</a>
+                    <div class="activity-content">
+                        <h3>SUP</h3>
+                        <p>Stand-Up Paddling für Wassersport-Enthusiasten</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projekte Section -->
-    <section id="projekte" class="projects">
-        <div class="container">
-            <div class="section-header">
-                <h2>IT & Upcycling Projekte</h2>
-                <p>Innovative Lösungen und nachhaltige Projekte</p>
-            </div>
-
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-header">
-                        <h3>Digitalisierung HR-Prozesse</h3>
-                        <div class="project-tags">
-                            <span class="tag">HR-Tech</span>
-                            <span class="tag">UKG</span>
-                            <span class="tag">Change Management</span>
-                        </div>
-                    </div>
-                    <p>Implementierung von UKG HRSD für einen internationalen Konzern mit über 500 Mitarbeitenden.</p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-header">
-                        <h3>Prozessoptimierung mit ADONIS</h3>
-                        <div class="project-tags">
-                            <span class="tag">BPMN</span>
-                            <span class="tag">ADONIS</span>
-                            <span class="tag">Banking</span>
-                        </div>
-                    </div>
-                    <p>Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank.</p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-header">
-                        <h3>Upcycling Workshop</h3>
-                        <div class="project-tags">
-                            <span class="tag">Nachhaltigkeit</span>
-                            <span class="tag">Workshop</span>
-                            <span class="tag">IT</span>
-                        </div>
-                    </div>
-                    <p>Nachhaltige IT-Lösungen durch Wiederverwendung von Hardware und Software.</p>
-                </div>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Bewerbungen Section (Klein und unauffällig) -->
-    <section id="bewerbungen" class="applications-mini">
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
         <div class="container">
-            <div class="applications-content">
-                <div class="applications-text">
-                    <h3>Bewerbungsunterlagen</h3>
-                    <p>Interaktive Präsentation meiner Qualifikationen und Erfahrungen</p>
-                </div>
-                <div class="applications-links">
-                    <a href="bewerbungsmappe.html" target="_blank" class="btn btn-small">
-                        <i class="fas fa-book-open"></i>
-                        Bewerbungsmappe
-                    </a>
-                    <a href="lebenslauf.html" target="_blank" class="btn btn-small btn-outline">
-                        <i class="fas fa-file-alt"></i>
-                        Lebenslauf
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Kontakt Section -->
-    <section id="kontakt" class="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2>Kontakt</h2>
-                <p>Lassen Sie uns über Ihr Projekt sprechen</p>
-            </div>
-
             <div class="contact-content">
                 <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                        <i class="fas fa-user"></i>
+                    <h2 class="section-title">Kontakt</h2>
+                    <p class="contact-description">
+                        Bereit für die nächste Herausforderung? Lassen Sie uns gemeinsam 
+                        Ihre HR-Prozesse modernisieren und die Zukunft gestalten.
+                    </p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>E-Mail</h4>
+                                <a href="mailto:weissmanuel94@gmail.com">weissmanuel94@gmail.com</a>
+                            </div>
                         </div>
-                        <div class="contact-details">
-                            <h4>Manuel Weiss</h4>
-                            <p>Professional Services</p>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Standort</h4>
+                                <p>Schweiz</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="contact-details">
-                            <h4>Standort</h4>
-                            <p>Schweiz</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                        <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="contact-details">
-                            <h4>E-Mail</h4>
-                            <p>weiss-manuel@gmx.de</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                        <i class="fas fa-phone"></i>
-                        </div>
-                        <div class="contact-details">
-                            <h4>Telefon</h4>
-                            <p id="phone-number">Wird geladen...</p>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Verfügbarkeit</h4>
+                                <p>Mo-Fr: 9:00 - 18:00</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="contact-form">
-                    <form id="contact-form">
+                    <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Name *</label>
+                            <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
                         </div>
-
+                        
                         <div class="form-group">
-                            <label for="email">E-Mail *</label>
+                            <label for="email">E-Mail</label>
                             <input type="email" id="email" name="email" required>
                         </div>
-
+                        
                         <div class="form-group">
-                            <label for="service">Service</label>
-                            <select id="service" name="service">
-                                <option value="">Bitte wählen</option>
-                                <option value="beratung">Beratung</option>
-                                <option value="wohnmobil">Wohnmobil Vermietung</option>
-                                <option value="fotobox">Fotobox Vermietung</option>
-                                <option value="sup">Stand-Up-Paddle Vermietung</option>
-                                <option value="ebike">E-Bike Vermietung</option>
-                                <option value="projekt">IT/Upcycling Projekt</option>
-                            </select>
+                            <label for="subject">Betreff</label>
+                            <input type="text" id="subject" name="subject" required>
                         </div>
-
+                        
                         <div class="form-group">
-                            <label for="message">Nachricht *</label>
+                            <label for="message">Nachricht</label>
                             <textarea id="message" name="message" rows="5" required></textarea>
                         </div>
-
+                        
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i>
                             Nachricht senden
@@ -399,41 +339,57 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
-                    <p>Professional Services</p>
-                    <p>Beratung • Vermietung • Projekte</p>
+                <div class="footer-brand">
+                    <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                    <div>
+                        <h3>Manuel Weiss</h3>
+                        <p>HR Berater für AI & Transformation</p>
+                    </div>
                 </div>
-
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li><a href="#beratung">Beratung</a></li>
-                        <li><a href="#vermietung">Vermietung</a></li>
-                        <li><a href="#projekte">Projekte</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Kontakt</h4>
-                    <p>weiss-manuel@gmx.de</p>
-                    <p id="footer-phone">Wird geladen...</p>
+                
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="#services">AI & Digitalisierung</a></li>
+                            <li><a href="#services">HR Transformation</a></li>
+                            <li><a href="#services">Geschäftsprozesse</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Aktivitäten</h4>
+                        <ul>
+                            <li><a href="wohnmobil.html">Wohnmobil</a></li>
+                            <li><a href="fotobox.html">Fotobox</a></li>
+                            <li><a href="ebike.html">E-Bikes</a></li>
+                            <li><a href="sup.html">SUP</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Kontakt</h4>
+                        <ul>
+                            <li><a href="mailto:weissmanuel94@gmail.com">E-Mail</a></li>
+                            <li><a href="#contact">Kontaktformular</a></li>
+                            <li><a href="admin.html" target="_blank">Admin Panel</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-
+            
             <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss Professional Services. Alle Rechte vorbehalten.</p>
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-manager.js?v=3.0"></script>
-    <script src="js/content-manager.js?v=3.0"></script>
-    <script src="js/activity-gallery.js?v=3.0"></script>
-    <script src="js/image-gallery.js?v=3.0"></script>
-    <script src="js/netlify-storage.js?v=3.0"></script>
-    <script src="js/data-persistence.js?v=3.0"></script>
-    <script src="script.js?v=3.0"></script>
+    <script src="script.js"></script>
 </body>
 </html>
