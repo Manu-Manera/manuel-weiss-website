@@ -604,6 +604,7 @@ class AdminPanel {
             <button onclick="adminPanel.testPhotoUpload()" style="margin: 2px; padding: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Test Photo</button>
             <button onclick="adminPanel.testVideoUpload()" style="margin: 2px; padding: 5px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">Test Video</button>
             <button onclick="adminPanel.testAIProcessing()" style="margin: 2px; padding: 5px; background: #ffc107; color: black; border: none; border-radius: 3px; cursor: pointer;">Test AI</button>
+            <button onclick="adminPanel.testDownload()" style="margin: 2px; padding: 5px; background: #17a2b8; color: white; border: none; border-radius: 3px; cursor: pointer;">Test Download</button>
             <button onclick="this.parentElement.remove()" style="margin: 2px; padding: 5px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Close</button>
         `;
         
@@ -648,6 +649,21 @@ class AdminPanel {
         console.log('🧪 Testing AI processing...');
         this.showToast('Test: AI Processing gestartet', 'info');
         this.startAIProcessing();
+    }
+
+    async testDownload() {
+        console.log('🧪 Testing download...');
+        this.showToast('Test: Download gestartet', 'info');
+        
+        // Simuliere Download
+        setTimeout(async () => {
+            try {
+                await this.downloadTwin();
+            } catch (error) {
+                console.error('❌ Test download failed:', error);
+                this.showToast('Download Test fehlgeschlagen', 'error');
+            }
+        }, 1000);
     }
 
     async handlePhotoUpload(file) {
@@ -1075,23 +1091,38 @@ class AdminPanel {
         }
     }
 
-    downloadPresentation(presentationId) {
+    async downloadPresentation(presentationId) {
+        console.log('📥 Downloading presentation:', presentationId);
+        
         const presentation = this.aiTwinData.presentations?.find(p => p.id == presentationId);
         if (!presentation) {
+            console.error('❌ Presentation not found:', presentationId);
             this.showToast('Präsentation nicht gefunden', 'error');
             return;
         }
         
-        // Erstelle Download-Link
-        const blob = new Blob([presentation.text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${presentation.title}.txt`;
-        link.click();
-        URL.revokeObjectURL(url);
-        
-        this.showToast('Präsentation heruntergeladen', 'success');
+        try {
+            // Erstelle Download-Link
+            const blob = new Blob([presentation.text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${presentation.title || 'presentation'}-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            
+            // Füge Link zum DOM hinzu und klicke ihn
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log('✅ Presentation download started');
+            this.showToast('Präsentation heruntergeladen', 'success');
+        } catch (error) {
+            console.error('❌ Download failed:', error);
+            this.showToast('Download fehlgeschlagen: ' + error.message, 'error');
+        }
     }
 
     // Media Management
@@ -1416,17 +1447,40 @@ class AdminPanel {
         }
     }
 
-    downloadTwin() {
+    async downloadTwin() {
+        console.log('📥 Downloading AI Twin...');
+        
         if (!this.aiTwinData || !this.aiTwinData.photoUrl) {
-            this.showToast('Kein Twin zum Herunterladen verfügbar', 'error');
+            console.error('❌ No AI Twin data available for download');
+            this.showToast('Kein AI Twin zum Herunterladen verfügbar', 'error');
             return;
         }
-        
-        const link = document.createElement('a');
-        link.href = this.aiTwinData.photoUrl;
-        link.download = 'ai-twin-' + new Date().toISOString().split('T')[0] + '.jpg';
-        link.click();
-        this.showToast('Twin wird heruntergeladen', 'success');
+
+        try {
+            // Konvertiere Data URL zu Blob für Download
+            const response = await fetch(this.aiTwinData.photoUrl);
+            const blob = await response.blob();
+            
+            // Erstelle Download-Link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ai-twin-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.jpg`;
+            
+            // Füge Link zum DOM hinzu und klicke ihn
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            console.log('✅ AI Twin download started');
+            this.showToast('AI Twin Download gestartet', 'success');
+        } catch (error) {
+            console.error('❌ Download failed:', error);
+            this.showToast('Download fehlgeschlagen: ' + error.message, 'error');
+        }
     }
 
     showTextInputSection() {
