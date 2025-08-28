@@ -107,6 +107,8 @@ class AdminPanel {
         this.websiteData = null;
         this.mediaFiles = [];
         this.aiTwinData = null;
+        this.aiTwins = []; // Array für mehrere AI Twins
+        this.currentTwinId = null; // Aktuell ausgewählter Twin
         this.notifications = [];
         
         // Initialize AI Twin
@@ -133,26 +135,36 @@ class AdminPanel {
 
     // Data Management mit Fallback für private Fenster
     loadData() {
-        try {
-        this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-        this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
-        this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
-        this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                try {
+            this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+            this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
+            this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
+            this.aiTwins = JSON.parse(localStorage.getItem('aiTwins') || '[]');
+            this.currentTwinId = localStorage.getItem('currentTwinId') || null;
+            this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            
+            console.log('📊 Loaded AI Twins:', this.aiTwins.length, 'twins');
         } catch (error) {
             console.warn('⚠️ Local Storage not available (private window?), using defaults');
             this.websiteData = {};
             this.mediaFiles = [];
             this.aiTwinData = {};
+            this.aiTwins = [];
+            this.currentTwinId = null;
             this.notifications = [];
         }
     }
 
     saveData() {
-        try {
-        localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
-        localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
-        localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
-        localStorage.setItem('notifications', JSON.stringify(this.notifications));
+                try {
+            localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
+            localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
+            localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
+            localStorage.setItem('aiTwins', JSON.stringify(this.aiTwins));
+            localStorage.setItem('currentTwinId', this.currentTwinId || '');
+            localStorage.setItem('notifications', JSON.stringify(this.notifications));
+            
+            console.log('💾 Saved AI Twins:', this.aiTwins.length, 'twins');
         } catch (error) {
             console.warn('⚠️ Could not save to Local Storage (private window?)');
         }
@@ -438,7 +450,11 @@ class AdminPanel {
     // AI Twin Section
     loadAITwinSection() {
         console.log('Loading AI Twin section...');
-        this.updateAITwinUI();
+        this.setupAITwinUpload();
+        this.updateAITwinsUI(); // Verwende neue Multi-Twin UI
+        
+        // Initialize twin gallery
+        this.showTwinGallery();
     }
 
     updateAITwinUI() {
@@ -879,37 +895,49 @@ class AdminPanel {
                 throw new Error('Invalid AI Twin data');
             }
             
-            this.aiTwinData = this.aiTwinData || {};
-            this.aiTwinData.isCreated = true;
-            this.aiTwinData.photoUrl = aiTwin.photoUrl;
-            this.aiTwinData.createdAt = aiTwin.createdAt || new Date().toISOString();
-            this.aiTwinData.features = aiTwin.features || {
-                faceDetection: true,
-                emotionAnalysis: true,
-                voiceSynthesis: true
+            // Erstelle neuen Twin mit eindeutiger ID und Namen
+            const newTwin = {
+                id: aiTwin.id || Date.now(),
+                name: `AI Twin ${this.aiTwins.length + 1}`,
+                photoUrl: aiTwin.photoUrl,
+                createdAt: aiTwin.createdAt || new Date().toISOString(),
+                isCreated: true,
+                features: aiTwin.features || {
+                    faceDetection: true,
+                    emotionAnalysis: true,
+                    voiceSynthesis: true
+                },
+                presentations: [],
+                stats: {
+                    totalPresentations: 0,
+                    totalDownloads: 0,
+                    lastUsed: new Date().toISOString()
+                }
             };
-            this.aiTwinData.id = aiTwin.id || Date.now();
+            
+            // Füge zum Twins Array hinzu
+            this.aiTwins.push(newTwin);
+            this.currentTwinId = newTwin.id;
+            
+            // Backward compatibility
+            this.aiTwinData = newTwin;
             
             // Speichere sofort
             this.saveData();
             
-            console.log('✅ AI Twin created successfully:', this.aiTwinData);
-            this.showToast('🤖 AI Twin erfolgreich erstellt!', 'success');
+            console.log('✅ AI Twin created successfully:', newTwin);
+            console.log('📊 Total AI Twins:', this.aiTwins.length);
+            this.showToast(`🤖 ${newTwin.name} erfolgreich erstellt! (${this.aiTwins.length} Twins total)`, 'success');
             
-            // Update Steps und UI
-            this.updateAISteps(4);
-            this.updateAITwinUI();
+            // Update UI
+            this.updateAITwinsUI();
+            this.showTwinGallery();
             
             // Text Input Section nach kurzer Verzögerung
             setTimeout(() => {
                 this.showTextInputSection();
                 console.log('📝 Text input section should be visible now');
             }, 1000);
-            
-            // Zusätzliche UI-Updates
-            setTimeout(() => {
-                this.forceUIUpdate();
-            }, 2000);
             
         } catch (error) {
             console.error('❌ Error processing AI result:', error);
@@ -952,6 +980,215 @@ class AdminPanel {
         }
         
         console.log('✅ Force UI update completed');
+    }
+
+    updateAITwinsUI() {
+        console.log('🔄 Updating AI Twins UI...');
+        this.showTwinGallery();
+        this.updateAISteps(this.aiTwins.length > 0 ? 4 : 1);
+    }
+
+    showTwinGallery() {
+        console.log('🖼️ Showing Twin Gallery...', this.aiTwins.length, 'twins');
+        
+        // Finde oder erstelle Galerie-Container
+        let galleryContainer = document.getElementById('twinGallery');
+        if (!galleryContainer) {
+            galleryContainer = document.createElement('div');
+            galleryContainer.id = 'twinGallery';
+            galleryContainer.className = 'twin-gallery';
+            
+            // Füge zur AI Twin Sektion hinzu
+            const aiTwinContent = document.querySelector('.ai-twin-content') || 
+                                 document.querySelector('#aiTwinSection') ||
+                                 document.body;
+            aiTwinContent.appendChild(galleryContainer);
+        }
+        
+        // Styles für Galerie
+        galleryContainer.style.cssText = `
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        `;
+        
+        if (this.aiTwins.length === 0) {
+            galleryContainer.innerHTML = `
+                <div style="text-align: center; color: #6c757d; padding: 20px;">
+                    <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 10px;"></i>
+                    <h4>Noch keine AI Twins erstellt</h4>
+                    <p>Laden Sie Fotos hoch um Ihre ersten digitalen Avatare zu erstellen</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Render Twin Galerie
+        galleryContainer.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #333;">
+                    <i class="fas fa-users"></i> Meine AI Twins (${this.aiTwins.length})
+                </h4>
+                <button onclick="adminPanel.resetUploadArea()" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-plus"></i> Neuen Twin erstellen
+                </button>
+            </div>
+            <div class="twins-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                ${this.aiTwins.map(twin => this.renderTwinCard(twin)).join('')}
+            </div>
+        `;
+    }
+
+    renderTwinCard(twin) {
+        const isActive = this.currentTwinId === twin.id;
+        return `
+            <div class="twin-card ${isActive ? 'active' : ''}" style="
+                background: ${isActive ? '#e3f2fd' : 'white'};
+                border: 2px solid ${isActive ? '#2196f3' : '#dee2e6'};
+                border-radius: 8px;
+                padding: 15px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+            " onclick="adminPanel.selectTwin('${twin.id}')">
+                
+                <img src="${twin.photoUrl}" alt="${twin.name}" style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    margin-bottom: 10px;
+                    border: 3px solid ${isActive ? '#2196f3' : '#dee2e6'};
+                ">
+                
+                <h5 style="margin: 5px 0; color: #333;">${twin.name}</h5>
+                <p style="margin: 5px 0; color: #6c757d; font-size: 12px;">
+                    ${new Date(twin.createdAt).toLocaleDateString('de-DE')}
+                </p>
+                
+                <div style="margin-top: 10px; display: flex; justify-content: center; gap: 5px;">
+                    <button onclick="event.stopPropagation(); adminPanel.renameTwin('${twin.id}')" 
+                            style="padding: 2px 6px; background: #ffc107; color: black; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); adminPanel.downloadTwin('${twin.id}')" 
+                            style="padding: 2px 6px; background: #17a2b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); adminPanel.deleteTwin('${twin.id}')" 
+                            style="padding: 2px 6px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                
+                ${isActive ? `<div style="position: absolute; top: 5px; right: 5px; background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">AKTIV</div>` : ''}
+            </div>
+        `;
+    }
+
+    selectTwin(twinId) {
+        console.log('🎯 Selecting twin:', twinId);
+        this.currentTwinId = twinId;
+        const selectedTwin = this.aiTwins.find(t => t.id === twinId);
+        if (selectedTwin) {
+            this.aiTwinData = selectedTwin; // Backward compatibility
+            selectedTwin.stats.lastUsed = new Date().toISOString();
+            this.saveData();
+            this.showTwinGallery(); // Refresh UI
+            this.showToast(`${selectedTwin.name} ausgewählt`, 'info');
+        }
+    }
+
+    resetUploadArea() {
+        console.log('🔄 Resetting upload area for new twin...');
+        
+        // Zeige Upload-Bereich wieder
+        const uploadArea = document.getElementById('aiUploadArea');
+        if (uploadArea) {
+            uploadArea.style.display = 'block';
+        }
+        
+        // Verstecke Twin Preview
+        const twinPreview = document.getElementById('twinPreview');
+        if (twinPreview) {
+            twinPreview.style.display = 'none';
+        }
+        
+        // Reset Steps
+        this.updateAISteps(1);
+        
+        this.showToast('Bereit für neuen AI Twin!', 'info');
+    }
+
+    renameTwin(twinId) {
+        const twin = this.aiTwins.find(t => t.id === twinId);
+        if (!twin) return;
+        
+        const newName = prompt('Neuer Name für den AI Twin:', twin.name);
+        if (newName && newName.trim() && newName !== twin.name) {
+            twin.name = newName.trim();
+            this.saveData();
+            this.showTwinGallery();
+            this.showToast(`AI Twin umbenannt zu "${twin.name}"`, 'success');
+        }
+    }
+
+    async downloadTwin(twinId) {
+        const twin = this.aiTwins.find(t => t.id === twinId);
+        if (!twin) return;
+        
+        try {
+            console.log('📥 Downloading twin:', twin.name);
+            
+            // Update stats
+            twin.stats.totalDownloads++;
+            this.saveData();
+            
+            // Download photo
+            const response = await fetch(twin.photoUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${twin.name.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            this.showToast(`${twin.name} heruntergeladen`, 'success');
+            
+        } catch (error) {
+            console.error('❌ Download failed:', error);
+            this.showToast('Download fehlgeschlagen: ' + error.message, 'error');
+        }
+    }
+
+    deleteTwin(twinId) {
+        const twin = this.aiTwins.find(t => t.id === twinId);
+        if (!twin) return;
+        
+        if (confirm(`Möchten Sie "${twin.name}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.`)) {
+            // Entferne aus Array
+            this.aiTwins = this.aiTwins.filter(t => t.id !== twinId);
+            
+            // Reset current twin falls gelöscht
+            if (this.currentTwinId === twinId) {
+                this.currentTwinId = this.aiTwins.length > 0 ? this.aiTwins[0].id : null;
+                this.aiTwinData = this.aiTwins.length > 0 ? this.aiTwins[0] : null;
+            }
+            
+            this.saveData();
+            this.showTwinGallery();
+            this.showToast(`${twin.name} gelöscht`, 'success');
+            
+            console.log('🗑️ Twin deleted:', twin.name);
+            console.log('📊 Remaining twins:', this.aiTwins.length);
+        }
     }
 
     handleVideoUpload(file) {
