@@ -321,12 +321,12 @@ class AdminPanel {
     // Data Management mit Fallback für private Fenster
     loadData() {
                 try {
-            this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
-            this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
-            this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
+        this.websiteData = JSON.parse(localStorage.getItem('websiteData') || '{}');
+        this.mediaFiles = JSON.parse(localStorage.getItem('mediaFiles') || '[]');
+        this.aiTwinData = JSON.parse(localStorage.getItem('aiTwinData') || '{}');
             this.aiTwins = JSON.parse(localStorage.getItem('aiTwins') || '[]');
             this.currentTwinId = localStorage.getItem('currentTwinId') || null;
-            this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        this.notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
             
             console.log('📊 Loaded AI Twins:', this.aiTwins.length, 'twins');
         } catch (error) {
@@ -342,12 +342,12 @@ class AdminPanel {
 
     saveData() {
                 try {
-            localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
-            localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
-            localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
+        localStorage.setItem('websiteData', JSON.stringify(this.websiteData));
+        localStorage.setItem('mediaFiles', JSON.stringify(this.mediaFiles));
+        localStorage.setItem('aiTwinData', JSON.stringify(this.aiTwinData));
             localStorage.setItem('aiTwins', JSON.stringify(this.aiTwins));
             localStorage.setItem('currentTwinId', this.currentTwinId || '');
-            localStorage.setItem('notifications', JSON.stringify(this.notifications));
+        localStorage.setItem('notifications', JSON.stringify(this.notifications));
             
             console.log('💾 Saved AI Twins:', this.aiTwins.length, 'twins');
         } catch (error) {
@@ -636,19 +636,15 @@ class AdminPanel {
     loadAITwinSection() {
         console.log('Loading AI Twin section...');
         
-        const mainContent = document.getElementById('mainContent');
-        mainContent.innerHTML = `
-            <div class="content-header">
-                <h1>AI Twin Management</h1>
-                <p>Erstellen und verwalten Sie Ihre digitalen Zwillinge</p>
-            </div>
-            <div id="aiTwinContent" class="ai-twin-section">
-                <!-- Upload Area wird hier geladen -->
-            </div>
-        `;
-        
-        // Erstelle Upload-Bereich sofort
-        this.createUploadAreaIfMissing();
+        // Das AI Twin HTML existiert bereits - wir verwenden den existierenden Container
+        const aiTwinMainContent = document.getElementById('aiTwinMainContent');
+        if (aiTwinMainContent) {
+            // Leere den Container und erstelle die Upload-Kacheln
+            aiTwinMainContent.innerHTML = '';
+            
+            // Erstelle Upload-Bereich sofort
+            this.createUploadAreaInContainer(aiTwinMainContent);
+        }
         
         // Setup upload funktionalität
         setTimeout(() => {
@@ -2802,7 +2798,7 @@ class AdminPanel {
             }
             
             if (!window.adminPanel) {
-                adminPanel = new AdminPanel();
+    adminPanel = new AdminPanel();
                 window.adminPanel = adminPanel;
                 globalThis.adminPanel = adminPanel;
                 console.log('✅ Admin Panel initialized successfully');
