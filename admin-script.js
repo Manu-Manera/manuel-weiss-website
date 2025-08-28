@@ -21,6 +21,7 @@ class AdminPanel {
         this.loadCurrentSection();
         this.setupMobileMenu();
         this.loadTheme();
+        this.setupSettingsTabs();
     }
 
     // Data Management
@@ -89,6 +90,30 @@ class AdminPanel {
                 sidebar.classList.remove('mobile-open');
             }
         });
+    }
+
+    setupSettingsTabs() {
+        document.querySelectorAll('.settings-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = tab.dataset.tab;
+                this.showSettingsTab(tabName);
+            });
+        });
+    }
+
+    showSettingsTab(tabName) {
+        // Update active tab
+        document.querySelectorAll('.settings-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+        // Update active panel
+        document.querySelectorAll('.settings-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        document.getElementById(tabName + 'Settings').classList.add('active');
     }
 
     // Navigation
@@ -328,7 +353,7 @@ class AdminPanel {
             });
         }
         
-        // Video upload
+        // Video upload (optional)
         const videoUpload = document.getElementById('videoUpload');
         const videoInput = document.getElementById('videoInput');
         
@@ -365,6 +390,11 @@ class AdminPanel {
             this.saveData();
             this.showToast('Foto erfolgreich hochgeladen', 'success');
             this.updateAISteps(2);
+            
+            // Start AI processing immediately after photo upload
+            setTimeout(() => {
+                this.startAIProcessing();
+            }, 1000);
         };
         reader.readAsDataURL(file);
     }
@@ -389,7 +419,11 @@ class AdminPanel {
                 this.aiTwinData.videoUrl = e.target.result;
                 this.saveData();
                 this.showToast('Video erfolgreich hochgeladen', 'success');
-                this.startAIProcessing();
+                
+                // If we already have a photo, start processing
+                if (this.aiTwinData.photoUrl) {
+                    this.startAIProcessing();
+                }
             };
             reader.readAsDataURL(file);
         };
@@ -529,6 +563,31 @@ class AdminPanel {
             }
             this.saveRentalData(rentalType, updatedRental);
         });
+    }
+
+    // Settings Section
+    loadSettingsSection() {
+        // Load settings form handlers
+        const settingsForm = document.querySelector('.settings-form');
+        if (settingsForm) {
+            settingsForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveSettings();
+            });
+        }
+    }
+
+    saveSettings() {
+        const formData = new FormData(document.querySelector('.settings-form'));
+        const settings = {};
+        
+        for (const [key, value] of formData.entries()) {
+            settings[key] = value;
+        }
+        
+        this.websiteData.settings = settings;
+        this.saveData();
+        this.showToast('Einstellungen gespeichert', 'success');
     }
 
     // Utility Functions
@@ -723,10 +782,6 @@ class AdminPanel {
         this.showToast('Analytics werden geladen...', 'info');
     }
 
-    loadSettingsSection() {
-        this.showToast('Einstellungen werden geladen...', 'info');
-    }
-
     editContent(id) {
         this.showToast(`Content ${id} wird bearbeitet...`, 'info');
     }
@@ -742,14 +797,14 @@ class AdminPanel {
     }
 
     downloadTwin() {
-        if (!this.aiTwinData || !this.aiTwinData.videoUrl) {
+        if (!this.aiTwinData || !this.aiTwinData.photoUrl) {
             this.showToast('Kein Twin zum Herunterladen verfügbar', 'error');
             return;
         }
         
         const link = document.createElement('a');
-        link.href = this.aiTwinData.videoUrl;
-        link.download = 'ai-twin-' + new Date().toISOString().split('T')[0] + '.mp4';
+        link.href = this.aiTwinData.photoUrl;
+        link.download = 'ai-twin-' + new Date().toISOString().split('T')[0] + '.jpg';
         link.click();
         this.showToast('Twin wird heruntergeladen', 'success');
     }
