@@ -1868,3 +1868,54 @@ body {
     justify-content: center;
     flex-wrap: wrap;
 }
+
+/* Text Input Section Styles */
+.text-input-section {
+    margin-top: var(--spacing-3xl);
+    padding: var(--spacing-3xl);
+    background: var(--gray-50);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+}
+
+.text-input-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.text-input-header h4 {
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-sm);
+}
+
+.text-input-header p {
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.text-input-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.text-input-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Responsive Design for Text Input */
+@media (max-width: 768px) {
+    .text-input-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .text-input-section {
+        padding: var(--spacing-lg);
+        margin-top: var(--spacing-xl);
+    }
+}

@@ -22,6 +22,9 @@ class AdminPanel {
         this.setupMobileMenu();
         this.loadTheme();
         this.setupSettingsTabs();
+        
+        // Set global reference
+        window.adminPanel = this;
     }
 
     // Data Management
@@ -1043,6 +1046,6 @@ document.addEventListener('DOMContentLoaded', function() {
     adminPanel = new AdminPanel();
     console.log('Admin Panel initialized successfully');
 });
-
 // Global function definitions for onclick handlers
 window.adminPanel = null; // Will be set after DOM loads
+
