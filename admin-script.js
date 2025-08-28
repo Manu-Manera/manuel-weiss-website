@@ -474,8 +474,9 @@ class AdminPanel {
         
         // Photo upload - Versuche verschiedene Selektoren
         let photoUpload = document.getElementById('photoUpload') || 
-                         document.querySelector('.upload-zone:first-child') ||
-                         document.querySelector('[data-upload="photo"]');
+                         document.querySelector('.upload-zone') ||
+                         document.querySelector('[onclick*="photo"]') ||
+                         document.querySelector('.ai-twin-section .upload-zone');
         
         let photoInput = document.getElementById('photoInput') ||
                         document.querySelector('input[type="file"][accept*="image"]');
@@ -489,6 +490,33 @@ class AdminPanel {
             photoInput.accept = 'image/*';
             photoInput.style.display = 'none';
             document.body.appendChild(photoInput);
+        }
+        
+        // Falls kein Upload-Element gefunden wurde, erstelle eines
+        if (!photoUpload) {
+            console.log('📸 Creating photo upload element...');
+            photoUpload = document.createElement('div');
+            photoUpload.id = 'photoUpload';
+            photoUpload.className = 'upload-zone';
+            photoUpload.innerHTML = `
+                <i class="fas fa-camera"></i>
+                <p>Foto hierher ziehen oder klicken</p>
+            `;
+            photoUpload.style.cssText = `
+                border: 2px dashed #007bff;
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+                cursor: pointer;
+                margin: 10px 0;
+                background: #f8f9fa;
+            `;
+            
+            // Füge zu AI Twin Sektion hinzu
+            const aiTwinSection = document.querySelector('.ai-twin-content') || 
+                                 document.querySelector('#aiTwinSection') ||
+                                 document.body;
+            aiTwinSection.appendChild(photoUpload);
         }
         
         console.log('📸 Photo elements:', { photoUpload, photoInput });
@@ -632,6 +660,7 @@ class AdminPanel {
         debugContainer.innerHTML = `
             <div style="margin-bottom: 15px;"><strong>🚨 EMERGENCY PANEL</strong></div>
             <button onclick="adminPanel.forceInit()" style="margin: 3px; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">FORCE INIT</button>
+            <button onclick="adminPanel.emergencyUpload()" style="margin: 3px; padding: 8px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">EMERGENCY UPLOAD</button>
             <button onclick="adminPanel.testPhotoUpload()" style="margin: 3px; padding: 8px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Photo</button>
             <button onclick="adminPanel.testPresentation()" style="margin: 3px; padding: 8px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Präsentation</button>
             <button onclick="adminPanel.testDownload()" style="margin: 3px; padding: 8px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Download</button>
@@ -657,6 +686,40 @@ class AdminPanel {
         } catch (error) {
             console.error('❌ EMERGENCY: Force init failed:', error);
             this.showToast('Force Init fehlgeschlagen', 'error');
+        }
+    }
+
+    emergencyUpload() {
+        console.log('🚨 EMERGENCY: Starting emergency upload...');
+        try {
+            // Erstelle direkten File Input
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    console.log('🚨 EMERGENCY: File selected:', file.name);
+                    this.showToast('EMERGENCY: Datei wird verarbeitet...', 'info');
+                    
+                    try {
+                        await this.handlePhotoUpload(file);
+                    } catch (error) {
+                        console.error('❌ EMERGENCY: Upload failed:', error);
+                        this.showToast('EMERGENCY Upload fehlgeschlagen', 'error');
+                    }
+                }
+                document.body.removeChild(input);
+            };
+            
+            document.body.appendChild(input);
+            input.click();
+            
+        } catch (error) {
+            console.error('❌ EMERGENCY: Emergency upload failed:', error);
+            this.showToast('Emergency Upload fehlgeschlagen', 'error');
         }
     }
 
