@@ -558,6 +558,12 @@
     <script src="js/content-manager.js"></script>
     <script src="js/image-manager.js"></script>
     <script src="js/data-persistence.js"></script>
-    <script src="admin-script.js?v=2.0"></script>
+    <script>
+        // Cache-busting für Admin-Script
+        const timestamp = new Date().getTime();
+        const script = document.createElement('script');
+        script.src = `admin-script.js?v=3.1&t=${timestamp}`;
+        document.head.appendChild(script);
+    </script>
 </body>
 </html>
