@@ -279,23 +279,32 @@ class AdminPanel {
 
     init() {
         console.log('🚀 Initializing UNIFIED Admin Panel...');
-        this.loadData();
-        this.setupEventListeners();
-        this.setupNavigation();
+        
+        // Verstecke Loading Screen sofort als erstes
         this.hideLoading();
-        this.loadCurrentSection();
-        this.setupMobileMenu();
-        this.loadTheme();
-        this.setupSettingsTabs();
-        this.setupDragAndDrop();
-        this.setupCalendar();
-        this.setupVoiceFeatures();
-        this.setupMultiLanguage();
         
-        // Set global reference
-        window.adminPanel = this;
-        
-        console.log('✅ UNIFIED Admin Panel initialized successfully!');
+        try {
+            this.loadData();
+            this.setupEventListeners();
+            this.setupNavigation();
+            this.loadCurrentSection();
+            this.setupMobileMenu();
+            this.loadTheme();
+            this.setupSettingsTabs();
+            this.setupDragAndDrop();
+            this.setupCalendar();
+            this.setupVoiceFeatures();
+            this.setupMultiLanguage();
+            
+            // Set global reference
+            window.adminPanel = this;
+            
+            console.log('✅ UNIFIED Admin Panel initialized successfully!');
+        } catch (error) {
+            console.error('❌ Error during initialization:', error);
+            // Zeige trotzdem das Admin Panel - auch bei teilweisen Fehlern
+            this.showBasicInterface();
+        }
     }
 
     // Hide loading screen
@@ -306,6 +315,37 @@ class AdminPanel {
             console.log('✅ Loading screen hidden');
         } else {
             console.warn('⚠️ Loading screen element not found');
+        }
+        
+        // Zusätzlich: Stelle sicher, dass das Admin Panel sichtbar ist
+        const adminWrapper = document.querySelector('.admin-wrapper');
+        if (adminWrapper) {
+            adminWrapper.style.display = 'flex';
+            adminWrapper.style.opacity = '1';
+            console.log('✅ Admin wrapper made visible');
+        }
+    }
+
+    // Fallback method to show basic interface
+    showBasicInterface() {
+        console.log('🔧 Showing basic interface as fallback...');
+        
+        const adminWrapper = document.querySelector('.admin-wrapper');
+        if (adminWrapper) {
+            adminWrapper.style.display = 'flex';
+            adminWrapper.style.opacity = '1';
+            
+            // Zeige Dashboard-Sektion
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard) {
+                dashboard.classList.add('active');
+            }
+            
+            // Aktiviere Dashboard-Navigation
+            const dashboardNav = document.querySelector('[data-section="dashboard"]');
+            if (dashboardNav) {
+                dashboardNav.classList.add('active');
+            }
         }
     }
 
@@ -731,9 +771,21 @@ class AdminPanel {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM loaded, initializing UNIFIED Admin Panel...');
     
-    // Debug: Check if required elements exist
+    // NOTFALL-TIMEOUT: Verstecke Loading Screen nach spätestens 3 Sekunden
     const loadingScreen = document.getElementById('loadingScreen');
     const adminWrapper = document.querySelector('.admin-wrapper');
+    
+    setTimeout(() => {
+        if (loadingScreen && loadingScreen.style.display !== 'none') {
+            console.warn('⚡ Emergency timeout: Hiding loading screen after 3 seconds');
+            loadingScreen.style.display = 'none';
+            
+            if (adminWrapper) {
+                adminWrapper.style.display = 'flex';
+                adminWrapper.style.opacity = '1';
+            }
+        }
+    }, 3000);
     
     console.log('🔍 Debug - Loading screen found:', !!loadingScreen);
     console.log('🔍 Debug - Admin wrapper found:', !!adminWrapper);
@@ -751,18 +803,30 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('🔧 Fallback: Loading screen hidden manually');
         }
         
-        // Show error message to user
+        // Show admin wrapper even with errors
         if (adminWrapper) {
-            adminWrapper.innerHTML = `
-                <div style="padding: 2rem; text-align: center; color: #ef4444;">
-                    <h2>⚠️ Admin Panel Fehler</h2>
-                    <p>Das Admin Panel konnte nicht geladen werden.</p>
-                    <p><strong>Fehler:</strong> ${error.message}</p>
-                    <button onclick="location.reload()" style="padding: 0.5rem 1rem; margin-top: 1rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
-                        🔄 Seite neu laden
-                    </button>
-                </div>
-            `;
+            adminWrapper.style.display = 'flex';
+            adminWrapper.style.opacity = '1';
+            
+            // Show error message in admin panel
+            const mainContent = adminWrapper.querySelector('.admin-main');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: #ef4444;">
+                        <h2>⚠️ Admin Panel Teilfehler</h2>
+                        <p>Das Admin Panel wurde mit Einschränkungen geladen.</p>
+                        <p><strong>Fehler:</strong> ${error.message}</p>
+                        <div style="margin-top: 2rem;">
+                            <button onclick="location.reload()" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                                🔄 Seite neu laden
+                            </button>
+                            <a href="admin-simple.html" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #10b981; color: white; text-decoration: none; border-radius: 0.5rem; display: inline-block;">
+                                🛠️ Vereinfachte Version
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
         }
     }
 });
