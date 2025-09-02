@@ -753,22 +753,153 @@
                         // Gewählten Tab aktivieren
                         this.classList.add('active');
                         
-                        // Rental Content aktualisieren
-                        const rentalEditor = document.getElementById('rentalEditor');
-                        if (rentalEditor) {
-                            rentalEditor.innerHTML = `
-                                <div style="padding: 2rem; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                                    <h3 style="color: #333; margin-bottom: 1rem;">🏠 ${rentalType.charAt(0).toUpperCase() + rentalType.slice(1)} Verwaltung</h3>
-                                    <p style="color: #666; margin-bottom: 2rem;">Hier können Sie die ${rentalType} Einstellungen verwalten.</p>
-                                    <div style="margin-top: 2rem;">
-                                        <button onclick="alert('${rentalType} Verwaltung wird geladen...')" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
-                                            🔄 ${rentalType} verwalten
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                            console.log(`✅ Rental Editor aktualisiert für: ${rentalType}`);
-                        }
+                                                 // Rental Content aktualisieren
+                         const rentalEditor = document.getElementById('rentalEditor');
+                         if (rentalEditor) {
+                             // Spezifischer Inhalt für jeden Vermietungstyp
+                             let content = '';
+                             
+                             switch(rentalType) {
+                                 case 'wohnmobil':
+                                     content = `
+                                         <div style="padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                             <h3 style="color: #333; margin-bottom: 1rem;">🏠 Wohnmobil Verwaltung</h3>
+                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Verfügbarkeit</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Verfügbar
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Preis pro Tag" value="150€" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                 </div>
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Bilder</h4>
+                                                     <div style="border: 2px dashed #ddd; padding: 2rem; text-align: center; border-radius: 8px;">
+                                                         <i class="fas fa-camera" style="font-size: 2rem; color: #999; margin-bottom: 1rem;"></i>
+                                                         <p style="color: #666;">Bilder hier hochladen</p>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     `;
+                                     break;
+                                     
+                                 case 'fotobox':
+                                     content = `
+                                         <div style="padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                             <h3 style="color: #333; margin-bottom: 1rem;">📸 Fotobox Verwaltung</h3>
+                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Event-Einstellungen</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Für Events verfügbar
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Preis pro Tag" value="200€" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Mindestbuchungsdauer" value="1 Tag" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                 </div>
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Zubehör</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Hintergründe
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Props & Kostüme
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Drucker
+                                                     </label>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     `;
+                                     break;
+                                     
+                                 case 'ebike':
+                                     content = `
+                                         <div style="padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                             <h3 style="color: #333; margin-bottom: 1rem;">🚴 E-Bikes Verwaltung</h3>
+                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Fahrrad-Details</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Anzahl verfügbar" value="5" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Preis pro Tag" value="50€" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Akkulaufzeit" value="80km" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                 </div>
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Zubehör</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Helme
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Schlösser
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Taschen
+                                                     </label>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     `;
+                                     break;
+                                     
+                                 case 'sup':
+                                     content = `
+                                         <div style="padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                             <h3 style="color: #333; margin-bottom: 1rem;">🏄 SUP Boards Verwaltung</h3>
+                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Board-Details</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Anzahl verfügbar" value="8" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Preis pro Tag" value="30€" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="text" placeholder="Board-Typen" value="Allround, Touring" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                                     </label>
+                                                 </div>
+                                                 <div>
+                                                     <h4 style="color: #555; margin-bottom: 1rem;">Wassersport-Zubehör</h4>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Paddel
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Schwimmwesten
+                                                     </label>
+                                                     <label style="display: block; margin-bottom: 0.5rem;">
+                                                         <input type="checkbox" checked> Trockensäcke
+                                                     </label>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     `;
+                                     break;
+                                     
+                                 default:
+                                     content = `
+                                         <div style="padding: 2rem; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                             <h3 style="color: #333; margin-bottom: 1rem;">🏠 ${rentalType.charAt(0).toUpperCase() + rentalType.slice(1)} Verwaltung</h3>
+                                             <p style="color: #666; margin-bottom: 2rem;">Verwaltung für ${rentalType} wird geladen...</p>
+                                         </div>
+                                     `;
+                             }
+                             
+                             rentalEditor.innerHTML = content;
+                             console.log(`✅ Rental Editor aktualisiert für: ${rentalType}`);
+                         }
                     }
                     
                     // Prüfe ob es ein Settings-Tab ist
