@@ -930,6 +930,22 @@ document.addEventListener('DOMContentLoaded', () => {
             adminWrapper.style.display = 'flex';
             adminWrapper.style.opacity = '1';
             
+            // Erstelle eine minimale AdminPanel Instanz für Fallback
+            window.adminPanel = {
+                showSection: function(section) {
+                    console.log('🔄 Fallback: Switching to section:', section);
+                    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                    const targetSection = document.getElementById(section);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                },
+                executeQuickAction: function(actionId) {
+                    console.log('🚀 Fallback: Quick action:', actionId);
+                    location.reload();
+                }
+            };
+            
             // Zeige Fallback-Interface
             const mainContent = adminWrapper.querySelector('.admin-main');
             if (mainContent) {
@@ -948,6 +964,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }
+            
+            console.log('🔧 Fallback adminPanel created');
         }
     }
 });
