@@ -722,13 +722,90 @@
                 });
             }
             
+            // 5. VERMIETUNGEN TABS - EINFACHE LÖSUNG
+            console.log('🏠 Initialisiere Vermietungen Tabs...');
+            
+            // Alle Tab-Buttons finden
+            const allTabButtons = document.querySelectorAll('.tab-btn, .settings-tab');
+            console.log(`🏠 Gefunden: ${allTabButtons.length} Tab Buttons insgesamt`);
+            
+            allTabButtons.forEach(function(tab) {
+                console.log(`🏠 Tab Button gefunden:`, tab);
+                
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log(`🏠 Tab geklickt:`, this);
+                    console.log(`🏠 Tab Klassen:`, this.className);
+                    console.log(`🏠 Tab data-Attribute:`, this.dataset);
+                    
+                    // Prüfe ob es ein Vermietungen-Tab ist
+                    if (this.hasAttribute('data-rental')) {
+                        const rentalType = this.getAttribute('data-rental');
+                        console.log(`🏠 VERMIETUNG Tab geklickt: ${rentalType}`);
+                        
+                        // Alle Vermietungen-Tabs deaktivieren
+                        document.querySelectorAll('.tab-btn[data-rental]').forEach(function(t) {
+                            t.classList.remove('active');
+                        });
+                        
+                        // Gewählten Tab aktivieren
+                        this.classList.add('active');
+                        
+                        // Rental Content aktualisieren
+                        const rentalEditor = document.getElementById('rentalEditor');
+                        if (rentalEditor) {
+                            rentalEditor.innerHTML = `
+                                <div style="padding: 2rem; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h3 style="color: #333; margin-bottom: 1rem;">🏠 ${rentalType.charAt(0).toUpperCase() + rentalType.slice(1)} Verwaltung</h3>
+                                    <p style="color: #666; margin-bottom: 2rem;">Hier können Sie die ${rentalType} Einstellungen verwalten.</p>
+                                    <div style="margin-top: 2rem;">
+                                        <button onclick="alert('${rentalType} Verwaltung wird geladen...')" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                                            🔄 ${rentalType} verwalten
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            console.log(`✅ Rental Editor aktualisiert für: ${rentalType}`);
+                        }
+                    }
+                    
+                    // Prüfe ob es ein Settings-Tab ist
+                    if (this.hasAttribute('data-tab')) {
+                        const tabName = this.getAttribute('data-tab');
+                        console.log(`⚙️ SETTINGS Tab geklickt: ${tabName}`);
+                        
+                        // Alle Settings-Tabs deaktivieren
+                        document.querySelectorAll('.settings-tab[data-tab]').forEach(function(t) {
+                            t.classList.remove('active');
+                        });
+                        
+                        // Alle Settings-Panels verstecken
+                        document.querySelectorAll('.settings-panel').forEach(function(p) {
+                            p.classList.remove('active');
+                        });
+                        
+                        // Gewählten Tab aktivieren
+                        this.classList.add('active');
+                        
+                        // Passendes Panel anzeigen
+                        const targetPanel = document.getElementById(tabName + 'Settings');
+                        if (targetPanel) {
+                            targetPanel.classList.add('active');
+                            console.log(`✅ Settings Panel aktiviert: ${tabName}`);
+                        }
+                    }
+                });
+            });
+            
             console.log('✅ DIREKTE ADMIN PANEL INITIALISIERUNG ABGESCHLOSSEN!');
         });
         
         // Cache-busting für Admin-Script (als Backup)
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
-        script.src = `admin-script.js?v=3.3&t=${timestamp}`;
+        script.src = `admin-script.js?v=3.4&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
 </body>
