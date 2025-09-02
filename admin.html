@@ -1408,6 +1408,499 @@
             alert('Services aktualisiert!');
         }
         
+        // ===== VERMIETUNGS- UND BUCHUNGSSYSTEM =====
+        
+        // Vermietungsgegenstände laden
+        function loadRentalItems() {
+            const savedItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            if (savedItems.length === 0) {
+                // Standard-Vermietungsgegenstände erstellen
+                const defaultItems = [
+                    {
+                        id: 'wohnmobil-001',
+                        type: 'wohnmobil',
+                        name: 'Wohnmobil-001',
+                        price: 150,
+                        deposit: 500,
+                        description: 'Komfortables Wohnmobil für 4 Personen',
+                        status: 'available',
+                        images: [],
+                        bookings: []
+                    },
+                    {
+                        id: 'fotobox-001',
+                        type: 'fotobox',
+                        name: 'Fotobox-001',
+                        price: 80,
+                        deposit: 200,
+                        description: 'Professionelle Fotobox für Events',
+                        status: 'available',
+                        images: [],
+                        bookings: []
+                    },
+                    {
+                        id: 'ebike-001',
+                        type: 'ebike',
+                        name: 'E-Bike-001',
+                        price: 45,
+                        deposit: 150,
+                        description: 'Elektrofahrrad für Stadt und Land',
+                        status: 'available',
+                        images: [],
+                        bookings: []
+                    },
+                    {
+                        id: 'sup-001',
+                        type: 'sup',
+                        name: 'SUP-001',
+                        price: 35,
+                        deposit: 100,
+                        description: 'Stand-Up Paddle Board für Wasseraktivitäten',
+                        status: 'available',
+                        images: [],
+                        bookings: []
+                    }
+                ];
+                
+                localStorage.setItem('adminRentalItems', JSON.stringify(defaultItems));
+                return defaultItems;
+            }
+            return savedItems;
+        }
+        
+        // Vermietungsgegenstände rendern
+        function renderRentalItems() {
+            const items = loadRentalItems();
+            const container = document.getElementById('rentalItemsList');
+            if (!container) return;
+            
+            container.innerHTML = items.map((item, index) => `
+                <div class="rental-item-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid ${getRentalTypeColor(item.type)};">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="${getRentalTypeIcon(item.type)}" style="color: ${getRentalTypeColor(item.type)}; font-size: 1.5rem;"></i>
+                            <h4 style="margin: 0; color: #333;">${item.name}</h4>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="editRentalItem(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                ✏️
+                            </button>
+                            <button onclick="deleteRentalItem(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #666; margin-bottom: 0.5rem; line-height: 1.5;">${item.description}</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+                            <div>
+                                <strong>Preis:</strong> ${item.price}€/Tag<br>
+                                <strong>Kaution:</strong> ${item.deposit}€
+                            </div>
+                            <div>
+                                <strong>Status:</strong> <span style="color: ${getStatusColor(item.status)}; font-weight: 500;">${getStatusText(item.status)}</span><br>
+                                <strong>Buchungen:</strong> ${item.bookings.length}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="background: ${getRentalTypeColor(item.type)}20; color: ${getRentalTypeColor(item.type)}; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                            ${getRentalTypeText(item.type)}
+                        </span>
+                        <button onclick="viewRentalBookings(${index})" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                            📅 Buchungen anzeigen
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Neuen Vermietungsgegenstand erstellen
+        function createNewRentalItem() {
+            const type = document.getElementById('newRentalType').value;
+            const name = document.getElementById('newRentalName').value;
+            const price = parseFloat(document.getElementById('newRentalPrice').value);
+            const deposit = parseFloat(document.getElementById('newRentalDeposit').value);
+            const description = document.getElementById('newRentalDescription').value;
+            const status = document.getElementById('newRentalStatus').value;
+            const imageFiles = document.getElementById('newRentalImages').files;
+            
+            if (!type || !name || !price || !description) {
+                alert('Bitte fülle alle Pflichtfelder aus!');
+                return;
+            }
+            
+            const newItem = {
+                id: `${type}-${Date.now()}`,
+                type: type,
+                name: name,
+                price: price,
+                deposit: deposit,
+                description: description,
+                status: status,
+                images: [],
+                bookings: []
+            };
+            
+            // Bilder verarbeiten falls vorhanden
+            if (imageFiles.length > 0) {
+                let processedImages = 0;
+                Array.from(imageFiles).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        newItem.images.push(e.target.result);
+                        processedImages++;
+                        
+                        if (processedImages === imageFiles.length) {
+                            saveAndRenderRentalItem(newItem);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                saveAndRenderRentalItem(newItem);
+            }
+        }
+        
+        // Vermietungsgegenstand speichern und rendern
+        function saveAndRenderRentalItem(newItem) {
+            const savedItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            savedItems.push(newItem);
+            localStorage.setItem('adminRentalItems', JSON.stringify(savedItems));
+            
+            renderRentalItems();
+            updateBookingRentalSelect();
+            
+            // Formular zurücksetzen
+            document.getElementById('newRentalType').value = 'wohnmobil';
+            document.getElementById('newRentalName').value = '';
+            document.getElementById('newRentalPrice').value = '';
+            document.getElementById('newRentalDeposit').value = '';
+            document.getElementById('newRentalDescription').value = '';
+            document.getElementById('newRentalImages').value = '';
+            document.getElementById('newRentalStatus').value = 'available';
+            
+            alert('Vermietungsgegenstand erfolgreich erstellt!');
+            console.log('✅ Neuer Vermietungsgegenstand erstellt:', newItem);
+        }
+        
+        // Vermietungsgegenstand bearbeiten
+        function editRentalItem(index) {
+            const savedItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            const item = savedItems[index];
+            
+            if (item) {
+                const newName = prompt('Neuer Name:', item.name);
+                const newPrice = prompt('Neuer Preis (€/Tag):', item.price);
+                const newDescription = prompt('Neue Beschreibung:', item.description);
+                
+                if (newName && newPrice && newDescription) {
+                    item.name = newName;
+                    item.price = parseFloat(newPrice);
+                    item.description = newDescription;
+                    
+                    localStorage.setItem('adminRentalItems', JSON.stringify(savedItems));
+                    renderRentalItems();
+                    alert('Vermietungsgegenstand erfolgreich bearbeitet!');
+                }
+            }
+        }
+        
+        // Vermietungsgegenstand löschen
+        function deleteRentalItem(index) {
+            if (confirm('Möchtest du diesen Vermietungsgegenstand wirklich löschen?')) {
+                const savedItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+                savedItems.splice(index, 1);
+                localStorage.setItem('adminRentalItems', JSON.stringify(savedItems));
+                
+                renderRentalItems();
+                updateBookingRentalSelect();
+                alert('Vermietungsgegenstand erfolgreich gelöscht!');
+            }
+        }
+        
+        // Buchungen für einen Vermietungsgegenstand anzeigen
+        function viewRentalBookings(index) {
+            const savedItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            const item = savedItems[index];
+            
+            if (item && item.bookings.length > 0) {
+                const bookingsList = item.bookings.map(booking => `
+                    <div style="background: #f9f9f9; padding: 1rem; margin: 0.5rem 0; border-radius: 6px; border-left: 3px solid #6366f1;">
+                        <strong>${booking.customerName}</strong> (${booking.customerEmail})<br>
+                        <small>${new Date(booking.startDate).toLocaleDateString('de-DE')} - ${new Date(booking.endDate).toLocaleDateString('de-DE')}</small><br>
+                        <span style="color: ${getStatusColor(booking.status)};">${getStatusText(booking.status)}</span>
+                    </div>
+                `).join('');
+                
+                alert(`Buchungen für ${item.name}:\n\n${item.bookings.length} Buchung(en) gefunden.`);
+            } else {
+                alert(`Keine Buchungen für ${item.name} vorhanden.`);
+            }
+        }
+        
+        // ===== BUCHUNGSSYSTEM =====
+        
+        // Buchungen laden
+        function loadBookings() {
+            const savedBookings = JSON.parse(localStorage.getItem('adminBookings') || '[]');
+            renderBookings(savedBookings);
+            updateBookingRentalSelect();
+        }
+        
+        // Buchungen rendern
+        function renderBookings(bookings) {
+            const container = document.getElementById('bookingsList');
+            if (!container) return;
+            
+            if (bookings.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">Keine Buchungen vorhanden.</div>';
+                return;
+            }
+            
+            container.innerHTML = bookings.map((booking, index) => `
+                <div class="booking-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid ${getStatusColor(booking.status)};">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">${booking.customerName}</h4>
+                            <p style="margin: 0; color: #666; font-size: 0.875rem;">${booking.customerEmail}</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="editBooking(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                ✏️
+                            </button>
+                            <button onclick="deleteBooking(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            <div>
+                                <strong>Gegenstand:</strong> ${booking.rentalItemName}<br>
+                                <strong>Telefon:</strong> ${booking.customerPhone}
+                            </div>
+                            <div>
+                                <strong>Preis:</strong> ${booking.totalPrice}€<br>
+                                <strong>Status:</strong> <span style="color: ${getStatusColor(booking.status)}; font-weight: 500;">${getStatusText(booking.status)}</span>
+                            </div>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 0.75rem; border-radius: 4px; font-size: 0.875rem;">
+                            <strong>Zeitraum:</strong> ${new Date(booking.startDate).toLocaleDateString('de-DE')} - ${new Date(booking.endDate).toLocaleDateString('de-DE')}
+                        </div>
+                        ${booking.notes ? `<div style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;"><strong>Notizen:</strong> ${booking.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Neue Buchung erstellen
+        function createNewBooking() {
+            const rentalItemId = document.getElementById('bookingRentalItem').value;
+            const customerName = document.getElementById('bookingCustomerName').value;
+            const customerEmail = document.getElementById('bookingCustomerEmail').value;
+            const customerPhone = document.getElementById('bookingCustomerPhone').value;
+            const startDate = document.getElementById('bookingStartDate').value;
+            const endDate = document.getElementById('bookingEndDate').value;
+            const status = document.getElementById('bookingStatus').value;
+            const notes = document.getElementById('bookingNotes').value;
+            
+            if (!rentalItemId || !customerName || !customerEmail || !startDate || !endDate) {
+                alert('Bitte fülle alle Pflichtfelder aus!');
+                return;
+            }
+            
+            // Vermietungsgegenstand finden
+            const rentalItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            const rentalItem = rentalItems.find(item => item.id === rentalItemId);
+            
+            if (!rentalItem) {
+                alert('Vermietungsgegenstand nicht gefunden!');
+                return;
+            }
+            
+            // Preis berechnen
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            const totalPrice = days * rentalItem.price;
+            
+            const newBooking = {
+                id: `booking-${Date.now()}`,
+                rentalItemId: rentalItemId,
+                rentalItemName: rentalItem.name,
+                rentalItemType: rentalItem.type,
+                customerName: customerName,
+                customerEmail: customerEmail,
+                customerPhone: customerPhone,
+                startDate: startDate,
+                endDate: endDate,
+                totalPrice: totalPrice,
+                status: status,
+                notes: notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Buchung speichern
+            const savedBookings = JSON.parse(localStorage.getItem('adminBookings') || '[]');
+            savedBookings.push(newBooking);
+            localStorage.setItem('adminBookings', JSON.stringify(savedBookings));
+            
+            // Buchung zum Vermietungsgegenstand hinzufügen
+            rentalItem.bookings.push(newBooking);
+            localStorage.setItem('adminRentalItems', JSON.stringify(rentalItems));
+            
+            // UI aktualisieren
+            renderBookings(savedBookings);
+            renderRentalItems();
+            
+            // Formular zurücksetzen
+            document.getElementById('bookingRentalItem').value = '';
+            document.getElementById('bookingCustomerName').value = '';
+            document.getElementById('bookingCustomerEmail').value = '';
+            document.getElementById('bookingCustomerPhone').value = '';
+            document.getElementById('bookingStartDate').value = '';
+            document.getElementById('bookingEndDate').value = '';
+            document.getElementById('bookingTotalPrice').value = '';
+            document.getElementById('bookingNotes').value = '';
+            
+            alert('Buchung erfolgreich erstellt!');
+            console.log('✅ Neue Buchung erstellt:', newBooking);
+        }
+        
+        // Buchung bearbeiten
+        function editBooking(index) {
+            const savedBookings = JSON.parse(localStorage.getItem('adminBookings') || '[]');
+            const booking = savedBookings[index];
+            
+            if (booking) {
+                const newStatus = prompt('Neuer Status (confirmed/pending/cancelled/completed):', booking.status);
+                
+                if (newStatus && ['confirmed', 'pending', 'cancelled', 'completed'].includes(newStatus)) {
+                    booking.status = newStatus;
+                    
+                    localStorage.setItem('adminBookings', JSON.stringify(savedBookings));
+                    renderBookings(savedBookings);
+                    alert('Buchung erfolgreich bearbeitet!');
+                }
+            }
+        }
+        
+        // Buchung löschen
+        function deleteBooking(index) {
+            if (confirm('Möchtest du diese Buchung wirklich löschen?')) {
+                const savedBookings = JSON.parse(localStorage.getItem('adminBookings') || '[]');
+                const deletedBooking = savedBookings[index];
+                
+                // Buchung aus Vermietungsgegenstand entfernen
+                if (deletedBooking) {
+                    const rentalItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+                    const rentalItem = rentalItems.find(item => item.id === deletedBooking.rentalItemId);
+                    
+                    if (rentalItem) {
+                        rentalItem.bookings = rentalItem.bookings.filter(b => b.id !== deletedBooking.id);
+                        localStorage.setItem('adminRentalItems', JSON.stringify(rentalItems));
+                    }
+                }
+                
+                savedBookings.splice(index, 1);
+                localStorage.setItem('adminBookings', JSON.stringify(savedBookings));
+                
+                renderBookings(savedBookings);
+                renderRentalItems();
+                alert('Buchung erfolgreich gelöscht!');
+            }
+        }
+        
+        // Buchungs-Select für Vermietungsgegenstände aktualisieren
+        function updateBookingRentalSelect() {
+            const select = document.getElementById('bookingRentalItem');
+            if (!select) return;
+            
+            const rentalItems = JSON.parse(localStorage.getItem('adminRentalItems') || '[]');
+            const availableItems = rentalItems.filter(item => item.status === 'available');
+            
+            select.innerHTML = '<option value="">Bitte wählen...</option>' + 
+                availableItems.map(item => `<option value="${item.id}">${item.name} (${item.price}€/Tag)</option>`).join('');
+        }
+        
+        // ===== HELPER-FUNKTIONEN =====
+        
+        // Farben für Vermietungstypen
+        function getRentalTypeColor(type) {
+            const colors = {
+                'wohnmobil': '#8b5cf6',
+                'fotobox': '#f59e0b',
+                'ebike': '#10b981',
+                'sup': '#3b82f6'
+            };
+            return colors[type] || '#6b7280';
+        }
+        
+        // Icons für Vermietungstypen
+        function getRentalTypeIcon(type) {
+            const icons = {
+                'wohnmobil': 'fas fa-campground',
+                'fotobox': 'fas fa-camera',
+                'ebike': 'fas fa-bicycle',
+                'sup': 'fas fa-water'
+            };
+            return icons[type] || 'fas fa-box';
+        }
+        
+        // Text für Vermietungstypen
+        function getRentalTypeText(type) {
+            const texts = {
+                'wohnmobil': 'Wohnmobil',
+                'fotobox': 'Fotobox',
+                'ebike': 'E-Bike',
+                'sup': 'SUP Board'
+            };
+            return texts[type] || type;
+        }
+        
+        // Farben für Status
+        function getStatusColor(status) {
+            const colors = {
+                'available': '#10b981',
+                'maintenance': '#f59e0b',
+                'out_of_order': '#ef4444',
+                'confirmed': '#10b981',
+                'pending': '#f59e0b',
+                'cancelled': '#ef4444',
+                'completed': '#6b7280'
+            };
+            return colors[status] || '#6b7280';
+        }
+        
+        // Text für Status
+        function getStatusText(status) {
+            const texts = {
+                'available': 'Verfügbar',
+                'maintenance': 'Wartung',
+                'out_of_order': 'Außer Betrieb',
+                'confirmed': 'Bestätigt',
+                'pending': 'Ausstehend',
+                'cancelled': 'Storniert',
+                'completed': 'Abgeschlossen'
+            };
+            return texts[status] || status;
+        }
+        
+        // ===== INITIALISIERUNG =====
+        
+        // Alle Systeme beim Laden initialisieren
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServices();
+            loadRentalItems();
+            loadBookings();
+            renderRentalItems();
+            renderBookings([]);
+        });
+        
         // Cache-busting für Admin-Script (als Backup)
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
