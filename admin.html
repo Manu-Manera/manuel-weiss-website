@@ -589,30 +589,112 @@
 
                 <!-- Bookings Section -->
                 <section id="bookings" class="admin-section">
-                    <div class="section-toolbar">
-                        <div class="toolbar-left">
-                            <button class="btn btn-primary" onclick="adminPanel.addNewBooking()">
-                                <i class="fas fa-plus"></i>
-                                Neue Buchung
-                            </button>
+                    <h2>📅 Buchungsverwaltung</h2>
+                    
+                    <!-- Neue Buchung erstellen -->
+                    <div class="create-booking" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                        <h3 style="color: #555; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                            ➕ Neue Buchung erstellen
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Vermietungsgegenstand:</label>
+                                <select id="bookingRentalItem" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="">Bitte wählen...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kunde:</label>
+                                <input type="text" id="bookingCustomerName" placeholder="Vor- und Nachname" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
                         </div>
-                        <div class="toolbar-right">
-                            <input type="date" class="date-input" id="bookingDateFilter">
-                            <select class="filter-select">
-                                <option>Alle Status</option>
-                                <option>Bestätigt</option>
-                                <option>Ausstehend</option>
-                                <option>Storniert</option>
-                            </select>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">E-Mail:</label>
+                                <input type="email" id="bookingCustomerEmail" placeholder="kunde@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Telefon:</label>
+                                <input type="tel" id="bookingCustomerPhone" placeholder="+49 123 456789" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
                         </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Startdatum:</label>
+                                <input type="date" id="bookingStartDate" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Enddatum:</label>
+                                <input type="date" id="bookingEndDate" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Gesamtpreis:</label>
+                                <input type="number" id="bookingTotalPrice" placeholder="0" readonly style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status:</label>
+                                <select id="bookingStatus" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="confirmed">Bestätigt</option>
+                                    <option value="pending">Ausstehend</option>
+                                    <option value="cancelled">Storniert</option>
+                                    <option value="completed">Abgeschlossen</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Notizen:</label>
+                            <textarea id="bookingNotes" placeholder="Besondere Wünsche oder Anmerkungen..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+                        </div>
+                        
+                        <button onclick="createNewBooking()" style="padding: 1rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                            📅 Buchung erstellen
+                        </button>
                     </div>
                     
-                    <div class="bookings-calendar" id="bookingsCalendar">
-                        <!-- Calendar view will be rendered here -->
-                    </div>
-                    
-                    <div class="bookings-list" id="bookingsList">
-                        <!-- Bookings list will be loaded here -->
+                    <!-- Alle Buchungen anzeigen -->
+                    <div class="bookings-list">
+                        <h3 style="color: #555; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                            📋 Alle Buchungen
+                        </h3>
+                        
+                        <!-- Filter und Suche -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status filtern:</label>
+                                <select id="bookingStatusFilter" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="">Alle Status</option>
+                                    <option value="confirmed">Bestätigt</option>
+                                    <option value="pending">Ausstehend</option>
+                                    <option value="cancelled">Storniert</option>
+                                    <option value="completed">Abgeschlossen</option>
+                                </option>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Typ filtern:</label>
+                                <select id="bookingTypeFilter" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="">Alle Typen</option>
+                                    <option value="wohnmobil">Wohnmobil</option>
+                                    <option value="fotobox">Fotobox</option>
+                                    <option value="ebike">E-Bike</option>
+                                    <option value="sup">SUP Board</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Suche:</label>
+                                <input type="text" id="bookingSearch" placeholder="Kundenname oder E-Mail..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                        </div>
+                        
+                        <div id="bookingsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+                            <!-- Buchungen werden dynamisch geladen -->
+                        </div>
                     </div>
                 </section>
 
