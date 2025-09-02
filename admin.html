@@ -514,6 +514,77 @@
                             <!-- Rental specific editor will be loaded here -->
                         </div>
                     </div>
+                    
+                    <!-- Detaillierte Vermietungsverwaltung -->
+                    <div class="detailed-rentals" style="margin-top: 2rem;">
+                        <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                            🏠 Detaillierte Vermietungsverwaltung
+                        </h3>
+                        
+                        <!-- Neuen Vermietungsgegenstand hinzufügen -->
+                        <div class="add-rental-item" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                            <h4 style="color: #555; margin-bottom: 1.5rem;">➕ Neuen Vermietungsgegenstand hinzufügen:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Typ:</label>
+                                    <select id="newRentalType" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="wohnmobil">Wohnmobil</option>
+                                        <option value="fotobox">Fotobox</option>
+                                        <option value="ebike">E-Bike</option>
+                                        <option value="sup">SUP Board</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Name/ID:</label>
+                                    <input type="text" id="newRentalName" placeholder="z.B. Wohnmobil-001, E-Bike-05" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Preis pro Tag:</label>
+                                    <input type="number" id="newRentalPrice" placeholder="150" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kaution:</label>
+                                    <input type="number" id="newRentalDeposit" placeholder="500" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Beschreibung:</label>
+                                <textarea id="newRentalDescription" placeholder="Details zum Gegenstand..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bilder:</label>
+                                    <input type="file" id="newRentalImages" accept="image/*" multiple style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status:</label>
+                                    <select id="newRentalStatus" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="available">Verfügbar</option>
+                                        <option value="maintenance">Wartung</option>
+                                        <option value="out_of_order">Außer Betrieb</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button onclick="createNewRentalItem()" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                                🏠 Vermietungsgegenstand erstellen
+                            </button>
+                        </div>
+                        
+                        <!-- Alle Vermietungsgegenstände anzeigen -->
+                        <div class="rental-items-list">
+                            <h4 style="color: #555; margin-bottom: 1rem;">Alle Vermietungsgegenstände:</h4>
+                            <div id="rentalItemsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem;">
+                                <!-- Vermietungsgegenstände werden dynamisch geladen -->
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Bookings Section -->
