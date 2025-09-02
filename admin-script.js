@@ -1,4 +1,4 @@
-// Modern Admin Panel - FINAL UNIFIED VERSION v6.0
+// Modern Admin Panel - FINAL UNIFIED VERSION v6.1 - Loading Screen Fix
 'use strict';
 
 // Globale Variable für Admin Panel
