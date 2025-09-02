@@ -287,8 +287,44 @@
                 <section id="ai-twin" class="admin-section">
                     <div class="ai-twin-container">
                         <div class="ai-twin-header">
-                            <h2>AI Digital Twin</h2>
-                            <p>Erstelle deinen digitalen Zwilling für Bewerbungen und Präsentationen</p>
+                            <h2>AI Digital Twin & Profilverwaltung</h2>
+                            <p>Verwalte dein Profilbild, Video und erstelle deinen digitalen Zwilling</p>
+                        </div>
+                        
+                        <!-- Profilbild & Video Verwaltung -->
+                        <div class="profile-management" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                👤 Profilbild & Video
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                                <!-- Profilbild -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">📸 Profilbild</h4>
+                                    <div style="text-align: center; margin-bottom: 1rem;">
+                                        <img id="profileImage" src="manuel-weiss-photo.svg" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #6366f1;">
+                                    </div>
+                                    <input type="file" id="profileImageInput" accept="image/*" style="width: 100%; margin-bottom: 1rem;">
+                                    <button onclick="updateProfileImage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        🔄 Profilbild aktualisieren
+                                    </button>
+                                </div>
+                                
+                                <!-- Profilvideo -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">🎥 Profilvideo</h4>
+                                    <div style="text-align: center; margin-bottom: 1rem;">
+                                        <video id="profileVideo" controls style="width: 100%; max-width: 200px; border-radius: 8px;">
+                                            <source src="" type="video/mp4">
+                                            Kein Video verfügbar
+                                        </video>
+                                    </div>
+                                    <input type="file" id="profileVideoInput" accept="video/*" style="width: 100%; margin-bottom: 1rem;">
+                                    <button onclick="updateProfileVideo()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        🎥 Video aktualisieren
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="ai-twin-steps">
