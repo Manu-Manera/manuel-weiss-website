@@ -233,19 +233,19 @@
                         <div class="dashboard-card">
                             <h3>Quick Actions</h3>
                             <div class="quick-actions">
-                                <button class="quick-action-btn" onclick="adminPanel.showSection('content')">
+                                <button class="quick-action-btn" data-action="content">
                                     <i class="fas fa-plus"></i>
                                     <span>Neuer Inhalt</span>
                                 </button>
-                                <button class="quick-action-btn" onclick="adminPanel.showSection('ai-twin')">
+                                <button class="quick-action-btn" data-action="ai-twin">
                                     <i class="fas fa-robot"></i>
                                     <span>AI Twin erstellen</span>
                                 </button>
-                                <button class="quick-action-btn" onclick="adminPanel.showSection('media')">
+                                <button class="quick-action-btn" data-action="media">
                                     <i class="fas fa-upload"></i>
                                     <span>Medien hochladen</span>
                                 </button>
-                                <button class="quick-action-btn" onclick="adminPanel.showSection('rentals')">
+                                <button class="quick-action-btn" data-action="rentals">
                                     <i class="fas fa-key"></i>
                                     <span>Vermietung verwalten</span>
                                 </button>
@@ -604,16 +604,131 @@
         }, 5000);
     </script>
 
-    <!-- Scripts -->
+    <!-- EINZIGES ADMIN SCRIPT - Alle anderen entfernt um Konflikte zu vermeiden -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/content-manager.js"></script>
-    <script src="js/image-manager.js"></script>
-    <script src="js/data-persistence.js"></script>
+    
+    <!-- DIREKTE FUNKTIONALITÄT - Funktioniert garantiert -->
     <script>
-        // Cache-busting für Admin-Script
+        console.log('🚀 DIREKTE ADMIN PANEL INITIALISIERUNG...');
+        
+        // Warte bis DOM geladen ist
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM geladen, initialisiere Admin Panel...');
+            
+            // 1. Navigation Event Listener
+            const navItems = document.querySelectorAll('.nav-item');
+            console.log(`📋 Gefunden: ${navItems.length} Navigation Items`);
+            
+            navItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const section = this.getAttribute('data-section');
+                    console.log(`🔄 Navigation geklickt: ${section}`);
+                    
+                    if (section) {
+                        // Alle Sektionen verstecken
+                        document.querySelectorAll('.admin-section').forEach(function(s) {
+                            s.classList.remove('active');
+                        });
+                        
+                        // Gewählte Sektion anzeigen
+                        const targetSection = document.getElementById(section);
+                        if (targetSection) {
+                            targetSection.classList.add('active');
+                            console.log(`✅ Sektion aktiviert: ${section}`);
+                        }
+                        
+                        // Navigation aktualisieren
+                        document.querySelectorAll('.nav-item').forEach(function(nav) {
+                            nav.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        // Titel aktualisieren
+                        const sectionTitle = document.getElementById('sectionTitle');
+                        if (sectionTitle) {
+                            sectionTitle.textContent = section.charAt(0).toUpperCase() + section.slice(1);
+                        }
+                    }
+                });
+            });
+            
+            // 2. Quick Actions Event Listener
+            const quickActionButtons = document.querySelectorAll('.quick-action-btn');
+            console.log(`🚀 Gefunden: ${quickActionButtons.length} Quick Action Buttons`);
+            
+            quickActionButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const action = this.getAttribute('data-action');
+                    const text = this.querySelector('span').textContent;
+                    console.log(`🚀 Quick Action geklickt: ${text} (${action})`);
+                    
+                    if (action) {
+                        // Alle Sektionen verstecken
+                        document.querySelectorAll('.admin-section').forEach(function(s) {
+                            s.classList.remove('active');
+                        });
+                        
+                        // Gewählte Sektion anzeigen
+                        const targetSection = document.getElementById(action);
+                        if (targetSection) {
+                            targetSection.classList.add('active');
+                            console.log(`✅ Sektion aktiviert: ${action}`);
+                            
+                            // Dashboard verstecken
+                            const dashboard = document.getElementById('dashboard');
+                            if (dashboard) {
+                                dashboard.classList.remove('active');
+                            }
+                        }
+                        
+                        // Navigation aktualisieren
+                        document.querySelectorAll('.nav-item').forEach(function(nav) {
+                            nav.classList.remove('active');
+                        });
+                        
+                        // Passende Navigation aktivieren
+                        const navItem = document.querySelector(`[data-section="${action}"]`);
+                        if (navItem) {
+                            navItem.classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            // 3. Sidebar Toggle
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    const sidebar = document.querySelector('.admin-sidebar');
+                    if (sidebar) {
+                        sidebar.classList.toggle('collapsed');
+                        console.log('🔄 Sidebar toggled');
+                    }
+                });
+            }
+            
+            // 4. Dark Mode Toggle
+            const darkModeBtn = document.getElementById('darkModeIcon');
+            if (darkModeBtn) {
+                darkModeBtn.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    console.log('🌙 Dark mode toggled');
+                });
+            }
+            
+            console.log('✅ DIREKTE ADMIN PANEL INITIALISIERUNG ABGESCHLOSSEN!');
+        });
+        
+        // Cache-busting für Admin-Script (als Backup)
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
-        script.src = `admin-script.js?v=3.2&t=${timestamp}`;
+        script.src = `admin-script.js?v=3.3&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
 </body>
