@@ -553,6 +553,57 @@
     <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- NOTFALL-SCRIPT: Versteckt Loading Screen nach 2 Sekunden GARANTIERT -->
+    <script>
+        console.log('🆘 EMERGENCY: Loading emergency fallback script...');
+        
+        // Sofortiger Fallback nach 2 Sekunden
+        setTimeout(function() {
+            console.log('🆘 EMERGENCY: Activating loading screen fallback...');
+            
+            const loadingScreen = document.getElementById('loadingScreen');
+            const adminWrapper = document.querySelector('.admin-wrapper');
+            
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+                loadingScreen.style.visibility = 'hidden';
+                loadingScreen.style.opacity = '0';
+                console.log('🆘 EMERGENCY: Loading screen hidden');
+            }
+            
+            if (adminWrapper) {
+                adminWrapper.style.display = 'flex';
+                adminWrapper.style.opacity = '1';
+                adminWrapper.style.visibility = 'visible';
+                console.log('🆘 EMERGENCY: Admin wrapper shown');
+            }
+            
+            // Dashboard aktivieren
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard) {
+                dashboard.classList.add('active');
+                dashboard.style.display = 'block';
+            }
+            
+            console.log('🆘 EMERGENCY: Fallback completed - Admin Panel should be visible now');
+        }, 2000);
+        
+        // Zusätzlicher ultra-sicherer Fallback nach 5 Sekunden
+        setTimeout(function() {
+            const loadingElements = document.querySelectorAll('#loadingScreen, .loading-screen, [class*="loading"]');
+            loadingElements.forEach(function(el) {
+                el.remove(); // Komplett entfernen
+            });
+            
+            const adminWrapper = document.querySelector('.admin-wrapper');
+            if (adminWrapper) {
+                adminWrapper.style.cssText = 'display: flex !important; opacity: 1 !important; visibility: visible !important;';
+            }
+            
+            console.log('🆘 ULTRA-EMERGENCY: Loading elements completely removed');
+        }, 5000);
+    </script>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/content-manager.js"></script>
@@ -562,7 +613,7 @@
         // Cache-busting für Admin-Script
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
-        script.src = `admin-script.js?v=3.1&t=${timestamp}`;
+        script.src = `admin-script.js?v=3.2&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
 </body>

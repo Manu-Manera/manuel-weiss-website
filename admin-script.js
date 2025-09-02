@@ -280,8 +280,8 @@ class AdminPanel {
     init() {
         console.log('🚀 Initializing UNIFIED Admin Panel...');
         
-        // Verstecke Loading Screen sofort als erstes
-        this.hideLoading();
+        // Verstecke Loading Screen SOFORT und ZUVERLÄSSIG
+        this.forceHideLoading();
         
         try {
             this.loadData();
@@ -303,42 +303,73 @@ class AdminPanel {
         } catch (error) {
             console.error('❌ Error during initialization:', error);
             // Zeige trotzdem das Admin Panel - auch bei teilweisen Fehlern
+            this.forceHideLoading();
             this.showBasicInterface();
         }
     }
 
-    // Hide loading screen
-    hideLoading() {
-        const loading = document.getElementById('loadingScreen');
-        if (loading) {
-            loading.style.display = 'none';
-            console.log('✅ Loading screen hidden');
-        } else {
-            console.warn('⚠️ Loading screen element not found');
-        }
+    // Force hide loading screen - GARANTIERT funktionierend
+    forceHideLoading() {
+        console.log('🔧 FORCE: Hiding loading screen...');
         
-        // Zusätzlich: Stelle sicher, dass das Admin Panel sichtbar ist
-        const adminWrapper = document.querySelector('.admin-wrapper');
-        if (adminWrapper) {
-            adminWrapper.style.display = 'flex';
-            adminWrapper.style.opacity = '1';
-            console.log('✅ Admin wrapper made visible');
-        }
+        // Alle möglichen Selektoren probieren
+        const selectors = ['#loadingScreen', '.loading-screen', '[id*="loading"]', '[class*="loading"]'];
+        
+        selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.style.display = 'none !important';
+                element.style.visibility = 'hidden';
+                element.style.opacity = '0';
+                element.style.pointerEvents = 'none';
+                element.setAttribute('hidden', true);
+                console.log(`✅ FORCE: Hidden element with selector: ${selector}`);
+            });
+        });
+        
+        // Admin Wrapper sichtbar machen
+        const adminSelectors = ['.admin-wrapper', '#adminWrapper', '[class*="admin-wrapper"]'];
+        
+        adminSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                element.style.display = 'flex !important';
+                element.style.opacity = '1 !important';
+                element.style.visibility = 'visible';
+                element.removeAttribute('hidden');
+                console.log(`✅ FORCE: Shown admin element with selector: ${selector}`);
+            });
+        });
+        
+        // Zusätzlich den Body bereinigen
+        document.body.classList.remove('loading');
+        
+        console.log('✅ FORCE: Loading screen force-hidden completed');
+    }
+    
+    // Hide loading screen (alte Methode als Fallback)
+    hideLoading() {
+        this.forceHideLoading(); // Verwende die neue Methode
     }
 
     // Fallback method to show basic interface
     showBasicInterface() {
         console.log('🔧 Showing basic interface as fallback...');
         
+        // Zuerst Loading Screen verstecken
+        this.forceHideLoading();
+        
         const adminWrapper = document.querySelector('.admin-wrapper');
         if (adminWrapper) {
             adminWrapper.style.display = 'flex';
             adminWrapper.style.opacity = '1';
+            adminWrapper.style.visibility = 'visible';
             
             // Zeige Dashboard-Sektion
             const dashboard = document.getElementById('dashboard');
             if (dashboard) {
                 dashboard.classList.add('active');
+                dashboard.style.display = 'block';
             }
             
             // Aktiviere Dashboard-Navigation
@@ -346,6 +377,23 @@ class AdminPanel {
             if (dashboardNav) {
                 dashboardNav.classList.add('active');
             }
+            
+            // Stelle sicher, dass die Hauptbereiche sichtbar sind
+            const adminMain = document.querySelector('.admin-main');
+            if (adminMain) {
+                adminMain.style.display = 'block';
+                adminMain.style.visibility = 'visible';
+            }
+            
+            const adminSidebar = document.querySelector('.admin-sidebar');
+            if (adminSidebar) {
+                adminSidebar.style.display = 'flex';
+                adminSidebar.style.visibility = 'visible';
+            }
+            
+            console.log('✅ Basic interface shown successfully');
+        } else {
+            console.error('❌ Admin wrapper not found in DOM');
         }
     }
 
@@ -767,62 +815,83 @@ class AdminPanel {
     createNewBooking() { console.log('📅 Creating new booking...'); }
 }
 
+// SOFORTIGER Loading Screen Fix - wird als erstes ausgeführt
+(function() {
+    console.log('🚀 IMMEDIATE: Starting admin panel initialization...');
+    
+    // Verstecke Loading Screen sofort nach 1 Sekunde
+    setTimeout(() => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        const adminWrapper = document.querySelector('.admin-wrapper');
+        
+        console.log('⚡ IMMEDIATE: Hiding loading screen after 1 second');
+        
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+            console.log('✅ Loading screen hidden immediately');
+        }
+        
+        if (adminWrapper) {
+            adminWrapper.style.display = 'flex';
+            adminWrapper.style.opacity = '1';
+            console.log('✅ Admin wrapper shown immediately');
+        }
+    }, 1000);
+})();
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM loaded, initializing UNIFIED Admin Panel...');
     
-    // NOTFALL-TIMEOUT: Verstecke Loading Screen nach spätestens 3 Sekunden
-    const loadingScreen = document.getElementById('loadingScreen');
-    const adminWrapper = document.querySelector('.admin-wrapper');
-    
+    // Zusätzlicher Notfall-Timeout
     setTimeout(() => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        const adminWrapper = document.querySelector('.admin-wrapper');
+        
         if (loadingScreen && loadingScreen.style.display !== 'none') {
-            console.warn('⚡ Emergency timeout: Hiding loading screen after 3 seconds');
+            console.warn('⚡ Emergency timeout: Hiding loading screen after 2 seconds');
             loadingScreen.style.display = 'none';
-            
-            if (adminWrapper) {
-                adminWrapper.style.display = 'flex';
-                adminWrapper.style.opacity = '1';
-            }
         }
-    }, 3000);
-    
-    console.log('🔍 Debug - Loading screen found:', !!loadingScreen);
-    console.log('🔍 Debug - Admin wrapper found:', !!adminWrapper);
+        
+        if (adminWrapper && (adminWrapper.style.display === 'none' || adminWrapper.style.opacity === '0')) {
+            adminWrapper.style.display = 'flex';
+            adminWrapper.style.opacity = '1';
+        }
+    }, 2000);
     
     try {
+        // Versuche AdminPanel zu initialisieren, aber ohne den Loading Screen davon abhängig zu machen
         adminPanel = new AdminPanel();
         console.log('✅ UNIFIED Admin Panel loaded successfully!');
     } catch (error) {
         console.error('❌ Error initializing UNIFIED Admin Panel:', error);
-        console.error('❌ Stack trace:', error.stack);
         
-        // Fallback: Hide loading screen manually
+        // Zeige trotzdem das Interface
+        const loadingScreen = document.getElementById('loadingScreen');
+        const adminWrapper = document.querySelector('.admin-wrapper');
+        
         if (loadingScreen) {
             loadingScreen.style.display = 'none';
-            console.log('🔧 Fallback: Loading screen hidden manually');
         }
         
-        // Show admin wrapper even with errors
         if (adminWrapper) {
             adminWrapper.style.display = 'flex';
             adminWrapper.style.opacity = '1';
             
-            // Show error message in admin panel
+            // Zeige Fallback-Interface
             const mainContent = adminWrapper.querySelector('.admin-main');
             if (mainContent) {
                 mainContent.innerHTML = `
-                    <div style="padding: 2rem; text-align: center; color: #ef4444;">
-                        <h2>⚠️ Admin Panel Teilfehler</h2>
-                        <p>Das Admin Panel wurde mit Einschränkungen geladen.</p>
-                        <p><strong>Fehler:</strong> ${error.message}</p>
+                    <div style="padding: 2rem; text-align: center;">
+                        <h2>🛠️ Admin Panel</h2>
+                        <p>Admin Panel wird im Basis-Modus geladen...</p>
                         <div style="margin-top: 2rem;">
                             <button onclick="location.reload()" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
-                                🔄 Seite neu laden
+                                🔄 Neu laden
                             </button>
-                            <a href="admin-simple.html" style="padding: 0.5rem 1rem; margin: 0.5rem; background: #10b981; color: white; text-decoration: none; border-radius: 0.5rem; display: inline-block;">
-                                🛠️ Vereinfachte Version
-                            </a>
+                        </div>
+                        <div style="margin-top: 2rem; color: #666;">
+                            <small>Fehler: ${error.message}</small>
                         </div>
                     </div>
                 `;
