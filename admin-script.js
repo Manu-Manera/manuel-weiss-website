@@ -299,7 +299,17 @@ class AdminPanel {
             // Set global reference
             window.adminPanel = this;
             
+            // Stelle sicher, dass die globale Variable verfügbar ist
+            if (typeof window !== 'undefined') {
+                window.adminPanel = this;
+                // Auch direkt als adminPanel verfügbar machen
+                if (typeof globalThis !== 'undefined') {
+                    globalThis.adminPanel = this;
+                }
+            }
+            
             console.log('✅ UNIFIED Admin Panel initialized successfully!');
+            console.log('🔍 Global adminPanel set:', !!window.adminPanel);
         } catch (error) {
             console.error('❌ Error during initialization:', error);
             // Zeige trotzdem das Admin Panel - auch bei teilweisen Fehlern
@@ -430,15 +440,34 @@ class AdminPanel {
 
     // Setup navigation
     setupNavigation() {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
+        console.log('🔧 Setting up navigation...');
+        
+        const navItems = document.querySelectorAll('.nav-item');
+        console.log(`📋 Found ${navItems.length} navigation items`);
+        
+        navItems.forEach((item, index) => {
+            const section = item.getAttribute('data-section');
+            console.log(`📌 Nav item ${index}: ${section}`);
+            
+            // Entferne alte Event Listener
+            item.replaceWith(item.cloneNode(true));
+            const newItem = document.querySelectorAll('.nav-item')[index];
+            
+            newItem.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = item.getAttribute('data-section');
+                e.stopPropagation();
+                
+                console.log(`🔄 Navigation clicked: ${section}`);
+                
                 if (section) {
                     this.showSection(section);
+                } else {
+                    console.warn(`⚠️ No section attribute found for nav item ${index}`);
                 }
             });
         });
+        
+        console.log('✅ Navigation setup completed');
     }
 
     // Setup mobile menu
@@ -618,12 +647,29 @@ class AdminPanel {
 
         const quickActionsContainer = document.querySelector('.quick-actions');
         if (quickActionsContainer) {
-            quickActionsContainer.innerHTML = quickActions.map(action => `
-                <button class="quick-action-btn" onclick="adminPanel.executeQuickAction('${action.id}')">
+            // Entferne alte Event Listener und erstelle neue
+            quickActionsContainer.innerHTML = '';
+            
+            quickActions.forEach(action => {
+                const button = document.createElement('button');
+                button.className = 'quick-action-btn';
+                button.innerHTML = `
                     <i class="${action.icon}"></i>
                     <span>${action.text}</span>
-                </button>
-            `).join('');
+                `;
+                
+                // Direkte Event Listener statt onclick
+                button.addEventListener('click', () => {
+                    console.log(`🚀 Quick Action clicked: ${action.id}`);
+                    this.executeQuickAction(action.id);
+                });
+                
+                quickActionsContainer.appendChild(button);
+            });
+            
+            console.log('✅ Quick actions setup completed');
+        } else {
+            console.warn('⚠️ Quick actions container not found');
         }
     }
 
@@ -861,8 +907,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     try {
         // Versuche AdminPanel zu initialisieren, aber ohne den Loading Screen davon abhängig zu machen
-        adminPanel = new AdminPanel();
+        const panelInstance = new AdminPanel();
+        
+        // Setze globale Referenzen
+        window.adminPanel = panelInstance;
+        adminPanel = panelInstance;
+        
         console.log('✅ UNIFIED Admin Panel loaded successfully!');
+        console.log('🔍 adminPanel instance created and set globally');
     } catch (error) {
         console.error('❌ Error initializing UNIFIED Admin Panel:', error);
         
