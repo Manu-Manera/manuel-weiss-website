@@ -1,0 +1,10 @@
+# Vercel Deployment DEAKTIVIERT
+# Dieses Projekt nutzt nur Netlify
+
+# Blockiere alle Dateien für Vercel
+*
+.*
+**/*
+
+# Grund: Projekt ist für Netlify konfiguriert, nicht für Vercel
+# Bitte Vercel-Account und GitHub-Integrationen überprüfen

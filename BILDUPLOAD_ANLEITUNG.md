@@ -96,8 +96,8 @@ window.addEventListener('unhandledrejection', (e) => {
 - Automatische Bereitstellung bei Git-Push
 - Optimierte Caching-Header für bessere Performance
 
-#### Vercel
-- Verbesserte `vercel.json` mit Bild-spezifischen Headers
+#### Netlify
+- Verbesserte `netlify.toml` mit Bild-spezifischen Headers
 - Automatische Bereitstellung bei Git-Push
 - Optimierte Routing für statische Assets
 

@@ -1,0 +1,15 @@
+{
+  "builds": [],
+  "routes": [],
+  "functions": {},
+  "public": false,
+  "version": 2,
+  "regions": [],
+  "env": {},
+  "build": {
+    "env": {}
+  },
+  "github": {
+    "enabled": false
+  }
+}
