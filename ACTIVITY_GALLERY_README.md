@@ -135,7 +135,7 @@ Admin Upload → localStorage → Website Data → Frontend Display
 ## Zukünftige Erweiterungen
 
 ### Geplante Features
-1. **Cloud-Integration**: Netlify/Vercel Storage für permanente Speicherung
+1. **Cloud-Integration**: Netlify Storage für permanente Speicherung
 2. **Bildoptimierung**: Automatische Kompression und Formatkonvertierung
 3. **Bulk-Upload**: Drag & Drop für mehrere Ordner
 4. **Bildfilter**: Kategorisierung und Filterung
