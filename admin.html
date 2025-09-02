@@ -258,23 +258,85 @@
                 <section id="content" class="admin-section">
                     <div class="section-toolbar">
                         <div class="toolbar-left">
-                            <button class="btn btn-primary" onclick="adminPanel.createNewContent()">
+                            <button class="btn btn-primary" onclick="addNewService()">
                                 <i class="fas fa-plus"></i>
-                                Neuer Inhalt
+                                Neuen Service hinzufügen
                             </button>
-                            <button class="btn btn-outline" onclick="adminPanel.refreshContent()">
+                            <button class="btn btn-outline" onclick="refreshServices()">
                                 <i class="fas fa-sync"></i>
                                 Aktualisieren
                             </button>
                         </div>
                         <div class="toolbar-right">
-                            <input type="search" class="search-input" placeholder="Inhalte suchen...">
+                            <input type="search" class="search-input" placeholder="Services suchen...">
                             <select class="filter-select">
-                                <option>Alle Kategorien</option>
-                                <option>Services</option>
+                                <option>Alle Services</option>
+                                <option>Beratung</option>
                                 <option>Projekte</option>
                                 <option>Vermietung</option>
+                                <option>Weitere Tätigkeiten</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Service Verwaltung -->
+                    <div class="services-management" style="margin-bottom: 2rem;">
+                        <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                            🚀 Services & Tätigkeiten verwalten
+                        </h3>
+                        
+                        <!-- Aktuelle Services -->
+                        <div class="current-services" style="margin-bottom: 2rem;">
+                            <h4 style="color: #555; margin-bottom: 1rem;">Aktuelle Services:</h4>
+                            <div id="servicesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                                <!-- Services werden dynamisch geladen -->
+                            </div>
+                        </div>
+                        
+                        <!-- Neuen Service hinzufügen -->
+                        <div class="add-service-form" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h4 style="color: #555; margin-bottom: 1.5rem;">➕ Neuen Service hinzufügen:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Service-Name:</label>
+                                    <input type="text" id="newServiceName" placeholder="z.B. Projektmanagement" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                                    <select id="newServiceCategory" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="beratung">Beratung</option>
+                                        <option value="projekte">Projekte</option>
+                                        <option value="vermietung">Vermietung</option>
+                                        <option value="weitere">Weitere Tätigkeiten</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Beschreibung:</label>
+                                <textarea id="newServiceDescription" placeholder="Beschreibe den Service..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Icon (FontAwesome):</label>
+                                    <input type="text" id="newServiceIcon" placeholder="fas fa-project-diagram" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Farbe:</label>
+                                    <input type="color" id="newServiceColor" value="#6366f1" style="width: 100%; height: 50px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bild:</label>
+                                <input type="file" id="newServiceImage" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            
+                            <button onclick="createNewService()" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                                🚀 Service erstellen
+                            </button>
                         </div>
                     </div>
                     
@@ -967,12 +1029,236 @@
             });
             
             console.log('✅ DIREKTE ADMIN PANEL INITIALISIERUNG ABGESCHLOSSEN!');
+            
+            // Lade initiale Services
+            loadServices();
         });
+        
+        // PROFIL & SERVICE VERWALTUNG FUNKTIONEN
+        
+        // Profilbild aktualisieren
+        function updateProfileImage() {
+            const input = document.getElementById('profileImageInput');
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    // Hier könnte man das Bild zu einem Server hochladen
+                    console.log('✅ Profilbild aktualisiert');
+                    alert('Profilbild erfolgreich aktualisiert!');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Bitte wähle eine Datei aus!');
+            }
+        }
+        
+        // Profilvideo aktualisieren
+        function updateProfileVideo() {
+            const input = document.getElementById('profileVideoInput');
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const video = document.getElementById('profileVideo');
+                    video.src = e.target.result;
+                    video.load();
+                    // Hier könnte man das Video zu einem Server hochladen
+                    console.log('✅ Profilvideo aktualisiert');
+                    alert('Profilvideo erfolgreich aktualisiert!');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Bitte wähle eine Datei aus!');
+            }
+        }
+        
+        // Services laden
+        function loadServices() {
+            const servicesList = document.getElementById('servicesList');
+            if (!servicesList) return;
+            
+            // Standard-Services (können später bearbeitet werden)
+            const defaultServices = [
+                {
+                    name: 'Projektmanagement',
+                    category: 'projekte',
+                    description: 'Professionelles Projektmanagement für komplexe IT- und Geschäftsprojekte',
+                    icon: 'fas fa-project-diagram',
+                    color: '#8b5cf6',
+                    image: null
+                },
+                {
+                    name: 'Persönlichkeitsentwicklung',
+                    category: 'weitere',
+                    description: 'Coaching und Beratung für persönliches Wachstum und Entwicklung',
+                    icon: 'fas fa-user-graduate',
+                    color: '#10b981',
+                    image: null
+                },
+                {
+                    name: 'Ernährungsberatung',
+                    category: 'weitere',
+                    description: 'Professionelle Beratung für gesunde Ernährung und Lebensweise',
+                    icon: 'fas fa-apple-alt',
+                    color: '#f59e0b',
+                    image: null
+                },
+                {
+                    name: 'Balance & Fitness',
+                    category: 'weitere',
+                    description: 'Ganzheitliches Training für Körper, Geist und Seele',
+                    icon: 'fas fa-dumbbell',
+                    color: '#ef4444',
+                    image: null
+                }
+            ];
+            
+            // Lade gespeicherte Services oder verwende Standard
+            const savedServices = JSON.parse(localStorage.getItem('adminServices') || '[]');
+            const allServices = savedServices.length > 0 ? savedServices : defaultServices;
+            
+            renderServices(allServices);
+        }
+        
+        // Services rendern
+        function renderServices(services) {
+            const servicesList = document.getElementById('servicesList');
+            if (!servicesList) return;
+            
+            servicesList.innerHTML = services.map((service, index) => `
+                <div class="service-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid ${service.color};">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="${service.icon}" style="color: ${service.color}; font-size: 1.5rem;"></i>
+                            <h4 style="margin: 0; color: #333;">${service.name}</h4>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="editService(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                ✏️
+                            </button>
+                            <button onclick="deleteService(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <p style="color: #666; margin-bottom: 1rem; line-height: 1.5;">${service.description}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="background: ${service.color}20; color: ${service.color}; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                            ${service.category}
+                        </span>
+                        ${service.image ? `<img src="${service.image}" alt="${service.name}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Neuen Service hinzufügen
+        function addNewService() {
+            // Formular anzeigen (bereits im HTML vorhanden)
+            console.log('➕ Neuen Service hinzufügen');
+        }
+        
+        // Service erstellen
+        function createNewService() {
+            const name = document.getElementById('newServiceName').value;
+            const category = document.getElementById('newServiceCategory').value;
+            const description = document.getElementById('newServiceDescription').value;
+            const icon = document.getElementById('newServiceIcon').value;
+            const color = document.getElementById('newServiceColor').value;
+            const imageFile = document.getElementById('newServiceImage').files[0];
+            
+            if (!name || !description) {
+                alert('Bitte fülle alle Pflichtfelder aus!');
+                return;
+            }
+            
+            const newService = {
+                name: name,
+                category: category,
+                description: description,
+                icon: icon || 'fas fa-star',
+                color: color,
+                image: null
+            };
+            
+            // Bild verarbeiten falls vorhanden
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newService.image = e.target.result;
+                    saveAndRenderService(newService);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                saveAndRenderService(newService);
+            }
+        }
+        
+        // Service speichern und rendern
+        function saveAndRenderService(newService) {
+            const savedServices = JSON.parse(localStorage.getItem('adminServices') || '[]');
+            savedServices.push(newService);
+            localStorage.setItem('adminServices', JSON.stringify(savedServices));
+            
+            renderServices(savedServices);
+            
+            // Formular zurücksetzen
+            document.getElementById('newServiceName').value = '';
+            document.getElementById('newServiceDescription').value = '';
+            document.getElementById('newServiceIcon').value = '';
+            document.getElementById('newServiceImage').value = '';
+            
+            alert('Service erfolgreich erstellt!');
+            console.log('✅ Neuer Service erstellt:', newService);
+        }
+        
+        // Service bearbeiten
+        function editService(index) {
+            const savedServices = JSON.parse(localStorage.getItem('adminServices') || '[]');
+            const service = savedServices[index];
+            
+            if (service) {
+                // Einfache Bearbeitung über Prompt (kann später erweitert werden)
+                const newName = prompt('Neuer Name:', service.name);
+                const newDescription = prompt('Neue Beschreibung:', service.description);
+                
+                if (newName && newDescription) {
+                    service.name = newName;
+                    service.description = newDescription;
+                    
+                    localStorage.setItem('adminServices', JSON.stringify(savedServices));
+                    renderServices(savedServices);
+                    alert('Service erfolgreich bearbeitet!');
+                }
+            }
+        }
+        
+        // Service löschen
+        function deleteService(index) {
+            if (confirm('Möchtest du diesen Service wirklich löschen?')) {
+                const savedServices = JSON.parse(localStorage.getItem('adminServices') || '[]');
+                savedServices.splice(index, 1);
+                localStorage.setItem('adminServices', JSON.stringify(savedServices));
+                
+                renderServices(savedServices);
+                alert('Service erfolgreich gelöscht!');
+            }
+        }
+        
+        // Services aktualisieren
+        function refreshServices() {
+            loadServices();
+            alert('Services aktualisiert!');
+        }
         
         // Cache-busting für Admin-Script (als Backup)
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
-        script.src = `admin-script.js?v=3.4&t=${timestamp}`;
+        script.src = `admin-script.js?v=3.5&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
 </body>
