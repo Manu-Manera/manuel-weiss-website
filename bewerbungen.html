@@ -2115,8 +2115,16 @@
         const applicationsManager = new ApplicationsManager();
 
         // Global functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
         function openAddModal() {
-            applicationsManager.openModal('addModal');
+            openModal('addModal');
         }
 
         function editApplication(id) {
@@ -2127,7 +2135,7 @@
                 document.getElementById('editPosition').value = application.position;
                 document.getElementById('editStatus').value = application.status;
                 document.getElementById('editNotes').value = application.notes || '';
-                applicationsManager.openModal('editModal');
+                openModal('editModal');
             }
         }
 
@@ -2197,7 +2205,7 @@
 
         // AI Letter Generator Functions
         function openAILetterGenerator() {
-            applicationsManager.openModal('aiLetterModal');
+            openModal('aiLetterModal');
             resetAIGenerator();
         }
 
@@ -2405,10 +2413,13 @@ Manuel Weiss`;
         }
 
         function showSentenceAlternatives(originalSentence) {
+            console.log('🔍 Original sentence:', originalSentence);
             document.getElementById('originalSentenceText').textContent = originalSentence;
             
             // Generate alternatives (simulated)
             const alternatives = generateSentenceAlternatives(originalSentence);
+            console.log('🎯 Generated alternatives:', alternatives);
+            
             const alternativesContainer = document.getElementById('alternativeOptions');
             
             alternativesContainer.innerHTML = alternatives.map((alt, index) => `
@@ -2417,18 +2428,70 @@ Manuel Weiss`;
                 </div>
             `).join('');
             
-            applicationsManager.openModal('sentenceModal');
+            openModal('sentenceModal');
         }
 
         function generateSentenceAlternatives(originalSentence) {
-            // Simulate AI-generated alternatives
-            const alternatives = [
-                originalSentence.replace('überzeugt', 'sicher').replace('wertvolle Bereicherung', 'ideale Ergänzung'),
-                originalSentence.replace('überzeugt', 'davon überzeugt').replace('wertvolle Bereicherung', 'perfekte Besetzung'),
-                originalSentence.replace('überzeugt', 'fest davon überzeugt').replace('wertvolle Bereicherung', 'großen Mehrwert')
-            ];
+            // Enhanced AI-generated alternatives with comprehensive pattern matching
+            const alternatives = [];
             
-            return alternatives;
+            // Detect sentence type and generate appropriate alternatives
+            const isFirstSentence = originalSentence.includes('Sehr geehrte') || originalSentence.includes('mit großem Interesse');
+            const isMiddleSentence = originalSentence.includes('überzeugt') || originalSentence.includes('Bereicherung');
+            const isClosingSentence = originalSentence.includes('freundlichen Grüßen') || originalSentence.includes('Mit freundlichen');
+            
+            console.log('🔍 Sentence analysis:', {
+                original: originalSentence,
+                isFirstSentence,
+                isMiddleSentence,
+                isClosingSentence
+            });
+            
+            if (isFirstSentence) {
+                // Alternatives for opening sentences
+                alternatives.push(
+                    originalSentence.replace(/mit großem Interesse.*gelesen/g, 'bin ich auf Ihre Stellenanzeige aufmerksam geworden'),
+                    originalSentence.replace(/mit großem Interesse.*gelesen/g, 'möchte ich mich gerne auf die ausgeschriebene Position bewerben'),
+                    originalSentence.replace(/mit großem Interesse.*gelesen/g, 'bin ich begeistert von Ihrer Stellenausschreibung')
+                );
+            } else if (isMiddleSentence) {
+                // Alternatives for middle sentences
+                alternatives.push(
+                    originalSentence.replace(/überzeugt/g, 'sicher').replace(/wertvolle Bereicherung/g, 'ideale Ergänzung'),
+                    originalSentence.replace(/überzeugt/g, 'davon überzeugt').replace(/wertvolle Bereicherung/g, 'perfekte Besetzung'),
+                    originalSentence.replace(/überzeugt/g, 'fest davon überzeugt').replace(/wertvolle Bereicherung/g, 'großen Mehrwert')
+                );
+            } else if (isClosingSentence) {
+                // Alternatives for closing sentences
+                alternatives.push(
+                    originalSentence.replace(/Mit freundlichen Grüßen/g, 'Mit freundlichen Grüßen und freudiger Erwartung'),
+                    originalSentence.replace(/Mit freundlichen Grüßen/g, 'Mit freundlichen Grüßen und besten Wünschen'),
+                    originalSentence.replace(/Mit freundlichen Grüßen/g, 'Mit freundlichen Grüßen und herzlichen Dank')
+                );
+            } else {
+                // Generic alternatives for any sentence
+                alternatives.push(
+                    originalSentence.replace(/ich/g, 'ich gerne').replace(/kann/g, 'könnte'),
+                    originalSentence.replace(/sehr/g, 'besonders').replace(/gut/g, 'ausgezeichnet'),
+                    originalSentence.replace(/möchte/g, 'würde gerne').replace(/helfen/g, 'unterstützen')
+                );
+            }
+            
+            // Fallback: If no patterns matched, create generic alternatives
+            if (alternatives.length === 0 || alternatives.every(alt => alt === originalSentence)) {
+                alternatives.push(
+                    originalSentence.replace(/ich/g, 'ich gerne'),
+                    originalSentence.replace(/sehr/g, 'besonders'),
+                    originalSentence.replace(/gut/g, 'ausgezeichnet')
+                );
+            }
+            
+            // Ensure we have exactly 3 alternatives
+            while (alternatives.length < 3) {
+                alternatives.push(originalSentence);
+            }
+            
+            return alternatives.slice(0, 3);
         }
 
         function selectAlternative(index) {
@@ -2540,7 +2603,7 @@ Manuel Weiss`;
                 </div>
             `).join('');
             
-            applicationsManager.openModal('paragraphModal');
+            openModal('paragraphModal');
         }
 
         function selectParagraphForRegeneration(index) {
@@ -2834,7 +2897,7 @@ Manuel Weiss`;
             document.getElementById('confirmStatusBtn').disabled = true;
             
             // Show modal
-            document.getElementById('statusModal').style.display = 'flex';
+            openModal('statusModal');
         }
 
         function selectStatusOption(status) {
@@ -2941,7 +3004,7 @@ Manuel Weiss`;
             document.getElementById('shareEmail').value = emailTemplate;
 
             // Open modal
-            applicationsManager.openModal('shareModal');
+            openModal('shareModal');
         }
 
         function generateEmailTemplate(application, hrLink) {
