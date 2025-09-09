@@ -31,7 +31,8 @@ class AIIntegration {
 
     async generateMealPlan(userData) {
         if (!this.apiKey) {
-            throw new Error('OpenAI API key not configured. Please set your API key in the admin panel.');
+            console.log('⚠️ No API key found, using fallback meal plan...');
+            return this.getFallbackMealPlan(userData);
         }
 
         try {
@@ -52,7 +53,8 @@ class AIIntegration {
             return enhancedMealPlan;
         } catch (error) {
             console.error('Error generating meal plan:', error);
-            throw error;
+            console.log('🔄 Falling back to predefined meal plan...');
+            return this.getFallbackMealPlan(userData);
         }
     }
 
@@ -244,6 +246,50 @@ Antworte im JSON-Format:
             console.error('Error parsing recipe response:', error);
             throw new Error('Failed to parse AI response');
         }
+    }
+
+    getFallbackMealPlan(userData) {
+        // Create a comprehensive fallback meal plan
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        const weekPlan = {};
+        
+        days.forEach(day => {
+            weekPlan[day] = [
+                this.getFallbackRecipe('Frühstück'),
+                this.getFallbackRecipe('Mittagessen'),
+                this.getFallbackRecipe('Abendessen')
+            ];
+        });
+        
+        return {
+            weekPlan: weekPlan,
+            totalNutrients: {
+                calories: userData.dailyCalories || 2000,
+                protein: 150,
+                carbs: 200,
+                fats: 80,
+                fiber: 35,
+                sugar: 50
+            },
+            shoppingList: [
+                {
+                    category: 'Obst & Gemüse',
+                    items: ['Äpfel', 'Bananen', 'Spinat', 'Tomaten', 'Gurken', 'Paprika']
+                },
+                {
+                    category: 'Proteine',
+                    items: ['Hähnchenbrust', 'Lachs', 'Eier', 'Griechischer Joghurt', 'Quark']
+                },
+                {
+                    category: 'Kohlenhydrate',
+                    items: ['Haferflocken', 'Vollkornbrot', 'Reis', 'Quinoa', 'Süßkartoffeln']
+                },
+                {
+                    category: 'Fette & Öle',
+                    items: ['Olivenöl', 'Avocado', 'Nüsse', 'Samen']
+                }
+            ]
+        };
     }
 
     getFallbackRecipe(mealType) {

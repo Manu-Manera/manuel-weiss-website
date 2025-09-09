@@ -17,6 +17,7 @@ function initializeWebsite() {
     loadProfileImageFromStorage();
     loadHeroContentFromStorage();
     setupProfileImageListener();
+    initNutritionPlanner();
 }
 
 // Hide loading screen
@@ -627,6 +628,26 @@ function setupProfileImageListener() {
             }
         }
     };
+}
+
+// Initialize Nutrition Planner
+function initNutritionPlanner() {
+    // Wait for DOM to be fully loaded
+    setTimeout(() => {
+        if (typeof NutritionPlanner !== 'undefined') {
+            window.nutritionPlanner = new NutritionPlanner();
+            console.log('🍽️ Nutrition Planner initialized');
+        } else {
+            console.error('❌ NutritionPlanner class not found');
+        }
+        
+        if (typeof AIIntegration !== 'undefined') {
+            window.aiIntegration = new AIIntegration();
+            console.log('🤖 AI Integration initialized');
+        } else {
+            console.error('❌ AIIntegration class not found');
+        }
+    }, 100);
 }
 
 // Export functions for external use
