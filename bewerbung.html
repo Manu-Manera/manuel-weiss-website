@@ -300,6 +300,170 @@
             font-size: 0.875rem;
         }
 
+        /* Certificates */
+        .certificates-section {
+            margin-bottom: 2rem;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .certificate-card {
+            background: var(--white);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .certificate-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .certificate-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            line-height: 1.4;
+        }
+
+        .certificate-download {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .certificate-download:hover {
+            background: var(--primary-light);
+            transform: scale(1.1);
+        }
+
+        .certificate-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .certificate-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--neutral-600);
+        }
+
+        .certificate-info-item i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .certificate-description {
+            font-size: 0.875rem;
+            color: var(--neutral-600);
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        }
+
+        .certificate-preview {
+            width: 100%;
+            height: 120px;
+            background: var(--neutral-50);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .certificate-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .certificate-preview .fallback {
+            color: var(--neutral-400);
+            text-align: center;
+        }
+
+        .certificate-preview .fallback i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .certificate-preview .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .certificate-preview:hover .overlay {
+            opacity: 1;
+        }
+
+        .certificate-preview .overlay button {
+            background: var(--white);
+            color: var(--neutral-900);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .certificate-preview .overlay button:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
         /* Skills */
         .skills-section {
             margin-bottom: 2rem;
@@ -679,6 +843,13 @@
                     </div>
                 </div>
 
+                <div class="certificates-section">
+                    <h3>📜 Zeugnisse & Dokumente</h3>
+                    <div class="certificates-grid" id="certificatesGrid">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                </div>
+
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="scheduleInterview()">
                         <i class="fas fa-calendar-plus"></i>
@@ -739,6 +910,7 @@
                     this.updateViewCount();
                     this.displayApplication();
                     this.loadCompanyBranding();
+                    this.loadCertificates();
                 } catch (error) {
                     console.error('Error loading application:', error);
                     this.showError('Fehler beim Laden der Bewerbung.');
@@ -755,6 +927,60 @@
                 document.getElementById('lastViewed').textContent = 'Gerade eben';
                 
                 console.log(`Application ${this.applicationId} viewed. Total views: ${viewCount}`);
+            }
+
+            loadCertificates() {
+                const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+                const certificates = hrDesignData.certificates || [];
+                
+                const certificatesGrid = document.getElementById('certificatesGrid');
+                if (!certificatesGrid) return;
+                
+                certificatesGrid.innerHTML = '';
+                
+                certificates.forEach(cert => {
+                    const certElement = this.createCertificateElement(cert);
+                    certificatesGrid.appendChild(certElement);
+                });
+            }
+
+            createCertificateElement(cert) {
+                const div = document.createElement('div');
+                div.className = 'certificate-card';
+                div.innerHTML = `
+                    <div class="certificate-header">
+                        <div class="certificate-title">${cert.title}</div>
+                        <button class="certificate-download" onclick="downloadCertificate('${cert.id}')" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                    <div class="certificate-info">
+                        <div class="certificate-info-item">
+                            <i class="fas fa-university"></i>
+                            <span>${cert.institution}</span>
+                        </div>
+                        <div class="certificate-info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>${cert.year}</span>
+                        </div>
+                    </div>
+                    ${cert.description ? `<div class="certificate-description">${cert.description}</div>` : ''}
+                    <div class="certificate-preview">
+                        ${cert.file ? 
+                            `<img src="${cert.file}" alt="${cert.title}">
+                             <div class="overlay">
+                                 <button onclick="downloadCertificate('${cert.id}')">
+                                     <i class="fas fa-download"></i> Download
+                                 </button>
+                             </div>` : 
+                            `<div class="fallback">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>${cert.fileName || 'Keine Vorschau verfügbar'}</div>
+                            </div>`
+                        }
+                    </div>
+                `;
+                return div;
             }
 
             displayApplication() {
@@ -996,6 +1222,38 @@ Manuel Weiss`;
 
         function sendMessage() {
             alert('Nachrichtenfunktion wird in einer zukünftigen Version verfügbar sein.');
+        }
+
+        function downloadCertificate(id) {
+            const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+            const certificates = hrDesignData.certificates || [];
+            const cert = certificates.find(c => c.id === id);
+            
+            if (!cert) {
+                alert('Zeugnis nicht gefunden.');
+                return;
+            }
+
+            if (cert.file) {
+                // Download from stored file data
+                const link = document.createElement('a');
+                link.href = cert.file;
+                link.download = cert.fileName || `${cert.title}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (cert.fileName) {
+                // Try to download from server
+                const link = document.createElement('a');
+                link.href = cert.fileName;
+                link.download = cert.fileName;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('Keine Datei verfügbar für Download.');
+            }
         }
 
         // Initialize application viewer when page loads
