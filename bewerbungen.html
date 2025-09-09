@@ -7762,6 +7762,9 @@ Manuel Weiss</textarea>
             `;
             document.body.appendChild(modal);
             
+            // Initialize mode selector
+            setupModeSelector();
+            
             // Load available documents
             loadAvailableDocuments();
         }
@@ -8058,27 +8061,39 @@ Manuel Weiss</textarea>
 
         // Mode Selector Functions
         function setupModeSelector() {
-            const modeRadios = document.querySelectorAll('input[name="workflowMode"]');
-            const manualSection = document.getElementById('manualJobSection');
-            const searchSection = document.getElementById('searchJobSection');
-            const analyzeBtn = document.getElementById('analyzeJobBtn');
-            const searchBtn = document.getElementById('searchJobsBtn');
-            
-            modeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'manual') {
-                        manualSection.style.display = 'block';
-                        searchSection.style.display = 'none';
-                        analyzeBtn.style.display = 'inline-block';
-                        searchBtn.style.display = 'none';
-                    } else if (this.value === 'search') {
-                        manualSection.style.display = 'none';
-                        searchSection.style.display = 'block';
-                        analyzeBtn.style.display = 'none';
-                        searchBtn.style.display = 'inline-block';
-                    }
+            // Wait for DOM to be ready
+            setTimeout(() => {
+                const modeRadios = document.querySelectorAll('input[name="workflowMode"]');
+                const manualSection = document.getElementById('manualJobSection');
+                const searchSection = document.getElementById('searchJobSection');
+                const analyzeBtn = document.getElementById('analyzeJobBtn');
+                const searchBtn = document.getElementById('searchJobsBtn');
+                
+                if (modeRadios.length === 0) return;
+                
+                modeRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'manual') {
+                            if (manualSection) manualSection.style.display = 'block';
+                            if (searchSection) searchSection.style.display = 'none';
+                            if (analyzeBtn) analyzeBtn.style.display = 'inline-block';
+                            if (searchBtn) searchBtn.style.display = 'none';
+                        } else if (this.value === 'search') {
+                            if (manualSection) manualSection.style.display = 'none';
+                            if (searchSection) searchSection.style.display = 'block';
+                            if (analyzeBtn) analyzeBtn.style.display = 'none';
+                            if (searchBtn) searchBtn.style.display = 'inline-block';
+                        }
+                    });
                 });
-            });
+                
+                // Set default to manual mode
+                const manualRadio = document.querySelector('input[name="workflowMode"][value="manual"]');
+                if (manualRadio) {
+                    manualRadio.checked = true;
+                    manualRadio.dispatchEvent(new Event('change'));
+                }
+            }, 100);
         }
 
         function searchJobs() {
