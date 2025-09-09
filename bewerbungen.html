@@ -1581,6 +1581,255 @@
                 opacity: 1;
             }
         }
+
+        /* Job Analysis Styles */
+        .job-analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-analysis-section h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .job-analysis-section textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .job-analysis-section textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .analysis-preview {
+            margin-top: 1.5rem;
+        }
+
+        .analysis-preview h5 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .analysis-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .progress-item i {
+            color: #6366f1;
+        }
+
+        .analysis-success {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .analysis-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-item.success {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.02);
+        }
+
+        .analysis-item.warning {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.02);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-header i {
+            font-size: 1.25rem;
+        }
+
+        .item-header i.fa-check-circle {
+            color: #10b981;
+        }
+
+        .item-header i.fa-exclamation-triangle {
+            color: #f59e0b;
+        }
+
+        .item-header strong {
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .item-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detected-input {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .detected-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-small {
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            align-self: flex-start;
+        }
+
+        .btn-small:hover {
+            background: #5b21b6;
+            transform: translateY(-1px);
+        }
+
+        .branding-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .branding-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .branding-item .label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 120px;
+            font-size: 0.875rem;
+        }
+
+        .branding-item .value {
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+        }
+
+        .color-input {
+            width: 40px;
+            height: 32px;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .detected-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 0.25rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .culture-tag {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .branding-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .branding-item .label {
+                min-width: auto;
+            }
+            
+            .keywords-list {
+                justify-content: flex-start;
+            }
+        }
         
         .action-edit { background: #dbeafe; color: #1e40af; }
         .action-edit:hover { background: #1e40af; color: white; }
@@ -4544,6 +4793,438 @@ ${name}`
             }, 1500);
         }
 
+        function analyzeJobPosting() {
+            const jobPostingText = document.getElementById('jobPostingText').value;
+            if (!jobPostingText || jobPostingText.length < 100) {
+                alert('Bitte fügen Sie eine vollständige Stellenanzeige ein (mindestens 100 Zeichen).');
+                return;
+            }
+            
+            // Show analysis progress
+            showJobAnalysisProgress();
+            
+            // Simulate AI analysis
+            setTimeout(() => {
+                const analysis = performJobAnalysis(jobPostingText);
+                displayJobAnalysisResults(analysis);
+                updateWorkflowStep(1);
+            }, 3000);
+        }
+
+        function showJobAnalysisProgress() {
+            const analysisPreview = document.getElementById('analysisPreview');
+            const jobAnalysisResults = document.getElementById('jobAnalysisResults');
+            
+            analysisPreview.style.display = 'block';
+            jobAnalysisResults.innerHTML = `
+                <div class="analysis-progress">
+                    <div class="progress-item">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Analysiere Firmenname...</span>
+                    </div>
+                    <div class="progress-item">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Suche Logo und Branding...</span>
+                    </div>
+                    <div class="progress-item">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Extrahiere Position und Anforderungen...</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function performJobAnalysis(jobText) {
+            // Extract company name
+            const companyName = extractCompanyName(jobText);
+            
+            // Extract position title
+            const positionTitle = extractPositionTitle(jobText);
+            
+            // Analyze company branding
+            const branding = analyzeCompanyBranding(companyName, jobText);
+            
+            // Extract requirements and keywords
+            const requirements = extractRequirements(jobText);
+            const keywords = extractKeywords(jobText);
+            
+            // Analyze company culture
+            const culture = analyzeCompanyCulture(jobText);
+            
+            return {
+                companyName,
+                positionTitle,
+                branding,
+                requirements,
+                keywords,
+                culture,
+                originalText: jobText
+            };
+        }
+
+        function extractCompanyName(text) {
+            // Common patterns for company names in job postings
+            const patterns = [
+                /(?:bei|at|@)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:Unternehmen|Company|Firma):\s*([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:Wir sind|We are)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:Bewerbung|Application)\s+(?:an|to)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i
+            ];
+            
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match && match[1]) {
+                    return match[1].trim();
+                }
+            }
+            
+            // Fallback: look for capitalized words that might be company names
+            const words = text.split(/\s+/);
+            for (let i = 0; i < words.length - 1; i++) {
+                if (words[i].match(/^[A-Z][a-z]+$/) && words[i+1].match(/^[A-Z][a-z]+$/)) {
+                    return `${words[i]} ${words[i+1]}`;
+                }
+            }
+            
+            return null;
+        }
+
+        function extractPositionTitle(text) {
+            const patterns = [
+                /(?:Position|Stelle|Job|Rolle):\s*([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:Wir suchen|We are looking for|Looking for)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:als|as)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i,
+                /(?:für die Position|for the position)\s+([A-Z][a-zA-Z\s&.-]+?)(?:\s|$|,|\.)/i
+            ];
+            
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match && match[1]) {
+                    return match[1].trim();
+                }
+            }
+            
+            return null;
+        }
+
+        function analyzeCompanyBranding(companyName, text) {
+            if (!companyName) return null;
+            
+            // Simulate logo and branding detection
+            const branding = {
+                companyName: companyName,
+                logo: null,
+                primaryColor: null,
+                secondaryColor: null,
+                industry: null,
+                size: null,
+                culture: null
+            };
+            
+            // Industry detection
+            if (text.toLowerCase().includes('tech') || text.toLowerCase().includes('software') || text.toLowerCase().includes('digital')) {
+                branding.industry = 'Technology';
+                branding.primaryColor = '#007bff';
+                branding.secondaryColor = '#6c757d';
+            } else if (text.toLowerCase().includes('finance') || text.toLowerCase().includes('bank') || text.toLowerCase().includes('finanz')) {
+                branding.industry = 'Finance';
+                branding.primaryColor = '#28a745';
+                branding.secondaryColor = '#ffffff';
+            } else if (text.toLowerCase().includes('health') || text.toLowerCase().includes('medical') || text.toLowerCase().includes('gesundheit')) {
+                branding.industry = 'Healthcare';
+                branding.primaryColor = '#dc3545';
+                branding.secondaryColor = '#ffffff';
+            } else if (text.toLowerCase().includes('consulting') || text.toLowerCase().includes('beratung')) {
+                branding.industry = 'Consulting';
+                branding.primaryColor = '#6f42c1';
+                branding.secondaryColor = '#ffffff';
+            } else {
+                branding.industry = 'General';
+                branding.primaryColor = '#343a40';
+                branding.secondaryColor = '#6c757d';
+            }
+            
+            // Company size detection
+            if (text.toLowerCase().includes('startup') || text.toLowerCase().includes('klein')) {
+                branding.size = 'Startup';
+            } else if (text.toLowerCase().includes('mittelstand') || text.toLowerCase().includes('medium')) {
+                branding.size = 'Mittelstand';
+            } else if (text.toLowerCase().includes('konzern') || text.toLowerCase().includes('global') || text.toLowerCase().includes('international')) {
+                branding.size = 'Konzern';
+            } else {
+                branding.size = 'Unbekannt';
+            }
+            
+            // Try to find logo (simulate)
+            branding.logo = simulateLogoDetection(companyName);
+            
+            return branding;
+        }
+
+        function simulateLogoDetection(companyName) {
+            // Simulate logo detection based on company name
+            const logoMap = {
+                'SAP': 'https://logos-world.net/wp-content/uploads/2020/09/SAP-Logo.png',
+                'Microsoft': 'https://logos-world.net/wp-content/uploads/2020/09/Microsoft-Logo.png',
+                'Google': 'https://logos-world.net/wp-content/uploads/2020/09/Google-Logo.png',
+                'Apple': 'https://logos-world.net/wp-content/uploads/2020/09/Apple-Logo.png',
+                'Amazon': 'https://logos-world.net/wp-content/uploads/2020/09/Amazon-Logo.png',
+                'Meta': 'https://logos-world.net/wp-content/uploads/2020/09/Meta-Logo.png',
+                'Tesla': 'https://logos-world.net/wp-content/uploads/2020/09/Tesla-Logo.png',
+                'Netflix': 'https://logos-world.net/wp-content/uploads/2020/09/Netflix-Logo.png'
+            };
+            
+            // Check for exact match
+            if (logoMap[companyName]) {
+                return logoMap[companyName];
+            }
+            
+            // Check for partial match
+            for (const [key, logo] of Object.entries(logoMap)) {
+                if (companyName.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(companyName.toLowerCase())) {
+                    return logo;
+                }
+            }
+            
+            return null;
+        }
+
+        function displayJobAnalysisResults(analysis) {
+            const jobAnalysisResults = document.getElementById('jobAnalysisResults');
+            const startWorkflowBtn = document.getElementById('startWorkflowBtn');
+            
+            let resultsHtml = `
+                <div class="analysis-success">
+                    <div class="analysis-item success">
+                        <div class="item-header">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Firmenname erkannt:</strong>
+                        </div>
+                        <div class="item-content">
+                            <input type="text" id="detectedCompanyName" value="${analysis.companyName || ''}" class="detected-input">
+                            <button class="btn-small" onclick="searchCompanyLogo('${analysis.companyName || ''}')">
+                                <i class="fas fa-search"></i> Logo suchen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item success">
+                        <div class="item-header">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Position erkannt:</strong>
+                        </div>
+                        <div class="item-content">
+                            <input type="text" id="detectedPositionTitle" value="${analysis.positionTitle || ''}" class="detected-input">
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item ${analysis.branding ? 'success' : 'warning'}">
+                        <div class="item-header">
+                            <i class="fas fa-${analysis.branding ? 'check-circle' : 'exclamation-triangle'}"></i>
+                            <strong>Branding-Analyse:</strong>
+                        </div>
+                        <div class="item-content">
+                            ${analysis.branding ? `
+                                <div class="branding-preview">
+                                    <div class="branding-item">
+                                        <span class="label">Branche:</span>
+                                        <span class="value">${analysis.branding.industry}</span>
+                                    </div>
+                                    <div class="branding-item">
+                                        <span class="label">Unternehmensgröße:</span>
+                                        <span class="value">${analysis.branding.size}</span>
+                                    </div>
+                                    <div class="branding-item">
+                                        <span class="label">Primärfarbe:</span>
+                                        <div class="color-preview" style="background-color: ${analysis.branding.primaryColor}"></div>
+                                        <input type="color" id="detectedPrimaryColor" value="${analysis.branding.primaryColor}" class="color-input">
+                                    </div>
+                                    ${analysis.branding.logo ? `
+                                        <div class="branding-item">
+                                            <span class="label">Logo gefunden:</span>
+                                            <img src="${analysis.branding.logo}" alt="Company Logo" class="detected-logo">
+                                            <button class="btn-small" onclick="useDetectedLogo('${analysis.branding.logo}')">
+                                                <i class="fas fa-check"></i> Verwenden
+                                            </button>
+                                        </div>
+                                    ` : `
+                                        <div class="branding-item">
+                                            <span class="label">Logo:</span>
+                                            <button class="btn-small" onclick="uploadCompanyLogo()">
+                                                <i class="fas fa-upload"></i> Logo hochladen
+                                            </button>
+                                        </div>
+                                    `}
+                                </div>
+                            ` : `
+                                <p>Branding konnte nicht automatisch erkannt werden. Sie können es manuell hinzufügen.</p>
+                                <button class="btn-small" onclick="addManualBranding()">
+                                    <i class="fas fa-plus"></i> Manuell hinzufügen
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item success">
+                        <div class="item-header">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Schlüsselwörter erkannt:</strong>
+                        </div>
+                        <div class="item-content">
+                            <div class="keywords-list">
+                                ${analysis.keywords.slice(0, 8).map(keyword => `
+                                    <span class="keyword-tag">${keyword}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item success">
+                        <div class="item-header">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Unternehmenskultur:</strong>
+                        </div>
+                        <div class="item-content">
+                            <span class="culture-tag">${analysis.culture}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            jobAnalysisResults.innerHTML = resultsHtml;
+            
+            // Enable workflow start button
+            startWorkflowBtn.style.display = 'inline-block';
+            startWorkflowBtn.disabled = false;
+            
+            // Store analysis results for later use
+            window.currentJobAnalysis = analysis;
+        }
+
+        function searchCompanyLogo(companyName) {
+            // Simulate logo search
+            const logo = simulateLogoDetection(companyName);
+            if (logo) {
+                // Update the logo in the analysis results
+                const logoContainer = document.querySelector('.detected-logo');
+                if (logoContainer) {
+                    logoContainer.src = logo;
+                } else {
+                    // Add logo if not present
+                    const brandingItem = document.querySelector('.branding-item:last-child');
+                    if (brandingItem) {
+                        brandingItem.innerHTML = `
+                            <span class="label">Logo gefunden:</span>
+                            <img src="${logo}" alt="Company Logo" class="detected-logo">
+                            <button class="btn-small" onclick="useDetectedLogo('${logo}')">
+                                <i class="fas fa-check"></i> Verwenden
+                            </button>
+                        `;
+                    }
+                }
+            } else {
+                alert('Logo für "' + companyName + '" nicht gefunden. Bitte laden Sie es manuell hoch.');
+            }
+        }
+
+        function useDetectedLogo(logoUrl) {
+            // Store logo for use in designer
+            window.detectedLogo = logoUrl;
+            alert('Logo wird im Designer verwendet!');
+        }
+
+        function uploadCompanyLogo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        window.detectedLogo = e.target.result;
+                        alert('Logo hochgeladen und wird im Designer verwendet!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function addManualBranding() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-palette"></i> Branding manuell hinzufügen</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Primärfarbe:</label>
+                            <input type="color" id="manualPrimaryColor" value="#007bff">
+                        </div>
+                        <div class="form-group">
+                            <label>Sekundärfarbe:</label>
+                            <input type="color" id="manualSecondaryColor" value="#6c757d">
+                        </div>
+                        <div class="form-group">
+                            <label>Branche:</label>
+                            <select id="manualIndustry">
+                                <option value="Technology">Technology</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Consulting">Consulting</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Logo hochladen:</label>
+                            <input type="file" id="manualLogo" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="saveManualBranding()">
+                            <i class="fas fa-save"></i>
+                            Speichern
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveManualBranding() {
+            const primaryColor = document.getElementById('manualPrimaryColor').value;
+            const secondaryColor = document.getElementById('manualSecondaryColor').value;
+            const industry = document.getElementById('manualIndustry').value;
+            const logoFile = document.getElementById('manualLogo').files[0];
+            
+            // Store manual branding
+            window.manualBranding = {
+                primaryColor,
+                secondaryColor,
+                industry,
+                logo: null
+            };
+            
+            if (logoFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.manualBranding.logo = e.target.result;
+                    document.querySelector('.modal').remove();
+                    alert('Branding erfolgreich hinzugefügt!');
+                };
+                reader.readAsDataURL(logoFile);
+            } else {
+                document.querySelector('.modal').remove();
+                alert('Branding erfolgreich hinzugefügt!');
+            }
+        }
+
         function startIntelligentWorkflow() {
             // Close modal
             document.querySelector('.modal').remove();
@@ -4551,8 +5232,97 @@ ${name}`
             // Switch to designer
             showSection('designer');
             
-            // Start intelligent filling
-            performIntelligentFill();
+            // Start intelligent filling with job analysis
+            performIntelligentFillWithJobAnalysis();
+        }
+
+        function performIntelligentFillWithJobAnalysis() {
+            // Show progress
+            showWorkflowProgress();
+            
+            // Step 1: Load contact data
+            setTimeout(() => {
+                loadContactDataFromWebsite();
+                updateWorkflowStep(1);
+            }, 500);
+            
+            // Step 2: Fill from job analysis
+            setTimeout(() => {
+                fillFromJobAnalysis();
+                updateWorkflowStep(2);
+            }, 1000);
+            
+            // Step 3: Analyze and fill from applications
+            setTimeout(() => {
+                fillFromApplications();
+                updateWorkflowStep(3);
+            }, 1500);
+            
+            // Step 4: Fill from cover letters
+            setTimeout(() => {
+                fillFromCoverLetters();
+                updateWorkflowStep(4);
+            }, 2000);
+            
+            // Step 5: Complete
+            setTimeout(() => {
+                completeWorkflow();
+            }, 2500);
+        }
+
+        function fillFromJobAnalysis() {
+            if (!window.currentJobAnalysis) return;
+            
+            const analysis = window.currentJobAnalysis;
+            
+            // Fill company and position
+            if (analysis.companyName) {
+                document.getElementById('companyName').value = analysis.companyName;
+                document.getElementById('aiCompanyName').value = analysis.companyName;
+            }
+            
+            if (analysis.positionTitle) {
+                document.getElementById('aiPositionTitle').value = analysis.positionTitle;
+            }
+            
+            // Fill job description
+            document.getElementById('jobDescription').value = analysis.originalText;
+            
+            // Apply branding if available
+            if (analysis.branding) {
+                applyBrandingToDesigner(analysis.branding);
+            }
+            
+            // Apply manual branding if available
+            if (window.manualBranding) {
+                applyBrandingToDesigner(window.manualBranding);
+            }
+            
+            // Apply logo if available
+            if (window.detectedLogo) {
+                applyLogoToDesigner(window.detectedLogo);
+            }
+            
+            // Update preview
+            updatePreview();
+        }
+
+        function applyBrandingToDesigner(branding) {
+            if (branding.primaryColor) {
+                document.getElementById('primaryColor').value = branding.primaryColor;
+            }
+            if (branding.secondaryColor) {
+                document.getElementById('secondaryColor').value = branding.secondaryColor;
+            }
+        }
+
+        function applyLogoToDesigner(logoUrl) {
+            // Update logo preview in designer
+            const logoPreview = document.getElementById('logoPreview');
+            if (logoPreview) {
+                logoPreview.src = logoUrl;
+                logoPreview.style.display = 'block';
+            }
         }
 
         function performIntelligentFill() {
