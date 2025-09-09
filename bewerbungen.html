@@ -92,6 +92,657 @@
             padding: 2rem 0;
             margin-left: 280px;
         }
+
+        /* Designer Section Styles */
+        .designer-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            margin-left: 280px;
+        }
+
+        .designer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .designer-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .designer-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        .designer-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .tab:hover {
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .color-picker {
+            height: 40px;
+            padding: 0.25rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .file-upload-area i {
+            font-size: 2rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-area p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .preview-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .preview-content {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            min-height: 500px;
+        }
+
+        /* Calendar Section Styles */
+        .calendar-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            margin-left: 280px;
+        }
+
+        .calendar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .calendar-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header h1 {
+            margin: 0 0 0.5rem 0;
+            color: #1e293b;
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .calendar-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 1.125rem;
+        }
+
+        .calendar-dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .card-content h3 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .card-content p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .calendar-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .calendar-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 400px);
+        }
+
+        .calendar-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-filters h3,
+        .quick-actions h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkmark {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .quick-action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-btn:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .calendar-main {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-view {
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-header-nav h2 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 1rem;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .calendar-day.other-month {
+            background: #f8fafc;
+            color: #9ca3af;
+        }
+
+        .calendar-day.today {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .day-event {
+            background: #6366f1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .events-list h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .event-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            border-color: #6366f1;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-time {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .event-type {
+            display: inline-block;
+            background: #6366f1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Profile Section Styles */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-right: 1rem;
+        }
+
+        .profile-toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-toggle .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            min-width: auto;
+        }
+
+        .profile-display {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #6366f1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-display:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .profile-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-display:hover .profile-overlay {
+            opacity: 1;
+        }
+
+        .play-btn {
+            width: 32px;
+            height: 32px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .play-btn:hover {
+            background: #4f46e5;
+            transform: scale(1.1);
+        }
+
+        .profile-display.digital-twin {
+            border-color: #8b5cf6;
+        }
+
+        .profile-display.digital-twin .profile-overlay {
+            background: rgba(139, 92, 246, 0.8);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .designer-content,
+            .calendar-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .designer-sidebar,
+            .calendar-sidebar {
+                order: 2;
+            }
+
+            .preview-area,
+            .calendar-main {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .applications-page,
+            .designer-section,
+            .calendar-section {
+                margin-left: 0;
+                padding: 1rem 0;
+            }
+
+            .designer-header,
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .calendar-actions {
+                flex-direction: column;
+            }
+        }
         
         .applications-container {
             max-width: 1200px;
@@ -349,6 +1000,225 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.875rem;
+        }
+
+        .action-icon.action-designer {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .action-icon.action-designer:hover {
+            background: #7c3aed;
+            color: white;
+        }
+
+        /* Workflow Styles */
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step.active {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #6366f1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .step-content h4 {
+            margin: 0 0 0.25rem 0;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .step-content p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .workflow-options h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .data-sources {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .data-source {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .data-source.available {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .data-source.unavailable {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .data-source i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .workflow-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.completed {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            background: #e2e8f0;
+            color: #64748b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.completed .step-icon {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-text {
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .progress-step.completed .step-text {
+            color: #065f46;
+            font-weight: 500;
+        }
+
+        .workflow-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .notification-content i {
+            color: #10b981;
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+        }
+
+        .notification-text {
+            flex: 1;
+            color: #374151;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 1.25rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
         
         .action-edit { background: #dbeafe; color: #1e40af; }
@@ -1429,6 +2299,10 @@
                             <i class="fas fa-plus"></i>
                             <span>Neue Bewerbung</span>
                         </button>
+                        <button class="action-btn" onclick="createNewWithDesigner()">
+                            <i class="fas fa-palette"></i>
+                            <span>Mit Designer erstellen</span>
+                        </button>
                         <button class="action-btn" onclick="exportApplications()">
                             <i class="fas fa-download"></i>
                             <span>Exportieren</span>
@@ -2236,6 +3110,958 @@
 
     <!-- Scripts -->
     <script>
+        // Navigation Management
+        function showSection(sectionName) {
+            // Hide all sections
+            document.getElementById('applications-section').style.display = 'none';
+            document.getElementById('designer-section').style.display = 'none';
+            document.getElementById('calendar-section').style.display = 'none';
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+            
+            // Update active navigation
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Initialize section-specific functionality
+            if (sectionName === 'calendar') {
+                initializeCalendar();
+            } else if (sectionName === 'designer') {
+                initializeDesigner();
+            }
+        }
+
+        // Designer Management
+        function initializeDesigner() {
+            // Load contact data from website
+            loadContactDataFromWebsite();
+            
+            // Setup event listeners
+            setupDesignerEventListeners();
+            
+            // Update preview
+            updatePreview();
+        }
+
+        function loadContactDataFromWebsite() {
+            fetch('data/website-content.json')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.contact) {
+                        document.getElementById('candidateEmail').value = data.contact.email || '';
+                        document.getElementById('candidatePhone').value = data.contact.phone || '';
+                        document.getElementById('candidateLocation').value = data.contact.location || '';
+                    }
+                    if (data.hero) {
+                        document.getElementById('candidateName').value = data.hero.name || '';
+                        document.getElementById('candidatePosition').value = data.hero.title || '';
+                    }
+                    console.log('✅ Kontaktdaten von Website übernommen');
+                })
+                .catch(error => {
+                    console.log('⚠️ Konnte Kontaktdaten nicht von Website laden:', error);
+                });
+        }
+
+        function setupDesignerEventListeners() {
+            // Content inputs
+            document.getElementById('candidateName').addEventListener('input', updatePreview);
+            document.getElementById('candidatePosition').addEventListener('input', updatePreview);
+            document.getElementById('candidateEmail').addEventListener('input', updatePreview);
+            document.getElementById('candidatePhone').addEventListener('input', updatePreview);
+            document.getElementById('candidateLocation').addEventListener('input', updatePreview);
+            document.getElementById('coverLetterText').addEventListener('input', updatePreview);
+            document.getElementById('skillsText').addEventListener('input', updatePreview);
+            
+            // Design inputs
+            document.getElementById('primaryColor').addEventListener('change', updatePreview);
+            document.getElementById('secondaryColor').addEventListener('change', updatePreview);
+            document.getElementById('designStyle').addEventListener('change', updatePreview);
+            
+            // Branding inputs
+            document.getElementById('companyName').addEventListener('input', updatePreview);
+            
+            // Logo upload
+            document.getElementById('logoUploadArea').addEventListener('click', () => {
+                document.getElementById('logoFile').click();
+            });
+            
+            document.getElementById('logoFile').addEventListener('change', handleLogoUpload);
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoPreview = document.createElement('img');
+                    logoPreview.src = e.target.result;
+                    logoPreview.style.maxWidth = '100px';
+                    logoPreview.style.maxHeight = '100px';
+                    logoPreview.style.borderRadius = '0.5rem';
+                    
+                    const uploadArea = document.getElementById('logoUploadArea');
+                    uploadArea.innerHTML = '';
+                    uploadArea.appendChild(logoPreview);
+                    
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updatePreview() {
+            const previewContent = document.getElementById('previewContent');
+            const name = document.getElementById('candidateName').value || 'Manuel Weiss';
+            const position = document.getElementById('candidatePosition').value || 'HR & AI Berater';
+            const email = document.getElementById('candidateEmail').value || 'manuel@example.com';
+            const phone = document.getElementById('candidatePhone').value || '+41 79 123 45 67';
+            const location = document.getElementById('candidateLocation').value || 'Zürich, Schweiz';
+            const coverLetter = document.getElementById('coverLetterText').value || 'Hier kommt der Anschreiben-Text...';
+            const skills = document.getElementById('skillsText').value || 'HR Management, AI Integration, Projektmanagement...';
+            const companyName = document.getElementById('companyName').value || 'Beispiel AG';
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            
+            previewContent.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; font-family: 'Inter', sans-serif; line-height: 1.6; color: #1e293b;">
+                    <div style="background: linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%); color: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; text-align: center;">
+                        <h1 style="margin: 0 0 0.5rem 0; font-size: 2.5rem; font-weight: 700;">${name}</h1>
+                        <p style="margin: 0; font-size: 1.25rem; opacity: 0.9;">${position}</p>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <h2 style="color: ${primaryColor}; margin-bottom: 1rem;">Anschreiben</h2>
+                        <div style="white-space: pre-wrap; margin-bottom: 2rem;">${coverLetter}</div>
+                        
+                        <h2 style="color: ${primaryColor}; margin-bottom: 1rem;">Kernkompetenzen</h2>
+                        <p style="margin-bottom: 2rem;">${skills}</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                            <div style="text-align: center;">
+                                <i class="fas fa-envelope" style="color: ${primaryColor}; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; font-size: 0.875rem;">${email}</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-phone" style="color: ${primaryColor}; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; font-size: 0.875rem;">${phone}</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-map-marker-alt" style="color: ${primaryColor}; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; font-size: 0.875rem;">${location}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tab Management
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Cover Letter Generation
+        function generateCoverLetter() {
+            const jobDescription = document.getElementById('jobDescription').value;
+            const companyName = document.getElementById('aiCompanyName').value;
+            const positionTitle = document.getElementById('aiPositionTitle').value;
+            
+            if (!jobDescription || !companyName || !positionTitle) {
+                alert('Bitte füllen Sie alle Felder aus.');
+                return;
+            }
+            
+            // Simulate AI generation
+            const coverLetter = `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige für die Position "${positionTitle}" bei ${companyName} gelesen. Als erfahrener HR & AI Berater mit über 6 Jahren Erfahrung in der digitalen Transformation bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+
+Meine Expertise umfasst:
+• Strategische HR-Beratung und Prozessoptimierung
+• KI-Integration in HR-Prozesse
+• Projektmanagement und Change Management
+• Stakeholder-Management auf C-Level
+
+Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln und direkt zum Unternehmenserfolg beizutragen. Ich bin überzeugt, dass meine analytische Denkweise und mein unternehmerisches Handeln eine ideale Ergänzung zu Ihrem Team darstellen.
+
+Ich freue mich auf ein persönliches Gespräch und die Möglichkeit, Ihnen meine Qualifikationen im Detail vorstellen zu können.
+
+Mit freundlichen Grüßen
+${document.getElementById('candidateName').value || 'Manuel Weiss'}`;
+            
+            document.getElementById('generatedCoverLetter').value = coverLetter;
+            console.log('✅ Anschreiben generiert');
+        }
+
+        function saveCoverLetter() {
+            const coverLetter = document.getElementById('generatedCoverLetter').value;
+            if (!coverLetter) {
+                alert('Bitte generieren Sie zuerst ein Anschreiben.');
+                return;
+            }
+            
+            // Save to localStorage
+            const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+            const newCoverLetter = {
+                id: Date.now(),
+                title: document.getElementById('aiPositionTitle').value || 'Neues Anschreiben',
+                company: document.getElementById('aiCompanyName').value || 'Unbekanntes Unternehmen',
+                content: coverLetter,
+                createdAt: new Date().toISOString()
+            };
+            
+            coverLetters.push(newCoverLetter);
+            localStorage.setItem('coverLetters', JSON.stringify(coverLetters));
+            
+            alert('Anschreiben erfolgreich gespeichert!');
+        }
+
+        function copyCoverLetter() {
+            const coverLetter = document.getElementById('generatedCoverLetter').value;
+            if (!coverLetter) {
+                alert('Bitte generieren Sie zuerst ein Anschreiben.');
+                return;
+            }
+            
+            navigator.clipboard.writeText(coverLetter).then(() => {
+                alert('Anschreiben in die Zwischenablage kopiert!');
+            });
+        }
+
+        // Profile & Digital Twin Functions
+        function toggleProfileMode() {
+            const profileDisplay = document.getElementById('profileDisplay');
+            const toggleBtn = document.getElementById('profileToggleBtn');
+            const isDigitalTwin = profileDisplay.classList.contains('digital-twin');
+            
+            if (isDigitalTwin) {
+                profileDisplay.classList.remove('digital-twin');
+                toggleBtn.innerHTML = '<i class="fas fa-camera"></i><span>Foto</span>';
+            } else {
+                profileDisplay.classList.add('digital-twin');
+                toggleBtn.innerHTML = '<i class="fas fa-robot"></i><span>AI Twin</span>';
+            }
+        }
+
+        function playDigitalTwin() {
+            const coverLetterText = document.getElementById('generatedCoverLetter').value;
+            if (!coverLetterText) {
+                alert('Bitte generieren Sie zuerst ein Anschreiben.');
+                return;
+            }
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(coverLetterText);
+                utterance.lang = 'de-DE';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Text-to-Speech wird von diesem Browser nicht unterstützt.');
+            }
+        }
+
+        // Calendar Management
+        function initializeCalendar() {
+            updateCalendarStats();
+            generateCalendar();
+            loadUpcomingEvents();
+        }
+
+        function updateCalendarStats() {
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const now = new Date();
+            
+            const upcoming = events.filter(event => new Date(event.date) > now).length;
+            const phone = events.filter(event => event.type === 'phone').length;
+            const interviews = events.filter(event => event.type === 'interview').length;
+            const reminders = events.filter(event => event.type === 'reminder').length;
+            
+            document.getElementById('upcomingCount').textContent = upcoming;
+            document.getElementById('phoneCount').textContent = phone;
+            document.getElementById('interviewCount').textContent = interviews;
+            document.getElementById('reminderCount').textContent = reminders;
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                              'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+            
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.style.background = '#f1f5f9';
+                dayHeader.style.padding = '0.5rem';
+                dayHeader.style.textAlign = 'center';
+                dayHeader.style.fontWeight = '600';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Add empty cells for days before month starts
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day other-month';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                if (day === currentDate.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-events"></div>
+                `;
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function loadUpcomingEvents() {
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const now = new Date();
+            const upcoming = events.filter(event => new Date(event.date) > now)
+                                 .sort((a, b) => new Date(a.date) - new Date(b.date))
+                                 .slice(0, 5);
+            
+            const eventsContainer = document.getElementById('eventsContainer');
+            eventsContainer.innerHTML = '';
+            
+            if (upcoming.length === 0) {
+                eventsContainer.innerHTML = '<p style="color: #64748b; text-align: center;">Keine anstehenden Termine</p>';
+                return;
+            }
+            
+            upcoming.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'event-item';
+                eventElement.innerHTML = `
+                    <div class="event-title">${event.title}</div>
+                    <div class="event-time">${new Date(event.date).toLocaleDateString('de-DE')} um ${event.time}</div>
+                    <div class="event-type">${event.type}</div>
+                `;
+                eventsContainer.appendChild(eventElement);
+            });
+        }
+
+        // Event Management
+        function openEventModal() {
+            // Create and show event modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Neuer Termin</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Titel</label>
+                            <input type="text" id="eventTitle" class="form-input" placeholder="Termin-Titel">
+                        </div>
+                        <div class="form-group">
+                            <label>Datum</label>
+                            <input type="date" id="eventDate" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Uhrzeit</label>
+                            <input type="time" id="eventTime" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Typ</label>
+                            <select id="eventType" class="form-input">
+                                <option value="interview">Interview</option>
+                                <option value="phone">Telefonat</option>
+                                <option value="reminder">Erinnerung</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Beschreibung</label>
+                            <textarea id="eventDescription" class="form-input" rows="3" placeholder="Optional"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="saveEvent()">Speichern</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveEvent() {
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const type = document.getElementById('eventType').value;
+            const description = document.getElementById('eventDescription').value;
+            
+            if (!title || !date || !time) {
+                alert('Bitte füllen Sie alle Pflichtfelder aus.');
+                return;
+            }
+            
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const newEvent = {
+                id: Date.now(),
+                title,
+                date,
+                time,
+                type,
+                description,
+                createdAt: new Date().toISOString()
+            };
+            
+            events.push(newEvent);
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+            
+            // Close modal
+            document.querySelector('.modal').remove();
+            
+            // Update calendar
+            updateCalendarStats();
+            loadUpcomingEvents();
+            
+            alert('Termin erfolgreich erstellt!');
+        }
+
+        // Quick Actions
+        function createInterviewReminder() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const reminder = {
+                id: Date.now(),
+                title: 'Interview-Vorbereitung',
+                date: tomorrow.toISOString().split('T')[0],
+                time: '09:00',
+                type: 'reminder',
+                description: 'Interview vorbereiten - Fragen überlegen, Unterlagen bereitlegen'
+            };
+            
+            events.push(reminder);
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+            
+            updateCalendarStats();
+            loadUpcomingEvents();
+            alert('Interview-Erinnerung erstellt!');
+        }
+
+        function createFollowUpReminder() {
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const reminder = {
+                id: Date.now(),
+                title: 'Follow-up E-Mail',
+                date: nextWeek.toISOString().split('T')[0],
+                time: '10:00',
+                type: 'reminder',
+                description: 'Follow-up E-Mail für Bewerbung senden'
+            };
+            
+            events.push(reminder);
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+            
+            updateCalendarStats();
+            loadUpcomingEvents();
+            alert('Follow-up Erinnerung erstellt!');
+        }
+
+        function createEmailReminder() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const reminder = {
+                id: Date.now(),
+                title: 'E-Mail Erinnerung',
+                date: tomorrow.toISOString().split('T')[0],
+                time: '14:00',
+                type: 'reminder',
+                description: 'E-Mail für Bewerbung senden'
+            };
+            
+            events.push(reminder);
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+            
+            updateCalendarStats();
+            loadUpcomingEvents();
+            alert('E-Mail Erinnerung erstellt!');
+        }
+
+        function openReminderModal() {
+            openEventModal();
+            document.getElementById('eventType').value = 'reminder';
+        }
+
+        function exportCalendar() {
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Titel,Datum,Uhrzeit,Typ,Beschreibung\n"
+                + events.map(event => 
+                    `"${event.title}","${event.date}","${event.time}","${event.type}","${event.description}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "kalender_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function previousMonth() {
+            // Implement month navigation
+            console.log('Previous month');
+        }
+
+        function nextMonth() {
+            // Implement month navigation
+            console.log('Next month');
+        }
+
+        // Designer Functions
+        function resetDesign() {
+            if (confirm('Möchten Sie das Design wirklich zurücksetzen?')) {
+                document.getElementById('primaryColor').value = '#6366f1';
+                document.getElementById('secondaryColor').value = '#8b5cf6';
+                document.getElementById('designStyle').value = 'swiss';
+                updatePreview();
+                alert('Design zurückgesetzt!');
+            }
+        }
+
+        function saveDesign() {
+            const designData = {
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                designStyle: document.getElementById('designStyle').value,
+                companyName: document.getElementById('companyName').value,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('hrDesignData', JSON.stringify(designData));
+            alert('Design erfolgreich gespeichert!');
+        }
+
+        function previewDesign() {
+            updatePreview();
+            alert('Vorschau aktualisiert!');
+        }
+
+        function openPreview() {
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Bewerbungs-Vorschau</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; margin: 0; padding: 2rem; background: #f8fafc; }
+                    </style>
+                </head>
+                <body>
+                    ${document.getElementById('previewContent').innerHTML}
+                </body>
+                </html>
+            `);
+        }
+
+        // Intelligent Workflow Functions
+        function createNewWithDesigner() {
+            // Show workflow modal
+            showWorkflowModal();
+        }
+
+        function openInDesigner(applicationId) {
+            const application = applicationsManager.applications.find(app => app.id === applicationId);
+            if (!application) {
+                alert('Bewerbung nicht gefunden.');
+                return;
+            }
+
+            // Switch to designer section
+            showSection('designer');
+            
+            // Auto-fill with application data
+            autoFillFromApplication(application);
+            
+            // Show success message
+            showWorkflowSuccess('Bewerbung in Designer geladen', application);
+        }
+
+        function showWorkflowModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-magic"></i> Intelligenter Bewerbungs-Workflow</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="workflow-steps">
+                            <div class="workflow-step active" id="step1">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Daten sammeln</h4>
+                                    <p>Analysiere vorhandene Bewerbungen und Dokumente</p>
+                                </div>
+                            </div>
+                            <div class="workflow-step" id="step2">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Intelligentes Vorausfüllen</h4>
+                                    <p>Fülle Designer mit relevanten Daten</p>
+                                </div>
+                            </div>
+                            <div class="workflow-step" id="step3">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Designer öffnen</h4>
+                                    <p>Bereit für Anpassungen und Optimierung</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-options">
+                            <h4>Verfügbare Datenquellen:</h4>
+                            <div class="data-sources" id="dataSources">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Analysiere verfügbare Daten...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="startIntelligentWorkflow()" id="startWorkflowBtn" disabled>
+                            <i class="fas fa-rocket"></i>
+                            Workflow starten
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Analyze available data
+            analyzeAvailableData();
+        }
+
+        function analyzeAvailableData() {
+            const dataSources = document.getElementById('dataSources');
+            const startBtn = document.getElementById('startWorkflowBtn');
+            
+            // Simulate analysis
+            setTimeout(() => {
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+                const certificates = hrDesignData.certificates || [];
+                
+                let sourcesHtml = '';
+                let hasData = false;
+                
+                if (applications.length > 0) {
+                    sourcesHtml += `
+                        <div class="data-source available">
+                            <i class="fas fa-briefcase"></i>
+                            <span>${applications.length} Bewerbungen gefunden</span>
+                        </div>
+                    `;
+                    hasData = true;
+                }
+                
+                if (coverLetters.length > 0) {
+                    sourcesHtml += `
+                        <div class="data-source available">
+                            <i class="fas fa-file-alt"></i>
+                            <span>${coverLetters.length} Anschreiben gefunden</span>
+                        </div>
+                    `;
+                    hasData = true;
+                }
+                
+                if (certificates.length > 0) {
+                    sourcesHtml += `
+                        <div class="data-source available">
+                            <i class="fas fa-certificate"></i>
+                            <span>${certificates.length} Zeugnisse gefunden</span>
+                        </div>
+                    `;
+                    hasData = true;
+                }
+                
+                // Check for website data
+                sourcesHtml += `
+                    <div class="data-source available">
+                        <i class="fas fa-globe"></i>
+                        <span>Website-Kontaktdaten verfügbar</span>
+                    </div>
+                `;
+                hasData = true;
+                
+                if (!hasData) {
+                    sourcesHtml = `
+                        <div class="data-source unavailable">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Keine Datenquellen gefunden</span>
+                        </div>
+                    `;
+                } else {
+                    startBtn.disabled = false;
+                }
+                
+                dataSources.innerHTML = sourcesHtml;
+            }, 1500);
+        }
+
+        function startIntelligentWorkflow() {
+            // Close modal
+            document.querySelector('.modal').remove();
+            
+            // Switch to designer
+            showSection('designer');
+            
+            // Start intelligent filling
+            performIntelligentFill();
+        }
+
+        function performIntelligentFill() {
+            // Show progress
+            showWorkflowProgress();
+            
+            // Step 1: Load contact data
+            setTimeout(() => {
+                loadContactDataFromWebsite();
+                updateWorkflowStep(1);
+            }, 500);
+            
+            // Step 2: Analyze and fill from applications
+            setTimeout(() => {
+                fillFromApplications();
+                updateWorkflowStep(2);
+            }, 1000);
+            
+            // Step 3: Fill from cover letters
+            setTimeout(() => {
+                fillFromCoverLetters();
+                updateWorkflowStep(3);
+            }, 1500);
+            
+            // Step 4: Complete
+            setTimeout(() => {
+                completeWorkflow();
+            }, 2000);
+        }
+
+        function showWorkflowProgress() {
+            const progressModal = document.createElement('div');
+            progressModal.className = 'modal';
+            progressModal.style.display = 'block';
+            progressModal.id = 'workflowProgress';
+            progressModal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-magic"></i> Intelligenter Workflow</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="workflow-progress">
+                            <div class="progress-step" id="progressStep1">
+                                <div class="step-icon"><i class="fas fa-user"></i></div>
+                                <div class="step-text">Kontaktdaten laden...</div>
+                            </div>
+                            <div class="progress-step" id="progressStep2">
+                                <div class="step-icon"><i class="fas fa-briefcase"></i></div>
+                                <div class="step-text">Bewerbungsdaten analysieren...</div>
+                            </div>
+                            <div class="progress-step" id="progressStep3">
+                                <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+                                <div class="step-text">Anschreiben optimieren...</div>
+                            </div>
+                            <div class="progress-step" id="progressStep4">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-text">Workflow abgeschlossen!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(progressModal);
+        }
+
+        function updateWorkflowStep(step) {
+            for (let i = 1; i <= step; i++) {
+                const stepElement = document.getElementById(`progressStep${i}`);
+                if (stepElement) {
+                    stepElement.classList.add('completed');
+                    const icon = stepElement.querySelector('.step-icon i');
+                    if (i < step) {
+                        icon.className = 'fas fa-check';
+                    } else if (i === step) {
+                        icon.className = 'fas fa-spinner fa-spin';
+                    }
+                }
+            }
+        }
+
+        function completeWorkflow() {
+            // Update final step
+            updateWorkflowStep(4);
+            
+            // Close progress modal
+            setTimeout(() => {
+                const progressModal = document.getElementById('workflowProgress');
+                if (progressModal) {
+                    progressModal.remove();
+                }
+                
+                // Show success message
+                showWorkflowSuccess('Intelligenter Workflow abgeschlossen!', null);
+            }, 1000);
+        }
+
+        function fillFromApplications() {
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            if (applications.length === 0) return;
+            
+            // Find most recent or most successful application
+            const recentApp = applications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+            
+            // Fill company and position if not already filled
+            if (!document.getElementById('companyName').value && recentApp.company) {
+                document.getElementById('companyName').value = recentApp.company;
+            }
+            
+            if (!document.getElementById('aiCompanyName').value && recentApp.company) {
+                document.getElementById('aiCompanyName').value = recentApp.company;
+            }
+            
+            if (!document.getElementById('aiPositionTitle').value && recentApp.position) {
+                document.getElementById('aiPositionTitle').value = recentApp.position;
+            }
+            
+            // Update preview
+            updatePreview();
+        }
+
+        function fillFromCoverLetters() {
+            const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+            if (coverLetters.length === 0) return;
+            
+            // Find most recent cover letter
+            const recentCoverLetter = coverLetters.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+            
+            // Fill cover letter text if not already filled
+            if (!document.getElementById('coverLetterText').value && recentCoverLetter.content) {
+                document.getElementById('coverLetterText').value = recentCoverLetter.content;
+            }
+            
+            // Update preview
+            updatePreview();
+        }
+
+        function autoFillFromApplication(application) {
+            // Fill all relevant fields
+            if (application.company) {
+                document.getElementById('companyName').value = application.company;
+                document.getElementById('aiCompanyName').value = application.company;
+            }
+            
+            if (application.position) {
+                document.getElementById('aiPositionTitle').value = application.position;
+            }
+            
+            if (application.coverLetter) {
+                document.getElementById('coverLetterText').value = application.coverLetter;
+                document.getElementById('generatedCoverLetter').value = application.coverLetter;
+            }
+            
+            if (application.notes) {
+                document.getElementById('skillsText').value = application.notes;
+            }
+            
+            // Update preview
+            updatePreview();
+        }
+
+        function showWorkflowSuccess(message, application) {
+            const successHtml = application ? 
+                `✅ ${message}<br><br>
+                 📋 Bewerbung: ${application.company} - ${application.position}<br>
+                 🎨 Designer ist bereit für Anpassungen!` :
+                `✅ ${message}<br><br>
+                 🎨 Designer ist mit intelligenten Daten vorausgefüllt!`;
+            
+            // Create success notification
+            const notification = document.createElement('div');
+            notification.className = 'workflow-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="notification-text">${successHtml}</div>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
         // Applications Management
         class ApplicationsManager {
             constructor() {
@@ -2380,6 +4206,9 @@
                             </div>
                             <div class="action-icon action-edit" onclick="editApplication(${app.id})" title="Bearbeiten">
                                 <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="action-icon action-designer" onclick="openInDesigner(${app.id})" title="Mit Designer bearbeiten">
+                                <i class="fas fa-palette"></i>
                             </div>
                             <div class="action-icon action-delete" onclick="deleteApplication(${app.id})" title="Löschen">
                                 <i class="fas fa-trash"></i>
