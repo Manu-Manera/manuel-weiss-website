@@ -5938,6 +5938,417 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 e.target.style.display = 'none';
             }
         });
+
+        // Smart Templates & Snippets
+        function initializeSmartTemplates() {
+            const templates = [
+                {
+                    title: "Erfahrung einleiten",
+                    content: "Mit über 6 Jahren Erfahrung in der digitalen Transformation bringe ich umfassende Expertise in...",
+                    category: "introduction"
+                },
+                {
+                    title: "Skills hervorheben",
+                    content: "Meine Kernkompetenzen umfassen strategische HR-Beratung, Prozessoptimierung und KI-Integration...",
+                    category: "skills"
+                },
+                {
+                    title: "Motivation ausdrücken",
+                    content: "Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln...",
+                    category: "motivation"
+                },
+                {
+                    title: "Abschluss formulieren",
+                    content: "Ich freue mich auf ein persönliches Gespräch und die Möglichkeit, Ihnen meine Qualifikationen im Detail vorstellen zu können.",
+                    category: "closing"
+                },
+                {
+                    title: "Projektmanagement",
+                    content: "Erfolgreiche Leitung von Digitalisierungsprojekten mit Budgets bis zu 500.000€ und Teams von 15+ Personen.",
+                    category: "achievements"
+                },
+                {
+                    title: "KI-Expertise",
+                    content: "Implementierung von KI-Tools in HR-Prozessen mit messbaren Effizienzsteigerungen von 40%.",
+                    category: "achievements"
+                }
+            ];
+            
+            return templates;
+        }
+
+        function insertSnippet(snippet) {
+            const coverLetterText = document.getElementById('coverLetterText');
+            if (coverLetterText) {
+                const cursorPos = coverLetterText.selectionStart;
+                const textBefore = coverLetterText.value.substring(0, cursorPos);
+                const textAfter = coverLetterText.value.substring(cursorPos);
+                
+                coverLetterText.value = textBefore + snippet + ' ' + textAfter;
+                coverLetterText.focus();
+                coverLetterText.setSelectionRange(cursorPos + snippet.length + 1, cursorPos + snippet.length + 1);
+                
+                // Trigger real-time feedback
+                updateRealTimeFeedback();
+            }
+        }
+
+        function showSmartTemplates() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-magic"></i> Smart Templates & Snippets</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="smart-templates">
+                            <h3><i class="fas fa-lightbulb"></i> Intelligente Textbausteine</h3>
+                            <div class="template-snippets">
+                                ${initializeSmartTemplates().map(template => `
+                                    <div class="snippet-card" onclick="insertSnippet('${template.content.replace(/'/g, "\\'")}')">
+                                        <div class="snippet-title">${template.title}</div>
+                                        <div class="snippet-preview">${template.content.substring(0, 80)}...</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="batch-actions">
+                            <h3><i class="fas fa-bolt"></i> Batch-Aktionen</h3>
+                            <div class="batch-buttons">
+                                <button class="batch-btn" onclick="createMultipleApplications()">
+                                    <i class="fas fa-copy"></i>
+                                    Mehrere Bewerbungen erstellen
+                                </button>
+                                <button class="batch-btn" onclick="exportAllApplications()">
+                                    <i class="fas fa-download"></i>
+                                    Alle Bewerbungen exportieren
+                                </button>
+                                <button class="batch-btn" onclick="scheduleFollowUps()">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Follow-ups planen
+                                </button>
+                                <button class="batch-btn" onclick="generateReport()">
+                                    <i class="fas fa-chart-line"></i>
+                                    Erfolgsbericht erstellen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Real-time Quality Feedback
+        function updateRealTimeFeedback() {
+            const coverLetterText = document.getElementById('coverLetterText');
+            if (!coverLetterText) return;
+            
+            const text = coverLetterText.value;
+            if (text.length < 50) return;
+            
+            const metrics = analyzeTextQuality(text);
+            showQualityFeedback(metrics);
+        }
+
+        function analyzeTextQuality(text) {
+            const wordCount = text.split(/\s+/).length;
+            const sentenceCount = text.split(/[.!?]+/).length;
+            const avgWordsPerSentence = wordCount / sentenceCount;
+            
+            // Keyword analysis
+            const keywords = ['Projektmanagement', 'Digitalisierung', 'KI', 'HR', 'Strategie', 'Innovation', 'Leadership'];
+            const keywordMatches = keywords.filter(keyword => 
+                text.toLowerCase().includes(keyword.toLowerCase())
+            ).length;
+            
+            // Readability score (simplified)
+            const readabilityScore = Math.max(0, Math.min(100, 100 - (avgWordsPerSentence - 15) * 2));
+            
+            // ATS score (based on keyword density and structure)
+            const atsScore = Math.min(100, 60 + (keywordMatches * 8) + (text.includes('•') ? 10 : 0));
+            
+            // Match score (simplified)
+            const matchScore = Math.min(100, 70 + (keywordMatches * 5) + (wordCount > 200 ? 10 : 0));
+            
+            return {
+                wordCount,
+                readabilityScore: Math.round(readabilityScore),
+                atsScore: Math.round(atsScore),
+                matchScore: Math.round(matchScore),
+                keywordMatches
+            };
+        }
+
+        function showQualityFeedback(metrics) {
+            let feedbackElement = document.getElementById('qualityFeedback');
+            if (!feedbackElement) {
+                feedbackElement = document.createElement('div');
+                feedbackElement.id = 'qualityFeedback';
+                feedbackElement.className = 'quality-feedback';
+                document.body.appendChild(feedbackElement);
+            }
+            
+            feedbackElement.innerHTML = `
+                <div class="feedback-header">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="feedback-title">Live-Qualitätsanalyse</span>
+                </div>
+                <div class="feedback-metrics">
+                    <div class="feedback-metric">
+                        <span class="metric-name">Wörter:</span>
+                        <span class="metric-score ${getScoreClass(metrics.wordCount, 200, 400)}">${metrics.wordCount}</span>
+                    </div>
+                    <div class="feedback-metric">
+                        <span class="metric-name">Readability:</span>
+                        <span class="metric-score ${getScoreClass(metrics.readabilityScore, 70, 90)}">${metrics.readabilityScore}%</span>
+                    </div>
+                    <div class="feedback-metric">
+                        <span class="metric-name">ATS-Score:</span>
+                        <span class="metric-score ${getScoreClass(metrics.atsScore, 70, 90)}">${metrics.atsScore}%</span>
+                    </div>
+                    <div class="feedback-metric">
+                        <span class="metric-name">Match-Score:</span>
+                        <span class="metric-score ${getScoreClass(metrics.matchScore, 70, 90)}">${metrics.matchScore}%</span>
+                    </div>
+                </div>
+            `;
+            
+            feedbackElement.classList.add('active');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                feedbackElement.classList.remove('active');
+            }, 5000);
+        }
+
+        function getScoreClass(score, goodThreshold, excellentThreshold) {
+            if (score >= excellentThreshold) return 'excellent';
+            if (score >= goodThreshold) return 'good';
+            if (score >= goodThreshold - 20) return 'needs-improvement';
+            return 'poor';
+        }
+
+        // Auto-save functionality
+        function initializeAutoSave() {
+            const coverLetterText = document.getElementById('coverLetterText');
+            if (coverLetterText) {
+                let saveTimeout;
+                coverLetterText.addEventListener('input', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        autoSave();
+                        updateRealTimeFeedback();
+                    }, 2000);
+                });
+            }
+        }
+
+        function autoSave() {
+            const coverLetterText = document.getElementById('coverLetterText');
+            if (coverLetterText && coverLetterText.value.length > 10) {
+                // Save to localStorage
+                const autoSaveData = {
+                    content: coverLetterText.value,
+                    timestamp: new Date().toISOString(),
+                    company: document.getElementById('aiCompanyName')?.value || '',
+                    position: document.getElementById('aiPositionTitle')?.value || ''
+                };
+                
+                localStorage.setItem('autoSaveCoverLetter', JSON.stringify(autoSaveData));
+                showAutoSaveIndicator();
+            }
+        }
+
+        function showAutoSaveIndicator() {
+            let indicator = document.getElementById('autoSaveIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'autoSaveIndicator';
+                indicator.className = 'auto-save-indicator';
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.innerHTML = '<i class="fas fa-save"></i> Automatisch gespeichert';
+            indicator.classList.add('active');
+            
+            setTimeout(() => {
+                indicator.classList.remove('active');
+            }, 3000);
+        }
+
+        // Batch processing functions
+        function createMultipleApplications() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-copy"></i> Mehrere Bewerbungen erstellen</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Unternehmen (durch Komma getrennt):</label>
+                            <textarea id="batchCompanies" placeholder="SAP, Microsoft, Google, Apple..." rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Position:</label>
+                            <input type="text" id="batchPosition" placeholder="HR Manager">
+                        </div>
+                        <div class="form-group">
+                            <label>Anschreiben-Vorlage:</label>
+                            <select id="batchTemplate">
+                                <option value="formal">Formal</option>
+                                <option value="modern">Modern</option>
+                                <option value="creative">Kreativ</option>
+                                <option value="ats">ATS-optimiert</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="processBatchApplications()">
+                            <i class="fas fa-rocket"></i>
+                            Bewerbungen erstellen
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function processBatchApplications() {
+            const companies = document.getElementById('batchCompanies').value.split(',').map(c => c.trim()).filter(c => c);
+            const position = document.getElementById('batchPosition').value;
+            const template = document.getElementById('batchTemplate').value;
+            
+            if (companies.length === 0 || !position) {
+                alert('Bitte füllen Sie alle Felder aus.');
+                return;
+            }
+            
+            // Close modal
+            document.querySelector('.modal').remove();
+            
+            // Show progress
+            showBatchProgress(companies.length);
+            
+            // Create applications
+            companies.forEach((company, index) => {
+                setTimeout(() => {
+                    const coverLetter = generateCoverLetterByStyle(template, company, position);
+                    
+                    const application = {
+                        id: Date.now() + index,
+                        company: company,
+                        position: position,
+                        status: 'In Bearbeitung',
+                        coverLetter: coverLetter,
+                        createdAt: new Date().toISOString(),
+                        notes: `Batch-erstellt mit ${template} Template`
+                    };
+                    
+                    applicationsManager.applications.push(application);
+                    applicationsManager.saveApplications();
+                    
+                    updateBatchProgress(index + 1, companies.length);
+                    
+                    if (index === companies.length - 1) {
+                        setTimeout(() => {
+                            applicationsManager.renderApplications();
+                            showBatchSuccess(companies.length);
+                        }, 500);
+                    }
+                }, index * 1000);
+            });
+        }
+
+        function showBatchProgress(total) {
+            const progressModal = document.createElement('div');
+            progressModal.className = 'modal';
+            progressModal.style.display = 'block';
+            progressModal.id = 'batchProgress';
+            progressModal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-body" style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-copy fa-3x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                        <h3>Erstelle ${total} Bewerbungen...</h3>
+                        <p id="batchProgressText">Vorbereitung...</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="batchProgressFill"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(progressModal);
+        }
+
+        function updateBatchProgress(current, total) {
+            const progressText = document.getElementById('batchProgressText');
+            const progressFill = document.getElementById('batchProgressFill');
+            
+            if (progressText) {
+                progressText.textContent = `Erstelle Bewerbung ${current} von ${total}...`;
+            }
+            
+            if (progressFill) {
+                progressFill.style.width = `${(current / total) * 100}%`;
+            }
+        }
+
+        function showBatchSuccess(count) {
+            const progressModal = document.getElementById('batchProgress');
+            if (progressModal) {
+                progressModal.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'workflow-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="notification-text">
+                        ✅ ${count} Bewerbungen erfolgreich erstellt!<br><br>
+                        🚀 Alle Bewerbungen sind bereit für:<br>
+                        • Anpassungen im Designer<br>
+                        • HR-Links generieren<br>
+                        • Status-Updates<br>
+                        • Follow-ups planen
+                    </div>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 8000);
+        }
+
+        // Initialize advanced features when page loads
+        setTimeout(() => {
+            initializeAutoSave();
+            
+            // Add smart templates button to designer
+            const coverLetterTab = document.querySelector('[onclick="switchTab(\'coverLetter\')"]');
+            if (coverLetterTab) {
+                const smartTemplatesBtn = document.createElement('button');
+                smartTemplatesBtn.className = 'btn btn-secondary';
+                smartTemplatesBtn.innerHTML = '<i class="fas fa-magic"></i> Smart Templates';
+                smartTemplatesBtn.onclick = showSmartTemplates;
+                smartTemplatesBtn.style.marginLeft = '1rem';
+                coverLetterTab.parentElement.appendChild(smartTemplatesBtn);
+            }
+        }, 2000);
     </script>
 </body>
 </html>
