@@ -2565,6 +2565,353 @@
             background: linear-gradient(135deg, #10b981, #059669);
         }
 
+        /* Document Management Styles */
+        .document-management {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .document-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .document-category {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .document-category:hover {
+            border-color: #6366f1;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .category-icon.cv { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .category-icon.cover { background: linear-gradient(135deg, #10b981, #059669); }
+        .category-icon.certificates { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .category-icon.portfolio { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .category-icon.references { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .category-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .category-description {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .document-item:hover {
+            border-color: #6366f1;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+
+        .document-item.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .document-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 1.25rem;
+        }
+
+        .document-info {
+            flex: 1;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .document-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .document-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.375rem;
+            border: none;
+            background: #f1f5f9;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .document-action:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        .document-action.primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .document-action.primary:hover {
+            background: #4f46e5;
+        }
+
+        /* PDF Preview Modal */
+        .pdf-preview-modal {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .pdf-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .pdf-preview-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .pdf-preview-content {
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-page-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pdf-page-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-page-item:hover {
+            border-color: #6366f1;
+        }
+
+        .pdf-page-item.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .pdf-page-preview {
+            width: 100%;
+            height: 120px;
+            background: #f1f5f9;
+            border-radius: 0.375rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .pdf-page-number {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        .pdf-page-description {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .package-selection-summary {
+            background: #f0fdf4;
+            border: 1px solid #10b981;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .package-selection-title {
+            font-weight: 600;
+            color: #065f46;
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .selected-documents-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .selected-document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #10b981;
+            border-radius: 0.5rem;
+        }
+
+        .selected-document-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .selected-document-name {
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .selected-document-pages {
+            font-size: 0.75rem;
+            color: #059669;
+            background: #dcfce7;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .remove-document-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .remove-document-btn:hover {
+            background: #dc2626;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #6366f1;
+            background: #f0f4ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .branding-item {
@@ -3772,6 +4119,129 @@
                 </div>
             </div>
 
+            <!-- Document Management Section -->
+            <div class="document-management">
+                <h4><i class="fas fa-folder-open"></i> Dokumentenverwaltung</h4>
+                <p>Verwalten Sie Ihre Bewerbungsunterlagen nach Kategorien und wählen Sie gezielt aus, welche Dokumente für welche Bewerbung verwendet werden sollen.</p>
+                
+                <div class="document-categories">
+                    <div class="document-category">
+                        <div class="category-header">
+                            <div class="category-icon cv">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h5 class="category-title">Lebenslauf</h5>
+                                <p class="category-description">Ihr aktueller Lebenslauf und verschiedene Versionen</p>
+                            </div>
+                        </div>
+                        <div class="document-list" id="cv-documents">
+                            <!-- CV documents will be loaded here -->
+                        </div>
+                        <div class="upload-area" onclick="document.getElementById('cv-upload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="upload-text">Lebenslauf hochladen</div>
+                            <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
+                        </div>
+                        <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('cv', this.files[0])">
+                    </div>
+
+                    <div class="document-category">
+                        <div class="category-header">
+                            <div class="category-icon cover">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <h5 class="category-title">Anschreiben</h5>
+                                <p class="category-description">Vorlagen und generierte Anschreiben</p>
+                            </div>
+                        </div>
+                        <div class="document-list" id="cover-documents">
+                            <!-- Cover letter documents will be loaded here -->
+                        </div>
+                        <div class="upload-area" onclick="document.getElementById('cover-upload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="upload-text">Anschreiben hochladen</div>
+                            <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
+                        </div>
+                        <input type="file" id="cover-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('cover', this.files[0])">
+                    </div>
+
+                    <div class="document-category">
+                        <div class="category-header">
+                            <div class="category-icon certificates">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div>
+                                <h5 class="category-title">Zeugnisse</h5>
+                                <p class="category-description">Arbeitszeugnisse, Zertifikate, Diplome</p>
+                            </div>
+                        </div>
+                        <div class="document-list" id="certificates-documents">
+                            <!-- Certificate documents will be loaded here -->
+                        </div>
+                        <div class="upload-area" onclick="document.getElementById('certificates-upload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="upload-text">Zeugnis hochladen</div>
+                            <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
+                        </div>
+                        <input type="file" id="certificates-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('certificates', this.files[0])">
+                    </div>
+
+                    <div class="document-category">
+                        <div class="category-header">
+                            <div class="category-icon portfolio">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <h5 class="category-title">Portfolio</h5>
+                                <p class="category-description">Projektbeispiele und Arbeitsproben</p>
+                            </div>
+                        </div>
+                        <div class="document-list" id="portfolio-documents">
+                            <!-- Portfolio documents will be loaded here -->
+                        </div>
+                        <div class="upload-area" onclick="document.getElementById('portfolio-upload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="upload-text">Portfolio hochladen</div>
+                            <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
+                        </div>
+                        <input type="file" id="portfolio-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('portfolio', this.files[0])">
+                    </div>
+
+                    <div class="document-category">
+                        <div class="category-header">
+                            <div class="category-icon references">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h5 class="category-title">Referenzen</h5>
+                                <p class="category-description">Empfehlungsschreiben und Kontakte</p>
+                            </div>
+                        </div>
+                        <div class="document-list" id="references-documents">
+                            <!-- Reference documents will be loaded here -->
+                        </div>
+                        <div class="upload-area" onclick="document.getElementById('references-upload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="upload-text">Referenz hochladen</div>
+                            <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
+                        </div>
+                        <input type="file" id="references-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('references', this.files[0])">
+                    </div>
+                </div>
+            </div>
+
             <div class="designer-content">
                 <div class="designer-sidebar">
                     <div class="tabs">
@@ -4503,8 +4973,244 @@
             // Setup event listeners
             setupDesignerEventListeners();
             
+            // Load documents
+            loadAllDocuments();
+            
             // Update preview
             updatePreview();
+        }
+
+        // Document Management Functions
+        function loadAllDocuments() {
+            const categories = ['cv', 'cover', 'certificates', 'portfolio', 'references'];
+            categories.forEach(category => {
+                loadDocumentsForCategory(category);
+            });
+        }
+
+        function loadDocumentsForCategory(category) {
+            const documents = getDocumentsByCategory(category);
+            const container = document.getElementById(`${category}-documents`);
+            
+            if (!container) return;
+            
+            if (documents.length === 0) {
+                container.innerHTML = '<p style="color: #64748b; font-style: italic; text-align: center; padding: 1rem;">Noch keine Dokumente hochgeladen</p>';
+                return;
+            }
+            
+            container.innerHTML = documents.map(doc => `
+                <div class="document-item" data-document-id="${doc.id}">
+                    <div class="document-preview">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="document-info">
+                        <div class="document-name">${doc.name}</div>
+                        <div class="document-meta">${doc.size} • ${doc.uploadDate}</div>
+                    </div>
+                    <div class="document-actions">
+                        <button class="document-action" onclick="previewDocument('${doc.id}')" title="Vorschau">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="document-action" onclick="downloadDocument('${doc.id}')" title="Herunterladen">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="document-action" onclick="deleteDocument('${doc.id}')" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getDocumentsByCategory(category) {
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            return documents.filter(doc => doc.category === category);
+        }
+
+        function uploadDocument(category, file) {
+            if (!file) return;
+            
+            // Validate file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ Datei ist zu groß. Maximum 10MB erlaubt.');
+                return;
+            }
+            
+            // Validate file type
+            const allowedTypes = ['.pdf', '.doc', '.docx'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes.includes(fileExtension)) {
+                alert('❌ Dateityp nicht unterstützt. Nur PDF, DOC und DOCX erlaubt.');
+                return;
+            }
+            
+            // Create document object
+            const document = {
+                id: Date.now().toString(),
+                name: file.name,
+                category: category,
+                size: formatFileSize(file.size),
+                uploadDate: new Date().toLocaleDateString('de-DE'),
+                file: file,
+                pages: estimatePages(file)
+            };
+            
+            // Save to localStorage
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            documents.push(document);
+            localStorage.setItem('documents', JSON.stringify(documents));
+            
+            // Reload documents for this category
+            loadDocumentsForCategory(category);
+            
+            // Show success message
+            alert(`✅ Dokument "${file.name}" erfolgreich hochgeladen!`);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function estimatePages(file) {
+            // Simple estimation based on file size
+            const sizeInMB = file.size / (1024 * 1024);
+            return Math.max(1, Math.round(sizeInMB * 2)); // Rough estimate: 0.5MB per page
+        }
+
+        function previewDocument(documentId) {
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            const document = documents.find(doc => doc.id === documentId);
+            
+            if (!document) {
+                alert('❌ Dokument nicht gefunden.');
+                return;
+            }
+            
+            // Create PDF preview modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-file-pdf"></i> ${document.name}</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="pdf-preview-modal">
+                            <div class="pdf-preview-header">
+                                <h4 class="pdf-preview-title">PDF-Vorschau</h4>
+                                <div class="pdf-info">
+                                    <span class="pdf-meta">${document.size} • ${document.pages} Seiten</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pdf-preview-content">
+                                <div class="pdf-page-selector" id="pdfPageSelector">
+                                    ${generatePageSelector(document.pages)}
+                                </div>
+                            </div>
+                            
+                            <div class="pdf-actions">
+                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                    <i class="fas fa-times"></i>
+                                    Schließen
+                                </button>
+                                <button class="btn btn-primary" onclick="selectPagesForPackage('${documentId}')">
+                                    <i class="fas fa-check"></i>
+                                    Ausgewählte Seiten für Paket verwenden
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function generatePageSelector(pageCount) {
+            let html = '';
+            for (let i = 1; i <= pageCount; i++) {
+                html += `
+                    <div class="pdf-page-item" data-page="${i}" onclick="togglePageSelection(${i})">
+                        <div class="pdf-page-preview">
+                            <i class="fas fa-file-pdf"></i>
+                            <div>Seite ${i}</div>
+                        </div>
+                        <div class="pdf-page-number">Seite ${i}</div>
+                        <div class="pdf-page-description">Klicken zum Auswählen</div>
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        function togglePageSelection(pageNumber) {
+            const pageItem = document.querySelector(`[data-page="${pageNumber}"]`);
+            pageItem.classList.toggle('selected');
+        }
+
+        function selectPagesForPackage(documentId) {
+            const selectedPages = Array.from(document.querySelectorAll('.pdf-page-item.selected'))
+                .map(item => parseInt(item.dataset.page))
+                .sort((a, b) => a - b);
+            
+            if (selectedPages.length === 0) {
+                alert('❌ Bitte wählen Sie mindestens eine Seite aus.');
+                return;
+            }
+            
+            // Store selected pages for package
+            window.selectedDocumentPages = window.selectedDocumentPages || {};
+            window.selectedDocumentPages[documentId] = selectedPages;
+            
+            // Close modal
+            document.querySelector('.modal').remove();
+            
+            // Show success message
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            const document = documents.find(doc => doc.id === documentId);
+            alert(`✅ ${selectedPages.length} Seite(n) von "${document.name}" für Paket ausgewählt!`);
+        }
+
+        function downloadDocument(documentId) {
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            const document = documents.find(doc => doc.id === documentId);
+            
+            if (!document) {
+                alert('❌ Dokument nicht gefunden.');
+                return;
+            }
+            
+            // Create download link
+            const url = URL.createObjectURL(document.file);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = document.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function deleteDocument(documentId) {
+            if (!confirm('❓ Möchten Sie dieses Dokument wirklich löschen?')) {
+                return;
+            }
+            
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            const filteredDocuments = documents.filter(doc => doc.id !== documentId);
+            localStorage.setItem('documents', JSON.stringify(filteredDocuments));
+            
+            // Reload all document categories
+            loadAllDocuments();
+            
+            alert('✅ Dokument erfolgreich gelöscht!');
         }
 
         function loadContactDataFromWebsite() {
@@ -9198,6 +9904,314 @@ Manuel Weiss</textarea>
             
             // Show success message
             alert('✅ Stelle ausgewählt! Sie können jetzt den Workflow starten.');
+        }
+
+        // Enhanced Package Creation Functions
+        function createApplicationPackageEnhanced() {
+            // Check if job posting exists
+            const jobPostingText = document.getElementById('jobPostingText');
+            if (!jobPostingText || !jobPostingText.value.trim()) {
+                alert('❌ Bitte fügen Sie zuerst eine Stellenanzeige ein, bevor Sie ein Bewerbungspaket erstellen.');
+                return;
+            }
+            
+            // Show document selection modal with granular PDF selection
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-file-archive"></i> Bewerbungspaket zusammenstellen</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="package-selection-summary">
+                            <h4 class="package-selection-title">
+                                <i class="fas fa-check-circle"></i>
+                                Ausgewählte Dokumente
+                            </h4>
+                            <div class="selected-documents-list" id="selectedDocumentsList">
+                                <p style="color: #64748b; font-style: italic;">Noch keine Dokumente ausgewählt</p>
+                            </div>
+                        </div>
+                        
+                        <div class="document-selection-grid">
+                            <div class="document-category">
+                                <div class="category-header">
+                                    <div class="category-icon cv">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="category-title">Lebenslauf</h5>
+                                        <p class="category-description">Wählen Sie Ihren Lebenslauf aus</p>
+                                    </div>
+                                </div>
+                                <div class="document-list" id="package-cv-documents">
+                                    <!-- CV documents will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="document-category">
+                                <div class="category-header">
+                                    <div class="category-icon cover">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="category-title">Anschreiben</h5>
+                                        <p class="category-description">Wählen Sie Ihr Anschreiben aus</p>
+                                    </div>
+                                </div>
+                                <div class="document-list" id="package-cover-documents">
+                                    <!-- Cover letter documents will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="document-category">
+                                <div class="category-header">
+                                    <div class="category-icon certificates">
+                                        <i class="fas fa-certificate"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="category-title">Zeugnisse</h5>
+                                        <p class="category-description">Wählen Sie relevante Zeugnisse aus</p>
+                                    </div>
+                                </div>
+                                <div class="document-list" id="package-certificates-documents">
+                                    <!-- Certificate documents will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="document-category">
+                                <div class="category-header">
+                                    <div class="category-icon portfolio">
+                                        <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="category-title">Portfolio</h5>
+                                        <p class="category-description">Wählen Sie Portfolio-Dokumente aus</p>
+                                    </div>
+                                </div>
+                                <div class="document-list" id="package-portfolio-documents">
+                                    <!-- Portfolio documents will be loaded here -->
+                                </div>
+                            </div>
+
+                            <div class="document-category">
+                                <div class="category-header">
+                                    <div class="category-icon references">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="category-title">Referenzen</h5>
+                                        <p class="category-description">Wählen Sie Referenzdokumente aus</p>
+                                    </div>
+                                </div>
+                                <div class="document-list" id="package-references-documents">
+                                    <!-- Reference documents will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="package-actions">
+                            <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                <i class="fas fa-times"></i>
+                                Abbrechen
+                            </button>
+                            <button class="btn btn-primary" onclick="downloadPackageEnhanced()" id="downloadPackageBtn" disabled>
+                                <i class="fas fa-download"></i>
+                                Als ZIP herunterladen
+                            </button>
+                            <button class="btn btn-success" onclick="emailPackageEnhanced()" id="emailPackageBtn" disabled>
+                                <i class="fas fa-envelope"></i>
+                                Per E-Mail senden
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load documents for package selection
+            loadDocumentsForPackage();
+        }
+
+        function loadDocumentsForPackage() {
+            const categories = ['cv', 'cover', 'certificates', 'portfolio', 'references'];
+            categories.forEach(category => {
+                const documents = getDocumentsByCategory(category);
+                const container = document.getElementById(`package-${category}-documents`);
+                
+                if (!container) return;
+                
+                if (documents.length === 0) {
+                    container.innerHTML = '<p style="color: #64748b; font-style: italic; text-align: center; padding: 1rem;">Keine Dokumente verfügbar</p>';
+                    return;
+                }
+                
+                container.innerHTML = documents.map(doc => `
+                    <div class="document-item package-document-item" data-document-id="${doc.id}" data-category="${category}">
+                        <div class="document-preview">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="document-info">
+                            <div class="document-name">${doc.name}</div>
+                            <div class="document-meta">${doc.size} • ${doc.pages} Seiten</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="document-action" onclick="previewDocument('${doc.id}')" title="Vorschau & Seiten auswählen">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="document-action primary" onclick="selectDocumentForPackage('${doc.id}', '${category}')" title="Für Paket auswählen">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function selectDocumentForPackage(documentId, category) {
+            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+            const document = documents.find(doc => doc.id === documentId);
+            
+            if (!document) {
+                alert('❌ Dokument nicht gefunden.');
+                return;
+            }
+            
+            // Add to selected documents
+            window.selectedPackageDocuments = window.selectedPackageDocuments || {};
+            window.selectedPackageDocuments[category] = {
+                id: documentId,
+                name: document.name,
+                pages: window.selectedDocumentPages && window.selectedDocumentPages[documentId] ? 
+                    window.selectedDocumentPages[documentId] : 
+                    Array.from({length: document.pages}, (_, i) => i + 1)
+            };
+            
+            // Update UI
+            updatePackageSelectionSummary();
+            updatePackageButtons();
+            
+            // Mark document as selected
+            const documentItem = document.querySelector(`[data-document-id="${documentId}"]`);
+            if (documentItem) {
+                documentItem.classList.add('selected');
+                const selectBtn = documentItem.querySelector('.document-action.primary');
+                if (selectBtn) {
+                    selectBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    selectBtn.title = 'Ausgewählt';
+                }
+            }
+        }
+
+        function updatePackageSelectionSummary() {
+            const summaryContainer = document.getElementById('selectedDocumentsList');
+            if (!summaryContainer) return;
+            
+            const selectedDocs = window.selectedPackageDocuments || {};
+            const docCount = Object.keys(selectedDocs).length;
+            
+            if (docCount === 0) {
+                summaryContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">Noch keine Dokumente ausgewählt</p>';
+                return;
+            }
+            
+            summaryContainer.innerHTML = Object.entries(selectedDocs).map(([category, doc]) => `
+                <div class="selected-document-item">
+                    <div class="selected-document-info">
+                        <div class="document-preview">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <div class="selected-document-name">${doc.name}</div>
+                            <div class="selected-document-pages">${doc.pages.length} Seite(n): ${doc.pages.join(', ')}</div>
+                        </div>
+                    </div>
+                    <button class="remove-document-btn" onclick="removeDocumentFromPackage('${category}')" title="Entfernen">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeDocumentFromPackage(category) {
+            if (window.selectedPackageDocuments) {
+                delete window.selectedPackageDocuments[category];
+            }
+            
+            // Update UI
+            updatePackageSelectionSummary();
+            updatePackageButtons();
+            
+            // Unmark document as selected
+            const documentItem = document.querySelector(`[data-category="${category}"]`);
+            if (documentItem) {
+                documentItem.classList.remove('selected');
+                const selectBtn = documentItem.querySelector('.document-action.primary');
+                if (selectBtn) {
+                    selectBtn.innerHTML = '<i class="fas fa-plus"></i>';
+                    selectBtn.title = 'Für Paket auswählen';
+                }
+            }
+        }
+
+        function updatePackageButtons() {
+            const selectedDocs = window.selectedPackageDocuments || {};
+            const docCount = Object.keys(selectedDocs).length;
+            const hasDocuments = docCount > 0;
+            
+            const downloadBtn = document.getElementById('downloadPackageBtn');
+            const emailBtn = document.getElementById('emailPackageBtn');
+            
+            if (downloadBtn) downloadBtn.disabled = !hasDocuments;
+            if (emailBtn) emailBtn.disabled = !hasDocuments;
+        }
+
+        function downloadPackageEnhanced() {
+            const selectedDocs = window.selectedPackageDocuments || {};
+            const docCount = Object.keys(selectedDocs).length;
+            
+            if (docCount === 0) {
+                alert('❌ Bitte wählen Sie mindestens ein Dokument aus.');
+                return;
+            }
+            
+            // Create package summary
+            const packageSummary = Object.entries(selectedDocs).map(([category, doc]) => 
+                `• ${doc.name} (${doc.pages.length} Seite(n))`
+            ).join('\n');
+            
+            alert(`📦 Bewerbungspaket wird erstellt...\n\nAusgewählte Dokumente:\n${packageSummary}\n\n(Feature wird in einer zukünftigen Version implementiert)`);
+        }
+
+        function emailPackageEnhanced() {
+            const selectedDocs = window.selectedPackageDocuments || {};
+            const docCount = Object.keys(selectedDocs).length;
+            
+            if (docCount === 0) {
+                alert('❌ Bitte wählen Sie mindestens ein Dokument aus.');
+                return;
+            }
+            
+            const email = 'manuel.weiss@gmx.de';
+            const subject = 'Bewerbungsunterlagen - Manuel Weiss';
+            const packageSummary = Object.entries(selectedDocs).map(([category, doc]) => 
+                `• ${doc.name} (${doc.pages.length} Seite(n))`
+            ).join('\n');
+            
+            const body = `Sehr geehrte Damen und Herren,
+
+anbei übersende ich Ihnen meine Bewerbungsunterlagen:
+
+${packageSummary}
+
+Mit freundlichen Grüßen
+Manuel Weiss`;
+            
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink);
         }
     </script>
 </body>
