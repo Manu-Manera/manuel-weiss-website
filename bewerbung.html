@@ -544,26 +544,54 @@
 
                 // Load cover letter if available
                 this.loadCoverLetter(application);
-            }
+        }
 
-            loadCoverLetter(application) {
-                // Try to find a saved cover letter for this application
-                const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
-                const matchingLetter = coverLetters.find(letter => 
+        loadCoverLetter(application) {
+            // Try to find a saved cover letter for this application
+            const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+            let matchingLetter = null;
+            
+            // First try to find by coverLetterId if available
+            if (application.coverLetterId) {
+                matchingLetter = coverLetters.find(letter => letter.id == application.coverLetterId);
+            }
+            
+            // If not found, try to find by company and position
+            if (!matchingLetter) {
+                matchingLetter = coverLetters.find(letter => 
                     letter.company.toLowerCase() === application.company.toLowerCase() &&
                     letter.position.toLowerCase() === application.position.toLowerCase()
                 );
-
-                if (matchingLetter) {
-                    document.getElementById('coverLetterContent').innerHTML = 
-                        `<div style="white-space: pre-wrap; line-height: 1.6;">${matchingLetter.content}</div>`;
-                } else {
-                    // Generate a default cover letter
-                    const defaultLetter = this.generateDefaultCoverLetter(application);
-                    document.getElementById('coverLetterContent').innerHTML = 
-                        `<div style="white-space: pre-wrap; line-height: 1.6;">${defaultLetter}</div>`;
-                }
             }
+
+            if (matchingLetter) {
+                document.getElementById('coverLetterContent').innerHTML = 
+                    `<div style="white-space: pre-wrap; line-height: 1.6;">${matchingLetter.content}</div>`;
+                
+                // Add AI-generated badge if applicable
+                if (application.source === 'ai-generated') {
+                    const coverLetterDiv = document.getElementById('coverLetterContent');
+                    const badge = document.createElement('div');
+                    badge.style.cssText = `
+                        display: inline-block;
+                        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                        color: white;
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 12px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        margin-bottom: 1rem;
+                    `;
+                    badge.textContent = '🤖 KI-generiert';
+                    coverLetterDiv.insertBefore(badge, coverLetterDiv.firstChild);
+                }
+            } else {
+                // Generate a default cover letter
+                const defaultLetter = this.generateDefaultCoverLetter(application);
+                document.getElementById('coverLetterContent').innerHTML = 
+                    `<div style="white-space: pre-wrap; line-height: 1.6;">${defaultLetter}</div>`;
+            }
+        }
 
             generateDefaultCoverLetter(application) {
                 return `Sehr geehrte Damen und Herren,
