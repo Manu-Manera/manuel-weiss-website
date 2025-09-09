@@ -2291,6 +2291,12 @@ Bitte antworte im folgenden JSON-Format:
             const interviews = applications.filter(app => 
                 app.status === 'interview' || app.status === 'accepted'
             ).length;
+            const rejections = applications.filter(app => 
+                app.status === 'rejected'
+            ).length;
+            const pendingApplications = applications.filter(app => 
+                app.status === 'sent' || app.status === 'reviewed'
+            ).length;
             const successRate = sentApplications > 0 ? 
                 Math.round((positiveResponses / sentApplications) * 100) : 0;
             
@@ -2298,11 +2304,15 @@ Bitte antworte im folgenden JSON-Format:
             const sentElement = document.getElementById('sent-applications');
             const positiveElement = document.getElementById('positive-responses');
             const interviewElement = document.getElementById('interviews');
+            const rejectionElement = document.getElementById('rejections');
+            const pendingElement = document.getElementById('pending-applications');
             const successElement = document.getElementById('success-rate');
             
             if (sentElement) sentElement.textContent = sentApplications;
             if (positiveElement) positiveElement.textContent = positiveResponses;
             if (interviewElement) interviewElement.textContent = interviews;
+            if (rejectionElement) rejectionElement.textContent = rejections;
+            if (pendingElement) pendingElement.textContent = pendingApplications;
             if (successElement) successElement.textContent = successRate + '%';
         }
         
