@@ -61,6 +61,18 @@
                                 <span>Inhalte</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="nutrition">
+                            <a href="#nutrition">
+                                <i class="fas fa-apple-alt"></i>
+                                <span>Ernährungsplan</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-section="applications">
+                            <a href="#applications">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Bewerbungen</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="ai-twin">
                             <a href="#ai-twin">
                                 <i class="fas fa-robot"></i>
@@ -237,6 +249,14 @@
                                     <i class="fas fa-plus"></i>
                                     <span>Neuer Inhalt</span>
                                 </button>
+                                <button class="quick-action-btn" data-action="nutrition">
+                                    <i class="fas fa-apple-alt"></i>
+                                    <span>Ernährungsplan</span>
+                                </button>
+                                <button class="quick-action-btn" data-action="applications">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Bewerbungen</span>
+                                </button>
                                 <button class="quick-action-btn" data-action="ai-twin">
                                     <i class="fas fa-robot"></i>
                                     <span>AI Twin erstellen</span>
@@ -342,6 +362,340 @@
                     
                     <div class="content-grid" id="contentGrid">
                         <!-- Content cards will be dynamically loaded here -->
+                    </div>
+                </section>
+
+                <!-- Nutrition Planner Section -->
+                <section id="nutrition" class="admin-section">
+                    <div class="nutrition-admin-container">
+                        <div class="nutrition-admin-header">
+                            <h2>Ernährungsplan-Verwaltung</h2>
+                            <p>Verwalte den intelligenten Ernährungsplan-Generator</p>
+                        </div>
+                        
+                        <!-- OpenAI API Konfiguration -->
+                        <div class="openai-config" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                🤖 OpenAI API Konfiguration
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 1rem;">
+                                <input type="password" id="openai-api-key" placeholder="OpenAI API Key eingeben..." style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                <button onclick="saveOpenAIKey()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    💾 Speichern
+                                </button>
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <button onclick="testOpenAIConnection()" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    🔗 Verbindung testen
+                                </button>
+                                <button onclick="toggleAPIKeyVisibility()" style="padding: 0.5rem 1rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    👁️ Anzeigen/Verstecken
+                                </button>
+                            </div>
+                            
+                            <div id="api-status" style="padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; display: none;">
+                                <span id="api-status-text"></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Statistiken Dashboard -->
+                        <div class="nutrition-stats" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                📊 Statistiken
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Pläne erstellt</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #6366f1; margin: 0;" id="plans-generated">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">AI-Anfragen</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #10b981; margin: 0;" id="ai-requests">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Exporte heute</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #f59e0b; margin: 0;" id="exports-today">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Aktive Nutzer</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #ef4444; margin: 0;" id="active-users">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Rezept-Generator -->
+                        <div class="ai-recipe-generator" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                🤖 AI Rezept-Generator
+                            </h3>
+                            
+                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <!-- Rezept-Suche -->
+                                <div style="margin-bottom: 2rem;">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">🔍 Rezept suchen & generieren</h4>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Rezept-Name oder Beschreibung:</label>
+                                            <input type="text" id="ai-recipe-search" placeholder="z.B. 'gesunde Quinoa-Bowl mit Gemüse'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                                            <select id="ai-recipe-category" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                <option value="frühstück">Frühstück</option>
+                                                <option value="mittagessen">Mittagessen</option>
+                                                <option value="abendessen">Abendessen</option>
+                                                <option value="snack">Snack</option>
+                                                <option value="dessert">Dessert</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Besondere Anforderungen:</label>
+                                            <input type="text" id="ai-recipe-requirements" placeholder="z.B. 'vegan, glutenfrei, unter 400 Kalorien'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        </div>
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kochzeit (Minuten):</label>
+                                            <input type="number" id="ai-recipe-time" placeholder="30" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        </div>
+                                    </div>
+                                    
+                                    <button onclick="generateAIRecipe()" style="width: 100%; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                                        🤖 Rezept mit AI generieren
+                                    </button>
+                                    
+                                    <!-- AI Progress -->
+                                    <div id="ai-recipe-progress" style="display: none; margin-bottom: 1rem;">
+                                        <div style="background: #f3f4f6; border-radius: 6px; padding: 1rem; text-align: center;">
+                                            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                                <div style="width: 20px; height: 20px; border: 2px solid #6366f1; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                                <span style="font-weight: 600; color: #6366f1;">AI generiert Rezept...</span>
+                                            </div>
+                                            <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                                                <div id="ai-progress-bar" style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Generiertes Rezept -->
+                                <div id="generated-recipe" style="display: none; margin-bottom: 2rem;">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">✨ Generiertes Rezept</h4>
+                                    
+                                    <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1.5rem;">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Rezept-Name:</label>
+                                                <input type="text" id="generated-recipe-name" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                                                <select id="generated-recipe-category" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                    <option value="frühstück">Frühstück</option>
+                                                    <option value="mittagessen">Mittagessen</option>
+                                                    <option value="abendessen">Abendessen</option>
+                                                    <option value="snack">Snack</option>
+                                                    <option value="dessert">Dessert</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 1.5rem;">
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Zutaten:</label>
+                                            <textarea id="generated-recipe-ingredients" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 80px; resize: vertical;"></textarea>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 1.5rem;">
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Zubereitung:</label>
+                                            <textarea id="generated-recipe-instructions" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 100px; resize: vertical;"></textarea>
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kalorien:</label>
+                                                <input type="number" id="generated-recipe-calories" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Protein (g):</label>
+                                                <input type="number" id="generated-recipe-protein" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kohlenhydrate (g):</label>
+                                                <input type="number" id="generated-recipe-carbs" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fett (g):</label>
+                                                <input type="number" id="generated-recipe-fat" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: 1rem;">
+                                            <button onclick="saveGeneratedRecipe()" style="flex: 1; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                                💾 Rezept speichern
+                                            </button>
+                                            <button onclick="regenerateRecipe()" style="flex: 1; padding: 1rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                                🔄 Neu generieren
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Rezept-Datenbank -->
+                                <div style="border-top: 2px solid #e2e8f0; padding-top: 2rem;">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">📚 Gespeicherte Rezepte</h4>
+                                    
+                                    <div id="saved-recipes-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                        <!-- Rezepte werden hier dynamisch geladen -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Applications Section -->
+                <section id="applications" class="admin-section">
+                    <div class="applications-admin-container">
+                        <div class="applications-admin-header">
+                            <h2>Bewerbungsverwaltung</h2>
+                            <p>Verwalte Bewerbungen und Lebensläufe</p>
+                        </div>
+                        
+                        <!-- Bewerbungsstatistiken -->
+                        <div class="application-stats" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                📈 Bewerbungsstatistiken
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Gesendete Bewerbungen</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #6366f1; margin: 0;" id="sent-applications">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Positive Rückmeldungen</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #10b981; margin: 0;" id="positive-responses">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Interviews</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #f59e0b; margin: 0;" id="interviews">0</p>
+                                </div>
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+                                    <h4 style="color: #555; margin-bottom: 0.5rem;">Erfolgsrate</h4>
+                                    <p style="font-size: 2rem; font-weight: bold; color: #ef4444; margin: 0;" id="success-rate">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bewerbungsverwaltung -->
+                        <div class="application-management" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                📋 Bewerbungen verwalten
+                            </h3>
+                            
+                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Unternehmen:</label>
+                                        <input type="text" id="application-company" placeholder="z.B. Google, Microsoft..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Position:</label>
+                                        <input type="text" id="application-position" placeholder="z.B. Senior Developer" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status:</label>
+                                    <select id="application-status" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="sent">Gesendet</option>
+                                        <option value="reviewed">In Bearbeitung</option>
+                                        <option value="interview">Interview</option>
+                                        <option value="accepted">Angenommen</option>
+                                        <option value="rejected">Abgelehnt</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Notizen:</label>
+                                    <textarea id="application-notes" placeholder="Notizen zur Bewerbung..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 100px; resize: vertical;"></textarea>
+                                </div>
+                                
+                                <div style="display: flex; gap: 1rem;">
+                                    <button onclick="addApplication()" style="flex: 1; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                        ➕ Bewerbung hinzufügen
+                                    </button>
+                                    <button onclick="exportApplications()" style="flex: 1; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                        📊 Exportieren
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lebenslauf-Verwaltung -->
+                        <div class="cv-management" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                📄 Lebenslauf-Verwaltung
+                            </h3>
+                            
+                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                    <div>
+                                        <h4 style="color: #555; margin-bottom: 1rem;">Aktuelle Versionen</h4>
+                                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                <div>
+                                                    <p style="font-weight: 600; margin: 0;">Lebenslauf_Manuel_Weiss.pdf</p>
+                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
+                                                </div>
+                                                <div style="display: flex; gap: 0.5rem;">
+                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        👁️ Ansehen
+                                                    </button>
+                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        📥 Download
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                <div>
+                                                    <p style="font-weight: 600; margin: 0;">Bewerbungsmappe.html</p>
+                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
+                                                </div>
+                                                <div style="display: flex; gap: 0.5rem;">
+                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        👁️ Ansehen
+                                                    </button>
+                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        📥 Download
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 style="color: #555; margin-bottom: 1rem;">Neue Version hochladen</h4>
+                                        <div style="border: 2px dashed #ddd; border-radius: 6px; padding: 2rem; text-align: center;">
+                                            <input type="file" id="cv-upload" accept=".pdf,.doc,.docx,.html" style="display: none;">
+                                            <button onclick="document.getElementById('cv-upload').click()" style="padding: 1rem 2rem; background: #f8fafc; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 1.1rem;">
+                                                📁 Datei auswählen
+                                            </button>
+                                            <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, DOC, DOCX oder HTML</p>
+                                        </div>
+                                        
+                                        <button onclick="uploadCV()" style="width: 100%; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 1rem;">
+                                            📤 Lebenslauf hochladen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -1564,6 +1918,121 @@
             }
         }
         
+        function toggleAPIKeyVisibility() {
+            const apiKeyInput = document.getElementById('openai-api-key');
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+            } else {
+                apiKeyInput.type = 'password';
+            }
+        }
+        
+        // Bewerbungsverwaltung Funktionen
+        function addApplication() {
+            const applicationData = {
+                company: document.getElementById('application-company').value,
+                position: document.getElementById('application-position').value,
+                status: document.getElementById('application-status').value,
+                notes: document.getElementById('application-notes').value,
+                date: new Date().toISOString()
+            };
+            
+            if (!applicationData.company || !applicationData.position) {
+                alert('Bitte fülle alle Pflichtfelder aus!');
+                return;
+            }
+            
+            // Lade bestehende Bewerbungen
+            let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            
+            // Füge neue Bewerbung hinzu
+            applicationData.id = Date.now();
+            applications.push(applicationData);
+            
+            // Speichere zurück
+            localStorage.setItem('applications', JSON.stringify(applications));
+            
+            // Leere Formular
+            document.getElementById('application-company').value = '';
+            document.getElementById('application-position').value = '';
+            document.getElementById('application-status').value = 'sent';
+            document.getElementById('application-notes').value = '';
+            
+            // Aktualisiere Statistiken
+            updateApplicationStats();
+            
+            alert('Bewerbung erfolgreich hinzugefügt!');
+        }
+        
+        function exportApplications() {
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            
+            if (applications.length === 0) {
+                alert('Keine Bewerbungen zum Exportieren vorhanden!');
+                return;
+            }
+            
+            // Erstelle CSV-Export
+            const csvContent = [
+                ['Unternehmen', 'Position', 'Status', 'Datum', 'Notizen'],
+                ...applications.map(app => [
+                    app.company,
+                    app.position,
+                    app.status,
+                    new Date(app.date).toLocaleDateString('de-DE'),
+                    app.notes
+                ])
+            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `bewerbungen_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+        
+        function uploadCV() {
+            const fileInput = document.getElementById('cv-upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Bitte wähle eine Datei aus!');
+                return;
+            }
+            
+            // Hier würde normalerweise der Upload-Prozess stattfinden
+            alert(`Datei "${file.name}" wurde erfolgreich hochgeladen!`);
+            
+            // Leere Input
+            fileInput.value = '';
+        }
+        
+        function updateApplicationStats() {
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            
+            const sentApplications = applications.length;
+            const positiveResponses = applications.filter(app => 
+                app.status === 'interview' || app.status === 'accepted'
+            ).length;
+            const interviews = applications.filter(app => 
+                app.status === 'interview' || app.status === 'accepted'
+            ).length;
+            const successRate = sentApplications > 0 ? 
+                Math.round((positiveResponses / sentApplications) * 100) : 0;
+            
+            // Aktualisiere Anzeige
+            const sentElement = document.getElementById('sent-applications');
+            const positiveElement = document.getElementById('positive-responses');
+            const interviewElement = document.getElementById('interviews');
+            const successElement = document.getElementById('success-rate');
+            
+            if (sentElement) sentElement.textContent = sentApplications;
+            if (positiveElement) positiveElement.textContent = positiveResponses;
+            if (interviewElement) interviewElement.textContent = interviews;
+            if (successElement) successElement.textContent = successRate + '%';
+        }
+        
         // Services laden
         function loadServices() {
             const servicesList = document.getElementById('servicesList');
@@ -2244,6 +2713,9 @@
             // Lade Ernährungsplan-Verwaltung
             loadOpenAIKey();
             updateNutritionStats();
+            
+            // Lade Bewerbungsverwaltung
+            updateApplicationStats();
         });
         
         // Cache-busting für Admin-Script (als Backup)

@@ -76,23 +76,27 @@
 
 .nutrition-planner {
     padding: var(--spacing-2xl) 0;
-    background: var(--white);
+    background: #ffffff !important;
     min-height: 100vh;
+    color: #1e293b !important;
 }
 
 .nutrition-planner-app {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    background: var(--white);
+    background: #ffffff !important;
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
     overflow: hidden;
     border: 1px solid var(--gray-200);
+    color: #1e293b !important;
 }
 
 /* Wizard Container */
 .wizard-container {
     padding: var(--spacing-xl);
+    background: #ffffff !important;
+    color: #1e293b !important;
 }
 
 /* Wizard Steps */
@@ -153,13 +157,13 @@
 .step-title {
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--gray-500);
+    color: #64748b !important;
     text-align: center;
     line-height: 1.4;
 }
 
 .step.active .step-title {
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 /* Wizard Content */
@@ -199,7 +203,8 @@
     border-radius: var(--radius-xl);
     cursor: pointer;
     transition: all var(--transition-base);
-    background: var(--white);
+    background: #ffffff !important;
+    color: #1e293b !important;
 }
 
 .goal-card:hover {
@@ -222,7 +227,7 @@
 
 .goal-card:has(input[type="radio"]:checked) {
     border-color: var(--primary);
-    background: var(--gray-50);
+    background: #f8fafc !important;
 }
 
 .goal-icon {
@@ -235,12 +240,12 @@
     font-size: var(--font-size-xl);
     font-weight: 700;
     margin-bottom: var(--spacing-xs);
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 .goal-description {
     font-size: var(--font-size-sm);
-    color: var(--gray-600);
+    color: #64748b !important;
     text-align: center;
 }
 
@@ -251,7 +256,7 @@
 .preferences-section h4 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-lg);
 }
 
@@ -269,12 +274,13 @@
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-base);
-    background: var(--white);
+    background: #ffffff !important;
+    color: #1e293b !important;
 }
 
 .preference-item:hover {
     border-color: var(--primary);
-    background: var(--gray-50);
+    background: #f8fafc !important;
 }
 
 .preference-item input[type="checkbox"] {
@@ -286,7 +292,7 @@
 
 .preference-item span {
     font-weight: 500;
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 /* Step 2: Physical Data */
@@ -309,7 +315,7 @@
 
 .form-group label {
     font-weight: 600;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-xs);
 }
 
@@ -339,7 +345,7 @@
 .allergies-section h4 {
     font-size: var(--font-size-xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-md);
 }
 
@@ -366,7 +372,7 @@
 .meal-prep h4 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-lg);
 }
 
@@ -387,14 +393,15 @@
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-base);
-    background: var(--white);
+    background: #ffffff !important;
+    color: #1e293b !important;
 }
 
 .meal-option:hover,
 .time-option:hover,
 .meal-prep-option:hover {
     border-color: var(--primary);
-    background: var(--gray-50);
+    background: #f8fafc !important;
 }
 
 .meal-option input[type="radio"],
@@ -410,7 +417,7 @@
 .time-option span,
 .meal-prep-option span {
     font-weight: 500;
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 /* Step 4: AI Generation */
@@ -449,7 +456,7 @@
 .progress-text {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 .ai-steps {
@@ -464,10 +471,11 @@
     flex-direction: column;
     align-items: center;
     padding: var(--spacing-xl);
-    background: var(--white);
+    background: #ffffff !important;
     border: 2px solid var(--gray-200);
     border-radius: var(--radius-xl);
     animation: pulse 2s ease-in-out infinite;
+    color: #1e293b !important;
 }
 
 .ai-step:nth-child(2) {
@@ -490,7 +498,7 @@
 
 .ai-step-text {
     font-weight: 600;
-    color: var(--gray-900);
+    color: #1e293b !important;
     text-align: center;
 }
 
@@ -508,17 +516,18 @@
 }
 
 .summary-card {
-    background: var(--white);
+    background: #ffffff !important;
     padding: var(--spacing-xl);
     border-radius: var(--radius-xl);
     border: 2px solid var(--gray-200);
     box-shadow: var(--shadow-md);
+    color: #1e293b !important;
 }
 
 .summary-card h4 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-lg);
 }
 
@@ -533,18 +542,19 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-md);
-    background: var(--white);
+    background: #ffffff !important;
     border-radius: var(--radius-lg);
+    color: #1e293b !important;
 }
 
 .nutrient-label {
     font-weight: 600;
-    color: var(--gray-600);
+    color: #64748b !important;
 }
 
 .nutrient-value {
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
 }
 
 .week-overview {
@@ -554,22 +564,23 @@
 }
 
 .day-card {
-    background: var(--white);
+    background: #ffffff !important;
     padding: var(--spacing-md);
     border-radius: var(--radius-lg);
     text-align: center;
     border: 2px solid var(--gray-200);
+    color: #1e293b !important;
 }
 
 .day-name {
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-xs);
 }
 
 .day-meals {
     font-size: var(--font-size-xs);
-    color: var(--gray-600);
+    color: #64748b !important;
 }
 
 .export-options {
@@ -579,7 +590,7 @@
 .export-options h4 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--gray-900);
+    color: #1e293b !important;
     margin-bottom: var(--spacing-lg);
 }
 
@@ -599,8 +610,8 @@
     font-weight: 500;
     border: 2px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    background: var(--white);
-    color: var(--gray-900);
+    background: #ffffff !important;
+    color: #1e293b !important;
     cursor: pointer;
     transition: all var(--transition-fast);
     font-family: var(--font-family);
