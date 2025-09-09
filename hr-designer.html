@@ -954,18 +954,67 @@ Stakeholder Management</textarea>
         </div>
     </div>
 
+    <!-- Certificate Modal -->
+    <div class="certificate-modal" id="certificateModal">
+        <div class="certificate-modal-content">
+            <div class="certificate-modal-header">
+                <h3 class="certificate-modal-title" id="certificateModalTitle">Zeugnis hinzufügen</h3>
+                <button class="certificate-modal-close" onclick="closeCertificateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Titel des Zeugnisses</label>
+                <input type="text" class="form-input" id="certificateTitle" placeholder="z.B. Bachelor of Science Informatik">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Institution</label>
+                <input type="text" class="form-input" id="certificateInstitution" placeholder="z.B. ETH Zürich">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Jahr</label>
+                <input type="number" class="form-input" id="certificateYear" placeholder="2023" min="1900" max="2030">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Datei hochladen</label>
+                <div class="certificate-upload-area" onclick="document.getElementById('certificateFile').click()">
+                    <i class="fas fa-file-pdf"></i>
+                    <p>PDF-Datei hier ablegen oder klicken zum Auswählen</p>
+                    <div class="file-info" id="fileInfo" style="display: none;"></div>
+                </div>
+                <input type="file" id="certificateFile" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Beschreibung (optional)</label>
+                <textarea class="form-input form-textarea" id="certificateDescription" rows="3" placeholder="Kurze Beschreibung des Zeugnisses..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button class="btn btn-secondary" onclick="closeCertificateModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveCertificate()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // HR Designer Class
         class HRDesigner {
             constructor() {
                 this.currentStyle = 'swiss';
                 this.designData = this.loadDesignData();
+                this.editingCertificateId = null;
                 this.init();
             }
 
             init() {
                 this.setupEventListeners();
                 this.loadCurrentDesign();
+                this.renderCertificates();
                 this.updatePreview();
             }
 
@@ -1013,6 +1062,24 @@ Stakeholder Management</textarea>
                     logoUpload.classList.remove('dragover');
                     this.handleLogoUpload(e);
                 });
+
+                // Certificate file upload
+                document.getElementById('certificateFile').addEventListener('change', (e) => this.handleCertificateFileUpload(e));
+
+                // Drag and drop for certificate
+                const certificateUpload = document.querySelector('.certificate-upload-area');
+                certificateUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    certificateUpload.classList.add('dragover');
+                });
+                certificateUpload.addEventListener('dragleave', () => {
+                    certificateUpload.classList.remove('dragover');
+                });
+                certificateUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    certificateUpload.classList.remove('dragover');
+                    this.handleCertificateFileUpload(e);
+                });
             }
 
             loadDesignData() {
@@ -1036,7 +1103,27 @@ Stakeholder Management</textarea>
                         companyInitials: 'TC',
                         logo: null,
                         template: 'auto'
-                    }
+                    },
+                    certificates: [
+                        {
+                            id: 'cert_1',
+                            title: 'Bachelor of Science Informatik',
+                            institution: 'ETH Zürich',
+                            year: 2020,
+                            description: 'Abschluss in Informatik mit Schwerpunkt auf Software Engineering',
+                            file: null,
+                            fileName: 'Zugnisse.pdf'
+                        },
+                        {
+                            id: 'cert_2',
+                            title: 'Lebenslauf',
+                            institution: 'Manuel Weiss',
+                            year: 2024,
+                            description: 'Aktueller Lebenslauf mit allen relevanten Informationen',
+                            file: null,
+                            fileName: 'Manuel_Weiss_CV.pdf'
+                        }
+                    ]
                 }));
             }
 
