@@ -356,7 +356,7 @@
                         <!-- Profilbild & Video Verwaltung -->
                         <div class="profile-management" style="margin-bottom: 3rem;">
                             <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
-                                👤 Profilbild & Video
+                                👤 Profilbild & Hero-Bereich
                             </h3>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
@@ -369,6 +369,46 @@
                                     <input type="file" id="profileImageInput" accept="image/*" style="width: 100%; margin-bottom: 1rem;">
                                     <button onclick="updateProfileImage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         🔄 Profilbild aktualisieren
+                                    </button>
+                                </div>
+                                
+                                <!-- Hero-Text & Effekte -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">✨ Hero-Bereich anpassen</h4>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Name:</label>
+                                        <input type="text" id="heroName" placeholder="Manuel Weiss" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Titel:</label>
+                                        <input type="text" id="heroTitle" placeholder="Professional Services" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Untertitel:</label>
+                                        <input type="text" id="heroSubtitle" placeholder="Digitalisierung • Prozessmanagement • HR-Tech Beratung" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Beschreibung:</label>
+                                        <textarea id="heroDescription" placeholder="Seit über 6 Jahren begleite ich Unternehmen..." style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; height: 80px; resize: vertical;"></textarea>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Schrift-Effekte:</label>
+                                        <select id="heroTextEffect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                            <option value="none">Keine Effekte</option>
+                                            <option value="gradient">Gradient-Text</option>
+                                            <option value="glow">Glow-Effekt</option>
+                                            <option value="shadow">Schatten-Effekt</option>
+                                            <option value="animated">Animierter Text</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button onclick="updateHeroContent()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        💾 Hero-Bereich speichern
                                     </button>
                                 </div>
                                 
@@ -1350,6 +1390,70 @@
             }
         }
         
+        // Hero-Bereich aktualisieren
+        function updateHeroContent() {
+            const heroData = {
+                name: document.getElementById('heroName').value,
+                title: document.getElementById('heroTitle').value,
+                subtitle: document.getElementById('heroSubtitle').value,
+                description: document.getElementById('heroDescription').value,
+                textEffect: document.getElementById('heroTextEffect').value
+            };
+            
+            // Prüfe ob alle Felder ausgefüllt sind
+            if (!heroData.name || !heroData.title || !heroData.subtitle || !heroData.description) {
+                alert('Bitte fülle alle Felder aus!');
+                return;
+            }
+            
+            // Speichere in localStorage für Website-Synchronisation
+            localStorage.setItem('heroContent', JSON.stringify(heroData));
+            
+            // Speichere auch in der JSON-Datenstruktur
+            if (window.adminPanel && window.adminPanel.data) {
+                if (!window.adminPanel.data.hero) {
+                    window.adminPanel.data.hero = {};
+                }
+                Object.assign(window.adminPanel.data.hero, heroData);
+                window.adminPanel.saveData();
+            }
+            
+            // Netlify Storage verwenden falls verfügbar
+            if (window.netlifyStorage) {
+                window.netlifyStorage.saveData('hero-content', heroData)
+                    .then(result => {
+                        console.log('✅ Hero-Content auch bei Netlify gespeichert:', result);
+                    })
+                    .catch(error => {
+                        console.warn('⚠️ Netlify Storage nicht verfügbar:', error);
+                    });
+            }
+            
+            console.log('✅ Hero-Bereich aktualisiert:', heroData);
+            alert('Hero-Bereich erfolgreich aktualisiert! Die Änderungen werden auf der Website angezeigt.');
+        }
+        
+        // Hero-Content beim Laden des Admin-Panels aus localStorage laden
+        function loadHeroContentFromStorage() {
+            const savedHeroContent = localStorage.getItem('heroContent');
+            if (savedHeroContent) {
+                try {
+                    const heroData = JSON.parse(savedHeroContent);
+                    
+                    // Fülle die Formularfelder
+                    if (heroData.name) document.getElementById('heroName').value = heroData.name;
+                    if (heroData.title) document.getElementById('heroTitle').value = heroData.title;
+                    if (heroData.subtitle) document.getElementById('heroSubtitle').value = heroData.subtitle;
+                    if (heroData.description) document.getElementById('heroDescription').value = heroData.description;
+                    if (heroData.textEffect) document.getElementById('heroTextEffect').value = heroData.textEffect;
+                    
+                    console.log('✅ Hero-Content aus localStorage geladen');
+                } catch (error) {
+                    console.error('Fehler beim Laden des Hero-Content:', error);
+                }
+            }
+        }
+        
         // Ernährungsplan-Verwaltung Funktionen
         function saveOpenAIKey() {
             const apiKey = document.getElementById('openai-api-key').value;
@@ -2133,6 +2237,9 @@
             
             // Lade gespeichertes Profilbild
             loadProfileImageFromStorage();
+            
+            // Lade Hero-Content
+            loadHeroContentFromStorage();
             
             // Lade Ernährungsplan-Verwaltung
             loadOpenAIKey();

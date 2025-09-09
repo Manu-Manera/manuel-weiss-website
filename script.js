@@ -15,6 +15,7 @@ function initializeWebsite() {
     initTypingEffect();
     initParallax();
     loadProfileImageFromStorage();
+    loadHeroContentFromStorage();
     setupProfileImageListener();
 }
 
@@ -530,6 +531,75 @@ function loadProfileImageFromStorage() {
             profileImageElement.src = savedImage;
             console.log('✅ Profilbild aus localStorage geladen (script.js)');
         }
+    }
+}
+
+// Hero-Content aus localStorage laden
+function loadHeroContentFromStorage() {
+    const savedHeroContent = localStorage.getItem('heroContent');
+    if (savedHeroContent) {
+        try {
+            const heroData = JSON.parse(savedHeroContent);
+            
+            // Aktualisiere die Hero-Elemente
+            const heroName = document.querySelector('#hero-name');
+            const heroTitle = document.querySelector('#hero-title');
+            const heroSubtitle = document.querySelector('#hero-subtitle');
+            const heroDescription = document.querySelector('#hero-description');
+            
+            if (heroName && heroData.name) heroName.textContent = heroData.name;
+            if (heroTitle && heroData.title) heroTitle.textContent = heroData.title;
+            if (heroSubtitle && heroData.subtitle) heroSubtitle.textContent = heroData.subtitle;
+            if (heroDescription && heroData.description) heroDescription.textContent = heroData.description;
+            
+            // Wende Text-Effekte an
+            if (heroData.textEffect && heroData.textEffect !== 'none') {
+                applyTextEffect(heroData.textEffect);
+            }
+            
+            console.log('✅ Hero-Content aus localStorage geladen (script.js)');
+        } catch (error) {
+            console.error('Fehler beim Laden des Hero-Content:', error);
+        }
+    }
+}
+
+// Text-Effekte anwenden
+function applyTextEffect(effect) {
+    const heroTitle = document.querySelector('#hero-title');
+    const heroSubtitle = document.querySelector('#hero-subtitle');
+    
+    if (!heroTitle && !heroSubtitle) return;
+    
+    // Entferne vorherige Effekte
+    [heroTitle, heroSubtitle].forEach(element => {
+        if (element) {
+            element.classList.remove('text-gradient', 'text-glow', 'text-shadow', 'text-animated');
+        }
+    });
+    
+    // Wende neuen Effekt an
+    switch (effect) {
+        case 'gradient':
+            [heroTitle, heroSubtitle].forEach(element => {
+                if (element) element.classList.add('text-gradient');
+            });
+            break;
+        case 'glow':
+            [heroTitle, heroSubtitle].forEach(element => {
+                if (element) element.classList.add('text-glow');
+            });
+            break;
+        case 'shadow':
+            [heroTitle, heroSubtitle].forEach(element => {
+                if (element) element.classList.add('text-shadow');
+            });
+            break;
+        case 'animated':
+            [heroTitle, heroSubtitle].forEach(element => {
+                if (element) element.classList.add('text-animated');
+            });
+            break;
     }
 }
 

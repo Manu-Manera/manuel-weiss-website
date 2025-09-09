@@ -18,11 +18,32 @@ class ContentManager {
 
     async loadContent() {
         try {
-            const response = await fetch('/data/website-content.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // Versuche verschiedene Pfade für die JSON-Datei
+            const possiblePaths = [
+                './data/website-content.json',
+                '/data/website-content.json',
+                'data/website-content.json'
+            ];
+            
+            let response = null;
+            for (const path of possiblePaths) {
+                try {
+                    response = await fetch(path);
+                    if (response.ok) {
+                        console.log('✅ JSON-Datei erfolgreich geladen von:', path);
+                        break;
+                    }
+                } catch (e) {
+                    console.log('❌ Pfad nicht gefunden:', path);
+                }
             }
+            
+            if (!response || !response.ok) {
+                throw new Error(`HTTP error! status: ${response ? response.status : 'No response'}`);
+            }
+            
             this.content = await response.json();
+            console.log('✅ Content erfolgreich geladen:', this.content);
         } catch (error) {
             console.error('Fehler beim Laden der JSON-Datei:', error);
             // Fallback: Verwende eingebettete Inhalte
