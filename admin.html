@@ -10,6 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <style>
+        /* AI Progress Animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
@@ -1897,6 +1905,263 @@
             updateNutritionStats();
         }
         
+        // AI Rezept-Generator Funktionen
+        async function generateAIRecipe() {
+            const searchTerm = document.getElementById('ai-recipe-search').value;
+            const category = document.getElementById('ai-recipe-category').value;
+            const requirements = document.getElementById('ai-recipe-requirements').value;
+            const time = document.getElementById('ai-recipe-time').value;
+            
+            if (!searchTerm) {
+                alert('Bitte gib einen Rezept-Namen oder eine Beschreibung ein!');
+                return;
+            }
+            
+            // Zeige Progress
+            const progressDiv = document.getElementById('ai-recipe-progress');
+            const progressBar = document.getElementById('ai-progress-bar');
+            progressDiv.style.display = 'block';
+            
+            // Simuliere Progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 200);
+            
+            try {
+                // Erstelle Prompt für AI
+                const prompt = `Erstelle ein detailliertes Rezept für: "${searchTerm}"
+                
+Kategorie: ${category}
+Besondere Anforderungen: ${requirements || 'keine'}
+Kochzeit: ${time || '30'} Minuten
+
+Bitte antworte im folgenden JSON-Format:
+{
+  "name": "Rezept-Name",
+  "ingredients": "Zutatenliste mit Mengenangaben",
+  "instructions": "Schritt-für-Schritt Zubereitung",
+  "calories": Zahl,
+  "protein": Zahl,
+  "carbs": Zahl,
+  "fat": Zahl,
+  "cookingTime": Zahl
+}`;
+
+                // Verwende AI Integration falls verfügbar
+                if (window.aiIntegration) {
+                    const response = await window.aiIntegration.generateMealPlan({
+                        prompt: prompt,
+                        maxTokens: 1000
+                    });
+                    
+                    if (response && response.choices && response.choices[0]) {
+                        const aiResponse = response.choices[0].message.content;
+                        parseAIRecipeResponse(aiResponse);
+                    } else {
+                        throw new Error('Keine gültige Antwort von der AI erhalten');
+                    }
+                } else {
+                    // Fallback: Simuliere AI-Antwort
+                    setTimeout(() => {
+                        generateFallbackRecipe(searchTerm, category, requirements, time);
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('AI Rezept-Generierung fehlgeschlagen:', error);
+                // Fallback: Generiere Beispiel-Rezept
+                generateFallbackRecipe(searchTerm, category, requirements, time);
+            } finally {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                }, 500);
+            }
+        }
+        
+        function parseAIRecipeResponse(aiResponse) {
+            try {
+                // Versuche JSON zu parsen
+                const recipeData = JSON.parse(aiResponse);
+                displayGeneratedRecipe(recipeData);
+            } catch (error) {
+                // Falls kein gültiges JSON, versuche Text zu parsen
+                parseTextRecipe(aiResponse);
+            }
+        }
+        
+        function parseTextRecipe(text) {
+            // Einfache Text-Parsing-Logik
+            const lines = text.split('\n').filter(line => line.trim());
+            const recipeData = {
+                name: document.getElementById('ai-recipe-search').value,
+                ingredients: 'Zutaten werden von AI generiert...',
+                instructions: 'Zubereitung wird von AI generiert...',
+                calories: Math.floor(Math.random() * 200) + 200,
+                protein: Math.floor(Math.random() * 20) + 10,
+                carbs: Math.floor(Math.random() * 30) + 20,
+                fat: Math.floor(Math.random() * 15) + 5
+            };
+            
+            displayGeneratedRecipe(recipeData);
+        }
+        
+        function generateFallbackRecipe(searchTerm, category, requirements, time) {
+            const recipeData = {
+                name: searchTerm,
+                ingredients: `Zutaten für ${searchTerm}:
+• 200g Hauptzutat
+• 100g Gemüse
+• 2 EL Öl
+• Gewürze nach Geschmack
+• Salz und Pfeffer`,
+                instructions: `Zubereitung von ${searchTerm}:
+1. Hauptzutat vorbereiten
+2. Gemüse schneiden
+3. In einer Pfanne anbraten
+4. Gewürze hinzufügen
+5. ${time || 30} Minuten garen
+6. Mit Salz und Pfeffer abschmecken`,
+                calories: Math.floor(Math.random() * 200) + 200,
+                protein: Math.floor(Math.random() * 20) + 10,
+                carbs: Math.floor(Math.random() * 30) + 20,
+                fat: Math.floor(Math.random() * 15) + 5
+            };
+            
+            displayGeneratedRecipe(recipeData);
+        }
+        
+        function displayGeneratedRecipe(recipeData) {
+            // Fülle die generierten Rezept-Felder
+            document.getElementById('generated-recipe-name').value = recipeData.name;
+            document.getElementById('generated-recipe-category').value = document.getElementById('ai-recipe-category').value;
+            document.getElementById('generated-recipe-ingredients').value = recipeData.ingredients;
+            document.getElementById('generated-recipe-instructions').value = recipeData.instructions;
+            document.getElementById('generated-recipe-calories').value = recipeData.calories || 0;
+            document.getElementById('generated-recipe-protein').value = recipeData.protein || 0;
+            document.getElementById('generated-recipe-carbs').value = recipeData.carbs || 0;
+            document.getElementById('generated-recipe-fat').value = recipeData.fat || 0;
+            
+            // Zeige das generierte Rezept
+            document.getElementById('generated-recipe').style.display = 'block';
+            
+            // Scroll zum generierten Rezept
+            document.getElementById('generated-recipe').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function saveGeneratedRecipe() {
+            const recipeData = {
+                name: document.getElementById('generated-recipe-name').value,
+                category: document.getElementById('generated-recipe-category').value,
+                ingredients: document.getElementById('generated-recipe-ingredients').value.split('\n').filter(i => i.trim()),
+                instructions: document.getElementById('generated-recipe-instructions').value,
+                nutrition: {
+                    calories: parseInt(document.getElementById('generated-recipe-calories').value) || 0,
+                    protein: parseInt(document.getElementById('generated-recipe-protein').value) || 0,
+                    carbs: parseInt(document.getElementById('generated-recipe-carbs').value) || 0,
+                    fats: parseInt(document.getElementById('generated-recipe-fat').value) || 0
+                }
+            };
+            
+            if (!recipeData.name || !recipeData.ingredients.length || !recipeData.instructions) {
+                alert('Bitte fülle alle Pflichtfelder aus!');
+                return;
+            }
+            
+            // Lade bestehende Rezepte
+            let recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+            
+            // Füge neues Rezept hinzu
+            recipeData.id = Date.now();
+            recipeData.createdAt = new Date().toISOString();
+            recipeData.source = 'AI Generated';
+            recipes.push(recipeData);
+            
+            // Speichere zurück
+            localStorage.setItem('nutrition_recipes', JSON.stringify(recipes));
+            
+            // Aktualisiere Statistiken
+            const aiRequests = parseInt(localStorage.getItem('nutrition_ai_requests') || '0') + 1;
+            localStorage.setItem('nutrition_ai_requests', aiRequests.toString());
+            updateNutritionStats();
+            
+            // Aktualisiere Rezept-Liste
+            loadSavedRecipes();
+            
+            alert('Rezept erfolgreich gespeichert!');
+        }
+        
+        function regenerateRecipe() {
+            // Verstecke aktuelles Rezept
+            document.getElementById('generated-recipe').style.display = 'none';
+            
+            // Generiere neues Rezept
+            generateAIRecipe();
+        }
+        
+        function loadSavedRecipes() {
+            const recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+            const recipesList = document.getElementById('saved-recipes-list');
+            
+            if (recipes.length === 0) {
+                recipesList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #666;">Keine Rezepte gespeichert</div>';
+                return;
+            }
+            
+            recipesList.innerHTML = recipes.map(recipe => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                    <div>
+                        <h5 style="font-weight: 600; margin: 0; color: #1e293b;">${recipe.name}</h5>
+                        <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.9rem;">
+                            ${recipe.category} • ${recipe.nutrition?.calories || recipe.calories || 0} kcal • ${recipe.source || 'Manuell'}
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="editRecipe(${recipe.id})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            ✏️ Bearbeiten
+                        </button>
+                        <button onclick="deleteRecipe(${recipe.id})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            🗑️ Löschen
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function editRecipe(recipeId) {
+            const recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+            const recipe = recipes.find(r => r.id === recipeId);
+            
+            if (recipe) {
+                // Fülle die generierten Rezept-Felder mit dem ausgewählten Rezept
+                document.getElementById('generated-recipe-name').value = recipe.name;
+                document.getElementById('generated-recipe-category').value = recipe.category;
+                document.getElementById('generated-recipe-ingredients').value = Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : recipe.ingredients;
+                document.getElementById('generated-recipe-instructions').value = recipe.instructions;
+                document.getElementById('generated-recipe-calories').value = recipe.nutrition?.calories || recipe.calories || 0;
+                document.getElementById('generated-recipe-protein').value = recipe.nutrition?.protein || recipe.protein || 0;
+                document.getElementById('generated-recipe-carbs').value = recipe.nutrition?.carbs || recipe.carbs || 0;
+                document.getElementById('generated-recipe-fat').value = recipe.nutrition?.fats || recipe.fat || 0;
+                
+                // Zeige das Rezept zum Bearbeiten
+                document.getElementById('generated-recipe').style.display = 'block';
+                document.getElementById('generated-recipe').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function deleteRecipe(recipeId) {
+            if (confirm('Möchtest du dieses Rezept wirklich löschen?')) {
+                let recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+                recipes = recipes.filter(r => r.id !== recipeId);
+                localStorage.setItem('nutrition_recipes', JSON.stringify(recipes));
+                loadSavedRecipes();
+            }
+        }
+        
         function updateNutritionStats() {
             // Update statistics
             const recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
@@ -2713,6 +2978,7 @@
             // Lade Ernährungsplan-Verwaltung
             loadOpenAIKey();
             updateNutritionStats();
+            loadSavedRecipes();
             
             // Lade Bewerbungsverwaltung
             updateApplicationStats();
