@@ -787,6 +787,330 @@
             border-top: 1px solid #e2e8f0;
         }
         
+        /* Editing Tools Styles */
+        .editing-tools {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tool-section h6 {
+            color: #1e293b;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tool-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tool-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        .tool-btn.active {
+            background: #10b981;
+        }
+        
+        /* Sentence Alternatives Styles */
+        .sentence-alternatives {
+            padding: 1rem 0;
+        }
+        
+        .original-sentence {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .original-sentence h5 {
+            color: #1e293b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .original-sentence p {
+            color: #64748b;
+            font-style: italic;
+            margin: 0;
+        }
+        
+        .alternatives h5 {
+            color: #1e293b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .alternative-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .alternative-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .alternative-option:hover {
+            border-color: #6366f1;
+            background: #f8fafc;
+        }
+        
+        .alternative-option.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .alternative-option::before {
+            content: "✓";
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #10b981;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .alternative-option.selected::before {
+            opacity: 1;
+        }
+        
+        .alternative-text {
+            color: #1e293b;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .sentence-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Paragraph Regeneration Styles */
+        .paragraph-regeneration {
+            padding: 1rem 0;
+        }
+        
+        .paragraph-selection h5 {
+            color: #1e293b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .paragraph-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .paragraph-option {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .paragraph-option:hover {
+            border-color: #6366f1;
+            background: #f1f5f9;
+        }
+        
+        .paragraph-option.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .paragraph-option::before {
+            content: "✓";
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #10b981;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .paragraph-option.selected::before {
+            opacity: 1;
+        }
+        
+        .paragraph-preview {
+            color: #64748b;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .regeneration-options {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .regeneration-options h5 {
+            color: #1e293b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .regeneration-options .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .regeneration-options .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .paragraph-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Editable Letter Content */
+        .letter-content.editable {
+            position: relative;
+        }
+        
+        .letter-content.editable .sentence {
+            position: relative;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+        
+        .letter-content.editable .sentence:hover {
+            background: #f1f5f9;
+        }
+        
+        .letter-content.editable .sentence.selected {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+        }
+        
+        .letter-content.editable .paragraph {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .letter-content.editable .paragraph:hover {
+            background: #f1f5f9;
+        }
+        
+        .letter-content.editable .paragraph.selected {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+        }
+        
+        .edit-hint {
+            position: absolute;
+            top: -2rem;
+            left: 0;
+            background: #1e293b;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .sentence:hover .edit-hint,
+        .paragraph:hover .edit-hint {
+            opacity: 1;
+        }
+        
+        /* Animation for new applications */
+        @keyframes pulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+        
+        .application-card.new-application {
+            border: 2px solid #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+        }
+        
+        .application-card.new-application::before {
+            content: "🆕";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .admin-sidebar {
@@ -1372,12 +1696,17 @@
                     return;
                 }
 
-                container.innerHTML = filteredApplications.map(app => `
-                    <div class="application-card">
+            container.innerHTML = filteredApplications.map(app => {
+                const isNew = this.isNewApplication(app);
+                const cardClass = isNew ? 'application-card new-application' : 'application-card';
+                
+                return `
+                    <div class="${cardClass}" data-application-id="${app.id}">
                         <div class="application-header">
                             <div class="application-info">
                                 <h3>${app.company}</h3>
                                 <p>${app.position}</p>
+                                ${app.source === 'ai-generated' ? '<span style="font-size: 0.75rem; color: #6366f1; font-weight: 500;">🤖 KI-generiert</span>' : ''}
                             </div>
                             <div class="application-status status-${app.status}">
                                 ${this.getStatusText(app.status)}
@@ -1392,15 +1721,21 @@
                                 <i class="fas fa-clock"></i>
                                 <span>${this.getTimeAgo(app.date)}</span>
                             </div>
+                            ${app.views > 0 ? `
+                                <div class="detail-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>${app.views} Aufrufe</span>
+                                </div>
+                            ` : ''}
                         </div>
                         ${app.notes ? `<div class="application-notes" style="margin-bottom: 1rem; color: #64748b; font-size: 0.875rem;">${app.notes}</div>` : ''}
                         <div class="application-actions">
-                        <div class="action-icon action-view" onclick="viewApplication(${app.id})" title="Ansehen">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div class="action-icon action-share" onclick="shareApplication(${app.id})" title="HR-Link teilen">
-                            <i class="fas fa-share-alt"></i>
-                        </div>
+                            <div class="action-icon action-view" onclick="viewApplication(${app.id})" title="Ansehen">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="action-icon action-share" onclick="shareApplication(${app.id})" title="HR-Link teilen">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
                             <div class="action-icon action-edit" onclick="editApplication(${app.id})" title="Bearbeiten">
                                 <i class="fas fa-edit"></i>
                             </div>
@@ -1409,7 +1744,8 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `;
+            }).join('');
             }
 
             getStatusText(status) {
@@ -1420,8 +1756,18 @@
                     'accepted': 'Angenommen',
                     'rejected': 'Abgelehnt'
                 };
-                return statusMap[status] || status;
-            }
+            return statusMap[status] || status;
+        }
+
+        isNewApplication(application) {
+            // Consider an application "new" if it was created in the last 5 minutes
+            const now = new Date();
+            const appDate = new Date(application.date);
+            const timeDiff = now - appDate;
+            const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+            
+            return timeDiff < fiveMinutes;
+        }
 
             getTimeAgo(date) {
                 const now = new Date();
@@ -1704,18 +2050,144 @@
             // Generate sample cover letter
             const coverLetter = `Sehr geehrte Damen und Herren,
 
-mit großem Interesse habe ich Ihre Stellenanzeige für ${positionTitle} bei ${companyName} gelesen. Als erfahrener Projektmanager mit über 5 Jahren Berufserfahrung in der IT-Branche bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+mit großem Interesse habe ich Ihre Stellenanzeige für ${positionTitle} bei ${companyName} gelesen. Als erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
 
-In meiner bisherigen Tätigkeit habe ich erfolgreich komplexe Projekte geleitet und dabei stets die Balance zwischen technischer Exzellenz und wirtschaftlichen Zielen gefunden. Meine analytische Denkweise und meine Fähigkeit, auch in stressigen Situationen den Überblick zu behalten, haben mir dabei geholfen, Projekte termingerecht und im Budget abzuschließen.
+In meiner bisherigen Tätigkeit habe ich erfolgreich Unternehmen bei der Modernisierung ihrer HR-Abteilungen unterstützt und dabei messbare Verbesserungen erzielt. Meine Expertise in HR-Systemen wie Workday und SAP SuccessFactors sowie meine analytische Denkweise haben mir dabei geholfen, komplexe HR-Transformationen erfolgreich umzusetzen.
 
-Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln und dabei von einem dynamischen Team zu lernen. Ich bringe nicht nur fachliche Expertise mit, sondern auch die Leidenschaft, kontinuierlich dazuzulernen und mich neuen Herausforderungen zu stellen.
+Besonders reizt mich an dieser Position die Möglichkeit, innovative HR-Tech-Lösungen zu entwickeln und dabei von einem dynamischen Team zu lernen. Ich bringe nicht nur fachliche Expertise in der HR-Digitalisierung mit, sondern auch die Leidenschaft, kontinuierlich dazuzulernen und mich neuen Herausforderungen zu stellen.
 
 Gerne würde ich in einem persönlichen Gespräch erläutern, wie ich mit meinen Fähigkeiten und meiner Motivation zum Erfolg Ihres Unternehmens beitragen kann.
 
 Mit freundlichen Grüßen
 Manuel Weiss`;
 
-            document.getElementById('generatedLetterContent').textContent = coverLetter;
+            // Make letter editable
+            makeLetterEditable(coverLetter);
+        }
+
+        function makeLetterEditable(coverLetter) {
+            const contentDiv = document.getElementById('generatedLetterContent');
+            contentDiv.className = 'letter-content editable';
+            
+            // Split into paragraphs and sentences
+            const paragraphs = coverLetter.split('\n\n').filter(p => p.trim());
+            let html = '';
+            
+            paragraphs.forEach((paragraph, pIndex) => {
+                const sentences = paragraph.split('. ').filter(s => s.trim());
+                html += `<div class="paragraph" data-paragraph="${pIndex}">`;
+                
+                sentences.forEach((sentence, sIndex) => {
+                    const cleanSentence = sentence.trim();
+                    if (cleanSentence) {
+                        html += `<span class="sentence" data-paragraph="${pIndex}" data-sentence="${sIndex}">${cleanSentence}${cleanSentence.endsWith('.') ? '' : '.'}</span> `;
+                    }
+                });
+                
+                html += '</div>';
+            });
+            
+            contentDiv.innerHTML = html;
+            
+            // Add click handlers
+            addEditingEventListeners();
+        }
+
+        function addEditingEventListeners() {
+            // Sentence click handlers
+            document.querySelectorAll('.sentence').forEach(sentence => {
+                sentence.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectSentence(sentence);
+                });
+            });
+            
+            // Paragraph click handlers
+            document.querySelectorAll('.paragraph').forEach(paragraph => {
+                paragraph.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectParagraph(paragraph);
+                });
+            });
+        }
+
+        function selectSentence(sentence) {
+            // Remove previous selections
+            document.querySelectorAll('.sentence.selected').forEach(s => s.classList.remove('selected'));
+            document.querySelectorAll('.paragraph.selected').forEach(p => p.classList.remove('selected'));
+            
+            // Select current sentence
+            sentence.classList.add('selected');
+            
+            // Show sentence alternatives
+            showSentenceAlternatives(sentence.textContent.trim());
+        }
+
+        function selectParagraph(paragraph) {
+            // Remove previous selections
+            document.querySelectorAll('.sentence.selected').forEach(s => s.classList.remove('selected'));
+            document.querySelectorAll('.paragraph.selected').forEach(p => p.classList.remove('selected'));
+            
+            // Select current paragraph
+            paragraph.classList.add('selected');
+        }
+
+        function showSentenceAlternatives(originalSentence) {
+            document.getElementById('originalSentenceText').textContent = originalSentence;
+            
+            // Generate alternatives (simulated)
+            const alternatives = generateSentenceAlternatives(originalSentence);
+            const alternativesContainer = document.getElementById('alternativeOptions');
+            
+            alternativesContainer.innerHTML = alternatives.map((alt, index) => `
+                <div class="alternative-option" onclick="selectAlternative(${index})">
+                    <p class="alternative-text">${alt}</p>
+                </div>
+            `).join('');
+            
+            applicationsManager.openModal('sentenceModal');
+        }
+
+        function generateSentenceAlternatives(originalSentence) {
+            // Simulate AI-generated alternatives
+            const alternatives = [
+                originalSentence.replace('überzeugt', 'sicher').replace('wertvolle Bereicherung', 'ideale Ergänzung'),
+                originalSentence.replace('überzeugt', 'davon überzeugt').replace('wertvolle Bereicherung', 'perfekte Besetzung'),
+                originalSentence.replace('überzeugt', 'fest davon überzeugt').replace('wertvolle Bereicherung', 'großen Mehrwert')
+            ];
+            
+            return alternatives;
+        }
+
+        function selectAlternative(index) {
+            // Remove previous selections
+            document.querySelectorAll('.alternative-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Select current alternative
+            document.querySelectorAll('.alternative-option')[index].classList.add('selected');
+            
+            // Apply the alternative
+            const selectedText = document.querySelectorAll('.alternative-option')[index].textContent.trim();
+            const selectedSentence = document.querySelector('.sentence.selected');
+            
+            if (selectedSentence) {
+                selectedSentence.textContent = selectedText;
+                selectedSentence.classList.remove('selected');
+            }
+            
+            closeModal('sentenceModal');
+        }
+
+        function regenerateAlternatives() {
+            const originalSentence = document.getElementById('originalSentenceText').textContent;
+            const alternatives = generateSentenceAlternatives(originalSentence);
+            const alternativesContainer = document.getElementById('alternativeOptions');
+            
+            alternativesContainer.innerHTML = alternatives.map((alt, index) => `
+                <div class="alternative-option" onclick="selectAlternative(${index})">
+                    <p class="alternative-text">${alt}</p>
+                </div>
+            `).join('');
         }
 
         function regenerateLetter() {
@@ -1732,12 +2204,155 @@ Manuel Weiss`;
             generateBtn.innerHTML = '<i class="fas fa-robot"></i> Anschreiben generieren';
         }
 
+        // Editing Tool Functions
+        function enableSentenceEditing() {
+            const toolBtn = event.target.closest('.tool-btn');
+            toolBtn.classList.toggle('active');
+            
+            if (toolBtn.classList.contains('active')) {
+                // Enable sentence editing mode
+                document.querySelectorAll('.sentence').forEach(sentence => {
+                    sentence.style.cursor = 'pointer';
+                });
+                alert('Klick auf einen Satz, um Alternativen zu sehen!');
+            } else {
+                // Disable sentence editing mode
+                document.querySelectorAll('.sentence').forEach(sentence => {
+                    sentence.style.cursor = 'default';
+                });
+            }
+        }
+
+        function enableParagraphEditing() {
+            const toolBtn = event.target.closest('.tool-btn');
+            toolBtn.classList.toggle('active');
+            
+            if (toolBtn.classList.contains('active')) {
+                // Show paragraph selection modal
+                showParagraphSelection();
+            } else {
+                // Disable paragraph editing mode
+                document.querySelectorAll('.paragraph').forEach(paragraph => {
+                    paragraph.style.cursor = 'default';
+                });
+            }
+        }
+
+        function improveTone() {
+            const toolBtn = event.target.closest('.tool-btn');
+            toolBtn.classList.toggle('active');
+            
+            if (toolBtn.classList.contains('active')) {
+                // Simulate tone improvement
+                const contentDiv = document.getElementById('generatedLetterContent');
+                const currentText = contentDiv.textContent;
+                
+                // Simulate AI tone improvement
+                const improvedText = currentText
+                    .replace(/überzeugt/g, 'fest davon überzeugt')
+                    .replace(/kann/g, 'kann und werde')
+                    .replace(/möchte/g, 'möchte sehr gerne');
+                
+                makeLetterEditable(improvedText);
+                alert('Ton wurde verbessert!');
+            }
+        }
+
+        function showParagraphSelection() {
+            const paragraphs = document.querySelectorAll('.paragraph');
+            const paragraphOptions = document.getElementById('paragraphOptions');
+            
+            paragraphOptions.innerHTML = paragraphs.map((paragraph, index) => `
+                <div class="paragraph-option" onclick="selectParagraphForRegeneration(${index})">
+                    <p class="paragraph-preview">${paragraph.textContent.substring(0, 100)}...</p>
+                </div>
+            `).join('');
+            
+            applicationsManager.openModal('paragraphModal');
+        }
+
+        function selectParagraphForRegeneration(index) {
+            // Remove previous selections
+            document.querySelectorAll('.paragraph-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Select current paragraph
+            document.querySelectorAll('.paragraph-option')[index].classList.add('selected');
+            
+            // Store selected paragraph index
+            window.selectedParagraphIndex = index;
+        }
+
+        function regenerateParagraph() {
+            const selectedIndex = window.selectedParagraphIndex;
+            if (selectedIndex === undefined) {
+                alert('Bitte wähle einen Absatz aus!');
+                return;
+            }
+            
+            const tone = document.getElementById('paragraphTone').value;
+            const focus = document.getElementById('paragraphFocus').value;
+            const selectedParagraph = document.querySelectorAll('.paragraph')[selectedIndex];
+            
+            // Simulate AI paragraph regeneration
+            const newParagraph = generateNewParagraph(tone, focus, selectedParagraph.textContent);
+            
+            // Replace the paragraph
+            selectedParagraph.innerHTML = newParagraph;
+            
+            // Re-add event listeners
+            addEditingEventListeners();
+            
+            closeModal('paragraphModal');
+            alert('Absatz wurde neu generiert!');
+        }
+
+        function generateNewParagraph(tone, focus, originalText) {
+            // Simulate AI-generated paragraph based on tone and focus
+            const baseText = originalText;
+            
+            let newText = baseText;
+            
+            // Apply tone changes
+            switch (tone) {
+                case 'enthusiastic':
+                    newText = newText.replace(/bin ich überzeugt/g, 'bin ich begeistert und überzeugt');
+                    newText = newText.replace(/kann/g, 'kann und werde mit Leidenschaft');
+                    break;
+                case 'confident':
+                    newText = newText.replace(/bin ich überzeugt/g, 'bin ich absolut überzeugt');
+                    newText = newText.replace(/kann/g, 'kann selbstbewusst');
+                    break;
+                case 'humble':
+                    newText = newText.replace(/bin ich überzeugt/g, 'hoffe ich, dass ich');
+                    newText = newText.replace(/kann/g, 'könnte');
+                    break;
+            }
+            
+            // Apply focus changes
+            switch (focus) {
+                case 'experience':
+                    newText = newText.replace(/Berufserfahrung/g, 'umfangreiche Berufserfahrung');
+                    break;
+                case 'skills':
+                    newText = newText.replace(/Fähigkeiten/g, 'meine vielfältigen Fähigkeiten');
+                    break;
+                case 'motivation':
+                    newText = newText.replace(/reizt mich/g, 'begeistert mich besonders');
+                    break;
+                case 'achievements':
+                    newText = newText.replace(/erfolgreich/g, 'nachweislich erfolgreich');
+                    break;
+            }
+            
+            return newText;
+        }
+
         function saveLetter() {
             const letterContent = document.getElementById('generatedLetterContent').textContent;
             const companyName = document.getElementById('resultCompany').textContent;
             const positionTitle = document.getElementById('resultPosition').textContent;
             
-            // Save to localStorage
+            // Save letter to localStorage
             const savedLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
             const newLetter = {
                 id: Date.now(),
@@ -1750,13 +2365,103 @@ Manuel Weiss`;
             savedLetters.push(newLetter);
             localStorage.setItem('coverLetters', JSON.stringify(savedLetters));
             
-            alert('Anschreiben wurde gespeichert!');
+            // Automatically create new application
+            const newApplication = createApplicationFromLetter(newLetter);
+            
+            // Save application to localStorage
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            applications.push(newApplication);
+            localStorage.setItem('applications', JSON.stringify(applications));
+            
+            // Update statistics
+            applicationsManager.updateStats();
+            applicationsManager.renderApplications();
+            
+            // Show success message with application details
+            showSaveSuccess(newApplication);
+        }
+
+        function createApplicationFromLetter(letter) {
+            const applicationId = Date.now() + Math.random(); // Ensure unique ID
+            
+            return {
+                id: applicationId,
+                company: letter.company,
+                position: letter.position,
+                status: 'sent',
+                notes: `Automatisch erstellt aus KI-Anschreiben. Anschreiben-ID: ${letter.id}`,
+                date: new Date().toISOString(),
+                coverLetterId: letter.id,
+                source: 'ai-generated',
+                views: 0,
+                lastViewed: null
+            };
+        }
+
+        function showSaveSuccess(application) {
+            const successMessage = `
+                ✅ Anschreiben und Bewerbung erfolgreich erstellt!
+                
+                📋 Bewerbung:
+                • Unternehmen: ${application.company}
+                • Position: ${application.position}
+                • Status: Gesendet
+                • ID: ${application.id}
+                
+                📝 Anschreiben wurde automatisch verknüpft.
+                
+                Du kannst die Bewerbung jetzt in der Liste sehen und den HR-Link teilen!
+            `;
+            
+            alert(successMessage);
+            
+            // Close the AI letter modal
+            closeModal('aiLetterModal');
+            
+            // Optionally scroll to the new application in the list
+            setTimeout(() => {
+                const newApplicationCard = document.querySelector(`[onclick*="${application.id}"]`);
+                if (newApplicationCard) {
+                    newApplicationCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    newApplicationCard.style.animation = 'pulse 2s ease-in-out';
+                }
+            }, 500);
         }
 
         function copyLetter() {
             const letterContent = document.getElementById('generatedLetterContent').textContent;
+            const companyName = document.getElementById('resultCompany').textContent;
+            const positionTitle = document.getElementById('resultPosition').textContent;
+            
+            // Copy to clipboard
             navigator.clipboard.writeText(letterContent).then(() => {
-                alert('Anschreiben wurde in die Zwischenablage kopiert!');
+                // Automatically create application when copying
+                const newLetter = {
+                    id: Date.now(),
+                    company: companyName,
+                    position: positionTitle,
+                    content: letterContent,
+                    createdAt: new Date().toISOString()
+                };
+                
+                const newApplication = createApplicationFromLetter(newLetter);
+                
+                // Save both letter and application
+                const savedLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                savedLetters.push(newLetter);
+                localStorage.setItem('coverLetters', JSON.stringify(savedLetters));
+                
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                applications.push(newApplication);
+                localStorage.setItem('applications', JSON.stringify(applications));
+                
+                // Update statistics
+                applicationsManager.updateStats();
+                applicationsManager.renderApplications();
+                
+                // Show success message
+                showCopySuccess(newApplication);
+                
             }).catch(() => {
                 // Fallback for older browsers
                 const textArea = document.createElement('textarea');
@@ -1765,8 +2470,60 @@ Manuel Weiss`;
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                alert('Anschreiben wurde in die Zwischenablage kopiert!');
+                
+                // Still create application even with fallback
+                const newLetter = {
+                    id: Date.now(),
+                    company: companyName,
+                    position: positionTitle,
+                    content: letterContent,
+                    createdAt: new Date().toISOString()
+                };
+                
+                const newApplication = createApplicationFromLetter(newLetter);
+                
+                const savedLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                savedLetters.push(newLetter);
+                localStorage.setItem('coverLetters', JSON.stringify(savedLetters));
+                
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                applications.push(newApplication);
+                localStorage.setItem('applications', JSON.stringify(applications));
+                
+                applicationsManager.updateStats();
+                applicationsManager.renderApplications();
+                
+                showCopySuccess(newApplication);
             });
+        }
+
+        function showCopySuccess(application) {
+            const successMessage = `
+                ✅ Anschreiben kopiert und Bewerbung erstellt!
+                
+                📋 Neue Bewerbung:
+                • Unternehmen: ${application.company}
+                • Position: ${application.position}
+                • Status: Gesendet
+                
+                📝 Anschreiben ist in der Zwischenablage und wurde automatisch verknüpft.
+                
+                Du kannst die Bewerbung jetzt in der Liste sehen und den HR-Link teilen!
+            `;
+            
+            alert(successMessage);
+            
+            // Close the AI letter modal
+            closeModal('aiLetterModal');
+            
+            // Scroll to the new application
+            setTimeout(() => {
+                const newApplicationCard = document.querySelector(`[onclick*="${application.id}"]`);
+                if (newApplicationCard) {
+                    newApplicationCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    newApplicationCard.style.animation = 'pulse 2s ease-in-out';
+                }
+            }, 500);
         }
 
         // Share Application Functions
