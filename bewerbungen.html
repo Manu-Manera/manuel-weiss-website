@@ -1111,6 +1111,207 @@
             font-weight: bold;
         }
         
+        /* Status Dropdown Styles */
+        .application-status {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .application-status:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .status-arrow {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .application-status:hover .status-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Status Change Modal Styles */
+        .status-change-content {
+            padding: 1.5rem 0;
+        }
+        
+        .current-status {
+            margin-bottom: 2rem;
+        }
+        
+        .current-status h4 {
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-display {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid;
+        }
+        
+        .status-options h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .status-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .status-option.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+        
+        .status-option.selected::before {
+            content: "✓";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        /* Quick Status Section Styles */
+        .quick-status-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .quick-status-section h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .status-quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .status-quick-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 0.75rem;
+            border: 2px solid;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .status-quick-btn i {
+            font-size: 1.25rem;
+        }
+        
+        .status-quick-btn span {
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        
+        /* Status-specific colors */
+        .status-quick-btn.status-sent {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .status-quick-btn.status-sent:hover {
+            background: #eff6ff;
+        }
+        
+        .status-quick-btn.status-reviewed {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+        
+        .status-quick-btn.status-reviewed:hover {
+            background: #fffbeb;
+        }
+        
+        .status-quick-btn.status-interview {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+        
+        .status-quick-btn.status-interview:hover {
+            background: #f3e8ff;
+        }
+        
+        .status-quick-btn.status-accepted {
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        .status-quick-btn.status-accepted:hover {
+            background: #ecfdf5;
+        }
+        
+        .status-quick-btn.status-rejected {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .status-quick-btn.status-rejected:hover {
+            background: #fef2f2;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .admin-sidebar {
@@ -1243,6 +1444,33 @@
                             <span>KI Anschreiben</span>
                         </button>
                     </div>
+                    
+                    <!-- Quick Status Changes -->
+                    <div class="quick-status-section">
+                        <h3>🚀 Schnelle Statusänderungen</h3>
+                        <div class="status-quick-buttons">
+                            <button class="status-quick-btn status-sent" onclick="quickStatusChange('sent')" title="Als 'Gesendet' markieren">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Gesendet</span>
+                            </button>
+                            <button class="status-quick-btn status-reviewed" onclick="quickStatusChange('reviewed')" title="Als 'In Bearbeitung' markieren">
+                                <i class="fas fa-clock"></i>
+                                <span>In Bearbeitung</span>
+                            </button>
+                            <button class="status-quick-btn status-interview" onclick="quickStatusChange('interview')" title="Als 'Vorstellungsgespräch' markieren">
+                                <i class="fas fa-handshake"></i>
+                                <span>Interview</span>
+                            </button>
+                            <button class="status-quick-btn status-accepted" onclick="quickStatusChange('accepted')" title="Als 'Zusage' markieren">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Zusage</span>
+                            </button>
+                            <button class="status-quick-btn status-rejected" onclick="quickStatusChange('rejected')" title="Als 'Abgelehnt' markieren">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Abgelehnt</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1340,6 +1568,37 @@
                     <button type="submit" class="btn-primary">Aktualisieren</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Status Change Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Status ändern</h3>
+                <button class="close-btn" onclick="closeModal('statusModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="status-change-content">
+                <div class="current-status">
+                    <h4>Aktueller Status:</h4>
+                    <div id="currentStatusDisplay" class="status-display"></div>
+                </div>
+                <div class="status-options">
+                    <h4>Neuer Status wählen:</h4>
+                    <div id="statusOptionsList" class="status-options-grid">
+                        <!-- Status options will be populated here -->
+                    </div>
+                </div>
+                <div class="status-actions">
+                    <button class="btn-secondary" onclick="closeModal('statusModal')">Abbrechen</button>
+                    <button class="btn-primary" onclick="confirmStatusChange()" id="confirmStatusBtn" disabled>
+                        <i class="fas fa-check"></i>
+                        Status ändern
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1708,8 +1967,9 @@
                                 <p>${app.position}</p>
                                 ${app.source === 'ai-generated' ? '<span style="font-size: 0.75rem; color: #6366f1; font-weight: 500;">🤖 KI-generiert</span>' : ''}
                             </div>
-                            <div class="application-status status-${app.status}">
+                            <div class="application-status status-${app.status}" onclick="showStatusDropdown(${app.id}, '${app.status}')" title="Status ändern">
                                 ${this.getStatusText(app.status)}
+                                <i class="fas fa-chevron-down status-arrow"></i>
                             </div>
                         </div>
                         <div class="application-details">
@@ -1750,13 +2010,25 @@
 
             getStatusText(status) {
                 const statusMap = {
+                    'draft': 'Entwurf',
                     'sent': 'Gesendet',
                     'reviewed': 'In Bearbeitung',
-                    'interview': 'Interview',
-                    'accepted': 'Angenommen',
+                    'interview': 'Vorstellungsgespräch',
+                    'accepted': 'Zusage',
                     'rejected': 'Abgelehnt'
                 };
             return statusMap[status] || status;
+        }
+
+        getStatusOptions() {
+            return [
+                { value: 'draft', text: 'Entwurf', color: '#6b7280' },
+                { value: 'sent', text: 'Gesendet', color: '#3b82f6' },
+                { value: 'reviewed', text: 'In Bearbeitung', color: '#f59e0b' },
+                { value: 'interview', text: 'Vorstellungsgespräch', color: '#8b5cf6' },
+                { value: 'accepted', text: 'Zusage', color: '#10b981' },
+                { value: 'rejected', text: 'Abgelehnt', color: '#ef4444' }
+            ];
         }
 
         isNewApplication(application) {
@@ -2524,6 +2796,130 @@ Manuel Weiss`;
                     newApplicationCard.style.animation = 'pulse 2s ease-in-out';
                 }
             }, 500);
+        }
+
+        // Status Management Functions
+        let currentApplicationId = null;
+        let selectedNewStatus = null;
+
+        function showStatusDropdown(applicationId, currentStatus) {
+            currentApplicationId = applicationId;
+            selectedNewStatus = null;
+            
+            const application = applicationsManager.applications.find(app => app.id == applicationId);
+            if (!application) return;
+            
+            // Show current status
+            const currentStatusDisplay = document.getElementById('currentStatusDisplay');
+            const statusOptions = applicationsManager.getStatusOptions();
+            const currentStatusOption = statusOptions.find(opt => opt.value === currentStatus);
+            
+            currentStatusDisplay.textContent = currentStatusOption ? currentStatusOption.text : currentStatus;
+            currentStatusDisplay.style.backgroundColor = currentStatusOption ? currentStatusOption.color : '#6b7280';
+            currentStatusDisplay.style.color = 'white';
+            currentStatusDisplay.style.borderColor = currentStatusOption ? currentStatusOption.color : '#6b7280';
+            
+            // Populate status options
+            const statusOptionsList = document.getElementById('statusOptionsList');
+            statusOptionsList.innerHTML = statusOptions.map(option => `
+                <div class="status-option" 
+                     data-status="${option.value}" 
+                     onclick="selectStatusOption('${option.value}')"
+                     style="border-color: ${option.color}; color: ${option.color};">
+                    ${option.text}
+                </div>
+            `).join('');
+            
+            // Reset confirm button
+            document.getElementById('confirmStatusBtn').disabled = true;
+            
+            // Show modal
+            document.getElementById('statusModal').style.display = 'flex';
+        }
+
+        function selectStatusOption(status) {
+            selectedNewStatus = status;
+            
+            // Remove previous selection
+            document.querySelectorAll('.status-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            const selectedOption = document.querySelector(`[data-status="${status}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            // Enable confirm button
+            document.getElementById('confirmStatusBtn').disabled = false;
+        }
+
+        function confirmStatusChange() {
+            if (!currentApplicationId || !selectedNewStatus) return;
+            
+            // Update application status
+            const application = applicationsManager.applications.find(app => app.id == currentApplicationId);
+            if (application) {
+                application.status = selectedNewStatus;
+                
+                // Save to localStorage
+                localStorage.setItem('applications', JSON.stringify(applicationsManager.applications));
+                
+                // Update statistics and render
+                applicationsManager.updateStats();
+                applicationsManager.renderApplications();
+                
+                // Show success message
+                const statusOptions = applicationsManager.getStatusOptions();
+                const newStatusText = statusOptions.find(opt => opt.value === selectedNewStatus)?.text || selectedNewStatus;
+                
+                alert(`✅ Status erfolgreich geändert zu: ${newStatusText}`);
+            }
+            
+            // Close modal
+            closeModal('statusModal');
+        }
+
+        function quickStatusChange(newStatus) {
+            // Get all applications that are not already in the target status
+            const applicationsToUpdate = applicationsManager.applications.filter(app => app.status !== newStatus);
+            
+            if (applicationsToUpdate.length === 0) {
+                const statusOptions = applicationsManager.getStatusOptions();
+                const statusText = statusOptions.find(opt => opt.value === newStatus)?.text || newStatus;
+                alert(`Alle Bewerbungen sind bereits auf Status "${statusText}" gesetzt.`);
+                return;
+            }
+            
+            // Show confirmation dialog
+            const statusOptions = applicationsManager.getStatusOptions();
+            const statusText = statusOptions.find(opt => opt.value === newStatus)?.text || newStatus;
+            const count = applicationsToUpdate.length;
+            
+            const confirmed = confirm(
+                `Möchten Sie ${count} Bewerbung${count > 1 ? 'en' : ''} auf Status "${statusText}" setzen?\n\n` +
+                `Betroffene Bewerbungen:\n` +
+                applicationsToUpdate.slice(0, 5).map(app => `• ${app.company} - ${app.position}`).join('\n') +
+                (applicationsToUpdate.length > 5 ? `\n... und ${applicationsToUpdate.length - 5} weitere` : '')
+            );
+            
+            if (confirmed) {
+                // Update all applications
+                applicationsToUpdate.forEach(app => {
+                    app.status = newStatus;
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('applications', JSON.stringify(applicationsManager.applications));
+                
+                // Update statistics and render
+                applicationsManager.updateStats();
+                applicationsManager.renderApplications();
+                
+                // Show success message
+                alert(`✅ ${count} Bewerbung${count > 1 ? 'en' : ''} erfolgreich auf "${statusText}" gesetzt!`);
+            }
         }
 
         // Share Application Functions
