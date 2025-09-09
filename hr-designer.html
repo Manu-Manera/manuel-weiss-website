@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR-Designer - Modulares Baukasten-System</title>
+    <title>Bewerbungs-Designer - Modulares Baukasten-System</title>
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
@@ -686,7 +686,7 @@
         <div class="header-container">
             <div class="header-title">
                 <i class="fas fa-palette"></i>
-                <h1>HR-Designer</h1>
+                <h1>Bewerbungs-Designer</h1>
                 <span style="color: var(--gray-500); font-size: 0.875rem;">Modulares Baukasten-System</span>
             </div>
             <div class="header-actions">
@@ -723,6 +723,10 @@
                 <button class="tab" onclick="switchTab('branding')">
                     <i class="fas fa-building"></i>
                     Branding
+                </button>
+                <button class="tab" onclick="switchTab('cover-letter')">
+                    <i class="fas fa-robot"></i>
+                    Anschreiben
                 </button>
             </div>
 
@@ -930,6 +934,75 @@ Stakeholder Management</textarea>
                     </div>
                 </div>
             </div>
+
+            <!-- Cover Letter Tab -->
+            <div id="cover-letter-tab" class="tab-content">
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-robot"></i>
+                        KI-Anschreiben Generator
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Stellenanzeige</label>
+                        <textarea class="form-input form-textarea" id="jobDescription" rows="6" placeholder="Kopiere hier die komplette Stellenanzeige hinein..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Unternehmen</label>
+                        <input type="text" class="form-input" id="aiCompanyName" placeholder="Name des Unternehmens">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Position</label>
+                        <input type="text" class="form-input" id="aiPositionTitle" placeholder="Titel der Position">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Zusätzliche Anforderungen</label>
+                        <textarea class="form-input form-textarea" id="additionalRequirements" rows="3" placeholder="Besondere Wünsche oder Anforderungen..."></textarea>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="generateCoverLetter()" style="width: 100%;">
+                        <i class="fas fa-magic"></i>
+                        Anschreiben generieren
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-edit"></i>
+                        Anschreiben bearbeiten
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Generiertes Anschreiben</label>
+                        <textarea class="form-input form-textarea" id="generatedCoverLetter" rows="10" placeholder="Hier erscheint das generierte Anschreiben..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="improveTone()" style="flex: 1;">
+                            <i class="fas fa-magic"></i>
+                            Ton verbessern
+                        </button>
+                        <button class="btn btn-secondary" onclick="regenerateParagraph()" style="flex: 1;">
+                            <i class="fas fa-redo"></i>
+                            Absatz neu
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="btn btn-success" onclick="saveCoverLetter()" style="flex: 1;">
+                            <i class="fas fa-save"></i>
+                            Speichern
+                        </button>
+                        <button class="btn btn-secondary" onclick="copyCoverLetter()" style="flex: 1;">
+                            <i class="fas fa-copy"></i>
+                            Kopieren
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Preview Area -->
@@ -1013,6 +1086,7 @@ Stakeholder Management</textarea>
 
             init() {
                 this.setupEventListeners();
+                this.loadContactDataFromWebsite();
                 this.loadCurrentDesign();
                 this.renderCertificates();
                 this.updatePreview();
@@ -1082,14 +1156,37 @@ Stakeholder Management</textarea>
                 });
             }
 
+            loadContactDataFromWebsite() {
+                // Load contact data from website-content.json
+                fetch('data/website-content.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.contact) {
+                            // Update contact fields with website data
+                            document.getElementById('candidateEmail').value = data.contact.email || '';
+                            document.getElementById('candidatePhone').value = data.contact.phone || '';
+                            document.getElementById('candidateLocation').value = data.contact.location || '';
+                        }
+                        if (data.hero) {
+                            // Update name and title from hero section
+                            document.getElementById('candidateName').value = data.hero.name || '';
+                            document.getElementById('candidatePosition').value = data.hero.title || '';
+                        }
+                        console.log('✅ Kontaktdaten von Website übernommen');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Konnte Kontaktdaten nicht von Website laden:', error);
+                    });
+            }
+
             loadDesignData() {
                 return JSON.parse(localStorage.getItem('hrDesignData') || JSON.stringify({
                     content: {
                         candidateName: 'Manuel Weiss',
-                        candidatePosition: 'HR-Tech Consultant',
-                        candidateEmail: 'manuel.weiss@email.com',
-                        candidatePhone: '+41 44 123 45 67',
-                        candidateLocation: 'Zürich, Schweiz',
+                        candidatePosition: 'Professional Services',
+                        candidateEmail: 'weiss-manuel@gmx.de',
+                        candidatePhone: '+49 173 3993407',
+                        candidateLocation: 'Schweiz',
                         coverLetterText: 'Sehr geehrte Damen und Herren,\n\nmit großem Interesse habe ich Ihre Stellenanzeige für die Position des HR-Tech Consultants gelesen...',
                         skillsText: 'HR-Tech Beratung\nProzessoptimierung\nDigital Transformation\nRecruiting Automation\nChange Management\nData Analytics\nProject Management\nStakeholder Management'
                     },
