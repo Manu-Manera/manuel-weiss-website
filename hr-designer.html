@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR-Designer - Modulares Baukasten-System</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* HR Designer Styles */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+        }
+
+        /* Header */
+        .designer-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Main Layout */
+        .designer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Sidebar - Controls */
+        .designer-sidebar {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Color Picker */
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 40px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-picker:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Style Variants */
+        .style-variants {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .style-variant {
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: var(--white);
+        }
+
+        .style-variant:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .style-variant.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .style-variant .variant-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .style-variant .variant-desc {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Logo Upload */
+        .logo-upload {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--gray-50);
+        }
+
+        .logo-upload:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .logo-upload.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .logo-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-lg);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+        }
+
+        .logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-preview .fallback {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-400);
+        }
+
+        /* Preview Area */
+        .preview-area {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: var(--gray-50);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            background: var(--white);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .designer-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .designer-sidebar {
+                position: static;
+                order: 2;
+            }
+
+            .preview-area {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .designer-container {
+                padding: 1rem;
+            }
+
+            .designer-sidebar {
+                padding: 1.5rem;
+            }
+
+            .style-variants {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Certificate Styles */
+        .certificates-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .certificate-item {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .certificate-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .certificate-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .certificate-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 0.875rem;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .certificate-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+        }
+
+        .certificate-btn.download {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .certificate-btn.download:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        .certificate-btn.edit {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .certificate-btn.edit:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .certificate-btn.delete {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .certificate-btn.delete:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .certificate-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        .certificate-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .certificate-info-item i {
+            width: 12px;
+            color: var(--gray-400);
+        }
+
+        .certificate-preview {
+            width: 100%;
+            height: 80px;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.75rem;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .certificate-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .certificate-preview .fallback {
+            color: var(--gray-400);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .certificate-preview .fallback i {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        /* Certificate Modal */
+        .certificate-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .certificate-modal.active {
+            display: flex;
+        }
+
+        .certificate-modal-content {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .certificate-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .certificate-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .certificate-modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+
+        .certificate-modal-close:hover {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .certificate-upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--gray-50);
+            margin-bottom: 1.5rem;
+        }
+
+        .certificate-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .certificate-upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .certificate-upload-area i {
+            font-size: 2rem;
+            color: var(--gray-400);
+            margin-bottom: 0.5rem;
+        }
+
+        .certificate-upload-area p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .certificate-upload-area .file-info {
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="designer-header">
+        <div class="header-container">
+            <div class="header-title">
+                <i class="fas fa-palette"></i>
+                <h1>HR-Designer</h1>
+                <span style="color: var(--gray-500); font-size: 0.875rem;">Modulares Baukasten-System</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="resetDesign()">
+                    <i class="fas fa-undo"></i>
+                    Zurücksetzen
+                </button>
+                <button class="btn btn-primary" onclick="saveDesign()">
+                    <i class="fas fa-save"></i>
+                    Speichern
+                </button>
+                <button class="btn btn-success" onclick="previewDesign()">
+                    <i class="fas fa-eye"></i>
+                    Vorschau
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="designer-container">
+        <!-- Sidebar - Controls -->
+        <div class="designer-sidebar">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('content')">
+                    <i class="fas fa-edit"></i>
+                    Inhalt
+                </button>
+                <button class="tab" onclick="switchTab('design')">
+                    <i class="fas fa-palette"></i>
+                    Design
+                </button>
+                <button class="tab" onclick="switchTab('branding')">
+                    <i class="fas fa-building"></i>
+                    Branding
+                </button>
+            </div>
+
+            <!-- Content Tab -->
+            <div id="content-tab" class="tab-content active">
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-user"></i>
+                        Kandidaten-Informationen
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="candidateName" value="Manuel Weiss">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Position</label>
+                        <input type="text" class="form-input" id="candidatePosition" value="HR-Tech Consultant">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">E-Mail</label>
+                        <input type="email" class="form-input" id="candidateEmail" value="manuel.weiss@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <input type="tel" class="form-input" id="candidatePhone" value="+41 44 123 45 67">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Standort</label>
+                        <input type="text" class="form-input" id="candidateLocation" value="Zürich, Schweiz">
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        Anschreiben
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Anschreiben-Text</label>
+                        <textarea class="form-input form-textarea" id="coverLetterText" rows="8">Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige für die Position des HR-Tech Consultants gelesen. Als erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+
+Meine Expertise umfasst die Implementierung moderner HR-Technologien, die Optimierung von Recruiting-Prozessen und die Entwicklung innovativer Lösungen für Unternehmen aller Größenordnungen.
+
+Mit freundlichen Grüßen
+Manuel Weiss</textarea>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-cogs"></i>
+                        Kompetenzen
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Kompetenzen (eine pro Zeile)</label>
+                        <textarea class="form-input form-textarea" id="skillsText" rows="6">HR-Tech Beratung
+Prozessoptimierung
+Digital Transformation
+Recruiting Automation
+Change Management
+Data Analytics
+Project Management
+Stakeholder Management</textarea>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-certificate"></i>
+                        Zeugnisse & Dokumente
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Zeugnisse verwalten</label>
+                        <div class="certificates-container" id="certificatesContainer">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                        <button class="btn btn-secondary" onclick="addCertificate()" style="width: 100%; margin-top: 1rem;">
+                            <i class="fas fa-plus"></i>
+                            Zeugnis hinzufügen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design Tab -->
+            <div id="design-tab" class="tab-content">
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-palette"></i>
+                        Farben
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Primärfarbe</label>
+                        <div class="color-picker-group">
+                            <input type="text" class="form-input" id="primaryColor" value="#1e40af">
+                            <input type="color" class="color-picker" id="primaryColorPicker" value="#1e40af">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Sekundärfarbe</label>
+                        <div class="color-picker-group">
+                            <input type="text" class="form-input" id="secondaryColor" value="#059669">
+                            <input type="color" class="color-picker" id="secondaryColorPicker" value="#059669">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-paint-brush"></i>
+                        Style-Varianten
+                    </div>
+                    
+                    <div class="style-variants">
+                        <div class="style-variant active" data-style="swiss" onclick="selectStyle('swiss')">
+                            <div class="variant-name">Swiss</div>
+                            <div class="variant-desc">Professionell & Minimal</div>
+                        </div>
+                        <div class="style-variant" data-style="modern" onclick="selectStyle('modern')">
+                            <div class="variant-name">Modern</div>
+                            <div class="variant-desc">Trendy & Dynamisch</div>
+                        </div>
+                        <div class="style-variant" data-style="corporate" onclick="selectStyle('corporate')">
+                            <div class="variant-name">Corporate</div>
+                            <div class="variant-desc">Klassisch & Seriös</div>
+                        </div>
+                        <div class="style-variant" data-style="creative" onclick="selectStyle('creative')">
+                            <div class="variant-name">Creative</div>
+                            <div class="variant-desc">Kreativ & Innovativ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branding Tab -->
+            <div id="branding-tab" class="tab-content">
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-building"></i>
+                        Firmen-Branding
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Firmenname</label>
+                        <input type="text" class="form-input" id="companyName" value="TechConsult GmbH">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Firmenlogo</label>
+                        <div class="logo-upload" onclick="document.getElementById('logoFile').click()">
+                            <div class="logo-preview" id="logoPreview">
+                                <div class="fallback">TC</div>
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 0.875rem;">
+                                <i class="fas fa-upload"></i><br>
+                                Logo hochladen oder hier ablegen
+                            </p>
+                        </div>
+                        <input type="file" id="logoFile" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Firmen-Initialen (Fallback)</label>
+                        <input type="text" class="form-input" id="companyInitials" value="TC" maxlength="3">
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <i class="fas fa-magic"></i>
+                        KI-Branding
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Automatische Erkennung</label>
+                        <button class="btn btn-primary" onclick="detectCompanyBranding()">
+                            <i class="fas fa-robot"></i>
+                            Firmen-Branding erkennen
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Branding-Template</label>
+                        <select class="form-input" id="brandingTemplate">
+                            <option value="auto">Automatisch erkennen</option>
+                            <option value="google">Google Style</option>
+                            <option value="microsoft">Microsoft Style</option>
+                            <option value="apple">Apple Style</option>
+                            <option value="sap">SAP Style</option>
+                            <option value="siemens">Siemens Style</option>
+                            <option value="swiss">Swiss Standard</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Area -->
+        <div class="preview-area">
+            <div class="preview-header">
+                <div class="preview-title">
+                    <i class="fas fa-eye"></i>
+                    Live-Vorschau
+                </div>
+                <div class="preview-actions">
+                    <button class="btn btn-secondary" onclick="refreshPreview()">
+                        <i class="fas fa-refresh"></i>
+                        Aktualisieren
+                    </button>
+                    <button class="btn btn-primary" onclick="openPreview()">
+                        <i class="fas fa-external-link-alt"></i>
+                        In neuem Tab
+                    </button>
+                </div>
+            </div>
+            <iframe id="previewFrame" class="preview-iframe" src="bewerbung.html?id=preview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // HR Designer Class
+        class HRDesigner {
+            constructor() {
+                this.currentStyle = 'swiss';
+                this.designData = this.loadDesignData();
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadCurrentDesign();
+                this.updatePreview();
+            }
+
+            setupEventListeners() {
+                // Content inputs
+                document.getElementById('candidateName').addEventListener('input', () => this.updatePreview());
+                document.getElementById('candidatePosition').addEventListener('input', () => this.updatePreview());
+                document.getElementById('candidateEmail').addEventListener('input', () => this.updatePreview());
+                document.getElementById('candidatePhone').addEventListener('input', () => this.updatePreview());
+                document.getElementById('candidateLocation').addEventListener('input', () => this.updatePreview());
+                document.getElementById('coverLetterText').addEventListener('input', () => this.updatePreview());
+                document.getElementById('skillsText').addEventListener('input', () => this.updatePreview());
+
+                // Design inputs
+                document.getElementById('primaryColor').addEventListener('input', () => this.updatePreview());
+                document.getElementById('secondaryColor').addEventListener('input', () => this.updatePreview());
+                document.getElementById('primaryColorPicker').addEventListener('change', (e) => {
+                    document.getElementById('primaryColor').value = e.target.value;
+                    this.updatePreview();
+                });
+                document.getElementById('secondaryColorPicker').addEventListener('change', (e) => {
+                    document.getElementById('secondaryColor').value = e.target.value;
+                    this.updatePreview();
+                });
+
+                // Branding inputs
+                document.getElementById('companyName').addEventListener('input', () => this.updatePreview());
+                document.getElementById('companyInitials').addEventListener('input', () => this.updatePreview());
+                document.getElementById('brandingTemplate').addEventListener('change', () => this.updatePreview());
+
+                // Logo upload
+                document.getElementById('logoFile').addEventListener('change', (e) => this.handleLogoUpload(e));
+
+                // Drag and drop for logo
+                const logoUpload = document.querySelector('.logo-upload');
+                logoUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    logoUpload.classList.add('dragover');
+                });
+                logoUpload.addEventListener('dragleave', () => {
+                    logoUpload.classList.remove('dragover');
+                });
+                logoUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    logoUpload.classList.remove('dragover');
+                    this.handleLogoUpload(e);
+                });
+            }
+
+            loadDesignData() {
+                return JSON.parse(localStorage.getItem('hrDesignData') || JSON.stringify({
+                    content: {
+                        candidateName: 'Manuel Weiss',
+                        candidatePosition: 'HR-Tech Consultant',
+                        candidateEmail: 'manuel.weiss@email.com',
+                        candidatePhone: '+41 44 123 45 67',
+                        candidateLocation: 'Zürich, Schweiz',
+                        coverLetterText: 'Sehr geehrte Damen und Herren,\n\nmit großem Interesse habe ich Ihre Stellenanzeige für die Position des HR-Tech Consultants gelesen...',
+                        skillsText: 'HR-Tech Beratung\nProzessoptimierung\nDigital Transformation\nRecruiting Automation\nChange Management\nData Analytics\nProject Management\nStakeholder Management'
+                    },
+                    design: {
+                        primaryColor: '#1e40af',
+                        secondaryColor: '#059669',
+                        style: 'swiss'
+                    },
+                    branding: {
+                        companyName: 'TechConsult GmbH',
+                        companyInitials: 'TC',
+                        logo: null,
+                        template: 'auto'
+                    }
+                }));
+            }
+
+            loadCurrentDesign() {
+                const data = this.designData;
+                
+                // Load content
+                document.getElementById('candidateName').value = data.content.candidateName;
+                document.getElementById('candidatePosition').value = data.content.candidatePosition;
+                document.getElementById('candidateEmail').value = data.content.candidateEmail;
+                document.getElementById('candidatePhone').value = data.content.candidatePhone;
+                document.getElementById('candidateLocation').value = data.content.candidateLocation;
+                document.getElementById('coverLetterText').value = data.content.coverLetterText;
+                document.getElementById('skillsText').value = data.content.skillsText;
+
+                // Load design
+                document.getElementById('primaryColor').value = data.design.primaryColor;
+                document.getElementById('secondaryColor').value = data.design.secondaryColor;
+                document.getElementById('primaryColorPicker').value = data.design.primaryColor;
+                document.getElementById('secondaryColorPicker').value = data.design.secondaryColor;
+                this.selectStyle(data.design.style);
+
+                // Load branding
+                document.getElementById('companyName').value = data.branding.companyName;
+                document.getElementById('companyInitials').value = data.branding.companyInitials;
+                document.getElementById('brandingTemplate').value = data.branding.template;
+                
+                if (data.branding.logo) {
+                    this.updateLogoPreview(data.branding.logo);
+                }
+            }
+
+            updatePreview() {
+                // Collect current data
+                const currentData = {
+                    content: {
+                        candidateName: document.getElementById('candidateName').value,
+                        candidatePosition: document.getElementById('candidatePosition').value,
+                        candidateEmail: document.getElementById('candidateEmail').value,
+                        candidatePhone: document.getElementById('candidatePhone').value,
+                        candidateLocation: document.getElementById('candidateLocation').value,
+                        coverLetterText: document.getElementById('coverLetterText').value,
+                        skillsText: document.getElementById('skillsText').value
+                    },
+                    design: {
+                        primaryColor: document.getElementById('primaryColor').value,
+                        secondaryColor: document.getElementById('secondaryColor').value,
+                        style: this.currentStyle
+                    },
+                    branding: {
+                        companyName: document.getElementById('companyName').value,
+                        companyInitials: document.getElementById('companyInitials').value,
+                        logo: this.designData.branding.logo,
+                        template: document.getElementById('brandingTemplate').value
+                    }
+                };
+
+                // Save to localStorage
+                this.designData = currentData;
+                localStorage.setItem('hrDesignData', JSON.stringify(currentData));
+
+                // Update preview iframe
+                const iframe = document.getElementById('previewFrame');
+                iframe.src = iframe.src; // Refresh iframe
+            }
+
+            selectStyle(style) {
+                this.currentStyle = style;
+                
+                // Update active style variant
+                document.querySelectorAll('.style-variant').forEach(variant => {
+                    variant.classList.remove('active');
+                });
+                document.querySelector(`[data-style="${style}"]`).classList.add('active');
+
+                // Apply style-specific colors
+                const styleColors = this.getStyleColors(style);
+                document.getElementById('primaryColor').value = styleColors.primary;
+                document.getElementById('secondaryColor').value = styleColors.secondary;
+                document.getElementById('primaryColorPicker').value = styleColors.primary;
+                document.getElementById('secondaryColorPicker').value = styleColors.secondary;
+
+                this.updatePreview();
+            }
+
+            getStyleColors(style) {
+                const styleColors = {
+                    swiss: { primary: '#1e40af', secondary: '#059669' },
+                    modern: { primary: '#6366f1', secondary: '#8b5cf6' },
+                    corporate: { primary: '#1f2937', secondary: '#374151' },
+                    creative: { primary: '#dc2626', secondary: '#f59e0b' }
+                };
+                return styleColors[style] || styleColors.swiss;
+            }
+
+            handleLogoUpload(event) {
+                const file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+                if (!file) return;
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.designData.branding.logo = e.target.result;
+                        this.updateLogoPreview(e.target.result);
+                        this.updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Bitte wählen Sie eine Bilddatei aus.');
+                }
+            }
+
+            updateLogoPreview(logoData) {
+                const preview = document.getElementById('logoPreview');
+                if (logoData) {
+                    preview.innerHTML = `<img src="${logoData}" alt="Company Logo">`;
+                } else {
+                    preview.innerHTML = `<div class="fallback">${document.getElementById('companyInitials').value}</div>`;
+                }
+            }
+
+            async detectCompanyBranding() {
+                const companyName = document.getElementById('companyName').value;
+                if (!companyName) {
+                    alert('Bitte geben Sie zuerst einen Firmennamen ein.');
+                    return;
+                }
+
+                // Simulate AI detection
+                const branding = await this.simulateAIDetection(companyName);
+                
+                // Apply detected branding
+                document.getElementById('primaryColor').value = branding.primary;
+                document.getElementById('secondaryColor').value = branding.secondary;
+                document.getElementById('primaryColorPicker').value = branding.primary;
+                document.getElementById('secondaryColorPicker').value = branding.secondary;
+                document.getElementById('companyInitials').value = branding.initials;
+                
+                this.updateLogoPreview(null);
+                this.updatePreview();
+            }
+
+            async simulateAIDetection(companyName) {
+                // Simulate AI processing
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Return simulated branding based on company name
+                const lowerName = companyName.toLowerCase();
+                
+                if (lowerName.includes('google')) {
+                    return { primary: '#4285f4', secondary: '#34a853', initials: 'G' };
+                } else if (lowerName.includes('microsoft')) {
+                    return { primary: '#0078d4', secondary: '#00bcf2', initials: 'M' };
+                } else if (lowerName.includes('apple')) {
+                    return { primary: '#000000', secondary: '#1d1d1f', initials: '🍎' };
+                } else if (lowerName.includes('sap')) {
+                    return { primary: '#0f7b0f', secondary: '#1e7e34', initials: 'SAP' };
+                } else if (lowerName.includes('siemens')) {
+                    return { primary: '#009999', secondary: '#00cccc', initials: 'S' };
+                } else {
+                    // Default Swiss branding
+                    return { primary: '#1e40af', secondary: '#059669', initials: companyName.substring(0, 2).toUpperCase() };
+                }
+            }
+
+            saveDesign() {
+                // Design is already saved in updatePreview()
+                alert('Design erfolgreich gespeichert!');
+            }
+
+            resetDesign() {
+                if (confirm('Möchten Sie das Design wirklich zurücksetzen? Alle Änderungen gehen verloren.')) {
+                    localStorage.removeItem('hrDesignData');
+                    location.reload();
+                }
+            }
+
+            previewDesign() {
+                window.open('bewerbung.html?id=preview', '_blank');
+            }
+        }
+
+        // Global Functions
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function selectStyle(style) {
+            hrDesigner.selectStyle(style);
+        }
+
+        function detectCompanyBranding() {
+            hrDesigner.detectCompanyBranding();
+        }
+
+        function saveDesign() {
+            hrDesigner.saveDesign();
+        }
+
+        function resetDesign() {
+            hrDesigner.resetDesign();
+        }
+
+        function previewDesign() {
+            hrDesigner.previewDesign();
+        }
+
+        function refreshPreview() {
+            document.getElementById('previewFrame').src = document.getElementById('previewFrame').src;
+        }
+
+        function openPreview() {
+            window.open('bewerbung.html?id=preview', '_blank');
+        }
+
+        // Initialize HR Designer
+        let hrDesigner;
+        document.addEventListener('DOMContentLoaded', () => {
+            hrDesigner = new HRDesigner();
+        });
+    </script>
+</body>
+</html>
