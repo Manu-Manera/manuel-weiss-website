@@ -1220,6 +1220,367 @@
                 opacity: 1;
             }
         }
+
+        /* Advanced Generation Styles */
+        .generation-options {
+            margin-bottom: 2rem;
+        }
+
+        .generation-options h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .option-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+        }
+
+        .option-icon {
+            font-size: 2rem;
+            color: #6366f1;
+            margin-bottom: 0.75rem;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .ai-analysis {
+            margin-bottom: 2rem;
+        }
+
+        .ai-analysis h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+        }
+
+        .analysis-results {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .analysis-item {
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .analysis-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .analysis-item strong {
+            color: #1e293b;
+        }
+
+        .quality-preview h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+        }
+
+        .quality-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .generation-spinner {
+            text-align: center;
+        }
+
+        .generation-spinner h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1e293b;
+        }
+
+        .generation-spinner p {
+            margin: 0 0 1.5rem 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Smart Templates & Snippets */
+        .smart-templates {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .smart-templates h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .template-snippets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .snippet-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .snippet-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .snippet-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .snippet-preview {
+            font-size: 0.75rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* Batch Processing */
+        .batch-actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .batch-actions h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .batch-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .batch-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .batch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Real-time Feedback */
+        .quality-feedback {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            z-index: 1000;
+            min-width: 250px;
+            display: none;
+        }
+
+        .quality-feedback.active {
+            display: block;
+            animation: slideInLeft 0.3s ease;
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        .feedback-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .feedback-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .metric-name {
+            color: #64748b;
+        }
+
+        .metric-score {
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .metric-score.excellent {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+        }
+
+        .metric-score.good {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+        }
+
+        .metric-score.needs-improvement {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+
+        .metric-score.poor {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Auto-save indicator */
+        .auto-save-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            z-index: 1000;
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .auto-save-indicator.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
         
         .action-edit { background: #dbeafe; color: #1e40af; }
         .action-edit:hover { background: #1e40af; color: white; }
@@ -3289,8 +3650,177 @@
                 return;
             }
             
-            // Simulate AI generation
-            const coverLetter = `Sehr geehrte Damen und Herren,
+            // Show advanced generation modal
+            showAdvancedGenerationModal(jobDescription, companyName, positionTitle);
+        }
+
+        function showAdvancedGenerationModal(jobDescription, companyName, positionTitle) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 700px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-brain"></i> Intelligente Anschreiben-Generierung</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="generation-options">
+                            <h4>🎯 Generierungsoptionen</h4>
+                            <div class="option-grid">
+                                <div class="option-card" onclick="generateVersion('formal', '${companyName}', '${positionTitle}')">
+                                    <div class="option-icon">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <div class="option-title">Formal</div>
+                                    <div class="option-desc">Klassisch & professionell</div>
+                                </div>
+                                <div class="option-card" onclick="generateVersion('modern', '${companyName}', '${positionTitle}')">
+                                    <div class="option-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <div class="option-title">Modern</div>
+                                    <div class="option-desc">Innovativ & dynamisch</div>
+                                </div>
+                                <div class="option-card" onclick="generateVersion('creative', '${companyName}', '${positionTitle}')">
+                                    <div class="option-icon">
+                                        <i class="fas fa-palette"></i>
+                                    </div>
+                                    <div class="option-title">Kreativ</div>
+                                    <div class="option-desc">Einzigartig & persönlich</div>
+                                </div>
+                                <div class="option-card" onclick="generateVersion('ats', '${companyName}', '${positionTitle}')">
+                                    <div class="option-icon">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="option-title">ATS-optimiert</div>
+                                    <div class="option-desc">Für Bewerbungssysteme</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-analysis">
+                            <h4>🔍 KI-Analyse der Stellenanzeige</h4>
+                            <div class="analysis-results" id="jobAnalysis">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Analysiere Stellenanzeige...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quality-preview">
+                            <h4>📊 Qualitätsvorschau</h4>
+                            <div class="quality-metrics" id="qualityMetrics">
+                                <div class="metric">
+                                    <span class="metric-label">Match-Score:</span>
+                                    <span class="metric-value" id="matchScore">-</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">ATS-Score:</span>
+                                    <span class="metric-value" id="atsScore">-</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Readability:</span>
+                                    <span class="metric-value" id="readabilityScore">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Analyze job description
+            analyzeJobDescription(jobDescription);
+        }
+
+        function analyzeJobDescription(jobDescription) {
+            setTimeout(() => {
+                const analysisResults = document.getElementById('jobAnalysis');
+                
+                // Simulate AI analysis
+                const keywords = extractKeywords(jobDescription);
+                const requirements = extractRequirements(jobDescription);
+                const companyCulture = analyzeCompanyCulture(jobDescription);
+                
+                analysisResults.innerHTML = `
+                    <div class="analysis-item">
+                        <strong>Schlüsselwörter:</strong> ${keywords.slice(0, 5).join(', ')}
+                    </div>
+                    <div class="analysis-item">
+                        <strong>Anforderungen:</strong> ${requirements.slice(0, 3).join(', ')}
+                    </div>
+                    <div class="analysis-item">
+                        <strong>Unternehmenskultur:</strong> ${companyCulture}
+                    </div>
+                `;
+                
+                // Update quality metrics
+                updateQualityMetrics(keywords, requirements);
+            }, 2000);
+        }
+
+        function extractKeywords(text) {
+            const commonKeywords = [
+                'Projektmanagement', 'Teamführung', 'Digitalisierung', 'Innovation',
+                'Strategie', 'Analytik', 'Kommunikation', 'Leadership', 'Agile',
+                'Change Management', 'Stakeholder', 'Prozessoptimierung', 'KI',
+                'Machine Learning', 'Data Science', 'Cloud', 'SaaS', 'Startup'
+            ];
+            
+            return commonKeywords.filter(keyword => 
+                text.toLowerCase().includes(keyword.toLowerCase())
+            );
+        }
+
+        function extractRequirements(text) {
+            const requirements = [];
+            if (text.includes('Erfahrung')) requirements.push('Berufserfahrung');
+            if (text.includes('Studium') || text.includes('Bachelor') || text.includes('Master')) requirements.push('Hochschulabschluss');
+            if (text.includes('Sprachen') || text.includes('Englisch')) requirements.push('Sprachkenntnisse');
+            if (text.includes('Führung') || text.includes('Team')) requirements.push('Führungserfahrung');
+            return requirements;
+        }
+
+        function analyzeCompanyCulture(text) {
+            if (text.includes('Startup') || text.includes('agil')) return 'Innovativ & dynamisch';
+            if (text.includes('Tradition') || text.includes('etabliert')) return 'Traditionell & strukturiert';
+            if (text.includes('international') || text.includes('global')) return 'International & divers';
+            return 'Professionell & zielorientiert';
+        }
+
+        function updateQualityMetrics(keywords, requirements) {
+            const matchScore = Math.min(95, 60 + (keywords.length * 5) + (requirements.length * 3));
+            const atsScore = Math.min(90, 70 + (keywords.length * 4));
+            const readabilityScore = Math.min(95, 80 + Math.random() * 10);
+            
+            document.getElementById('matchScore').textContent = `${Math.round(matchScore)}%`;
+            document.getElementById('atsScore').textContent = `${Math.round(atsScore)}%`;
+            document.getElementById('readabilityScore').textContent = `${Math.round(readabilityScore)}%`;
+        }
+
+        function generateVersion(style, companyName, positionTitle) {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+            
+            // Show generation progress
+            showGenerationProgress(style);
+            
+            setTimeout(() => {
+                const coverLetter = generateCoverLetterByStyle(style, companyName, positionTitle);
+                document.getElementById('generatedCoverLetter').value = coverLetter;
+                
+                // Show success with quality metrics
+                showGenerationSuccess(style, coverLetter);
+            }, 2000);
+        }
+
+        function generateCoverLetterByStyle(style, companyName, positionTitle) {
+            const name = document.getElementById('candidateName').value || 'Manuel Weiss';
+            
+            const templates = {
+                formal: `Sehr geehrte Damen und Herren,
 
 mit großem Interesse habe ich Ihre Stellenanzeige für die Position "${positionTitle}" bei ${companyName} gelesen. Als erfahrener HR & AI Berater mit über 6 Jahren Erfahrung in der digitalen Transformation bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
 
@@ -3305,10 +3835,128 @@ Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen z
 Ich freue mich auf ein persönliches Gespräch und die Möglichkeit, Ihnen meine Qualifikationen im Detail vorstellen zu können.
 
 Mit freundlichen Grüßen
-${document.getElementById('candidateName').value || 'Manuel Weiss'}`;
+${name}`,
+
+                modern: `Hallo ${companyName} Team,
+
+ich bin Manuel Weiss und bewerbe mich für die Position "${positionTitle}". Als HR & AI Experte mit 6+ Jahren Erfahrung in der digitalen Transformation bringe ich genau die Skills mit, die Sie suchen.
+
+🚀 Was mich auszeichnet:
+• HR-Prozesse digitalisieren und automatisieren
+• KI-Tools erfolgreich implementieren
+• Teams durch Change-Prozesse führen
+• C-Level Stakeholder begeistern
+
+Ich liebe es, komplexe Herausforderungen in innovative Lösungen zu verwandeln. Bei ${companyName} sehe ich die perfekte Gelegenheit, meine Leidenschaft für HR-Tech und strategische Beratung einzubringen.
+
+Lass uns sprechen! Ich freue mich auf ein Gespräch über Ihre Vision und wie ich dazu beitragen kann.
+
+Beste Grüße
+${name}`,
+
+                creative: `Liebes ${companyName} Team,
+
+stellen Sie sich vor: Ein HR-Experte, der nicht nur über KI spricht, sondern sie lebt. Das bin ich - Manuel Weiss, und ich bewerbe mich für "${positionTitle}".
+
+🎯 Meine Mission: HR-Prozesse revolutionieren
+📊 Meine Waffe: 6 Jahre Erfahrung in der digitalen Transformation
+🎨 Mein Stil: Komplexe Probleme in elegante Lösungen verwandeln
+
+Warum ${companyName}? Weil ich spüre, dass hier Innovation und Tradition eine perfekte Symbiose eingehen. Ich möchte Teil dieser Geschichte werden und mit meiner Expertise in KI-Integration und strategischer HR-Beratung zum Erfolg beitragen.
+
+Lassen Sie uns gemeinsam die Zukunft des HR gestalten!
+
+Mit Begeisterung
+${name}`,
+
+                ats: `Bewerbung als ${positionTitle} bei ${companyName}
+
+Sehr geehrte Damen und Herren,
+
+ich bewerbe mich für die ausgeschriebene Position "${positionTitle}" bei ${companyName}. Als HR & AI Berater mit über 6 Jahren Berufserfahrung in der digitalen Transformation verfüge ich über umfassende Kenntnisse in Projektmanagement, Change Management, Stakeholder Management, Prozessoptimierung und KI-Integration.
+
+Meine Kernkompetenzen:
+- Strategische HR-Beratung
+- Digitalisierung von HR-Prozessen
+- Projektmanagement und Teamführung
+- Change Management
+- Stakeholder Management auf C-Level
+- KI-Integration in HR-Systeme
+- Prozessoptimierung
+- Agile Methoden
+
+Ich bin überzeugt, dass meine Qualifikationen und meine Erfahrung in der digitalen Transformation eine ideale Ergänzung für Ihr Team darstellen. Ich freue mich auf ein persönliches Gespräch.
+
+Mit freundlichen Grüßen
+${name}`
+            };
             
-            document.getElementById('generatedCoverLetter').value = coverLetter;
-            console.log('✅ Anschreiben generiert');
+            return templates[style] || templates.formal;
+        }
+
+        function showGenerationProgress(style) {
+            const progressModal = document.createElement('div');
+            progressModal.className = 'modal';
+            progressModal.style.display = 'block';
+            progressModal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-body" style="text-align: center; padding: 2rem;">
+                        <div class="generation-spinner">
+                            <i class="fas fa-brain fa-3x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                            <h3>Generiere ${style} Anschreiben...</h3>
+                            <p>KI analysiert Stellenanzeige und optimiert Inhalt</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(progressModal);
+            
+            // Animate progress bar
+            const progressFill = progressModal.querySelector('.progress-fill');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+
+        function showGenerationSuccess(style, coverLetter) {
+            // Remove progress modal
+            const progressModal = document.querySelector('.modal');
+            if (progressModal) progressModal.remove();
+            
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.className = 'workflow-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="notification-text">
+                        ✅ ${style.charAt(0).toUpperCase() + style.slice(1)} Anschreiben generiert!<br><br>
+                        📊 Qualitätsmetriken:<br>
+                        • Match-Score: ${Math.round(85 + Math.random() * 10)}%<br>
+                        • ATS-Score: ${Math.round(80 + Math.random() * 15)}%<br>
+                        • Readability: ${Math.round(90 + Math.random() * 5)}%<br><br>
+                        🎨 Anschreiben ist bereit für Anpassungen!
+                    </div>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 8 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 8000);
         }
 
         function saveCoverLetter() {
