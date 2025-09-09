@@ -242,6 +242,14 @@ class NutritionPlanner {
             if (window.aiIntegration && window.aiIntegration.apiKey) {
                 console.log('🚀 Using AI for meal plan generation...');
                 this.mealPlan = await window.aiIntegration.generateMealPlan(this.userData);
+                
+                // Generate shopping list
+                this.shoppingList = await window.aiIntegration.generateShoppingList(this.mealPlan);
+                
+                // Update statistics
+                this.updateGenerationStats();
+                
+                console.log('✅ AI meal plan generation completed successfully');
             } else {
                 console.log('📝 Using fallback meal plan generation...');
                 // Fallback to predefined meal plan
@@ -252,6 +260,7 @@ class NutritionPlanner {
             // Update UI with results
             this.updatePlanSummary();
             this.updateWeekOverview();
+            this.updateShoppingList();
             
             // Move to next step
             setTimeout(() => {
@@ -478,15 +487,78 @@ class NutritionPlanner {
         
         weekOverview.innerHTML = days.map(day => {
             const dayMeals = this.mealPlan.weekPlan[day];
-            const mealNames = dayMeals.map(meal => meal.name).join(', ');
+            const mealsList = dayMeals.map(meal => 
+                `<div class="meal-item">
+                    <strong>${meal.type}:</strong> ${meal.name}
+                    <span class="meal-calories">${meal.nutrition?.calories || 0} kcal</span>
+                    ${meal.enhanced ? '<span class="ai-badge">🤖 AI Enhanced</span>' : ''}
+                    ${meal.superfoods && meal.superfoods.length > 0 ? `<span class="superfood-badge">🌟 Superfoods</span>` : ''}
+                </div>`
+            ).join('');
             
             return `
                 <div class="day-card">
                     <div class="day-name">${day}</div>
-                    <div class="day-meals">${mealNames}</div>
+                    <div class="day-meals">${mealsList}</div>
                 </div>
             `;
         }).join('');
+    }
+    
+    updateShoppingList() {
+        const shoppingListContainer = document.getElementById('shopping-list');
+        if (!shoppingListContainer || !this.shoppingList) return;
+        
+        const categories = Object.keys(this.shoppingList);
+        if (categories.length === 0) return;
+        
+        shoppingListContainer.innerHTML = categories.map(category => {
+            const items = this.shoppingList[category];
+            const itemsList = items.map(item => 
+                `<div class="shopping-item">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-amount">${item.amount} ${item.unit}</span>
+                </div>`
+            ).join('');
+            
+            return `
+                <div class="shopping-category">
+                    <h4 class="category-name">${category}</h4>
+                    <div class="category-items">${itemsList}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    updateGenerationStats() {
+        // Update AI request counter
+        const aiRequests = parseInt(localStorage.getItem('nutrition_ai_requests') || '0') + 1;
+        localStorage.setItem('nutrition_ai_requests', aiRequests.toString());
+        
+        // Update plans generated counter
+        const plansGenerated = parseInt(localStorage.getItem('nutrition_plans_generated') || '0') + 1;
+        localStorage.setItem('nutrition_plans_generated', plansGenerated.toString());
+        
+        // Update exports today counter
+        const today = new Date().toDateString();
+        const lastExportDate = localStorage.getItem('last_export_date');
+        let exportsToday = parseInt(localStorage.getItem('nutrition_exports_today') || '0');
+        
+        if (lastExportDate !== today) {
+            exportsToday = 0;
+            localStorage.setItem('last_export_date', today);
+        }
+        
+        // Update active users (simplified)
+        const activeUsers = parseInt(localStorage.getItem('nutrition_active_users') || '0') + 1;
+        localStorage.setItem('nutrition_active_users', activeUsers.toString());
+        
+        console.log('📊 Statistics updated:', {
+            aiRequests,
+            plansGenerated,
+            exportsToday,
+            activeUsers
+        });
     }
 
     updateStepDisplay() {
