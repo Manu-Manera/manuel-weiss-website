@@ -5247,7 +5247,7 @@ ${name}`
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="analyzeJobPosting()" id="analyzeJobBtn" style="display: none;">
+                        <button class="btn btn-primary" onclick="analyzeJobPosting()" id="analyzeJobBtn">
                             <i class="fas fa-search"></i>
                             Stellenanzeige analysieren
                         </button>
@@ -5258,6 +5258,10 @@ ${name}`
                         <button class="btn btn-primary" onclick="startIntelligentWorkflow()" id="startWorkflowBtn" disabled style="display: none;">
                             <i class="fas fa-rocket"></i>
                             Workflow starten
+                        </button>
+                        <button class="btn btn-success" onclick="startIntelligentWorkflow()" id="continueWorkflowBtn">
+                            <i class="fas fa-arrow-right"></i>
+                            Weiter
                         </button>
                     </div>
                 </div>
@@ -8068,21 +8072,43 @@ Manuel Weiss</textarea>
                 const searchSection = document.getElementById('searchJobSection');
                 const analyzeBtn = document.getElementById('analyzeJobBtn');
                 const searchBtn = document.getElementById('searchJobsBtn');
+                const continueBtn = document.getElementById('continueWorkflowBtn');
                 
-                if (modeRadios.length === 0) return;
+                console.log('Setting up mode selector:', {
+                    modeRadios: modeRadios.length,
+                    manualSection: !!manualSection,
+                    searchSection: !!searchSection,
+                    analyzeBtn: !!analyzeBtn,
+                    searchBtn: !!searchBtn,
+                    continueBtn: !!continueBtn
+                });
+                
+                if (modeRadios.length === 0) {
+                    console.log('No mode radios found, setting up manually');
+                    // If no radios found, just show manual mode by default
+                    if (manualSection) manualSection.style.display = 'block';
+                    if (searchSection) searchSection.style.display = 'none';
+                    if (analyzeBtn) analyzeBtn.style.display = 'inline-block';
+                    if (searchBtn) searchBtn.style.display = 'none';
+                    if (continueBtn) continueBtn.style.display = 'inline-block';
+                    return;
+                }
                 
                 modeRadios.forEach(radio => {
                     radio.addEventListener('change', function() {
+                        console.log('Mode changed to:', this.value);
                         if (this.value === 'manual') {
                             if (manualSection) manualSection.style.display = 'block';
                             if (searchSection) searchSection.style.display = 'none';
                             if (analyzeBtn) analyzeBtn.style.display = 'inline-block';
                             if (searchBtn) searchBtn.style.display = 'none';
+                            if (continueBtn) continueBtn.style.display = 'inline-block';
                         } else if (this.value === 'search') {
                             if (manualSection) manualSection.style.display = 'none';
                             if (searchSection) searchSection.style.display = 'block';
                             if (analyzeBtn) analyzeBtn.style.display = 'none';
                             if (searchBtn) searchBtn.style.display = 'inline-block';
+                            if (continueBtn) continueBtn.style.display = 'inline-block';
                         }
                     });
                 });
@@ -8092,8 +8118,15 @@ Manuel Weiss</textarea>
                 if (manualRadio) {
                     manualRadio.checked = true;
                     manualRadio.dispatchEvent(new Event('change'));
+                } else {
+                    // Fallback: show manual mode if no radio found
+                    if (manualSection) manualSection.style.display = 'block';
+                    if (searchSection) searchSection.style.display = 'none';
+                    if (analyzeBtn) analyzeBtn.style.display = 'inline-block';
+                    if (searchBtn) searchBtn.style.display = 'none';
+                    if (continueBtn) continueBtn.style.display = 'inline-block';
                 }
-            }, 100);
+            }, 200);
         }
 
         function searchJobs() {
@@ -8115,6 +8148,15 @@ Manuel Weiss</textarea>
             setTimeout(() => {
                 const mockJobs = generateMockJobResults(keywords, location, experience, industry, preferences);
                 displayJobSearchResults(mockJobs);
+                
+                // Enable workflow start button if jobs found
+                if (mockJobs.length > 0) {
+                    const startWorkflowBtn = document.getElementById('startWorkflowBtn');
+                    if (startWorkflowBtn) {
+                        startWorkflowBtn.style.display = 'inline-block';
+                        startWorkflowBtn.disabled = false;
+                    }
+                }
             }, 2000);
         }
 
