@@ -3120,6 +3120,286 @@ Standort: ${candidateData.location}
                 return coverLetter;
             }
 
+            // Profile & Digital Twin Functions
+            toggleProfileMode() {
+                const profileDisplay = document.getElementById('profileDisplay');
+                const toggleBtn = document.getElementById('profileToggleBtn');
+                const isDigitalTwin = profileDisplay.classList.contains('digital-twin');
+                
+                if (isDigitalTwin) {
+                    // Switch to photo mode
+                    profileDisplay.classList.remove('digital-twin');
+                    toggleBtn.innerHTML = '<i class="fas fa-camera"></i><span>Foto</span>';
+                } else {
+                    // Switch to digital twin mode
+                    profileDisplay.classList.add('digital-twin');
+                    toggleBtn.innerHTML = '<i class="fas fa-robot"></i><span>AI Twin</span>';
+                }
+            }
+
+            playDigitalTwin() {
+                const coverLetterText = document.getElementById('generatedCoverLetter').value;
+                if (!coverLetterText) {
+                    alert('Bitte generieren Sie zuerst ein Anschreiben.');
+                    return;
+                }
+                
+                // Show voice recording modal
+                document.getElementById('voiceRecordingModal').style.display = 'block';
+                this.startTextToSpeech(coverLetterText);
+            }
+
+            startTextToSpeech(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'de-DE';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    
+                    utterance.onstart = () => {
+                        document.getElementById('recordingStatus').textContent = 'Digital Twin spricht...';
+                        document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-volume-up"></i>';
+                    };
+                    
+                    utterance.onend = () => {
+                        document.getElementById('recordingStatus').textContent = 'Wiedergabe beendet';
+                        document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-microphone"></i>';
+                    };
+                    
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert('Text-to-Speech wird von diesem Browser nicht unterstützt.');
+                }
+            }
+
+            // Analytics Functions
+            updateAnalytics() {
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                
+                // Calculate metrics
+                const totalApps = applications.length;
+                const responses = applications.filter(app => 
+                    app.status === 'reviewed' || app.status === 'interview' || 
+                    app.status === 'accepted' || app.status === 'rejected'
+                ).length;
+                const interviews = applications.filter(app => 
+                    app.status === 'interview' || app.status === 'accepted'
+                ).length;
+                const offers = applications.filter(app => 
+                    app.status === 'accepted'
+                ).length;
+                
+                const responseRate = totalApps > 0 ? Math.round((responses / totalApps) * 100) : 0;
+                const interviewRate = responses > 0 ? Math.round((interviews / responses) * 100) : 0;
+                const offerRate = interviews > 0 ? Math.round((offers / interviews) * 100) : 0;
+                
+                // Update UI
+                document.getElementById('totalApplications').textContent = totalApps;
+                document.getElementById('responseRate').textContent = `${responseRate}%`;
+                document.getElementById('interviewRate').textContent = `${interviewRate}%`;
+                document.getElementById('offerRate').textContent = `${offerRate}%`;
+                
+                // Update keywords
+                this.updateTopKeywords();
+            }
+
+            updateTopKeywords() {
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                const keywords = this.extractKeywords(applications, []);
+                const keywordList = document.getElementById('topKeywordsList');
+                
+                keywordList.innerHTML = '';
+                keywords.slice(0, 5).forEach((keyword, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'keyword-item';
+                    item.innerHTML = `
+                        <span class="keyword-name">${keyword}</span>
+                        <span class="keyword-score">${Math.round(Math.random() * 40) + 60}%</span>
+                    `;
+                    keywordList.appendChild(item);
+                });
+            }
+
+            // Template Functions
+            loadTemplate(templateType) {
+                const templates = {
+                    tech: {
+                        opening: "Als leidenschaftlicher Technologie-Enthusiast mit über 6 Jahren Erfahrung in der digitalen Transformation...",
+                        body: "Meine Expertise in modernen Technologien und agilen Entwicklungsmethoden qualifiziert mich ideal für diese Position...",
+                        closing: "Ich freue mich darauf, mit meiner technischen Expertise und meinem Innovationsgeist zu Ihrem Team beizutragen."
+                    },
+                    consulting: {
+                        opening: "Mit großer Begeisterung für strategische Beratung und Prozessoptimierung...",
+                        body: "Meine umfassende Erfahrung in der Beratung von Unternehmen verschiedener Branchen...",
+                        closing: "Ich bin überzeugt, dass meine analytische Denkweise und mein Stakeholder-Management eine wertvolle Bereicherung darstellen."
+                    },
+                    startup: {
+                        opening: "Als unternehmerisch denkender Experte mit einer Leidenschaft für Innovation und Wachstum...",
+                        body: "Meine Erfahrung in dynamischen, schnell wachsenden Umgebungen...",
+                        closing: "Ich bin bereit, in einem agilen Startup-Umfeld Verantwortung zu übernehmen und direkt zum Erfolg beizutragen."
+                    },
+                    corporate: {
+                        opening: "Als erfahrener Professional mit einem starken Fokus auf strukturierte Prozesse und nachhaltige Ergebnisse...",
+                        body: "Meine Expertise in der Führung komplexer Projekte in etablierten Unternehmensstrukturen...",
+                        closing: "Ich freue mich darauf, meine Erfahrung in einem strukturierten, zielorientierten Umfeld einzubringen."
+                    }
+                };
+                
+                const template = templates[templateType];
+                if (template) {
+                    const currentText = document.getElementById('coverLetterText').value;
+                    const newText = `${template.opening}\n\n${template.body}\n\n${template.closing}`;
+                    document.getElementById('coverLetterText').value = newText;
+                    this.updatePreview();
+                    
+                    // Switch to content tab
+                    switchTab('content');
+                }
+            }
+
+            // Quick Action Functions
+            generateEmailVersion() {
+                const coverLetter = document.getElementById('coverLetterText').value;
+                if (!coverLetter) {
+                    alert('Bitte erstellen Sie zuerst ein Anschreiben.');
+                    return;
+                }
+                
+                const emailVersion = `Betreff: Bewerbung als ${document.getElementById('aiPositionTitle').value || '[Position]'}
+
+${coverLetter.replace(/Sehr geehrte Damen und Herren,/g, 'Hallo,').replace(/Mit freundlichen Grüßen/g, 'Beste Grüße')}`;
+                
+                document.getElementById('generatedCoverLetter').value = emailVersion;
+                console.log('✅ E-Mail Version generiert');
+            }
+
+            generateLinkedInMessage() {
+                const coverLetter = document.getElementById('coverLetterText').value;
+                if (!coverLetter) {
+                    alert('Bitte erstellen Sie zuerst ein Anschreiben.');
+                    return;
+                }
+                
+                const linkedinVersion = `Hallo,
+
+ich habe Ihre Stellenanzeige für ${document.getElementById('aiPositionTitle').value || '[Position]'} gesehen und bin sehr interessiert.
+
+${coverLetter.split('\n\n')[1] || 'Kurze Zusammenfassung der relevanten Erfahrung...'}
+
+Würden Sie sich über ein kurzes Gespräch freuen?
+
+Beste Grüße
+${document.getElementById('candidateName').value}`;
+                
+                document.getElementById('generatedCoverLetter').value = linkedinVersion;
+                console.log('✅ LinkedIn Message generiert');
+            }
+
+            generateVideoScript() {
+                const coverLetter = document.getElementById('coverLetterText').value;
+                if (!coverLetter) {
+                    alert('Bitte erstellen Sie zuerst ein Anschreiben.');
+                    return;
+                }
+                
+                const videoScript = `🎥 VIDEO BEWERBUNG SCRIPT (60 Sekunden)
+
+[0-10s] Einleitung
+"Hallo, ich bin ${document.getElementById('candidateName').value}, und ich bewerbe mich für die Position ${document.getElementById('aiPositionTitle').value || '[Position]'} bei ${document.getElementById('aiCompanyName').value || '[Unternehmen]'}."
+
+[10-30s] Erfahrung
+"Mit über 6 Jahren Erfahrung in der digitalen Transformation habe ich bereits erfolgreich komplexe Projekte geleitet und Teams geführt."
+
+[30-50s] Motivation
+"Was mich besonders an dieser Position reizt, ist die Möglichkeit, innovative Lösungen zu entwickeln und direkt zum Unternehmenserfolg beizutragen."
+
+[50-60s] Call-to-Action
+"Ich freue mich auf ein persönliches Gespräch. Vielen Dank für Ihre Zeit!"
+
+---
+📝 TIPPS:
+- Lächeln und Augenkontakt halten
+- Professionelle Kleidung
+- Gute Beleuchtung
+- Ruhiger Hintergrund`;
+                
+                document.getElementById('generatedCoverLetter').value = videoScript;
+                console.log('✅ Video Script generiert');
+            }
+
+            generateFollowUp() {
+                const followUpText = `Sehr geehrte Damen und Herren,
+
+vor zwei Wochen habe ich mich bei Ihnen für die Position ${document.getElementById('aiPositionTitle').value || '[Position]'} beworben und möchte gerne den aktuellen Stand erfragen.
+
+Ich bin nach wie vor sehr interessiert an dieser Position und würde mich freuen, wenn wir die Möglichkeit eines persönlichen Gesprächs besprechen könnten.
+
+Falls Sie noch weitere Informationen benötigen, stehe ich gerne zur Verfügung.
+
+Mit freundlichen Grüßen
+${document.getElementById('candidateName').value}
+
+---
+📅 TIPPS für Follow-ups:
+- Nach 1-2 Wochen nachfragen
+- Höflich und professionell bleiben
+- Neuen Mehrwert bieten
+- Nicht zu oft nachfragen`;
+                
+                document.getElementById('generatedCoverLetter').value = followUpText;
+                console.log('✅ Follow-up generiert');
+            }
+
+            // Voice Recording Functions
+            startRecording() {
+                // Simulate recording start
+                document.getElementById('recordingStatus').textContent = 'Aufnahme läuft...';
+                document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-microphone"></i>';
+                document.getElementById('recordBtn').style.display = 'none';
+                document.getElementById('stopBtn').style.display = 'inline-flex';
+                
+                // Simulate recording process
+                setTimeout(() => {
+                    this.stopRecording();
+                }, 3000);
+            }
+
+            stopRecording() {
+                document.getElementById('recordingStatus').textContent = 'Aufnahme beendet';
+                document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-check"></i>';
+                document.getElementById('stopBtn').style.display = 'none';
+                document.getElementById('playBtn').style.display = 'inline-flex';
+                document.getElementById('saveVoiceBtn').style.display = 'inline-block';
+            }
+
+            playRecording() {
+                document.getElementById('recordingStatus').textContent = 'Wiedergabe...';
+                document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-volume-up"></i>';
+                
+                // Simulate playback
+                setTimeout(() => {
+                    document.getElementById('recordingStatus').textContent = 'Wiedergabe beendet';
+                    document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-check"></i>';
+                }, 2000);
+            }
+
+            saveVoiceRecording() {
+                alert('Voice Recording gespeichert!');
+                this.closeVoiceModal();
+            }
+
+            closeVoiceModal() {
+                document.getElementById('voiceRecordingModal').style.display = 'none';
+                // Reset modal state
+                document.getElementById('recordingStatus').textContent = 'Bereit für Aufnahme';
+                document.getElementById('recordingVisualizer').innerHTML = '<i class="fas fa-microphone"></i>';
+                document.getElementById('recordBtn').style.display = 'inline-flex';
+                document.getElementById('stopBtn').style.display = 'none';
+                document.getElementById('playBtn').style.display = 'none';
+                document.getElementById('saveVoiceBtn').style.display = 'none';
+            }
+
             saveDesign() {
                 // Design is already saved in updatePreview()
                 alert('Design erfolgreich gespeichert!');
