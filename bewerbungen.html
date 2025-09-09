@@ -360,6 +360,9 @@
         .action-view { background: #f3e8ff; color: #7c3aed; }
         .action-view:hover { background: #7c3aed; color: white; }
         
+        .action-share { background: #ecfdf5; color: #059669; }
+        .action-share:hover { background: #059669; color: white; }
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -683,6 +686,105 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+        }
+        
+        /* Share Modal Styles */
+        .share-content {
+            padding: 1rem 0;
+        }
+        
+        .application-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .application-preview h4 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .application-preview p {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .share-option label {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .url-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .url-container input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            background: #f8fafc;
+        }
+        
+        .copy-url-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-url-btn:hover {
+            background: #4f46e5;
+        }
+        
+        .copy-email-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            align-self: flex-start;
+        }
+        
+        .copy-email-btn:hover {
+            background: #059669;
+        }
+        
+        .share-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
         }
         
         /* Responsive Design */
@@ -1027,6 +1129,50 @@
         </div>
     </div>
 
+    <!-- Share Application Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-share-alt"></i> HR-Link teilen</h3>
+                <button class="close-btn" onclick="closeModal('shareModal')">&times;</button>
+            </div>
+            
+            <div class="share-content">
+                <div class="application-preview">
+                    <h4 id="shareApplicationTitle">-</h4>
+                    <p id="shareApplicationCompany">-</p>
+                </div>
+                
+                <div class="share-options">
+                    <div class="share-option">
+                        <label for="shareUrl">HR-Link:</label>
+                        <div class="url-container">
+                            <input type="text" id="shareUrl" readonly>
+                            <button class="copy-url-btn" onclick="copyShareUrl()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="share-option">
+                        <label for="shareEmail">E-Mail-Vorlage:</label>
+                        <textarea id="shareEmail" rows="6" readonly></textarea>
+                        <button class="copy-email-btn" onclick="copyEmailTemplate()">
+                            <i class="fas fa-copy"></i> E-Mail kopieren
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="share-actions">
+                    <button class="btn-secondary" onclick="closeModal('shareModal')">Schließen</button>
+                    <button class="btn-primary" onclick="openEmailClient()">
+                        <i class="fas fa-envelope"></i> E-Mail öffnen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Applications Management
@@ -1153,9 +1299,12 @@
                         </div>
                         ${app.notes ? `<div class="application-notes" style="margin-bottom: 1rem; color: #64748b; font-size: 0.875rem;">${app.notes}</div>` : ''}
                         <div class="application-actions">
-                            <div class="action-icon action-view" onclick="viewApplication(${app.id})" title="Ansehen">
-                                <i class="fas fa-eye"></i>
-                            </div>
+                        <div class="action-icon action-view" onclick="viewApplication(${app.id})" title="Ansehen">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="action-icon action-share" onclick="shareApplication(${app.id})" title="HR-Link teilen">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
                             <div class="action-icon action-edit" onclick="editApplication(${app.id})" title="Bearbeiten">
                                 <i class="fas fa-edit"></i>
                             </div>
@@ -1522,6 +1671,94 @@ Manuel Weiss`;
                 document.body.removeChild(textArea);
                 alert('Anschreiben wurde in die Zwischenablage kopiert!');
             });
+        }
+
+        // Share Application Functions
+        function shareApplication(id) {
+            const application = applicationsManager.applications.find(app => app.id === id);
+            if (!application) return;
+
+            // Update modal content
+            document.getElementById('shareApplicationTitle').textContent = application.position;
+            document.getElementById('shareApplicationCompany').textContent = application.company;
+
+            // Generate HR link
+            const baseUrl = window.location.origin + window.location.pathname.replace('bewerbungen.html', '');
+            const hrLink = `${baseUrl}bewerbung.html?id=${application.id}`;
+            document.getElementById('shareUrl').value = hrLink;
+
+            // Generate email template
+            const emailTemplate = generateEmailTemplate(application, hrLink);
+            document.getElementById('shareEmail').value = emailTemplate;
+
+            // Open modal
+            applicationsManager.openModal('shareModal');
+        }
+
+        function generateEmailTemplate(application, hrLink) {
+            return `Betreff: Bewerbung für ${application.position} - Manuel Weiss
+
+Sehr geehrte Damen und Herren,
+
+vielen Dank für Ihr Interesse an meiner Bewerbung für die Position "${application.position}" bei ${application.company}.
+
+Ich freue mich, Ihnen meine vollständige Bewerbungsunterlagen über den folgenden Link zur Verfügung zu stellen:
+
+${hrLink}
+
+Diese Seite enthält:
+• Mein persönliches Anschreiben
+• Detaillierte Informationen zu meiner Berufserfahrung
+• Meine Qualifikationen und Kompetenzen
+• Kontaktmöglichkeiten
+• Download-Links für weitere Unterlagen
+
+Die Seite ist speziell für HR-Mitarbeiter optimiert und bietet eine übersichtliche Darstellung aller relevanten Informationen.
+
+Bei Fragen stehe ich Ihnen gerne zur Verfügung.
+
+Mit freundlichen Grüßen
+Manuel Weiss
+
+---
+Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Sie: ${hrLink}`;
+        }
+
+        function copyShareUrl() {
+            const urlInput = document.getElementById('shareUrl');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                alert('HR-Link wurde in die Zwischenablage kopiert!');
+            }).catch(() => {
+                // Fallback
+                document.execCommand('copy');
+                alert('HR-Link wurde in die Zwischenablage kopiert!');
+            });
+        }
+
+        function copyEmailTemplate() {
+            const emailTextarea = document.getElementById('shareEmail');
+            emailTextarea.select();
+            emailTextarea.setSelectionRange(0, 99999);
+            
+            navigator.clipboard.writeText(emailTextarea.value).then(() => {
+                alert('E-Mail-Vorlage wurde in die Zwischenablage kopiert!');
+            }).catch(() => {
+                // Fallback
+                document.execCommand('copy');
+                alert('E-Mail-Vorlage wurde in die Zwischenablage kopiert!');
+            });
+        }
+
+        function openEmailClient() {
+            const emailTemplate = document.getElementById('shareEmail').value;
+            const subject = `Bewerbung für ${document.getElementById('shareApplicationTitle').textContent} - Manuel Weiss`;
+            const body = encodeURIComponent(emailTemplate);
+            
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
+            window.open(mailtoLink);
         }
 
         // Close modal when clicking outside

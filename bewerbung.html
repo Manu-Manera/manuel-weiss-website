@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbung - Manuel Weiss</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Application Page Specific Styles */
+        .application-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem 0;
+        }
+        
+        .application-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .application-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .application-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        
+        .application-header .subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        
+        .application-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .info-card h3 {
+            color: #1e293b;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .application-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .content-section {
+            margin-bottom: 3rem;
+        }
+        
+        .content-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .content-section h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .content-section h2 i {
+            color: #6366f1;
+        }
+        
+        .content-section p {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        
+        .content-section ul {
+            color: #64748b;
+            line-height: 1.7;
+            padding-left: 1.5rem;
+        }
+        
+        .content-section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .skill-item {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            color: #1e293b;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-item:hover {
+            border-color: #6366f1;
+            background: #f8fafc;
+        }
+        
+        .experience-item {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .experience-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .experience-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .experience-company {
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .experience-date {
+            color: #64748b;
+            font-size: 0.875rem;
+            background: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+        
+        .experience-description {
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .contact-section {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .contact-section h2 {
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            margin-bottom: 2rem;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .contact-item i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .contact-item span {
+            font-weight: 500;
+        }
+        
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        
+        .contact-item a:hover {
+            opacity: 1;
+        }
+        
+        .download-section {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .tracking-info {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .application-container {
+                padding: 0 1rem;
+            }
+            
+            .application-header {
+                padding: 2rem 1rem;
+            }
+            
+            .application-header h1 {
+                font-size: 2rem;
+            }
+            
+            .application-content {
+                padding: 2rem 1rem;
+            }
+            
+            .contact-section {
+                padding: 2rem 1rem;
+            }
+            
+            .experience-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Application Page -->
+    <section class="application-page">
+        <div class="application-container">
+            <!-- Header -->
+            <div class="application-header">
+                <h1>Manuel Weiss</h1>
+                <p class="subtitle" id="applicationSubtitle">Bewerbung für die Position</p>
+                
+                <div class="application-info">
+                    <div class="info-card">
+                        <h3>Position</h3>
+                        <p id="positionTitle">-</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Unternehmen</h3>
+                        <p id="companyName">-</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Bewerbungsdatum</h3>
+                        <p id="applicationDate">-</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Status</h3>
+                        <p id="applicationStatus">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Content -->
+            <div class="application-content">
+                <!-- Cover Letter Section -->
+                <div class="content-section">
+                    <h2><i class="fas fa-file-alt"></i> Anschreiben</h2>
+                    <div id="coverLetterContent">
+                        <!-- Cover letter will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- About Me Section -->
+                <div class="content-section">
+                    <h2><i class="fas fa-user"></i> Über mich</h2>
+                    <p>Ich bin ein erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen. Meine Leidenschaft liegt darin, Unternehmen dabei zu unterstützen, ihre HR-Abteilungen zu modernisieren und effizienter zu gestalten.</p>
+                    <p>Durch meine analytische Denkweise und meine Fähigkeit, komplexe Systeme zu verstehen und zu optimieren, habe ich bereits zahlreiche HR-Transformationen erfolgreich begleitet und dabei messbare Verbesserungen erzielt.</p>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="content-section">
+                    <h2><i class="fas fa-cogs"></i> Kompetenzen</h2>
+                    <div class="skills-grid">
+                        <div class="skill-item">HR-Tech Beratung</div>
+                        <div class="skill-item">Digitale Transformation</div>
+                        <div class="skill-item">Prozessoptimierung</div>
+                        <div class="skill-item">HR-Systeme</div>
+                        <div class="skill-item">Change Management</div>
+                        <div class="skill-item">Stakeholder Management</div>
+                        <div class="skill-item">Projektmanagement</div>
+                        <div class="skill-item">Agile Methoden</div>
+                        <div class="skill-item">IT-Systeme</div>
+                        <div class="skill-item">Kundenberatung</div>
+                        <div class="skill-item">Wirtschaftsinformatik</div>
+                        <div class="skill-item">Systemintegration</div>
+                    </div>
+                </div>
+
+                <!-- Experience Section -->
+                <div class="content-section">
+                    <h2><i class="fas fa-briefcase"></i> Berufserfahrung</h2>
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <div class="experience-title">Senior HR-Tech Consultant</div>
+                                <div class="experience-company">Manuel Weiss Professional Services</div>
+                            </div>
+                            <div class="experience-date">2021 - Heute</div>
+                        </div>
+                        <div class="experience-description">
+                            Beratung von Unternehmen bei der digitalen Transformation ihrer HR-Prozesse. Entwicklung und Implementierung von HR-Tech-Lösungen, die zu einer 30%igen Steigerung der HR-Effizienz führen. Spezialisierung auf moderne HR-Systeme und Prozessoptimierung.
+                        </div>
+                    </div>
+                    
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <div class="experience-title">HR-Tech Consultant</div>
+                                <div class="experience-company">Digital HR Solutions GmbH</div>
+                            </div>
+                            <div class="experience-date">2019 - 2021</div>
+                        </div>
+                        <div class="experience-description">
+                            Beratung von mittelständischen Unternehmen bei der Einführung von HR-Systemen. Projektleitung für HR-Digitalisierungsprojekte mit Budgets bis zu 500.000€. Erfolgreiche Implementierung von Workday, SAP SuccessFactors und anderen HR-Tech-Lösungen.
+                        </div>
+                    </div>
+                    
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <div class="experience-title">IT-Systemkaufmann</div>
+                                <div class="experience-company">Deutsche Telekom AG</div>
+                            </div>
+                            <div class="experience-date">2015 - 2018</div>
+                        </div>
+                        <div class="experience-description">
+                            Duale Ausbildung im Bereich IT-Systeme und -Dienstleistungen. Praktische Erfahrung in IT-Support, Kundenberatung und Projektmanagement. Spezialisierung auf HR-relevante IT-Systeme und deren Integration.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education Section -->
+                <div class="content-section">
+                    <h2><i class="fas fa-graduation-cap"></i> Ausbildung</h2>
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <div class="experience-title">Bachelor of Science in Wirtschaftsinformatik</div>
+                                <div class="experience-company">Hochschule München</div>
+                            </div>
+                            <div class="experience-date">2018 - 2021</div>
+                        </div>
+                        <div class="experience-description">
+                            Schwerpunkt: HR-Informationssysteme und digitale Transformation. Abschlussnote: 1,7. Bachelorarbeit zum Thema "Digitale Transformation in der Personalabteilung".
+                        </div>
+                    </div>
+                    
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div>
+                                <div class="experience-title">Ausbildung zum IT-Systemkaufmann</div>
+                                <div class="experience-company">Deutsche Telekom AG</div>
+                            </div>
+                            <div class="experience-date">2015 - 2018</div>
+                        </div>
+                        <div class="experience-description">
+                            Duale Ausbildung im Bereich IT-Systeme und -Dienstleistungen mit praktischer Erfahrung in verschiedenen Abteilungen. Abschlussnote: 1,4.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="contact-section">
+                <h2><i class="fas fa-envelope"></i> Kontakt</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>E-Mail</span>
+                        <a href="mailto:manuel.weiss@email.com">manuel.weiss@email.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Telefon</span>
+                        <a href="tel:+49123456789">+49 123 456 789</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Standort</span>
+                        <span>München, Deutschland</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <span>LinkedIn</span>
+                        <a href="https://linkedin.com/in/manuel-weiss" target="_blank">linkedin.com/in/manuel-weiss</a>
+                    </div>
+                </div>
+                
+                <div class="download-section">
+                    <a href="Manuel_Weiss_CV.pdf" class="download-btn" download>
+                        <i class="fas fa-download"></i>
+                        <span>Lebenslauf herunterladen</span>
+                    </a>
+                    <a href="bewerbungsmappe.html" class="download-btn">
+                        <i class="fas fa-folder"></i>
+                        <span>Bewerbungsmappe ansehen</span>
+                    </a>
+                </div>
+                
+                <div class="tracking-info">
+                    <i class="fas fa-eye"></i>
+                    Diese Seite wurde <span id="viewCount">0</span> mal angesehen
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Application Data Management
+        class ApplicationPageManager {
+            constructor() {
+                this.applicationId = this.getApplicationIdFromURL();
+                this.init();
+            }
+
+            init() {
+                this.loadApplicationData();
+                this.trackView();
+            }
+
+            getApplicationIdFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('id');
+            }
+
+            loadApplicationData() {
+                if (!this.applicationId) {
+                    this.showError('Keine Bewerbungs-ID gefunden');
+                    return;
+                }
+
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                const application = applications.find(app => app.id == this.applicationId);
+
+                if (!application) {
+                    this.showError('Bewerbung nicht gefunden');
+                    return;
+                }
+
+                this.displayApplication(application);
+            }
+
+            displayApplication(application) {
+                // Update header information
+                document.getElementById('positionTitle').textContent = application.position;
+                document.getElementById('companyName').textContent = application.company;
+                document.getElementById('applicationDate').textContent = new Date(application.date).toLocaleDateString('de-DE');
+                document.getElementById('applicationStatus').textContent = this.getStatusText(application.status);
+                
+                // Update page title
+                document.title = `Bewerbung ${application.position} - ${application.company} - Manuel Weiss`;
+                
+                // Update subtitle
+                document.getElementById('applicationSubtitle').textContent = `Bewerbung für ${application.position} bei ${application.company}`;
+
+                // Load cover letter if available
+                this.loadCoverLetter(application);
+            }
+
+            loadCoverLetter(application) {
+                // Try to find a saved cover letter for this application
+                const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                const matchingLetter = coverLetters.find(letter => 
+                    letter.company.toLowerCase() === application.company.toLowerCase() &&
+                    letter.position.toLowerCase() === application.position.toLowerCase()
+                );
+
+                if (matchingLetter) {
+                    document.getElementById('coverLetterContent').innerHTML = 
+                        `<div style="white-space: pre-wrap; line-height: 1.6;">${matchingLetter.content}</div>`;
+                } else {
+                    // Generate a default cover letter
+                    const defaultLetter = this.generateDefaultCoverLetter(application);
+                    document.getElementById('coverLetterContent').innerHTML = 
+                        `<div style="white-space: pre-wrap; line-height: 1.6;">${defaultLetter}</div>`;
+                }
+            }
+
+            generateDefaultCoverLetter(application) {
+                return `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige für ${application.position} bei ${application.company} gelesen. Als erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+
+In meiner bisherigen Tätigkeit habe ich erfolgreich Unternehmen bei der Modernisierung ihrer HR-Abteilungen unterstützt und dabei messbare Verbesserungen erzielt. Meine Expertise in HR-Systemen wie Workday und SAP SuccessFactors sowie meine analytische Denkweise haben mir dabei geholfen, komplexe HR-Transformationen erfolgreich umzusetzen.
+
+Besonders reizt mich an dieser Position die Möglichkeit, innovative HR-Tech-Lösungen zu entwickeln und dabei von einem dynamischen Team zu lernen. Ich bringe nicht nur fachliche Expertise in der HR-Digitalisierung mit, sondern auch die Leidenschaft, kontinuierlich dazuzulernen und mich neuen Herausforderungen zu stellen.
+
+Gerne würde ich in einem persönlichen Gespräch erläutern, wie ich mit meinen Fähigkeiten und meiner Motivation zum Erfolg Ihres Unternehmens beitragen kann.
+
+Mit freundlichen Grüßen
+Manuel Weiss`;
+            }
+
+            getStatusText(status) {
+                const statusMap = {
+                    'sent': 'Gesendet',
+                    'reviewed': 'In Bearbeitung',
+                    'interview': 'Interview',
+                    'accepted': 'Angenommen',
+                    'rejected': 'Abgelehnt'
+                };
+                return statusMap[status] || status;
+            }
+
+            trackView() {
+                if (!this.applicationId) return;
+
+                const viewKey = `application_views_${this.applicationId}`;
+                const currentViews = parseInt(localStorage.getItem(viewKey) || '0');
+                const newViews = currentViews + 1;
+                
+                localStorage.setItem(viewKey, newViews.toString());
+                document.getElementById('viewCount').textContent = newViews;
+
+                // Also track in application data
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                const application = applications.find(app => app.id == this.applicationId);
+                if (application) {
+                    application.views = newViews;
+                    application.lastViewed = new Date().toISOString();
+                    localStorage.setItem('applications', JSON.stringify(applications));
+                }
+            }
+
+            showError(message) {
+                document.querySelector('.application-container').innerHTML = `
+                    <div style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ef4444; margin-bottom: 2rem;"></i>
+                        <h2 style="color: #1e293b; margin-bottom: 1rem;">Fehler</h2>
+                        <p style="color: #64748b; font-size: 1.1rem;">${message}</p>
+                        <a href="bewerbungen.html" style="display: inline-block; margin-top: 2rem; padding: 1rem 2rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                            Zurück zu Bewerbungen
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ApplicationPageManager();
+        });
+    </script>
+</body>
+</html>
