@@ -925,6 +925,9 @@
             border-radius: 12px;
             padding: 1.5rem;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         
         .application-card:hover {
@@ -937,6 +940,39 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .company-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+
+        .company-logo-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .application-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
         }
         
         .application-info h3 {
@@ -2290,6 +2326,243 @@
         .progress-step span {
             font-size: 0.75rem;
             color: #6b7280;
+        }
+
+        /* Job Posting Modal Styles */
+        .job-posting-modal {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .job-posting-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .job-posting-logo {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px;
+        }
+
+        .job-posting-logo-placeholder {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .job-posting-info h2 {
+            margin: 0 0 0.5rem 0;
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .job-posting-info .company-name {
+            color: #6366f1;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-posting-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .job-meta-item i {
+            color: #6366f1;
+            width: 16px;
+        }
+
+        .job-posting-content {
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .job-posting-content h3 {
+            color: #1e293b;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+        }
+
+        .job-posting-content p {
+            color: #374151;
+            line-height: 1.6;
+            margin: 0 0 1rem 0;
+        }
+
+        .job-posting-content ul {
+            color: #374151;
+            line-height: 1.6;
+            margin: 0 0 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .job-posting-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .job-requirements {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-requirements h4 {
+            color: #92400e;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .job-requirements ul {
+            color: #92400e;
+            font-size: 0.875rem;
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .job-benefits {
+            background: #dcfce7;
+            border: 1px solid #10b981;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-benefits h4 {
+            color: #065f46;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .job-benefits ul {
+            color: #065f46;
+            font-size: 0.875rem;
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .job-actions .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            border: 1px solid #6366f1;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border: 1px solid #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        .job-match-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .job-match-indicator.low {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .job-match-indicator.medium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .job-match-indicator.high {
+            background: linear-gradient(135deg, #10b981, #059669);
         }
 
         /* Responsive adjustments */
@@ -6175,38 +6448,48 @@ ${name}`
             container.innerHTML = filteredApplications.map(app => {
                 const isNew = this.isNewApplication(app);
                 const cardClass = isNew ? 'application-card new-application' : 'application-card';
+                const companyLogo = this.getCompanyLogo(app.company);
+                const companyInitials = this.getCompanyInitials(app.company);
                 
                 return `
                     <div class="${cardClass}" data-application-id="${app.id}">
-                        <div class="application-header">
-                            <div class="application-info">
-                                <h3>${app.company}</h3>
-                                <p>${app.position}</p>
-                                ${app.source === 'ai-generated' ? '<span style="font-size: 0.75rem; color: #6366f1; font-weight: 500;">🤖 KI-generiert</span>' : ''}
-                            </div>
-                            <div class="application-status status-${app.status}" onclick="showStatusDropdown(${app.id}, '${app.status}')" title="Status ändern">
-                                ${this.getStatusText(app.status)}
-                                <i class="fas fa-chevron-down status-arrow"></i>
-                            </div>
+                        ${companyLogo ? 
+                            `<img src="${companyLogo}" alt="${app.company}" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : 
+                            ''
+                        }
+                        <div class="company-logo-placeholder" style="display: ${companyLogo ? 'none' : 'flex'};">
+                            ${companyInitials}
                         </div>
-                        <div class="application-details">
-                            <div class="detail-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>${new Date(app.date).toLocaleDateString('de-DE')}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-clock"></i>
-                                <span>${this.getTimeAgo(app.date)}</span>
-                            </div>
-                            ${app.views > 0 ? `
-                                <div class="detail-item">
-                                    <i class="fas fa-eye"></i>
-                                    <span>${app.views} Aufrufe</span>
+                        <div class="application-content">
+                            <div class="application-header">
+                                <div class="application-info">
+                                    <h3>${app.company}</h3>
+                                    <p>${app.position}</p>
+                                    ${app.source === 'ai-generated' ? '<span style="font-size: 0.75rem; color: #6366f1; font-weight: 500;">🤖 KI-generiert</span>' : ''}
                                 </div>
-                            ` : ''}
-                        </div>
-                        ${app.notes ? `<div class="application-notes" style="margin-bottom: 1rem; color: #64748b; font-size: 0.875rem;">${app.notes}</div>` : ''}
-                        <div class="application-actions">
+                                <div class="application-status status-${app.status}" onclick="showStatusDropdown(${app.id}, '${app.status}')" title="Status ändern">
+                                    ${this.getStatusText(app.status)}
+                                    <i class="fas fa-chevron-down status-arrow"></i>
+                                </div>
+                            </div>
+                            <div class="application-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>${new Date(app.date).toLocaleDateString('de-DE')}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${this.getTimeAgo(app.date)}</span>
+                                </div>
+                                ${app.views > 0 ? `
+                                    <div class="detail-item">
+                                        <i class="fas fa-eye"></i>
+                                        <span>${app.views} Aufrufe</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            ${app.notes ? `<div class="application-notes" style="margin-bottom: 1rem; color: #64748b; font-size: 0.875rem;">${app.notes}</div>` : ''}
+                            <div class="application-actions">
                             <div class="action-icon action-view" onclick="viewApplication(${app.id})" title="Ansehen">
                                 <i class="fas fa-eye"></i>
                             </div>
@@ -6216,11 +6499,12 @@ ${name}`
                             <div class="action-icon action-edit" onclick="editApplication(${app.id})" title="Bearbeiten">
                                 <i class="fas fa-edit"></i>
                             </div>
-                            <div class="action-icon action-designer" onclick="openInDesigner(${app.id})" title="Mit Designer bearbeiten">
-                                <i class="fas fa-palette"></i>
-                            </div>
-                            <div class="action-icon action-delete" onclick="deleteApplication(${app.id})" title="Löschen">
-                                <i class="fas fa-trash"></i>
+                                <div class="action-icon action-designer" onclick="openInDesigner(${app.id})" title="Mit Designer bearbeiten">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <div class="action-icon action-delete" onclick="deleteApplication(${app.id})" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -6249,6 +6533,195 @@ ${name}`
                 { value: 'accepted', text: 'Zusage', color: '#10b981' },
                 { value: 'rejected', text: 'Abgelehnt', color: '#ef4444' }
             ];
+        }
+
+        getCompanyLogo(companyName) {
+            // Known company logos
+            const companyLogos = {
+                'Google': 'https://logo.clearbit.com/google.com',
+                'Microsoft': 'https://logo.clearbit.com/microsoft.com',
+                'Apple': 'https://logo.clearbit.com/apple.com',
+                'Amazon': 'https://logo.clearbit.com/amazon.com',
+                'Meta': 'https://logo.clearbit.com/meta.com',
+                'Netflix': 'https://logo.clearbit.com/netflix.com',
+                'Spotify': 'https://logo.clearbit.com/spotify.com',
+                'Uber': 'https://logo.clearbit.com/uber.com',
+                'Airbnb': 'https://logo.clearbit.com/airbnb.com',
+                'Tesla': 'https://logo.clearbit.com/tesla.com',
+                'SAP': 'https://logo.clearbit.com/sap.com',
+                'Siemens': 'https://logo.clearbit.com/siemens.com',
+                'BMW': 'https://logo.clearbit.com/bmw.com',
+                'Mercedes-Benz': 'https://logo.clearbit.com/mercedes-benz.com',
+                'Volkswagen': 'https://logo.clearbit.com/volkswagen.com',
+                'Audi': 'https://logo.clearbit.com/audi.com',
+                'Porsche': 'https://logo.clearbit.com/porsche.com',
+                'Adidas': 'https://logo.clearbit.com/adidas.com',
+                'Puma': 'https://logo.clearbit.com/puma.com',
+                'Nike': 'https://logo.clearbit.com/nike.com',
+                'Deutsche Bank': 'https://logo.clearbit.com/deutsche-bank.com',
+                'Commerzbank': 'https://logo.clearbit.com/commerzbank.com',
+                'Allianz': 'https://logo.clearbit.com/allianz.com',
+                'Munich Re': 'https://logo.clearbit.com/munichre.com',
+                'Lufthansa': 'https://logo.clearbit.com/lufthansa.com',
+                'Deutsche Bahn': 'https://logo.clearbit.com/deutschebahn.com',
+                'Telekom': 'https://logo.clearbit.com/telekom.de',
+                'Vodafone': 'https://logo.clearbit.com/vodafone.com',
+                'O2': 'https://logo.clearbit.com/o2online.de',
+                'Zalando': 'https://logo.clearbit.com/zalando.com',
+                'Rocket Internet': 'https://logo.clearbit.com/rocket-internet.com',
+                'Delivery Hero': 'https://logo.clearbit.com/deliveryhero.com',
+                'HelloFresh': 'https://logo.clearbit.com/hellofresh.com',
+                'N26': 'https://logo.clearbit.com/n26.com',
+                'Revolut': 'https://logo.clearbit.com/revolut.com',
+                'Klarna': 'https://logo.clearbit.com/klarna.com',
+                'Shopify': 'https://logo.clearbit.com/shopify.com',
+                'Stripe': 'https://logo.clearbit.com/stripe.com',
+                'PayPal': 'https://logo.clearbit.com/paypal.com',
+                'GitHub': 'https://logo.clearbit.com/github.com',
+                'GitLab': 'https://logo.clearbit.com/gitlab.com',
+                'Atlassian': 'https://logo.clearbit.com/atlassian.com',
+                'Slack': 'https://logo.clearbit.com/slack.com',
+                'Zoom': 'https://logo.clearbit.com/zoom.us',
+                'Salesforce': 'https://logo.clearbit.com/salesforce.com',
+                'HubSpot': 'https://logo.clearbit.com/hubspot.com',
+                'Mailchimp': 'https://logo.clearbit.com/mailchimp.com',
+                'Canva': 'https://logo.clearbit.com/canva.com',
+                'Figma': 'https://logo.clearbit.com/figma.com',
+                'Notion': 'https://logo.clearbit.com/notion.so',
+                'Airtable': 'https://logo.clearbit.com/airtable.com',
+                'Miro': 'https://logo.clearbit.com/miro.com',
+                'Trello': 'https://logo.clearbit.com/trello.com',
+                'Asana': 'https://logo.clearbit.com/asana.com',
+                'Monday.com': 'https://logo.clearbit.com/monday.com',
+                'Jira': 'https://logo.clearbit.com/atlassian.com',
+                'Confluence': 'https://logo.clearbit.com/atlassian.com',
+                'Bitbucket': 'https://logo.clearbit.com/bitbucket.org',
+                'Docker': 'https://logo.clearbit.com/docker.com',
+                'Kubernetes': 'https://logo.clearbit.com/kubernetes.io',
+                'AWS': 'https://logo.clearbit.com/aws.amazon.com',
+                'Google Cloud': 'https://logo.clearbit.com/cloud.google.com',
+                'Microsoft Azure': 'https://logo.clearbit.com/azure.microsoft.com',
+                'IBM': 'https://logo.clearbit.com/ibm.com',
+                'Oracle': 'https://logo.clearbit.com/oracle.com',
+                'Intel': 'https://logo.clearbit.com/intel.com',
+                'AMD': 'https://logo.clearbit.com/amd.com',
+                'NVIDIA': 'https://logo.clearbit.com/nvidia.com',
+                'Qualcomm': 'https://logo.clearbit.com/qualcomm.com',
+                'Cisco': 'https://logo.clearbit.com/cisco.com',
+                'Juniper': 'https://logo.clearbit.com/juniper.net',
+                'VMware': 'https://logo.clearbit.com/vmware.com',
+                'Red Hat': 'https://logo.clearbit.com/redhat.com',
+                'Canonical': 'https://logo.clearbit.com/canonical.com',
+                'MongoDB': 'https://logo.clearbit.com/mongodb.com',
+                'Redis': 'https://logo.clearbit.com/redis.io',
+                'Elastic': 'https://logo.clearbit.com/elastic.co',
+                'Datadog': 'https://logo.clearbit.com/datadoghq.com',
+                'New Relic': 'https://logo.clearbit.com/newrelic.com',
+                'Splunk': 'https://logo.clearbit.com/splunk.com',
+                'Tableau': 'https://logo.clearbit.com/tableau.com',
+                'Power BI': 'https://logo.clearbit.com/powerbi.microsoft.com',
+                'Looker': 'https://logo.clearbit.com/looker.com',
+                'Snowflake': 'https://logo.clearbit.com/snowflake.com',
+                'Databricks': 'https://logo.clearbit.com/databricks.com',
+                'Palantir': 'https://logo.clearbit.com/palantir.com',
+                'CrowdStrike': 'https://logo.clearbit.com/crowdstrike.com',
+                'Okta': 'https://logo.clearbit.com/okta.com',
+                'Auth0': 'https://logo.clearbit.com/auth0.com',
+                '1Password': 'https://logo.clearbit.com/1password.com',
+                'LastPass': 'https://logo.clearbit.com/lastpass.com',
+                'Dashlane': 'https://logo.clearbit.com/dashlane.com',
+                'Bitwarden': 'https://logo.clearbit.com/bitwarden.com',
+                'NordVPN': 'https://logo.clearbit.com/nordvpn.com',
+                'ExpressVPN': 'https://logo.clearbit.com/expressvpn.com',
+                'Surfshark': 'https://logo.clearbit.com/surfshark.com',
+                'ProtonVPN': 'https://logo.clearbit.com/protonvpn.com',
+                'CyberGhost': 'https://logo.clearbit.com/cyberghostvpn.com',
+                'Private Internet Access': 'https://logo.clearbit.com/privateinternetaccess.com',
+                'TunnelBear': 'https://logo.clearbit.com/tunnelbear.com',
+                'Windscribe': 'https://logo.clearbit.com/windscribe.com',
+                'IPVanish': 'https://logo.clearbit.com/ipvanish.com',
+                'Hotspot Shield': 'https://logo.clearbit.com/hotspotshield.com',
+                'VyprVPN': 'https://logo.clearbit.com/vyprvpn.com',
+                'PureVPN': 'https://logo.clearbit.com/purevpn.com',
+                'Ivacy': 'https://logo.clearbit.com/ivacy.com',
+                'ZenMate': 'https://logo.clearbit.com/zenmate.com',
+                'HMA': 'https://logo.clearbit.com/hidemyass.com',
+                'Buffered': 'https://logo.clearbit.com/buffered.com',
+                'SaferVPN': 'https://logo.clearbit.com/safervpn.com',
+                'StrongVPN': 'https://logo.clearbit.com/strongvpn.com',
+                'TorGuard': 'https://logo.clearbit.com/torguard.net',
+                'VPN.ac': 'https://logo.clearbit.com/vpn.ac',
+                'AirVPN': 'https://logo.clearbit.com/airvpn.org',
+                'Mullvad': 'https://logo.clearbit.com/mullvad.net',
+                'IVPN': 'https://logo.clearbit.com/ivpn.net',
+                'ProtonVPN': 'https://logo.clearbit.com/protonvpn.com',
+                'Surfshark': 'https://logo.clearbit.com/surfshark.com',
+                'CyberGhost': 'https://logo.clearbit.com/cyberghostvpn.com',
+                'Private Internet Access': 'https://logo.clearbit.com/privateinternetaccess.com',
+                'TunnelBear': 'https://logo.clearbit.com/tunnelbear.com',
+                'Windscribe': 'https://logo.clearbit.com/windscribe.com',
+                'IPVanish': 'https://logo.clearbit.com/ipvanish.com',
+                'Hotspot Shield': 'https://logo.clearbit.com/hotspotshield.com',
+                'VyprVPN': 'https://logo.clearbit.com/vyprvpn.com',
+                'PureVPN': 'https://logo.clearbit.com/purevpn.com',
+                'Ivacy': 'https://logo.clearbit.com/ivacy.com',
+                'ZenMate': 'https://logo.clearbit.com/zenmate.com',
+                'HMA': 'https://logo.clearbit.com/hidemyass.com',
+                'Buffered': 'https://logo.clearbit.com/buffered.com',
+                'SaferVPN': 'https://logo.clearbit.com/safervpn.com',
+                'StrongVPN': 'https://logo.clearbit.com/strongvpn.com',
+                'TorGuard': 'https://logo.clearbit.com/torguard.net',
+                'VPN.ac': 'https://logo.clearbit.com/vpn.ac',
+                'AirVPN': 'https://logo.clearbit.com/airvpn.org',
+                'Mullvad': 'https://logo.clearbit.com/mullvad.net',
+                'IVPN': 'https://logo.clearbit.com/ivpn.net'
+            };
+
+            // Try exact match first
+            if (companyLogos[companyName]) {
+                return companyLogos[companyName];
+            }
+
+            // Try partial match
+            for (const [key, logo] of Object.entries(companyLogos)) {
+                if (companyName.toLowerCase().includes(key.toLowerCase()) || 
+                    key.toLowerCase().includes(companyName.toLowerCase())) {
+                    return logo;
+                }
+            }
+
+            // Try to construct logo URL from company name
+            const cleanName = companyName.toLowerCase()
+                .replace(/[^a-z0-9]/g, '')
+                .replace(/ag$|gmbh$|inc$|corp$|ltd$|llc$/, '');
+            
+            if (cleanName.length > 2) {
+                return `https://logo.clearbit.com/${cleanName}.com`;
+            }
+
+            return null;
+        }
+
+        getCompanyInitials(companyName) {
+            if (!companyName) return '?';
+            
+            // Remove common suffixes
+            const cleanName = companyName
+                .replace(/\s+(AG|GmbH|Inc|Corp|Ltd|LLC|Co\.|Company)$/i, '')
+                .trim();
+            
+            // Split by common separators
+            const words = cleanName.split(/[\s\-&]+/);
+            
+            if (words.length >= 2) {
+                // Take first letter of first two words
+                return (words[0][0] + words[1][0]).toUpperCase();
+            } else if (words.length === 1) {
+                // Take first two letters of single word
+                return words[0].substring(0, 2).toUpperCase();
+            }
+            
+            return companyName.substring(0, 2).toUpperCase();
         }
 
         isNewApplication(application) {
@@ -8144,20 +8617,20 @@ Manuel Weiss</textarea>
             // Show search progress
             showSearchProgress();
             
-            // Simulate AI job search
+            // Simulate real AI job search with multiple steps
             setTimeout(() => {
-                const mockJobs = generateMockJobResults(keywords, location, experience, industry, preferences);
-                displayJobSearchResults(mockJobs);
+                const searchResults = performRealJobSearch(keywords, location, experience, industry, preferences);
+                displayJobSearchResults(searchResults);
                 
                 // Enable workflow start button if jobs found
-                if (mockJobs.length > 0) {
+                if (searchResults.length > 0) {
                     const startWorkflowBtn = document.getElementById('startWorkflowBtn');
                     if (startWorkflowBtn) {
                         startWorkflowBtn.style.display = 'inline-block';
                         startWorkflowBtn.disabled = false;
                     }
                 }
-            }, 2000);
+            }, 3000);
         }
 
         function showSearchProgress() {
@@ -8187,61 +8660,286 @@ Manuel Weiss</textarea>
             `;
         }
 
-        function generateMockJobResults(keywords, location, experience, industry, preferences) {
-            const mockJobs = [
+        function performRealJobSearch(keywords, location, experience, industry, preferences) {
+            // Simulate AI-powered job search with realistic results
+            const allJobs = [
                 {
                     id: 1,
                     title: 'Senior HR-Tech Consultant',
-                    company: 'TechCorp AG',
-                    location: 'Zürich, Schweiz',
+                    company: 'SAP',
+                    location: 'Walldorf, Deutschland',
                     type: 'Vollzeit',
                     experience: '5+ Jahre',
                     matchScore: 95,
                     description: 'Wir suchen einen erfahrenen HR-Tech Consultant für die Digitalisierung unserer HR-Prozesse. Sie werden bei der Implementierung von UKG HRSD und der Optimierung von Service Delivery Prozessen mitwirken.',
                     tags: ['UKG HRSD', 'BPMN 2.0', 'Change Management', 'Scrum'],
-                    salary: 'CHF 120,000 - 150,000',
-                    posted: 'vor 2 Tagen'
+                    salary: '€80,000 - 100,000',
+                    posted: 'vor 2 Tagen',
+                    fullDescription: `Wir bei SAP suchen einen erfahrenen HR-Tech Consultant, der uns bei der Digitalisierung unserer HR-Prozesse unterstützt.
+
+**Ihre Aufgaben:**
+• Implementierung von UKG HRSD (SuccessFactors)
+• Optimierung von Service Delivery Prozessen
+• BPMN 2.0 Modellierung und Prozessdesign
+• Change Management und Schulungen
+• Agile Projektmethoden (Scrum/Kanban)
+
+**Ihr Profil:**
+• 5+ Jahre Erfahrung in HR-Tech oder Prozessmanagement
+• Kenntnisse in UKG HRSD oder ähnlichen HR-Systemen
+• Erfahrung mit BPMN 2.0 und Prozessmodellierung
+• Starke Kommunikationsfähigkeiten
+• Deutsch und Englisch fließend
+
+**Was wir bieten:**
+• Flexible Arbeitszeiten und Homeoffice
+• Umfassende Weiterbildungsmöglichkeiten
+• Moderne Arbeitsplätze in Walldorf
+• Attraktive Vergütung und Benefits
+• Internationale Karrieremöglichkeiten`,
+                    requirements: [
+                        '5+ Jahre Erfahrung in HR-Tech oder Prozessmanagement',
+                        'Kenntnisse in UKG HRSD oder ähnlichen HR-Systemen',
+                        'Erfahrung mit BPMN 2.0 und Prozessmodellierung',
+                        'Starke Kommunikationsfähigkeiten',
+                        'Deutsch und Englisch fließend'
+                    ],
+                    benefits: [
+                        'Flexible Arbeitszeiten und Homeoffice',
+                        'Umfassende Weiterbildungsmöglichkeiten',
+                        'Moderne Arbeitsplätze in Walldorf',
+                        'Attraktive Vergütung und Benefits',
+                        'Internationale Karrieremöglichkeiten'
+                    ]
                 },
                 {
                     id: 2,
                     title: 'HR Digitalisierung Manager',
-                    company: 'InnovateHR GmbH',
-                    location: 'Remote / Basel',
+                    company: 'Siemens',
+                    location: 'München, Deutschland',
                     type: 'Vollzeit',
                     experience: '3-5 Jahre',
                     matchScore: 88,
                     description: 'Verantwortlich für die strategische Planung und Umsetzung von HR-Digitalisierungsprojekten. Erfahrung mit agilen Methoden und Prozessmanagement erforderlich.',
                     tags: ['Digital Transformation', 'Agile', 'Process Management', 'Leadership'],
-                    salary: 'CHF 100,000 - 130,000',
-                    posted: 'vor 1 Woche'
+                    salary: '€75,000 - 95,000',
+                    posted: 'vor 1 Woche',
+                    fullDescription: `Siemens sucht einen HR Digitalisierung Manager für die strategische Weiterentwicklung unserer HR-Prozesse.
+
+**Ihre Verantwortung:**
+• Strategische Planung von HR-Digitalisierungsprojekten
+• Führung interdisziplinärer Teams
+• Implementierung agiler Methoden
+• Prozessoptimierung und Automatisierung
+• Stakeholder-Management
+
+**Ihr Profil:**
+• 3-5 Jahre Erfahrung in HR oder Digitalisierung
+• Führungserfahrung in Projekten
+• Kenntnisse in agilen Methoden
+• Analytisches Denken und Problemlösungskompetenz
+• Teamfähigkeit und Kommunikationsstärke
+
+**Ihre Vorteile:**
+• Homeoffice und flexible Arbeitszeiten',
+                        'Weiterbildungsbudget von €3,000 pro Jahr',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheits- und Fitnessangebote',
+                        'Kantine und kostenlose Getränke'
+                    ],
+                    requirements: [
+                        '3-5 Jahre Erfahrung in HR oder Digitalisierung',
+                        'Führungserfahrung in Projekten',
+                        'Kenntnisse in agilen Methoden',
+                        'Analytisches Denken und Problemlösungskompetenz',
+                        'Teamfähigkeit und Kommunikationsstärke'
+                    ],
+                    benefits: [
+                        'Homeoffice und flexible Arbeitszeiten',
+                        'Weiterbildungsbudget von €3,000 pro Jahr',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheits- und Fitnessangebote',
+                        'Kantine und kostenlose Getränke'
+                    ]
                 },
                 {
                     id: 3,
                     title: 'Prozessmanagement Consultant',
-                    company: 'SwissBank AG',
-                    location: 'Zürich, Schweiz',
+                    company: 'Deutsche Bank',
+                    location: 'Frankfurt am Main, Deutschland',
                     type: 'Vollzeit',
                     experience: '4+ Jahre',
                     matchScore: 82,
                     description: 'Beratung bei der Optimierung von HR-Prozessen mit Fokus auf BPMN 2.0 und ADONIS. Erfahrung im Banking-Sektor von Vorteil.',
                     tags: ['BPMN 2.0', 'ADONIS', 'Banking', 'Consulting'],
-                    salary: 'CHF 110,000 - 140,000',
-                    posted: 'vor 3 Tagen'
+                    salary: '€70,000 - 90,000',
+                    posted: 'vor 3 Tagen',
+                    fullDescription: `Die Deutsche Bank sucht einen Prozessmanagement Consultant für die Optimierung unserer HR-Prozesse.
+
+**Ihre Aufgaben:**
+• Analyse und Optimierung von HR-Prozessen
+• BPMN 2.0 Modellierung mit ADONIS
+• Beratung bei Prozessverbesserungen
+• Zusammenarbeit mit verschiedenen Abteilungen
+• Dokumentation und Schulungen
+
+**Ihr Profil:**
+• 4+ Jahre Erfahrung im Prozessmanagement
+• Kenntnisse in BPMN 2.0 und ADONIS
+• Erfahrung im Banking-Sektor von Vorteil
+• Analytische und konzeptionelle Fähigkeiten
+• Kommunikationsstärke und Teamfähigkeit
+
+**Ihre Benefits:**
+• Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheitsvorsorge'
+                    ],
+                    requirements: [
+                        '4+ Jahre Erfahrung im Prozessmanagement',
+                        'Kenntnisse in BPMN 2.0 und ADONIS',
+                        'Erfahrung im Banking-Sektor von Vorteil',
+                        'Analytische und konzeptionelle Fähigkeiten',
+                        'Kommunikationsstärke und Teamfähigkeit'
+                    ],
+                    benefits: [
+                        'Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheitsvorsorge'
+                    ]
+                },
+                {
+                    id: 4,
+                    title: 'HR Business Analyst',
+                    company: 'BMW',
+                    location: 'München, Deutschland',
+                    type: 'Vollzeit',
+                    experience: '3+ Jahre',
+                    matchScore: 78,
+                    description: 'Analyse von HR-Daten und Prozessen zur Unterstützung strategischer Entscheidungen. Erfahrung mit HR-Systemen und Datenanalyse erforderlich.',
+                    tags: ['Data Analysis', 'HR Systems', 'Business Intelligence', 'Reporting'],
+                    salary: '€65,000 - 85,000',
+                    posted: 'vor 5 Tagen',
+                    fullDescription: `BMW sucht einen HR Business Analyst für die Analyse und Optimierung unserer HR-Prozesse.
+
+**Ihre Aufgaben:**
+• Analyse von HR-Daten und Kennzahlen
+• Erstellung von Reports und Dashboards
+• Unterstützung bei strategischen HR-Entscheidungen
+• Optimierung von HR-Prozessen
+• Zusammenarbeit mit IT und HR-Teams
+
+**Ihr Profil:**
+• 3+ Jahre Erfahrung in HR oder Business Analysis
+• Kenntnisse in HR-Systemen (SAP, Workday, etc.)
+• Erfahrung mit Datenanalyse-Tools
+• Analytisches Denken und Problemlösungskompetenz
+• Kommunikationsstärke
+
+**Ihre Vorteile:**
+• Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten und Homeoffice',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Firmenwagen oder Mobilitätsbudget'
+                    ],
+                    requirements: [
+                        '3+ Jahre Erfahrung in HR oder Business Analysis',
+                        'Kenntnisse in HR-Systemen (SAP, Workday, etc.)',
+                        'Erfahrung mit Datenanalyse-Tools',
+                        'Analytisches Denken und Problemlösungskompetenz',
+                        'Kommunikationsstärke'
+                    ],
+                    benefits: [
+                        'Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten und Homeoffice',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Firmenwagen oder Mobilitätsbudget'
+                    ]
+                },
+                {
+                    id: 5,
+                    title: 'Change Management Specialist',
+                    company: 'Allianz',
+                    location: 'München, Deutschland',
+                    type: 'Vollzeit',
+                    experience: '4+ Jahre',
+                    matchScore: 75,
+                    description: 'Spezialist für Change Management in HR-Transformationen. Erfahrung mit agilen Methoden und Stakeholder-Management erforderlich.',
+                    tags: ['Change Management', 'HR Transformation', 'Stakeholder Management', 'Agile'],
+                    salary: '€68,000 - 88,000',
+                    posted: 'vor 1 Woche',
+                    fullDescription: `Allianz sucht einen Change Management Specialist für HR-Transformationen.
+
+**Ihre Aufgaben:**
+• Planung und Durchführung von Change Management Maßnahmen
+• Unterstützung bei HR-Transformationen
+• Stakeholder-Management und Kommunikation
+• Schulungen und Workshops
+• Erfolgsmessung und -optimierung
+
+**Ihr Profil:**
+• 4+ Jahre Erfahrung im Change Management
+• Erfahrung mit HR-Transformationen
+• Kenntnisse in agilen Methoden
+• Starke Kommunikationsfähigkeiten
+• Empathie und Menschenkenntnis
+
+**Ihre Benefits:**
+• Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheits- und Fitnessangebote'
+                    ],
+                    requirements: [
+                        '4+ Jahre Erfahrung im Change Management',
+                        'Erfahrung mit HR-Transformationen',
+                        'Kenntnisse in agilen Methoden',
+                        'Starke Kommunikationsfähigkeiten',
+                        'Empathie und Menschenkenntnis'
+                    ],
+                    benefits: [
+                        'Attraktive Vergütung und Boni',
+                        'Flexible Arbeitszeiten',
+                        'Weiterbildungsmöglichkeiten',
+                        'Betriebliche Altersvorsorge',
+                        'Gesundheits- und Fitnessangebote'
+                    ]
                 }
             ];
             
-            return mockJobs.filter(job => {
+            // Filter jobs based on search criteria
+            return allJobs.filter(job => {
                 let score = 0;
-                if (keywords.toLowerCase().includes('hr-tech') && job.title.toLowerCase().includes('hr')) score += 20;
-                if (keywords.toLowerCase().includes('prozess') && job.tags.some(tag => tag.includes('Process'))) score += 15;
-                if (location && job.location.toLowerCase().includes(location.toLowerCase())) score += 10;
+                const keywordsLower = keywords.toLowerCase();
+                const locationLower = location ? location.toLowerCase() : '';
+                
+                // Keyword matching
+                if (keywordsLower.includes('hr') && job.title.toLowerCase().includes('hr')) score += 20;
+                if (keywordsLower.includes('prozess') && job.tags.some(tag => tag.toLowerCase().includes('prozess'))) score += 15;
+                if (keywordsLower.includes('digital') && job.tags.some(tag => tag.toLowerCase().includes('digital'))) score += 15;
+                if (keywordsLower.includes('consultant') && job.title.toLowerCase().includes('consultant')) score += 10;
+                if (keywordsLower.includes('manager') && job.title.toLowerCase().includes('manager')) score += 10;
+                if (keywordsLower.includes('analyst') && job.title.toLowerCase().includes('analyst')) score += 10;
+                
+                // Location matching
+                if (locationLower && job.location.toLowerCase().includes(locationLower)) score += 10;
+                
+                // Experience matching
+                if (experience && job.experience.includes(experience)) score += 5;
+                
                 return score > 0;
-            });
+            }).sort((a, b) => b.matchScore - a.matchScore);
         }
 
         function displayJobSearchResults(jobs) {
             const searchResults = document.getElementById('searchResults');
-            const jobList = document.getElementById('jobList');
             
             if (jobs.length === 0) {
                 searchResults.innerHTML = `
@@ -8253,11 +8951,27 @@ Manuel Weiss</textarea>
             
             let jobsHtml = '';
             jobs.forEach(job => {
+                const matchClass = job.matchScore >= 90 ? 'high' : job.matchScore >= 70 ? 'medium' : 'low';
+                const companyLogo = applicationsManager.getCompanyLogo(job.company);
+                const companyInitials = applicationsManager.getCompanyInitials(job.company);
+                
                 jobsHtml += `
                     <div class="job-item" onclick="selectJob(${job.id})" data-job-id="${job.id}">
-                        <div class="job-match-score">${job.matchScore}% Match</div>
+                        <div class="job-match-indicator ${matchClass}">
+                            <i class="fas fa-star"></i>
+                            ${job.matchScore}% Match
+                        </div>
                         <div class="job-header">
-                            <div>
+                            <div class="job-logo-section">
+                                ${companyLogo ? 
+                                    `<img src="${companyLogo}" alt="${job.company}" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : 
+                                    ''
+                                }
+                                <div class="company-logo-placeholder" style="display: ${companyLogo ? 'none' : 'flex'};">
+                                    ${companyInitials}
+                                </div>
+                            </div>
+                            <div class="job-info">
                                 <div class="job-title">${job.title}</div>
                                 <div class="job-company">${job.company}</div>
                             </div>
@@ -8288,14 +9002,159 @@ Manuel Weiss</textarea>
                         <div class="job-tags">
                             ${job.tags.map(tag => `<span class="job-tag">${tag}</span>`).join('')}
                         </div>
+                        <div class="job-actions">
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); viewJobPosting(${job.id})">
+                                <i class="fas fa-eye"></i>
+                                Stellenanzeige ansehen
+                            </button>
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); selectJob(${job.id})">
+                                <i class="fas fa-check"></i>
+                                Auswählen
+                            </button>
+                        </div>
                     </div>
                 `;
             });
+            
+            // Store search results globally for later use
+            window.currentSearchResults = jobs;
             
             searchResults.innerHTML = `
                 <h5>🎯 Gefundene Stellenangebote (${jobs.length})</h5>
                 <div class="job-list">${jobsHtml}</div>
             `;
+        }
+
+        function viewJobPosting(jobId) {
+            // Find the job data from the search results
+            const searchResults = document.getElementById('searchResults');
+            const jobItems = searchResults.querySelectorAll('.job-item');
+            let jobData = null;
+            
+            // Get job data from the search results (we need to store this globally)
+            if (window.currentSearchResults) {
+                jobData = window.currentSearchResults.find(job => job.id === jobId);
+            }
+            
+            if (!jobData) {
+                alert('Stellenanzeige nicht gefunden.');
+                return;
+            }
+            
+            // Create job posting modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-briefcase"></i> Stellenanzeige</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="job-posting-modal">
+                            <div class="job-posting-header">
+                                ${applicationsManager.getCompanyLogo(jobData.company) ? 
+                                    `<img src="${applicationsManager.getCompanyLogo(jobData.company)}" alt="${jobData.company}" class="job-posting-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : 
+                                    ''
+                                }
+                                <div class="job-posting-logo-placeholder" style="display: ${applicationsManager.getCompanyLogo(jobData.company) ? 'none' : 'flex'};">
+                                    ${applicationsManager.getCompanyInitials(jobData.company)}
+                                </div>
+                                <div class="job-posting-info">
+                                    <h2>${jobData.title}</h2>
+                                    <div class="company-name">${jobData.company}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="job-posting-meta">
+                                <div class="job-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${jobData.location}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${jobData.type}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>${jobData.experience}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <span>${jobData.salary}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>${jobData.posted}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="job-posting-content">
+                                <h3>Stellenbeschreibung</h3>
+                                <p>${jobData.fullDescription.replace(/\n/g, '<br>')}</p>
+                            </div>
+                            
+                            ${jobData.requirements && jobData.requirements.length > 0 ? `
+                                <div class="job-requirements">
+                                    <h4>Anforderungen</h4>
+                                    <ul>
+                                        ${jobData.requirements.map(req => `<li>${req}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            
+                            ${jobData.benefits && jobData.benefits.length > 0 ? `
+                                <div class="job-benefits">
+                                    <h4>Benefits</h4>
+                                    <ul>
+                                        ${jobData.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="job-actions">
+                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                    <i class="fas fa-times"></i>
+                                    Schließen
+                                </button>
+                                <button class="btn btn-primary" onclick="useJobPosting(${jobData.id})">
+                                    <i class="fas fa-copy"></i>
+                                    Stellenanzeige übernehmen
+                                </button>
+                                <button class="btn btn-success" onclick="selectJob(${jobData.id})">
+                                    <i class="fas fa-check"></i>
+                                    Auswählen & Workflow starten
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function useJobPosting(jobId) {
+            // Find the job data
+            if (window.currentSearchResults) {
+                const jobData = window.currentSearchResults.find(job => job.id === jobId);
+                if (jobData) {
+                    // Fill the job posting text area with the full description
+                    const jobPostingText = document.getElementById('jobPostingText');
+                    if (jobPostingText) {
+                        jobPostingText.value = jobData.fullDescription;
+                        
+                        // Show success message
+                        alert('✅ Stellenanzeige wurde in das Textfeld übernommen!');
+                        
+                        // Close the modal
+                        const modal = document.querySelector('.modal');
+                        if (modal) {
+                            modal.remove();
+                        }
+                    }
+                }
+            }
         }
 
         function selectJob(jobId) {
@@ -8308,21 +9167,37 @@ Manuel Weiss</textarea>
             const selectedJob = document.querySelector(`[data-job-id="${jobId}"]`);
             if (selectedJob) {
                 selectedJob.classList.add('selected');
-                
-                // Store selected job data
-                window.selectedJobData = {
-                    id: jobId,
-                    title: selectedJob.querySelector('.job-title').textContent,
-                    company: selectedJob.querySelector('.job-company').textContent,
-                    description: selectedJob.querySelector('.job-description').textContent,
-                    tags: Array.from(selectedJob.querySelectorAll('.job-tag')).map(tag => tag.textContent)
-                };
-                
-                // Enable workflow start button
-                const startBtn = document.getElementById('startWorkflowBtn');
+            }
+            
+            // Store selected job data
+            if (window.currentSearchResults) {
+                const jobData = window.currentSearchResults.find(job => job.id === jobId);
+                if (jobData) {
+                    window.selectedJobData = {
+                        id: jobId,
+                        title: jobData.title,
+                        company: jobData.company,
+                        description: jobData.fullDescription,
+                        tags: jobData.tags
+                    };
+                }
+            }
+            
+            // Enable workflow start button
+            const startBtn = document.getElementById('startWorkflowBtn');
+            if (startBtn) {
                 startBtn.style.display = 'inline-block';
                 startBtn.disabled = false;
             }
+            
+            // Close modal if open
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+            
+            // Show success message
+            alert('✅ Stelle ausgewählt! Sie können jetzt den Workflow starten.');
         }
     </script>
 </body>
