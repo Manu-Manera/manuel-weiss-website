@@ -1366,7 +1366,9 @@
         <nav class="sidebar-nav">
             <ul>
                 <li><a href="admin.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#" class="sidebar-link active" data-section="applications"><i class="fas fa-briefcase"></i> Bewerbungen</a></li>
+                <li><a href="#" class="sidebar-link active" onclick="showSection('applications')"><i class="fas fa-briefcase"></i> Bewerbungen</a></li>
+                <li><a href="#" class="sidebar-link" onclick="showSection('designer')"><i class="fas fa-palette"></i> Bewerbungs-Designer</a></li>
+                <li><a href="#" class="sidebar-link" onclick="showSection('calendar')"><i class="fas fa-calendar-alt"></i> Termine</a></li>
                 <li><a href="admin.html#nutrition" class="sidebar-link"><i class="fas fa-apple-alt"></i> Ernährungsplan</a></li>
                 <li><a href="admin.html#content" class="sidebar-link"><i class="fas fa-edit"></i> Content</a></li>
                 <li><a href="admin.html#media" class="sidebar-link"><i class="fas fa-images"></i> Medien</a></li>
@@ -1378,7 +1380,7 @@
     </div>
 
     <!-- Applications Page -->
-    <section class="applications-page">
+    <section class="applications-page" id="applications-section">
         <div class="applications-container">
             <!-- Header -->
             <div class="applications-header">
@@ -1489,6 +1491,386 @@
 
                 <div class="applications-list" id="applicationsList">
                     <!-- Applications will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Designer Section -->
+    <section class="designer-section" id="designer-section" style="display: none;">
+        <div class="designer-container">
+            <div class="designer-header">
+                <div class="header-title">
+                    <i class="fas fa-palette"></i>
+                    <h1>Bewerbungs-Designer</h1>
+                    <span style="color: var(--gray-500); font-size: 0.875rem;">Modulares Baukasten-System</span>
+                </div>
+                <div class="header-actions">
+                    <div class="profile-section">
+                        <div class="profile-toggle">
+                            <button class="btn btn-secondary" onclick="toggleProfileMode()" id="profileToggleBtn">
+                                <i class="fas fa-camera"></i>
+                                <span>Foto</span>
+                            </button>
+                        </div>
+                        <div class="profile-display" id="profileDisplay">
+                            <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image" id="profileImage">
+                            <div class="profile-overlay" id="profileOverlay">
+                                <button class="play-btn" onclick="playDigitalTwin()" title="Digital Twin abspielen">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="resetDesign()">
+                        <i class="fas fa-undo"></i>
+                        Zurücksetzen
+                    </button>
+                    <button class="btn btn-primary" onclick="saveDesign()">
+                        <i class="fas fa-save"></i>
+                        Speichern
+                    </button>
+                    <button class="btn btn-success" onclick="previewDesign()">
+                        <i class="fas fa-eye"></i>
+                        Vorschau
+                    </button>
+                </div>
+            </div>
+
+            <div class="designer-content">
+                <div class="designer-sidebar">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('content')">
+                            <i class="fas fa-edit"></i>
+                            Inhalt
+                        </button>
+                        <button class="tab" onclick="switchTab('design')">
+                            <i class="fas fa-paint-brush"></i>
+                            Design
+                        </button>
+                        <button class="tab" onclick="switchTab('branding')">
+                            <i class="fas fa-building"></i>
+                            Branding
+                        </button>
+                        <button class="tab" onclick="switchTab('cover-letter')">
+                            <i class="fas fa-robot"></i>
+                            Anschreiben
+                        </button>
+                    </div>
+
+                    <!-- Content Tab -->
+                    <div id="content-tab" class="tab-content active">
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-user"></i>
+                                Kandidaten-Informationen
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-input" id="candidateName" placeholder="Manuel Weiss">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Position</label>
+                                <input type="text" class="form-input" id="candidatePosition" placeholder="HR & AI Berater">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">E-Mail</label>
+                                <input type="email" class="form-input" id="candidateEmail" placeholder="manuel@example.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Telefon</label>
+                                <input type="tel" class="form-input" id="candidatePhone" placeholder="+41 79 123 45 67">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Standort</label>
+                                <input type="text" class="form-input" id="candidateLocation" placeholder="Zürich, Schweiz">
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-file-alt"></i>
+                                Anschreiben
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Anschreiben-Text</label>
+                                <textarea class="form-input form-textarea" id="coverLetterText" rows="8" placeholder="Hier kommt der Anschreiben-Text..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-cogs"></i>
+                                Fähigkeiten
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Kernkompetenzen</label>
+                                <textarea class="form-input form-textarea" id="skillsText" rows="4" placeholder="HR Management, AI Integration, Projektmanagement..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Design Tab -->
+                    <div id="design-tab" class="tab-content">
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-palette"></i>
+                                Farben & Stil
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Primärfarbe</label>
+                                <input type="color" class="form-input color-picker" id="primaryColor" value="#6366f1">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Sekundärfarbe</label>
+                                <input type="color" class="form-input color-picker" id="secondaryColor" value="#8b5cf6">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Design-Stil</label>
+                                <select class="form-input" id="designStyle">
+                                    <option value="swiss">Swiss Design</option>
+                                    <option value="modern">Modern</option>
+                                    <option value="corporate">Corporate</option>
+                                    <option value="creative">Creative</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Branding Tab -->
+                    <div id="branding-tab" class="tab-content">
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-building"></i>
+                                Unternehmens-Branding
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Unternehmensname</label>
+                                <input type="text" class="form-input" id="companyName" placeholder="Beispiel AG">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Firmenlogo</label>
+                                <div class="file-upload-area" id="logoUploadArea">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Logo hier ablegen oder klicken</p>
+                                    <input type="file" id="logoFile" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cover Letter Tab -->
+                    <div id="cover-letter-tab" class="tab-content">
+                        <div class="sidebar-section">
+                            <div class="section-title">
+                                <i class="fas fa-robot"></i>
+                                KI Anschreiben-Generator
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Stellenanzeige</label>
+                                <textarea class="form-input form-textarea" id="jobDescription" rows="4" placeholder="Kopiere hier die Stellenanzeige..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Unternehmen</label>
+                                <input type="text" class="form-input" id="aiCompanyName" placeholder="Name des Unternehmens">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Position</label>
+                                <input type="text" class="form-input" id="aiPositionTitle" placeholder="Titel der Position">
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="generateCoverLetter()" style="width: 100%;">
+                                <i class="fas fa-magic"></i>
+                                Anschreiben generieren
+                            </button>
+                            
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label class="form-label">Generiertes Anschreiben</label>
+                                <textarea class="form-input form-textarea" id="generatedCoverLetter" rows="8" placeholder="Hier erscheint das generierte Anschreiben..."></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-success" onclick="saveCoverLetter()" style="flex: 1;">
+                                    <i class="fas fa-save"></i>
+                                    Speichern
+                                </button>
+                                <button class="btn btn-secondary" onclick="copyCoverLetter()" style="flex: 1;">
+                                    <i class="fas fa-copy"></i>
+                                    Kopieren
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="preview-area">
+                    <div class="preview-header">
+                        <div class="preview-title">
+                            <i class="fas fa-eye"></i>
+                            Live-Vorschau
+                        </div>
+                        <div class="preview-actions">
+                            <button class="btn btn-secondary" onclick="openPreview()">
+                                <i class="fas fa-external-link-alt"></i>
+                                In neuem Tab öffnen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-content" id="previewContent">
+                        <!-- Preview wird hier dynamisch geladen -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendar Section -->
+    <section class="calendar-section" id="calendar-section" style="display: none;">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h1><i class="fas fa-calendar-alt"></i> Terminverwaltung</h1>
+                <p>Verwalte Interviews, Telefonate und Erinnerungen</p>
+            </div>
+
+            <div class="calendar-dashboard">
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="upcomingCount">0</h3>
+                            <p>Anstehende Termine</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="phoneCount">0</h3>
+                            <p>Telefontermine</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="interviewCount">0</h3>
+                            <p>Interviews</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="reminderCount">0</h3>
+                            <p>Erinnerungen</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-actions">
+                    <button class="btn btn-primary" onclick="openEventModal()">
+                        <i class="fas fa-plus"></i>
+                        Neuer Termin
+                    </button>
+                    <button class="btn btn-secondary" onclick="openReminderModal()">
+                        <i class="fas fa-bell"></i>
+                        Erinnerung erstellen
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportCalendar()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-content">
+                <div class="calendar-sidebar">
+                    <div class="calendar-filters">
+                        <h3>Filter</h3>
+                        <div class="filter-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="filterInterviews" checked>
+                                <span class="checkmark"></span>
+                                Interviews
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="filterPhone" checked>
+                                <span class="checkmark"></span>
+                                Telefonate
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="filterReminders" checked>
+                                <span class="checkmark"></span>
+                                Erinnerungen
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <button class="quick-action-btn" onclick="createInterviewReminder()">
+                            <i class="fas fa-video"></i>
+                            Interview-Erinnerung
+                        </button>
+                        <button class="quick-action-btn" onclick="createFollowUpReminder()">
+                            <i class="fas fa-reply"></i>
+                            Follow-up Erinnerung
+                        </button>
+                        <button class="quick-action-btn" onclick="createEmailReminder()">
+                            <i class="fas fa-envelope"></i>
+                            E-Mail Erinnerung
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calendar-main">
+                    <div class="calendar-view">
+                        <div class="calendar-header-nav">
+                            <button class="btn btn-secondary" onclick="previousMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h2 id="currentMonth">Januar 2024</h2>
+                            <button class="btn btn-secondary" onclick="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar wird hier dynamisch generiert -->
+                        </div>
+                    </div>
+
+                    <div class="events-list">
+                        <h3>Anstehende Termine</h3>
+                        <div class="events-container" id="eventsContainer">
+                            <!-- Events werden hier dynamisch geladen -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
