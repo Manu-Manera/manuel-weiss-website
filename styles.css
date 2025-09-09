@@ -287,6 +287,8 @@ a:hover {
     height: 300px;
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
+    object-fit: cover;
+    object-position: center;
 }
 
 .hero-stats {
@@ -864,6 +866,8 @@ a:hover {
     .profile-image {
         width: 250px;
         height: 250px;
+        object-fit: cover;
+        object-position: center;
     }
 }
 
