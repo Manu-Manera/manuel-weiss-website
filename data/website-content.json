@@ -33,55 +33,55 @@
   "services": [
     {
       "id": 1,
-      "icon": "fas fa-cogs",
-      "title": "Prozessmanagement",
-      "description": "Optimierung und Digitalisierung von Geschäftsprozessen mit bewährten Methoden wie BPMN 2.0 und ADONIS.",
-      "features": [
-        "Prozessanalyse & -optimierung",
-        "Workflow-Design",
-        "Tool-Implementierung"
-      ],
-      "isPrimary": true,
-      "category": "beratung"
-    },
-    {
-      "id": 2,
-      "icon": "fas fa-users",
-      "title": "HR-Tech Beratung",
-      "description": "Spezialisierung auf HR-Software und Service Delivery mit Fokus auf UKG HRSD und moderne HR-Lösungen.",
-      "features": [
-        "HR-Systeme Implementierung",
-        "Service Delivery Optimierung",
-        "Change Management"
-      ],
-      "isPrimary": false,
-      "category": "beratung"
-    },
-    {
-      "id": 3,
-      "icon": "fas fa-lightbulb",
-      "title": "Design Thinking",
-      "description": "Innovative Lösungsansätze durch Design Thinking Workshops und Business Model Innovation.",
-      "features": [
-        "Workshop-Moderation",
-        "Innovationsprozesse",
-        "Prototyping"
-      ],
-      "isPrimary": false,
-      "category": "beratung"
-    },
-    {
-      "id": 4,
       "icon": "fas fa-project-diagram",
       "title": "Projektmanagement",
-      "description": "Erfolgreiche Projektleitung mit agilen und klassischen Methoden (Scrum, Prince2, BPMN).",
+      "description": "Professionelles Projektmanagement für komplexe IT- und Geschäftsprojekte",
       "features": [
         "Agile Projektleitung",
         "Stakeholder-Management",
         "Risikomanagement"
       ],
+      "isPrimary": true,
+      "category": "projekte"
+    },
+    {
+      "id": 2,
+      "icon": "fas fa-user-graduate",
+      "title": "Persönlichkeitsentwicklung",
+      "description": "Coaching und Beratung für persönliches Wachstum und Entwicklung",
+      "features": [
+        "Einzelcoaching",
+        "Gruppenworkshops",
+        "Entwicklungspläne"
+      ],
       "isPrimary": false,
-      "category": "beratung"
+      "category": "weitere"
+    },
+    {
+      "id": 3,
+      "icon": "fas fa-apple-alt",
+      "title": "Ernährungsberatung",
+      "description": "Professionelle Beratung für gesunde Ernährung und Lebensweise",
+      "features": [
+        "Ernährungspläne",
+        "Kalorienberechnung",
+        "Lebensstil-Coaching"
+      ],
+      "isPrimary": false,
+      "category": "weitere"
+    },
+    {
+      "id": 4,
+      "icon": "fas fa-dumbbell",
+      "title": "Balance & Fitness",
+      "description": "Ganzheitliches Training für Körper, Geist und Seele",
+      "features": [
+        "Personal Training",
+        "Mental Coaching",
+        "Work-Life-Balance"
+      ],
+      "isPrimary": false,
+      "category": "weitere"
     }
   ],
   "rentals": [
