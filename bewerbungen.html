@@ -11,11 +11,86 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
+        /* Admin Sidebar Styles */
+        .admin-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sidebar-logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-nav li {
+            margin: 0;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #6366f1;
+        }
+        
+        .sidebar-link.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: white;
+            border-left-color: #6366f1;
+        }
+        
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
         /* Bewerbungsseite spezifische Styles */
         .applications-page {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 2rem 0;
+            margin-left: 280px;
         }
         
         .applications-container {
@@ -427,8 +502,204 @@
             background: #e2e8f0;
         }
         
+        /* AI Generator Styles */
+        .ai-generator-content {
+            padding: 1rem 0;
+        }
+        
+        .ai-step {
+            display: none;
+            padding: 1.5rem 0;
+        }
+        
+        .ai-step.active {
+            display: block;
+        }
+        
+        .ai-step h4 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .ai-step p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+        
+        .data-analysis {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .analysis-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+        
+        .analysis-item i {
+            color: #6366f1;
+            margin-right: 0.75rem;
+        }
+        
+        .analysis-item span {
+            flex: 1;
+            font-weight: 500;
+            color: #1e293b;
+        }
+        
+        .analysis-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .analysis-status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .analysis-status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .ai-progress {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .ai-insights {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ai-insights h5 {
+            color: #0369a1;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-insights ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .ai-insights li {
+            padding: 0.5rem 0;
+            color: #0c4a6e;
+            border-bottom: 1px solid #bae6fd;
+        }
+        
+        .ai-insights li:last-child {
+            border-bottom: none;
+        }
+        
+        .ai-insights li::before {
+            content: "✓";
+            color: #059669;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .generated-letter {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .letter-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .letter-header h5 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .letter-header p {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .letter-content {
+            line-height: 1.6;
+            color: #1e293b;
+            white-space: pre-wrap;
+        }
+        
+        .letter-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .applications-page {
+                margin-left: 0;
+            }
+            
             .applications-dashboard {
                 grid-template-columns: 1fr;
             }
@@ -448,24 +719,36 @@
             .applications-header h1 {
                 font-size: 2rem;
             }
+            
+            .overview-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">Manuel Weiss</a>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="lebenslauf.html" class="nav-link">Lebenslauf</a>
-                <a href="bewerbungsmappe.html" class="nav-link">Bewerbungsmappe</a>
-                <a href="admin.html" class="nav-link">Admin</a>
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="sidebar-logo-img">
+                <span class="sidebar-title">Admin Panel</span>
             </div>
         </div>
-    </nav>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="admin.html" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" class="sidebar-link active" data-section="applications"><i class="fas fa-briefcase"></i> Bewerbungen</a></li>
+                <li><a href="admin.html#nutrition" class="sidebar-link"><i class="fas fa-apple-alt"></i> Ernährungsplan</a></li>
+                <li><a href="admin.html#content" class="sidebar-link"><i class="fas fa-edit"></i> Content</a></li>
+                <li><a href="admin.html#media" class="sidebar-link"><i class="fas fa-images"></i> Medien</a></li>
+                <li><a href="admin.html#ai-twin" class="sidebar-link"><i class="fas fa-robot"></i> AI Twin</a></li>
+                <li><a href="admin.html#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="admin.html#settings" class="sidebar-link"><i class="fas fa-cog"></i> Einstellungen</a></li>
+            </ul>
+        </nav>
+    </div>
 
     <!-- Applications Page -->
     <section class="applications-page">
@@ -528,6 +811,10 @@
                         <button class="action-btn" onclick="openSettings()">
                             <i class="fas fa-cog"></i>
                             <span>Einstellungen</span>
+                        </button>
+                        <button class="action-btn" onclick="openAILetterGenerator()">
+                            <i class="fas fa-robot"></i>
+                            <span>KI Anschreiben</span>
                         </button>
                     </div>
                 </div>
@@ -627,6 +914,116 @@
                     <button type="submit" class="btn-primary">Aktualisieren</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- AI Letter Generator Modal -->
+    <div id="aiLetterModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-robot"></i> KI-Anschreiben Generator</h3>
+                <button class="close-btn" onclick="closeModal('aiLetterModal')">&times;</button>
+            </div>
+            
+            <div class="ai-generator-content">
+                <!-- Step 1: Data Analysis -->
+                <div id="aiStep1" class="ai-step active">
+                    <h4><i class="fas fa-search"></i> Schritt 1: Datenanalyse</h4>
+                    <p>Analysiere deine gespeicherten Daten (Lebenslauf, Bewerbungen, etc.)</p>
+                    <div class="data-analysis">
+                        <div class="analysis-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Lebenslauf-Daten</span>
+                            <div class="analysis-status" id="cvStatus">Wird analysiert...</div>
+                        </div>
+                        <div class="analysis-item">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Bewerbungshistorie</span>
+                            <div class="analysis-status" id="appStatus">Wird analysiert...</div>
+                        </div>
+                        <div class="analysis-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Qualifikationen</span>
+                            <div class="analysis-status" id="qualStatus">Wird analysiert...</div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="analyzeData()" id="analyzeBtn">
+                        <i class="fas fa-play"></i> Analyse starten
+                    </button>
+                </div>
+
+                <!-- Step 2: Job Description -->
+                <div id="aiStep2" class="ai-step">
+                    <h4><i class="fas fa-briefcase"></i> Schritt 2: Stellenanzeige</h4>
+                    <p>Füge die Stellenanzeige ein, für die du dich bewerben möchtest</p>
+                    <div class="form-group">
+                        <label for="jobDescription">Stellenanzeige *</label>
+                        <textarea id="jobDescription" name="jobDescription" rows="8" 
+                                  placeholder="Kopiere hier die komplette Stellenanzeige hinein..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyName">Unternehmen</label>
+                        <input type="text" id="companyName" name="companyName" placeholder="Name des Unternehmens">
+                    </div>
+                    <div class="form-group">
+                        <label for="positionTitle">Position</label>
+                        <input type="text" id="positionTitle" name="positionTitle" placeholder="Titel der Position">
+                    </div>
+                    <button class="btn-primary" onclick="proceedToStep3()">
+                        <i class="fas fa-arrow-right"></i> Weiter
+                    </button>
+                </div>
+
+                <!-- Step 3: AI Generation -->
+                <div id="aiStep3" class="ai-step">
+                    <h4><i class="fas fa-magic"></i> Schritt 3: KI-Generierung</h4>
+                    <p>Die KI analysiert die Anforderungen und erstellt ein maßgeschneidertes Anschreiben</p>
+                    
+                    <div class="ai-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="aiProgressFill"></div>
+                        </div>
+                        <div class="progress-text" id="aiProgressText">Bereite Analyse vor...</div>
+                    </div>
+
+                    <div class="ai-insights" id="aiInsights" style="display: none;">
+                        <h5>Erkannte Anforderungen:</h5>
+                        <ul id="requirementsList"></ul>
+                    </div>
+
+                    <button class="btn-primary" onclick="generateCoverLetter()" id="generateBtn">
+                        <i class="fas fa-robot"></i> Anschreiben generieren
+                    </button>
+                </div>
+
+                <!-- Step 4: Result -->
+                <div id="aiStep4" class="ai-step">
+                    <h4><i class="fas fa-check-circle"></i> Schritt 4: Ergebnis</h4>
+                    <p>Dein KI-generiertes Anschreiben ist fertig!</p>
+                    
+                    <div class="generated-letter">
+                        <div class="letter-header">
+                            <h5>Anschreiben für: <span id="resultCompany"></span></h5>
+                            <p>Position: <span id="resultPosition"></span></p>
+                        </div>
+                        <div class="letter-content" id="generatedLetterContent">
+                            <!-- Generated letter will appear here -->
+                        </div>
+                    </div>
+
+                    <div class="letter-actions">
+                        <button class="btn-secondary" onclick="regenerateLetter()">
+                            <i class="fas fa-redo"></i> Neu generieren
+                        </button>
+                        <button class="btn-primary" onclick="saveLetter()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                        <button class="btn-primary" onclick="copyLetter()">
+                            <i class="fas fa-copy"></i> Kopieren
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -933,6 +1330,198 @@
 
         function openSettings() {
             alert('Einstellungen werden in einer zukünftigen Version verfügbar sein.');
+        }
+
+        // AI Letter Generator Functions
+        function openAILetterGenerator() {
+            applicationsManager.openModal('aiLetterModal');
+            resetAIGenerator();
+        }
+
+        function resetAIGenerator() {
+            // Reset to step 1
+            document.querySelectorAll('.ai-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('aiStep1').classList.add('active');
+            
+            // Reset status indicators
+            document.getElementById('cvStatus').textContent = 'Wird analysiert...';
+            document.getElementById('cvStatus').className = 'analysis-status';
+            document.getElementById('appStatus').textContent = 'Wird analysiert...';
+            document.getElementById('appStatus').className = 'analysis-status';
+            document.getElementById('qualStatus').textContent = 'Wird analysiert...';
+            document.getElementById('qualStatus').className = 'analysis-status';
+        }
+
+        function analyzeData() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
+
+            // Simulate data analysis
+            setTimeout(() => {
+                document.getElementById('cvStatus').textContent = 'Analysiert';
+                document.getElementById('cvStatus').className = 'analysis-status completed';
+            }, 1000);
+
+            setTimeout(() => {
+                document.getElementById('appStatus').textContent = 'Analysiert';
+                document.getElementById('appStatus').className = 'analysis-status completed';
+            }, 1500);
+
+            setTimeout(() => {
+                document.getElementById('qualStatus').textContent = 'Analysiert';
+                document.getElementById('qualStatus').className = 'analysis-status completed';
+                
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Weiter zu Schritt 2';
+                analyzeBtn.onclick = proceedToStep2;
+            }, 2000);
+        }
+
+        function proceedToStep2() {
+            document.querySelectorAll('.ai-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('aiStep2').classList.add('active');
+        }
+
+        function proceedToStep3() {
+            const jobDescription = document.getElementById('jobDescription').value;
+            const companyName = document.getElementById('companyName').value;
+            const positionTitle = document.getElementById('positionTitle').value;
+
+            if (!jobDescription.trim()) {
+                alert('Bitte füge eine Stellenanzeige ein.');
+                return;
+            }
+
+            document.querySelectorAll('.ai-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('aiStep3').classList.add('active');
+        }
+
+        function generateCoverLetter() {
+            const generateBtn = document.getElementById('generateBtn');
+            const progressFill = document.getElementById('aiProgressFill');
+            const progressText = document.getElementById('aiProgressText');
+            const insights = document.getElementById('aiInsights');
+            const requirementsList = document.getElementById('requirementsList');
+
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generiere...';
+
+            // Simulate AI analysis and generation
+            const steps = [
+                { progress: 20, text: 'Analysiere Stellenanzeige...' },
+                { progress: 40, text: 'Erkenne Anforderungen...' },
+                { progress: 60, text: 'Matche mit deinen Qualifikationen...' },
+                { progress: 80, text: 'Formuliere Anschreiben...' },
+                { progress: 100, text: 'Fertig!' }
+            ];
+
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    progressFill.style.width = step.progress + '%';
+                    progressText.textContent = step.text;
+
+                    if (currentStep === 1) {
+                        // Show requirements
+                        const requirements = [
+                            'Mindestens 3 Jahre Berufserfahrung',
+                            'Kenntnisse in Projektmanagement',
+                            'Teamfähigkeit und Kommunikationsstärke',
+                            'Analytische Denkweise',
+                            'Erfahrung mit modernen Tools'
+                        ];
+                        requirementsList.innerHTML = requirements.map(req => `<li>${req}</li>`).join('');
+                        insights.style.display = 'block';
+                    }
+
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        showGeneratedLetter();
+                    }, 500);
+                }
+            }, 1500);
+        }
+
+        function showGeneratedLetter() {
+            document.querySelectorAll('.ai-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('aiStep4').classList.add('active');
+
+            const companyName = document.getElementById('companyName').value || 'das Unternehmen';
+            const positionTitle = document.getElementById('positionTitle').value || 'die ausgeschriebene Position';
+
+            document.getElementById('resultCompany').textContent = companyName;
+            document.getElementById('resultPosition').textContent = positionTitle;
+
+            // Generate sample cover letter
+            const coverLetter = `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige für ${positionTitle} bei ${companyName} gelesen. Als erfahrener Projektmanager mit über 5 Jahren Berufserfahrung in der IT-Branche bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+
+In meiner bisherigen Tätigkeit habe ich erfolgreich komplexe Projekte geleitet und dabei stets die Balance zwischen technischer Exzellenz und wirtschaftlichen Zielen gefunden. Meine analytische Denkweise und meine Fähigkeit, auch in stressigen Situationen den Überblick zu behalten, haben mir dabei geholfen, Projekte termingerecht und im Budget abzuschließen.
+
+Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln und dabei von einem dynamischen Team zu lernen. Ich bringe nicht nur fachliche Expertise mit, sondern auch die Leidenschaft, kontinuierlich dazuzulernen und mich neuen Herausforderungen zu stellen.
+
+Gerne würde ich in einem persönlichen Gespräch erläutern, wie ich mit meinen Fähigkeiten und meiner Motivation zum Erfolg Ihres Unternehmens beitragen kann.
+
+Mit freundlichen Grüßen
+Manuel Weiss`;
+
+            document.getElementById('generatedLetterContent').textContent = coverLetter;
+        }
+
+        function regenerateLetter() {
+            document.querySelectorAll('.ai-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('aiStep3').classList.add('active');
+            
+            // Reset progress
+            document.getElementById('aiProgressFill').style.width = '0%';
+            document.getElementById('aiProgressText').textContent = 'Bereite Analyse vor...';
+            document.getElementById('aiInsights').style.display = 'none';
+            
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-robot"></i> Anschreiben generieren';
+        }
+
+        function saveLetter() {
+            const letterContent = document.getElementById('generatedLetterContent').textContent;
+            const companyName = document.getElementById('resultCompany').textContent;
+            const positionTitle = document.getElementById('resultPosition').textContent;
+            
+            // Save to localStorage
+            const savedLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+            const newLetter = {
+                id: Date.now(),
+                company: companyName,
+                position: positionTitle,
+                content: letterContent,
+                createdAt: new Date().toISOString()
+            };
+            
+            savedLetters.push(newLetter);
+            localStorage.setItem('coverLetters', JSON.stringify(savedLetters));
+            
+            alert('Anschreiben wurde gespeichert!');
+        }
+
+        function copyLetter() {
+            const letterContent = document.getElementById('generatedLetterContent').textContent;
+            navigator.clipboard.writeText(letterContent).then(() => {
+                alert('Anschreiben wurde in die Zwischenablage kopiert!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = letterContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Anschreiben wurde in die Zwischenablage kopiert!');
+            });
         }
 
         // Close modal when clicking outside

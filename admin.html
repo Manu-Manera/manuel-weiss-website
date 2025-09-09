@@ -274,10 +274,11 @@
                                     </div>
                                 </div>
                                 <div class="overview-actions">
-                                    <a href="bewerbungen.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                        <i class="fas fa-external-link-alt"></i>
-                                        <span>Zur Bewerbungsseite</span>
-                                    </a>
+                                    <button class="btn-applications" onclick="openApplicationsPage()">
+                                        <i class="fas fa-briefcase"></i>
+                                        <span>Bewerbungen verwalten</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2346,6 +2347,86 @@ Bitte antworte im folgenden JSON-Format:
             if (rejectionElement) rejectionElement.textContent = rejections;
             if (pendingElement) pendingElement.textContent = pendingApplications;
             if (successElement) successElement.textContent = successRate + '%';
+        }
+        
+        function updateDashboardApplications() {
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            
+            const total = applications.length;
+            const pending = applications.filter(app => 
+                app.status === 'sent' || app.status === 'reviewed'
+            ).length;
+            const positive = applications.filter(app => 
+                app.status === 'interview' || app.status === 'accepted'
+            ).length;
+            const successRate = total > 0 ? Math.round((positive / total) * 100) : 0;
+            
+            // Update dashboard stats
+            const totalElement = document.getElementById('dashboard-total-apps');
+            const pendingElement = document.getElementById('dashboard-pending-apps');
+            const successElement = document.getElementById('dashboard-success-rate');
+            
+            if (totalElement) totalElement.textContent = total;
+            if (pendingElement) pendingElement.textContent = pending;
+            if (successElement) successElement.textContent = successRate + '%';
+            
+            // Update recent applications
+            updateRecentApplications(applications);
+        }
+        
+        function updateRecentApplications(applications) {
+            const recentList = document.getElementById('recentApplicationsList');
+            if (!recentList) return;
+            
+            // Get last 3 applications
+            const recentApps = applications
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+            
+            if (recentApps.length === 0) {
+                recentList.innerHTML = '<p style="color: #64748b; font-size: 0.875rem;">Keine Bewerbungen vorhanden</p>';
+                return;
+            }
+            
+            recentList.innerHTML = recentApps.map(app => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <div>
+                        <div style="font-weight: 600; color: #1e293b; font-size: 0.875rem;">${app.company}</div>
+                        <div style="color: #64748b; font-size: 0.75rem;">${app.position}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.625rem; font-weight: 600; text-transform: uppercase; background: ${getStatusColor(app.status)}; color: white;">
+                            ${getStatusText(app.status)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getStatusColor(status) {
+            const colors = {
+                'sent': '#dbeafe',
+                'reviewed': '#fef3c7',
+                'interview': '#d1fae5',
+                'accepted': '#dcfce7',
+                'rejected': '#fee2e2'
+            };
+            return colors[status] || '#f1f5f9';
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'sent': 'Gesendet',
+                'reviewed': 'In Bearbeitung',
+                'interview': 'Interview',
+                'accepted': 'Angenommen',
+                'rejected': 'Abgelehnt'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function openApplicationsPage() {
+            window.open('bewerbungen.html', '_blank');
         }
         
         // Services laden
