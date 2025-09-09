@@ -1289,6 +1289,214 @@ Stakeholder Management</textarea>
                 }
             }
 
+            // Certificate Management
+            renderCertificates() {
+                const container = document.getElementById('certificatesContainer');
+                const certificates = this.designData.certificates || [];
+                
+                container.innerHTML = '';
+                
+                certificates.forEach(cert => {
+                    const certElement = this.createCertificateElement(cert);
+                    container.appendChild(certElement);
+                });
+            }
+
+            createCertificateElement(cert) {
+                const div = document.createElement('div');
+                div.className = 'certificate-item';
+                div.innerHTML = `
+                    <div class="certificate-header">
+                        <div class="certificate-title">${cert.title}</div>
+                        <div class="certificate-actions">
+                            <button class="certificate-btn download" onclick="downloadCertificate('${cert.id}')" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="certificate-btn edit" onclick="editCertificate('${cert.id}')" title="Bearbeiten">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="certificate-btn delete" onclick="deleteCertificate('${cert.id}')" title="Löschen">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="certificate-info">
+                        <div class="certificate-info-item">
+                            <i class="fas fa-university"></i>
+                            <span>${cert.institution}</span>
+                        </div>
+                        <div class="certificate-info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>${cert.year}</span>
+                        </div>
+                    </div>
+                    <div class="certificate-preview">
+                        ${cert.file ? 
+                            `<img src="${cert.file}" alt="${cert.title}">` : 
+                            `<div class="fallback">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>${cert.fileName || 'Keine Datei'}</div>
+                            </div>`
+                        }
+                    </div>
+                `;
+                return div;
+            }
+
+            handleCertificateFileUpload(event) {
+                const file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+                if (!file) return;
+
+                if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('fileInfo').innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                        `;
+                        document.getElementById('fileInfo').style.display = 'block';
+                        
+                        // Store file data temporarily
+                        this.tempCertificateFile = {
+                            data: e.target.result,
+                            name: file.name,
+                            type: file.type
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Bitte wählen Sie eine PDF- oder Bilddatei aus.');
+                }
+            }
+
+            addCertificate() {
+                this.editingCertificateId = null;
+                this.openCertificateModal();
+            }
+
+            editCertificate(id) {
+                const cert = this.designData.certificates.find(c => c.id === id);
+                if (!cert) return;
+
+                this.editingCertificateId = id;
+                this.openCertificateModal(cert);
+            }
+
+            openCertificateModal(cert = null) {
+                const modal = document.getElementById('certificateModal');
+                const title = document.getElementById('certificateModalTitle');
+                
+                if (cert) {
+                    title.textContent = 'Zeugnis bearbeiten';
+                    document.getElementById('certificateTitle').value = cert.title;
+                    document.getElementById('certificateInstitution').value = cert.institution;
+                    document.getElementById('certificateYear').value = cert.year;
+                    document.getElementById('certificateDescription').value = cert.description || '';
+                    
+                    if (cert.file) {
+                        document.getElementById('fileInfo').innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            ${cert.fileName || 'Datei geladen'}
+                        `;
+                        document.getElementById('fileInfo').style.display = 'block';
+                    }
+                } else {
+                    title.textContent = 'Zeugnis hinzufügen';
+                    document.getElementById('certificateTitle').value = '';
+                    document.getElementById('certificateInstitution').value = '';
+                    document.getElementById('certificateYear').value = '';
+                    document.getElementById('certificateDescription').value = '';
+                    document.getElementById('fileInfo').style.display = 'none';
+                }
+                
+                modal.classList.add('active');
+            }
+
+            saveCertificate() {
+                const title = document.getElementById('certificateTitle').value;
+                const institution = document.getElementById('certificateInstitution').value;
+                const year = document.getElementById('certificateYear').value;
+                const description = document.getElementById('certificateDescription').value;
+
+                if (!title || !institution || !year) {
+                    alert('Bitte füllen Sie alle Pflichtfelder aus.');
+                    return;
+                }
+
+                const certificate = {
+                    id: this.editingCertificateId || 'cert_' + Date.now(),
+                    title,
+                    institution,
+                    year: parseInt(year),
+                    description,
+                    file: this.tempCertificateFile ? this.tempCertificateFile.data : null,
+                    fileName: this.tempCertificateFile ? this.tempCertificateFile.name : null
+                };
+
+                if (this.editingCertificateId) {
+                    // Update existing certificate
+                    const index = this.designData.certificates.findIndex(c => c.id === this.editingCertificateId);
+                    if (index !== -1) {
+                        this.designData.certificates[index] = certificate;
+                    }
+                } else {
+                    // Add new certificate
+                    this.designData.certificates.push(certificate);
+                }
+
+                this.tempCertificateFile = null;
+                this.renderCertificates();
+                this.updatePreview();
+                this.closeCertificateModal();
+            }
+
+            deleteCertificate(id) {
+                if (confirm('Möchten Sie dieses Zeugnis wirklich löschen?')) {
+                    this.designData.certificates = this.designData.certificates.filter(c => c.id !== id);
+                    this.renderCertificates();
+                    this.updatePreview();
+                }
+            }
+
+            downloadCertificate(id) {
+                const cert = this.designData.certificates.find(c => c.id === id);
+                if (!cert) return;
+
+                if (cert.file) {
+                    // Download from stored file data
+                    const link = document.createElement('a');
+                    link.href = cert.file;
+                    link.download = cert.fileName || `${cert.title}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else if (cert.fileName) {
+                    // Try to download from server
+                    const link = document.createElement('a');
+                    link.href = cert.fileName;
+                    link.download = cert.fileName;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert('Keine Datei verfügbar für Download.');
+                }
+            }
+
+            closeCertificateModal() {
+                document.getElementById('certificateModal').classList.remove('active');
+                this.editingCertificateId = null;
+                this.tempCertificateFile = null;
+                
+                // Reset form
+                document.getElementById('certificateTitle').value = '';
+                document.getElementById('certificateInstitution').value = '';
+                document.getElementById('certificateYear').value = '';
+                document.getElementById('certificateDescription').value = '';
+                document.getElementById('fileInfo').style.display = 'none';
+            }
+
             saveDesign() {
                 // Design is already saved in updatePreview()
                 alert('Design erfolgreich gespeichert!');
@@ -1343,6 +1551,31 @@ Stakeholder Management</textarea>
 
         function openPreview() {
             window.open('bewerbung.html?id=preview', '_blank');
+        }
+
+        // Certificate Functions
+        function addCertificate() {
+            hrDesigner.addCertificate();
+        }
+
+        function editCertificate(id) {
+            hrDesigner.editCertificate(id);
+        }
+
+        function deleteCertificate(id) {
+            hrDesigner.deleteCertificate(id);
+        }
+
+        function downloadCertificate(id) {
+            hrDesigner.downloadCertificate(id);
+        }
+
+        function saveCertificate() {
+            hrDesigner.saveCertificate();
+        }
+
+        function closeCertificateModal() {
+            hrDesigner.closeCertificateModal();
         }
 
         // Initialize HR Designer
