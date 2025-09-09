@@ -2072,6 +2072,226 @@
             font-weight: 600;
         }
 
+        /* Package Assembly Modal Styles */
+        .package-assembly-modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-assembly-modal h3 {
+            margin: 0 0 1.5rem 0;
+            color: #1e293b;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .package-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .package-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .package-option:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+        }
+
+        .package-option.selected {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .package-option input[type="checkbox"] {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            accent-color: #6366f1;
+        }
+
+        .package-option h4 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .package-option p {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .package-option .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .package-option.selected .file-info {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .email-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-section h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .email-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .email-form input,
+        .email-form textarea {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .email-form input:focus,
+        .email-form textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .email-form textarea {
+            grid-column: 1 / -1;
+            resize: vertical;
+        }
+
+        .package-preview {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-preview h4 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .preview-item .file-name {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .preview-item .file-size {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .search-progress {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .progress-spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: #6366f1;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .progress-step i {
+            font-size: 1.5rem;
+            color: #6366f1;
+        }
+
+        .progress-step span {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .branding-item {
@@ -5749,8 +5969,8 @@ ${name}`
                     progressModal.remove();
                 }
                 
-                // Show success message
-                showWorkflowSuccess('Intelligenter Workflow abgeschlossen!', null);
+                // Show package assembly modal
+                showPackageAssemblyModal();
             }, 1000);
         }
 
