@@ -229,23 +229,55 @@
                                 <div class="activity-item">
                                     <i class="fas fa-robot"></i>
                                     <div>
-                                        <p>AI Twin wurde aktualisiert</p>
+                                        <p>AI Ernährungsplan generiert</p>
                                         <span>vor 2 Stunden</span>
                                     </div>
                                 </div>
                                 <div class="activity-item">
-                                    <i class="fas fa-calendar-check"></i>
+                                    <i class="fas fa-file-alt"></i>
                                     <div>
-                                        <p>Neue Buchung eingegangen</p>
-                                        <span>vor 5 Stunden</span>
+                                        <p>Neue Bewerbung hinzugefügt</p>
+                                        <span>vor 4 Stunden</span>
                                     </div>
                                 </div>
                                 <div class="activity-item">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-apple-alt"></i>
                                     <div>
-                                        <p>Content aktualisiert</p>
-                                        <span>gestern</span>
+                                        <p>Rezept mit AI erstellt</p>
+                                        <span>vor 1 Tag</span>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <h3>Bewerbungsübersicht</h3>
+                            <div class="applications-overview">
+                                <div class="overview-stats">
+                                    <div class="overview-stat">
+                                        <span class="stat-number" id="dashboard-total-apps">0</span>
+                                        <span class="stat-label">Gesamt</span>
+                                    </div>
+                                    <div class="overview-stat">
+                                        <span class="stat-number" id="dashboard-pending-apps">0</span>
+                                        <span class="stat-label">Ausstehend</span>
+                                    </div>
+                                    <div class="overview-stat">
+                                        <span class="stat-number" id="dashboard-success-rate">0%</span>
+                                        <span class="stat-label">Erfolgsrate</span>
+                                    </div>
+                                </div>
+                                <div class="recent-applications">
+                                    <h4>Letzte Bewerbungen</h4>
+                                    <div id="recentApplicationsList">
+                                        <!-- Recent applications will be loaded here -->
+                                    </div>
+                                </div>
+                                <div class="overview-actions">
+                                    <a href="bewerbungen.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <span>Zur Bewerbungsseite</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -3000,6 +3032,7 @@ Bitte antworte im folgenden JSON-Format:
             
             // Lade Bewerbungsverwaltung
             updateApplicationStats();
+            updateDashboardApplications();
         });
         
         // Cache-busting für Admin-Script (als Backup)
