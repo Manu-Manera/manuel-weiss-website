@@ -4389,7 +4389,7 @@ ${name}`
             modal.className = 'modal';
             modal.style.display = 'block';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-content" style="max-width: 700px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-magic"></i> Intelligenter Bewerbungs-Workflow</h3>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
@@ -4399,23 +4399,42 @@ ${name}`
                             <div class="workflow-step active" id="step1">
                                 <div class="step-number">1</div>
                                 <div class="step-content">
-                                    <h4>Daten sammeln</h4>
-                                    <p>Analysiere vorhandene Bewerbungen und Dokumente</p>
+                                    <h4>Stellenanzeige analysieren</h4>
+                                    <p>KI extrahiert Firmenname, Logo und Branding</p>
                                 </div>
                             </div>
                             <div class="workflow-step" id="step2">
                                 <div class="step-number">2</div>
                                 <div class="step-content">
-                                    <h4>Intelligentes Vorausfüllen</h4>
-                                    <p>Fülle Designer mit relevanten Daten</p>
+                                    <h4>Daten sammeln</h4>
+                                    <p>Analysiere vorhandene Bewerbungen und Dokumente</p>
                                 </div>
                             </div>
                             <div class="workflow-step" id="step3">
                                 <div class="step-number">3</div>
                                 <div class="step-content">
+                                    <h4>Intelligentes Vorausfüllen</h4>
+                                    <p>Fülle Designer mit relevanten Daten</p>
+                                </div>
+                            </div>
+                            <div class="workflow-step" id="step4">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
                                     <h4>Designer öffnen</h4>
                                     <p>Bereit für Anpassungen und Optimierung</p>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="job-analysis-section">
+                            <h4><i class="fas fa-search"></i> Stellenanzeige analysieren</h4>
+                            <div class="form-group">
+                                <label for="jobPostingText">Stellenanzeige einfügen:</label>
+                                <textarea id="jobPostingText" placeholder="Fügen Sie hier die komplette Stellenanzeige ein. Die KI wird automatisch Firmenname, Logo und Branding erkennen..." rows="8"></textarea>
+                            </div>
+                            <div class="analysis-preview" id="analysisPreview" style="display: none;">
+                                <h5>🔍 KI-Analyse Ergebnisse:</h5>
+                                <div class="analysis-results" id="jobAnalysisResults"></div>
                             </div>
                         </div>
                         
@@ -4431,7 +4450,11 @@ ${name}`
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="startIntelligentWorkflow()" id="startWorkflowBtn" disabled>
+                        <button class="btn btn-primary" onclick="analyzeJobPosting()" id="analyzeJobBtn">
+                            <i class="fas fa-search"></i>
+                            Stellenanzeige analysieren
+                        </button>
+                        <button class="btn btn-primary" onclick="startIntelligentWorkflow()" id="startWorkflowBtn" disabled style="display: none;">
                             <i class="fas fa-rocket"></i>
                             Workflow starten
                         </button>
@@ -4442,6 +4465,15 @@ ${name}`
             
             // Analyze available data
             analyzeAvailableData();
+            
+            // Add event listener for job posting text
+            document.getElementById('jobPostingText').addEventListener('input', function() {
+                if (this.value.length > 100) {
+                    document.getElementById('analyzeJobBtn').disabled = false;
+                } else {
+                    document.getElementById('analyzeJobBtn').disabled = true;
+                }
+            });
         }
 
         function analyzeAvailableData() {
