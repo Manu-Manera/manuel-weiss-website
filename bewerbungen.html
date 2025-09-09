@@ -7706,6 +7706,567 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 coverLetterTab.parentElement.appendChild(smartTemplatesBtn);
             }
         }, 2000);
+
+        // Package Assembly Functions
+        function showPackageAssemblyModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-box"></i> Bewerbungspaket zusammenstellen</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="package-assembly-modal">
+                            <h3><i class="fas fa-check-circle"></i> Workflow erfolgreich abgeschlossen!</h3>
+                            <p>Wählen Sie die Dokumente aus, die in Ihr Bewerbungspaket aufgenommen werden sollen:</p>
+                            
+                            <div class="package-options" id="packageOptions">
+                                <!-- Wird dynamisch gefüllt -->
+                            </div>
+                            
+                            <div class="package-preview" id="packagePreview" style="display: none;">
+                                <h4><i class="fas fa-eye"></i> Paket-Vorschau</h4>
+                                <div class="preview-list" id="previewList"></div>
+                            </div>
+                            
+                            <div class="email-section">
+                                <h4><i class="fas fa-envelope"></i> E-Mail-Versand (Optional)</h4>
+                                <div class="email-form">
+                                    <input type="email" id="recipientEmail" placeholder="E-Mail-Adresse des Empfängers">
+                                    <input type="text" id="emailSubject" placeholder="Betreff" value="Bewerbung - Manuel Weiss">
+                                    <textarea id="emailMessage" placeholder="Nachricht" rows="4">Sehr geehrte Damen und Herren,
+
+anbei übersende ich Ihnen meine Bewerbungsunterlagen für die ausgeschriebene Position.
+
+Mit freundlichen Grüßen
+Manuel Weiss</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="downloadPackage()" id="downloadBtn" disabled>
+                            <i class="fas fa-download"></i>
+                            Paket herunterladen
+                        </button>
+                        <button class="btn btn-success" onclick="sendPackage()" id="sendBtn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                            Per E-Mail senden
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load available documents
+            loadAvailableDocuments();
+        }
+
+        function loadAvailableDocuments() {
+            const packageOptions = document.getElementById('packageOptions');
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+            const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+            const certificates = hrDesignData.certificates || [];
+            
+            let optionsHtml = '';
+            
+            // Lebenslauf
+            optionsHtml += `
+                <div class="package-option" onclick="togglePackageOption(this)">
+                    <input type="checkbox" value="cv">
+                    <h4><i class="fas fa-file-alt"></i> Lebenslauf</h4>
+                    <p>Ihr aktueller Lebenslauf mit allen relevanten Informationen</p>
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Manuel_Weiss_CV.pdf (2.3 MB)</span>
+                    </div>
+                </div>
+            `;
+            
+            // Anschreiben (falls vorhanden)
+            if (window.currentJobAnalysis || window.selectedJobData) {
+                const jobData = window.currentJobAnalysis || window.selectedJobData;
+                optionsHtml += `
+                    <div class="package-option" onclick="togglePackageOption(this)">
+                        <input type="checkbox" value="coverLetter" checked>
+                        <h4><i class="fas fa-envelope-open-text"></i> Anschreiben</h4>
+                        <p>KI-generiertes Anschreiben für ${jobData.company || 'die Position'}</p>
+                        <div class="file-info">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Anschreiben_${(jobData.company || 'Position').replace(/\s+/g, '_')}.pdf (0.8 MB)</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Zeugnisse
+            if (certificates.length > 0) {
+                optionsHtml += `
+                    <div class="package-option" onclick="togglePackageOption(this)">
+                        <input type="checkbox" value="certificates">
+                        <h4><i class="fas fa-certificate"></i> Zeugnisse & Zertifikate</h4>
+                        <p>Alle relevanten Zeugnisse und Zertifikate (${certificates.length} Dokumente)</p>
+                        <div class="file-info">
+                            <i class="fas fa-folder"></i>
+                            <span>Zeugnisse.zip (${(certificates.length * 0.5).toFixed(1)} MB)</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Portfolio/Projekte
+            optionsHtml += `
+                <div class="package-option" onclick="togglePackageOption(this)">
+                    <input type="checkbox" value="portfolio">
+                    <h4><i class="fas fa-briefcase"></i> Projektportfolio</h4>
+                    <p>Übersicht Ihrer wichtigsten Projekte und Erfolge</p>
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Projektportfolio.pdf (1.2 MB)</span>
+                    </div>
+                </div>
+            `;
+            
+            // Referenzen
+            optionsHtml += `
+                <div class="package-option" onclick="togglePackageOption(this)">
+                    <input type="checkbox" value="references">
+                    <h4><i class="fas fa-users"></i> Referenzen</h4>
+                    <p>Kontaktdaten von Referenzpersonen</p>
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Referenzen.pdf (0.3 MB)</span>
+                    </div>
+                </div>
+            `;
+            
+            packageOptions.innerHTML = optionsHtml;
+            
+            // Update preview
+            updatePackagePreview();
+        }
+
+        function togglePackageOption(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                element.classList.add('selected');
+            } else {
+                element.classList.remove('selected');
+            }
+            
+            updatePackagePreview();
+        }
+
+        function updatePackagePreview() {
+            const selectedOptions = document.querySelectorAll('.package-option input[type="checkbox"]:checked');
+            const preview = document.getElementById('packagePreview');
+            const previewList = document.getElementById('previewList');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (selectedOptions.length === 0) {
+                preview.style.display = 'none';
+                downloadBtn.disabled = true;
+                sendBtn.disabled = true;
+                return;
+            }
+            
+            preview.style.display = 'block';
+            downloadBtn.disabled = false;
+            sendBtn.disabled = false;
+            
+            let previewHtml = '';
+            let totalSize = 0;
+            
+            selectedOptions.forEach(option => {
+                const optionElement = option.closest('.package-option');
+                const title = optionElement.querySelector('h4').textContent;
+                const fileInfo = optionElement.querySelector('.file-info span').textContent;
+                const sizeMatch = fileInfo.match(/\(([^)]+)\)/);
+                const size = sizeMatch ? sizeMatch[1] : '0 MB';
+                
+                previewHtml += `
+                    <div class="preview-item">
+                        <span class="file-name">${title}</span>
+                        <span class="file-size">${size}</span>
+                    </div>
+                `;
+                
+                // Calculate total size
+                const sizeValue = parseFloat(size);
+                totalSize += sizeValue;
+            });
+            
+            previewHtml += `
+                <div class="preview-item" style="border-top: 2px solid #e2e8f0; font-weight: 600;">
+                    <span class="file-name">Gesamt</span>
+                    <span class="file-size">${totalSize.toFixed(1)} MB</span>
+                </div>
+            `;
+            
+            previewList.innerHTML = previewHtml;
+        }
+
+        function downloadPackage() {
+            const selectedOptions = document.querySelectorAll('.package-option input[type="checkbox"]:checked');
+            if (selectedOptions.length === 0) {
+                alert('Bitte wählen Sie mindestens ein Dokument aus.');
+                return;
+            }
+            
+            // Show download progress
+            showDownloadProgress();
+            
+            // Simulate package creation and download
+            setTimeout(() => {
+                const packageName = generatePackageName();
+                const link = document.createElement('a');
+                link.href = '#'; // In real implementation, this would be the generated PDF
+                link.download = `${packageName}.zip`;
+                link.click();
+                
+                showSuccessMessage('Paket erfolgreich heruntergeladen!');
+            }, 2000);
+        }
+
+        function sendPackage() {
+            const recipientEmail = document.getElementById('recipientEmail').value;
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+            
+            if (!recipientEmail.trim()) {
+                alert('Bitte geben Sie eine E-Mail-Adresse ein.');
+                return;
+            }
+            
+            const selectedOptions = document.querySelectorAll('.package-option input[type="checkbox"]:checked');
+            if (selectedOptions.length === 0) {
+                alert('Bitte wählen Sie mindestens ein Dokument aus.');
+                return;
+            }
+            
+            // Show sending progress
+            showSendingProgress();
+            
+            // Simulate email sending
+            setTimeout(() => {
+                // In real implementation, this would send via your GMX email
+                const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+                window.open(mailtoLink);
+                
+                showSuccessMessage('E-Mail erfolgreich gesendet!');
+            }, 2000);
+        }
+
+        function generatePackageName() {
+            const jobData = window.currentJobAnalysis || window.selectedJobData;
+            const company = jobData?.company || 'Bewerbung';
+            const date = new Date().toISOString().split('T')[0];
+            return `Bewerbung_${company.replace(/\s+/g, '_')}_${date}`;
+        }
+
+        function showDownloadProgress() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-body" style="text-align: center; padding: 2rem;">
+                        <div class="progress-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Paket wird erstellt...</span>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step active">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>PDFs erstellen</span>
+                            </div>
+                            <div class="progress-step">
+                                <i class="fas fa-archive"></i>
+                                <span>ZIP erstellen</span>
+                            </div>
+                            <div class="progress-step">
+                                <i class="fas fa-download"></i>
+                                <span>Download starten</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            setTimeout(() => {
+                modal.remove();
+            }, 2000);
+        }
+
+        function showSendingProgress() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-body" style="text-align: center; padding: 2rem;">
+                        <div class="progress-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>E-Mail wird gesendet...</span>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step active">
+                                <i class="fas fa-envelope"></i>
+                                <span>E-Mail vorbereiten</span>
+                            </div>
+                            <div class="progress-step">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Über GMX senden</span>
+                            </div>
+                            <div class="progress-step">
+                                <i class="fas fa-check"></i>
+                                <span>Versand bestätigt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            setTimeout(() => {
+                modal.remove();
+            }, 2000);
+        }
+
+        function showSuccessMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Mode Selector Functions
+        function setupModeSelector() {
+            const modeRadios = document.querySelectorAll('input[name="workflowMode"]');
+            const manualSection = document.getElementById('manualJobSection');
+            const searchSection = document.getElementById('searchJobSection');
+            const analyzeBtn = document.getElementById('analyzeJobBtn');
+            const searchBtn = document.getElementById('searchJobsBtn');
+            
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'manual') {
+                        manualSection.style.display = 'block';
+                        searchSection.style.display = 'none';
+                        analyzeBtn.style.display = 'inline-block';
+                        searchBtn.style.display = 'none';
+                    } else if (this.value === 'search') {
+                        manualSection.style.display = 'none';
+                        searchSection.style.display = 'block';
+                        analyzeBtn.style.display = 'none';
+                        searchBtn.style.display = 'inline-block';
+                    }
+                });
+            });
+        }
+
+        function searchJobs() {
+            const keywords = document.getElementById('searchKeywords').value;
+            const location = document.getElementById('searchLocation').value;
+            const experience = document.getElementById('searchExperience').value;
+            const industry = document.getElementById('searchIndustry').value;
+            const preferences = document.getElementById('searchPreferences').value;
+            
+            if (!keywords.trim()) {
+                alert('Bitte geben Sie Suchbegriffe ein.');
+                return;
+            }
+            
+            // Show search progress
+            showSearchProgress();
+            
+            // Simulate AI job search
+            setTimeout(() => {
+                const mockJobs = generateMockJobResults(keywords, location, experience, industry, preferences);
+                displayJobSearchResults(mockJobs);
+            }, 2000);
+        }
+
+        function showSearchProgress() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.style.display = 'block';
+            searchResults.innerHTML = `
+                <div class="search-progress">
+                    <div class="progress-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>KI durchsucht Jobportale...</span>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="progress-step active">
+                            <i class="fas fa-search"></i>
+                            <span>Jobportale durchsuchen</span>
+                        </div>
+                        <div class="progress-step">
+                            <i class="fas fa-filter"></i>
+                            <span>Ergebnisse filtern</span>
+                        </div>
+                        <div class="progress-step">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Match-Score berechnen</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateMockJobResults(keywords, location, experience, industry, preferences) {
+            const mockJobs = [
+                {
+                    id: 1,
+                    title: 'Senior HR-Tech Consultant',
+                    company: 'TechCorp AG',
+                    location: 'Zürich, Schweiz',
+                    type: 'Vollzeit',
+                    experience: '5+ Jahre',
+                    matchScore: 95,
+                    description: 'Wir suchen einen erfahrenen HR-Tech Consultant für die Digitalisierung unserer HR-Prozesse. Sie werden bei der Implementierung von UKG HRSD und der Optimierung von Service Delivery Prozessen mitwirken.',
+                    tags: ['UKG HRSD', 'BPMN 2.0', 'Change Management', 'Scrum'],
+                    salary: 'CHF 120,000 - 150,000',
+                    posted: 'vor 2 Tagen'
+                },
+                {
+                    id: 2,
+                    title: 'HR Digitalisierung Manager',
+                    company: 'InnovateHR GmbH',
+                    location: 'Remote / Basel',
+                    type: 'Vollzeit',
+                    experience: '3-5 Jahre',
+                    matchScore: 88,
+                    description: 'Verantwortlich für die strategische Planung und Umsetzung von HR-Digitalisierungsprojekten. Erfahrung mit agilen Methoden und Prozessmanagement erforderlich.',
+                    tags: ['Digital Transformation', 'Agile', 'Process Management', 'Leadership'],
+                    salary: 'CHF 100,000 - 130,000',
+                    posted: 'vor 1 Woche'
+                },
+                {
+                    id: 3,
+                    title: 'Prozessmanagement Consultant',
+                    company: 'SwissBank AG',
+                    location: 'Zürich, Schweiz',
+                    type: 'Vollzeit',
+                    experience: '4+ Jahre',
+                    matchScore: 82,
+                    description: 'Beratung bei der Optimierung von HR-Prozessen mit Fokus auf BPMN 2.0 und ADONIS. Erfahrung im Banking-Sektor von Vorteil.',
+                    tags: ['BPMN 2.0', 'ADONIS', 'Banking', 'Consulting'],
+                    salary: 'CHF 110,000 - 140,000',
+                    posted: 'vor 3 Tagen'
+                }
+            ];
+            
+            return mockJobs.filter(job => {
+                let score = 0;
+                if (keywords.toLowerCase().includes('hr-tech') && job.title.toLowerCase().includes('hr')) score += 20;
+                if (keywords.toLowerCase().includes('prozess') && job.tags.some(tag => tag.includes('Process'))) score += 15;
+                if (location && job.location.toLowerCase().includes(location.toLowerCase())) score += 10;
+                return score > 0;
+            });
+        }
+
+        function displayJobSearchResults(jobs) {
+            const searchResults = document.getElementById('searchResults');
+            const jobList = document.getElementById('jobList');
+            
+            if (jobs.length === 0) {
+                searchResults.innerHTML = `
+                    <h5>🎯 Keine passenden Stellen gefunden</h5>
+                    <p>Versuchen Sie andere Suchbegriffe oder erweitern Sie Ihre Kriterien.</p>
+                `;
+                return;
+            }
+            
+            let jobsHtml = '';
+            jobs.forEach(job => {
+                jobsHtml += `
+                    <div class="job-item" onclick="selectJob(${job.id})" data-job-id="${job.id}">
+                        <div class="job-match-score">${job.matchScore}% Match</div>
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.title}</div>
+                                <div class="job-company">${job.company}</div>
+                            </div>
+                        </div>
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${job.location}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${job.type}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-user"></i>
+                                <span>${job.experience}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>${job.salary}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>${job.posted}</span>
+                            </div>
+                        </div>
+                        <div class="job-description">${job.description}</div>
+                        <div class="job-tags">
+                            ${job.tags.map(tag => `<span class="job-tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            searchResults.innerHTML = `
+                <h5>🎯 Gefundene Stellenangebote (${jobs.length})</h5>
+                <div class="job-list">${jobsHtml}</div>
+            `;
+        }
+
+        function selectJob(jobId) {
+            // Remove previous selection
+            document.querySelectorAll('.job-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current job
+            const selectedJob = document.querySelector(`[data-job-id="${jobId}"]`);
+            if (selectedJob) {
+                selectedJob.classList.add('selected');
+                
+                // Store selected job data
+                window.selectedJobData = {
+                    id: jobId,
+                    title: selectedJob.querySelector('.job-title').textContent,
+                    company: selectedJob.querySelector('.job-company').textContent,
+                    description: selectedJob.querySelector('.job-description').textContent,
+                    tags: Array.from(selectedJob.querySelectorAll('.job-tag')).map(tag => tag.textContent)
+                };
+                
+                // Enable workflow start button
+                const startBtn = document.getElementById('startWorkflowBtn');
+                startBtn.style.display = 'inline-block';
+                startBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
