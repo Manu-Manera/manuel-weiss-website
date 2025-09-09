@@ -389,6 +389,81 @@
                             </div>
                         </div>
                         
+                        <!-- Ernährungsplan-Verwaltung -->
+                        <div class="nutrition-management" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                🍽️ Ernährungsplan-Verwaltung
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                                <!-- OpenAI API Konfiguration -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">🤖 OpenAI API Konfiguration</h4>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label for="openai-api-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key:</label>
+                                        <input type="password" id="openai-api-key" placeholder="sk-..." style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                    </div>
+                                    <button onclick="saveOpenAIKey()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1rem;">
+                                        🔑 API Key speichern
+                                    </button>
+                                    <button onclick="testOpenAIConnection()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        🧪 Verbindung testen
+                                    </button>
+                                    <div id="openai-status" style="margin-top: 1rem; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem;"></div>
+                                </div>
+                                
+                                <!-- Ernährungsplan-Statistiken -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">📊 Statistiken</h4>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div style="text-align: center; padding: 1rem; background: #f0f4ff; border-radius: 8px;">
+                                            <div style="font-size: 2rem; font-weight: 700; color: #6366f1;" id="plans-generated">0</div>
+                                            <div style="font-size: 0.9rem; color: #64748b;">Pläne erstellt</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 8px;">
+                                            <div style="font-size: 2rem; font-weight: 700; color: #10b981;" id="ai-requests">0</div>
+                                            <div style="font-size: 0.9rem; color: #64748b;">AI Requests</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 1rem; background: #fef3c7; border-radius: 8px;">
+                                            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;" id="exports-today">0</div>
+                                            <div style="font-size: 0.9rem; color: #64748b;">Exports heute</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 1rem; background: #fce7f3; border-radius: 8px;">
+                                            <div style="font-size: 2rem; font-weight: 700; color: #ec4899;" id="active-users">0</div>
+                                            <div style="font-size: 0.9rem; color: #64748b;">Aktive Nutzer</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rezept-Datenbank -->
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <h4 style="color: #555; margin-bottom: 1rem;">📚 Rezept-Datenbank</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <input type="text" id="recipe-name" placeholder="Rezeptname" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                    <select id="recipe-category" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                        <option value="Frühstück">Frühstück</option>
+                                        <option value="Mittagessen">Mittagessen</option>
+                                        <option value="Abendessen">Abendessen</option>
+                                        <option value="Snack">Snack</option>
+                                    </select>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <textarea id="recipe-ingredients" placeholder="Zutaten (eine pro Zeile)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; min-height: 100px;"></textarea>
+                                    <textarea id="recipe-instructions" placeholder="Zubereitung" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; min-height: 100px;"></textarea>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                                    <input type="number" id="recipe-calories" placeholder="Kalorien" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                    <input type="number" id="recipe-protein" placeholder="Protein (g)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                    <input type="number" id="recipe-carbs" placeholder="Kohlenhydrate (g)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                    <input type="number" id="recipe-fats" placeholder="Fette (g)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
+                                </div>
+                                <button onclick="addRecipe()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    ➕ Rezept hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="ai-twin-steps">
                             <div class="step active" data-step="1">
                                 <div class="step-number">1</div>
@@ -1275,6 +1350,116 @@
             }
         }
         
+        // Ernährungsplan-Verwaltung Funktionen
+        function saveOpenAIKey() {
+            const apiKey = document.getElementById('openai-api-key').value;
+            if (!apiKey) {
+                showStatus('Bitte gib einen API Key ein.', 'error');
+                return;
+            }
+            
+            if (window.aiIntegration) {
+                window.aiIntegration.setAPIKey(apiKey);
+                showStatus('✅ API Key erfolgreich gespeichert!', 'success');
+            } else {
+                localStorage.setItem('openai_api_key', apiKey);
+                showStatus('✅ API Key gespeichert (AI Integration nicht verfügbar)', 'success');
+            }
+        }
+        
+        function testOpenAIConnection() {
+            if (!window.aiIntegration) {
+                showStatus('❌ AI Integration nicht verfügbar', 'error');
+                return;
+            }
+            
+            showStatus('🧪 Teste Verbindung...', 'info');
+            
+            window.aiIntegration.testConnection()
+                .then(result => {
+                    if (result.success) {
+                        showStatus('✅ Verbindung erfolgreich!', 'success');
+                    } else {
+                        showStatus(`❌ ${result.message}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    showStatus(`❌ Fehler: ${error.message}`, 'error');
+                });
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('openai-status');
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.className = `status-${type}`;
+                statusDiv.style.backgroundColor = type === 'success' ? '#d1fae5' : 
+                                                 type === 'error' ? '#fee2e2' : '#dbeafe';
+                statusDiv.style.color = type === 'success' ? '#065f46' : 
+                                       type === 'error' ? '#991b1b' : '#1e40af';
+            }
+        }
+        
+        function addRecipe() {
+            const recipe = {
+                name: document.getElementById('recipe-name').value,
+                category: document.getElementById('recipe-category').value,
+                ingredients: document.getElementById('recipe-ingredients').value.split('\n').filter(i => i.trim()),
+                instructions: document.getElementById('recipe-instructions').value,
+                nutrition: {
+                    calories: parseInt(document.getElementById('recipe-calories').value) || 0,
+                    protein: parseInt(document.getElementById('recipe-protein').value) || 0,
+                    carbs: parseInt(document.getElementById('recipe-carbs').value) || 0,
+                    fats: parseInt(document.getElementById('recipe-fats').value) || 0
+                }
+            };
+            
+            if (!recipe.name || !recipe.ingredients.length || !recipe.instructions) {
+                alert('Bitte fülle alle Pflichtfelder aus.');
+                return;
+            }
+            
+            // Save recipe to localStorage
+            const recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+            recipe.id = Date.now();
+            recipe.createdAt = new Date().toISOString();
+            recipes.push(recipe);
+            localStorage.setItem('nutrition_recipes', JSON.stringify(recipes));
+            
+            // Clear form
+            document.getElementById('recipe-name').value = '';
+            document.getElementById('recipe-ingredients').value = '';
+            document.getElementById('recipe-instructions').value = '';
+            document.getElementById('recipe-calories').value = '';
+            document.getElementById('recipe-protein').value = '';
+            document.getElementById('recipe-carbs').value = '';
+            document.getElementById('recipe-fats').value = '';
+            
+            alert('✅ Rezept erfolgreich hinzugefügt!');
+            updateNutritionStats();
+        }
+        
+        function updateNutritionStats() {
+            // Update statistics
+            const recipes = JSON.parse(localStorage.getItem('nutrition_recipes') || '[]');
+            const plansGenerated = parseInt(localStorage.getItem('nutrition_plans_generated') || '0');
+            const aiRequests = parseInt(localStorage.getItem('nutrition_ai_requests') || '0');
+            const exportsToday = parseInt(localStorage.getItem('nutrition_exports_today') || '0');
+            const activeUsers = parseInt(localStorage.getItem('nutrition_active_users') || '0');
+            
+            document.getElementById('plans-generated').textContent = plansGenerated;
+            document.getElementById('ai-requests').textContent = aiRequests;
+            document.getElementById('exports-today').textContent = exportsToday;
+            document.getElementById('active-users').textContent = activeUsers;
+        }
+        
+        function loadOpenAIKey() {
+            const savedKey = localStorage.getItem('openai_api_key');
+            if (savedKey) {
+                document.getElementById('openai-api-key').value = savedKey;
+            }
+        }
+        
         // Services laden
         function loadServices() {
             const servicesList = document.getElementById('servicesList');
@@ -1948,6 +2133,10 @@
             
             // Lade gespeichertes Profilbild
             loadProfileImageFromStorage();
+            
+            // Lade Ernährungsplan-Verwaltung
+            loadOpenAIKey();
+            updateNutritionStats();
         });
         
         // Cache-busting für Admin-Script (als Backup)
@@ -1956,5 +2145,6 @@
         script.src = `admin-script.js?v=3.5&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
+    <script src="js/ai-integration.js"></script>
 </body>
 </html>
