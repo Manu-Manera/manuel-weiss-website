@@ -14,6 +14,8 @@ function initializeWebsite() {
     initSmoothScroll();
     initTypingEffect();
     initParallax();
+    loadProfileImageFromStorage();
+    setupProfileImageListener();
 }
 
 // Hide loading screen
@@ -519,5 +521,44 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// Load profile image from localStorage
+function loadProfileImageFromStorage() {
+    const savedImage = localStorage.getItem('profileImage');
+    if (savedImage && savedImage.startsWith('data:image/')) {
+        const profileImageElement = document.getElementById('profile-photo');
+        if (profileImageElement) {
+            profileImageElement.src = savedImage;
+            console.log('✅ Profilbild aus localStorage geladen (script.js)');
+        }
+    }
+}
+
+// Listen for localStorage changes to update profile image in real-time
+function setupProfileImageListener() {
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'profileImage' && e.newValue && e.newValue.startsWith('data:image/')) {
+            const profileImageElement = document.getElementById('profile-photo');
+            if (profileImageElement) {
+                profileImageElement.src = e.newValue;
+                console.log('✅ Profilbild in Echtzeit aktualisiert (storage event)');
+            }
+        }
+    });
+    
+    // Auch auf localStorage-Änderungen im gleichen Tab reagieren
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+        originalSetItem.apply(this, arguments);
+        if (key === 'profileImage' && value && value.startsWith('data:image/')) {
+            const profileImageElement = document.getElementById('profile-photo');
+            if (profileImageElement) {
+                profileImageElement.src = value;
+                console.log('✅ Profilbild in Echtzeit aktualisiert (setItem override)');
+            }
+        }
+    };
+}
+
 // Export functions for external use
 window.showNotification = showNotification;
+window.loadProfileImageFromStorage = loadProfileImageFromStorage;

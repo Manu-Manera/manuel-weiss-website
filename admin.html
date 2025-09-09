@@ -1197,10 +1197,44 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('profileImage').src = e.target.result;
-                    // Hier könnte man das Bild zu einem Server hochladen
-                    console.log('✅ Profilbild aktualisiert');
-                    alert('Profilbild erfolgreich aktualisiert!');
+                    const imageData = e.target.result;
+                    
+                    // Profilbild im Admin-Panel anzeigen
+                    document.getElementById('profileImage').src = imageData;
+                    
+                    // Profilbild in localStorage speichern für Website-Synchronisation
+                    localStorage.setItem('profileImage', imageData);
+                    
+                    // Zusätzlich in der JSON-Datenstruktur speichern
+                    if (window.adminPanel && window.adminPanel.data) {
+                        if (!window.adminPanel.data.hero) {
+                            window.adminPanel.data.hero = {};
+                        }
+                        window.adminPanel.data.hero.profileImage = imageData;
+                        window.adminPanel.saveData();
+                    }
+                    
+                    // Netlify Storage verwenden falls verfügbar
+                    if (window.netlifyStorage) {
+                        window.netlifyStorage.saveProfileImage(imageData, 'profile-image-' + Date.now())
+                            .then(result => {
+                                console.log('✅ Profilbild auch bei Netlify gespeichert:', result);
+                            })
+                            .catch(error => {
+                                console.warn('⚠️ Netlify Storage nicht verfügbar:', error);
+                            });
+                    }
+                    
+                    console.log('✅ Profilbild aktualisiert und gespeichert');
+                    alert('Profilbild erfolgreich aktualisiert! Es wird nun auf der Website angezeigt.');
+                    
+                    // Test: Prüfe ob localStorage korrekt gesetzt wurde
+                    const testImage = localStorage.getItem('profileImage');
+                    if (testImage && testImage.startsWith('data:image/')) {
+                        console.log('✅ localStorage Test erfolgreich - Profilbild ist gespeichert');
+                    } else {
+                        console.error('❌ localStorage Test fehlgeschlagen');
+                    }
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -1226,6 +1260,18 @@
                 reader.readAsDataURL(file);
             } else {
                 alert('Bitte wähle eine Datei aus!');
+            }
+        }
+        
+        // Profilbild beim Laden des Admin-Panels aus localStorage laden
+        function loadProfileImageFromStorage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage && savedImage.startsWith('data:image/')) {
+                const profileImageElement = document.getElementById('profileImage');
+                if (profileImageElement) {
+                    profileImageElement.src = savedImage;
+                    console.log('✅ Profilbild aus localStorage geladen');
+                }
             }
         }
         
@@ -1899,6 +1945,9 @@
             loadBookings();
             renderRentalItems();
             renderBookings([]);
+            
+            // Lade gespeichertes Profilbild
+            loadProfileImageFromStorage();
         });
         
         // Cache-busting für Admin-Script (als Backup)
