@@ -457,6 +457,111 @@ body {
     margin-bottom: var(--spacing-2xl);
 }
 
+/* Applications Overview Styles */
+.applications-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.overview-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.overview-stat {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid #6366f1;
+}
+
+.overview-stat .stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.overview-stat .stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.recent-applications h4 {
+    color: #1e293b;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.overview-actions {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Applications Button Styles */
+.btn-applications {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-applications::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-applications:hover::before {
+    left: 100%;
+}
+
+.btn-applications:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn-applications:active {
+    transform: translateY(0);
+}
+
+.btn-applications i:first-child {
+    font-size: 1rem;
+}
+
+.btn-applications i:last-child {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-applications:hover i:last-child {
+    transform: translateX(4px);
+}
+
 .stat-card {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
