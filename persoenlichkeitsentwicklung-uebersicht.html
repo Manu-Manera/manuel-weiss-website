@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeitsentwicklung - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung. Von Ikigai bis Zeitmanagement - finde deinen Weg zu mehr Klarheit und Erfolg.">
+    <meta name="keywords" content="Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Coaching, Selbstreflexion">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Persönlichkeitsentwicklung - Manuel Weiss">
+    <meta property="og:description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app/persoenlichkeitsentwicklung-uebersicht.html">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+                <a href="admin.html" class="nav-link">Admin</a>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero personality-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Persönlichkeitsentwicklung</span><br>
+                    Entdecke dein Potenzial
+                </h1>
+                <p class="hero-subtitle">
+                    Verschiedene bewährte Methoden für deine persönliche Entwicklung. 
+                    Von Selbstfindung bis Zielerreichung - finde deinen Weg zu mehr Klarheit und Erfolg.
+                </p>
+                <div class="hero-actions">
+                    <a href="#methods-overview" class="btn btn-primary">Methoden entdecken</a>
+                    <a href="persoenlichkeitsentwicklung.html" class="btn btn-outline">Ikigai-Workflow</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="personality-visual">
+                    <div class="visual-grid">
+                        <div class="visual-item" data-method="ikigai">
+                            <i class="fas fa-compass"></i>
+                            <span>Ikigai</span>
+                        </div>
+                        <div class="visual-item" data-method="values">
+                            <i class="fas fa-heart"></i>
+                            <span>Werte</span>
+                        </div>
+                        <div class="visual-item" data-method="strengths">
+                            <i class="fas fa-star"></i>
+                            <span>Stärken</span>
+                        </div>
+                        <div class="visual-item" data-method="goals">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Ziele</span>
+                        </div>
+                        <div class="visual-item" data-method="mindfulness">
+                            <i class="fas fa-leaf"></i>
+                            <span>Achtsamkeit</span>
+                        </div>
+                        <div class="visual-item" data-method="eq">
+                            <i class="fas fa-brain"></i>
+                            <span>EQ</span>
+                        </div>
+                        <div class="visual-item" data-method="habits">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Gewohnheiten</span>
+                        </div>
+                        <div class="visual-item" data-method="communication">
+                            <i class="fas fa-comments"></i>
+                            <span>Kommunikation</span>
+                        </div>
+                        <div class="visual-item" data-method="time">
+                            <i class="fas fa-clock"></i>
+                            <span>Zeit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methods Overview Section -->
+    <section id="methods-overview" class="personality-methods-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Persönlichkeitsentwicklung Methoden</h2>
+                <p class="section-subtitle">
+                    Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
+                </p>
+            </div>
+            
+            <div class="methods-grid">
+                <!-- Ikigai - Hauptmethode -->
+                <div class="method-card featured-method" onclick="startMethod('ikigai')">
+                    <div class="method-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ikigai-Workflow</h3>
+                        <p class="method-description">
+                            Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
+                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">7 Schritte</span>
+                            <span class="feature-tag">Tiefe Reflexion</span>
+                            <span class="feature-tag">Export-Funktionen</span>
+                            <span class="feature-tag">Progress-Tracking</span>
+                        </div>
+                        <div class="method-stats">
+                            <div class="stat">
+                                <span class="stat-number">7</span>
+                                <span class="stat-label">Schritte</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">45+</span>
+                                <span class="stat-label">Fragen</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">2-3h</span>
+                                <span class="stat-label">Dauer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-primary">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <!-- Weitere Methoden -->
+                <div class="method-card" onclick="startMethod('values-clarification')">
+                    <div class="method-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Werte-Klärung</h3>
+                        <p class="method-description">
+                            Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Werte-Ranking</span>
+                            <span class="feature-tag">Konflikt-Analyse</span>
+                            <span class="feature-tag">Lebensbereiche</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('strengths-finder')">
+                    <div class="method-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Stärken-Analyse</h3>
+                        <p class="method-description">
+                            Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Gallup-Stärken</span>
+                            <span class="feature-tag">VIA-Test</span>
+                            <span class="feature-tag">Entwicklungsplan</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('goal-setting')">
+                    <div class="method-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ziel-Setting</h3>
+                        <p class="method-description">
+                            Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">SMART-Ziele</span>
+                            <span class="feature-tag">Aktionsplan</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('mindfulness')">
+                    <div class="method-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Achtsamkeit & Meditation</h3>
+                        <p class="method-description">
+                            Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Geführte Meditation</span>
+                            <span class="feature-tag">Achtsamkeitsübungen</span>
+                            <span class="feature-tag">Stress-Reduktion</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('emotional-intelligence')">
+                    <div class="method-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Emotionale Intelligenz</h3>
+                        <p class="method-description">
+                            Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">EQ-Test</span>
+                            <span class="feature-tag">Emotionsregulation</span>
+                            <span class="feature-tag">Empathie-Training</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('habit-building')">
+                    <div class="method-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Gewohnheiten aufbauen</h3>
+                        <p class="method-description">
+                            Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Habit-Stacking</span>
+                            <span class="feature-tag">21-Tage-Regel</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('communication')">
+                    <div class="method-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Kommunikation</h3>
+                        <p class="method-description">
+                            Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Aktives Zuhören</span>
+                            <span class="feature-tag">Nonverbale Kommunikation</span>
+                            <span class="feature-tag">Konfliktlösung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('time-management')">
+                    <div class="method-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Zeitmanagement</h3>
+                        <p class="method-description">
+                            Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Pomodoro-Technik</span>
+                            <span class="feature-tag">Eisenhower-Matrix</span>
+                            <span class="feature-tag">Priorisierung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Method Workflow Container -->
+    <section id="method-workflow" class="method-workflow-section" style="display: none;">
+        <div class="container">
+            <div class="workflow-header">
+                <button class="back-to-overview" onclick="showOverview()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zur Übersicht
+                </button>
+                <h2 id="workflow-title">Methoden-Workflow</h2>
+            </div>
+            
+            <!-- Workflow Content wird hier dynamisch eingefügt -->
+            <div id="workflow-content">
+                <!-- Content wird per JavaScript geladen -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Kontakt</h2>
+                <p class="section-subtitle">
+                    Bereit für deine persönliche Entwicklung? Lass uns sprechen!
+                </p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>E-Mail</h4>
+                            <p>manuel.weiss@example.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p>+49 123 456 789</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Standort</h4>
+                            <p>Deutschland</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <input type="text" placeholder="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="E-Mail" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Nachricht" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Nachricht senden</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                    <span class="footer-name">Manuel Weiss</span>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#about">Über mich</a>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a>
+                    <a href="index.html#contact">Kontakt</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // Method Start Functions
+        function startMethod(methodId) {
+            if (methodId === 'ikigai') {
+                window.location.href = 'persoenlichkeitsentwicklung.html';
+                return;
+            }
+            
+            // Hide overview and show workflow
+            document.getElementById('methods-overview').style.display = 'none';
+            document.getElementById('method-workflow').style.display = 'block';
+            
+            // Load method workflow
+            loadMethodWorkflow(methodId);
+            
+            // Scroll to workflow
+            document.getElementById('method-workflow').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showOverview() {
+            document.getElementById('methods-overview').style.display = 'block';
+            document.getElementById('method-workflow').style.display = 'none';
+            document.getElementById('methods-overview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadMethodWorkflow(methodId) {
+            const methodData = getMethodWorkflowData(methodId);
+            
+            document.getElementById('workflow-title').textContent = methodData.title;
+            
+            const workflowContent = document.getElementById('workflow-content');
+            workflowContent.innerHTML = methodData.html;
+            
+            // Initialize method-specific JavaScript
+            if (methodData.initFunction) {
+                methodData.initFunction();
+            }
+        }
+
+        function getMethodWorkflowData(methodId) {
+            const workflows = {
+                'values-clarification': {
+                    title: 'Werte-Klärung Workflow',
+                    html: getValuesClarificationHTML(),
+                    initFunction: initValuesClarification
+                },
+                'strengths-finder': {
+                    title: 'Stärken-Analyse Workflow',
+                    html: getStrengthsFinderHTML(),
+                    initFunction: initStrengthsFinder
+                },
+                'goal-setting': {
+                    title: 'Ziel-Setting Workflow',
+                    html: getGoalSettingHTML(),
+                    initFunction: initGoalSetting
+                },
+                'mindfulness': {
+                    title: 'Achtsamkeit & Meditation Workflow',
+                    html: getMindfulnessHTML(),
+                    initFunction: initMindfulness
+                },
+                'emotional-intelligence': {
+                    title: 'Emotionale Intelligenz Workflow',
+                    html: getEmotionalIntelligenceHTML(),
+                    initFunction: initEmotionalIntelligence
+                },
+                'habit-building': {
+                    title: 'Gewohnheiten aufbauen Workflow',
+                    html: getHabitBuildingHTML(),
+                    initFunction: initHabitBuilding
+                },
+                'communication': {
+                    title: 'Kommunikation Workflow',
+                    html: getCommunicationHTML(),
+                    initFunction: initCommunication
+                },
+                'time-management': {
+                    title: 'Zeitmanagement Workflow',
+                    html: getTimeManagementHTML(),
+                    initFunction: initTimeManagement
+                }
+            };
+            
+            return workflows[methodId] || workflows['values-clarification'];
+        }
+
+        // Method HTML Generators
+        function getValuesClarificationHTML() {
+            return `
+                <div class="workflow-container">
+                    <div class="workflow-intro">
+                        <h3>Werte-Klärung: Finde heraus, was dir wirklich wichtig ist</h3>
+                        <p>Deine Werte sind die Grundlage für alle deine Entscheidungen. In diesem Workflow identifizierst du deine wichtigsten Werte und lernst, sie in deinem Alltag zu leben.</p>
+                    </div>
+                    
+                    <div class="workflow-progress">
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Werte-Sammlung</div>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Priorisierung</div>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Konflikt-Analyse</div>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Lebensbereiche</div>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Aktionsplan</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 1: Werte-Sammlung -->
+                    <div class="workflow-step active" data-step="1">
+                        <div class="step-header">
+                            <h3>Schritt 1: Werte-Sammlung</h3>
+                            <p>Identifiziere alle Werte, die dir wichtig sind. Wähle aus der Liste oder füge eigene hinzu.</p>
+                        </div>
+                        
+                        <div class="values-grid">
+                            <div class="value-category">
+                                <h4>Beziehungen & Familie</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="liebe">
+                                        <span>Liebe</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="familie">
+                                        <span>Familie</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="freundschaft">
+                                        <span>Freundschaft</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="treue">
+                                        <span>Treue</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="vertrauen">
+                                        <span>Vertrauen</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>Persönliche Entwicklung</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="wachstum">
+                                        <span>Wachstum</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="lernen">
+                                        <span>Lernen</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="authentizitaet">
+                                        <span>Authentizität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="kreativitaet">
+                                        <span>Kreativität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="freiheit">
+                                        <span>Freiheit</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>Beruf & Erfolg</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="erfolg">
+                                        <span>Erfolg</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="anerkennung">
+                                        <span>Anerkennung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="fuehrung">
+                                        <span>Führung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="innovation">
+                                        <span>Innovation</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="teamwork">
+                                        <span>Teamwork</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>Gesundheit & Wohlbefinden</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="gesundheit">
+                                        <span>Gesundheit</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="balance">
+                                        <span>Balance</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="sport">
+                                        <span>Sport</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="entspannung">
+                                        <span>Entspannung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="natur">
+                                        <span>Natur</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="custom-values">
+                            <h4>Eigene Werte hinzufügen</h4>
+                            <div class="add-value-form">
+                                <input type="text" id="custom-value" placeholder="Dein Wert...">
+                                <button onclick="addCustomValue()" class="btn btn-outline">Hinzufügen</button>
+                            </div>
+                            <div id="custom-values-list"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="workflow-navigation">
+                        <div class="nav-buttons">
+                            <button class="btn btn-secondary" id="prev-step" disabled onclick="previousStep()">Zurück</button>
+                            <button class="btn btn-primary" id="next-step" onclick="nextStep()">Weiter</button>
+                        </div>
+                        <div class="progress-info">
+                            <span id="progress-text">Schritt 1 von 5</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStrengthsFinderHTML() {
+            return `
+                <div class="workflow-container">
+                    <div class="workflow-intro">
+                        <h3>Stärken-Analyse: Entdecke deine natürlichen Talente</h3>
+                        <p>Deine Stärken sind der Schlüssel zu deinem Erfolg. In diesem Workflow identifizierst du deine Top-Stärken und lernst, sie optimal einzusetzen.</p>
+                    </div>
+                    
+                    <div class="workflow-progress">
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Selbsteinschätzung</div>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Stärken-Test</div>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Top 5</div>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-title">Anwendung</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 1: Selbsteinschätzung -->
+                    <div class="workflow-step active" data-step="1">
+                        <div class="step-header">
+                            <h3>Schritt 1: Selbsteinschätzung</h3>
+                            <p>Bewerte dich selbst in verschiedenen Bereichen. Wo siehst du deine größten Stärken?</p>
+                        </div>
+                        
+                        <div class="strengths-assessment">
+                            <div class="strength-category">
+                                <h4>Kognitive Stärken</h4>
+                                <div class="strength-item">
+                                    <label>Analytisches Denken</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="analytical">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Kreativität</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="creativity">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Strategisches Denken</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="strategic">
+                                    <span class="rating-value">5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="strength-category">
+                                <h4>Soziale Stärken</h4>
+                                <div class="strength-item">
+                                    <label>Kommunikation</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="communication">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Empathie</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="empathy">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Führung</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="leadership">
+                                    <span class="rating-value">5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="strength-category">
+                                <h4>Exekutive Stärken</h4>
+                                <div class="strength-item">
+                                    <label>Organisation</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="organization">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Durchhaltevermögen</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="persistence">
+                                    <span class="rating-value">5</span>
+                                </div>
+                                <div class="strength-item">
+                                    <label>Anpassungsfähigkeit</label>
+                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="adaptability">
+                                    <span class="rating-value">5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="workflow-navigation">
+                        <div class="nav-buttons">
+                            <button class="btn btn-secondary" id="prev-step" disabled onclick="previousStep()">Zurück</button>
+                            <button class="btn btn-primary" id="next-step" onclick="nextStep()">Weiter</button>
+                        </div>
+                        <div class="progress-info">
+                            <span id="progress-text">Schritt 1 von 4</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Weitere Methoden HTML (vereinfacht für Demo)
+        function getGoalSettingHTML() {
+            return `<div class="workflow-container"><h3>Ziel-Setting Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        function getMindfulnessHTML() {
+            return `<div class="workflow-container"><h3>Achtsamkeit & Meditation Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        function getEmotionalIntelligenceHTML() {
+            return `<div class="workflow-container"><h3>Emotionale Intelligenz Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        function getHabitBuildingHTML() {
+            return `<div class="workflow-container"><h3>Gewohnheiten aufbauen Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        function getCommunicationHTML() {
+            return `<div class="workflow-container"><h3>Kommunikation Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        function getTimeManagementHTML() {
+            return `<div class="workflow-container"><h3>Zeitmanagement Workflow - Coming Soon!</h3><p>Diese Methode wird bald verfügbar sein.</p></div>`;
+        }
+
+        // Method Initialization Functions
+        function initValuesClarification() {
+            console.log('Initializing Values Clarification');
+            // Initialize sliders, event listeners, etc.
+        }
+
+        function initStrengthsFinder() {
+            console.log('Initializing Strengths Finder');
+            // Initialize strength sliders
+            document.querySelectorAll('.strength-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const value = this.value;
+                    const valueSpan = this.parentElement.querySelector('.rating-value');
+                    valueSpan.textContent = value;
+                });
+            });
+        }
+
+        function initGoalSetting() {
+            console.log('Initializing Goal Setting');
+        }
+
+        function initMindfulness() {
+            console.log('Initializing Mindfulness');
+        }
+
+        function initEmotionalIntelligence() {
+            console.log('Initializing Emotional Intelligence');
+        }
+
+        function initHabitBuilding() {
+            console.log('Initializing Habit Building');
+        }
+
+        function initCommunication() {
+            console.log('Initializing Communication');
+        }
+
+        function initTimeManagement() {
+            console.log('Initializing Time Management');
+        }
+
+        // Global Workflow Functions
+        let currentStep = 1;
+        let totalSteps = 5;
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateWorkflowStep();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWorkflowStep();
+            }
+        }
+
+        function updateWorkflowStep() {
+            // Hide all steps
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show current step
+            const currentStepElement = document.querySelector(`.workflow-step[data-step="${currentStep}"]`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('active');
+            }
+            
+            // Update progress
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            const currentProgressStep = document.querySelector(`.progress-step[data-step="${currentStep}"]`);
+            if (currentProgressStep) {
+                currentProgressStep.classList.add('active');
+            }
+            
+            // Update navigation
+            const prevButton = document.getElementById('prev-step');
+            const nextButton = document.getElementById('next-step');
+            const progressText = document.getElementById('progress-text');
+            
+            if (prevButton) prevButton.disabled = currentStep === 1;
+            if (nextButton) nextButton.disabled = currentStep === totalSteps;
+            if (progressText) progressText.textContent = `Schritt ${currentStep} von ${totalSteps}`;
+        }
+
+        function addCustomValue() {
+            const input = document.getElementById('custom-value');
+            const value = input.value.trim();
+            
+            if (value) {
+                const customList = document.getElementById('custom-values-list');
+                const valueItem = document.createElement('label');
+                valueItem.className = 'value-item custom-value';
+                valueItem.innerHTML = `
+                    <input type="checkbox" value="${value.toLowerCase()}">
+                    <span>${value}</span>
+                `;
+                customList.appendChild(valueItem);
+                input.value = '';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Personality Development Overview initialized');
+        });
+    </script>
+</body>
+</html>
