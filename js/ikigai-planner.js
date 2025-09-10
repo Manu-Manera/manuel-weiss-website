@@ -104,29 +104,37 @@ class IkigaiPlanner {
 
     nextStep() {
         console.log('Next step clicked, current step:', this.currentStep);
-        if (this.currentStep < this.totalSteps) {
-            this.saveCurrentStepData();
-            this.currentStep++;
-            this.updateProgress();
-            this.updateNavigation();
-            this.scrollToTop();
-            console.log('Moved to step:', this.currentStep);
-        } else {
-            console.log('Already at last step');
+        try {
+            if (this.currentStep < this.totalSteps) {
+                this.saveCurrentStepData();
+                this.currentStep++;
+                this.updateProgress();
+                this.updateNavigation();
+                this.scrollToTop();
+                console.log('Successfully moved to step:', this.currentStep);
+            } else {
+                console.log('Already at last step');
+            }
+        } catch (error) {
+            console.error('Error in nextStep:', error);
         }
     }
 
     previousStep() {
         console.log('Previous step clicked, current step:', this.currentStep);
-        if (this.currentStep > 1) {
-            this.saveCurrentStepData();
-            this.currentStep--;
-            this.updateProgress();
-            this.updateNavigation();
-            this.scrollToTop();
-            console.log('Moved to step:', this.currentStep);
-        } else {
-            console.log('Already at first step');
+        try {
+            if (this.currentStep > 1) {
+                this.saveCurrentStepData();
+                this.currentStep--;
+                this.updateProgress();
+                this.updateNavigation();
+                this.scrollToTop();
+                console.log('Successfully moved to step:', this.currentStep);
+            } else {
+                console.log('Already at first step');
+            }
+        } catch (error) {
+            console.error('Error in previousStep:', error);
         }
     }
 
@@ -176,21 +184,27 @@ class IkigaiPlanner {
     }
 
     updateNavigation() {
+        console.log('Updating navigation for step:', this.currentStep);
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         const saveBtn = document.getElementById('save-progress');
 
+        console.log('Found navigation buttons:', { prevBtn, nextBtn, saveBtn });
+
         if (prevBtn) {
             prevBtn.disabled = this.currentStep === 1;
+            console.log('Previous button disabled:', prevBtn.disabled);
         }
 
         if (nextBtn) {
             if (this.currentStep === this.totalSteps) {
                 nextBtn.style.display = 'none';
                 if (saveBtn) saveBtn.style.display = 'inline-block';
+                console.log('Showing save button, hiding next button');
             } else {
                 nextBtn.style.display = 'inline-block';
                 if (saveBtn) saveBtn.style.display = 'none';
+                console.log('Showing next button, hiding save button');
             }
         }
     }
@@ -548,14 +562,17 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing IkigaiPlanner...');
     // Small delay to ensure all elements are rendered
     setTimeout(() => {
-        window.ikigaiPlanner = new IkigaiPlanner();
-        console.log('IkigaiPlanner instance created:', window.ikigaiPlanner);
+        if (!window.ikigaiPlanner) {
+            window.ikigaiPlanner = new IkigaiPlanner();
+            console.log('IkigaiPlanner instance created:', window.ikigaiPlanner);
+        }
     }, 100);
 });
 
 // Also try to initialize if DOM is already loaded
 if (document.readyState === 'loading') {
     // DOM is still loading, wait for DOMContentLoaded
+    console.log('DOM is loading, waiting for DOMContentLoaded...');
 } else {
     // DOM is already loaded
     console.log('DOM already loaded, initializing IkigaiPlanner immediately...');
@@ -567,13 +584,30 @@ if (document.readyState === 'loading') {
     }, 100);
 }
 
+// Additional fallback initialization
+setTimeout(() => {
+    if (!window.ikigaiPlanner) {
+        console.log('Fallback initialization of IkigaiPlanner...');
+        window.ikigaiPlanner = new IkigaiPlanner();
+        console.log('IkigaiPlanner instance created (fallback):', window.ikigaiPlanner);
+    }
+}, 500);
+
 // Global handler functions for onclick attributes
 function handleNextStep() {
     console.log('handleNextStep called');
     if (window.ikigaiPlanner) {
         window.ikigaiPlanner.nextStep();
     } else {
-        console.error('IkigaiPlanner not initialized');
+        console.error('IkigaiPlanner not initialized, trying to initialize...');
+        // Try to initialize if not already done
+        if (!window.ikigaiPlanner) {
+            window.ikigaiPlanner = new IkigaiPlanner();
+            console.log('IkigaiPlanner initialized in handleNextStep');
+        }
+        if (window.ikigaiPlanner) {
+            window.ikigaiPlanner.nextStep();
+        }
     }
 }
 
@@ -582,7 +616,15 @@ function handlePreviousStep() {
     if (window.ikigaiPlanner) {
         window.ikigaiPlanner.previousStep();
     } else {
-        console.error('IkigaiPlanner not initialized');
+        console.error('IkigaiPlanner not initialized, trying to initialize...');
+        // Try to initialize if not already done
+        if (!window.ikigaiPlanner) {
+            window.ikigaiPlanner = new IkigaiPlanner();
+            console.log('IkigaiPlanner initialized in handlePreviousStep');
+        }
+        if (window.ikigaiPlanner) {
+            window.ikigaiPlanner.previousStep();
+        }
     }
 }
 
@@ -591,7 +633,15 @@ function handleSaveProgress() {
     if (window.ikigaiPlanner) {
         window.ikigaiPlanner.saveProgress();
     } else {
-        console.error('IkigaiPlanner not initialized');
+        console.error('IkigaiPlanner not initialized, trying to initialize...');
+        // Try to initialize if not already done
+        if (!window.ikigaiPlanner) {
+            window.ikigaiPlanner = new IkigaiPlanner();
+            console.log('IkigaiPlanner initialized in handleSaveProgress');
+        }
+        if (window.ikigaiPlanner) {
+            window.ikigaiPlanner.saveProgress();
+        }
     }
 }
 
