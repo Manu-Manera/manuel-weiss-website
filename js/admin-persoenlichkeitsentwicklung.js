@@ -1149,10 +1149,352 @@ function removeQuestion(button) {
     button.parentElement.remove();
 }
 
+// Method definitions for admin tabs
+const methodDefinitions = {
+    'mindfulness': {
+        name: 'Achtsamkeit & Meditation',
+        steps: [
+            { name: 'Geführte Meditation', questions: [] },
+            { name: 'Achtsamkeitsübungen', questions: [] },
+            { name: 'Stress-Reduktion', questions: [] }
+        ],
+        duration: '30-60 Minuten',
+        difficulty: 'beginner'
+    },
+    'emotional-intelligence': {
+        name: 'Emotionale Intelligenz',
+        steps: [
+            { name: 'EQ-Test', questions: [] },
+            { name: 'Emotionsregulation', questions: [] },
+            { name: 'Empathie-Training', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'habits': {
+        name: 'Gewohnheiten aufbauen',
+        steps: [
+            { name: 'Habit-Stacking', questions: [] },
+            { name: '21-Tage-Regel', questions: [] },
+            { name: 'Tracking', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'beginner'
+    },
+    'communication': {
+        name: 'Kommunikation',
+        steps: [
+            { name: 'Aktives Zuhören', questions: [] },
+            { name: 'Nonverbale Kommunikation', questions: [] },
+            { name: 'Konfliktlösung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'time-management': {
+        name: 'Zeitmanagement',
+        steps: [
+            { name: 'Zeit-Analyse', questions: [] },
+            { name: 'Eisenhower-Matrix', questions: [] },
+            { name: 'Pomodoro-Technik', questions: [] },
+            { name: 'Tagesplanung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'beginner'
+    },
+    'johari-window': {
+        name: 'Johari-Fenster',
+        steps: [
+            { name: '4 Bereiche', questions: [] },
+            { name: 'Selbstbewusstsein', questions: [] },
+            { name: 'Feedback', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'walt-disney': {
+        name: 'Walt-Disney-Strategie',
+        steps: [
+            { name: 'Träumer', questions: [] },
+            { name: 'Realist', questions: [] },
+            { name: 'Kritiker', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'nonviolent-communication': {
+        name: 'Gewaltfreie Kommunikation',
+        steps: [
+            { name: 'Beobachtung', questions: [] },
+            { name: 'Gefühl', questions: [] },
+            { name: 'Bedürfnis', questions: [] },
+            { name: 'Bitte', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'five-pillars': {
+        name: 'Fünf Säulen der Identität',
+        steps: [
+            { name: 'Leiblichkeit', questions: [] },
+            { name: 'Soziales Netzwerk', questions: [] },
+            { name: 'Arbeit & Leistung', questions: [] },
+            { name: 'Materielle Sicherheit', questions: [] },
+            { name: 'Werte & Normen', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'nlp-meta-goal': {
+        name: 'NLP Meta-Ziel',
+        steps: [
+            { name: 'Ziel-Formulierung', questions: [] },
+            { name: 'Ressourcen-Analyse', questions: [] },
+            { name: 'Strategie-Entwicklung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'advanced'
+    },
+    'aek-communication': {
+        name: 'AEK - Aspektbezogene Kommunikation',
+        steps: [
+            { name: 'Aspekt-Identifikation', questions: [] },
+            { name: 'Kommunikations-Strategie', questions: [] },
+            { name: 'Umsetzung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'advanced'
+    },
+    'rubikon-model': {
+        name: 'Rubikon-Modell',
+        steps: [
+            { name: 'Prädezisionale Phase', questions: [] },
+            { name: 'Präaktionale Phase', questions: [] },
+            { name: 'Aktionale Phase', questions: [] },
+            { name: 'Postaktionale Phase', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'advanced'
+    },
+    'systemic-coaching': {
+        name: 'Systemisches Coaching',
+        steps: [
+            { name: 'System-Analyse', questions: [] },
+            { name: 'Intervention', questions: [] },
+            { name: 'Evaluation', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'advanced'
+    },
+    'rafael-method': {
+        name: 'RAFAEL-Methode',
+        steps: [
+            { name: 'Ressourcen', questions: [] },
+            { name: 'Aktivierung', questions: [] },
+            { name: 'Fokussierung', questions: [] },
+            { name: 'Aktion', questions: [] },
+            { name: 'Evaluation', questions: [] },
+            { name: 'Lernen', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'conflict-escalation': {
+        name: 'Neun Stufen der Konflikteskalation',
+        steps: [
+            { name: 'Verhärtung', questions: [] },
+            { name: 'Debatte', questions: [] },
+            { name: 'Taten', questions: [] },
+            { name: 'Koalitionen', questions: [] },
+            { name: 'Gesichtsverlust', questions: [] },
+            { name: 'Drohstrategien', questions: [] },
+            { name: 'Begrenzte Vernichtung', questions: [] },
+            { name: 'Zersplitterung', questions: [] },
+            { name: 'Gemeinsam in den Abgrund', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'advanced'
+    },
+    'harvard-method': {
+        name: 'Harvard-Methode',
+        steps: [
+            { name: 'Interessen-Analyse', questions: [] },
+            { name: 'Optionen-Entwicklung', questions: [] },
+            { name: 'Verhandlung', questions: [] },
+            { name: 'Vereinbarung', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'circular-interview': {
+        name: 'Zirkuläres Interview',
+        steps: [
+            { name: 'Fragen-Entwicklung', questions: [] },
+            { name: 'Interview-Durchführung', questions: [] },
+            { name: 'Auswertung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'target-coaching': {
+        name: 'Target Coaching',
+        steps: [
+            { name: 'Ziel-Definition', questions: [] },
+            { name: 'Strategie-Entwicklung', questions: [] },
+            { name: 'Umsetzung', questions: [] },
+            { name: 'Evaluation', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'solution-focused': {
+        name: 'Lösungsorientierte Kurzzeitberatung',
+        steps: [
+            { name: 'Problem-Analyse', questions: [] },
+            { name: 'Lösungs-Entwicklung', questions: [] },
+            { name: 'Umsetzung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'change-stages': {
+        name: 'Sechs Stufen der Veränderung',
+        steps: [
+            { name: 'Präkontemplation', questions: [] },
+            { name: 'Kontemplation', questions: [] },
+            { name: 'Vorbereitung', questions: [] },
+            { name: 'Aktion', questions: [] },
+            { name: 'Aufrechterhaltung', questions: [] },
+            { name: 'Rückfall', questions: [] }
+        ],
+        duration: '2-3 Stunden',
+        difficulty: 'intermediate'
+    },
+    'competence-map': {
+        name: 'Kompetenzkarte',
+        steps: [
+            { name: 'Kompetenz-Identifikation', questions: [] },
+            { name: 'Bewertung', questions: [] },
+            { name: 'Entwicklungsplan', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'beginner'
+    },
+    'moment-excellence': {
+        name: 'Moment of Excellence',
+        steps: [
+            { name: 'Erfolgs-Moment', questions: [] },
+            { name: 'Analyse', questions: [] },
+            { name: 'Transfer', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'intermediate'
+    },
+    'resource-analysis': {
+        name: 'Ressourcenanalyse',
+        steps: [
+            { name: 'Ressourcen-Identifikation', questions: [] },
+            { name: 'Bewertung', questions: [] },
+            { name: 'Nutzung', questions: [] }
+        ],
+        duration: '1-2 Stunden',
+        difficulty: 'beginner'
+    }
+};
+
+// Generate admin tabs dynamically
+function generateAdminTabs() {
+    const adminMain = document.querySelector('.admin-main');
+    const methodsTab = document.getElementById('methods-tab');
+    
+    // Insert all method tabs before the methods-tab
+    Object.keys(methodDefinitions).forEach(methodId => {
+        const method = methodDefinitions[methodId];
+        const tabHtml = generateMethodTabHtml(methodId, method);
+        adminMain.insertBefore(createElementFromHTML(tabHtml), methodsTab);
+    });
+}
+
+function generateMethodTabHtml(methodId, method) {
+    const stepsHtml = method.steps.map((step, index) => `
+        <div class="step-admin">
+            <h4>Schritt ${index + 1}: ${step.name}</h4>
+            <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+            <div class="questions-admin">
+                <h5>Reflexionsfragen:</h5>
+                <div class="question-list">
+                    <div class="question-item">
+                        <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                        <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+            </div>
+        </div>
+    `).join('');
+    
+    return `
+        <div class="admin-tab-content" id="${methodId}-tab">
+            <div class="tab-header">
+                <h2>${method.name} verwalten</h2>
+                <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die ${method.name}.</p>
+            </div>
+            
+            <div class="method-admin-content">
+                <div class="admin-section">
+                    <h3>Workflow-Schritte</h3>
+                    <div class="workflow-steps-admin">
+                        ${stepsHtml}
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3>Methoden-Eigenschaften</h3>
+                    <div class="method-properties">
+                        <div class="property-group">
+                            <label>Methoden-Name:</label>
+                            <input type="text" class="admin-input" value="${method.name}">
+                        </div>
+                        <div class="property-group">
+                            <label>Beschreibung:</label>
+                            <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                        </div>
+                        <div class="property-group">
+                            <label>Geschätzte Dauer:</label>
+                            <input type="text" class="admin-input" value="${method.duration}">
+                        </div>
+                        <div class="property-group">
+                            <label>Anzahl Schritte:</label>
+                            <input type="number" class="admin-input" value="${method.steps.length}">
+                        </div>
+                        <div class="property-group">
+                            <label>Schwierigkeitsgrad:</label>
+                            <select class="admin-select">
+                                <option value="beginner" ${method.difficulty === 'beginner' ? 'selected' : ''}>Anfänger</option>
+                                <option value="intermediate" ${method.difficulty === 'intermediate' ? 'selected' : ''}>Fortgeschritten</option>
+                                <option value="advanced" ${method.difficulty === 'advanced' ? 'selected' : ''}>Experte</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createElementFromHTML(htmlString) {
+    const div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild;
+}
+
 // Initialize admin panel when DOM is loaded
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
     adminPanel = new AdminPanel();
+    
+    // Generate all method tabs dynamically
+    generateAdminTabs();
     
     // Setup dropdown event listeners
     document.addEventListener('click', (e) => {

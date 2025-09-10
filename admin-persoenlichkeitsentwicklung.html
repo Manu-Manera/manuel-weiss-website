@@ -298,6 +298,441 @@
                 </div>
             </div>
 
+            <!-- Werte-Klärung Tab -->
+            <div class="admin-tab-content" id="values-tab">
+                <div class="tab-header">
+                    <h2>Werte-Klärung verwalten</h2>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die Werte-Klärung.</p>
+                </div>
+                
+                <div class="method-admin-content">
+                    <div class="admin-section">
+                        <h3>Workflow-Schritte</h3>
+                        <div class="workflow-steps-admin">
+                            <div class="step-admin">
+                                <h4>Schritt 1: Werte-Identifikation</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 2: Werte-Ranking</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 3: Konflikt-Analyse</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 4: Lebensbereiche</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>Methoden-Eigenschaften</h3>
+                        <div class="method-properties">
+                            <div class="property-group">
+                                <label>Methoden-Name:</label>
+                                <input type="text" class="admin-input" value="Werte-Klärung">
+                            </div>
+                            <div class="property-group">
+                                <label>Beschreibung:</label>
+                                <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                            </div>
+                            <div class="property-group">
+                                <label>Geschätzte Dauer:</label>
+                                <input type="text" class="admin-input" value="1-2 Stunden">
+                            </div>
+                            <div class="property-group">
+                                <label>Anzahl Schritte:</label>
+                                <input type="number" class="admin-input" value="4">
+                            </div>
+                            <div class="property-group">
+                                <label>Schwierigkeitsgrad:</label>
+                                <select class="admin-select">
+                                    <option value="beginner">Anfänger</option>
+                                    <option value="intermediate" selected>Fortgeschritten</option>
+                                    <option value="advanced">Experte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stärken-Analyse Tab -->
+            <div class="admin-tab-content" id="strengths-tab">
+                <div class="tab-header">
+                    <h2>Stärken-Analyse verwalten</h2>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die Stärken-Analyse.</p>
+                </div>
+                
+                <div class="method-admin-content">
+                    <div class="admin-section">
+                        <h3>Workflow-Schritte</h3>
+                        <div class="workflow-steps-admin">
+                            <div class="step-admin">
+                                <h4>Schritt 1: Stärken-Identifikation</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 2: Gallup-Stärken</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 3: VIA-Test</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 4: Entwicklungsplan</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>Methoden-Eigenschaften</h3>
+                        <div class="method-properties">
+                            <div class="property-group">
+                                <label>Methoden-Name:</label>
+                                <input type="text" class="admin-input" value="Stärken-Analyse">
+                            </div>
+                            <div class="property-group">
+                                <label>Beschreibung:</label>
+                                <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                            </div>
+                            <div class="property-group">
+                                <label>Geschätzte Dauer:</label>
+                                <input type="text" class="admin-input" value="1-2 Stunden">
+                            </div>
+                            <div class="property-group">
+                                <label>Anzahl Schritte:</label>
+                                <input type="number" class="admin-input" value="4">
+                            </div>
+                            <div class="property-group">
+                                <label>Schwierigkeitsgrad:</label>
+                                <select class="admin-select">
+                                    <option value="beginner" selected>Anfänger</option>
+                                    <option value="intermediate">Fortgeschritten</option>
+                                    <option value="advanced">Experte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ziel-Setting Tab -->
+            <div class="admin-tab-content" id="goals-tab">
+                <div class="tab-header">
+                    <h2>Ziel-Setting verwalten</h2>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für das Ziel-Setting.</p>
+                </div>
+                
+                <div class="method-admin-content">
+                    <div class="admin-section">
+                        <h3>Workflow-Schritte</h3>
+                        <div class="workflow-steps-admin">
+                            <div class="step-admin">
+                                <h4>Schritt 1: SMART-Ziele</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 2: Aktionsplan</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 3: Tracking</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>Methoden-Eigenschaften</h3>
+                        <div class="method-properties">
+                            <div class="property-group">
+                                <label>Methoden-Name:</label>
+                                <input type="text" class="admin-input" value="Ziel-Setting">
+                            </div>
+                            <div class="property-group">
+                                <label>Beschreibung:</label>
+                                <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                            </div>
+                            <div class="property-group">
+                                <label>Geschätzte Dauer:</label>
+                                <input type="text" class="admin-input" value="1-2 Stunden">
+                            </div>
+                            <div class="property-group">
+                                <label>Anzahl Schritte:</label>
+                                <input type="number" class="admin-input" value="3">
+                            </div>
+                            <div class="property-group">
+                                <label>Schwierigkeitsgrad:</label>
+                                <select class="admin-select">
+                                    <option value="beginner" selected>Anfänger</option>
+                                    <option value="intermediate">Fortgeschritten</option>
+                                    <option value="advanced">Experte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NLP Dilts Tab -->
+            <div class="admin-tab-content" id="nlp-dilts-tab">
+                <div class="tab-header">
+                    <h2>NLP Dilts - Logische Ebenen verwalten</h2>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die NLP Dilts Methode.</p>
+                </div>
+                
+                <div class="method-admin-content">
+                    <div class="admin-section">
+                        <h3>Workflow-Schritte</h3>
+                        <div class="workflow-steps-admin">
+                            <div class="step-admin">
+                                <h4>Schritt 1: Umgebung</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 2: Verhalten</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 3: Fähigkeiten</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 4: Werte & Überzeugungen</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 5: Identität</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 6: Spiritualität</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>Methoden-Eigenschaften</h3>
+                        <div class="method-properties">
+                            <div class="property-group">
+                                <label>Methoden-Name:</label>
+                                <input type="text" class="admin-input" value="NLP Dilts - Logische Ebenen">
+                            </div>
+                            <div class="property-group">
+                                <label>Beschreibung:</label>
+                                <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                            </div>
+                            <div class="property-group">
+                                <label>Geschätzte Dauer:</label>
+                                <input type="text" class="admin-input" value="2-3 Stunden">
+                            </div>
+                            <div class="property-group">
+                                <label>Anzahl Schritte:</label>
+                                <input type="number" class="admin-input" value="6">
+                            </div>
+                            <div class="property-group">
+                                <label>Schwierigkeitsgrad:</label>
+                                <select class="admin-select">
+                                    <option value="beginner">Anfänger</option>
+                                    <option value="intermediate" selected>Fortgeschritten</option>
+                                    <option value="advanced">Experte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Methods Management Tab -->
             <div class="admin-tab-content" id="methods-tab">
                 <div class="tab-header">
