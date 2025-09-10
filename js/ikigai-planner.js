@@ -16,6 +16,9 @@ class IkigaiPlanner {
         this.setupEventListeners();
         this.updateProgress();
         this.updateNavigation();
+        this.setupPassionSliders();
+        this.setupValueSuggestions();
+        this.setupPassionAnalysis();
     }
 
     setupEventListeners() {
@@ -536,3 +539,212 @@ animationStyle.textContent = `
     }
 `;
 document.head.appendChild(animationStyle);
+
+    // Setup passion rating sliders
+    setupPassionSliders() {
+        document.querySelectorAll('.passion-slider').forEach(slider => {
+            const ratingValue = slider.parentElement.querySelector('.rating-value');
+            
+            slider.addEventListener('input', (e) => {
+                ratingValue.textContent = e.target.value;
+                this.updatePassionAnalysis();
+                this.autoSave();
+            });
+        });
+    }
+
+    // Setup value suggestions
+    setupValueSuggestions() {
+        document.querySelectorAll('.value-suggestion').forEach(suggestion => {
+            suggestion.addEventListener('click', (e) => {
+                const value = e.target.getAttribute('data-value');
+                const emptyInput = document.querySelector('.value-input:not([value]):not(:focus)');
+                if (emptyInput) {
+                    emptyInput.value = value;
+                    emptyInput.focus();
+                    this.autoSave();
+                }
+            });
+        });
+    }
+
+    // Setup passion analysis
+    setupPassionAnalysis() {
+        this.updatePassionAnalysis();
+    }
+
+    // Update passion analysis based on slider values
+    updatePassionAnalysis() {
+        const sliders = document.querySelectorAll('.passion-slider');
+        const categories = ['creative', 'learning', 'physical', 'social'];
+        const ratings = {};
+        
+        sliders.forEach(slider => {
+            const category = slider.getAttribute('data-category');
+            ratings[category] = parseInt(slider.value);
+        });
+
+        // Find top passion
+        const topCategory = Object.keys(ratings).reduce((a, b) => ratings[a] > ratings[b] ? a : b);
+        const topPassionElement = document.getElementById('top-passion');
+        if (topPassionElement) {
+            const categoryNames = {
+                'creative': 'Kreative Tätigkeiten',
+                'learning': 'Lernbereiche',
+                'physical': 'Körperliche Aktivitäten',
+                'social': 'Soziale Aktivitäten'
+            };
+            topPassionElement.textContent = categoryNames[topCategory] || '-';
+        }
+
+        // Time investment analysis
+        const timeInvestmentElement = document.getElementById('time-investment-analysis');
+        if (timeInvestmentElement) {
+            const totalRating = Object.values(ratings).reduce((a, b) => a + b, 0);
+            const avgRating = totalRating / Object.keys(ratings).length;
+            
+            if (avgRating >= 8) {
+                timeInvestmentElement.textContent = 'Sehr hoch - du investierst viel Zeit in deine Leidenschaften';
+            } else if (avgRating >= 6) {
+                timeInvestmentElement.textContent = 'Hoch - du lebst deine Leidenschaften aktiv';
+            } else if (avgRating >= 4) {
+                timeInvestmentElement.textContent = 'Mittel - Raum für mehr Leidenschaft im Alltag';
+            } else {
+                timeInvestmentElement.textContent = 'Niedrig - Zeit, deine Leidenschaften zu entdecken';
+            }
+        }
+
+        // Development potential
+        const developmentElement = document.getElementById('development-potential');
+        if (developmentElement) {
+            const maxRating = Math.max(...Object.values(ratings));
+            const minRating = Math.min(...Object.values(ratings));
+            const range = maxRating - minRating;
+            
+            if (range <= 2) {
+                developmentElement.textContent = 'Ausgewogen - alle Bereiche gleich entwickelt';
+            } else if (maxRating >= 8) {
+                developmentElement.textContent = 'Fokussiert - starke Leidenschaft in einem Bereich';
+            } else {
+                developmentElement.textContent = 'Vielfältig - verschiedene Interessen erkunden';
+            }
+        }
+    }
+
+    // Enhanced auto-save with progress tracking
+    autoSave() {
+        this.saveCurrentStepData();
+        this.saveProgress();
+        
+        // Show auto-save indicator
+        this.showAutoSaveIndicator();
+    }
+
+    // Show auto-save indicator
+    showAutoSaveIndicator() {
+        let indicator = document.getElementById('auto-save-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'auto-save-indicator';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(34, 197, 94, 0.9);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            document.body.appendChild(indicator);
+        }
+        
+        indicator.textContent = '✓ Automatisch gespeichert';
+        indicator.style.opacity = '1';
+        
+        setTimeout(() => {
+            indicator.style.opacity = '0';
+        }, 2000);
+    }
+
+    // Enhanced step validation
+    validateStep(step) {
+        const stepElement = document.querySelector(`[data-step="${step}"]`);
+        if (!stepElement) return true;
+
+        const requiredFields = stepElement.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = '#ef4444';
+                isValid = false;
+            } else {
+                field.style.borderColor = '';
+            }
+        });
+
+        return isValid;
+    }
+
+    // Enhanced progress calculation
+    calculateProgress() {
+        let completedFields = 0;
+        let totalFields = 0;
+
+        for (let step = 1; step <= this.totalSteps; step++) {
+            const stepElement = document.querySelector(`[data-step="${step}"]`);
+            if (stepElement) {
+                const fields = stepElement.querySelectorAll('textarea, input[type="text"]');
+                fields.forEach(field => {
+                    totalFields++;
+                    if (field.value.trim()) {
+                        completedFields++;
+                    }
+                });
+            }
+        }
+
+        return totalFields > 0 ? (completedFields / totalFields) * 100 : 0;
+    }
+
+    // Enhanced data export with analysis
+    exportEnhancedData() {
+        const progress = this.calculateProgress();
+        const passionAnalysis = this.getPassionAnalysis();
+        
+        const exportData = {
+            ...this.userData,
+            metadata: {
+                exportDate: new Date().toISOString(),
+                progress: Math.round(progress),
+                passionAnalysis: passionAnalysis,
+                version: '2.0'
+            }
+        };
+
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Get passion analysis data
+    getPassionAnalysis() {
+        const sliders = document.querySelectorAll('.passion-slider');
+        const analysis = {};
+        
+        sliders.forEach(slider => {
+            const category = slider.getAttribute('data-category');
+            analysis[category] = parseInt(slider.value);
+        });
+
+        return analysis;
+    }

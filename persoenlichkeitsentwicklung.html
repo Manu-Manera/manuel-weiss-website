@@ -244,33 +244,142 @@
                         
                         <div class="reflection-exercises">
                             <div class="exercise-card">
-                                <h4>🎯 Lebensvision</h4>
-                                <p>Stell dir vor, du bist 80 Jahre alt und blickst auf dein Leben zurück. Was möchtest du erreicht haben?</p>
-                                <textarea placeholder="Beschreibe deine Lebensvision..." id="life-vision"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
-                                <h4>💭 Werte-Reflexion</h4>
-                                <p>Was sind deine 5 wichtigsten Werte? Wofür stehst du ein?</p>
-                                <div class="values-input">
-                                    <input type="text" placeholder="Wert 1" class="value-input">
-                                    <input type="text" placeholder="Wert 2" class="value-input">
-                                    <input type="text" placeholder="Wert 3" class="value-input">
-                                    <input type="text" placeholder="Wert 4" class="value-input">
-                                    <input type="text" placeholder="Wert 5" class="value-input">
+                                <h4>🎯 Lebensvision & Vermächtnis</h4>
+                                <p>Stell dir vor, du bist 80 Jahre alt und blickst auf dein Leben zurück. Was möchtest du erreicht haben? Wie möchtest du in Erinnerung bleiben?</p>
+                                <div class="exercise-tips">
+                                    <div class="tip-item">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>Denke an die Menschen, die du berührt hast</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>Überlege, welche Probleme du gelöst hast</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>Stelle dir vor, was andere über dich sagen würden</span>
+                                    </div>
+                                </div>
+                                <textarea placeholder="Beschreibe deine Lebensvision und dein gewünschtes Vermächtnis..." id="life-vision"></textarea>
+                                <div class="exercise-examples">
+                                    <h5>💡 Beispiele für Lebensvisionen:</h5>
+                                    <ul>
+                                        <li>"Ich habe Menschen dabei geholfen, ihre Träume zu verwirklichen"</li>
+                                        <li>"Ich habe eine nachhaltige Lösung für [Problem] entwickelt"</li>
+                                        <li>"Ich habe eine liebevolle Familie großgezogen und war ein Vorbild"</li>
+                                    </ul>
                                 </div>
                             </div>
                             
                             <div class="exercise-card">
-                                <h4>🌟 Energie-Quellen</h4>
-                                <p>Wann fühlst du dich am lebendigsten? Was gibt dir Energie?</p>
-                                <textarea placeholder="Beschreibe deine Energie-Quellen..." id="energy-sources"></textarea>
+                                <h4>💎 Werte-Hierarchie & Entscheidungsfilter</h4>
+                                <p>Was sind deine 5 wichtigsten Werte? Diese werden deine Entscheidungsfilter für alle wichtigen Lebensentscheidungen.</p>
+                                <div class="values-input">
+                                    <div class="value-item">
+                                        <input type="text" placeholder="Wert 1 (wichtigster)" class="value-input" data-priority="1">
+                                        <div class="value-description">
+                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
+                                        </div>
+                                    </div>
+                                    <div class="value-item">
+                                        <input type="text" placeholder="Wert 2" class="value-input" data-priority="2">
+                                        <div class="value-description">
+                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
+                                        </div>
+                                    </div>
+                                    <div class="value-item">
+                                        <input type="text" placeholder="Wert 3" class="value-input" data-priority="3">
+                                        <div class="value-description">
+                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
+                                        </div>
+                                    </div>
+                                    <div class="value-item">
+                                        <input type="text" placeholder="Wert 4" class="value-input" data-priority="4">
+                                        <div class="value-description">
+                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
+                                        </div>
+                                    </div>
+                                    <div class="value-item">
+                                        <input type="text" placeholder="Wert 5" class="value-input" data-priority="5">
+                                        <div class="value-description">
+                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="exercise-examples">
+                                    <h5>💡 Häufige Werte:</h5>
+                                    <div class="values-suggestions">
+                                        <span class="value-suggestion" data-value="Freiheit">Freiheit</span>
+                                        <span class="value-suggestion" data-value="Kreativität">Kreativität</span>
+                                        <span class="value-suggestion" data-value="Familie">Familie</span>
+                                        <span class="value-suggestion" data-value="Wachstum">Wachstum</span>
+                                        <span class="value-suggestion" data-value="Integrität">Integrität</span>
+                                        <span class="value-suggestion" data-value="Abenteuer">Abenteuer</span>
+                                        <span class="value-suggestion" data-value="Sicherheit">Sicherheit</span>
+                                        <span class="value-suggestion" data-value="Beitrag">Beitrag</span>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="exercise-card">
-                                <h4>🎨 Kreative Visualisierung</h4>
-                                <p>Male oder beschreibe dein ideales Leben in 5 Jahren.</p>
-                                <textarea placeholder="Beschreibe dein ideales Leben..." id="ideal-life"></textarea>
+                                <h4>⚡ Energie-Mapping & Flow-Zustände</h4>
+                                <p>Wann fühlst du dich am lebendigsten? Was gibt dir Energie? Wann bist du im Flow?</p>
+                                <div class="energy-mapping">
+                                    <div class="energy-category">
+                                        <h5>🔥 Energie-Gebende Aktivitäten</h5>
+                                        <textarea placeholder="z.B. Musik hören, Sport, Kochen, Lesen..." id="energy-giving"></textarea>
+                                    </div>
+                                    <div class="energy-category">
+                                        <h5>💤 Energie-Nehmende Aktivitäten</h5>
+                                        <textarea placeholder="z.B. Meetings, Smalltalk, Routine-Aufgaben..." id="energy-draining"></textarea>
+                                    </div>
+                                    <div class="energy-category">
+                                        <h5>🌊 Flow-Zustände</h5>
+                                        <textarea placeholder="Wann vergisst du die Zeit? Bei welchen Tätigkeiten?" id="flow-states"></textarea>
+                                    </div>
+                                </div>
+                                <div class="exercise-tips">
+                                    <div class="tip-item">
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Beobachte deine Energie über eine Woche</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Notiere die Tageszeiten, wann du am produktivsten bist</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎨 Lebensdesign & Vision Board</h4>
+                                <p>Male oder beschreibe dein ideales Leben in 5 Jahren. Sei so detailliert wie möglich!</p>
+                                <div class="life-design-areas">
+                                    <div class="design-area">
+                                        <h5>🏠 Lebensstil & Umgebung</h5>
+                                        <textarea placeholder="Wo lebst du? Wie sieht dein Zuhause aus? Wie verbringst du deine Zeit?" id="lifestyle"></textarea>
+                                    </div>
+                                    <div class="design-area">
+                                        <h5>💼 Beruf & Karriere</h5>
+                                        <textarea placeholder="Was machst du beruflich? Mit wem arbeitest du? Welche Projekte?" id="career"></textarea>
+                                    </div>
+                                    <div class="design-area">
+                                        <h5>👥 Beziehungen & Familie</h5>
+                                        <textarea placeholder="Wie sehen deine Beziehungen aus? Familie, Freunde, Partner?" id="relationships"></textarea>
+                                    </div>
+                                    <div class="design-area">
+                                        <h5>🌱 Persönliches Wachstum</h5>
+                                        <textarea placeholder="Welche Fähigkeiten hast du entwickelt? Was lernst du?" id="growth"></textarea>
+                                    </div>
+                                </div>
+                                <div class="vision-board-tools">
+                                    <h5>🛠️ Vision Board Tools:</h5>
+                                    <div class="tool-suggestions">
+                                        <a href="#" class="tool-link">Canva Vision Board</a>
+                                        <a href="#" class="tool-link">Pinterest Sammlung</a>
+                                        <a href="#" class="tool-link">Notion Template</a>
+                                        <a href="#" class="tool-link">Miro Board</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -294,38 +403,153 @@
                         
                         <div class="passion-exercises">
                             <div class="exercise-card">
-                                <h4>❤️ Leidenschaften-Mapping</h4>
-                                <p>Liste alle Aktivitäten auf, die du liebst - auch die kleinen Dinge:</p>
+                                <h4>❤️ Leidenschaften-Mapping & Passion Audit</h4>
+                                <p>Liste alle Aktivitäten auf, die du liebst - auch die kleinen Dinge. Bewerte sie nach Intensität und Häufigkeit.</p>
                                 <div class="passion-grid">
                                     <div class="passion-category">
-                                        <h5>Hobbys & Freizeit</h5>
-                                        <textarea placeholder="z.B. Lesen, Musik, Sport..." id="hobbies"></textarea>
+                                        <h5>🎨 Kreative Tätigkeiten</h5>
+                                        <textarea placeholder="z.B. Malen, Schreiben, Kochen, Musik, Design..." id="creative-activities"></textarea>
+                                        <div class="passion-rating">
+                                            <label>Intensität (1-10):</label>
+                                            <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="creative">
+                                            <span class="rating-value">5</span>
+                                        </div>
                                     </div>
                                     <div class="passion-category">
-                                        <h5>Lernbereiche</h5>
-                                        <textarea placeholder="z.B. Sprachen, Geschichte, Technik..." id="learning-areas"></textarea>
+                                        <h5>🧠 Lernbereiche & Wissensdurst</h5>
+                                        <textarea placeholder="z.B. Sprachen, Geschichte, Technik, Psychologie..." id="learning-areas"></textarea>
+                                        <div class="passion-rating">
+                                            <label>Intensität (1-10):</label>
+                                            <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="learning">
+                                            <span class="rating-value">5</span>
+                                        </div>
                                     </div>
                                     <div class="passion-category">
-                                        <h5>Kreative Tätigkeiten</h5>
-                                        <textarea placeholder="z.B. Malen, Schreiben, Kochen..." id="creative-activities"></textarea>
+                                        <h5>🏃‍♂️ Körperliche Aktivitäten</h5>
+                                        <textarea placeholder="z.B. Sport, Tanzen, Wandern, Yoga..." id="physical-activities"></textarea>
+                                        <div class="passion-rating">
+                                            <label>Intensität (1-10):</label>
+                                            <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="physical">
+                                            <span class="rating-value">5</span>
+                                        </div>
                                     </div>
                                     <div class="passion-category">
-                                        <h5>Soziale Aktivitäten</h5>
-                                        <textarea placeholder="z.B. Helfen, Lehren, Organisieren..." id="social-activities"></textarea>
+                                        <h5>🤝 Soziale Aktivitäten</h5>
+                                        <textarea placeholder="z.B. Helfen, Lehren, Organisieren, Mentoring..." id="social-activities"></textarea>
+                                        <div class="passion-rating">
+                                            <label>Intensität (1-10):</label>
+                                            <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="social">
+                                            <span class="rating-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="passion-analysis">
+                                    <h5>📊 Passion-Analyse</h5>
+                                    <div class="analysis-grid">
+                                        <div class="analysis-item">
+                                            <h6>🔥 Top-Passion</h6>
+                                            <p id="top-passion">-</p>
+                                        </div>
+                                        <div class="analysis-item">
+                                            <h6>⏰ Zeit-Investition</h6>
+                                            <p id="time-investment-analysis">-</p>
+                                        </div>
+                                        <div class="analysis-item">
+                                            <h6>🎯 Entwicklungspotential</h6>
+                                            <p id="development-potential">-</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="exercise-card">
-                                <h4>⏰ Zeit-Investition</h4>
-                                <p>Wofür investierst du gerne Zeit, auch ohne Belohnung?</p>
-                                <textarea placeholder="Beschreibe, wofür du gerne Zeit investierst..." id="time-investment"></textarea>
+                                <h4>⏰ Zeit-Investition & Energie-Flow</h4>
+                                <p>Wofür investierst du gerne Zeit, auch ohne Belohnung? Wann vergisst du die Zeit?</p>
+                                <div class="time-analysis">
+                                    <div class="time-category">
+                                        <h5>🕐 Zeit-Vergessen</h5>
+                                        <textarea placeholder="Aktivitäten, bei denen du die Zeit vergisst..." id="time-forgetting"></textarea>
+                                    </div>
+                                    <div class="time-category">
+                                        <h5>💰 Kostenlose Leidenschaft</h5>
+                                        <textarea placeholder="Was würdest du auch ohne Bezahlung machen?" id="free-passion"></textarea>
+                                    </div>
+                                    <div class="time-category">
+                                        <h5>🎁 Geschenk der Zeit</h5>
+                                        <textarea placeholder="Wenn du 10 Stunden extra hättest - wofür?" id="gift-time"></textarea>
+                                    </div>
+                                </div>
+                                <div class="exercise-tips">
+                                    <div class="tip-item">
+                                        <i class="fas fa-stopwatch"></i>
+                                        <span>Beobachte dich eine Woche lang - wann bist du am glücklichsten?</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Was machst du, wenn du traurig oder gestresst bist?</span>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="exercise-card">
-                                <h4>🎭 Kindheitsträume</h4>
-                                <p>Was wolltest du als Kind werden? Welche Träume hattest du?</p>
-                                <textarea placeholder="Erzähle von deinen Kindheitsträumen..." id="childhood-dreams"></textarea>
+                                <h4>🎭 Kindheitsträume & Innere Stimme</h4>
+                                <p>Was wolltest du als Kind werden? Welche Träume hattest du? Was sagt deine innere Stimme?</p>
+                                <div class="childhood-analysis">
+                                    <div class="childhood-category">
+                                        <h5>👶 Kindheitsträume (5-10 Jahre)</h5>
+                                        <textarea placeholder="Was wolltest du als Kind werden? Welche Träume hattest du?" id="childhood-dreams"></textarea>
+                                    </div>
+                                    <div class="childhood-category">
+                                        <h5>🧒 Jugendträume (10-18 Jahre)</h5>
+                                        <textarea placeholder="Was waren deine Träume als Teenager?" id="teenage-dreams"></textarea>
+                                    </div>
+                                    <div class="childhood-category">
+                                        <h5>🎭 Versteckte Talente</h5>
+                                        <textarea placeholder="Was konntest du als Kind besonders gut? Was wurde dir oft gesagt?" id="hidden-talents"></textarea>
+                                    </div>
+                                </div>
+                                <div class="inner-voice-exercise">
+                                    <h5>🗣️ Innere Stimme-Übung</h5>
+                                    <p>Stelle dir vor, dein 8-jähriges Ich würde dir einen Brief schreiben. Was würde es dir sagen?</p>
+                                    <textarea placeholder="Liebes erwachsenes Ich..." id="inner-voice-letter"></textarea>
+                                </div>
+                                <div class="exercise-examples">
+                                    <h5>💡 Typische Kindheitsträume:</h5>
+                                    <ul>
+                                        <li>Astronaut, Feuerwehrmann, Ärztin</li>
+                                        <li>Künstler, Musiker, Schriftsteller</li>
+                                        <li>Lehrer, Tierarzt, Erfinder</li>
+                                        <li>Prinzessin, Superheld, Entdecker</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🌟 Passion-Entwicklung & Nächste Schritte</h4>
+                                <p>Wie kannst du deine Leidenschaften weiterentwickeln? Was sind die nächsten Schritte?</p>
+                                <div class="passion-development">
+                                    <div class="development-area">
+                                        <h5>📚 Lernen & Entwicklung</h5>
+                                        <textarea placeholder="Welche Kurse, Bücher oder Erfahrungen könnten deine Leidenschaften vertiefen?" id="passion-learning"></textarea>
+                                    </div>
+                                    <div class="development-area">
+                                        <h5>🤝 Community & Netzwerk</h5>
+                                        <textarea placeholder="Welche Communities, Gruppen oder Menschen könnten dich unterstützen?" id="passion-community"></textarea>
+                                    </div>
+                                    <div class="development-area">
+                                        <h5>🎯 Konkrete Schritte</h5>
+                                        <textarea placeholder="Was könntest du diese Woche tun, um deine Leidenschaften zu leben?" id="passion-steps"></textarea>
+                                    </div>
+                                </div>
+                                <div class="passion-resources">
+                                    <h5>🛠️ Hilfreiche Ressourcen:</h5>
+                                    <div class="resource-links">
+                                        <a href="#" class="resource-link">📖 "The Passion Test" - Janet Attwood</a>
+                                        <a href="#" class="resource-link">🎧 "The Tim Ferriss Show" Podcast</a>
+                                        <a href="#" class="resource-link">📱 Skillshare - Online Kurse</a>
+                                        <a href="#" class="resource-link">🌐 Meetup - Lokale Communities</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
