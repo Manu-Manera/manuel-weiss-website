@@ -1171,6 +1171,238 @@
     color: #2d3748 !important;
 }
 
+/* Deep Reflection Questions */
+.deep-reflection-questions {
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.deep-reflection-questions h5 {
+    color: #667eea !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.reflection-question {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.reflection-question label {
+    display: block;
+    color: #4a5568 !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.reflection-question textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    color: #2d3748 !important;
+    background: rgba(255, 255, 255, 0.9);
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.reflection-question textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Progress Save Notifications */
+.save-notification,
+.load-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(16, 185, 129, 0.95);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.load-notification {
+    background: rgba(102, 126, 234, 0.95);
+}
+
+.save-notification.show,
+.load-notification.show {
+    transform: translateX(0);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+}
+
+.notification-content i {
+    font-size: 1.2rem;
+}
+
+/* Export Buttons */
+.workflow-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.export-buttons .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.export-buttons .btn i {
+    font-size: 1rem;
+}
+
+.export-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* Reminder Modal */
+.reminder-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 1rem;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.25rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #718096;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+    background-color: #f7fafc;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.reminder-option {
+    margin-bottom: 1.5rem;
+}
+
+.reminder-option label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.reminder-option input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.reminder-option select,
+.reminder-option input[type="time"],
+.reminder-option textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    color: #2d3748;
+}
+
+.reminder-option textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    justify-content: flex-end;
+}
+
 /* Example Categories and Tips */
 .example-category {
     background: rgba(102, 126, 234, 0.05);

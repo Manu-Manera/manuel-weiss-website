@@ -261,6 +261,31 @@
                                     </div>
                                 </div>
                                 <textarea placeholder="Beschreibe deine Lebensvision und dein gewünschtes Vermächtnis..." id="life-vision"></textarea>
+                                
+                                <!-- Tiefere Reflexionsfragen -->
+                                <div class="deep-reflection-questions">
+                                    <h5>🔍 Tiefere Reflexion - Lebensvision:</h5>
+                                    <div class="reflection-question">
+                                        <label>Was würde passieren, wenn du heute sterben würdest? Was würdest du am meisten bedauern, nicht getan zu haben?</label>
+                                        <textarea placeholder="Deine Antwort..." id="regret-question"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Wenn du unbegrenzte Ressourcen hättest, was würdest du in den nächsten 5 Jahren erreichen wollen?</label>
+                                        <textarea placeholder="Deine Antwort..." id="unlimited-resources"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Welche drei Wörter sollen auf deinem Grabstein stehen? Was soll dein Vermächtnis sein?</label>
+                                        <textarea placeholder="Deine Antwort..." id="legacy-words"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Wenn du eine Zeitkapsel für deine zukünftigen Enkelkinder erstellen könntest, was würdest du ihnen über dein Leben erzählen?</label>
+                                        <textarea placeholder="Deine Antwort..." id="time-capsule"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Was ist das Wichtigste, was du der Welt geben möchtest, bevor du gehst?</label>
+                                        <textarea placeholder="Deine Antwort..." id="gift-to-world"></textarea>
+                                    </div>
+                                </div>
                                 <div class="exercise-examples">
                                     <h5>💡 Beispiele für Lebensvisionen:</h5>
                                     <div class="example-category">
@@ -604,6 +629,31 @@
                                             <h6>🎯 Entwicklungspotential</h6>
                                             <p id="development-potential">-</p>
                                         </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tiefere Reflexionsfragen für Passion -->
+                                <div class="deep-reflection-questions">
+                                    <h5>🔍 Tiefere Reflexion - Leidenschaften:</h5>
+                                    <div class="reflection-question">
+                                        <label>Welche Aktivität hast du als Kind am liebsten gemacht? Was hat sich daran bis heute geändert?</label>
+                                        <textarea placeholder="Deine Antwort..." id="childhood-passion"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Wenn du einen ganzen Tag ohne Verpflichtungen hättest, womit würdest du ihn verbringen?</label>
+                                        <textarea placeholder="Deine Antwort..." id="free-day-passion"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Welche Leidenschaft würdest du gerne zu deinem Beruf machen, wenn Geld keine Rolle spielen würde?</label>
+                                        <textarea placeholder="Deine Antwort..." id="passion-as-career"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Was macht dich so neugierig, dass du stundenlang darüber lesen oder lernen könntest?</label>
+                                        <textarea placeholder="Deine Antwort..." id="curiosity-passion"></textarea>
+                                    </div>
+                                    <div class="reflection-question">
+                                        <label>Welche Aktivität gibt dir das Gefühl, "im Flow" zu sein - wo die Zeit wie im Flug vergeht?</label>
+                                        <textarea placeholder="Deine Antwort..." id="flow-passion"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -964,9 +1014,27 @@
                 
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
-                    <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()">Zurück</button>
-                    <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()">Weiter</button>
-                    <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
+                    <div class="nav-buttons">
+                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()">Zurück</button>
+                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()">Weiter</button>
+                        <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
+                    </div>
+                    
+                    <!-- Export & Reminder Buttons -->
+                    <div class="export-buttons">
+                        <button class="btn btn-outline" onclick="showReminderSettings()" title="Erinnerungen einrichten">
+                            <i class="fas fa-bell"></i> Erinnerungen
+                        </button>
+                        <button class="btn btn-outline" onclick="exportToPDF()" title="Als PDF exportieren">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="btn btn-outline" onclick="exportToWord()" title="Als Word-Dokument exportieren">
+                            <i class="fas fa-file-word"></i> Word
+                        </button>
+                        <button class="btn btn-outline" onclick="exportToExcel()" title="Als Excel-Tabelle exportieren">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1128,7 +1196,207 @@
         
         function ikigaiSaveProgress() {
             console.log('ikigaiSaveProgress called');
-            alert('Fortschritt gespeichert!');
+            saveIkigaiProgress();
+        }
+
+        // Export Functions
+        function exportToPDF() {
+            const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
+            const exportData = generateExportData(progressData);
+            
+            // Create PDF content
+            const pdfContent = generatePDFContent(exportData);
+            
+            // Create and download PDF
+            const blob = new Blob([pdfContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.html`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToWord() {
+            const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
+            const exportData = generateExportData(progressData);
+            
+            // Create Word document content
+            const wordContent = generateWordContent(exportData);
+            
+            // Create and download Word document
+            const blob = new Blob([wordContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.docx`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToExcel() {
+            const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
+            const exportData = generateExportData(progressData);
+            
+            // Create CSV content for Excel
+            const csvContent = generateCSVContent(exportData);
+            
+            // Create and download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generateExportData(progressData) {
+            return {
+                title: 'Mein Ikigai-Workflow',
+                date: new Date().toLocaleDateString('de-DE'),
+                completionPercentage: progressData.completionPercentage || 0,
+                timeSpent: progressData.timeSpent || '0h 0m',
+                steps: {
+                    step1: {
+                        title: 'Lebensvision & Vermächtnis',
+                        data: {
+                            lifeVision: progressData.stepData?.life_vision || '',
+                            regretQuestion: progressData.stepData?.regret_question || '',
+                            unlimitedResources: progressData.stepData?.unlimited_resources || '',
+                            legacyWords: progressData.stepData?.legacy_words || '',
+                            timeCapsule: progressData.stepData?.time_capsule || '',
+                            giftToWorld: progressData.stepData?.gift_to_world || ''
+                        }
+                    },
+                    step2: {
+                        title: 'Leidenschaften & Interessen',
+                        data: {
+                            creativeActivities: progressData.stepData?.creative_activities || '',
+                            learningAreas: progressData.stepData?.learning_areas || '',
+                            physicalActivities: progressData.stepData?.physical_activities || '',
+                            socialActivities: progressData.stepData?.social_activities || '',
+                            childhoodPassion: progressData.stepData?.childhood_passion || '',
+                            freeDayPassion: progressData.stepData?.free_day_passion || '',
+                            passionAsCareer: progressData.stepData?.passion_as_career || '',
+                            curiosityPassion: progressData.stepData?.curiosity_passion || '',
+                            flowPassion: progressData.stepData?.flow_passion || ''
+                        }
+                    }
+                }
+            };
+        }
+
+        function generatePDFContent(data) {
+            return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${data.title}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        h2 { color: #4a5568; margin-top: 30px; }
+        .section { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .question { font-weight: bold; color: #2d3748; margin-bottom: 5px; }
+        .answer { margin-bottom: 15px; padding: 10px; background: white; border-radius: 5px; }
+        .metadata { background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>${data.title}</h1>
+    <div class="metadata">
+        <p><strong>Erstellt am:</strong> ${data.date}</p>
+        <p><strong>Fortschritt:</strong> ${data.completionPercentage}%</p>
+        <p><strong>Zeit investiert:</strong> ${data.timeSpent}</p>
+    </div>
+    
+    <h2>Schritt 1: ${data.steps.step1.title}</h2>
+    <div class="section">
+        <div class="question">Lebensvision & Vermächtnis:</div>
+        <div class="answer">${data.steps.step1.data.lifeVision || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Was würdest du am meisten bedauern?</div>
+        <div class="answer">${data.steps.step1.data.regretQuestion || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Mit unbegrenzten Ressourcen:</div>
+        <div class="answer">${data.steps.step1.data.unlimitedResources || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Grabstein-Wörter:</div>
+        <div class="answer">${data.steps.step1.data.legacyWords || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Zeitkapsel für Enkelkinder:</div>
+        <div class="answer">${data.steps.step1.data.timeCapsule || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Geschenk an die Welt:</div>
+        <div class="answer">${data.steps.step1.data.giftToWorld || 'Nicht ausgefüllt'}</div>
+    </div>
+    
+    <h2>Schritt 2: ${data.steps.step2.title}</h2>
+    <div class="section">
+        <div class="question">Kreative Aktivitäten:</div>
+        <div class="answer">${data.steps.step2.data.creativeActivities || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Lernbereiche:</div>
+        <div class="answer">${data.steps.step2.data.learningAreas || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Körperliche Aktivitäten:</div>
+        <div class="answer">${data.steps.step2.data.physicalActivities || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Soziale Aktivitäten:</div>
+        <div class="answer">${data.steps.step2.data.socialActivities || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Kindheits-Leidenschaft:</div>
+        <div class="answer">${data.steps.step2.data.childhoodPassion || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Freier Tag:</div>
+        <div class="answer">${data.steps.step2.data.freeDayPassion || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Leidenschaft als Beruf:</div>
+        <div class="answer">${data.steps.step2.data.passionAsCareer || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Neugier-Passion:</div>
+        <div class="answer">${data.steps.step2.data.curiosityPassion || 'Nicht ausgefüllt'}</div>
+        
+        <div class="question">Flow-Passion:</div>
+        <div class="answer">${data.steps.step2.data.flowPassion || 'Nicht ausgefüllt'}</div>
+    </div>
+</body>
+</html>`;
+        }
+
+        function generateWordContent(data) {
+            // Simplified Word document content
+            return generatePDFContent(data);
+        }
+
+        function generateCSVContent(data) {
+            let csv = 'Frage,Antwort\n';
+            csv += `"Erstellt am","${data.date}"\n`;
+            csv += `"Fortschritt","${data.completionPercentage}%"\n`;
+            csv += `"Zeit investiert","${data.timeSpent}"\n\n`;
+            
+            csv += '"=== SCHRITT 1: LEBENSVISION ====",""\n';
+            csv += `"Lebensvision & Vermächtnis","${data.steps.step1.data.lifeVision || ''}"\n`;
+            csv += `"Was würdest du am meisten bedauern?","${data.steps.step1.data.regretQuestion || ''}"\n`;
+            csv += `"Mit unbegrenzten Ressourcen","${data.steps.step1.data.unlimitedResources || ''}"\n`;
+            csv += `"Grabstein-Wörter","${data.steps.step1.data.legacyWords || ''}"\n`;
+            csv += `"Zeitkapsel für Enkelkinder","${data.steps.step1.data.timeCapsule || ''}"\n`;
+            csv += `"Geschenk an die Welt","${data.steps.step1.data.giftToWorld || ''}"\n\n`;
+            
+            csv += '"=== SCHRITT 2: LEIDENSCHAFTEN ====",""\n';
+            csv += `"Kreative Aktivitäten","${data.steps.step2.data.creativeActivities || ''}"\n`;
+            csv += `"Lernbereiche","${data.steps.step2.data.learningAreas || ''}"\n`;
+            csv += `"Körperliche Aktivitäten","${data.steps.step2.data.physicalActivities || ''}"\n`;
+            csv += `"Soziale Aktivitäten","${data.steps.step2.data.socialActivities || ''}"\n`;
+            csv += `"Kindheits-Leidenschaft","${data.steps.step2.data.childhoodPassion || ''}"\n`;
+            csv += `"Freier Tag","${data.steps.step2.data.freeDayPassion || ''}"\n`;
+            csv += `"Leidenschaft als Beruf","${data.steps.step2.data.passionAsCareer || ''}"\n`;
+            csv += `"Neugier-Passion","${data.steps.step2.data.curiosityPassion || ''}"\n`;
+            csv += `"Flow-Passion","${data.steps.step2.data.flowPassion || ''}"\n`;
+            
+            return csv;
         }
         
         function updateIkigaiStep() {
@@ -1187,9 +1455,298 @@
             }
         }
         
+        // Progress Save System with Detailed Tracking
+        function saveIkigaiProgress() {
+            const progressData = {
+                currentStep: currentIkigaiStep,
+                timestamp: new Date().toISOString(),
+                stepData: {},
+                completionPercentage: Math.round((currentIkigaiStep / totalIkigaiSteps) * 100),
+                timeSpent: calculateTimeSpent(),
+                lastUpdated: new Date().toLocaleString('de-DE')
+            };
+
+            // Collect all form data
+            document.querySelectorAll('textarea, input[type="text"], input[type="range"], input[type="checkbox"]').forEach(input => {
+                if (input.id && input.value) {
+                    progressData.stepData[input.id] = input.value;
+                }
+            });
+
+            // Save to localStorage
+            localStorage.setItem('ikigaiProgress', JSON.stringify(progressData));
+            
+            // Show save confirmation
+            showSaveNotification();
+            
+            console.log('Ikigai progress saved:', progressData);
+        }
+
+        function loadIkigaiProgress() {
+            const savedProgress = localStorage.getItem('ikigaiProgress');
+            if (savedProgress) {
+                const progressData = JSON.parse(savedProgress);
+                currentIkigaiStep = progressData.currentStep || 1;
+                
+                // Restore form data
+                Object.keys(progressData.stepData).forEach(inputId => {
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        input.value = progressData.stepData[inputId];
+                    }
+                });
+                
+                updateIkigaiStep();
+                showLoadNotification(progressData);
+            }
+        }
+
+        function calculateTimeSpent() {
+            const startTime = localStorage.getItem('ikigaiStartTime');
+            if (startTime) {
+                const timeDiff = Date.now() - parseInt(startTime);
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                return `${hours}h ${minutes}m`;
+            }
+            return '0h 0m';
+        }
+
+        function showSaveNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'save-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Fortschritt gespeichert!</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showLoadNotification(progressData) {
+            const notification = document.createElement('div');
+            notification.className = 'load-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-history"></i>
+                    <span>Fortschritt geladen: ${progressData.completionPercentage}% abgeschlossen</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+
+        // Auto-save every 30 seconds
+        setInterval(saveIkigaiProgress, 30000);
+
+        // Save on input changes
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('textarea, input[type="text"], input[type="range"], input[type="checkbox"]')) {
+                setTimeout(saveIkigaiProgress, 1000); // Debounced save
+            }
+        });
+
+        // Reminder System
+        function setupReminderSystem() {
+            // Check if user wants reminders
+            const reminderSettings = JSON.parse(localStorage.getItem('ikigaiReminderSettings') || '{}');
+            
+            if (reminderSettings.enabled) {
+                scheduleReminders(reminderSettings);
+            }
+        }
+
+        function showReminderSettings() {
+            const modal = document.createElement('div');
+            modal.className = 'reminder-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🔔 Erinnerungen einrichten</h3>
+                        <button class="close-btn" onclick="closeReminderModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="reminder-option">
+                            <label>
+                                <input type="checkbox" id="enable-reminders">
+                                Erinnerungen aktivieren
+                            </label>
+                        </div>
+                        <div class="reminder-option">
+                            <label>Erinnerungsintervall:</label>
+                            <select id="reminder-interval">
+                                <option value="daily">Täglich</option>
+                                <option value="weekly">Wöchentlich</option>
+                                <option value="biweekly">Alle 2 Wochen</option>
+                                <option value="monthly">Monatlich</option>
+                            </select>
+                        </div>
+                        <div class="reminder-option">
+                            <label>Erinnerungszeit:</label>
+                            <input type="time" id="reminder-time" value="09:00">
+                        </div>
+                        <div class="reminder-option">
+                            <label>Erinnerungstext:</label>
+                            <textarea id="reminder-message" placeholder="Deine persönliche Erinnerungsnachricht...">Es ist Zeit, an deinem Ikigai zu arbeiten! 🌟</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="saveReminderSettings()">Speichern</button>
+                        <button class="btn btn-secondary" onclick="closeReminderModal()">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveReminderSettings() {
+            const settings = {
+                enabled: document.getElementById('enable-reminders').checked,
+                interval: document.getElementById('reminder-interval').value,
+                time: document.getElementById('reminder-time').value,
+                message: document.getElementById('reminder-message').value
+            };
+            
+            localStorage.setItem('ikigaiReminderSettings', JSON.stringify(settings));
+            
+            if (settings.enabled) {
+                scheduleReminders(settings);
+                showNotification('Erinnerungen wurden eingerichtet!', 'success');
+            } else {
+                clearReminders();
+                showNotification('Erinnerungen wurden deaktiviert.', 'info');
+            }
+            
+            closeReminderModal();
+        }
+
+        function scheduleReminders(settings) {
+            clearReminders();
+            
+            const now = new Date();
+            const reminderTime = new Date();
+            const [hours, minutes] = settings.time.split(':');
+            reminderTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // If time has passed today, schedule for tomorrow
+            if (reminderTime <= now) {
+                reminderTime.setDate(reminderTime.getDate() + 1);
+            }
+            
+            const intervalMs = getIntervalMs(settings.interval);
+            
+            const reminderId = setInterval(() => {
+                showReminderNotification(settings.message);
+                // Reschedule for next interval
+                setTimeout(() => scheduleReminders(settings), intervalMs);
+            }, reminderTime.getTime() - now.getTime());
+            
+            localStorage.setItem('ikigaiReminderId', reminderId.toString());
+        }
+
+        function getIntervalMs(interval) {
+            switch (interval) {
+                case 'daily': return 24 * 60 * 60 * 1000;
+                case 'weekly': return 7 * 24 * 60 * 60 * 1000;
+                case 'biweekly': return 14 * 24 * 60 * 60 * 1000;
+                case 'monthly': return 30 * 24 * 60 * 60 * 1000;
+                default: return 24 * 60 * 60 * 1000;
+            }
+        }
+
+        function clearReminders() {
+            const reminderId = localStorage.getItem('ikigaiReminderId');
+            if (reminderId) {
+                clearInterval(parseInt(reminderId));
+                localStorage.removeItem('ikigaiReminderId');
+            }
+        }
+
+        function showReminderNotification(message) {
+            if (Notification.permission === 'granted') {
+                new Notification('Ikigai-Workflow Erinnerung', {
+                    body: message,
+                    icon: '/favicon.ico',
+                    tag: 'ikigai-reminder'
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showReminderNotification(message);
+                    }
+                });
+            }
+        }
+
+        function closeReminderModal() {
+            const modal = document.querySelector('.reminder-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Ikigai navigation initialized');
+            
+            // Set start time if not exists
+            if (!localStorage.getItem('ikigaiStartTime')) {
+                localStorage.setItem('ikigaiStartTime', Date.now().toString());
+            }
+            
+            // Load existing progress
+            loadIkigaiProgress();
+            
+            // Setup reminder system
+            setupReminderSystem();
+            
             updateIkigaiStep();
         });
     </script>
