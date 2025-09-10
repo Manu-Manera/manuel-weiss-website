@@ -27,6 +27,13 @@ class AdminPanel {
             this.autoSave();
         }, 30000); // Auto-save every 30 seconds
 
+        // Dropdown functionality
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                this.closeAllDropdowns();
+            }
+        });
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
