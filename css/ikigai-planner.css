@@ -1405,47 +1405,55 @@
 
 /* Personality Methods Overview */
 .personality-methods-overview {
-    padding: 6rem 0;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    max-width: 100%;
-    overflow-x: hidden;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 6rem 0 !important;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 .personality-methods-overview .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    width: 100%;
-    box-sizing: border-box;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 2rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 .methods-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 3rem;
-    max-width: 100%;
-    overflow-x: hidden;
-    width: 100%;
-    box-sizing: border-box;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 1.5rem !important;
+    margin-top: 3rem !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .method-card {
-    background: white;
-    border-radius: 1.5rem;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    border: 1px solid rgba(102, 126, 234, 0.1);
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+    background: white !important;
+    border-radius: 1.5rem !important;
+    padding: 2rem !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    border: 1px solid rgba(102, 126, 234, 0.1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .method-card::before {
@@ -5006,6 +5014,7 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    width: 100%;
 }
 
 .container {
@@ -5020,4 +5029,59 @@ body {
     .container {
         padding: 0 1rem;
     }
+}
+
+/* Force visibility of method cards */
+.method-card {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.methods-grid {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Ensure all method cards are visible */
+.method-card[onclick*="nlp-dilts"],
+.method-card[onclick*="johari-window"],
+.method-card[onclick*="walt-disney"],
+.method-card[onclick*="nonviolent-communication"],
+.method-card[onclick*="five-pillars"],
+.method-card[onclick*="nlp-meta-goal"],
+.method-card[onclick*="aek-communication"],
+.method-card[onclick*="rubikon-model"],
+.method-card[onclick*="systemic-coaching"],
+.method-card[onclick*="rafael-method"],
+.method-card[onclick*="conflict-escalation"],
+.method-card[onclick*="harvard-method"],
+.method-card[onclick*="circular-interview"],
+.method-card[onclick*="target-coaching"],
+.method-card[onclick*="solution-focused"],
+.method-card[onclick*="change-stages"],
+.method-card[onclick*="competence-map"],
+.method-card[onclick*="moment-excellence"],
+.method-card[onclick*="resource-analysis"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    background: white !important;
+    border-radius: 1.5rem !important;
+    padding: 2rem !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Debug: Make sure all method cards are visible */
+.method-card {
+    border: 2px solid red !important;
+    min-height: 200px !important;
 }
