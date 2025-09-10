@@ -567,6 +567,34 @@ if (document.readyState === 'loading') {
     }, 100);
 }
 
+// Global handler functions for onclick attributes
+function handleNextStep() {
+    console.log('handleNextStep called');
+    if (window.ikigaiPlanner) {
+        window.ikigaiPlanner.nextStep();
+    } else {
+        console.error('IkigaiPlanner not initialized');
+    }
+}
+
+function handlePreviousStep() {
+    console.log('handlePreviousStep called');
+    if (window.ikigaiPlanner) {
+        window.ikigaiPlanner.previousStep();
+    } else {
+        console.error('IkigaiPlanner not initialized');
+    }
+}
+
+function handleSaveProgress() {
+    console.log('handleSaveProgress called');
+    if (window.ikigaiPlanner) {
+        window.ikigaiPlanner.saveProgress();
+    } else {
+        console.error('IkigaiPlanner not initialized');
+    }
+}
+
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
