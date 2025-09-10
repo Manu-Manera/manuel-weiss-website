@@ -287,8 +287,11 @@ a:hover {
     height: 300px;
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
-    object-fit: cover;
-    object-position: center;
+    object-fit: cover !important;
+    object-position: center !important;
+    aspect-ratio: 1/1;
+    max-width: 300px;
+    max-height: 300px;
 }
 
 .hero-stats {
@@ -378,8 +381,10 @@ a:hover {
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .service-card {
@@ -866,8 +871,11 @@ a:hover {
     .profile-image {
         width: 250px;
         height: 250px;
-        object-fit: cover;
-        object-position: center;
+        object-fit: cover !important;
+        object-position: center !important;
+        aspect-ratio: 1/1;
+        max-width: 250px;
+        max-height: 250px;
     }
 }
 

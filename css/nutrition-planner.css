@@ -1,5 +1,276 @@
 /* Nutrition Planner Styles - Integrated with Website Design System */
 
+/* Nutrition Planner Section - Main Background */
+.nutrition-planner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    padding: 6rem 0;
+}
+
+.nutrition-planner * {
+    color: white !important;
+}
+
+.nutrition-planner .section-title,
+.nutrition-planner .section-subtitle,
+.nutrition-planner h1,
+.nutrition-planner h2,
+.nutrition-planner h3,
+.nutrition-planner h4,
+.nutrition-planner h5,
+.nutrition-planner h6,
+.nutrition-planner p,
+.nutrition-planner span,
+.nutrition-planner label,
+.nutrition-planner .step-title,
+.nutrition-planner .step-content,
+.nutrition-planner .goal-title,
+.nutrition-planner .goal-description,
+.nutrition-planner .preference-item span,
+.nutrition-planner .meal-option span,
+.nutrition-planner .time-option span,
+.nutrition-planner .meal-prep-option span,
+.nutrition-planner .progress-text,
+.nutrition-planner .ai-step-text,
+.nutrition-planner .nutrient-label,
+.nutrition-planner .nutrient-value,
+.nutrition-planner .export-btn {
+    color: white !important;
+}
+
+/* Wizard Container */
+.wizard-container {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Wizard Steps */
+.wizard-steps {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.step {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.step.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.step-number {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.step.active .step-number {
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
+
+/* Wizard Content */
+.wizard-content {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.step-content {
+    background: transparent !important;
+}
+
+/* Goal Cards */
+.goal-card {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.goal-card:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.goal-card input[type="radio"]:checked + .goal-icon + .goal-title + .goal-description {
+    color: white !important;
+}
+
+/* Preferences Section */
+.preferences-section {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.preference-item {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.preference-item:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Form Elements */
+.physical-data-form,
+.time-availability {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: white !important;
+}
+
+/* Meal Options */
+.meal-option,
+.time-option,
+.meal-prep-option {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.meal-option:hover,
+.time-option:hover,
+.meal-prep-option:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* AI Generation */
+.ai-generation {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-bar {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-fill {
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+.ai-step {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+/* Plan Review */
+.plan-review {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.nutrient-info,
+.week-overview,
+.shopping-list {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+/* Export Options */
+.export-options {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.export-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+}
+
+.export-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: white !important;
+}
+
+/* Navigation Buttons */
+.wizard-navigation {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wizard-navigation .btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+}
+
+.wizard-navigation .btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: white !important;
+}
+
+.wizard-navigation .btn:disabled {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* Nutrition Hero Section */
 .nutrition-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
