@@ -4943,19 +4943,39 @@
     <script>
         // Navigation Management
         function showSection(sectionName) {
+            console.log('Switching to section:', sectionName); // Debug log
+            
             // Hide all sections
-            document.getElementById('applications-section').style.display = 'none';
-            document.getElementById('designer-section').style.display = 'none';
-            document.getElementById('calendar-section').style.display = 'none';
+            const sections = ['applications', 'designer', 'calendar'];
+            sections.forEach(section => {
+                const element = document.getElementById(section + '-section');
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
             
             // Show selected section
-            document.getElementById(sectionName + '-section').style.display = 'block';
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                console.log('Section displayed:', sectionName); // Debug log
+            } else {
+                console.error('Section not found:', sectionName + '-section'); // Debug log
+            }
             
             // Update active navigation
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // Find and activate the correct link
+            const targetLink = document.querySelector(`[onclick*="showSection('${sectionName}')"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+                console.log('Active link updated:', sectionName); // Debug log
+            } else {
+                console.error('Link not found for section:', sectionName); // Debug log
+            }
             
             // Initialize section-specific functionality
             if (sectionName === 'calendar') {
@@ -4965,19 +4985,55 @@
             }
         }
 
+        // Initialize navigation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up navigation...');
+            
+            // Setup sidebar navigation with event listeners
+            const sidebarLinks = document.querySelectorAll('.sidebar-link[onclick*="showSection"]');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const onclick = this.getAttribute('onclick');
+                    const match = onclick.match(/showSection\('([^']+)'\)/);
+                    if (match) {
+                        const sectionName = match[1];
+                        console.log('Sidebar link clicked:', sectionName);
+                        showSection(sectionName);
+                    }
+                });
+            });
+            
+            console.log('Navigation setup complete');
+            
+            // Test navigation
+            console.log('Available sections:');
+            console.log('- applications-section:', document.getElementById('applications-section') ? 'found' : 'not found');
+            console.log('- designer-section:', document.getElementById('designer-section') ? 'found' : 'not found');
+            console.log('- calendar-section:', document.getElementById('calendar-section') ? 'found' : 'not found');
+        });
+
         // Designer Management
         function initializeDesigner() {
-            // Load contact data from website
-            loadContactDataFromWebsite();
+            console.log('Initializing designer...'); // Debug log
             
-            // Setup event listeners
-            setupDesignerEventListeners();
-            
-            // Load documents
-            loadAllDocuments();
-            
-            // Update preview
-            updatePreview();
+            try {
+                // Load contact data from website
+                loadContactDataFromWebsite();
+                
+                // Setup event listeners
+                setupDesignerEventListeners();
+                
+                // Load documents
+                loadAllDocuments();
+                
+                // Update preview
+                updatePreview();
+                
+                console.log('Designer initialized successfully'); // Debug log
+            } catch (error) {
+                console.error('Error initializing designer:', error); // Debug log
+            }
         }
 
         // Document Management Functions
@@ -10213,6 +10269,27 @@ Manuel Weiss`;
             const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(mailtoLink);
         }
+
+        // Test function for debugging navigation
+        function testNavigation() {
+            console.log('=== Navigation Test ===');
+            console.log('Testing showSection function...');
+            
+            // Test each section
+            ['applications', 'designer', 'calendar'].forEach(section => {
+                console.log(`Testing ${section}...`);
+                showSection(section);
+                
+                const element = document.getElementById(section + '-section');
+                const isVisible = element && element.style.display !== 'none';
+                console.log(`${section}: ${isVisible ? 'visible' : 'hidden'}`);
+            });
+            
+            console.log('=== Test Complete ===');
+        }
+
+        // Make test function globally available
+        window.testNavigation = testNavigation;
     </script>
 </body>
 </html>
