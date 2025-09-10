@@ -964,9 +964,9 @@
                 
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
-                    <button class="btn btn-secondary" id="prev-step" disabled>Zurück</button>
-                    <button class="btn btn-primary" id="next-step">Weiter</button>
-                    <button class="btn btn-success" id="save-progress" style="display: none;">Fortschritt speichern</button>
+                    <button class="btn btn-secondary" id="prev-step" disabled onclick="handlePreviousStep()">Zurück</button>
+                    <button class="btn btn-primary" id="next-step" onclick="handleNextStep()">Weiter</button>
+                    <button class="btn btn-success" id="save-progress" style="display: none;" onclick="handleSaveProgress()">Fortschritt speichern</button>
                 </div>
             </div>
         </div>
