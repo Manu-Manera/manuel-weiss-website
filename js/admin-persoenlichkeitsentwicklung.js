@@ -1417,8 +1417,14 @@ function generateAdminTabs() {
 
 function generateMethodTabHtml(methodId, method) {
     const stepsHtml = method.steps.map((step, index) => `
-        <div class="step-admin">
-            <h4>Schritt ${index + 1}: ${step.name}</h4>
+        <div class="step-admin" draggable="true">
+            <div class="step-drag-handle">
+                <i class="fas fa-grip-vertical"></i>
+            </div>
+            <h4>
+                <span class="step-number">${index + 1}</span>
+                Schritt ${index + 1}: ${step.name}
+            </h4>
             <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
             <div class="questions-admin">
                 <h5>Reflexionsfragen:</h5>
@@ -1488,6 +1494,447 @@ function createElementFromHTML(htmlString) {
     return div.firstChild;
 }
 
+// Enhanced Admin Functions
+class AdminOptimizer {
+    constructor() {
+        this.draggedElement = null;
+        this.versions = new Map();
+        this.templates = new Map();
+        this.autoSaveInterval = null;
+        this.init();
+    }
+
+    init() {
+        this.setupDragAndDrop();
+        this.setupLivePreview();
+        this.setupBulkOperations();
+        this.setupTemplateSystem();
+        this.setupVersionControl();
+        this.setupValidation();
+        this.setupAutoSave();
+    }
+
+    // Drag & Drop für Workflow-Schritte
+    setupDragAndDrop() {
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('step-admin')) {
+                this.draggedElement = e.target;
+                e.target.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            }
+        });
+
+        document.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('step-admin')) {
+                e.target.classList.remove('dragging');
+                this.draggedElement = null;
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (e.target.classList.contains('step-admin') && e.target !== this.draggedElement) {
+                e.target.classList.add('drag-over');
+            }
+        });
+
+        document.addEventListener('dragleave', (e) => {
+            if (e.target.classList.contains('step-admin')) {
+                e.target.classList.remove('drag-over');
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.target.classList.contains('step-admin') && this.draggedElement) {
+                e.target.classList.remove('drag-over');
+                const container = e.target.parentNode;
+                const draggedIndex = Array.from(container.children).indexOf(this.draggedElement);
+                const targetIndex = Array.from(container.children).indexOf(e.target);
+                
+                if (draggedIndex < targetIndex) {
+                    container.insertBefore(this.draggedElement, e.target.nextSibling);
+                } else {
+                    container.insertBefore(this.draggedElement, e.target);
+                }
+                
+                this.updateStepNumbers(container);
+                this.showAutoSaveIndicator();
+            }
+        });
+    }
+
+    updateStepNumbers(container) {
+        const steps = container.querySelectorAll('.step-admin');
+        steps.forEach((step, index) => {
+            const numberElement = step.querySelector('.step-number');
+            if (numberElement) {
+                numberElement.textContent = index + 1;
+            }
+        });
+    }
+
+    // Live Preview
+    setupLivePreview() {
+        const previewToggle = document.createElement('button');
+        previewToggle.className = 'btn btn-outline';
+        previewToggle.innerHTML = '<i class="fas fa-eye"></i> Live-Vorschau';
+        previewToggle.onclick = () => this.toggleLivePreview();
+        
+        // Add to admin header
+        const adminActions = document.querySelector('.admin-actions');
+        if (adminActions) {
+            adminActions.appendChild(previewToggle);
+        }
+
+        this.createLivePreview();
+    }
+
+    createLivePreview() {
+        const preview = document.createElement('div');
+        preview.className = 'live-preview';
+        preview.innerHTML = `
+            <div class="preview-header">
+                <h4>Live-Vorschau</h4>
+                <button onclick="adminOptimizer.closeLivePreview()" class="btn btn-sm btn-outline">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="preview-content" id="preview-content">
+                <!-- Preview content will be generated here -->
+            </div>
+        `;
+        document.body.appendChild(preview);
+    }
+
+    toggleLivePreview() {
+        const preview = document.querySelector('.live-preview');
+        preview.classList.toggle('show');
+        if (preview.classList.contains('show')) {
+            this.updateLivePreview();
+        }
+    }
+
+    closeLivePreview() {
+        const preview = document.querySelector('.live-preview');
+        preview.classList.remove('show');
+    }
+
+    updateLivePreview() {
+        const previewContent = document.getElementById('preview-content');
+        const currentTab = document.querySelector('.admin-tab-content.active');
+        if (!currentTab) return;
+
+        const steps = currentTab.querySelectorAll('.step-admin');
+        let html = '';
+        
+        steps.forEach((step, index) => {
+            const title = step.querySelector('h4').textContent;
+            const description = step.querySelector('.admin-textarea').value || 'Keine Beschreibung verfügbar';
+            const questions = step.querySelectorAll('.question-item input');
+            const questionList = Array.from(questions).map(q => q.value).filter(q => q.trim()).join(', ');
+            
+            html += `
+                <div class="preview-step">
+                    <h5>${title}</h5>
+                    <p>${description}</p>
+                    ${questionList ? `<p><strong>Fragen:</strong> ${questionList}</p>` : ''}
+                </div>
+            `;
+        });
+        
+        previewContent.innerHTML = html;
+    }
+
+    // Bulk Operations
+    setupBulkOperations() {
+        const bulkToggle = document.createElement('button');
+        bulkToggle.className = 'btn btn-outline';
+        bulkToggle.innerHTML = '<i class="fas fa-tasks"></i> Bulk-Operationen';
+        bulkToggle.onclick = () => this.toggleBulkOperations();
+        
+        const adminActions = document.querySelector('.admin-actions');
+        if (adminActions) {
+            adminActions.appendChild(bulkToggle);
+        }
+    }
+
+    toggleBulkOperations() {
+        const currentTab = document.querySelector('.admin-tab-content.active');
+        if (!currentTab) return;
+
+        let bulkOps = currentTab.querySelector('.bulk-operations');
+        if (!bulkOps) {
+            bulkOps = this.createBulkOperations();
+            const firstSection = currentTab.querySelector('.admin-section');
+            firstSection.parentNode.insertBefore(bulkOps, firstSection);
+        }
+        
+        bulkOps.classList.toggle('show');
+    }
+
+    createBulkOperations() {
+        const bulkOps = document.createElement('div');
+        bulkOps.className = 'bulk-operations';
+        bulkOps.innerHTML = `
+            <h4>Bulk-Operationen</h4>
+            <div class="bulk-actions">
+                <button class="bulk-action-btn" onclick="adminOptimizer.bulkAddQuestions()">
+                    <i class="fas fa-plus"></i> Fragen zu allen Schritten hinzufügen
+                </button>
+                <button class="bulk-action-btn" onclick="adminOptimizer.bulkClearQuestions()">
+                    <i class="fas fa-trash"></i> Alle Fragen löschen
+                </button>
+                <button class="bulk-action-btn" onclick="adminOptimizer.bulkValidate()">
+                    <i class="fas fa-check"></i> Alle Felder validieren
+                </button>
+                <button class="bulk-action-btn danger" onclick="adminOptimizer.bulkReset()">
+                    <i class="fas fa-undo"></i> Alle zurücksetzen
+                </button>
+            </div>
+        `;
+        return bulkOps;
+    }
+
+    bulkAddQuestions() {
+        const currentTab = document.querySelector('.admin-tab-content.active');
+        const steps = currentTab.querySelectorAll('.step-admin');
+        
+        steps.forEach(step => {
+            const addBtn = step.querySelector('.btn-primary');
+            if (addBtn) {
+                addBtn.click();
+            }
+        });
+        
+        this.showNotification('Fragen zu allen Schritten hinzugefügt', 'success');
+    }
+
+    bulkClearQuestions() {
+        if (confirm('Möchten Sie wirklich alle Fragen löschen?')) {
+            const currentTab = document.querySelector('.admin-tab-content.active');
+            const questionItems = currentTab.querySelectorAll('.question-item');
+            
+            questionItems.forEach(item => {
+                const removeBtn = item.querySelector('.btn-danger');
+                if (removeBtn) {
+                    removeBtn.click();
+                }
+            });
+            
+            this.showNotification('Alle Fragen gelöscht', 'success');
+        }
+    }
+
+    bulkValidate() {
+        const currentTab = document.querySelector('.admin-tab-content.active');
+        const inputs = currentTab.querySelectorAll('.admin-input, .admin-textarea');
+        let valid = true;
+        
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('validation-error');
+                valid = false;
+            } else {
+                input.classList.remove('validation-error');
+            }
+        });
+        
+        if (valid) {
+            this.showNotification('Alle Felder sind gültig', 'success');
+        } else {
+            this.showNotification('Einige Felder sind leer', 'error');
+        }
+    }
+
+    bulkReset() {
+        if (confirm('Möchten Sie wirklich alle Änderungen zurücksetzen?')) {
+            const currentTab = document.querySelector('.admin-tab-content.active');
+            const inputs = currentTab.querySelectorAll('.admin-input, .admin-textarea');
+            
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('validation-error');
+            });
+            
+            this.showNotification('Alle Felder zurückgesetzt', 'success');
+        }
+    }
+
+    // Template System
+    setupTemplateSystem() {
+        this.templates.set('basic', {
+            name: 'Basis-Template',
+            steps: [
+                { name: 'Einführung', questions: ['Was ist das Ziel?'] },
+                { name: 'Hauptteil', questions: ['Wie gehst du vor?'] },
+                { name: 'Abschluss', questions: ['Was hast du gelernt?'] }
+            ]
+        });
+
+        this.templates.set('detailed', {
+            name: 'Detailliertes Template',
+            steps: [
+                { name: 'Vorbereitung', questions: ['Was brauchst du?', 'Welche Ressourcen hast du?'] },
+                { name: 'Durchführung', questions: ['Wie gehst du vor?', 'Was passiert?'] },
+                { name: 'Reflexion', questions: ['Was war gut?', 'Was kannst du verbessern?'] },
+                { name: 'Nächste Schritte', questions: ['Was machst du als nächstes?'] }
+            ]
+        });
+
+        this.templates.set('coaching', {
+            name: 'Coaching-Template',
+            steps: [
+                { name: 'Zielklärung', questions: ['Was möchtest du erreichen?'] },
+                { name: 'Ressourcenanalyse', questions: ['Was bringst du mit?'] },
+                { name: 'Strategieentwicklung', questions: ['Wie gehst du vor?'] },
+                { name: 'Umsetzung', questions: ['Was tust du konkret?'] },
+                { name: 'Evaluation', questions: ['Wie war es?'] }
+            ]
+        });
+    }
+
+    // Version Control
+    setupVersionControl() {
+        this.createVersion(0, 'Initiale Version', 'Erste Version der Methode');
+    }
+
+    createVersion(id, name, description) {
+        this.versions.set(id, {
+            id,
+            name,
+            description,
+            timestamp: new Date().toISOString(),
+            data: this.exportCurrentMethod()
+        });
+    }
+
+    exportCurrentMethod() {
+        const currentTab = document.querySelector('.admin-tab-content.active');
+        if (!currentTab) return null;
+
+        const methodName = currentTab.querySelector('.admin-input[value]')?.value || 'Unbekannte Methode';
+        const steps = Array.from(currentTab.querySelectorAll('.step-admin')).map(step => {
+            const title = step.querySelector('h4').textContent;
+            const description = step.querySelector('.admin-textarea').value;
+            const questions = Array.from(step.querySelectorAll('.question-item input')).map(q => q.value);
+            
+            return { title, description, questions };
+        });
+
+        return { methodName, steps };
+    }
+
+    // Validation
+    setupValidation() {
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('admin-input') || e.target.classList.contains('admin-textarea')) {
+                this.validateField(e.target);
+            }
+        });
+    }
+
+    validateField(field) {
+        const value = field.value.trim();
+        const isValid = value.length > 0;
+        
+        field.classList.toggle('validation-error', !isValid);
+        
+        // Remove existing validation message
+        const existingMessage = field.parentNode.querySelector('.validation-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        if (!isValid) {
+            const message = document.createElement('div');
+            message.className = 'validation-message';
+            message.textContent = 'Dieses Feld ist erforderlich';
+            field.parentNode.appendChild(message);
+        }
+    }
+
+    // Auto-save
+    setupAutoSave() {
+        this.autoSaveInterval = setInterval(() => {
+            this.autoSave();
+        }, 30000); // Auto-save every 30 seconds
+
+        // Auto-save on input changes
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('admin-input') || e.target.classList.contains('admin-textarea')) {
+                clearTimeout(this.autoSaveTimeout);
+                this.autoSaveTimeout = setTimeout(() => {
+                    this.autoSave();
+                }, 2000); // Auto-save 2 seconds after last input
+            }
+        });
+    }
+
+    autoSave() {
+        const currentMethod = this.exportCurrentMethod();
+        if (currentMethod) {
+            localStorage.setItem('admin_autosave', JSON.stringify({
+                method: currentMethod,
+                timestamp: new Date().toISOString()
+            }));
+            this.showAutoSaveIndicator();
+        }
+    }
+
+    showAutoSaveIndicator() {
+        const indicator = document.querySelector('.auto-save-indicator');
+        if (!indicator) {
+            const newIndicator = document.createElement('div');
+            newIndicator.className = 'auto-save-indicator';
+            newIndicator.innerHTML = '<i class="fas fa-save"></i> Auto-gespeichert';
+            document.body.appendChild(newIndicator);
+        }
+        
+        const indicator = document.querySelector('.auto-save-indicator');
+        indicator.classList.add('show');
+        
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 2000);
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}"></i>
+                ${message}
+            </div>
+        `;
+        
+        // Add styles
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            z-index: 10000;
+            animation: slideDown 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+// Initialize admin optimizer
+let adminOptimizer;
+
 // Initialize admin panel when DOM is loaded
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
@@ -1495,6 +1942,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Generate all method tabs dynamically
     generateAdminTabs();
+    
+    // Initialize admin optimizer
+    adminOptimizer = new AdminOptimizer();
     
     // Setup dropdown event listeners
     document.addEventListener('click', (e) => {
