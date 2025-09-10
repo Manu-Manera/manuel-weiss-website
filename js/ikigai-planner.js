@@ -12,6 +12,7 @@ class IkigaiPlanner {
     }
 
     init() {
+        console.log('IkigaiPlanner initializing...');
         this.loadSavedData();
         this.setupEventListeners();
         this.updateProgress();
@@ -19,31 +20,50 @@ class IkigaiPlanner {
         this.setupPassionSliders();
         this.setupValueSuggestions();
         this.setupPassionAnalysis();
+        console.log('IkigaiPlanner initialized successfully');
     }
 
     setupEventListeners() {
+        console.log('Setting up event listeners...');
+        
         // Navigation buttons
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         const saveBtn = document.getElementById('save-progress');
 
+        console.log('Found buttons:', { prevBtn, nextBtn, saveBtn });
+
         if (prevBtn) {
             prevBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('Previous button clicked');
                 this.previousStep();
             });
+        } else {
+            console.warn('Previous button not found');
         }
+        
         if (nextBtn) {
             nextBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('Next button clicked');
                 this.nextStep();
             });
+        } else {
+            console.warn('Next button not found');
         }
+        
         if (saveBtn) {
             saveBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('Save button clicked');
                 this.saveProgress();
             });
+        } else {
+            console.warn('Save button not found');
         }
 
         // Video links
@@ -59,6 +79,26 @@ class IkigaiPlanner {
         // Ikigai quadrant interactions
         document.querySelectorAll('.ikigai-quadrant').forEach(quadrant => {
             quadrant.addEventListener('click', () => this.highlightQuadrant(quadrant));
+        });
+
+        // Alternative event delegation for buttons that might be loaded later
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'next-step') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Next button clicked via delegation');
+                this.nextStep();
+            } else if (e.target && e.target.id === 'prev-step') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Previous button clicked via delegation');
+                this.previousStep();
+            } else if (e.target && e.target.id === 'save-progress') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Save button clicked via delegation');
+                this.saveProgress();
+            }
         });
     }
 
@@ -505,8 +545,27 @@ class IkigaiPlanner {
 
 // Initialize Ikigai Planner when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new IkigaiPlanner();
+    console.log('DOM loaded, initializing IkigaiPlanner...');
+    // Small delay to ensure all elements are rendered
+    setTimeout(() => {
+        window.ikigaiPlanner = new IkigaiPlanner();
+        console.log('IkigaiPlanner instance created:', window.ikigaiPlanner);
+    }, 100);
 });
+
+// Also try to initialize if DOM is already loaded
+if (document.readyState === 'loading') {
+    // DOM is still loading, wait for DOMContentLoaded
+} else {
+    // DOM is already loaded
+    console.log('DOM already loaded, initializing IkigaiPlanner immediately...');
+    setTimeout(() => {
+        if (!window.ikigaiPlanner) {
+            window.ikigaiPlanner = new IkigaiPlanner();
+            console.log('IkigaiPlanner instance created (late init):', window.ikigaiPlanner);
+        }
+    }, 100);
+}
 
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
