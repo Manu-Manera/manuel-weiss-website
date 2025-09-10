@@ -1177,8 +1177,14 @@
                 }
             }
             
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Scroll to Ikigai workflow section
+            const ikigaiSection = document.getElementById('ikigai-workflow');
+            if (ikigaiSection) {
+                ikigaiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                // Fallback to top if section not found
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
         
         // Initialize on page load
