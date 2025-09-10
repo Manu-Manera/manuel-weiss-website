@@ -148,8 +148,158 @@
 
         <!-- Admin Content -->
         <main class="admin-main">
+            <!-- Ikigai Tab -->
+            <div class="admin-tab-content active" id="ikigai-tab">
+                <div class="tab-header">
+                    <h2>Ikigai-Workflow verwalten</h2>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die Ikigai-Methode.</p>
+                </div>
+                
+                <div class="method-admin-content">
+                    <div class="admin-section">
+                        <h3>Workflow-Schritte</h3>
+                        <div class="workflow-steps-admin">
+                            <div class="step-admin">
+                                <h4>Schritt 1: Was du liebst</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 2: Was die Welt braucht</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 3: Wofür du bezahlt wirst</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 4: Worin du gut bist</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 5: Ikigai-Schnittmenge</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 6: Aktionsplan</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-admin">
+                                <h4>Schritt 7: Reflexion & Anpassung</h4>
+                                <textarea class="admin-textarea" placeholder="Beschreibung des Schritts..."></textarea>
+                                <div class="questions-admin">
+                                    <h5>Reflexionsfragen:</h5>
+                                    <div class="question-list">
+                                        <div class="question-item">
+                                            <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>Methoden-Eigenschaften</h3>
+                        <div class="method-properties">
+                            <div class="property-group">
+                                <label>Methoden-Name:</label>
+                                <input type="text" class="admin-input" value="Ikigai-Workflow">
+                            </div>
+                            <div class="property-group">
+                                <label>Beschreibung:</label>
+                                <textarea class="admin-textarea" placeholder="Kurze Beschreibung der Methode..."></textarea>
+                            </div>
+                            <div class="property-group">
+                                <label>Geschätzte Dauer:</label>
+                                <input type="text" class="admin-input" value="2-3 Stunden">
+                            </div>
+                            <div class="property-group">
+                                <label>Anzahl Schritte:</label>
+                                <input type="number" class="admin-input" value="7">
+                            </div>
+                            <div class="property-group">
+                                <label>Schwierigkeitsgrad:</label>
+                                <select class="admin-select">
+                                    <option value="beginner">Anfänger</option>
+                                    <option value="intermediate">Fortgeschritten</option>
+                                    <option value="advanced">Experte</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Methods Management Tab -->
-            <div class="admin-tab-content active" id="methods-tab">
+            <div class="admin-tab-content" id="methods-tab">
                 <div class="tab-header">
                     <h2>Methoden verwalten</h2>
                     <p>Verwalte alle Persönlichkeitsentwicklungs-Methoden und deren Eigenschaften.</p>
