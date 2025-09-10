@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Persönlichkeitsentwicklung</title>
+    <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link rel="stylesheet" href="css/admin-persoenlichkeitsentwicklung.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <i class="fas fa-cogs"></i>
+                    <h1>Admin Panel - Persönlichkeitsentwicklung</h1>
+                </div>
+                <div class="admin-actions">
+                    <button class="btn btn-primary" onclick="saveAllChanges()">
+                        <i class="fas fa-save"></i> Alle Änderungen speichern
+                    </button>
+                    <button class="btn btn-outline" onclick="exportConfiguration()">
+                        <i class="fas fa-download"></i> Konfiguration exportieren
+                    </button>
+                    <button class="btn btn-outline" onclick="importConfiguration()">
+                        <i class="fas fa-upload"></i> Konfiguration importieren
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetToDefaults()">
+                        <i class="fas fa-undo"></i> Zurücksetzen
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Navigation -->
+        <nav class="admin-nav">
+            <div class="admin-nav-content">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="methods" onclick="switchTab('methods')">
+                        <i class="fas fa-list"></i> Methoden verwalten
+                    </button>
+                    <button class="nav-tab" data-tab="content" onclick="switchTab('content')">
+                        <i class="fas fa-edit"></i> Inhalte bearbeiten
+                    </button>
+                    <button class="nav-tab" data-tab="questions" onclick="switchTab('questions')">
+                        <i class="fas fa-question-circle"></i> Fragen verwalten
+                    </button>
+                    <button class="nav-tab" data-tab="workflows" onclick="switchTab('workflows')">
+                        <i class="fas fa-sitemap"></i> Workflows konfigurieren
+                    </button>
+                    <button class="nav-tab" data-tab="users" onclick="switchTab('users')">
+                        <i class="fas fa-users"></i> Benutzer verwalten
+                    </button>
+                    <button class="nav-tab" data-tab="analytics" onclick="switchTab('analytics')">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Admin Content -->
+        <main class="admin-main">
+            <!-- Methods Management Tab -->
+            <div class="admin-tab-content active" id="methods-tab">
+                <div class="tab-header">
+                    <h2>Methoden verwalten</h2>
+                    <p>Verwalte alle Persönlichkeitsentwicklungs-Methoden und deren Eigenschaften.</p>
+                </div>
+
+                <div class="methods-management">
+                    <div class="methods-list">
+                        <div class="methods-header">
+                            <h3>Verfügbare Methoden</h3>
+                            <button class="btn btn-primary" onclick="addNewMethod()">
+                                <i class="fas fa-plus"></i> Neue Methode hinzufügen
+                            </button>
+                        </div>
+
+                        <div class="methods-grid" id="methods-grid">
+                            <!-- Methods will be dynamically loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="method-editor" id="method-editor" style="display: none;">
+                        <div class="editor-header">
+                            <h3>Methode bearbeiten</h3>
+                            <button class="btn btn-secondary" onclick="closeMethodEditor()">
+                                <i class="fas fa-times"></i> Schließen
+                            </button>
+                        </div>
+
+                        <div class="editor-content">
+                            <div class="editor-section">
+                                <h4>Grundinformationen</h4>
+                                <div class="form-group">
+                                    <label>Methoden-ID:</label>
+                                    <input type="text" id="method-id" class="form-input" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Methoden-Titel:</label>
+                                    <input type="text" id="method-title" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Beschreibung:</label>
+                                    <textarea id="method-description" class="form-textarea"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Icon (Font Awesome Klasse):</label>
+                                    <input type="text" id="method-icon" class="form-input" placeholder="z.B. fas fa-heart">
+                                </div>
+                                <div class="form-group">
+                                    <label>Feature-Tags (kommagetrennt):</label>
+                                    <input type="text" id="method-tags" class="form-input" placeholder="z.B. Selbstreflexion, Werte, 4 Schritte">
+                                </div>
+                            </div>
+
+                            <div class="editor-section">
+                                <h4>Workflow-Konfiguration</h4>
+                                <div class="form-group">
+                                    <label>Anzahl Schritte:</label>
+                                    <input type="number" id="method-steps" class="form-input" min="1" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Geschätzte Dauer (Minuten):</label>
+                                    <input type="number" id="method-duration" class="form-input" min="5" max="300">
+                                </div>
+                                <div class="form-group">
+                                    <label>Schwierigkeitsgrad:</label>
+                                    <select id="method-difficulty" class="form-select">
+                                        <option value="beginner">Anfänger</option>
+                                        <option value="intermediate">Fortgeschritten</option>
+                                        <option value="advanced">Experte</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="editor-section">
+                                <h4>Status & Sichtbarkeit</h4>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="method-active" class="form-checkbox">
+                                        Methode ist aktiv
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="method-featured" class="form-checkbox">
+                                        Als empfohlen markieren
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sortierreihenfolge:</label>
+                                    <input type="number" id="method-order" class="form-input" min="0">
+                                </div>
+                            </div>
+
+                            <div class="editor-actions">
+                                <button class="btn btn-primary" onclick="saveMethod()">
+                                    <i class="fas fa-save"></i> Methode speichern
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteMethod()">
+                                    <i class="fas fa-trash"></i> Methode löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Management Tab -->
+            <div class="admin-tab-content" id="content-tab">
+                <div class="tab-header">
+                    <h2>Inhalte bearbeiten</h2>
+                    <p>Bearbeite alle Texte, Beschreibungen und Inhalte der Methoden.</p>
+                </div>
+
+                <div class="content-management">
+                    <div class="content-selector">
+                        <div class="form-group">
+                            <label>Methode auswählen:</label>
+                            <select id="content-method-select" class="form-select" onchange="loadMethodContent()">
+                                <option value="">Methode auswählen...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="content-editor" id="content-editor" style="display: none;">
+                        <div class="content-sections">
+                            <div class="content-section">
+                                <h4>Übersichtsseite</h4>
+                                <div class="form-group">
+                                    <label>Haupttitel:</label>
+                                    <input type="text" id="content-main-title" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Untertitel:</label>
+                                    <input type="text" id="content-subtitle" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Beschreibung:</label>
+                                    <textarea id="content-description" class="form-textarea"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="content-section">
+                                <h4>Workflow-Schritte</h4>
+                                <div id="workflow-steps-editor">
+                                    <!-- Workflow steps will be dynamically loaded here -->
+                                </div>
+                                <button class="btn btn-outline" onclick="addWorkflowStep()">
+                                    <i class="fas fa-plus"></i> Schritt hinzufügen
+                                </button>
+                            </div>
+
+                            <div class="content-section">
+                                <h4>Reflexionsfragen</h4>
+                                <div id="reflection-questions-editor">
+                                    <!-- Reflection questions will be dynamically loaded here -->
+                                </div>
+                                <button class="btn btn-outline" onclick="addReflectionQuestion()">
+                                    <i class="fas fa-plus"></i> Frage hinzufügen
+                                </button>
+                            </div>
+
+                            <div class="content-actions">
+                                <button class="btn btn-primary" onclick="saveMethodContent()">
+                                    <i class="fas fa-save"></i> Inhalte speichern
+                                </button>
+                                <button class="btn btn-outline" onclick="previewMethod()">
+                                    <i class="fas fa-eye"></i> Vorschau
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Management Tab -->
+            <div class="admin-tab-content" id="questions-tab">
+                <div class="tab-header">
+                    <h2>Fragen verwalten</h2>
+                    <p>Verwalte alle Reflexionsfragen und deren Kategorien.</p>
+                </div>
+
+                <div class="questions-management">
+                    <div class="questions-categories">
+                        <div class="category-header">
+                            <h3>Fragen-Kategorien</h3>
+                            <button class="btn btn-primary" onclick="addQuestionCategory()">
+                                <i class="fas fa-plus"></i> Kategorie hinzufügen
+                            </button>
+                        </div>
+
+                        <div class="categories-list" id="categories-list">
+                            <!-- Categories will be dynamically loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="questions-editor" id="questions-editor" style="display: none;">
+                        <div class="editor-header">
+                            <h3>Fragen bearbeiten</h3>
+                            <button class="btn btn-secondary" onclick="closeQuestionsEditor()">
+                                <i class="fas fa-times"></i> Schließen
+                            </button>
+                        </div>
+
+                        <div class="editor-content">
+                            <div class="form-group">
+                                <label>Kategorie:</label>
+                                <input type="text" id="question-category" class="form-input" readonly>
+                            </div>
+
+                            <div class="questions-list" id="questions-list">
+                                <!-- Questions will be dynamically loaded here -->
+                            </div>
+
+                            <button class="btn btn-outline" onclick="addQuestion()">
+                                <i class="fas fa-plus"></i> Frage hinzufügen
+                            </button>
+
+                            <div class="editor-actions">
+                                <button class="btn btn-primary" onclick="saveQuestions()">
+                                    <i class="fas fa-save"></i> Fragen speichern
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflows Configuration Tab -->
+            <div class="admin-tab-content" id="workflows-tab">
+                <div class="tab-header">
+                    <h2>Workflows konfigurieren</h2>
+                    <p>Konfiguriere die Workflow-Struktur und Navigation für alle Methoden.</p>
+                </div>
+
+                <div class="workflows-management">
+                    <div class="workflow-selector">
+                        <div class="form-group">
+                            <label>Workflow auswählen:</label>
+                            <select id="workflow-select" class="form-select" onchange="loadWorkflowConfig()">
+                                <option value="">Workflow auswählen...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="workflow-config" id="workflow-config" style="display: none;">
+                        <div class="workflow-steps-config">
+                            <h4>Workflow-Schritte</h4>
+                            <div id="workflow-steps-config">
+                                <!-- Workflow steps configuration will be loaded here -->
+                            </div>
+                        </div>
+
+                        <div class="workflow-settings">
+                            <h4>Workflow-Einstellungen</h4>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="workflow-auto-save" class="form-checkbox">
+                                    Automatisches Speichern aktivieren
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="workflow-progress-tracking" class="form-checkbox">
+                                    Fortschrittsverfolgung aktivieren
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="workflow-export-enabled" class="form-checkbox">
+                                    Export-Funktionen aktivieren
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="workflow-reminders-enabled" class="form-checkbox">
+                                    Reminder-System aktivieren
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="workflow-actions">
+                            <button class="btn btn-primary" onclick="saveWorkflowConfig()">
+                                <i class="fas fa-save"></i> Workflow-Konfiguration speichern
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Management Tab -->
+            <div class="admin-tab-content" id="users-tab">
+                <div class="tab-header">
+                    <h2>Benutzer verwalten</h2>
+                    <p>Verwalte Benutzer, Rollen und Berechtigungen.</p>
+                </div>
+
+                <div class="users-management">
+                    <div class="users-list">
+                        <div class="users-header">
+                            <h3>Benutzer</h3>
+                            <button class="btn btn-primary" onclick="addUser()">
+                                <i class="fas fa-plus"></i> Benutzer hinzufügen
+                            </button>
+                        </div>
+
+                        <div class="users-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Benutzername</th>
+                                        <th>E-Mail</th>
+                                        <th>Rolle</th>
+                                        <th>Letzter Login</th>
+                                        <th>Status</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <!-- Users will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="user-editor" id="user-editor" style="display: none;">
+                        <div class="editor-header">
+                            <h3>Benutzer bearbeiten</h3>
+                            <button class="btn btn-secondary" onclick="closeUserEditor()">
+                                <i class="fas fa-times"></i> Schließen
+                            </button>
+                        </div>
+
+                        <div class="editor-content">
+                            <div class="form-group">
+                                <label>Benutzername:</label>
+                                <input type="text" id="user-username" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>E-Mail:</label>
+                                <input type="email" id="user-email" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Rolle:</label>
+                                <select id="user-role" class="form-select">
+                                    <option value="admin">Administrator</option>
+                                    <option value="editor">Editor</option>
+                                    <option value="viewer">Betrachter</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="user-active" class="form-checkbox">
+                                    Benutzer ist aktiv
+                                </label>
+                            </div>
+
+                            <div class="editor-actions">
+                                <button class="btn btn-primary" onclick="saveUser()">
+                                    <i class="fas fa-save"></i> Benutzer speichern
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteUser()">
+                                    <i class="fas fa-trash"></i> Benutzer löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="admin-tab-content" id="analytics-tab">
+                <div class="tab-header">
+                    <h2>Analytics & Statistiken</h2>
+                    <p>Überwache die Nutzung und Performance der Persönlichkeitsentwicklungs-Methoden.</p>
+                </div>
+
+                <div class="analytics-dashboard">
+                    <div class="analytics-cards">
+                        <div class="analytics-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="total-users">0</h3>
+                                <p>Gesamte Benutzer</p>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <div class="card-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="total-sessions">0</h3>
+                                <p>Workflow-Sitzungen</p>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="avg-duration">0 min</h3>
+                                <p>Durchschnittliche Dauer</p>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <div class="card-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="completion-rate">0%</h3>
+                                <p>Abschlussrate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h4>Beliebte Methoden</h4>
+                            <canvas id="methods-chart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h4>Nutzung über Zeit</h4>
+                            <canvas id="usage-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="analytics-export">
+                        <h4>Daten exportieren</h4>
+                        <div class="export-options">
+                            <button class="btn btn-outline" onclick="exportAnalytics('csv')">
+                                <i class="fas fa-file-csv"></i> CSV Export
+                            </button>
+                            <button class="btn btn-outline" onclick="exportAnalytics('json')">
+                                <i class="fas fa-file-code"></i> JSON Export
+                            </button>
+                            <button class="btn btn-outline" onclick="exportAnalytics('pdf')">
+                                <i class="fas fa-file-pdf"></i> PDF Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Admin Footer -->
+        <footer class="admin-footer">
+            <div class="admin-footer-content">
+                <p>&copy; 2024 Persönlichkeitsentwicklung Admin Panel. Alle Rechte vorbehalten.</p>
+                <div class="footer-actions">
+                    <button class="btn btn-outline" onclick="backupData()">
+                        <i class="fas fa-database"></i> Backup erstellen
+                    </button>
+                    <button class="btn btn-outline" onclick="restoreData()">
+                        <i class="fas fa-upload"></i> Backup wiederherstellen
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden file input for imports -->
+    <input type="file" id="file-import" style="display: none;" accept=".json,.csv" onchange="handleFileImport(event)">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/admin-persoenlichkeitsentwicklung.js"></script>
+</body>
+</html>
