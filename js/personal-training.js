@@ -27,6 +27,7 @@ class PersonalTrainingPlanner {
         this.updateProgress();
         this.updateNavigation();
         this.loadSavedData();
+        this.showStep(this.currentStep); // Ensure first step is visible
     }
 
     setupEventListeners() {
@@ -274,7 +275,7 @@ class PersonalTrainingPlanner {
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
         
         // Show current step
-        const currentStepElement = document.querySelector(`[data-step="${step}"]`);
+        const currentStepElement = document.querySelector(`.wizard-step[data-step="${step}"]`);
         if (currentStepElement) {
             currentStepElement.classList.add('active');
         }
