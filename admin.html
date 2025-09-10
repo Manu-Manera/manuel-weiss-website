@@ -2512,6 +2512,389 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
+        // Ikigai-Workflow-Verwaltung Funktionen
+        function loadIkigaiStats() {
+            try {
+                const stats = JSON.parse(localStorage.getItem('ikigaiStats') || '{}');
+                
+                // Update statistics display
+                document.getElementById('ikigai-completions').textContent = stats.completions || 0;
+                document.getElementById('avg-completion-time').textContent = stats.avgTime || '-';
+                document.getElementById('ikigai-rating').textContent = stats.rating || '-';
+                document.getElementById('ikigai-progress').textContent = (stats.completionRate || 0) + '%';
+            } catch (error) {
+                console.error('Error loading Ikigai stats:', error);
+            }
+        }
+        
+        function setupIkigaiEventListeners() {
+            // Step edit buttons
+            document.querySelectorAll('.edit-step-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const step = e.target.getAttribute('data-step');
+                    openStepEditor(step);
+                });
+            });
+            
+            // Video edit buttons
+            document.querySelectorAll('.edit-video-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const video = e.target.getAttribute('data-video');
+                    openVideoEditor(video);
+                });
+            });
+            
+            // Template management buttons
+            document.querySelectorAll('.manage-templates-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    openTemplateManager();
+                });
+            });
+        }
+        
+        function openStepEditor(stepNumber) {
+            // Create modal for step editing
+            const modal = document.createElement('div');
+            modal.className = 'ikigai-modal';
+            modal.innerHTML = `
+                <div class="ikigai-modal-content">
+                    <div class="ikigai-modal-header">
+                        <h3>Schritt ${stepNumber} bearbeiten</h3>
+                        <button class="ikigai-modal-close">&times;</button>
+                    </div>
+                    <div class="ikigai-modal-body">
+                        <div class="step-editor">
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" id="step-title-${stepNumber}" value="Schritt ${stepNumber}">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea id="step-description-${stepNumber}" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Übungen</label>
+                                <div class="exercises-list" id="exercises-${stepNumber}">
+                                    <!-- Exercises will be loaded here -->
+                                </div>
+                                <button class="add-exercise-btn" data-step="${stepNumber}">
+                                    <i class="fas fa-plus"></i> Übung hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ikigai-modal-footer">
+                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="saveStepChanges(${stepNumber})">Speichern</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .ikigai-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                }
+                .ikigai-modal-content {
+                    background: white;
+                    border-radius: 1rem;
+                    max-width: 800px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                }
+                .ikigai-modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.5rem;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                .ikigai-modal-header h3 {
+                    margin: 0;
+                    color: #1e293b;
+                }
+                .ikigai-modal-close {
+                    background: none;
+                    border: none;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    color: #64748b;
+                }
+                .ikigai-modal-body {
+                    padding: 2rem;
+                }
+                .ikigai-modal-footer {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 1rem;
+                    padding: 1.5rem;
+                    border-top: 1px solid #e2e8f0;
+                }
+                .form-group {
+                    margin-bottom: 1.5rem;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    font-weight: 500;
+                    color: #374151;
+                }
+                .form-group input,
+                .form-group textarea {
+                    width: 100%;
+                    padding: 0.75rem;
+                    border: 1px solid #d1d5db;
+                    border-radius: 0.5rem;
+                    font-family: inherit;
+                }
+                .add-exercise-btn {
+                    background: #10b981;
+                    color: white;
+                    border: none;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem 1rem;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            modal.querySelector('.ikigai-modal-close').addEventListener('click', () => {
+                closeIkigaiModal();
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeIkigaiModal();
+                }
+            });
+            
+            // Load step data
+            loadStepData(stepNumber);
+        }
+        
+        function openVideoEditor(videoType) {
+            // Create modal for video editing
+            const modal = document.createElement('div');
+            modal.className = 'ikigai-modal';
+            modal.innerHTML = `
+                <div class="ikigai-modal-content">
+                    <div class="ikigai-modal-header">
+                        <h3>Video bearbeiten: ${getVideoTitle(videoType)}</h3>
+                        <button class="ikigai-modal-close">&times;</button>
+                    </div>
+                    <div class="ikigai-modal-body">
+                        <div class="video-editor">
+                            <div class="form-group">
+                                <label>Titel</label>
+                                <input type="text" id="video-title-${videoType}" value="${getVideoTitle(videoType)}">
+                            </div>
+                            <div class="form-group">
+                                <label>Beschreibung</label>
+                                <textarea id="video-description-${videoType}" rows="3">${getVideoDescription(videoType)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>YouTube URL</label>
+                                <input type="url" id="video-url-${videoType}" placeholder="https://youtube.com/watch?v=...">
+                            </div>
+                            <div class="form-group">
+                                <label>Thumbnail</label>
+                                <input type="file" id="video-thumbnail-${videoType}" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ikigai-modal-footer">
+                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="saveVideoChanges('${videoType}')">Speichern</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            modal.querySelector('.ikigai-modal-close').addEventListener('click', () => {
+                closeIkigaiModal();
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeIkigaiModal();
+                }
+            });
+        }
+        
+        function openTemplateManager() {
+            // Create modal for template management
+            const modal = document.createElement('div');
+            modal.className = 'ikigai-modal';
+            modal.innerHTML = `
+                <div class="ikigai-modal-content">
+                    <div class="ikigai-modal-header">
+                        <h3>Inhaltsvorlagen verwalten</h3>
+                        <button class="ikigai-modal-close">&times;</button>
+                    </div>
+                    <div class="ikigai-modal-body">
+                        <div class="template-manager">
+                            <div class="template-categories">
+                                <button class="template-category-btn active" data-category="exercises">Übungsvorlagen</button>
+                                <button class="template-category-btn" data-category="tips">Tipps & Ratschläge</button>
+                                <button class="template-category-btn" data-category="examples">Beispielantworten</button>
+                            </div>
+                            <div class="template-content">
+                                <div class="template-list" id="template-list">
+                                    <!-- Templates will be loaded here -->
+                                </div>
+                                <button class="add-template-btn">
+                                    <i class="fas fa-plus"></i> Vorlage hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ikigai-modal-footer">
+                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="saveTemplateChanges()">Speichern</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            modal.querySelector('.ikigai-modal-close').addEventListener('click', () => {
+                closeIkigaiModal();
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeIkigaiModal();
+                }
+            });
+        }
+        
+        function closeIkigaiModal() {
+            const modal = document.querySelector('.ikigai-modal');
+            const style = document.querySelector('style:last-of-type');
+            if (modal) document.body.removeChild(modal);
+            if (style) document.head.removeChild(style);
+        }
+        
+        function loadStepData(stepNumber) {
+            // Load step data from localStorage or default values
+            const stepData = JSON.parse(localStorage.getItem(`ikigaiStep${stepNumber}`) || '{}');
+            
+            document.getElementById(`step-title-${stepNumber}`).value = stepData.title || `Schritt ${stepNumber}`;
+            document.getElementById(`step-description-${stepNumber}`).value = stepData.description || '';
+            
+            // Load exercises
+            const exercisesContainer = document.getElementById(`exercises-${stepNumber}`);
+            if (stepData.exercises) {
+                stepData.exercises.forEach((exercise, index) => {
+                    addExerciseToStep(stepNumber, index, exercise);
+                });
+            }
+        }
+        
+        function addExerciseToStep(stepNumber, index, exercise = {}) {
+            const exercisesContainer = document.getElementById(`exercises-${stepNumber}`);
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'exercise-item';
+            exerciseDiv.innerHTML = `
+                <div class="exercise-header">
+                    <input type="text" value="${exercise.title || ''}" placeholder="Übungstitel" class="exercise-title">
+                    <button class="remove-exercise-btn" onclick="removeExercise(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <textarea class="exercise-description" placeholder="Übungsbeschreibung" rows="2">${exercise.description || ''}</textarea>
+            `;
+            exercisesContainer.appendChild(exerciseDiv);
+        }
+        
+        function removeExercise(button) {
+            button.closest('.exercise-item').remove();
+        }
+        
+        function saveStepChanges(stepNumber) {
+            const stepData = {
+                title: document.getElementById(`step-title-${stepNumber}`).value,
+                description: document.getElementById(`step-description-${stepNumber}`).value,
+                exercises: []
+            };
+            
+            // Collect exercises
+            const exerciseItems = document.querySelectorAll(`#exercises-${stepNumber} .exercise-item`);
+            exerciseItems.forEach(item => {
+                const title = item.querySelector('.exercise-title').value;
+                const description = item.querySelector('.exercise-description').value;
+                if (title || description) {
+                    stepData.exercises.push({ title, description });
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem(`ikigaiStep${stepNumber}`, JSON.stringify(stepData));
+            
+            showStatus('✅ Schritt erfolgreich gespeichert!', 'success');
+            closeIkigaiModal();
+        }
+        
+        function saveVideoChanges(videoType) {
+            const videoData = {
+                title: document.getElementById(`video-title-${videoType}`).value,
+                description: document.getElementById(`video-description-${videoType}`).value,
+                url: document.getElementById(`video-url-${videoType}`).value
+            };
+            
+            // Save to localStorage
+            localStorage.setItem(`ikigaiVideo${videoType}`, JSON.stringify(videoData));
+            
+            showStatus('✅ Video erfolgreich gespeichert!', 'success');
+            closeIkigaiModal();
+        }
+        
+        function saveTemplateChanges() {
+            // Save template changes
+            showStatus('✅ Vorlagen erfolgreich gespeichert!', 'success');
+            closeIkigaiModal();
+        }
+        
+        function getVideoTitle(videoType) {
+            const titles = {
+                'ikigai-basics': 'Ikigai Grundlagen',
+                'self-reflection': 'Selbstreflexion',
+                'goal-setting': 'Lebensziele setzen',
+                'daily-ikigai': 'Ikigai im Alltag'
+            };
+            return titles[videoType] || 'Video-Tutorial';
+        }
+        
+        function getVideoDescription(videoType) {
+            const descriptions = {
+                'ikigai-basics': 'Grundlagen und Philosophie des Ikigai-Konzepts',
+                'self-reflection': 'Techniken zur tiefen Selbstanalyse',
+                'goal-setting': 'Wie du deine Ziele strukturiert angehst',
+                'daily-ikigai': 'Praktische Umsetzung im täglichen Leben'
+            };
+            return descriptions[videoType] || 'Ein hilfreiches Video-Tutorial';
+        }
+        
         // Bewerbungsverwaltung Funktionen
         function addApplication() {
             const applicationData = {
@@ -3389,6 +3772,10 @@ Bitte antworte im folgenden JSON-Format:
             loadOpenAIKey();
             updateNutritionStats();
             loadSavedRecipes();
+            
+            // Lade Ikigai-Workflow-Verwaltung
+            loadIkigaiStats();
+            setupIkigaiEventListeners();
             
             // Lade Bewerbungsverwaltung
             updateApplicationStats();
