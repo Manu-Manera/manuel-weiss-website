@@ -1407,13 +1407,29 @@
 .personality-methods-overview {
     padding: 6rem 0;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.personality-methods-overview .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
     margin-top: 3rem;
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .method-card {
@@ -1426,6 +1442,10 @@
     border: 1px solid rgba(102, 126, 234, 0.1);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .method-card::before {
@@ -1453,10 +1473,13 @@
     grid-column: 1 / -1;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 200px;
 }
 
 .featured-method::before {
@@ -1470,15 +1493,18 @@
 
 .featured-method .method-content h3 {
     color: white;
+    margin-bottom: 1rem;
 }
 
 .featured-method .method-description {
     color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
 }
 
 .featured-method .feature-tag {
     background: rgba(255, 255, 255, 0.2);
     color: white;
+    margin-bottom: 1.5rem;
 }
 
 .method-icon {
@@ -1499,6 +1525,15 @@
     height: 80px;
     font-size: 2rem;
     margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.method-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .method-content h3 {
@@ -1519,6 +1554,8 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .feature-tag {
@@ -1534,6 +1571,8 @@
     display: flex;
     gap: 2rem;
     margin-bottom: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .stat {
@@ -1564,6 +1603,8 @@
 
 .method-action {
     margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Method Modal */
@@ -2066,6 +2107,63 @@
     
     .add-value-form {
         flex-direction: column;
+    }
+    
+    .methods-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .method-card {
+        padding: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .featured-method {
+        grid-column: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .featured-method .method-icon {
+        margin-bottom: 1rem;
+    }
+    
+    .featured-method .method-content {
+        flex: 1;
+    }
+    
+    .featured-method .method-action {
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .methods-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .personality-methods-overview .container {
+        padding: 0 1rem;
+    }
+    
+    .methods-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .method-card {
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
@@ -4896,5 +4994,30 @@
     
     .wish-intensity span {
         text-align: center;
+    }
+}
+
+/* Fix for Layout Issues */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
     }
 }
