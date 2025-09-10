@@ -27,9 +27,24 @@ class IkigaiPlanner {
         const nextBtn = document.getElementById('next-step');
         const saveBtn = document.getElementById('save-progress');
 
-        if (prevBtn) prevBtn.addEventListener('click', () => this.previousStep());
-        if (nextBtn) nextBtn.addEventListener('click', () => this.nextStep());
-        if (saveBtn) saveBtn.addEventListener('click', () => this.saveProgress());
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.previousStep();
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.nextStep();
+            });
+        }
+        if (saveBtn) {
+            saveBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.saveProgress();
+            });
+        }
 
         // Video links
         document.querySelectorAll('.video-link').forEach(link => {
@@ -48,22 +63,30 @@ class IkigaiPlanner {
     }
 
     nextStep() {
+        console.log('Next step clicked, current step:', this.currentStep);
         if (this.currentStep < this.totalSteps) {
             this.saveCurrentStepData();
             this.currentStep++;
             this.updateProgress();
             this.updateNavigation();
             this.scrollToTop();
+            console.log('Moved to step:', this.currentStep);
+        } else {
+            console.log('Already at last step');
         }
     }
 
     previousStep() {
+        console.log('Previous step clicked, current step:', this.currentStep);
         if (this.currentStep > 1) {
             this.saveCurrentStepData();
             this.currentStep--;
             this.updateProgress();
             this.updateNavigation();
             this.scrollToTop();
+            console.log('Moved to step:', this.currentStep);
+        } else {
+            console.log('Already at first step');
         }
     }
 
