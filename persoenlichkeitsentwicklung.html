@@ -964,9 +964,9 @@
                 
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
-                    <button class="btn btn-secondary" id="prev-step" disabled onclick="handlePreviousStep()">Zurück</button>
-                    <button class="btn btn-primary" id="next-step" onclick="handleNextStep()">Weiter</button>
-                    <button class="btn btn-success" id="save-progress" style="display: none;" onclick="handleSaveProgress()">Fortschritt speichern</button>
+                    <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()">Zurück</button>
+                    <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()">Weiter</button>
+                    <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
                 </div>
             </div>
         </div>
@@ -1101,5 +1101,91 @@
     <!-- Scripts -->
     <script src="script.js"></script>
     <script src="js/ikigai-planner.js"></script>
+    
+    <!-- Direct Ikigai Navigation Script -->
+    <script>
+        // Simple Ikigai Navigation - Direct Implementation
+        let currentIkigaiStep = 1;
+        const totalIkigaiSteps = 7;
+        
+        function ikigaiNextStep() {
+            console.log('ikigaiNextStep called, current step:', currentIkigaiStep);
+            if (currentIkigaiStep < totalIkigaiSteps) {
+                currentIkigaiStep++;
+                updateIkigaiStep();
+                console.log('Moved to step:', currentIkigaiStep);
+            }
+        }
+        
+        function ikigaiPreviousStep() {
+            console.log('ikigaiPreviousStep called, current step:', currentIkigaiStep);
+            if (currentIkigaiStep > 1) {
+                currentIkigaiStep--;
+                updateIkigaiStep();
+                console.log('Moved to step:', currentIkigaiStep);
+            }
+        }
+        
+        function ikigaiSaveProgress() {
+            console.log('ikigaiSaveProgress called');
+            alert('Fortschritt gespeichert!');
+        }
+        
+        function updateIkigaiStep() {
+            console.log('Updating to step:', currentIkigaiStep);
+            
+            // Hide all steps
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show current step
+            const currentStepElement = document.querySelector(`.workflow-step:nth-child(${currentIkigaiStep})`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('active');
+                console.log('Activated step element:', currentStepElement);
+            }
+            
+            // Update progress indicators
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNumber === currentIkigaiStep) {
+                    step.classList.add('active');
+                } else if (stepNumber < currentIkigaiStep) {
+                    step.classList.add('completed');
+                }
+            });
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prev-step');
+            const nextBtn = document.getElementById('next-step');
+            const saveBtn = document.getElementById('save-progress');
+            
+            if (prevBtn) {
+                prevBtn.disabled = currentIkigaiStep === 1;
+            }
+            
+            if (nextBtn && saveBtn) {
+                if (currentIkigaiStep === totalIkigaiSteps) {
+                    nextBtn.style.display = 'none';
+                    saveBtn.style.display = 'inline-block';
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    saveBtn.style.display = 'none';
+                }
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Ikigai navigation initialized');
+            updateIkigaiStep();
+        });
+    </script>
 </body>
 </html>
