@@ -113,6 +113,22 @@ class PersonalTrainingPlanner {
         // Progress tracking
         const saveProgress = document.getElementById('save-progress');
         if (saveProgress) saveProgress.addEventListener('click', () => this.saveProgress());
+
+        // AI Exercise Database Update
+        const aiUpdateExercises = document.getElementById('ai-update-exercises');
+        if (aiUpdateExercises) aiUpdateExercises.addEventListener('click', () => this.aiUpdateExerciseDatabase());
+
+        // Add Custom Exercise
+        const addCustomExercise = document.getElementById('add-custom-exercise');
+        if (addCustomExercise) addCustomExercise.addEventListener('click', () => this.addCustomExercise());
+
+        // Edit Schedule
+        const editSchedule = document.getElementById('edit-schedule');
+        if (editSchedule) editSchedule.addEventListener('click', () => this.editSchedule());
+
+        // AI Optimize Schedule
+        const aiOptimizeSchedule = document.getElementById('ai-optimize-schedule');
+        if (aiOptimizeSchedule) aiOptimizeSchedule.addEventListener('click', () => this.aiOptimizeSchedule());
     }
 
     selectGoal(card) {
@@ -820,6 +836,202 @@ class PersonalTrainingPlanner {
         this.saveCurrentStepData();
     }
 
+    aiUpdateExerciseDatabase() {
+        this.showNotification('AI aktualisiert die Übungsdatenbank...', 'info');
+        
+        // Simulate AI update process
+        setTimeout(() => {
+            const newExercises = this.generateNewExercises();
+            this.addExercisesToDatabase(newExercises);
+            this.generateExercisesContent();
+            this.showNotification('Übungsdatenbank wurde erfolgreich aktualisiert!', 'success');
+        }, 3000);
+    }
+
+    generateNewExercises() {
+        // Simulate AI-generated exercises
+        return {
+            'chest': [
+                { name: 'Decline Push-ups', description: 'Liegestütze mit erhöhten Füßen für obere Brust' },
+                { name: 'Diamond Push-ups', description: 'Enger Griff für Trizeps und innere Brust' },
+                { name: 'Pike Push-ups', description: 'Schulterfokussierte Liegestütze' }
+            ],
+            'back': [
+                { name: 'Wide Grip Pull-ups', description: 'Breiter Griff für breiten Rücken' },
+                { name: 'Reverse Grip Pull-ups', description: 'Untergriff für unteren Rücken' },
+                { name: 'Archer Pull-ups', description: 'Einarmige Vorbereitung' }
+            ],
+            'legs': [
+                { name: 'Jump Squats', description: 'Explosive Kniebeugen mit Sprung' },
+                { name: 'Single Leg Deadlifts', description: 'Einbeiniges Kreuzheben für Balance' },
+                { name: 'Calf Raises', description: 'Wadenheben für Wadenmuskulatur' }
+            ],
+            'core': [
+                { name: 'Russian Twists', description: 'Rotationsübung für schräge Bauchmuskeln' },
+                { name: 'Mountain Climbers', description: 'Dynamische Core-Übung' },
+                { name: 'Dead Bug', description: 'Stabile Core-Übung für Anfänger' }
+            ]
+        };
+    }
+
+    addExercisesToDatabase(newExercises) {
+        const existingExercises = JSON.parse(localStorage.getItem('exerciseDatabase') || '{}');
+        
+        Object.keys(newExercises).forEach(category => {
+            if (!existingExercises[category]) {
+                existingExercises[category] = [];
+            }
+            
+            newExercises[category].forEach(exercise => {
+                const exerciseId = Date.now() + Math.random();
+                existingExercises[category].push({
+                    id: exerciseId,
+                    name: exercise.name,
+                    description: exercise.description,
+                    category: category,
+                    equipment: 'bodyweight',
+                    difficulty: 'intermediate',
+                    muscleGroups: [category]
+                });
+            });
+        });
+        
+        localStorage.setItem('exerciseDatabase', JSON.stringify(existingExercises));
+    }
+
+    addCustomExercise() {
+        const modal = this.createModal('Neue Übung hinzufügen', `
+            <div class="exercise-editor">
+                <div class="form-group">
+                    <label>Übungsname:</label>
+                    <input type="text" id="new-exercise-name" placeholder="z.B. Kniebeugen">
+                </div>
+                <div class="form-group">
+                    <label>Kategorie:</label>
+                    <select id="new-exercise-category">
+                        <option value="chest">Brust</option>
+                        <option value="back">Rücken</option>
+                        <option value="legs">Beine</option>
+                        <option value="shoulders">Schultern</option>
+                        <option value="arms">Arme</option>
+                        <option value="core">Core</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Beschreibung:</label>
+                    <textarea id="new-exercise-description" placeholder="Beschreibung der Übung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Equipment:</label>
+                    <select id="new-exercise-equipment">
+                        <option value="bodyweight">Körpergewicht</option>
+                        <option value="dumbbell">Kurzhantel</option>
+                        <option value="barbell">Langhantel</option>
+                        <option value="cable">Kabelzug</option>
+                        <option value="machine">Gerät</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Schwierigkeit:</label>
+                    <select id="new-exercise-difficulty">
+                        <option value="beginner">Anfänger</option>
+                        <option value="intermediate">Fortgeschritten</option>
+                        <option value="advanced">Experte</option>
+                    </select>
+                </div>
+            </div>
+        `, [
+            { text: 'Hinzufügen', class: 'btn-primary', onclick: 'saveCustomExercise()' },
+            { text: 'Abbrechen', class: 'btn-secondary', onclick: 'closeModal()' }
+        ]);
+    }
+
+    editSchedule() {
+        this.showNotification('Bearbeitungsmodus aktiviert', 'info');
+        
+        // Add edit functionality to session cards
+        const sessionCards = document.querySelectorAll('.session-card');
+        sessionCards.forEach(card => {
+            card.classList.add('editable');
+            this.addEditControlsToSession(card);
+        });
+    }
+
+    addEditControlsToSession(sessionCard) {
+        const sessionHeader = sessionCard.querySelector('.session-header');
+        const editControls = document.createElement('div');
+        editControls.className = 'session-edit-controls';
+        editControls.innerHTML = `
+            <button class="btn btn-sm btn-primary" onclick="addExerciseToSession(this)">
+                <i class="fas fa-plus"></i> Übung
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="aiSuggestExercises(this)">
+                <i class="fas fa-robot"></i> AI Vorschlag
+            </button>
+        `;
+        sessionHeader.appendChild(editControls);
+    }
+
+    aiOptimizeSchedule() {
+        this.showNotification('AI optimiert deinen Trainingsplan...', 'info');
+        
+        // Simulate AI optimization
+        setTimeout(() => {
+            this.optimizeScheduleWithAI();
+            this.showNotification('Trainingsplan wurde optimiert!', 'success');
+        }, 2000);
+    }
+
+    optimizeScheduleWithAI() {
+        // Simulate AI optimization logic
+        const currentWeek = this.generatedPlan.weeks[0];
+        
+        // Add variety to exercises
+        currentWeek.sessions.forEach(session => {
+            if (session.exercises.length < 6) {
+                const newExercise = this.getAIRecommendedExercise(session.type);
+                session.exercises.push(newExercise);
+            }
+        });
+        
+        // Regenerate schedule content
+        this.generateScheduleContent();
+    }
+
+    getAIRecommendedExercise(sessionType) {
+        const recommendations = {
+            'Push': { name: 'Schulterdrücken', sets: 3, reps: '8-12', category: 'shoulders' },
+            'Pull': { name: 'Face Pulls', sets: 3, reps: '12-15', category: 'back' },
+            'Legs': { name: 'Bulgarian Split Squats', sets: 3, reps: '10-12', category: 'legs' },
+            'Ganzkörper A': { name: 'Burpees', sets: 3, reps: '8-10', category: 'core' },
+            'Ganzkörper B': { name: 'Mountain Climbers', sets: 3, reps: '20-30s', category: 'core' }
+        };
+        
+        return recommendations[sessionType] || { name: 'Plank', sets: 3, reps: '30-60s', category: 'core' };
+    }
+
+    createModal(title, content, buttons = []) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${title}</h3>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    ${content}
+                </div>
+                <div class="modal-footer">
+                    ${buttons.map(btn => `<button class="btn ${btn.class}" onclick="${btn.onclick}">${btn.text}</button>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        return modal;
+    }
+
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -858,7 +1070,230 @@ class PersonalTrainingPlanner {
     }
 }
 
+// Global functions for onclick handlers
+function saveCustomExercise() {
+    const name = document.getElementById('new-exercise-name').value;
+    const category = document.getElementById('new-exercise-category').value;
+    const description = document.getElementById('new-exercise-description').value;
+    const equipment = document.getElementById('new-exercise-equipment').value;
+    const difficulty = document.getElementById('new-exercise-difficulty').value;
+
+    if (!name || !description) {
+        alert('Bitte fülle alle Pflichtfelder aus.');
+        return;
+    }
+
+    const exerciseData = {
+        id: Date.now(),
+        name: name,
+        description: description,
+        category: category,
+        equipment: equipment,
+        difficulty: difficulty,
+        muscleGroups: [category]
+    };
+
+    // Save to localStorage
+    const exercises = JSON.parse(localStorage.getItem('exerciseDatabase') || '{}');
+    if (!exercises[category]) {
+        exercises[category] = [];
+    }
+    exercises[category].push(exerciseData);
+    localStorage.setItem('exerciseDatabase', JSON.stringify(exercises));
+
+    // Refresh exercises display
+    if (window.trainingPlanner) {
+        window.trainingPlanner.generateExercisesContent();
+    }
+
+    closeModal();
+    showNotification('Übung wurde erfolgreich hinzugefügt!', 'success');
+}
+
+function addExerciseToSession(button) {
+    const sessionCard = button.closest('.session-card');
+    const sessionType = sessionCard.querySelector('.session-type').textContent;
+    
+    // Show exercise selection modal
+    const modal = createExerciseSelectionModal(sessionType, (selectedExercise) => {
+        addExerciseToSessionCard(sessionCard, selectedExercise);
+        closeModal();
+    });
+}
+
+function aiSuggestExercises(button) {
+    const sessionCard = button.closest('.session-card');
+    const sessionType = sessionCard.querySelector('.session-type').textContent;
+    
+    showNotification('AI generiert Übungsvorschläge...', 'info');
+    
+    setTimeout(() => {
+        const suggestions = getAIExerciseSuggestions(sessionType);
+        const modal = createExerciseSelectionModal(sessionType, (selectedExercise) => {
+            addExerciseToSessionCard(sessionCard, selectedExercise);
+            closeModal();
+        }, suggestions);
+    }, 1500);
+}
+
+function createExerciseSelectionModal(sessionType, onSelect, suggestions = null) {
+    const exercises = suggestions || getExercisesForSessionType(sessionType);
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Übung für ${sessionType} auswählen</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="exercise-selection-grid">
+                    ${exercises.map(exercise => `
+                        <div class="exercise-selection-card" onclick="selectExercise('${exercise.name}', '${exercise.sets}', '${exercise.reps}')">
+                            <h4>${exercise.name}</h4>
+                            <p>${exercise.description || 'Keine Beschreibung verfügbar'}</p>
+                            <div class="exercise-meta">
+                                <span class="sets">${exercise.sets} Sätze</span>
+                                <span class="reps">${exercise.reps}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Store callback for later use
+    modal._onSelect = onSelect;
+    
+    return modal;
+}
+
+function selectExercise(name, sets, reps) {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal && modal._onSelect) {
+        modal._onSelect({ name, sets, reps, category: 'custom' });
+    }
+}
+
+function addExerciseToSessionCard(sessionCard, exercise) {
+    const exercisesContainer = sessionCard.querySelector('.session-exercises');
+    const exerciseItem = document.createElement('div');
+    exerciseItem.className = 'exercise-item';
+    exerciseItem.innerHTML = `
+        <span class="exercise-name">${exercise.name}</span>
+        <span class="exercise-sets">${exercise.sets} Sätze</span>
+        <span class="exercise-reps">${exercise.reps}</span>
+        <button class="btn btn-sm btn-danger" onclick="removeExercise(this)">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    exercisesContainer.appendChild(exerciseItem);
+    
+    showNotification('Übung wurde hinzugefügt!', 'success');
+}
+
+function removeExercise(button) {
+    const exerciseItem = button.closest('.exercise-item');
+    exerciseItem.remove();
+    showNotification('Übung wurde entfernt!', 'info');
+}
+
+function getAIExerciseSuggestions(sessionType) {
+    const suggestions = {
+        'Push': [
+            { name: 'Dips', sets: 3, reps: '8-12', description: 'Trizeps und Brust' },
+            { name: 'Pike Push-ups', sets: 3, reps: '8-15', description: 'Schultern fokussiert' },
+            { name: 'Diamond Push-ups', sets: 3, reps: '8-12', description: 'Trizeps intensiv' }
+        ],
+        'Pull': [
+            { name: 'Wide Grip Pull-ups', sets: 3, reps: '5-10', description: 'Breiter Rücken' },
+            { name: 'Reverse Grip Pull-ups', sets: 3, reps: '6-12', description: 'Unterer Rücken' },
+            { name: 'Face Pulls', sets: 3, reps: '12-15', description: 'Schulterblatt-Retraktion' }
+        ],
+        'Legs': [
+            { name: 'Jump Squats', sets: 3, reps: '10-15', description: 'Explosive Kraft' },
+            { name: 'Bulgarian Split Squats', sets: 3, reps: '8-12', description: 'Einbeinige Stärke' },
+            { name: 'Calf Raises', sets: 3, reps: '15-20', description: 'Wadenmuskulatur' }
+        ],
+        'Ganzkörper A': [
+            { name: 'Burpees', sets: 3, reps: '8-10', description: 'Ganzkörper Cardio' },
+            { name: 'Mountain Climbers', sets: 3, reps: '20-30s', description: 'Core und Cardio' },
+            { name: 'Jumping Jacks', sets: 3, reps: '30-45s', description: 'Aufwärmen' }
+        ],
+        'Ganzkörper B': [
+            { name: 'Plank', sets: 3, reps: '30-60s', description: 'Core Stabilität' },
+            { name: 'Russian Twists', sets: 3, reps: '20-30', description: 'Schräge Bauchmuskeln' },
+            { name: 'Dead Bug', sets: 3, reps: '10-15', description: 'Core Kontrolle' }
+        ]
+    };
+    
+    return suggestions[sessionType] || suggestions['Ganzkörper A'];
+}
+
+function getExercisesForSessionType(sessionType) {
+    // Get exercises from localStorage or return defaults
+    const exercises = JSON.parse(localStorage.getItem('exerciseDatabase') || '{}');
+    const categoryExercises = exercises[sessionType.toLowerCase()] || [];
+    
+    return categoryExercises.map(exercise => ({
+        name: exercise.name,
+        sets: 3,
+        reps: '8-12',
+        description: exercise.description
+    }));
+}
+
+function closeModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new PersonalTrainingPlanner();
+    window.trainingPlanner = new PersonalTrainingPlanner();
 });
