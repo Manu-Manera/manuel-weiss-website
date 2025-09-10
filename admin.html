@@ -75,6 +75,12 @@
                                 <span>Ernährungsplan</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="ikigai">
+                            <a href="#ikigai">
+                                <i class="fas fa-seedling"></i>
+                                <span>Ikigai-Workflow</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="applications">
                             <a href="#applications">
                                 <i class="fas fa-file-alt"></i>
@@ -299,6 +305,10 @@
                                 <button class="quick-action-btn" data-action="nutrition">
                                     <i class="fas fa-apple-alt"></i>
                                     <span>Ernährungsplan</span>
+                                </button>
+                                <button class="quick-action-btn" data-action="ikigai">
+                                    <i class="fas fa-seedling"></i>
+                                    <span>Ikigai-Workflow</span>
                                 </button>
                                 <button class="quick-action-btn" data-action="applications">
                                     <i class="fas fa-file-alt"></i>
@@ -598,6 +608,269 @@
                                     
                                     <div id="saved-recipes-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
                                         <!-- Rezepte werden hier dynamisch geladen -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ikigai Workflow Section -->
+                <section id="ikigai" class="admin-section">
+                    <div class="ikigai-admin-container">
+                        <div class="ikigai-admin-header">
+                            <h2>Ikigai-Workflow Verwaltung</h2>
+                            <p>Verwalte den ausführlichen Ikigai-Workflow und seine Inhalte</p>
+                        </div>
+                        
+                        <!-- Workflow Steps Management -->
+                        <div class="workflow-steps-management">
+                            <h3>📋 Workflow-Schritte verwalten</h3>
+                            <div class="steps-grid">
+                                <div class="step-card" data-step="1">
+                                    <div class="step-header">
+                                        <h4>Schritt 1: Selbstreflexion</h4>
+                                        <button class="edit-step-btn" data-step="1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Vorbereitung und tiefe Selbstreflexion</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">4 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="2">
+                                    <div class="step-header">
+                                        <h4>Schritt 2: Was du liebst</h4>
+                                        <button class="edit-step-btn" data-step="2">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Entdecke deine Leidenschaften und Interessen</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">3 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="3">
+                                    <div class="step-header">
+                                        <h4>Schritt 3: Was die Welt braucht</h4>
+                                        <button class="edit-step-btn" data-step="3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Identifiziere Bereiche für positiven Beitrag</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">3 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="4">
+                                    <div class="step-header">
+                                        <h4>Schritt 4: Wofür du bezahlt wirst</h4>
+                                        <button class="edit-step-btn" data-step="4">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Analysiere deine beruflichen Fähigkeiten</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">3 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="5">
+                                    <div class="step-header">
+                                        <h4>Schritt 5: Worin du gut bist</h4>
+                                        <button class="edit-step-btn" data-step="5">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Entdecke deine natürlichen Talente</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">4 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="6">
+                                    <div class="step-header">
+                                        <h4>Schritt 6: Ikigai synthetisieren</h4>
+                                        <button class="edit-step-btn" data-step="6">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Verbinde alle Bereiche zu deinem Ikigai</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">3 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-card" data-step="7">
+                                    <div class="step-header">
+                                        <h4>Schritt 7: Aktionsplan erstellen</h4>
+                                        <button class="edit-step-btn" data-step="7">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="step-content">
+                                        <p>Setze dein Ikigai in konkrete Schritte um</p>
+                                        <div class="step-exercises">
+                                            <span class="exercise-count">4 Übungen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Video Resources Management -->
+                        <div class="video-resources-management">
+                            <h3>📺 Video-Ressourcen verwalten</h3>
+                            <div class="video-resources-grid">
+                                <div class="video-resource-card" data-video="ikigai-basics">
+                                    <div class="video-thumbnail">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div class="video-info">
+                                        <h4>Ikigai Grundlagen</h4>
+                                        <p>Grundlagen und Philosophie des Ikigai-Konzepts</p>
+                                        <div class="video-actions">
+                                            <button class="edit-video-btn" data-video="ikigai-basics">
+                                                <i class="fas fa-edit"></i> Bearbeiten
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="video-resource-card" data-video="self-reflection">
+                                    <div class="video-thumbnail">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div class="video-info">
+                                        <h4>Selbstreflexion</h4>
+                                        <p>Techniken zur tiefen Selbstanalyse</p>
+                                        <div class="video-actions">
+                                            <button class="edit-video-btn" data-video="self-reflection">
+                                                <i class="fas fa-edit"></i> Bearbeiten
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="video-resource-card" data-video="goal-setting">
+                                    <div class="video-thumbnail">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div class="video-info">
+                                        <h4>Lebensziele setzen</h4>
+                                        <p>Wie du deine Ziele strukturiert angehst</p>
+                                        <div class="video-actions">
+                                            <button class="edit-video-btn" data-video="goal-setting">
+                                                <i class="fas fa-edit"></i> Bearbeiten
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="video-resource-card" data-video="daily-ikigai">
+                                    <div class="video-thumbnail">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div class="video-info">
+                                        <h4>Ikigai im Alltag</h4>
+                                        <p>Praktische Umsetzung im täglichen Leben</p>
+                                        <div class="video-actions">
+                                            <button class="edit-video-btn" data-video="daily-ikigai">
+                                                <i class="fas fa-edit"></i> Bearbeiten
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Templates Management -->
+                        <div class="content-templates-management">
+                            <h3>📝 Inhaltsvorlagen verwalten</h3>
+                            <div class="templates-grid">
+                                <div class="template-card">
+                                    <h4>Übungsvorlagen</h4>
+                                    <p>Vorlagen für alle Workflow-Übungen</p>
+                                    <button class="manage-templates-btn">
+                                        <i class="fas fa-cog"></i> Verwalten
+                                    </button>
+                                </div>
+                                
+                                <div class="template-card">
+                                    <h4>Tipps & Ratschläge</h4>
+                                    <p>Hilfreiche Tipps für jeden Schritt</p>
+                                    <button class="manage-templates-btn">
+                                        <i class="fas fa-cog"></i> Verwalten
+                                    </button>
+                                </div>
+                                
+                                <div class="template-card">
+                                    <h4>Beispielantworten</h4>
+                                    <p>Beispiele für bessere Orientierung</p>
+                                    <button class="manage-templates-btn">
+                                        <i class="fas fa-cog"></i> Verwalten
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Statistics -->
+                        <div class="ikigai-statistics">
+                            <h3>📊 Statistiken</h3>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="ikigai-completions">0</h4>
+                                        <p>Workflows abgeschlossen</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="avg-completion-time">-</h4>
+                                        <p>Durchschnittliche Zeit</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="ikigai-rating">-</h4>
+                                        <p>Durchschnittliche Bewertung</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="ikigai-progress">0%</h4>
+                                        <p>Abschlussrate</p>
                                     </div>
                                 </div>
                             </div>
