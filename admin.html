@@ -81,6 +81,12 @@
                                 <span>Ikigai-Workflow</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="personal-training">
+                            <a href="#personal-training">
+                                <i class="fas fa-dumbbell"></i>
+                                <span>Personal Training</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="applications">
                             <a href="#applications">
                                 <i class="fas fa-file-alt"></i>
@@ -309,6 +315,10 @@
                                 <button class="quick-action-btn" data-action="ikigai">
                                     <i class="fas fa-seedling"></i>
                                     <span>Ikigai-Workflow</span>
+                                </button>
+                                <button class="quick-action-btn" data-action="personal-training">
+                                    <i class="fas fa-dumbbell"></i>
+                                    <span>Personal Training</span>
                                 </button>
                                 <button class="quick-action-btn" data-action="applications">
                                     <i class="fas fa-file-alt"></i>
@@ -871,6 +881,276 @@
                                     <div class="stat-content">
                                         <h4 id="ikigai-progress">0%</h4>
                                         <p>Abschlussrate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Personal Training Section -->
+                <section id="personal-training" class="admin-section">
+                    <div class="personal-training-admin-container">
+                        <div class="personal-training-admin-header">
+                            <h2>Personal Training Verwaltung</h2>
+                            <p>Verwalte Trainingspläne, Übungen und AI-Konfigurationen</p>
+                        </div>
+                        
+                        <!-- Training Plans Management -->
+                        <div class="training-plans-management">
+                            <h3>🏋️ Trainingspläne verwalten</h3>
+                            <div class="plans-grid">
+                                <div class="plan-template-card">
+                                    <div class="plan-header">
+                                        <h4>Muskelaufbau - Anfänger</h4>
+                                        <button class="edit-plan-btn" onclick="openPlanEditor('muscle-beginner')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="plan-content">
+                                        <p>3x pro Woche, 45 Min, Ganzkörper-Training</p>
+                                        <div class="plan-stats">
+                                            <span class="stat">12 Übungen</span>
+                                            <span class="stat">4 Wochen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="plan-template-card">
+                                    <div class="plan-header">
+                                        <h4>Gewichtsreduktion - Fortgeschritten</h4>
+                                        <button class="edit-plan-btn" onclick="openPlanEditor('weight-loss-advanced')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="plan-content">
+                                        <p>4x pro Woche, 60 Min, Split-Training</p>
+                                        <div class="plan-stats">
+                                            <span class="stat">20 Übungen</span>
+                                            <span class="stat">6 Wochen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="plan-template-card">
+                                    <div class="plan-header">
+                                        <h4>Bodyweight - Anfänger</h4>
+                                        <button class="edit-plan-btn" onclick="openPlanEditor('bodyweight-beginner')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="plan-content">
+                                        <p>3x pro Woche, 30 Min, Körpergewicht</p>
+                                        <div class="plan-stats">
+                                            <span class="stat">8 Übungen</span>
+                                            <span class="stat">4 Wochen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="plan-template-card">
+                                    <div class="plan-header">
+                                        <h4>Ausdauer - Alle Level</h4>
+                                        <button class="edit-plan-btn" onclick="openPlanEditor('endurance-all')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="plan-content">
+                                        <p>5x pro Woche, 45 Min, Cardio-Fokus</p>
+                                        <div class="plan-stats">
+                                            <span class="stat">15 Übungen</span>
+                                            <span class="stat">8 Wochen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Exercise Database Management -->
+                        <div class="exercise-database-management">
+                            <h3>💪 Übungsdatenbank verwalten</h3>
+                            <div class="exercise-categories">
+                                <div class="category-card">
+                                    <div class="category-header">
+                                        <h4>Brust</h4>
+                                        <span class="exercise-count">12 Übungen</span>
+                                    </div>
+                                    <div class="category-exercises">
+                                        <div class="exercise-item">
+                                            <span>Bankdrücken</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('bench-press')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Liegestütze</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('push-ups')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Schrägbankdrücken</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('incline-bench')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-card">
+                                    <div class="category-header">
+                                        <h4>Rücken</h4>
+                                        <span class="exercise-count">15 Übungen</span>
+                                    </div>
+                                    <div class="category-exercises">
+                                        <div class="exercise-item">
+                                            <span>Klimmzüge</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('pull-ups')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Rudern</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('rowing')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Latziehen</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('lat-pulldown')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-card">
+                                    <div class="category-header">
+                                        <h4>Beine</h4>
+                                        <span class="exercise-count">18 Übungen</span>
+                                    </div>
+                                    <div class="category-exercises">
+                                        <div class="exercise-item">
+                                            <span>Kniebeugen</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('squats')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Ausfallschritte</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('lunges')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <span>Rumänisches Kreuzheben</span>
+                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('romanian-deadlift')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Configuration -->
+                        <div class="ai-configuration">
+                            <h3>🤖 AI-Konfiguration</h3>
+                            <div class="ai-settings-grid">
+                                <div class="ai-setting-card">
+                                    <h4>Trainingsplan-Generierung</h4>
+                                    <div class="setting-options">
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Progressive Überladung</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Periodisierung</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox">
+                                            <span>Erholungstage berücksichtigen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-setting-card">
+                                    <h4>Übungsauswahl</h4>
+                                    <div class="setting-options">
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Equipment-basiert</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Level-angepasst</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox">
+                                            <span>Einschränkungen berücksichtigen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-setting-card">
+                                    <h4>Kalender-Integration</h4>
+                                    <div class="setting-options">
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Google Calendar</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox" checked>
+                                            <span>Apple Calendar</span>
+                                        </label>
+                                        <label class="setting-option">
+                                            <input type="checkbox">
+                                            <span>Outlook Integration</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Training Statistics -->
+                        <div class="training-statistics">
+                            <h3>📊 Trainings-Statistiken</h3>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-dumbbell"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="total-exercises">150+</h3>
+                                        <p>Übungen in der Datenbank</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-calendar-week"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="generated-plans">25</h3>
+                                        <p>Generierte Trainingspläne</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="active-users">12</h3>
+                                        <p>Aktive Nutzer</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="avg-rating">4.8</h3>
+                                        <p>Durchschnittliche Bewertung</p>
                                     </div>
                                 </div>
                             </div>
@@ -3777,6 +4057,10 @@ Bitte antworte im folgenden JSON-Format:
             loadIkigaiStats();
             setupIkigaiEventListeners();
             
+            // Lade Personal Training-Verwaltung
+            loadPersonalTrainingStats();
+            setupPersonalTrainingEventListeners();
+            
             // Lade Bewerbungsverwaltung
             updateApplicationStats();
             updateDashboardApplications();
@@ -3788,6 +4072,265 @@ Bitte antworte im folgenden JSON-Format:
         script.src = `admin-script.js?v=3.5&t=${timestamp}`;
         document.head.appendChild(script);
     </script>
+    
+    <script>
+        // Personal Training-Verwaltung Funktionen
+        function loadPersonalTrainingStats() {
+            try {
+                const stats = JSON.parse(localStorage.getItem('personalTrainingStats') || '{}');
+                
+                // Update statistics display
+                document.getElementById('total-exercises').textContent = stats.totalExercises || '150+';
+                document.getElementById('generated-plans').textContent = stats.generatedPlans || '25';
+                document.getElementById('active-users').textContent = stats.activeUsers || '12';
+                document.getElementById('avg-rating').textContent = stats.avgRating || '4.8';
+                
+            } catch (error) {
+                console.error('Error loading personal training stats:', error);
+            }
+        }
+        
+        function setupPersonalTrainingEventListeners() {
+            // Quick action button
+            document.querySelectorAll('[data-action="personal-training"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showSection('personal-training');
+                });
+            });
+            
+            // AI settings checkboxes
+            document.querySelectorAll('.ai-setting-card input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', saveAISettings);
+            });
+        }
+        
+        function openPlanEditor(planId) {
+            const modal = createModal('Plan Editor', `
+                <div class="plan-editor">
+                    <div class="form-group">
+                        <label>Plan Name:</label>
+                        <input type="text" id="plan-name" value="Muskelaufbau - Anfänger">
+                    </div>
+                    <div class="form-group">
+                        <label>Beschreibung:</label>
+                        <textarea id="plan-description">3x pro Woche, 45 Min, Ganzkörper-Training</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Häufigkeit (pro Woche):</label>
+                        <input type="number" id="plan-frequency" value="3" min="1" max="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Dauer (Minuten):</label>
+                        <input type="number" id="plan-duration" value="45" min="15" max="180">
+                    </div>
+                    <div class="form-group">
+                        <label>Wochen:</label>
+                        <input type="number" id="plan-weeks" value="4" min="1" max="12">
+                    </div>
+                    <div class="form-group">
+                        <label>Zielgruppe:</label>
+                        <select id="plan-target">
+                            <option value="beginner">Anfänger</option>
+                            <option value="intermediate">Fortgeschritten</option>
+                            <option value="advanced">Experte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Equipment:</label>
+                        <select id="plan-equipment">
+                            <option value="full-gym">Vollausgestattetes Gym</option>
+                            <option value="basic-gym">Basis-Gym</option>
+                            <option value="home-gym">Home-Gym</option>
+                            <option value="bodyweight">Nur Körpergewicht</option>
+                        </select>
+                    </div>
+                </div>
+            `, [
+                { text: 'Speichern', class: 'btn-primary', onclick: 'savePlanChanges()' },
+                { text: 'Abbrechen', class: 'btn-secondary', onclick: 'closeModal()' }
+            ]);
+        }
+        
+        function openExerciseEditor(exerciseId) {
+            const modal = createModal('Übung bearbeiten', `
+                <div class="exercise-editor">
+                    <div class="form-group">
+                        <label>Übungsname:</label>
+                        <input type="text" id="exercise-name" value="Bankdrücken">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategorie:</label>
+                        <select id="exercise-category">
+                            <option value="chest">Brust</option>
+                            <option value="back">Rücken</option>
+                            <option value="legs">Beine</option>
+                            <option value="shoulders">Schultern</option>
+                            <option value="arms">Arme</option>
+                            <option value="core">Core</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Beschreibung:</label>
+                        <textarea id="exercise-description">Klassische Brustübung mit Langhantel</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Equipment:</label>
+                        <select id="exercise-equipment">
+                            <option value="barbell">Langhantel</option>
+                            <option value="dumbbell">Kurzhantel</option>
+                            <option value="bodyweight">Körpergewicht</option>
+                            <option value="cable">Kabelzug</option>
+                            <option value="machine">Gerät</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Schwierigkeit:</label>
+                        <select id="exercise-difficulty">
+                            <option value="beginner">Anfänger</option>
+                            <option value="intermediate">Fortgeschritten</option>
+                            <option value="advanced">Experte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Muskelgruppen:</label>
+                        <div class="muscle-groups">
+                            <label><input type="checkbox" value="chest"> Brust</label>
+                            <label><input type="checkbox" value="triceps"> Trizeps</label>
+                            <label><input type="checkbox" value="shoulders"> Schultern</label>
+                        </div>
+                    </div>
+                </div>
+            `, [
+                { text: 'Speichern', class: 'btn-primary', onclick: 'saveExerciseChanges()' },
+                { text: 'Abbrechen', class: 'btn-secondary', onclick: 'closeModal()' }
+            ]);
+        }
+        
+        function savePlanChanges() {
+            const planData = {
+                name: document.getElementById('plan-name').value,
+                description: document.getElementById('plan-description').value,
+                frequency: document.getElementById('plan-frequency').value,
+                duration: document.getElementById('plan-duration').value,
+                weeks: document.getElementById('plan-weeks').value,
+                target: document.getElementById('plan-target').value,
+                equipment: document.getElementById('plan-equipment').value
+            };
+            
+            // Save to localStorage
+            const plans = JSON.parse(localStorage.getItem('trainingPlans') || '{}');
+            plans[Date.now()] = planData;
+            localStorage.setItem('trainingPlans', JSON.stringify(plans));
+            
+            showNotification('Trainingsplan wurde gespeichert!', 'success');
+            closeModal();
+        }
+        
+        function saveExerciseChanges() {
+            const exerciseData = {
+                name: document.getElementById('exercise-name').value,
+                category: document.getElementById('exercise-category').value,
+                description: document.getElementById('exercise-description').value,
+                equipment: document.getElementById('exercise-equipment').value,
+                difficulty: document.getElementById('exercise-difficulty').value,
+                muscleGroups: Array.from(document.querySelectorAll('.muscle-groups input:checked')).map(cb => cb.value)
+            };
+            
+            // Save to localStorage
+            const exercises = JSON.parse(localStorage.getItem('exerciseDatabase') || '{}');
+            exercises[Date.now()] = exerciseData;
+            localStorage.setItem('exerciseDatabase', JSON.stringify(exercises));
+            
+            showNotification('Übung wurde gespeichert!', 'success');
+            closeModal();
+        }
+        
+        function saveAISettings() {
+            const settings = {
+                progressiveOverload: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Progressive Überladung'),
+                periodization: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Periodisierung'),
+                recoveryDays: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Erholungstage'),
+                equipmentBased: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Equipment-basiert'),
+                levelAdjusted: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Level-angepasst'),
+                restrictions: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Einschränkungen'),
+                googleCalendar: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Google Calendar'),
+                appleCalendar: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Apple Calendar'),
+                outlook: document.querySelector('input[type="checkbox"]:checked')?.parentElement.textContent.includes('Outlook')
+            };
+            
+            localStorage.setItem('personalTrainingAISettings', JSON.stringify(settings));
+            showNotification('AI-Einstellungen wurden gespeichert!', 'success');
+        }
+        
+        function createModal(title, content, buttons = []) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        ${content}
+                    </div>
+                    <div class="modal-footer">
+                        ${buttons.map(btn => `<button class="btn ${btn.class}" onclick="${btn.onclick}">${btn.text}</button>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            return modal;
+        }
+        
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+    
     <script src="js/ai-integration.js"></script>
 </body>
 </html>
