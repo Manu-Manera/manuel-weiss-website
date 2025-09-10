@@ -1403,6 +1403,331 @@
     justify-content: flex-end;
 }
 
+/* Personality Methods Overview */
+.personality-methods-overview {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.methods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.method-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.method-card:hover::before {
+    transform: scaleX(1);
+}
+
+.method-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.featured-method {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 2rem;
+}
+
+.featured-method::before {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.featured-method .method-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.featured-method .method-content h3 {
+    color: white;
+}
+
+.featured-method .method-description {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.featured-method .feature-tag {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.method-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.featured-method .method-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+.method-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2d3748;
+}
+
+.method-description {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.method-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-tag {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.method-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.featured-method .stat-number {
+    color: white;
+}
+
+.featured-method .stat-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.method-action {
+    margin-top: auto;
+}
+
+/* Method Modal */
+.method-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.method-modal .modal-content {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 0;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.method-modal .modal-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 2rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.method-icon-large {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.method-modal .modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.method-modal .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.2s;
+}
+
+.method-modal .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.method-modal .modal-body {
+    padding: 2rem;
+}
+
+.method-modal .method-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4a5568;
+    margin-bottom: 2rem;
+}
+
+.method-details,
+.method-benefits {
+    margin-bottom: 2rem;
+}
+
+.method-details h4,
+.method-benefits h4 {
+    color: #2d3748;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.method-features-list,
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.method-features-list li,
+.benefits-list li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: #4a5568;
+}
+
+.method-features-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+}
+
+.benefits-list li::before {
+    content: "★";
+    position: absolute;
+    left: 0;
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.method-duration {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+}
+
+.duration-info,
+.difficulty-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.duration-info i,
+.difficulty-info i {
+    color: #667eea;
+}
+
+.method-modal .modal-footer {
+    padding: 2rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
 /* Example Categories and Tips */
 .example-category {
     background: rgba(102, 126, 234, 0.05);
