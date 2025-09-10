@@ -334,13 +334,16 @@ class PersonalTrainingPlanner {
     }
 
     generatePlan() {
+        console.log('Starting AI training plan generation...');
         // Show AI generation section
         this.startAIGeneration();
         
         // Simulate AI generation process
         setTimeout(() => {
+            console.log('Creating training plan...');
             this.generatedPlan = this.createTrainingPlan();
             this.displayGeneratedPlan();
+            console.log('Training plan created:', this.generatedPlan);
         }, 5000);
     }
 
@@ -386,8 +389,399 @@ class PersonalTrainingPlanner {
     }
 
     createTrainingPlan() {
-        // This would normally use AI to generate a personalized plan
-        // For now, we'll create a sample plan based on user data
+        console.log('Creating training plan with user data:', this.userData);
+        
+        const plan = {
+            id: Date.now(),
+            title: this.generatePlanTitle(),
+            goals: this.userData.goals || [],
+            level: this.userData.level || 'beginner',
+            equipment: this.userData.equipment || 'bodyweight',
+            timePerSession: this.userData.time || '30-45',
+            frequency: this.userData.frequency || '2-3',
+            trainingStyle: this.userData.trainingStyle || 'strength',
+            restrictions: this.userData.restrictions || [],
+            specialRequests: this.userData.specialRequests || '',
+            weeks: this.generateWeeks(),
+            createdAt: new Date().toISOString()
+        };
+
+        // Save to localStorage
+        this.saveTrainingPlan(plan);
+        
+        return plan;
+    }
+
+    generatePlanTitle() {
+        const goals = this.userData.goals || [];
+        const level = this.userData.level || 'beginner';
+        
+        if (goals.includes('muscle-gain')) {
+            return level === 'beginner' ? 'Muskelaufbau für Anfänger' : 
+                   level === 'intermediate' ? 'Fortgeschrittenes Muskelaufbau-Training' : 
+                   'Experten-Muskelaufbau-Programm';
+        } else if (goals.includes('weight-loss')) {
+            return level === 'beginner' ? 'Fettabbau für Anfänger' : 
+                   level === 'intermediate' ? 'Intensives Fettabbau-Training' : 
+                   'Experten-Fettabbau-Programm';
+        } else if (goals.includes('strength')) {
+            return level === 'beginner' ? 'Kraftaufbau für Anfänger' : 
+                   level === 'intermediate' ? 'Fortgeschrittenes Krafttraining' : 
+                   'Experten-Kraftaufbau-Programm';
+        } else if (goals.includes('endurance')) {
+            return level === 'beginner' ? 'Ausdauertraining für Anfänger' : 
+                   level === 'intermediate' ? 'Intensives Ausdauertraining' : 
+                   'Experten-Ausdauer-Programm';
+        } else {
+            return 'Personalisiertes Trainingsprogramm';
+        }
+    }
+
+    generateWeeks() {
+        const weeks = [];
+        const sessionTypes = this.getSessionTypes();
+        
+        for (let week = 1; week <= 4; week++) {
+            const weekPlan = {
+                week: week,
+                sessions: []
+            };
+
+            const frequency = parseInt(this.userData.frequency) || 3;
+            
+            for (let session = 1; session <= frequency; session++) {
+                const sessionType = sessionTypes[(session - 1) % sessionTypes.length];
+                weekPlan.sessions.push(this.createSession(sessionType, session, week));
+            }
+
+            weeks.push(weekPlan);
+        }
+
+        return weeks;
+    }
+
+    getSessionTypes() {
+        const goals = this.userData.goals || [];
+        const equipment = this.userData.equipment || 'bodyweight';
+        
+        if (goals.includes('muscle-gain')) {
+            return equipment === 'bodyweight' ? 
+                ['Ganzkörper A', 'Ganzkörper B', 'Core & Cardio'] :
+                ['Push', 'Pull', 'Legs'];
+        } else if (goals.includes('weight-loss')) {
+            return ['HIIT', 'Ganzkörper', 'Cardio'];
+        } else if (goals.includes('strength')) {
+            return equipment === 'bodyweight' ?
+                ['Kraft A', 'Kraft B', 'Stabilität'] :
+                ['Oberkörper', 'Unterkörper', 'Ganzkörper'];
+        } else {
+            return ['Ganzkörper A', 'Ganzkörper B', 'Flexibilität'];
+        }
+    }
+
+    createSession(type, sessionNumber, week) {
+        const exercises = this.getExercisesForSessionType(type);
+        const timePerSession = this.userData.time || '30-45';
+        
+        return {
+            id: `week${week}-session${sessionNumber}`,
+            type: type,
+            exercises: exercises,
+            duration: timePerSession,
+            difficulty: this.calculateDifficulty(week),
+            notes: this.generateSessionNotes(type, week)
+        };
+    }
+
+    getExercisesForSessionType(type) {
+        const exerciseDatabase = {
+            'Push': [
+                { name: 'Liegestütze', sets: 3, reps: '8-12', rest: '60s' },
+                { name: 'Dips', sets: 3, reps: '6-10', rest: '60s' },
+                { name: 'Schulterdrücken', sets: 3, reps: '8-12', rest: '60s' },
+                { name: 'Trizeps-Dips', sets: 3, reps: '10-15', rest: '45s' }
+            ],
+            'Pull': [
+                { name: 'Klimmzüge', sets: 3, reps: '5-10', rest: '90s' },
+                { name: 'Rudern', sets: 3, reps: '8-12', rest: '60s' },
+                { name: 'Latziehen', sets: 3, reps: '8-12', rest: '60s' },
+                { name: 'Face Pulls', sets: 3, reps: '12-15', rest: '45s' }
+            ],
+            'Legs': [
+                { name: 'Kniebeugen', sets: 4, reps: '8-12', rest: '90s' },
+                { name: 'Ausfallschritte', sets: 3, reps: '10-12', rest: '60s' },
+                { name: 'Wadenheben', sets: 3, reps: '15-20', rest: '45s' },
+                { name: 'Bulgarian Split Squats', sets: 3, reps: '8-10', rest: '60s' }
+            ],
+            'Ganzkörper A': [
+                { name: 'Burpees', sets: 3, reps: '8-10', rest: '60s' },
+                { name: 'Mountain Climbers', sets: 3, reps: '20-30s', rest: '45s' },
+                { name: 'Plank', sets: 3, reps: '30-60s', rest: '45s' },
+                { name: 'Jumping Jacks', sets: 3, reps: '30-45s', rest: '30s' }
+            ],
+            'Ganzkörper B': [
+                { name: 'Kniebeugen', sets: 3, reps: '12-15', rest: '60s' },
+                { name: 'Liegestütze', sets: 3, reps: '8-12', rest: '60s' },
+                { name: 'Russian Twists', sets: 3, reps: '20-30', rest: '45s' },
+                { name: 'High Knees', sets: 3, reps: '30-45s', rest: '30s' }
+            ],
+            'HIIT': [
+                { name: 'Burpees', sets: 4, reps: '20s', rest: '10s' },
+                { name: 'Mountain Climbers', sets: 4, reps: '20s', rest: '10s' },
+                { name: 'Jump Squats', sets: 4, reps: '20s', rest: '10s' },
+                { name: 'Plank Jacks', sets: 4, reps: '20s', rest: '10s' }
+            ],
+            'Core & Cardio': [
+                { name: 'Plank', sets: 3, reps: '30-60s', rest: '45s' },
+                { name: 'Russian Twists', sets: 3, reps: '20-30', rest: '45s' },
+                { name: 'Mountain Climbers', sets: 3, reps: '30-45s', rest: '30s' },
+                { name: 'Dead Bug', sets: 3, reps: '10-15', rest: '45s' }
+            ]
+        };
+
+        return exerciseDatabase[type] || exerciseDatabase['Ganzkörper A'];
+    }
+
+    calculateDifficulty(week) {
+        const baseDifficulty = this.userData.level === 'beginner' ? 1 : 
+                              this.userData.level === 'intermediate' ? 2 : 3;
+        return Math.min(baseDifficulty + Math.floor((week - 1) / 2), 5);
+    }
+
+    generateSessionNotes(type, week) {
+        const notes = {
+            'Push': 'Fokus auf Brust, Schultern und Trizeps. Achte auf korrekte Form.',
+            'Pull': 'Konzentriere dich auf Rücken und Bizeps. Ziehe die Schulterblätter zusammen.',
+            'Legs': 'Intensives Beintraining. Achte auf die Knieposition bei Kniebeugen.',
+            'Ganzkörper A': 'Ganzkörper-Workout mit Cardio-Elementen. Halte die Intensität hoch.',
+            'Ganzkörper B': 'Ausgewogenes Ganzkörper-Training. Konzentriere dich auf die Form.',
+            'HIIT': 'Hochintensives Intervalltraining. Gib alles in den Arbeitsphasen!',
+            'Core & Cardio': 'Stärke deine Körpermitte und verbessere deine Ausdauer.'
+        };
+
+        return notes[type] || 'Konzentriere dich auf die korrekte Ausführung aller Übungen.';
+    }
+
+    saveTrainingPlan(plan) {
+        const savedPlans = JSON.parse(localStorage.getItem('trainingPlans') || '[]');
+        savedPlans.push(plan);
+        localStorage.setItem('trainingPlans', JSON.stringify(savedPlans));
+        console.log('Training plan saved to localStorage');
+    }
+
+    displayGeneratedPlan() {
+        console.log('Displaying generated plan:', this.generatedPlan);
+        
+        // Show the generated plan section
+        const planOutput = document.getElementById('generated-plan-output');
+        if (planOutput) {
+            planOutput.style.display = 'block';
+        }
+
+        // Update plan overview
+        this.updatePlanOverview();
+        
+        // Generate schedule content
+        this.generateScheduleContent();
+        
+        // Generate exercises content
+        this.generateExercisesContent();
+        
+        // Show success notification
+        this.showNotification('Trainingsplan erfolgreich erstellt!', 'success');
+    }
+
+    updatePlanOverview() {
+        if (!this.generatedPlan) return;
+
+        const goalElement = document.getElementById('plan-overview-goal');
+        const levelElement = document.getElementById('plan-overview-level');
+        const durationElement = document.getElementById('plan-overview-duration');
+        const frequencyElement = document.getElementById('plan-overview-frequency');
+        const equipmentElement = document.getElementById('plan-overview-equipment');
+
+        if (goalElement) {
+            const goalNames = {
+                'muscle-gain': 'Muskelaufbau',
+                'weight-loss': 'Fettabbau',
+                'strength': 'Kraftaufbau',
+                'endurance': 'Ausdauer',
+                'flexibility': 'Flexibilität'
+            };
+            goalElement.textContent = this.generatedPlan.goals.map(goal => goalNames[goal] || goal).join(', ');
+        }
+
+        if (levelElement) {
+            const levelNames = {
+                'beginner': 'Anfänger',
+                'intermediate': 'Fortgeschritten',
+                'advanced': 'Experte'
+            };
+            levelElement.textContent = levelNames[this.generatedPlan.level] || this.generatedPlan.level;
+        }
+
+        if (durationElement) {
+            durationElement.textContent = this.generatedPlan.timePerSession + ' Min pro Session';
+        }
+
+        if (frequencyElement) {
+            frequencyElement.textContent = this.generatedPlan.frequency + 'x pro Woche';
+        }
+
+        if (equipmentElement) {
+            const equipmentNames = {
+                'bodyweight': 'Körpergewicht',
+                'dumbbells': 'Kurzhanteln',
+                'full-gym': 'Vollausgestattetes Gym',
+                'minimal': 'Minimal Equipment'
+            };
+            equipmentElement.textContent = equipmentNames[this.generatedPlan.equipment] || this.generatedPlan.equipment;
+        }
+    }
+
+    generateScheduleContent() {
+        const scheduleContent = document.getElementById('plan-schedule-content');
+        if (!scheduleContent || !this.generatedPlan) return;
+
+        let html = '';
+        
+        this.generatedPlan.weeks.forEach(week => {
+            html += `
+                <div class="week-schedule">
+                    <h4>Woche ${week.week}</h4>
+                    <div class="sessions-grid">
+            `;
+            
+            week.sessions.forEach(session => {
+                html += `
+                    <div class="session-card">
+                        <div class="session-header">
+                            <h5>${session.type}</h5>
+                            <span class="session-duration">${session.duration} Min</span>
+                        </div>
+                        <div class="session-exercises">
+                `;
+                
+                session.exercises.forEach(exercise => {
+                    html += `
+                        <div class="exercise-item">
+                            <span class="exercise-name">${exercise.name}</span>
+                            <span class="exercise-sets">${exercise.sets} Sätze</span>
+                            <span class="exercise-reps">${exercise.reps}</span>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <div class="session-notes">
+                            <p>${session.notes}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        scheduleContent.innerHTML = html;
+    }
+
+    generateExercisesContent() {
+        const exercisesContent = document.getElementById('exercise-database-content');
+        if (!exercisesContent || !this.generatedPlan) return;
+
+        // Collect all unique exercises from the plan
+        const allExercises = new Map();
+        
+        this.generatedPlan.weeks.forEach(week => {
+            week.sessions.forEach(session => {
+                session.exercises.forEach(exercise => {
+                    if (!allExercises.has(exercise.name)) {
+                        allExercises.set(exercise.name, {
+                            ...exercise,
+                            category: this.getExerciseCategory(exercise.name)
+                        });
+                    }
+                });
+            });
+        });
+
+        // Group exercises by category
+        const exercisesByCategory = {};
+        allExercises.forEach(exercise => {
+            if (!exercisesByCategory[exercise.category]) {
+                exercisesByCategory[exercise.category] = [];
+            }
+            exercisesByCategory[exercise.category].push(exercise);
+        });
+
+        let html = '';
+        Object.keys(exercisesByCategory).forEach(category => {
+            html += `
+                <div class="exercise-category">
+                    <h4>${category}</h4>
+                    <div class="exercises-grid">
+            `;
+            
+            exercisesByCategory[category].forEach(exercise => {
+                html += `
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <h5>${exercise.name}</h5>
+                            <span class="exercise-category-badge">${exercise.category}</span>
+                        </div>
+                        <div class="exercise-details">
+                            <p><strong>Sätze:</strong> ${exercise.sets}</p>
+                            <p><strong>Wiederholungen:</strong> ${exercise.reps}</p>
+                            <p><strong>Pause:</strong> ${exercise.rest}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        exercisesContent.innerHTML = html;
+    }
+
+    getExerciseCategory(exerciseName) {
+        const categories = {
+            'Liegestütze': 'Brust',
+            'Dips': 'Brust',
+            'Schulterdrücken': 'Schultern',
+            'Trizeps-Dips': 'Arme',
+            'Klimmzüge': 'Rücken',
+            'Rudern': 'Rücken',
+            'Latziehen': 'Rücken',
+            'Face Pulls': 'Rücken',
+            'Kniebeugen': 'Beine',
+            'Ausfallschritte': 'Beine',
+            'Wadenheben': 'Beine',
+            'Bulgarian Split Squats': 'Beine',
+            'Burpees': 'Ganzkörper',
+            'Mountain Climbers': 'Ganzkörper',
+            'Plank': 'Core',
+            'Russian Twists': 'Core',
+            'Dead Bug': 'Core',
+            'Jump Squats': 'Beine',
+            'Plank Jacks': 'Core',
+            'High Knees': 'Cardio',
+            'Jumping Jacks': 'Cardio'
+        };
+        
+        return categories[exerciseName] || 'Allgemein';
+    }
+
+    // Legacy function - keeping for compatibility
+    createLegacyTrainingPlan() {
         return {
             duration: '4 Wochen',
             sessions: parseInt(this.userData.frequency) * 4,
