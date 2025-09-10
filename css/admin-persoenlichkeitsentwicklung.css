@@ -163,6 +163,128 @@
     text-align: center;
 }
 
+/* Method Admin Content */
+.method-admin-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.admin-section {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: #334155;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.workflow-steps-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.step-admin {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+}
+
+.step-admin h4 {
+    margin: 0 0 1rem 0;
+    color: #3b82f6;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.questions-admin {
+    margin-top: 1rem;
+}
+
+.questions-admin h5 {
+    margin: 0 0 0.5rem 0;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.question-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.question-item .admin-input {
+    flex: 1;
+}
+
+.method-properties {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.property-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.property-group label {
+    font-weight: 500;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.admin-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.admin-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.admin-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.admin-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .nav-tab i {
     font-size: 1.1rem;
 }

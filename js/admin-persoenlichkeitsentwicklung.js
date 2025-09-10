@@ -1104,8 +1104,60 @@ function handleFileImport(event) {
     adminPanel.handleFileImport(event);
 }
 
+// Dropdown functionality
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(`${dropdownId}-dropdown`);
+    const toggle = document.querySelector(`[data-tab="${dropdownId}"]`);
+    
+    if (dropdown && toggle) {
+        const isOpen = dropdown.classList.contains('show');
+        closeAllDropdowns();
+        
+        if (!isOpen) {
+            dropdown.classList.add('show');
+            toggle.classList.add('active');
+        }
+    }
+}
+
+function closeAllDropdowns() {
+    const dropdowns = document.querySelectorAll('.dropdown-menu');
+    const toggles = document.querySelectorAll('.dropdown-toggle');
+    
+    dropdowns.forEach(dropdown => {
+        dropdown.classList.remove('show');
+    });
+    
+    toggles.forEach(toggle => {
+        toggle.classList.remove('active');
+    });
+}
+
+// Admin helper functions
+function addQuestion(button) {
+    const questionList = button.previousElementSibling;
+    const questionItem = document.createElement('div');
+    questionItem.className = 'question-item';
+    questionItem.innerHTML = `
+        <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
+        <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+    `;
+    questionList.appendChild(questionItem);
+}
+
+function removeQuestion(button) {
+    button.parentElement.remove();
+}
+
 // Initialize admin panel when DOM is loaded
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
     adminPanel = new AdminPanel();
+    
+    // Setup dropdown event listeners
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-dropdown')) {
+            closeAllDropdowns();
+        }
+    });
 });
