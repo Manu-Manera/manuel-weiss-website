@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeitsentwicklung & Ikigai - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke deinen Ikigai - deinen Grund zu leben. Ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung.">
+    <meta name="keywords" content="Ikigai, Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Sinn des Lebens">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Persönlichkeitsentwicklung & Ikigai - Manuel Weiss">
+    <meta property="og:description" content="Entdecke deinen Ikigai - deinen Grund zu leben">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app/persoenlichkeitsentwicklung.html">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+                <a href="admin.html" class="nav-link">Admin</a>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero ikigai-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Entdecke deinen <span class="gradient-text">Ikigai</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Dein Grund zu leben. Ein ausführlicher Workflow zur Selbstfindung, 
+                    Lebensziel-Entwicklung und Persönlichkeitsentwicklung.
+                </p>
+                <div class="hero-actions">
+                    <a href="#ikigai-workflow" class="btn btn-primary">Ikigai-Workflow starten</a>
+                    <a href="#what-is-ikigai" class="btn btn-outline">Was ist Ikigai?</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="ikigai-visual">
+                    <div class="ikigai-circle">
+                        <div class="ikigai-center">
+                            <span class="ikigai-text">IKIGAI</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="passion">
+                            <i class="fas fa-heart"></i>
+                            <span>Was du liebst</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="mission">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Was die Welt braucht</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="profession">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Wofür du bezahlt wirst</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="vocation">
+                            <i class="fas fa-star"></i>
+                            <span>Worin du gut bist</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Ikigai Section -->
+    <section id="what-is-ikigai" class="what-is-ikigai">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Was ist Ikigai?</h2>
+                <p class="section-subtitle">
+                    Die japanische Philosophie für ein erfülltes und sinnvolles Leben
+                </p>
+            </div>
+            
+            <div class="ikigai-explanation">
+                <div class="explanation-content">
+                    <div class="explanation-text">
+                        <h3>Der Begriff Ikigai</h3>
+                        <p>
+                            <strong>Ikigai</strong> (生き甲斐) ist ein japanisches Konzept, das sich als "Grund zu leben" oder "Sinn des Lebens" übersetzen lässt. 
+                            Es ist die Schnittmenge aus vier wichtigen Lebensbereichen:
+                        </p>
+                        
+                        <div class="ikigai-elements">
+                            <div class="element">
+                                <div class="element-icon">💖</div>
+                                <h4>Was du liebst</h4>
+                                <p>Deine Leidenschaften und Interessen, die dir Freude bereiten</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">🎯</div>
+                                <h4>Was die Welt braucht</h4>
+                                <p>Bereiche, in denen du einen positiven Beitrag leisten kannst</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">💼</div>
+                                <h4>Wofür du bezahlt wirst</h4>
+                                <p>Deine beruflichen Fähigkeiten und Talente</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">⭐</div>
+                                <h4>Worin du gut bist</h4>
+                                <p>Deine natürlichen Stärken und Kompetenzen</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefits">
+                            <h3>Warum Ikigai wichtig ist</h3>
+                            <ul>
+                                <li><strong>Lebenszufriedenheit:</strong> Menschen mit einem klaren Ikigai sind zufriedener und glücklicher</li>
+                                <li><strong>Langlebigkeit:</strong> In Okinawa, wo Ikigai seinen Ursprung hat, leben Menschen besonders lange</li>
+                                <li><strong>Motivation:</strong> Ein klares Ikigai gibt dir täglich einen Grund aufzustehen</li>
+                                <li><strong>Entscheidungsfindung:</strong> Hilft bei wichtigen Lebensentscheidungen</li>
+                                <li><strong>Stressreduktion:</strong> Reduziert Stress durch klare Lebensziele</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="video-resources">
+                        <h3>Video-Tutorials & Tipps</h3>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4>Ikigai erklärt</h4>
+                                <p>Grundlagen und Philosophie des Ikigai-Konzepts</p>
+                                <a href="#" class="video-link" data-video="ikigai-basics">Video ansehen</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4>Selbstreflexion</h4>
+                                <p>Techniken zur tiefen Selbstanalyse</p>
+                                <a href="#" class="video-link" data-video="self-reflection">Video ansehen</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4>Lebensziele setzen</h4>
+                                <p>Wie du deine Ziele strukturiert angehst</p>
+                                <a href="#" class="video-link" data-video="goal-setting">Video ansehen</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4>Ikigai im Alltag</h4>
+                                <p>Praktische Umsetzung im täglichen Leben</p>
+                                <a href="#" class="video-link" data-video="daily-ikigai">Video ansehen</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ikigai Workflow Section -->
+    <section id="ikigai-workflow" class="ikigai-workflow">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Dein Ikigai-Workflow</h2>
+                <p class="section-subtitle">
+                    Ein strukturierter Prozess zur Entdeckung deines persönlichen Ikigai
+                </p>
+            </div>
+            
+            <div class="workflow-container">
+                <!-- Progress Bar -->
+                <div class="workflow-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Selbstreflexion</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Passion</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Mission</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Profession</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Vocation</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-title">Synthese</div>
+                    </div>
+                    <div class="progress-step" data-step="7">
+                        <div class="step-number">7</div>
+                        <div class="step-title">Aktionsplan</div>
+                    </div>
+                </div>
+                
+                <!-- Workflow Content -->
+                <div class="workflow-content">
+                    <!-- Step 1: Self-Reflection -->
+                    <div class="workflow-step active" data-step="1">
+                        <div class="step-header">
+                            <h3>Schritt 1: Selbstreflexion & Vorbereitung</h3>
+                            <p>Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
+                        </div>
+                        
+                        <div class="reflection-exercises">
+                            <div class="exercise-card">
+                                <h4>🎯 Lebensvision</h4>
+                                <p>Stell dir vor, du bist 80 Jahre alt und blickst auf dein Leben zurück. Was möchtest du erreicht haben?</p>
+                                <textarea placeholder="Beschreibe deine Lebensvision..." id="life-vision"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>💭 Werte-Reflexion</h4>
+                                <p>Was sind deine 5 wichtigsten Werte? Wofür stehst du ein?</p>
+                                <div class="values-input">
+                                    <input type="text" placeholder="Wert 1" class="value-input">
+                                    <input type="text" placeholder="Wert 2" class="value-input">
+                                    <input type="text" placeholder="Wert 3" class="value-input">
+                                    <input type="text" placeholder="Wert 4" class="value-input">
+                                    <input type="text" placeholder="Wert 5" class="value-input">
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🌟 Energie-Quellen</h4>
+                                <p>Wann fühlst du dich am lebendigsten? Was gibt dir Energie?</p>
+                                <textarea placeholder="Beschreibe deine Energie-Quellen..." id="energy-sources"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎨 Kreative Visualisierung</h4>
+                                <p>Male oder beschreibe dein ideales Leben in 5 Jahren.</p>
+                                <textarea placeholder="Beschreibe dein ideales Leben..." id="ideal-life"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="step-tips">
+                            <h4>💡 Tipps für die Selbstreflexion</h4>
+                            <ul>
+                                <li>Nimm dir Zeit - beeile dich nicht</li>
+                                <li>Sei ehrlich zu dir selbst</li>
+                                <li>Denke an Momente, in denen du dich besonders lebendig gefühlt hast</li>
+                                <li>Frage Freunde und Familie nach ihrer Einschätzung</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Passion (Was du liebst) -->
+                    <div class="workflow-step" data-step="2">
+                        <div class="step-header">
+                            <h3>Schritt 2: Was du liebst</h3>
+                            <p>Entdecke deine Leidenschaften und Interessen, die dir Freude bereiten.</p>
+                        </div>
+                        
+                        <div class="passion-exercises">
+                            <div class="exercise-card">
+                                <h4>❤️ Leidenschaften-Mapping</h4>
+                                <p>Liste alle Aktivitäten auf, die du liebst - auch die kleinen Dinge:</p>
+                                <div class="passion-grid">
+                                    <div class="passion-category">
+                                        <h5>Hobbys & Freizeit</h5>
+                                        <textarea placeholder="z.B. Lesen, Musik, Sport..." id="hobbies"></textarea>
+                                    </div>
+                                    <div class="passion-category">
+                                        <h5>Lernbereiche</h5>
+                                        <textarea placeholder="z.B. Sprachen, Geschichte, Technik..." id="learning-areas"></textarea>
+                                    </div>
+                                    <div class="passion-category">
+                                        <h5>Kreative Tätigkeiten</h5>
+                                        <textarea placeholder="z.B. Malen, Schreiben, Kochen..." id="creative-activities"></textarea>
+                                    </div>
+                                    <div class="passion-category">
+                                        <h5>Soziale Aktivitäten</h5>
+                                        <textarea placeholder="z.B. Helfen, Lehren, Organisieren..." id="social-activities"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>⏰ Zeit-Investition</h4>
+                                <p>Wofür investierst du gerne Zeit, auch ohne Belohnung?</p>
+                                <textarea placeholder="Beschreibe, wofür du gerne Zeit investierst..." id="time-investment"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎭 Kindheitsträume</h4>
+                                <p>Was wolltest du als Kind werden? Welche Träume hattest du?</p>
+                                <textarea placeholder="Erzähle von deinen Kindheitsträumen..." id="childhood-dreams"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="video-resource">
+                            <h4>📺 Video-Tipp: Leidenschaften entdecken</h4>
+                            <p>Lerne Techniken zur Identifikation deiner wahren Leidenschaften.</p>
+                            <a href="#" class="video-link" data-video="discover-passions">Video ansehen</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Mission (Was die Welt braucht) -->
+                    <div class="workflow-step" data-step="3">
+                        <div class="step-header">
+                            <h3>Schritt 3: Was die Welt braucht</h3>
+                            <p>Identifiziere Bereiche, in denen du einen positiven Beitrag leisten kannst.</p>
+                        </div>
+                        
+                        <div class="mission-exercises">
+                            <div class="exercise-card">
+                                <h4>🌍 Weltprobleme</h4>
+                                <p>Welche Probleme in der Welt beschäftigen dich am meisten?</p>
+                                <div class="problem-categories">
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="environment">
+                                        <span>🌱 Umwelt & Nachhaltigkeit</span>
+                                    </label>
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="education">
+                                        <span>📚 Bildung & Wissen</span>
+                                    </label>
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="health">
+                                        <span>🏥 Gesundheit & Wohlbefinden</span>
+                                    </label>
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="social">
+                                        <span>🤝 Soziales & Gemeinschaft</span>
+                                    </label>
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="technology">
+                                        <span>💻 Technologie & Innovation</span>
+                                    </label>
+                                    <label class="problem-option">
+                                        <input type="checkbox" value="culture">
+                                        <span>🎨 Kultur & Kunst</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>💝 Beitrag leisten</h4>
+                                <p>Wie möchtest du zur Lösung dieser Probleme beitragen?</p>
+                                <textarea placeholder="Beschreibe deinen gewünschten Beitrag..." id="contribution"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🌟 Vermächtnis</h4>
+                                <p>Was möchtest du der Welt hinterlassen? Wie möchtest du in Erinnerung bleiben?</p>
+                                <textarea placeholder="Beschreibe dein gewünschtes Vermächtnis..." id="legacy"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="video-resource">
+                            <h4>📺 Video-Tipp: Sinn und Mission finden</h4>
+                            <p>Lerne, wie du deine persönliche Mission identifizierst.</p>
+                            <a href="#" class="video-link" data-video="find-mission">Video ansehen</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Profession (Wofür du bezahlt wirst) -->
+                    <div class="workflow-step" data-step="4">
+                        <div class="step-header">
+                            <h3>Schritt 4: Wofür du bezahlt wirst</h3>
+                            <p>Analysiere deine beruflichen Fähigkeiten und Talente.</p>
+                        </div>
+                        
+                        <div class="profession-exercises">
+                            <div class="exercise-card">
+                                <h4>💼 Berufliche Fähigkeiten</h4>
+                                <p>Welche Fähigkeiten hast du entwickelt, für die andere bezahlen würden?</p>
+                                <div class="skills-grid">
+                                    <div class="skill-category">
+                                        <h5>Technische Fähigkeiten</h5>
+                                        <textarea placeholder="z.B. Programmierung, Design, Analyse..." id="technical-skills"></textarea>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h5>Soft Skills</h5>
+                                        <textarea placeholder="z.B. Führung, Kommunikation, Problemlösung..." id="soft-skills"></textarea>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h5>Spezialwissen</h5>
+                                        <textarea placeholder="z.B. Branchenkenntnisse, Zertifikate..." id="specialized-knowledge"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>💰 Wertschöpfung</h4>
+                                <p>Welchen Wert schaffst du für andere? Was ist dein einzigartiges Angebot?</p>
+                                <textarea placeholder="Beschreibe deinen Wert für andere..." id="value-creation"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎯 Marktbedarf</h4>
+                                <p>Welche Probleme löst du für andere? Was ist der Marktbedarf?</p>
+                                <textarea placeholder="Beschreibe den Marktbedarf für deine Fähigkeiten..." id="market-need"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="video-resource">
+                            <h4>📺 Video-Tipp: Berufliche Stärken identifizieren</h4>
+                            <p>Lerne, wie du deine beruflichen Stärken systematisch analysierst.</p>
+                            <a href="#" class="video-link" data-video="professional-strengths">Video ansehen</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Vocation (Worin du gut bist) -->
+                    <div class="workflow-step" data-step="5">
+                        <div class="step-header">
+                            <h3>Schritt 5: Worin du gut bist</h3>
+                            <p>Entdecke deine natürlichen Talente und Stärken.</p>
+                        </div>
+                        
+                        <div class="vocation-exercises">
+                            <div class="exercise-card">
+                                <h4>⭐ Natürliche Talente</h4>
+                                <p>Was fällt dir leicht, während es anderen schwerfällt?</p>
+                                <textarea placeholder="Beschreibe deine natürlichen Talente..." id="natural-talents"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🏆 Erfolge & Anerkennung</h4>
+                                <p>Wofür wurdest du schon gelobt oder ausgezeichnet?</p>
+                                <textarea placeholder="Liste deine Erfolge und Anerkennungen auf..." id="achievements"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎯 Flow-Zustände</h4>
+                                <p>Bei welchen Tätigkeiten vergisst du die Zeit? Wann bist du im Flow?</p>
+                                <textarea placeholder="Beschreibe deine Flow-Zustände..." id="flow-states"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>👥 Fremdwahrnehmung</h4>
+                                <p>Was sagen andere über deine Stärken? Frage Familie, Freunde, Kollegen.</p>
+                                <textarea placeholder="Notiere die Einschätzungen anderer..." id="external-perception"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="video-resource">
+                            <h4>📺 Video-Tipp: Stärken entdecken</h4>
+                            <p>Lerne Techniken zur Identifikation deiner natürlichen Stärken.</p>
+                            <a href="#" class="video-link" data-video="discover-strengths">Video ansehen</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6: Synthesis (Ikigai finden) -->
+                    <div class="workflow-step" data-step="6">
+                        <div class="step-header">
+                            <h3>Schritt 6: Dein Ikigai synthetisieren</h3>
+                            <p>Jetzt verbinden wir alle vier Bereiche zu deinem persönlichen Ikigai.</p>
+                        </div>
+                        
+                        <div class="synthesis-exercises">
+                            <div class="exercise-card">
+                                <h4>🔍 Schnittmengen finden</h4>
+                                <p>Wo überschneiden sich deine vier Bereiche? Suche nach Gemeinsamkeiten.</p>
+                                <div class="intersection-analysis">
+                                    <div class="intersection">
+                                        <h5>Passion + Mission</h5>
+                                        <textarea placeholder="Was du liebst + Was die Welt braucht..." id="passion-mission"></textarea>
+                                    </div>
+                                    <div class="intersection">
+                                        <h5>Profession + Vocation</h5>
+                                        <textarea placeholder="Wofür du bezahlt wirst + Worin du gut bist..." id="profession-vocation"></textarea>
+                                    </div>
+                                    <div class="intersection">
+                                        <h5>Passion + Vocation</h5>
+                                        <textarea placeholder="Was du liebst + Worin du gut bist..." id="passion-vocation"></textarea>
+                                    </div>
+                                    <div class="intersection">
+                                        <h5>Mission + Profession</h5>
+                                        <textarea placeholder="Was die Welt braucht + Wofür du bezahlt wirst..." id="mission-profession"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎯 Ikigai-Formulierung</h4>
+                                <p>Formuliere dein Ikigai in einem klaren Satz:</p>
+                                <textarea placeholder="Mein Ikigai ist..." id="ikigai-statement"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🌟 Vision Board</h4>
+                                <p>Erstelle eine visuelle Darstellung deines Ikigai:</p>
+                                <div class="vision-board">
+                                    <div class="ikigai-visual-small">
+                                        <div class="center">IKIGAI</div>
+                                        <div class="quadrant" id="passion-quadrant">Passion</div>
+                                        <div class="quadrant" id="mission-quadrant">Mission</div>
+                                        <div class="quadrant" id="profession-quadrant">Profession</div>
+                                        <div class="quadrant" id="vocation-quadrant">Vocation</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="video-resource">
+                            <h4>📺 Video-Tipp: Ikigai synthetisieren</h4>
+                            <p>Lerne, wie du alle Bereiche zu einem kohärenten Ikigai verbindest.</p>
+                            <a href="#" class="video-link" data-video="synthesize-ikigai">Video ansehen</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 7: Action Plan -->
+                    <div class="workflow-step" data-step="7">
+                        <div class="step-header">
+                            <h3>Schritt 7: Aktionsplan erstellen</h3>
+                            <p>Jetzt setzen wir dein Ikigai in konkrete Schritte um.</p>
+                        </div>
+                        
+                        <div class="action-plan-exercises">
+                            <div class="exercise-card">
+                                <h4>📅 Kurzfristige Ziele (3 Monate)</h4>
+                                <p>Was kannst du in den nächsten 3 Monaten tun, um deinem Ikigai näher zu kommen?</p>
+                                <textarea placeholder="Liste deine kurzfristigen Ziele auf..." id="short-term-goals"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🎯 Mittelfristige Ziele (1 Jahr)</h4>
+                                <p>Wo möchtest du in einem Jahr stehen?</p>
+                                <textarea placeholder="Beschreibe deine mittelfristigen Ziele..." id="medium-term-goals"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>🌟 Langfristige Vision (5 Jahre)</h4>
+                                <p>Wie sieht dein Leben in 5 Jahren aus, wenn du deinem Ikigai folgst?</p>
+                                <textarea placeholder="Beschreibe deine langfristige Vision..." id="long-term-vision"></textarea>
+                            </div>
+                            
+                            <div class="exercise-card">
+                                <h4>📋 Konkrete Schritte</h4>
+                                <p>Welche konkreten Schritte wirst du diese Woche unternehmen?</p>
+                                <div class="action-steps">
+                                    <input type="text" placeholder="Schritt 1" class="action-step">
+                                    <input type="text" placeholder="Schritt 2" class="action-step">
+                                    <input type="text" placeholder="Schritt 3" class="action-step">
+                                    <input type="text" placeholder="Schritt 4" class="action-step">
+                                    <input type="text" placeholder="Schritt 5" class="action-step">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="final-resources">
+                            <h4>📚 Weiterführende Ressourcen</h4>
+                            <div class="resource-links">
+                                <a href="#" class="resource-link">📖 Ikigai-Buch Empfehlungen</a>
+                                <a href="#" class="resource-link">🎧 Podcast-Episoden</a>
+                                <a href="#" class="resource-link">📱 Apps & Tools</a>
+                                <a href="#" class="resource-link">👥 Community & Austausch</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="workflow-navigation">
+                    <button class="btn btn-secondary" id="prev-step" disabled>Zurück</button>
+                    <button class="btn btn-primary" id="next-step">Weiter</button>
+                    <button class="btn btn-success" id="save-progress" style="display: none;">Fortschritt speichern</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2 class="section-title">Persönliche Begleitung</h2>
+                    <p class="contact-description">
+                        Möchtest du Unterstützung bei deiner Ikigai-Reise? Ich begleite dich gerne 
+                        auf dem Weg zu deinem persönlichen Sinn des Lebens.
+                    </p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>E-Mail</h4>
+                                <a href="mailto:weissmanuel94@gmail.com">weissmanuel94@gmail.com</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Standort</h4>
+                                <p>Schweiz</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Verfügbarkeit</h4>
+                                <p>Mo-Fr: 9:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">E-Mail</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Betreff</label>
+                            <input type="text" id="subject" name="subject" value="Persönlichkeitsentwicklung & Ikigai" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Nachricht</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Erzähle mir von deiner Ikigai-Reise..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Nachricht senden
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                    <div>
+                        <h3>Manuel Weiss</h3>
+                        <p>HR Berater für AI & Transformation</p>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="index.html#services">AI & Digitalisierung</a></li>
+                            <li><a href="index.html#services">HR Transformation</a></li>
+                            <li><a href="index.html#services">Geschäftsprozesse</a></li>
+                            <li><a href="ernaehrungsberatung.html">Ernährungsberatung</a></li>
+                            <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Aktivitäten</h4>
+                        <ul>
+                            <li><a href="wohnmobil.html">Wohnmobil</a></li>
+                            <li><a href="fotobox.html">Fotobox</a></li>
+                            <li><a href="ebike.html">E-Bikes</a></li>
+                            <li><a href="sup.html">SUP</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Kontakt</h4>
+                        <ul>
+                            <li><a href="mailto:weissmanuel94@gmail.com">E-Mail</a></li>
+                            <li><a href="#contact">Kontaktformular</a></li>
+                            <li><a href="admin.html" target="_blank">Admin Panel</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="js/ikigai-planner.js"></script>
+</body>
+</html>

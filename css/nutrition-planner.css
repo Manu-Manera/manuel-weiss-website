@@ -3,8 +3,20 @@
 /* Nutrition Hero Section */
 .nutrition-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: white !important;
     padding: 6rem 0 4rem;
+}
+
+.nutrition-hero * {
+    color: white !important;
+}
+
+.nutrition-hero .hero-title,
+.nutrition-hero .hero-subtitle,
+.nutrition-hero .btn,
+.nutrition-hero .stat-label,
+.nutrition-hero .stat-number {
+    color: white !important;
 }
 
 .nutrition-hero .hero-title {
