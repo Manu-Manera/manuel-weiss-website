@@ -94,6 +94,218 @@
         </div>
     </section>
 
+    <!-- Persönlichkeitsentwicklung Übersicht -->
+    <section class="personality-methods-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Persönlichkeitsentwicklung Methoden</h2>
+                <p class="section-subtitle">
+                    Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
+                </p>
+            </div>
+            
+            <div class="methods-grid">
+                <!-- Ikigai - Hauptmethode -->
+                <div class="method-card featured-method" onclick="scrollToSection('ikigai-workflow')">
+                    <div class="method-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ikigai-Workflow</h3>
+                        <p class="method-description">
+                            Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
+                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">7 Schritte</span>
+                            <span class="feature-tag">Tiefe Reflexion</span>
+                            <span class="feature-tag">Export-Funktionen</span>
+                            <span class="feature-tag">Progress-Tracking</span>
+                        </div>
+                        <div class="method-stats">
+                            <div class="stat">
+                                <span class="stat-number">7</span>
+                                <span class="stat-label">Schritte</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">45+</span>
+                                <span class="stat-label">Fragen</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">2-3h</span>
+                                <span class="stat-label">Dauer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-primary">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <!-- Weitere Methoden -->
+                <div class="method-card" onclick="showMethodModal('values-clarification')">
+                    <div class="method-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Werte-Klärung</h3>
+                        <p class="method-description">
+                            Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Werte-Ranking</span>
+                            <span class="feature-tag">Konflikt-Analyse</span>
+                            <span class="feature-tag">Lebensbereiche</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('strengths-finder')">
+                    <div class="method-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Stärken-Analyse</h3>
+                        <p class="method-description">
+                            Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Gallup-Stärken</span>
+                            <span class="feature-tag">VIA-Test</span>
+                            <span class="feature-tag">Entwicklungsplan</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('goal-setting')">
+                    <div class="method-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ziel-Setting</h3>
+                        <p class="method-description">
+                            Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">SMART-Ziele</span>
+                            <span class="feature-tag">Aktionsplan</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('mindfulness')">
+                    <div class="method-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Achtsamkeit & Meditation</h3>
+                        <p class="method-description">
+                            Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Geführte Meditation</span>
+                            <span class="feature-tag">Achtsamkeitsübungen</span>
+                            <span class="feature-tag">Stress-Reduktion</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('emotional-intelligence')">
+                    <div class="method-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Emotionale Intelligenz</h3>
+                        <p class="method-description">
+                            Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">EQ-Test</span>
+                            <span class="feature-tag">Emotionsregulation</span>
+                            <span class="feature-tag">Empathie-Training</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('habit-building')">
+                    <div class="method-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Gewohnheiten aufbauen</h3>
+                        <p class="method-description">
+                            Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Habit-Stacking</span>
+                            <span class="feature-tag">21-Tage-Regel</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('communication')">
+                    <div class="method-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Kommunikation</h3>
+                        <p class="method-description">
+                            Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Aktives Zuhören</span>
+                            <span class="feature-tag">Nonverbale Kommunikation</span>
+                            <span class="feature-tag">Konfliktlösung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="showMethodModal('time-management')">
+                    <div class="method-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Zeitmanagement</h3>
+                        <p class="method-description">
+                            Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Pomodoro-Technik</span>
+                            <span class="feature-tag">Eisenhower-Matrix</span>
+                            <span class="feature-tag">Priorisierung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Mehr erfahren</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- What is Ikigai Section -->
     <section id="what-is-ikigai" class="what-is-ikigai">
         <div class="container">
@@ -1730,6 +1942,235 @@
                     }
                 }, 300);
             }, 4000);
+        }
+
+        // Method Navigation Functions
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function showMethodModal(methodId) {
+            const methodData = getMethodData(methodId);
+            const modal = document.createElement('div');
+            modal.className = 'method-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="method-icon-large">
+                            <i class="${methodData.icon}"></i>
+                        </div>
+                        <h3>${methodData.title}</h3>
+                        <button class="close-btn" onclick="closeMethodModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="method-description">${methodData.description}</p>
+                        
+                        <div class="method-details">
+                            <h4>Was erwartet dich:</h4>
+                            <ul class="method-features-list">
+                                ${methodData.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="method-benefits">
+                            <h4>Nutzen für dich:</h4>
+                            <ul class="benefits-list">
+                                ${methodData.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="method-duration">
+                            <div class="duration-info">
+                                <i class="fas fa-clock"></i>
+                                <span>Geschätzte Dauer: ${methodData.duration}</span>
+                            </div>
+                            <div class="difficulty-info">
+                                <i class="fas fa-signal"></i>
+                                <span>Schwierigkeit: ${methodData.difficulty}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="startMethod('${methodId}')">Jetzt starten</button>
+                        <button class="btn btn-secondary" onclick="closeMethodModal()">Schließen</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function getMethodData(methodId) {
+            const methods = {
+                'values-clarification': {
+                    title: 'Werte-Klärung',
+                    icon: 'fas fa-heart',
+                    description: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist. Diese Methode hilft dir, Entscheidungen zu treffen, die mit deinen tiefsten Überzeugungen übereinstimmen.',
+                    features: [
+                        'Werte-Ranking und Priorisierung',
+                        'Konflikt-Analyse zwischen Werten',
+                        'Anwendung auf verschiedene Lebensbereiche',
+                        'Entwicklung eines Werte-Kompasses'
+                    ],
+                    benefits: [
+                        'Klarheit über deine Prioritäten',
+                        'Bessere Entscheidungsfindung',
+                        'Mehr Authentizität im Leben',
+                        'Reduzierte innere Konflikte'
+                    ],
+                    duration: '45-60 Minuten',
+                    difficulty: 'Mittel'
+                },
+                'strengths-finder': {
+                    title: 'Stärken-Analyse',
+                    icon: 'fas fa-star',
+                    description: 'Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst, um deine Ziele zu erreichen und dein Potenzial voll auszuschöpfen.',
+                    features: [
+                        'Gallup StrengthsFinder Integration',
+                        'VIA Character Strengths Test',
+                        'Persönlicher Entwicklungsplan',
+                        'Stärken-basierte Zielsetzung'
+                    ],
+                    benefits: [
+                        'Bewusstsein für deine Talente',
+                        'Fokus auf Stärken statt Schwächen',
+                        'Höhere Motivation und Engagement',
+                        'Bessere Karriere-Entscheidungen'
+                    ],
+                    duration: '60-90 Minuten',
+                    difficulty: 'Einfach'
+                },
+                'goal-setting': {
+                    title: 'Ziel-Setting',
+                    icon: 'fas fa-bullseye',
+                    description: 'Setze dir klare, erreichbare Ziele mit der bewährten SMART-Methode und entwickle einen konkreten Aktionsplan für deren Umsetzung.',
+                    features: [
+                        'SMART-Ziele Formulierung',
+                        'Ziel-Hierarchie und Priorisierung',
+                        'Aktionsplan-Erstellung',
+                        'Fortschritts-Tracking System'
+                    ],
+                    benefits: [
+                        'Klarheit über deine Ziele',
+                        'Höhere Erfolgswahrscheinlichkeit',
+                        'Bessere Motivation und Fokus',
+                        'Messbare Fortschritte'
+                    ],
+                    duration: '30-45 Minuten',
+                    difficulty: 'Einfach'
+                },
+                'mindfulness': {
+                    title: 'Achtsamkeit & Meditation',
+                    icon: 'fas fa-leaf',
+                    description: 'Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und praktische Achtsamkeitsübungen für den Alltag.',
+                    features: [
+                        'Geführte Meditationen (5-30 Min)',
+                        'Achtsamkeitsübungen für den Alltag',
+                        'Stress-Reduktions-Techniken',
+                        'Atemübungen und Body-Scan'
+                    ],
+                    benefits: [
+                        'Reduzierter Stress und Ängste',
+                        'Verbesserte Konzentration',
+                        'Bessere emotionale Regulation',
+                        'Mehr Gelassenheit im Alltag'
+                    ],
+                    duration: 'Flexibel (5-30 Min pro Session)',
+                    difficulty: 'Einfach'
+                },
+                'emotional-intelligence': {
+                    title: 'Emotionale Intelligenz',
+                    icon: 'fas fa-brain',
+                    description: 'Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen, zu regulieren und in Beziehungen einzusetzen.',
+                    features: [
+                        'EQ-Assessment und Selbsteinschätzung',
+                        'Emotionsregulation-Techniken',
+                        'Empathie-Training',
+                        'Soziale Kompetenz-Übungen'
+                    ],
+                    benefits: [
+                        'Bessere Selbstwahrnehmung',
+                        'Verbesserte Beziehungen',
+                        'Höhere Führungskompetenz',
+                        'Mehr emotionale Stabilität'
+                    ],
+                    duration: '90-120 Minuten',
+                    difficulty: 'Mittel'
+                },
+                'habit-building': {
+                    title: 'Gewohnheiten aufbauen',
+                    icon: 'fas fa-sync-alt',
+                    description: 'Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden aus der Verhaltenspsychologie.',
+                    features: [
+                        'Habit-Stacking Technik',
+                        '21-Tage-Challenge System',
+                        'Gewohnheits-Tracking',
+                        'Umgebungs-Design für Erfolg'
+                    ],
+                    benefits: [
+                        'Konsistente positive Veränderungen',
+                        'Automatisierung guter Verhaltensweisen',
+                        'Höhere Selbstdisziplin',
+                        'Langfristige Lebensverbesserung'
+                    ],
+                    duration: '30-60 Minuten Setup + tägliche Praxis',
+                    difficulty: 'Mittel'
+                },
+                'communication': {
+                    title: 'Kommunikation',
+                    icon: 'fas fa-comments',
+                    description: 'Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren, zuzuhören und Konflikte zu lösen.',
+                    features: [
+                        'Aktives Zuhören Training',
+                        'Nonverbale Kommunikation',
+                        'Konfliktlösungs-Strategien',
+                        'Präsentations- und Rhetorik-Übungen'
+                    ],
+                    benefits: [
+                        'Bessere Beziehungen',
+                        'Höhere Überzeugungskraft',
+                        'Weniger Missverständnisse',
+                        'Professionellerer Auftritt'
+                    ],
+                    duration: '60-90 Minuten',
+                    difficulty: 'Mittel'
+                },
+                'time-management': {
+                    title: 'Zeitmanagement',
+                    icon: 'fas fa-clock',
+                    description: 'Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten mit bewährten Techniken und Tools.',
+                    features: [
+                        'Pomodoro-Technik',
+                        'Eisenhower-Matrix',
+                        'Priorisierungs-Methoden',
+                        'Produktivitäts-Tracking'
+                    ],
+                    benefits: [
+                        'Höhere Produktivität',
+                        'Bessere Work-Life-Balance',
+                        'Weniger Stress',
+                        'Mehr Zeit für wichtige Dinge'
+                    ],
+                    duration: '45-60 Minuten',
+                    difficulty: 'Einfach'
+                }
+            };
+            return methods[methodId] || methods['values-clarification'];
+        }
+
+        function startMethod(methodId) {
+            // Hier würde die jeweilige Methode gestartet werden
+            showNotification(`${getMethodData(methodId).title} wird bald verfügbar sein!`, 'info');
+            closeMethodModal();
+        }
+
+        function closeMethodModal() {
+            const modal = document.querySelector('.method-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
         }
 
         // Initialize on page load
