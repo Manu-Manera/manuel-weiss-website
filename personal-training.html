@@ -592,11 +592,24 @@
 
                     <div class="tab-panel" id="schedule">
                         <div class="schedule-content">
-                            <div class="week-selector">
-                                <button class="week-btn active" data-week="1">Woche 1</button>
-                                <button class="week-btn" data-week="2">Woche 2</button>
-                                <button class="week-btn" data-week="3">Woche 3</button>
-                                <button class="week-btn" data-week="4">Woche 4</button>
+                            <div class="schedule-header">
+                                <div class="week-selector">
+                                    <button class="week-btn active" data-week="1">Woche 1</button>
+                                    <button class="week-btn" data-week="2">Woche 2</button>
+                                    <button class="week-btn" data-week="3">Woche 3</button>
+                                    <button class="week-btn" data-week="4">Woche 4</button>
+                                </div>
+                                
+                                <div class="schedule-actions">
+                                    <button class="btn btn-primary" id="edit-schedule">
+                                        <i class="fas fa-edit"></i>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn btn-secondary" id="ai-optimize-schedule">
+                                        <i class="fas fa-magic"></i>
+                                        AI optimieren
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="week-schedule" id="week-schedule">
@@ -607,14 +620,27 @@
 
                     <div class="tab-panel" id="exercises">
                         <div class="exercises-content">
-                            <div class="exercise-categories">
-                                <button class="category-btn active" data-category="all">Alle Übungen</button>
-                                <button class="category-btn" data-category="chest">Brust</button>
-                                <button class="category-btn" data-category="back">Rücken</button>
-                                <button class="category-btn" data-category="legs">Beine</button>
-                                <button class="category-btn" data-category="shoulders">Schultern</button>
-                                <button class="category-btn" data-category="arms">Arme</button>
-                                <button class="category-btn" data-category="core">Core</button>
+                            <div class="exercise-header">
+                                <div class="exercise-categories">
+                                    <button class="category-btn active" data-category="all">Alle Übungen</button>
+                                    <button class="category-btn" data-category="chest">Brust</button>
+                                    <button class="category-btn" data-category="back">Rücken</button>
+                                    <button class="category-btn" data-category="legs">Beine</button>
+                                    <button class="category-btn" data-category="shoulders">Schultern</button>
+                                    <button class="category-btn" data-category="arms">Arme</button>
+                                    <button class="category-btn" data-category="core">Core</button>
+                                </div>
+                                
+                                <div class="exercise-actions">
+                                    <button class="btn btn-primary" id="ai-update-exercises">
+                                        <i class="fas fa-robot"></i>
+                                        AI-Update
+                                    </button>
+                                    <button class="btn btn-secondary" id="add-custom-exercise">
+                                        <i class="fas fa-plus"></i>
+                                        Übung hinzufügen
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="exercises-grid" id="exercises-grid">
