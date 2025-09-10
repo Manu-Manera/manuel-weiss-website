@@ -38,23 +38,109 @@
         <nav class="admin-nav">
             <div class="admin-nav-content">
                 <div class="nav-tabs">
-                    <button class="nav-tab active" data-tab="methods" onclick="switchTab('methods')">
-                        <i class="fas fa-list"></i> Methoden verwalten
-                    </button>
-                    <button class="nav-tab" data-tab="content" onclick="switchTab('content')">
-                        <i class="fas fa-edit"></i> Inhalte bearbeiten
-                    </button>
-                    <button class="nav-tab" data-tab="questions" onclick="switchTab('questions')">
-                        <i class="fas fa-question-circle"></i> Fragen verwalten
-                    </button>
-                    <button class="nav-tab" data-tab="workflows" onclick="switchTab('workflows')">
-                        <i class="fas fa-sitemap"></i> Workflows konfigurieren
-                    </button>
+                    <!-- Persönlichkeitsentwicklung Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="nav-tab dropdown-toggle active" data-tab="personality" onclick="toggleDropdown('personality')">
+                            <i class="fas fa-user-graduate"></i> Persönlichkeitsentwicklung
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <div class="dropdown-menu" id="personality-dropdown">
+                            <button class="dropdown-item" data-tab="ikigai" onclick="switchTab('ikigai')">
+                                <i class="fas fa-compass"></i> Ikigai-Workflow
+                            </button>
+                            <button class="dropdown-item" data-tab="values" onclick="switchTab('values')">
+                                <i class="fas fa-heart"></i> Werte-Klärung
+                            </button>
+                            <button class="dropdown-item" data-tab="strengths" onclick="switchTab('strengths')">
+                                <i class="fas fa-star"></i> Stärken-Analyse
+                            </button>
+                            <button class="dropdown-item" data-tab="goals" onclick="switchTab('goals')">
+                                <i class="fas fa-bullseye"></i> Ziel-Setting
+                            </button>
+                            <button class="dropdown-item" data-tab="mindfulness" onclick="switchTab('mindfulness')">
+                                <i class="fas fa-leaf"></i> Achtsamkeit & Meditation
+                            </button>
+                            <button class="dropdown-item" data-tab="emotional-intelligence" onclick="switchTab('emotional-intelligence')">
+                                <i class="fas fa-brain"></i> Emotionale Intelligenz
+                            </button>
+                            <button class="dropdown-item" data-tab="habits" onclick="switchTab('habits')">
+                                <i class="fas fa-sync-alt"></i> Gewohnheiten aufbauen
+                            </button>
+                            <button class="dropdown-item" data-tab="communication" onclick="switchTab('communication')">
+                                <i class="fas fa-comments"></i> Kommunikation
+                            </button>
+                            <button class="dropdown-item" data-tab="time-management" onclick="switchTab('time-management')">
+                                <i class="fas fa-clock"></i> Zeitmanagement
+                            </button>
+                            <button class="dropdown-item" data-tab="nlp-dilts" onclick="switchTab('nlp-dilts')">
+                                <i class="fas fa-layer-group"></i> NLP Dilts - Logische Ebenen
+                            </button>
+                            <button class="dropdown-item" data-tab="johari-window" onclick="switchTab('johari-window')">
+                                <i class="fas fa-window-restore"></i> Johari-Fenster
+                            </button>
+                            <button class="dropdown-item" data-tab="walt-disney" onclick="switchTab('walt-disney')">
+                                <i class="fas fa-magic"></i> Walt-Disney-Strategie
+                            </button>
+                            <button class="dropdown-item" data-tab="nonviolent-communication" onclick="switchTab('nonviolent-communication')">
+                                <i class="fas fa-dove"></i> Gewaltfreie Kommunikation
+                            </button>
+                            <button class="dropdown-item" data-tab="five-pillars" onclick="switchTab('five-pillars')">
+                                <i class="fas fa-columns"></i> Fünf Säulen der Identität
+                            </button>
+                            <button class="dropdown-item" data-tab="nlp-meta-goal" onclick="switchTab('nlp-meta-goal')">
+                                <i class="fas fa-crosshairs"></i> NLP Meta-Ziel
+                            </button>
+                            <button class="dropdown-item" data-tab="aek-communication" onclick="switchTab('aek-communication')">
+                                <i class="fas fa-comment-dots"></i> AEK - Aspektbezogene Kommunikation
+                            </button>
+                            <button class="dropdown-item" data-tab="rubikon-model" onclick="switchTab('rubikon-model')">
+                                <i class="fas fa-river"></i> Rubikon-Modell
+                            </button>
+                            <button class="dropdown-item" data-tab="systemic-coaching" onclick="switchTab('systemic-coaching')">
+                                <i class="fas fa-project-diagram"></i> Systemisches Coaching
+                            </button>
+                            <button class="dropdown-item" data-tab="rafael-method" onclick="switchTab('rafael-method')">
+                                <i class="fas fa-angel"></i> RAFAEL-Methode
+                            </button>
+                            <button class="dropdown-item" data-tab="conflict-escalation" onclick="switchTab('conflict-escalation')">
+                                <i class="fas fa-exclamation-triangle"></i> Neun Stufen der Konflikteskalation
+                            </button>
+                            <button class="dropdown-item" data-tab="harvard-method" onclick="switchTab('harvard-method')">
+                                <i class="fas fa-university"></i> Harvard-Methode
+                            </button>
+                            <button class="dropdown-item" data-tab="circular-interview" onclick="switchTab('circular-interview')">
+                                <i class="fas fa-sync"></i> Zirkuläres Interview
+                            </button>
+                            <button class="dropdown-item" data-tab="target-coaching" onclick="switchTab('target-coaching')">
+                                <i class="fas fa-bullseye"></i> Target Coaching
+                            </button>
+                            <button class="dropdown-item" data-tab="solution-focused" onclick="switchTab('solution-focused')">
+                                <i class="fas fa-lightbulb"></i> Lösungsorientierte Kurzzeitberatung
+                            </button>
+                            <button class="dropdown-item" data-tab="change-stages" onclick="switchTab('change-stages')">
+                                <i class="fas fa-route"></i> Sechs Stufen der Veränderung
+                            </button>
+                            <button class="dropdown-item" data-tab="competence-map" onclick="switchTab('competence-map')">
+                                <i class="fas fa-map"></i> Kompetenzkarte
+                            </button>
+                            <button class="dropdown-item" data-tab="moment-excellence" onclick="switchTab('moment-excellence')">
+                                <i class="fas fa-crown"></i> Moment of Excellence
+                            </button>
+                            <button class="dropdown-item" data-tab="resource-analysis" onclick="switchTab('resource-analysis')">
+                                <i class="fas fa-tools"></i> Ressourcenanalyse
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Allgemeine Admin-Funktionen -->
                     <button class="nav-tab" data-tab="users" onclick="switchTab('users')">
                         <i class="fas fa-users"></i> Benutzer verwalten
                     </button>
                     <button class="nav-tab" data-tab="analytics" onclick="switchTab('analytics')">
                         <i class="fas fa-chart-bar"></i> Analytics
+                    </button>
+                    <button class="nav-tab" data-tab="settings" onclick="switchTab('settings')">
+                        <i class="fas fa-cog"></i> Einstellungen
                     </button>
                 </div>
             </div>
