@@ -1149,6 +1149,168 @@ function removeQuestion(button) {
     button.parentElement.remove();
 }
 
+// Werte-Klärung Admin Functions
+function addValueCategory() {
+    const categoriesContainer = document.querySelector('.values-categories-admin');
+    const newCategory = document.createElement('div');
+    newCategory.className = 'category-admin';
+    newCategory.innerHTML = `
+        <h4>📝 Neue Kategorie</h4>
+        <div class="category-controls">
+            <button class="btn btn-sm btn-outline" onclick="addValueToCategory('new')">+ Wert hinzufügen</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCategory('new')">Kategorie löschen</button>
+        </div>
+        <div class="values-list-admin">
+            <div class="value-item-admin">
+                <input type="text" value="Neuer Wert" class="admin-input">
+                <input type="text" value="neuer-wert" class="admin-input" placeholder="ID">
+                <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+            </div>
+        </div>
+    `;
+    categoriesContainer.appendChild(newCategory);
+}
+
+function addValueToCategory(categoryId) {
+    const category = event.target.closest('.category-admin');
+    const valuesList = category.querySelector('.values-list-admin');
+    const newValue = document.createElement('div');
+    newValue.className = 'value-item-admin';
+    newValue.innerHTML = `
+        <input type="text" value="Neuer Wert" class="admin-input">
+        <input type="text" value="neuer-wert" class="admin-input" placeholder="ID">
+        <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+    `;
+    valuesList.appendChild(newValue);
+}
+
+function removeValue(button) {
+    button.parentElement.remove();
+}
+
+function deleteCategory(categoryId) {
+    if (confirm('Sind Sie sicher, dass Sie diese Kategorie löschen möchten?')) {
+        event.target.closest('.category-admin').remove();
+    }
+}
+
+function importValues() {
+    // In a real application, this would open a file picker
+    alert('Werte-Import-Funktion würde hier implementiert werden');
+}
+
+function exportValues() {
+    // In a real application, this would export the values to a file
+    alert('Werte-Export-Funktion würde hier implementiert werden');
+}
+
+function addQuizQuestion() {
+    const questionsContainer = document.querySelector('.quiz-questions-admin');
+    const questionNumber = questionsContainer.children.length + 1;
+    const newQuestion = document.createElement('div');
+    newQuestion.className = 'question-admin';
+    newQuestion.innerHTML = `
+        <h5>Frage ${questionNumber}</h5>
+        <textarea class="admin-textarea" placeholder="Frage eingeben..."></textarea>
+        <div class="question-options">
+            <div class="option-admin">
+                <input type="text" value="Option 1" class="admin-input">
+                <input type="text" value="wert1" class="admin-input" placeholder="Wert-ID">
+            </div>
+            <div class="option-admin">
+                <input type="text" value="Option 2" class="admin-input">
+                <input type="text" value="wert2" class="admin-input" placeholder="Wert-ID">
+            </div>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="addQuizOption(this)">+ Option hinzufügen</button>
+        <button class="btn btn-sm btn-danger" onclick="removeQuizQuestion(this)">Frage entfernen</button>
+    `;
+    questionsContainer.appendChild(newQuestion);
+}
+
+function addQuizOption(button) {
+    const optionsContainer = button.parentElement.querySelector('.question-options');
+    const newOption = document.createElement('div');
+    newOption.className = 'option-admin';
+    newOption.innerHTML = `
+        <input type="text" value="Neue Option" class="admin-input">
+        <input type="text" value="neuer-wert" class="admin-input" placeholder="Wert-ID">
+    `;
+    optionsContainer.appendChild(newOption);
+}
+
+function removeQuizQuestion(button) {
+    if (confirm('Sind Sie sicher, dass Sie diese Frage löschen möchten?')) {
+        button.parentElement.remove();
+    }
+}
+
+function previewQuiz() {
+    alert('Quiz-Vorschau würde hier in einem Modal angezeigt werden');
+}
+
+function addConflictPair() {
+    const conflictsContainer = document.querySelector('.conflict-pairs-admin');
+    const newConflict = document.createElement('div');
+    newConflict.className = 'conflict-pair-admin';
+    newConflict.innerHTML = `
+        <div class="conflict-inputs">
+            <select class="admin-select">
+                <option value="wert1">Wert 1</option>
+                <option value="wert2">Wert 2</option>
+            </select>
+            <span>vs.</span>
+            <select class="admin-select">
+                <option value="wert2">Wert 2</option>
+                <option value="wert1">Wert 1</option>
+            </select>
+        </div>
+        <textarea class="admin-textarea" placeholder="Konflikt-Beschreibung..."></textarea>
+        <button class="btn btn-sm btn-danger" onclick="removeConflictPair(this)">Entfernen</button>
+    `;
+    conflictsContainer.appendChild(newConflict);
+}
+
+function removeConflictPair(button) {
+    button.parentElement.remove();
+}
+
+function addLifeArea() {
+    const areasContainer = document.querySelector('.life-areas-list-admin');
+    const newArea = document.createElement('div');
+    newArea.className = 'life-area-admin';
+    newArea.innerHTML = `
+        <input type="text" value="🏠 Neuer Lebensbereich" class="admin-input">
+        <input type="text" value="neuer-bereich" class="admin-input" placeholder="ID">
+        <textarea class="admin-textarea" placeholder="Beschreibung..."></textarea>
+        <button class="btn btn-sm btn-danger" onclick="removeLifeArea(this)">Entfernen</button>
+    `;
+    areasContainer.appendChild(newArea);
+}
+
+function removeLifeArea(button) {
+    if (confirm('Sind Sie sicher, dass Sie diesen Lebensbereich löschen möchten?')) {
+        button.parentElement.remove();
+    }
+}
+
+function addValueChallenge() {
+    const challengesContainer = document.querySelector('.challenges-list-admin');
+    const newChallenge = document.createElement('div');
+    newChallenge.className = 'challenge-admin';
+    newChallenge.innerHTML = `
+        <input type="text" value="Neue Challenge" class="admin-input">
+        <textarea class="admin-textarea" placeholder="Challenge-Beschreibung..."></textarea>
+        <input type="number" value="30" class="admin-input" placeholder="Tage">
+        <button class="btn btn-sm btn-danger" onclick="removeChallenge(this)">Entfernen</button>
+    `;
+    challengesContainer.appendChild(newChallenge);
+}
+
+function removeChallenge(button) {
+    button.parentElement.remove();
+}
+
 // Method definitions for admin tabs
 const methodDefinitions = {
     'mindfulness': {
