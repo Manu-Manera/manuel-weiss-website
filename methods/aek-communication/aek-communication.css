@@ -1,0 +1,345 @@
+/* AEK Communication Specific Styles */
+
+.aek-method {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.assertive-section, .empathetic-section, .kind-section, .integration-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.assertive-section h4, .empathetic-section h4, .kind-section h4, .integration-section h4 {
+    color: #6366f1;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.assertive-section p, .empathetic-section p, .kind-section p, .integration-section p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Form Elements */
+.assertive-form, .empathetic-form, .kind-form, .integration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.assertive-item, .empathetic-item, .kind-item, .integration-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.assertive-item label, .empathetic-item label, .kind-item label, .integration-item label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.assertive-item textarea, .empathetic-item textarea, .kind-item textarea, .integration-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.assertive-item textarea:focus, .empathetic-item textarea:focus, .kind-item textarea:focus, .integration-item textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Principles, Skills, Elements, Strategies */
+.assertive-principles, .empathetic-skills, .kind-elements, .integration-strategies {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+}
+
+.assertive-principles h5, .empathetic-skills h5, .kind-elements h5, .integration-strategies h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.principles-list, .skills-list, .elements-list, .strategies-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.principle-item, .skill-item, .element-item, .strategy-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.principle-item:hover, .skill-item:hover, .element-item:hover, .strategy-item:hover {
+    border-color: #6366f1;
+    background: #f0f9ff;
+}
+
+.principle-item input, .skill-item input, .element-item input, .strategy-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: #6366f1;
+}
+
+.principle-item label, .skill-item label, .element-item label, .strategy-item label {
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Examples */
+.assertive-examples {
+    background: #f0fdf4;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid #bbf7d0;
+}
+
+.assertive-examples h5 {
+    color: #16a34a;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.example-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.example-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #bbf7d0;
+    transition: all 0.3s ease;
+}
+
+.example-item:hover {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.example-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: #16a34a;
+}
+
+.example-item label {
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Practice and Tips Styles */
+.assertive-practice, .empathetic-practice, .kind-practice, .integration-practice {
+    background: #f0f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #bae6fd;
+    margin-top: 1.5rem;
+}
+
+.assertive-practice h5, .empathetic-practice h5, .kind-practice h5, .integration-practice h5 {
+    color: #0284c7;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.practice-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exercise-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.exercise-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.exercise-item textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.exercise-item textarea:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.assertive-tips, .empathetic-tips, .kind-tips, .integration-tips {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #bbf7d0;
+    margin-top: 1.5rem;
+}
+
+.assertive-tips h5, .empathetic-tips h5, .kind-tips h5, .integration-tips h5 {
+    color: #16a34a;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #bbf7d0;
+    transition: all 0.3s ease;
+}
+
+.tip-item:hover {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.tip-content h6 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tip-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Summary */
+.aek-summary {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #f59e0b;
+    margin-top: 1.5rem;
+}
+
+.aek-summary h5 {
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.summary-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.summary-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.summary-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .aek-method {
+        padding: 1rem;
+    }
+    
+    .assertive-section, .empathetic-section, .kind-section, .integration-section {
+        padding: 1.5rem;
+    }
+    
+    .principles-list, .skills-list, .elements-list, .strategies-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .assertive-practice, .empathetic-practice, .kind-practice, .integration-practice,
+    .assertive-tips, .empathetic-tips, .kind-tips, .integration-tips,
+    .aek-summary {
+        padding: 1rem;
+    }
+    
+    .tip-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
