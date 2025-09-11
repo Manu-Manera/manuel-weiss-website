@@ -1,202 +1,460 @@
-/* Method Styles */
-.workflow-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
+/* Walt Disney Method Styles */
 
-.workflow-intro {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.workflow-features {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-}
-
-.feature-badge {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.workflow-progress {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.progress-step {
+.walt-disney-method {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 80px;
+    gap: 2rem;
 }
 
-.progress-step.active {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-}
-
-.progress-step.completed {
-    background: #10b981;
-    color: white;
-}
-
-.step-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+.dreamer-section {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.2);
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.step-title {
-    font-size: 0.8rem;
+.dreamer-intro {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.workflow-step {
-    display: none;
+.dreamer-intro h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.dreamer-intro p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.dreamer-exercise {
     background: white;
     border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
 }
 
-.workflow-step.active {
-    display: block;
-}
-
-.step-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.step-header h3 {
+.dreamer-exercise h5 {
     color: #1f2937;
-    margin-bottom: 1rem;
-}
-
-.step-header p {
-    color: #6b7280;
-    font-size: 1.1rem;
-}
-
-.workflow-navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-}
-
-.nav-buttons {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.vision-form {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.vision-item {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
+.vision-item label {
+    font-weight: 600;
+    color: #374151;
 }
 
-.btn-outline {
-    background: transparent;
-    color: #6366f1;
-    border: 2px solid #6366f1;
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.progress-info {
-    color: #6b7280;
-    font-weight: 500;
-}
-
-/* Form Styles */
-textarea, input[type="text"] {
+.vision-item textarea {
     width: 100%;
+    min-height: 100px;
     padding: 0.75rem 1rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: 1rem;
-    transition: all 0.3s ease;
     resize: vertical;
+    transition: all 0.3s ease;
 }
 
-textarea:focus, input[type="text"]:focus {
+.vision-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.dreamer-techniques {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dreamer-techniques h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.technique-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.technique-card:hover {
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+}
+
+.technique-card h6 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.technique-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.technique-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.technique-item:hover {
+    border-color: #f59e0b;
+    background: #f8fafc;
+}
+
+.technique-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #f59e0b;
+}
+
+.technique-item label {
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    flex: 1;
+}
+
+.dreamer-ideas {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dreamer-ideas h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.ideas-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.idea-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.idea-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.idea-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.idea-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.realist-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.realist-intro {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.realist-intro h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.realist-intro p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.realist-planning, .realist-timeline, .realist-resources, .realist-risks {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.realist-planning h5, .realist-timeline h5, .realist-resources h5, .realist-risks h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.planning-form, .timeline-form, .resources-form, .risks-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.planning-item, .timeline-item, .resource-item, .risk-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.planning-item label, .timeline-item label, .resource-item label, .risk-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.planning-item textarea, .timeline-item textarea, .resource-item textarea, .risk-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.planning-item textarea:focus, .timeline-item textarea:focus, .resource-item textarea:focus, .risk-item textarea:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.critic-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.critic-intro {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.critic-intro h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.critic-intro p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.critic-analysis, .critic-questions, .critic-improvements, .critic-alternatives {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.critic-analysis h5, .critic-questions h5, .critic-improvements h5, .critic-alternatives h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.analysis-form, .questions-form, .improvements-form, .alternatives-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.analysis-item, .question-item, .improvement-item, .alternative-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.analysis-item label, .question-item label, .improvement-item label, .alternative-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.analysis-item textarea, .question-item textarea, .improvement-item textarea, .alternative-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.analysis-item textarea:focus, .question-item textarea:focus, .improvement-item textarea:focus, .alternative-item textarea:focus {
+    outline: none;
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.integration-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.integration-intro {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.integration-intro h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.integration-intro p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.integration-synthesis, .integration-final, .integration-reflection {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.integration-synthesis h5, .integration-final h5, .integration-reflection h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.synthesis-form, .final-form, .reflection-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.synthesis-item, .final-item, .reflection-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.synthesis-item label, .final-item label, .reflection-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.synthesis-item textarea, .final-item textarea, .reflection-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.synthesis-item textarea:focus, .final-item textarea:focus, .reflection-item textarea:focus {
     outline: none;
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #6366f1;
-}
-
-label {
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-}
-
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 768px) {
-    .workflow-container {
-        padding: 1rem;
+    .techniques-grid {
+        grid-template-columns: 1fr;
     }
     
-    .workflow-progress {
-        gap: 0.5rem;
-    }
-    
-    .progress-step {
-        min-width: 60px;
-        padding: 0.5rem;
-    }
-    
-    .step-title {
-        font-size: 0.7rem;
-    }
-    
-    .nav-buttons {
-        flex-direction: column;
-        gap: 1rem;
+    .dreamer-exercise, .dreamer-techniques, .dreamer-ideas,
+    .realist-planning, .realist-timeline, .realist-resources, .realist-risks,
+    .critic-analysis, .critic-questions, .critic-improvements, .critic-alternatives,
+    .integration-synthesis, .integration-final, .integration-reflection {
+        padding: 1.5rem;
     }
 }

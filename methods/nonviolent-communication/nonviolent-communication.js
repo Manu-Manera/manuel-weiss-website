@@ -37,6 +37,19 @@ function setupFormInputs() {
             saveProgress();
         });
     });
+    
+    // Add event listeners for range sliders
+    const rangeSliders = document.querySelectorAll('input[type="range"]');
+    rangeSliders.forEach(slider => {
+        slider.addEventListener('input', function() {
+            const value = this.value;
+            const valueElement = document.getElementById(this.id + '-value');
+            if (valueElement) {
+                valueElement.textContent = `${value}/10`;
+            }
+            saveProgress();
+        });
+    });
 }
 
 function saveProgress() {
