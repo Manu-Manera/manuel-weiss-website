@@ -566,11 +566,16 @@ a:hover {
 .service-card h3 {
     font-size: var(--font-size-xl);
     margin-bottom: var(--spacing-md);
+    color: var(--gray-800);
+    font-weight: 700;
+    transition: color 0.3s ease;
 }
 
 .service-card p {
     color: var(--gray-600);
     margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+    transition: color 0.3s ease;
 }
 
 .service-features {
@@ -582,6 +587,8 @@ a:hover {
     color: var(--gray-700);
     position: relative;
     padding-left: var(--spacing-lg);
+    transition: color 0.3s ease;
+    font-weight: 500;
 }
 
 /* Service Card Content Layout */
@@ -616,6 +623,8 @@ a:hover {
     left: 0;
     color: var(--success);
     font-weight: 600;
+    font-size: 1.1em;
+    text-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
 }
 
 /* About Section */
