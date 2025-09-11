@@ -39,7 +39,10 @@ function setupHabitEventListeners() {
     document.getElementById('new-habit-select').addEventListener('change', updateStackPreview);
     
     // Challenge form updates
-    document.getElementById('challenge-habit').addEventListener('change', updateChallengeForm);
+    const challengeHabitSelect = document.getElementById('challenge-habit');
+    if (challengeHabitSelect) {
+        challengeHabitSelect.addEventListener('change', updateChallengeForm);
+    }
 }
 
 function addPositiveHabit() {
@@ -676,5 +679,17 @@ function loadSavedProgress() {
     const saved = localStorage.getItem('habit-building-progress');
     if (saved) {
         dailyProgress = JSON.parse(saved);
+    }
+}
+
+function updateChallengeForm() {
+    // Update challenge form based on selected habit
+    const selectedHabit = document.getElementById('challenge-habit').value;
+    if (selectedHabit) {
+        // Update goal placeholder
+        const goalInput = document.getElementById('challenge-goal');
+        if (goalInput && !goalInput.value) {
+            goalInput.placeholder = `z.B. '21 Tage ${selectedHabit.toLowerCase()}'`;
+        }
     }
 }
