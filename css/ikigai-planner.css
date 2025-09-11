@@ -437,6 +437,7 @@
     min-height: 600px;
 }
 
+/* Hide vertical workflow steps - only show horizontal progress */
 .workflow-step {
     display: none;
 }
@@ -7918,5 +7919,14 @@ html {
     
     .method-action .btn {
         width: 100%;
+    }
+    
+    /* Disable cursor on mobile devices */
+    * {
+        cursor: default !important;
+    }
+    
+    button, .btn, input, textarea, select, a {
+        cursor: pointer !important;
     }
 }
