@@ -1,0 +1,140 @@
+<div class="workflow-container">
+    <div class="workflow-intro">
+        <h3>Johari Window - Selbst- und Fremdbild</h3>
+        <p>Entdecke die vier Bereiche deines Selbst: Was du über dich weißt und was andere über dich wissen.</p>
+    </div>
+
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Selbstbild</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Fremdbild</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Blinder Fleck</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Unbekanntes</div>
+        </div>
+    </div>
+
+    <div class="workflow-content">
+        <div class="workflow-step active" data-step="1">
+            <div class="step-header">
+                <h3>Schritt 1: Selbstbild - Was du über dich weißt</h3>
+                <p>Identifiziere deine eigenen Stärken, Schwächen und Eigenschaften.</p>
+            </div>
+
+            <div class="johari-window">
+                <div class="johari-quadrant public">
+                    <h4>Öffentlich (Ich weiß, andere wissen)</h4>
+                    <p>Eigenschaften, die sowohl dir als auch anderen bekannt sind.</p>
+                    <div class="johari-traits">
+                        <div class="trait-category">
+                            <h5>Stärken</h5>
+                            <div class="trait-list">
+                                <div class="trait-item">
+                                    <input type="checkbox" id="trait1">
+                                    <span>Kommunikativ</span>
+                                </div>
+                                <div class="trait-item">
+                                    <input type="checkbox" id="trait2">
+                                    <span>Zuverlässig</span>
+                                </div>
+                                <div class="trait-item">
+                                    <input type="checkbox" id="trait3">
+                                    <span>Kreativ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-step" data-step="2">
+            <div class="step-header">
+                <h3>Schritt 2: Fremdbild - Was andere über dich wissen</h3>
+                <p>Erkenne, wie andere dich wahrnehmen und welche Eigenschaften sie dir zuschreiben.</p>
+            </div>
+
+            <div class="johari-window">
+                <div class="johari-quadrant hidden">
+                    <h4>Versteckt (Ich weiß, andere wissen nicht)</h4>
+                    <p>Eigenschaften, die nur dir bekannt sind.</p>
+                    <div class="custom-traits">
+                        <h5>Deine versteckten Eigenschaften</h5>
+                        <div class="add-trait-form">
+                            <input type="text" placeholder="Eigenschaft hinzufügen...">
+                            <button type="button" onclick="addTrait()">Hinzufügen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-step" data-step="3">
+            <div class="step-header">
+                <h3>Schritt 3: Blinder Fleck - Was andere sehen, du aber nicht</h3>
+                <p>Entdecke Eigenschaften, die andere an dir bemerken, die dir aber nicht bewusst sind.</p>
+            </div>
+
+            <div class="johari-window">
+                <div class="johari-quadrant blind">
+                    <h4>Blinder Fleck (Andere wissen, ich weiß nicht)</h4>
+                    <p>Eigenschaften, die andere an dir sehen, die dir aber nicht bewusst sind.</p>
+                    <div class="feedback-section">
+                        <h5>Feedback von anderen sammeln</h5>
+                        <textarea placeholder="Bitte andere um ehrliches Feedback über deine Eigenschaften..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-step" data-step="4">
+            <div class="step-header">
+                <h3>Schritt 4: Unbekanntes - Was niemand weiß</h3>
+                <p>Erkunde unbewusste Potenziale und versteckte Talente.</p>
+            </div>
+
+            <div class="johari-window">
+                <div class="johari-quadrant unknown">
+                    <h4>Unbekannt (Niemand weiß)</h4>
+                    <p>Unbewusste Potenziale und versteckte Talente.</p>
+                    <div class="exploration-section">
+                        <h5>Selbstexploration</h5>
+                        <div class="exploration-questions">
+                            <div class="question-item">
+                                <label>Welche Aktivitäten machen dir Spaß, die du noch nie ausprobiert hast?</label>
+                                <textarea placeholder="Deine Antwort..."></textarea>
+                            </div>
+                            <div class="question-item">
+                                <label>Was würdest du tun, wenn du keine Angst hättest?</label>
+                                <textarea placeholder="Deine Antwort..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="previousStep()" id="prevBtn" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button class="btn btn-primary" onclick="nextStep()" id="nextBtn">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="progress-info">
+            <span id="stepCounter">Schritt 1 von 4</span>
+        </div>
+    </div>
+</div>

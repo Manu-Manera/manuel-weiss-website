@@ -1,0 +1,116 @@
+/* NLP Dilts Analysis Styles */
+
+.nlp-dilts-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.dilts-level {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #6366f1;
+    transition: all 0.3s ease;
+}
+
+.dilts-level:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dilts-level.environment {
+    border-left-color: #10b981;
+}
+
+.dilts-level.behavior {
+    border-left-color: #f59e0b;
+}
+
+.dilts-level.capabilities {
+    border-left-color: #8b5cf6;
+}
+
+.dilts-level.beliefs {
+    border-left-color: #ef4444;
+}
+
+.dilts-level.identity {
+    border-left-color: #06b6d4;
+}
+
+.dilts-level.spirituality {
+    border-left-color: #84cc16;
+}
+
+.dilts-level h4 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.dilts-level p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.dilts-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.dilts-question {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dilts-question label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.dilts-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.dilts-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.dilts-input:hover {
+    border-color: #cbd5e1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dilts-level {
+        padding: 1.5rem;
+    }
+    
+    .dilts-level h4 {
+        font-size: 1.1rem;
+    }
+    
+    .dilts-questions {
+        gap: 1rem;
+    }
+    
+    .dilts-input {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9rem;
+    }
+}
