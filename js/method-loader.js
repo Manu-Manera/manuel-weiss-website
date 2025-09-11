@@ -47,6 +47,27 @@ class MethodLoader {
                 jsFile: 'methods/habit-building/habit-building.js',
                 initFunction: 'initHabitBuilding'
             },
+            'gallup-strengths': {
+                title: 'Gallup StrengthsFinder Assessment',
+                htmlFile: 'methods/gallup-strengths/gallup-strengths.html',
+                cssFile: 'methods/gallup-strengths/gallup-strengths.css',
+                jsFile: 'methods/gallup-strengths/gallup-strengths.js',
+                initFunction: 'initGallupStrengths'
+            },
+            'via-strengths': {
+                title: 'VIA Character Strengths Assessment',
+                htmlFile: 'methods/via-strengths/via-strengths.html',
+                cssFile: 'methods/via-strengths/via-strengths.css',
+                jsFile: 'methods/via-strengths/via-strengths.js',
+                initFunction: 'initVIAStrengths'
+            },
+            'self-assessment': {
+                title: 'Selbsteinschätzung Assessment',
+                htmlFile: 'methods/self-assessment/self-assessment.html',
+                cssFile: 'methods/self-assessment/self-assessment.css',
+                jsFile: 'methods/self-assessment/self-assessment.js',
+                initFunction: 'initSelfAssessment'
+            },
             'communication': {
                 title: 'Kommunikation Workflow',
                 htmlFile: 'methods/communication/communication.html',
