@@ -302,10 +302,182 @@
             <div class="admin-tab-content" id="values-tab">
                 <div class="tab-header">
                     <h2>Werte-Klärung verwalten</h2>
-                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die Werte-Klärung.</p>
+                    <p>Verwalte alle Inhalte, Fragen und Workflow-Schritte für die Werte-Klärung mit granularen Einstellungen.</p>
                 </div>
                 
                 <div class="method-admin-content">
+                    <!-- Werte-Bibliothek Management -->
+                    <div class="admin-section">
+                        <h3>📚 Werte-Bibliothek</h3>
+                        <div class="values-library-admin">
+                            <div class="library-controls">
+                                <button class="btn btn-primary" onclick="addValueCategory()">+ Neue Kategorie</button>
+                                <button class="btn btn-outline" onclick="importValues()">Werte importieren</button>
+                                <button class="btn btn-outline" onclick="exportValues()">Werte exportieren</button>
+                            </div>
+                            
+                            <div class="values-categories-admin">
+                                <div class="category-admin">
+                                    <h4>💕 Beziehungen & Familie</h4>
+                                    <div class="category-controls">
+                                        <button class="btn btn-sm btn-outline" onclick="addValueToCategory('relationships')">+ Wert hinzufügen</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory('relationships')">Kategorie löschen</button>
+                                    </div>
+                                    <div class="values-list-admin">
+                                        <div class="value-item-admin">
+                                            <input type="text" value="Liebe" class="admin-input">
+                                            <input type="text" value="liebe" class="admin-input" placeholder="ID">
+                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                        </div>
+                                        <div class="value-item-admin">
+                                            <input type="text" value="Familie" class="admin-input">
+                                            <input type="text" value="familie" class="admin-input" placeholder="ID">
+                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-admin">
+                                    <h4>💼 Beruf & Karriere</h4>
+                                    <div class="category-controls">
+                                        <button class="btn btn-sm btn-outline" onclick="addValueToCategory('career')">+ Wert hinzufügen</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory('career')">Kategorie löschen</button>
+                                    </div>
+                                    <div class="values-list-admin">
+                                        <div class="value-item-admin">
+                                            <input type="text" value="Erfolg" class="admin-input">
+                                            <input type="text" value="erfolg" class="admin-input" placeholder="ID">
+                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Werte-Quiz Management -->
+                    <div class="admin-section">
+                        <h3>🎯 Werte-Quiz</h3>
+                        <div class="quiz-admin">
+                            <div class="quiz-controls">
+                                <button class="btn btn-primary" onclick="addQuizQuestion()">+ Neue Frage</button>
+                                <button class="btn btn-outline" onclick="previewQuiz()">Quiz-Vorschau</button>
+                            </div>
+                            
+                            <div class="quiz-questions-admin">
+                                <div class="question-admin">
+                                    <h5>Frage 1</h5>
+                                    <textarea class="admin-textarea" placeholder="Frage eingeben...">Wenn du eine wichtige Entscheidung treffen müsstest, was wäre dir am wichtigsten?</textarea>
+                                    <div class="question-options">
+                                        <div class="option-admin">
+                                            <input type="text" value="Was andere von mir denken" class="admin-input">
+                                            <input type="text" value="anerkennung" class="admin-input" placeholder="Wert-ID">
+                                        </div>
+                                        <div class="option-admin">
+                                            <input type="text" value="Meine eigenen Bedürfnisse" class="admin-input">
+                                            <input type="text" value="authentizität" class="admin-input" placeholder="Wert-ID">
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline" onclick="addQuizOption(this)">+ Option hinzufügen</button>
+                                    <button class="btn btn-sm btn-danger" onclick="removeQuizQuestion(this)">Frage entfernen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Konflikt-Detektor Management -->
+                    <div class="admin-section">
+                        <h3>🔍 Konflikt-Detektor</h3>
+                        <div class="conflict-detector-admin">
+                            <div class="conflict-controls">
+                                <button class="btn btn-primary" onclick="addConflictPair()">+ Konflikt-Paar hinzufügen</button>
+                            </div>
+                            
+                            <div class="conflict-pairs-admin">
+                                <div class="conflict-pair-admin">
+                                    <div class="conflict-inputs">
+                                        <select class="admin-select">
+                                            <option value="karriere">Karriere</option>
+                                            <option value="familie">Familie</option>
+                                        </select>
+                                        <span>vs.</span>
+                                        <select class="admin-select">
+                                            <option value="familie">Familie</option>
+                                            <option value="karriere">Karriere</option>
+                                        </select>
+                                    </div>
+                                    <textarea class="admin-textarea" placeholder="Konflikt-Beschreibung...">Potentieller Konflikt zwischen Karriere und Familie</textarea>
+                                    <button class="btn btn-sm btn-danger" onclick="removeConflictPair(this)">Entfernen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lebensbereiche Management -->
+                    <div class="admin-section">
+                        <h3>🏠 Lebensbereiche</h3>
+                        <div class="life-areas-admin">
+                            <div class="areas-controls">
+                                <button class="btn btn-primary" onclick="addLifeArea()">+ Lebensbereich hinzufügen</button>
+                            </div>
+                            
+                            <div class="life-areas-list-admin">
+                                <div class="life-area-admin">
+                                    <input type="text" value="💼 Beruf & Karriere" class="admin-input">
+                                    <input type="text" value="career" class="admin-input" placeholder="ID">
+                                    <textarea class="admin-textarea" placeholder="Beschreibung...">Deine berufliche Entwicklung und Karriereziele</textarea>
+                                    <button class="btn btn-sm btn-danger" onclick="removeLifeArea(this)">Entfernen</button>
+                                </div>
+                                <div class="life-area-admin">
+                                    <input type="text" value="💕 Beziehungen & Familie" class="admin-input">
+                                    <input type="text" value="relationships" class="admin-input" placeholder="ID">
+                                    <textarea class="admin-textarea" placeholder="Beschreibung...">Deine persönlichen Beziehungen und Familie</textarea>
+                                    <button class="btn btn-sm btn-danger" onclick="removeLifeArea(this)">Entfernen</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Werte-Tracking Management -->
+                    <div class="admin-section">
+                        <h3>📊 Werte-Tracking</h3>
+                        <div class="tracking-admin">
+                            <div class="tracking-settings">
+                                <div class="setting-group">
+                                    <label>
+                                        <input type="checkbox" checked> Täglicher Check-in aktiviert
+                                    </label>
+                                </div>
+                                <div class="setting-group">
+                                    <label>
+                                        <input type="checkbox" checked> Wöchentliche Review aktiviert
+                                    </label>
+                                </div>
+                                <div class="setting-group">
+                                    <label>
+                                        <input type="checkbox" checked> Monatliche Bewertung aktiviert
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="challenges-admin">
+                                <h4>🎯 Werte-Challenges</h4>
+                                <div class="challenges-controls">
+                                    <button class="btn btn-primary" onclick="addValueChallenge()">+ Challenge hinzufügen</button>
+                                </div>
+                                
+                                <div class="challenges-list-admin">
+                                    <div class="challenge-admin">
+                                        <input type="text" value="30 Tage Liebe leben" class="admin-input">
+                                        <textarea class="admin-textarea" placeholder="Challenge-Beschreibung...">Jeden Tag eine bewusste Handlung der Liebe</textarea>
+                                        <input type="number" value="30" class="admin-input" placeholder="Tage">
+                                        <button class="btn btn-sm btn-danger" onclick="removeChallenge(this)">Entfernen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="admin-section">
                         <h3>Workflow-Schritte</h3>
                         <div class="workflow-steps-admin">

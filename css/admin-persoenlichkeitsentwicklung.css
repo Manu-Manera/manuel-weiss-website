@@ -560,6 +560,277 @@
     }
 }
 
+/* Enhanced Admin Panel Styles for Values Clarification */
+.values-library-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.library-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.values-categories-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-admin {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.category-admin h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.values-list-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.value-item-admin {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+}
+
+.quiz-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.quiz-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.quiz-questions-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.question-admin {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.question-admin h5 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.question-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.option-admin {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+}
+
+.conflict-detector-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.conflict-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.conflict-pairs-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.conflict-pair-admin {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.conflict-inputs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.conflict-inputs span {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.life-areas-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.areas-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.life-areas-list-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.life-area-admin {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.life-area-admin input[type="text"] {
+    grid-column: 1 / -1;
+}
+
+.life-area-admin textarea {
+    grid-column: 1 / -1;
+}
+
+.tracking-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.tracking-settings {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.setting-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.setting-group:last-child {
+    margin-bottom: 0;
+}
+
+.setting-group input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: #667eea;
+}
+
+.challenges-admin {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.challenges-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.challenges-list-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.challenge-admin {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 1rem;
+    align-items: start;
+}
+
+.challenge-admin textarea {
+    grid-column: 1 / -1;
+}
+
+/* Responsive adjustments for admin panel */
+@media (max-width: 768px) {
+    .values-categories-admin {
+        grid-template-columns: 1fr;
+    }
+    
+    .value-item-admin {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .option-admin {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .life-area-admin {
+        grid-template-columns: 1fr;
+    }
+    
+    .challenge-admin {
+        grid-template-columns: 1fr;
+    }
+    
+    .conflict-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
 .nav-tab i {
     font-size: 1.1rem;
 }

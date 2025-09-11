@@ -1492,16 +1492,22 @@
                     <div class="workflow-intro">
                         <h3>Werte-Klärung: Finde heraus, was dir wirklich wichtig ist</h3>
                         <p>Deine Werte sind die Grundlage für alle deine Entscheidungen. In diesem Workflow identifizierst du deine wichtigsten Werte und lernst, sie in deinem Alltag zu leben.</p>
+                        <div class="workflow-features">
+                            <span class="feature-badge">200+ Werte-Bibliothek</span>
+                            <span class="feature-badge">Konflikt-Detektor</span>
+                            <span class="feature-badge">Lebensbereiche-Mapping</span>
+                            <span class="feature-badge">Werte-Tracking</span>
+                        </div>
                     </div>
                     
                     <div class="workflow-progress">
                         <div class="progress-step active" data-step="1">
                             <div class="step-number">1</div>
-                            <div class="step-title">Werte-Sammlung</div>
+                            <div class="step-title">Werte-Identifikation</div>
                         </div>
                         <div class="progress-step" data-step="2">
                             <div class="step-number">2</div>
-                            <div class="step-title">Priorisierung</div>
+                            <div class="step-title">Werte-Ranking</div>
                         </div>
                         <div class="progress-step" data-step="3">
                             <div class="step-number">3</div>
@@ -1513,20 +1519,36 @@
                         </div>
                         <div class="progress-step" data-step="5">
                             <div class="step-number">5</div>
-                            <div class="step-title">Aktionsplan</div>
+                            <div class="step-title">Werte-Tracking</div>
                         </div>
                     </div>
                     
-                    <!-- Step 1: Werte-Sammlung -->
+                    <!-- Step 1: Werte-Identifikation -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3>Schritt 1: Werte-Sammlung</h3>
-                            <p>Identifiziere alle Werte, die dir wichtig sind. Wähle aus der Liste oder füge eigene hinzu.</p>
+                            <h3>Schritt 1: Werte-Identifikation</h3>
+                            <p>Identifiziere alle Werte, die dir wichtig sind. Nutze unsere umfangreiche Werte-Bibliothek mit 200+ vordefinierten Werten oder füge eigene hinzu.</p>
+                        </div>
+                        
+                        <div class="values-identification-tools">
+                            <div class="values-quiz-section">
+                                <h4>🎯 Werte-Quiz</h4>
+                                <p>Beantworte 10 situative Fragen, um deine wichtigsten Werte zu identifizieren.</p>
+                                <button class="btn btn-primary" onclick="startValuesQuiz()">Werte-Quiz starten</button>
+                            </div>
+                            
+                            <div class="values-search-section">
+                                <h4>🔍 Werte-Suche</h4>
+                                <div class="values-search-bar">
+                                    <input type="text" id="values-search" placeholder="Suche nach Werten..." onkeyup="searchValues()">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="values-grid">
                             <div class="value-category">
-                                <h4>Beziehungen & Familie</h4>
+                                <h4>💕 Beziehungen & Familie</h4>
                                 <div class="values-list">
                                     <label class="value-item">
                                         <input type="checkbox" value="liebe">
@@ -1541,18 +1563,68 @@
                                         <span>Freundschaft</span>
                                     </label>
                                     <label class="value-item">
-                                        <input type="checkbox" value="treue">
-                                        <span>Treue</span>
+                                        <input type="checkbox" value="partnerschaft">
+                                        <span>Partnerschaft</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="zugehörigkeit">
+                                        <span>Zugehörigkeit</span>
                                     </label>
                                     <label class="value-item">
                                         <input type="checkbox" value="vertrauen">
                                         <span>Vertrauen</span>
                                     </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="loyalität">
+                                        <span>Loyalität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="respekt">
+                                        <span>Respekt</span>
+                                    </label>
                                 </div>
                             </div>
                             
                             <div class="value-category">
-                                <h4>Persönliche Entwicklung</h4>
+                                <h4>💼 Beruf & Karriere</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="erfolg">
+                                        <span>Erfolg</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="karriere">
+                                        <span>Karriere</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="finanzielle-sicherheit">
+                                        <span>Finanzielle Sicherheit</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="anerkennung">
+                                        <span>Anerkennung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="verantwortung">
+                                        <span>Verantwortung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="führung">
+                                        <span>Führung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="teamwork">
+                                        <span>Teamwork</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="innovation">
+                                        <span>Innovation</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>🧠 Persönliche Entwicklung</h4>
                                 <div class="values-list">
                                     <label class="value-item">
                                         <input type="checkbox" value="wachstum">
@@ -1563,17 +1635,404 @@
                                         <span>Lernen</span>
                                     </label>
                                     <label class="value-item">
-                                        <input type="checkbox" value="authentizitaet">
-                                        <span>Authentizität</span>
-                                    </label>
-                                    <label class="value-item">
-                                        <input type="checkbox" value="kreativitaet">
+                                        <input type="checkbox" value="kreativität">
                                         <span>Kreativität</span>
                                     </label>
                                     <label class="value-item">
-                                        <input type="checkbox" value="freiheit">
-                                        <span>Freiheit</span>
+                                        <input type="checkbox" value="weisheit">
+                                        <span>Weisheit</span>
                                     </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="selbstverwirklichung">
+                                        <span>Selbstverwirklichung</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="authentizität">
+                                        <span>Authentizität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="selbstbewusstsein">
+                                        <span>Selbstbewusstsein</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="disziplin">
+                                        <span>Disziplin</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>🌍 Gesellschaft & Spiritualität</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="glaube">
+                                        <span>Glaube</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="spiritualität">
+                                        <span>Spiritualität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="hilfsbereitschaft">
+                                        <span>Hilfsbereitschaft</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="gerechtigkeit">
+                                        <span>Gerechtigkeit</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="umwelt">
+                                        <span>Umwelt</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="frieden">
+                                        <span>Frieden</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="toleranz">
+                                        <span>Toleranz</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="gemeinschaft">
+                                        <span>Gemeinschaft</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>💎 Materielle Werte</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="wohlstand">
+                                        <span>Wohlstand</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="luxus">
+                                        <span>Luxus</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="besitz">
+                                        <span>Besitz</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="status">
+                                        <span>Status</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="prestige">
+                                        <span>Prestige</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="sicherheit">
+                                        <span>Sicherheit</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="stabilität">
+                                        <span>Stabilität</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="komfort">
+                                        <span>Komfort</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="value-category">
+                                <h4>🎨 Kreative & Kulturelle Werte</h4>
+                                <div class="values-list">
+                                    <label class="value-item">
+                                        <input type="checkbox" value="schönheit">
+                                        <span>Schönheit</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="kunst">
+                                        <span>Kunst</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="musik">
+                                        <span>Musik</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="kultur">
+                                        <span>Kultur</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="ästhetik">
+                                        <span>Ästhetik</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="harmonie">
+                                        <span>Harmonie</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="eleganz">
+                                        <span>Eleganz</span>
+                                    </label>
+                                    <label class="value-item">
+                                        <input type="checkbox" value="stil">
+                                        <span>Stil</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="custom-values-section">
+                                <h4>➕ Eigene Werte hinzufügen</h4>
+                                <div class="custom-values-input">
+                                    <input type="text" id="custom-value" placeholder="Eigenen Wert eingeben...">
+                                    <button class="btn btn-outline" onclick="addCustomValue()">Hinzufügen</button>
+                                </div>
+                                <div class="custom-values-list" id="custom-values-list"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="selected-values-summary">
+                            <h4>📋 Ausgewählte Werte</h4>
+                            <div class="selected-values" id="selected-values">
+                                <p class="no-values">Noch keine Werte ausgewählt</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Werte-Ranking -->
+                    <div class="workflow-step" data-step="2">
+                        <div class="step-header">
+                            <h3>Schritt 2: Werte-Ranking</h3>
+                            <p>Priorisiere deine ausgewählten Werte und erstelle eine Hierarchie. Nutze Drag & Drop oder das Paarvergleich-System.</p>
+                        </div>
+                        
+                        <div class="values-ranking-tools">
+                            <div class="ranking-method-selector">
+                                <h4>🎯 Ranking-Methode wählen</h4>
+                                <div class="method-options">
+                                    <button class="btn btn-outline active" onclick="selectRankingMethod('drag-drop')">Drag & Drop</button>
+                                    <button class="btn btn-outline" onclick="selectRankingMethod('pairwise')">Paarvergleich</button>
+                                    <button class="btn btn-outline" onclick="selectRankingMethod('slider')">Slider-Ranking</button>
+                                </div>
+                            </div>
+                            
+                            <div class="values-ranking-container" id="values-ranking-container">
+                                <div class="ranking-instructions">
+                                    <p>Ziehe deine Werte in die gewünschte Reihenfolge. Die wichtigsten Werte sollten oben stehen.</p>
+                                </div>
+                                <div class="values-ranking-list" id="values-ranking-list">
+                                    <!-- Werte werden hier dynamisch eingefügt -->
+                                </div>
+                            </div>
+                            
+                            <div class="values-scoring">
+                                <h4>📊 Werte-Bewertung</h4>
+                                <p>Bewerte jeden Wert von 1-10 und erkläre, warum er dir wichtig ist.</p>
+                                <div class="values-scoring-list" id="values-scoring-list">
+                                    <!-- Scoring wird hier dynamisch eingefügt -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Konflikt-Analyse -->
+                    <div class="workflow-step" data-step="3">
+                        <div class="step-header">
+                            <h3>Schritt 3: Konflikt-Analyse</h3>
+                            <p>Identifiziere potenzielle Konflikte zwischen deinen Werten und entwickle Lösungsstrategien.</p>
+                        </div>
+                        
+                        <div class="conflict-analysis-tools">
+                            <div class="conflict-detector">
+                                <h4>🔍 Automatischer Konflikt-Detektor</h4>
+                                <button class="btn btn-primary" onclick="detectValueConflicts()">Konflikte analysieren</button>
+                                <div class="conflict-results" id="conflict-results"></div>
+                            </div>
+                            
+                            <div class="conflict-scenarios">
+                                <h4>🎭 Konflikt-Szenarien</h4>
+                                <p>Übe den Umgang mit typischen Wertkonflikten in verschiedenen Situationen.</p>
+                                <div class="scenario-list">
+                                    <div class="scenario-item">
+                                        <h5>Szenario 1: Karriere vs. Familie</h5>
+                                        <p>Du hast die Möglichkeit für eine Beförderung, die mehr Zeit und Reisen erfordert. Wie entscheidest du dich?</p>
+                                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                                    </div>
+                                    <div class="scenario-item">
+                                        <h5>Szenario 2: Sicherheit vs. Abenteuer</h5>
+                                        <p>Du kannst einen sicheren Job behalten oder ein Risiko eingehen und dein eigenes Unternehmen gründen.</p>
+                                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                                    </div>
+                                    <div class="scenario-item">
+                                        <h5>Szenario 3: Individualität vs. Zugehörigkeit</h5>
+                                        <p>Du stehst vor der Wahl, deine Meinung zu vertreten oder dich der Gruppe anzupassen.</p>
+                                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="conflict-resolution">
+                                <h4>💡 Lösungsstrategien</h4>
+                                <div class="resolution-strategies">
+                                    <div class="strategy-item">
+                                        <h5>Kompromiss finden</h5>
+                                        <p>Suche nach Wegen, beide Werte zu berücksichtigen.</p>
+                                    </div>
+                                    <div class="strategy-item">
+                                        <h5>Prioritäten setzen</h5>
+                                        <p>Entscheide, welcher Wert in dieser Situation wichtiger ist.</p>
+                                    </div>
+                                    <div class="strategy-item">
+                                        <h5>Kreative Lösungen</h5>
+                                        <p>Entwickle innovative Ansätze, die beide Werte erfüllen.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Lebensbereiche -->
+                    <div class="workflow-step" data-step="4">
+                        <div class="step-header">
+                            <h3>Schritt 4: Lebensbereiche-Mapping</h3>
+                            <p>Verteile deine Werte auf verschiedene Lebensbereiche und schaffe Balance.</p>
+                        </div>
+                        
+                        <div class="life-areas-mapping">
+                            <div class="life-areas-grid">
+                                <div class="life-area" data-area="career">
+                                    <h4>💼 Beruf & Karriere</h4>
+                                    <div class="values-in-area" id="career-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="career-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="career">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="relationships">
+                                    <h4>💕 Beziehungen & Familie</h4>
+                                    <div class="values-in-area" id="relationships-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="relationships-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="relationships">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="health">
+                                    <h4>🏃‍♀️ Gesundheit & Fitness</h4>
+                                    <div class="values-in-area" id="health-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="health-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="health">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="finances">
+                                    <h4>💰 Finanzen & Vermögen</h4>
+                                    <div class="values-in-area" id="finances-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="finances-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="finances">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="spirituality">
+                                    <h4>🧘‍♀️ Spiritualität & Sinn</h4>
+                                    <div class="values-in-area" id="spirituality-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="spirituality-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="spirituality">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="hobbies">
+                                    <h4>🎨 Hobbys & Freizeit</h4>
+                                    <div class="values-in-area" id="hobbies-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="hobbies-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="hobbies">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="family">
+                                    <h4>👨‍👩‍👧‍👦 Familie & Kinder</h4>
+                                    <div class="values-in-area" id="family-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="family-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="family">
+                                    </div>
+                                </div>
+                                
+                                <div class="life-area" data-area="personal-growth">
+                                    <h4>🌱 Persönliche Entwicklung</h4>
+                                    <div class="values-in-area" id="personal-growth-values"></div>
+                                    <div class="area-satisfaction">
+                                        <label>Zufriedenheit: <span id="personal-growth-satisfaction">5</span>/10</label>
+                                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="personal-growth">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="balance-analysis">
+                                <h4>⚖️ Balance-Analyse</h4>
+                                <div class="balance-chart" id="balance-chart"></div>
+                                <div class="balance-recommendations" id="balance-recommendations"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Werte-Tracking -->
+                    <div class="workflow-step" data-step="5">
+                        <div class="step-header">
+                            <h3>Schritt 5: Werte-Tracking</h3>
+                            <p>Entwickle ein System, um deine Werte regelmäßig zu überprüfen und zu leben.</p>
+                        </div>
+                        
+                        <div class="values-tracking-system">
+                            <div class="tracking-setup">
+                                <h4>📅 Tracking-Setup</h4>
+                                <div class="tracking-options">
+                                    <div class="tracking-option">
+                                        <label>
+                                            <input type="checkbox" id="daily-check-in">
+                                            Täglicher Check-in (5 Min)
+                                        </label>
+                                    </div>
+                                    <div class="tracking-option">
+                                        <label>
+                                            <input type="checkbox" id="weekly-review">
+                                            Wöchentliche Werte-Review (15 Min)
+                                        </label>
+                                    </div>
+                                    <div class="tracking-option">
+                                        <label>
+                                            <input type="checkbox" id="monthly-assessment">
+                                            Monatliche Werte-Bewertung (30 Min)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="values-challenges">
+                                <h4>🎯 Werte-Challenges</h4>
+                                <p>30-Tage-Herausforderungen für jeden deiner wichtigsten Werte.</p>
+                                <div class="challenge-list" id="challenge-list">
+                                    <!-- Challenges werden hier dynamisch generiert -->
+                                </div>
+                            </div>
+                            
+                            <div class="values-buddy-system">
+                                <h4>👥 Werte-Buddy-System</h4>
+                                <p>Finde einen Partner, der dich bei der Umsetzung deiner Werte unterstützt.</p>
+                                <div class="buddy-setup">
+                                    <input type="email" placeholder="E-Mail deines Werte-Buddys..." id="buddy-email">
+                                    <button class="btn btn-primary" onclick="inviteBuddy()">Einladen</button>
+                                </div>
+                            </div>
+                            
+                            <div class="values-analytics">
+                                <h4>📊 Werte-Analytics</h4>
+                                <div class="analytics-dashboard" id="analytics-dashboard">
+                                    <div class="analytics-chart" id="values-trend-chart"></div>
+                                    <div class="analytics-insights" id="analytics-insights"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                                 </div>
                             </div>
                             
@@ -1660,51 +2119,388 @@
                     <div class="workflow-intro">
                         <h3>Stärken-Analyse: Entdecke deine natürlichen Talente</h3>
                         <p>Deine Stärken sind der Schlüssel zu deinem Erfolg. In diesem Workflow identifizierst du deine Top-Stärken und lernst, sie optimal einzusetzen.</p>
+                        <div class="workflow-features">
+                            <span class="feature-badge">Gallup-Integration</span>
+                            <span class="feature-badge">VIA-Test</span>
+                            <span class="feature-badge">Stärken-Entwicklung</span>
+                            <span class="feature-badge">Coaching-Tools</span>
+                        </div>
                     </div>
                     
                     <div class="workflow-progress">
                         <div class="progress-step active" data-step="1">
                             <div class="step-number">1</div>
-                            <div class="step-title">Selbsteinschätzung</div>
+                            <div class="step-title">Stärken-Identifikation</div>
                         </div>
                         <div class="progress-step" data-step="2">
                             <div class="step-number">2</div>
-                            <div class="step-title">Stärken-Test</div>
+                            <div class="step-title">Gallup-Stärken</div>
                         </div>
                         <div class="progress-step" data-step="3">
                             <div class="step-number">3</div>
-                            <div class="step-title">Top 5</div>
+                            <div class="step-title">VIA-Test</div>
                         </div>
                         <div class="progress-step" data-step="4">
                             <div class="step-number">4</div>
-                            <div class="step-title">Anwendung</div>
+                            <div class="step-title">Entwicklungsplan</div>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Stärken-Coaching</div>
                         </div>
                     </div>
                     
-                    <!-- Step 1: Selbsteinschätzung -->
+                    <!-- Step 1: Stärken-Identifikation -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3>Schritt 1: Selbsteinschätzung</h3>
-                            <p>Bewerte dich selbst in verschiedenen Bereichen. Wo siehst du deine größten Stärken?</p>
+                            <h3>Schritt 1: Stärken-Identifikation</h3>
+                            <p>Identifiziere deine natürlichen Talente und Stärken mit verschiedenen Assessment-Tools und Selbsteinschätzung.</p>
+                        </div>
+                        
+                        <div class="strengths-identification-tools">
+                            <div class="assessment-selector">
+                                <h4>🎯 Assessment-Tool wählen</h4>
+                                <div class="assessment-options">
+                                    <button class="btn btn-primary" onclick="startGallupAssessment()">Gallup StrengthsFinder</button>
+                                    <button class="btn btn-outline" onclick="startVIAAssessment()">VIA Character Strengths</button>
+                                    <button class="btn btn-outline" onclick="startCustomAssessment()">Eigene Selbsteinschätzung</button>
+                                </div>
+                            </div>
+                            
+                            <div class="strengths-categories">
+                                <h4>📊 Stärken-Kategorien</h4>
+                                <div class="category-tabs">
+                                    <button class="tab-btn active" onclick="switchStrengthCategory('cognitive')">Kognitiv</button>
+                                    <button class="tab-btn" onclick="switchStrengthCategory('emotional')">Emotional</button>
+                                    <button class="tab-btn" onclick="switchStrengthCategory('social')">Sozial</button>
+                                    <button class="tab-btn" onclick="switchStrengthCategory('physical')">Physisch</button>
+                                    <button class="tab-btn" onclick="switchStrengthCategory('creative')">Kreativ</button>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="strengths-assessment">
-                            <div class="strength-category">
-                                <h4>Kognitive Stärken</h4>
+                            <!-- Kognitive Stärken -->
+                            <div class="strength-category active" data-category="cognitive">
+                                <h4>🧠 Kognitive Stärken</h4>
                                 <div class="strength-item">
-                                    <label>Analytisches Denken</label>
-                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="analytical">
-                                    <span class="rating-value">5</span>
+                                    <div class="strength-info">
+                                        <label>Analytisches Denken</label>
+                                        <span class="strength-description">Fähigkeit, komplexe Probleme zu zerlegen und zu analysieren</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="analytical">
+                                        <span class="rating-value">5</span>
+                                    </div>
                                 </div>
                                 <div class="strength-item">
-                                    <label>Kreativität</label>
-                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="creativity">
-                                    <span class="rating-value">5</span>
+                                    <div class="strength-info">
+                                        <label>Strategisches Denken</label>
+                                        <span class="strength-description">Fähigkeit, langfristige Pläne und Visionen zu entwickeln</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="strategic">
+                                        <span class="rating-value">5</span>
+                                    </div>
                                 </div>
                                 <div class="strength-item">
-                                    <label>Strategisches Denken</label>
-                                    <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="strategic">
-                                    <span class="rating-value">5</span>
+                                    <div class="strength-info">
+                                        <label>Lernfähigkeit</label>
+                                        <span class="strength-description">Schnelle Aneignung neuer Fähigkeiten und Wissen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="learning">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Problemlösung</label>
+                                        <span class="strength-description">Effektive Lösungsansätze für Herausforderungen finden</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="problem-solving">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Emotionale Stärken -->
+                            <div class="strength-category" data-category="emotional">
+                                <h4>💝 Emotionale Stärken</h4>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Emotionale Intelligenz</label>
+                                        <span class="strength-description">Verständnis und Management eigener und fremder Emotionen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="emotional-intelligence">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Resilienz</label>
+                                        <span class="strength-description">Widerstandsfähigkeit bei Rückschlägen und Stress</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="resilience">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Empathie</label>
+                                        <span class="strength-description">Fähigkeit, sich in andere hineinzuversetzen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="empathy">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Selbstbewusstsein</label>
+                                        <span class="strength-description">Vertrauen in die eigenen Fähigkeiten und Entscheidungen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="self-confidence">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Soziale Stärken -->
+                            <div class="strength-category" data-category="social">
+                                <h4>🤝 Soziale Stärken</h4>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Führung</label>
+                                        <span class="strength-description">Fähigkeit, andere zu inspirieren und zu leiten</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="leadership">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Kommunikation</label>
+                                        <span class="strength-description">Effektive verbale und nonverbale Kommunikation</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="communication">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Teamwork</label>
+                                        <span class="strength-description">Gute Zusammenarbeit in Gruppen und Teams</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="teamwork">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Networking</label>
+                                        <span class="strength-description">Aufbau und Pflege von beruflichen Beziehungen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="networking">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Physische Stärken -->
+                            <div class="strength-category" data-category="physical">
+                                <h4>💪 Physische Stärken</h4>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Ausdauer</label>
+                                        <span class="strength-description">Körperliche und mentale Belastbarkeit</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="endurance">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Koordination</label>
+                                        <span class="strength-description">Gute Hand-Auge-Koordination und Motorik</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="coordination">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Energie</label>
+                                        <span class="strength-description">Hohe körperliche und mentale Energie</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="energy">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Gesundheit</label>
+                                        <span class="strength-description">Gute körperliche Gesundheit und Fitness</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="health">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Kreative Stärken -->
+                            <div class="strength-category" data-category="creative">
+                                <h4>🎨 Kreative Stärken</h4>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Kreativität</label>
+                                        <span class="strength-description">Fähigkeit, innovative und originelle Ideen zu entwickeln</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="creativity">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Innovation</label>
+                                        <span class="strength-description">Entwicklung neuer Lösungen und Verbesserungen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="innovation">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Design-Thinking</label>
+                                        <span class="strength-description">Benutzerzentrierte Problemlösung und Gestaltung</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="design-thinking">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="strength-item">
+                                    <div class="strength-info">
+                                        <label>Künstlerische Fähigkeiten</label>
+                                        <span class="strength-description">Talente in Kunst, Musik, Schreiben oder anderen kreativen Bereichen</span>
+                                    </div>
+                                    <div class="strength-rating">
+                                        <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="artistic">
+                                        <span class="rating-value">5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="strengths-summary">
+                            <h4>📊 Stärken-Zusammenfassung</h4>
+                            <div class="top-strengths" id="top-strengths">
+                                <p class="no-strengths">Bewerte deine Stärken, um deine Top-Talente zu sehen</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Gallup-Stärken -->
+                    <div class="workflow-step" data-step="2">
+                        <div class="step-header">
+                            <h3>Schritt 2: Gallup StrengthsFinder</h3>
+                            <p>Entdecke deine Top 5 Gallup-Stärken und lerne, wie du sie optimal einsetzen kannst.</p>
+                        </div>
+                        
+                        <div class="gallup-strengths">
+                            <div class="gallup-intro">
+                                <h4>🌟 Was sind Gallup-Stärken?</h4>
+                                <p>Die Gallup StrengthsFinder identifiziert deine 34 natürlichen Talente und zeigt dir deine Top 5 Stärken. Diese sind der Schlüssel zu deinem Erfolg.</p>
+                            </div>
+                            
+                            <div class="gallup-assessment">
+                                <div class="assessment-options">
+                                    <button class="btn btn-primary" onclick="startGallupTest()">Gallup-Test starten</button>
+                                    <button class="btn btn-outline" onclick="importGallupResults()">Ergebnisse importieren</button>
+                                </div>
+                            </div>
+                            
+                            <div class="top-5-strengths" id="top-5-strengths">
+                                <h4>🏆 Deine Top 5 Stärken</h4>
+                                <div class="strengths-grid">
+                                    <div class="strength-card" data-strength="achiever">
+                                        <div class="strength-rank">1</div>
+                                        <h5>Achiever</h5>
+                                        <p>Du hast eine konstante Notwendigkeit, Dinge zu erreichen.</p>
+                                        <div class="strength-actions">
+                                            <button class="btn btn-sm btn-outline" onclick="viewStrengthDetails('achiever')">Details</button>
+                                            <button class="btn btn-sm btn-primary" onclick="developStrength('achiever')">Entwickeln</button>
+                                        </div>
+                                    </div>
+                                    <div class="strength-card" data-strength="learner">
+                                        <div class="strength-rank">2</div>
+                                        <h5>Learner</h5>
+                                        <p>Du hast eine starke Lust zu lernen und den Prozess des Lernens zu verbessern.</p>
+                                        <div class="strength-actions">
+                                            <button class="btn btn-sm btn-outline" onclick="viewStrengthDetails('learner')">Details</button>
+                                            <button class="btn btn-sm btn-primary" onclick="developStrength('learner')">Entwickeln</button>
+                                        </div>
+                                    </div>
+                                    <div class="strength-card" data-strength="strategic">
+                                        <div class="strength-rank">3</div>
+                                        <h5>Strategic</h5>
+                                        <p>Du kannst alternative Wege identifizieren und die beste Option auswählen.</p>
+                                        <div class="strength-actions">
+                                            <button class="btn btn-sm btn-outline" onclick="viewStrengthDetails('strategic')">Details</button>
+                                            <button class="btn btn-sm btn-primary" onclick="developStrength('strategic')">Entwickeln</button>
+                                        </div>
+                                    </div>
+                                    <div class="strength-card" data-strength="focus">
+                                        <div class="strength-rank">4</div>
+                                        <h5>Focus</h5>
+                                        <p>Du kannst Ziele setzen und sie erreichen, indem du dich auf das Wichtigste konzentrierst.</p>
+                                        <div class="strength-actions">
+                                            <button class="btn btn-sm btn-outline" onclick="viewStrengthDetails('focus')">Details</button>
+                                            <button class="btn btn-sm btn-primary" onclick="developStrength('focus')">Entwickeln</button>
+                                        </div>
+                                    </div>
+                                    <div class="strength-card" data-strength="responsibility">
+                                        <div class="strength-rank">5</div>
+                                        <h5>Responsibility</h5>
+                                        <p>Du übernimmst psychologisch Besitz von dem, was du sagst und tust.</p>
+                                        <div class="strength-actions">
+                                            <button class="btn btn-sm btn-outline" onclick="viewStrengthDetails('responsibility')">Details</button>
+                                            <button class="btn btn-sm btn-primary" onclick="developStrength('responsibility')">Entwickeln</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="strength-combinations">
+                                <h4>🔗 Stärken-Kombinationen</h4>
+                                <p>Verstehe, wie deine Top 5 Stärken zusammenwirken und sich gegenseitig verstärken.</p>
+                                <div class="combination-analysis" id="combination-analysis">
+                                    <div class="combination-item">
+                                        <h5>Achiever + Focus</h5>
+                                        <p>Diese Kombination macht dich besonders effektiv bei der Zielerreichung.</p>
+                                    </div>
+                                    <div class="combination-item">
+                                        <h5>Learner + Strategic</h5>
+                                        <p>Du lernst schnell und wendest dein Wissen strategisch an.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                                 </div>
                             </div>
                             
@@ -4492,19 +5288,376 @@
         // Method Initialization Functions
         function initValuesClarification() {
             console.log('Initializing Values Clarification');
-            // Initialize sliders, event listeners, etc.
+            
+            // Initialize value selection
+            document.querySelectorAll('.value-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedValues);
+            });
+            
+            // Initialize satisfaction sliders
+            document.querySelectorAll('.satisfaction-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const value = this.value;
+                    const area = this.dataset.area;
+                    const valueSpan = document.getElementById(`${area}-satisfaction`);
+                    if (valueSpan) {
+                        valueSpan.textContent = value;
+                    }
+                });
+            });
+            
+            // Initialize drag and drop for ranking
+            setupValuesDragAndDrop();
+            
+            // Initialize search functionality
+            const searchInput = document.getElementById('values-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', searchValues);
+            }
+            
+            // Load saved values
+            loadSavedValues();
+        }
+        
+        // Werte-Klärung Helper Functions
+        function updateSelectedValues() {
+            const selectedValues = [];
+            document.querySelectorAll('.value-item input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedValues.push({
+                    value: checkbox.value,
+                    label: checkbox.nextElementSibling.textContent
+                });
+            });
+            
+            const selectedContainer = document.getElementById('selected-values');
+            if (selectedContainer) {
+                if (selectedValues.length === 0) {
+                    selectedContainer.innerHTML = '<p class="no-values">Noch keine Werte ausgewählt</p>';
+                } else {
+                    selectedContainer.innerHTML = selectedValues.map(val => 
+                        `<span class="selected-value-tag">${val.label}</span>`
+                    ).join('');
+                }
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('selectedValues', JSON.stringify(selectedValues));
+        }
+        
+        function searchValues() {
+            const searchTerm = document.getElementById('values-search').value.toLowerCase();
+            document.querySelectorAll('.value-item').forEach(item => {
+                const label = item.querySelector('span').textContent.toLowerCase();
+                if (label.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function addCustomValue() {
+            const input = document.getElementById('custom-value');
+            const value = input.value.trim();
+            if (value) {
+                const customList = document.getElementById('custom-values-list');
+                const newValue = document.createElement('div');
+                newValue.className = 'custom-value-item';
+                newValue.innerHTML = `
+                    <label class="value-item">
+                        <input type="checkbox" value="${value.toLowerCase().replace(/\s+/g, '-')}">
+                        <span>${value}</span>
+                    </label>
+                `;
+                customList.appendChild(newValue);
+                input.value = '';
+                
+                // Add event listener to new checkbox
+                newValue.querySelector('input').addEventListener('change', updateSelectedValues);
+            }
+        }
+        
+        function selectRankingMethod(method) {
+            document.querySelectorAll('.method-options .btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const container = document.getElementById('values-ranking-container');
+            if (method === 'drag-drop') {
+                container.innerHTML = `
+                    <div class="ranking-instructions">
+                        <p>Ziehe deine Werte in die gewünschte Reihenfolge. Die wichtigsten Werte sollten oben stehen.</p>
+                    </div>
+                    <div class="values-ranking-list" id="values-ranking-list">
+                        <!-- Werte werden hier dynamisch eingefügt -->
+                    </div>
+                `;
+                setupValuesDragAndDrop();
+            } else if (method === 'pairwise') {
+                container.innerHTML = `
+                    <div class="pairwise-comparison" id="pairwise-comparison">
+                        <!-- Paarvergleich wird hier dynamisch generiert -->
+                    </div>
+                `;
+                setupPairwiseComparison();
+            } else if (method === 'slider') {
+                container.innerHTML = `
+                    <div class="slider-ranking" id="slider-ranking">
+                        <!-- Slider-Ranking wird hier dynamisch generiert -->
+                    </div>
+                `;
+                setupSliderRanking();
+            }
+        }
+        
+        function setupValuesDragAndDrop() {
+            const rankingList = document.getElementById('values-ranking-list');
+            if (!rankingList) return;
+            
+            // Get selected values
+            const selectedValues = JSON.parse(localStorage.getItem('selectedValues') || '[]');
+            
+            // Create draggable items
+            rankingList.innerHTML = selectedValues.map((val, index) => `
+                <div class="ranking-item" draggable="true" data-value="${val.value}">
+                    <div class="drag-handle">⋮⋮</div>
+                    <span class="ranking-number">${index + 1}</span>
+                    <span class="ranking-label">${val.label}</span>
+                </div>
+            `).join('');
+            
+            // Add drag and drop functionality
+            rankingList.addEventListener('dragstart', handleDragStart);
+            rankingList.addEventListener('dragover', handleDragOver);
+            rankingList.addEventListener('drop', handleDrop);
+        }
+        
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.value);
+            e.target.classList.add('dragging');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            const draggedValue = e.dataTransfer.getData('text/plain');
+            const dropTarget = e.target.closest('.ranking-item');
+            
+            if (dropTarget && dropTarget.dataset.value !== draggedValue) {
+                // Reorder items
+                const rankingList = document.getElementById('values-ranking-list');
+                const items = Array.from(rankingList.children);
+                const draggedItem = items.find(item => item.dataset.value === draggedValue);
+                const dropIndex = items.indexOf(dropTarget);
+                
+                if (draggedItem) {
+                    rankingList.insertBefore(draggedItem, dropTarget);
+                    updateRankingNumbers();
+                }
+            }
+            
+            document.querySelectorAll('.ranking-item').forEach(item => {
+                item.classList.remove('dragging');
+            });
+        }
+        
+        function updateRankingNumbers() {
+            document.querySelectorAll('.ranking-item').forEach((item, index) => {
+                item.querySelector('.ranking-number').textContent = index + 1;
+            });
+        }
+        
+        function detectValueConflicts() {
+            const selectedValues = JSON.parse(localStorage.getItem('selectedValues') || '[]');
+            const conflicts = [];
+            
+            // Define potential conflicts
+            const conflictPairs = [
+                ['karriere', 'familie'],
+                ['sicherheit', 'abenteuer'],
+                ['individualität', 'zugehörigkeit'],
+                ['wohlstand', 'hilfsbereitschaft'],
+                ['status', 'authentizität']
+            ];
+            
+            conflictPairs.forEach(pair => {
+                const hasFirst = selectedValues.some(v => v.value === pair[0]);
+                const hasSecond = selectedValues.some(v => v.value === pair[1]);
+                
+                if (hasFirst && hasSecond) {
+                    conflicts.push({
+                        values: pair,
+                        description: `Potentieller Konflikt zwischen ${pair[0]} und ${pair[1]}`
+                    });
+                }
+            });
+            
+            const resultsContainer = document.getElementById('conflict-results');
+            if (resultsContainer) {
+                if (conflicts.length === 0) {
+                    resultsContainer.innerHTML = '<p class="no-conflicts">✅ Keine Konflikte erkannt!</p>';
+                } else {
+                    resultsContainer.innerHTML = conflicts.map(conflict => `
+                        <div class="conflict-item">
+                            <h5>⚠️ ${conflict.description}</h5>
+                            <p>Überlege, wie du diese Werte in Einklang bringen kannst.</p>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+        
+        function inviteBuddy() {
+            const email = document.getElementById('buddy-email').value;
+            if (email) {
+                // In a real application, this would send an invitation
+                alert(`Einladung an ${email} gesendet!`);
+                document.getElementById('buddy-email').value = '';
+            }
+        }
+        
+        function loadSavedValues() {
+            const savedValues = localStorage.getItem('selectedValues');
+            if (savedValues) {
+                const values = JSON.parse(savedValues);
+                values.forEach(val => {
+                    const checkbox = document.querySelector(`input[value="${val.value}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateSelectedValues();
+            }
         }
 
         function initStrengthsFinder() {
             console.log('Initializing Strengths Finder');
+            
             // Initialize strength sliders
             document.querySelectorAll('.strength-slider').forEach(slider => {
                 slider.addEventListener('input', function() {
                     const value = this.value;
                     const valueSpan = this.parentElement.querySelector('.rating-value');
-                    valueSpan.textContent = value;
+                    if (valueSpan) {
+                        valueSpan.textContent = value;
+                    }
+                    updateStrengthsSummary();
                 });
             });
+            
+            // Initialize category tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.textContent.toLowerCase();
+                    switchStrengthCategory(category);
+                });
+            });
+            
+            // Load saved strengths
+            loadSavedStrengths();
+        }
+        
+        // Stärken-Analyse Helper Functions
+        function switchStrengthCategory(category) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide categories
+            document.querySelectorAll('.strength-category').forEach(cat => {
+                cat.classList.remove('active');
+                if (cat.dataset.category === category) {
+                    cat.classList.add('active');
+                }
+            });
+        }
+        
+        function updateStrengthsSummary() {
+            const strengths = [];
+            document.querySelectorAll('.strength-slider').forEach(slider => {
+                const value = parseInt(slider.value);
+                const strength = slider.dataset.strength;
+                const label = slider.closest('.strength-item').querySelector('label').textContent;
+                
+                if (value >= 7) { // Top strengths (7+)
+                    strengths.push({
+                        name: label,
+                        value: value,
+                        strength: strength
+                    });
+                }
+            });
+            
+            // Sort by value
+            strengths.sort((a, b) => b.value - a.value);
+            
+            const summaryContainer = document.getElementById('top-strengths');
+            if (summaryContainer) {
+                if (strengths.length === 0) {
+                    summaryContainer.innerHTML = '<p class="no-strengths">Bewerte deine Stärken, um deine Top-Talente zu sehen</p>';
+                } else {
+                    summaryContainer.innerHTML = strengths.slice(0, 5).map((strength, index) => `
+                        <div class="top-strength-item">
+                            <span class="strength-rank">${index + 1}</span>
+                            <span class="strength-name">${strength.name}</span>
+                            <span class="strength-score">${strength.value}/10</span>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('strengthsAssessment', JSON.stringify(strengths));
+        }
+        
+        function startGallupAssessment() {
+            alert('Gallup StrengthsFinder Test würde hier in einem neuen Fenster geöffnet werden');
+        }
+        
+        function startVIAAssessment() {
+            alert('VIA Character Strengths Test würde hier in einem neuen Fenster geöffnet werden');
+        }
+        
+        function startCustomAssessment() {
+            // Switch to custom assessment view
+            document.querySelector('.strengths-identification-tools').style.display = 'none';
+            document.querySelector('.strengths-assessment').style.display = 'block';
+        }
+        
+        function startGallupTest() {
+            alert('Gallup StrengthsFinder Test wird gestartet...');
+        }
+        
+        function importGallupResults() {
+            alert('Gallup-Ergebnisse können hier importiert werden');
+        }
+        
+        function viewStrengthDetails(strengthId) {
+            alert(`Details für Stärke: ${strengthId}`);
+        }
+        
+        function developStrength(strengthId) {
+            alert(`Entwicklungsplan für Stärke: ${strengthId}`);
+        }
+        
+        function loadSavedStrengths() {
+            const savedStrengths = localStorage.getItem('strengthsAssessment');
+            if (savedStrengths) {
+                const strengths = JSON.parse(savedStrengths);
+                strengths.forEach(strength => {
+                    const slider = document.querySelector(`[data-strength="${strength.strength}"]`);
+                    if (slider) {
+                        slider.value = strength.value;
+                        const valueSpan = slider.parentElement.querySelector('.rating-value');
+                        if (valueSpan) {
+                            valueSpan.textContent = strength.value;
+                        }
+                    }
+                });
+                updateStrengthsSummary();
+            }
         }
 
         function initGoalSetting() {
