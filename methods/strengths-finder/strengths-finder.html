@@ -1,0 +1,425 @@
+<div class="workflow-container">
+    <div class="workflow-intro">
+        <h3>Stärken-Analyse: Entdecke deine natürlichen Talente</h3>
+        <p>Deine Stärken sind der Schlüssel zu deinem Erfolg. In diesem Workflow identifizierst du deine natürlichen Talente und lernst, sie optimal einzusetzen.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Gallup-Stärken</span>
+            <span class="feature-badge">VIA-Test</span>
+            <span class="feature-badge">Entwicklungsplan</span>
+            <span class="feature-badge">Stärken-Tracking</span>
+        </div>
+    </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Stärken-Identifikation</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Stärken-Bewertung</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Entwicklungsplan</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Anwendungsbereiche</div>
+        </div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Stärken-Tracking</div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Stärken-Identifikation -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Stärken-Identifikation</h3>
+            <p>Identifiziere deine natürlichen Talente und Stärken. Nutze verschiedene Assessment-Tools oder die Selbsteinschätzung.</p>
+        </div>
+        
+        <div class="strengths-identification-tools">
+            <div class="assessment-options">
+                <h4>🎯 Assessment-Tools</h4>
+                <div class="assessment-grid">
+                    <div class="assessment-card" onclick="startGallupAssessment()">
+                        <div class="assessment-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5>Gallup StrengthsFinder</h5>
+                        <p>Der weltweit führende Stärken-Test mit 34 Talent-Themen</p>
+                        <div class="assessment-features">
+                            <span class="feature-tag">34 Talente</span>
+                            <span class="feature-tag">Wissenschaftlich</span>
+                            <span class="feature-tag">Detailliert</span>
+                        </div>
+                        <button class="btn btn-primary">Start Assessment</button>
+                    </div>
+                    
+                    <div class="assessment-card" onclick="startVIAAssessment()">
+                        <div class="assessment-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h5>VIA Character Strengths</h5>
+                        <p>Identifiziere deine 24 Charakterstärken</p>
+                        <div class="assessment-features">
+                            <span class="feature-tag">24 Stärken</span>
+                            <span class="feature-tag">Kostenlos</span>
+                            <span class="feature-tag">Charakter</span>
+                        </div>
+                        <button class="btn btn-primary">Start Assessment</button>
+                    </div>
+                    
+                    <div class="assessment-card" onclick="startCustomAssessment()">
+                        <div class="assessment-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5>Selbsteinschätzung</h5>
+                        <p>Bewerte dich selbst in verschiedenen Bereichen</p>
+                        <div class="assessment-features">
+                            <span class="feature-tag">Schnell</span>
+                            <span class="feature-tag">Individuell</span>
+                            <span class="feature-tag">Flexibel</span>
+                        </div>
+                        <button class="btn btn-primary">Start Assessment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="strengths-categories">
+                <h4>💪 Stärken-Kategorien</h4>
+                <div class="categories-grid">
+                    <div class="strength-category" data-category="executing">
+                        <h5>🎯 Umsetzung</h5>
+                        <p>Stärken, die dir helfen, Dinge zu erledigen</p>
+                        <div class="strength-items">
+                            <label class="strength-item">
+                                <input type="checkbox" value="achiever">
+                                <span>Achiever - Erreicher</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="arranger">
+                                <span>Arranger - Organisator</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="belief">
+                                <span>Belief - Glaube</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="consistency">
+                                <span>Consistency - Konsistenz</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="deliberative">
+                                <span>Deliberative - Bedacht</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="discipline">
+                                <span>Discipline - Disziplin</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="focus">
+                                <span>Focus - Fokus</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="responsibility">
+                                <span>Responsibility - Verantwortung</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="restorative">
+                                <span>Restorative - Wiederherstellung</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="strength-category" data-category="influencing">
+                        <h5>🗣️ Einflussnahme</h5>
+                        <p>Stärken, die dir helfen, andere zu erreichen</p>
+                        <div class="strength-items">
+                            <label class="strength-item">
+                                <input type="checkbox" value="activator">
+                                <span>Activator - Aktivator</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="command">
+                                <span>Command - Kommando</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="communication">
+                                <span>Communication - Kommunikation</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="competition">
+                                <span>Competition - Wettbewerb</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="maximizer">
+                                <span>Maximizer - Maximierer</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="self-assurance">
+                                <span>Self-Assurance - Selbstvertrauen</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="significance">
+                                <span>Significance - Bedeutung</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="woo">
+                                <span>Woo - Überzeugung</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="strength-category" data-category="relationship-building">
+                        <h5>🤝 Beziehungsaufbau</h5>
+                        <p>Stärken, die dir helfen, starke Beziehungen aufzubauen</p>
+                        <div class="strength-items">
+                            <label class="strength-item">
+                                <input type="checkbox" value="adaptability">
+                                <span>Adaptability - Anpassungsfähigkeit</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="connectedness">
+                                <span>Connectedness - Verbundenheit</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="developer">
+                                <span>Developer - Entwickler</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="empathy">
+                                <span>Empathy - Empathie</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="harmony">
+                                <span>Harmony - Harmonie</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="includer">
+                                <span>Includer - Einbezieher</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="individualization">
+                                <span>Individualization - Individualisierung</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="positivity">
+                                <span>Positivity - Positivität</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="relator">
+                                <span>Relator - Beziehungsaufbau</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="strength-category" data-category="strategic-thinking">
+                        <h5>🧠 Strategisches Denken</h5>
+                        <p>Stärken, die dir helfen, die Zukunft zu sehen</p>
+                        <div class="strength-items">
+                            <label class="strength-item">
+                                <input type="checkbox" value="analytical">
+                                <span>Analytical - Analytisch</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="context">
+                                <span>Context - Kontext</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="futuristic">
+                                <span>Futuristic - Zukunftsorientiert</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="ideation">
+                                <span>Ideation - Ideenfindung</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="input">
+                                <span>Input - Input</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="intellection">
+                                <span>Intellection - Intellekt</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="learner">
+                                <span>Learner - Lerner</span>
+                            </label>
+                            <label class="strength-item">
+                                <input type="checkbox" value="strategic">
+                                <span>Strategic - Strategisch</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="selected-strengths-summary">
+            <h4>📋 Ausgewählte Stärken</h4>
+            <div class="selected-strengths" id="selected-strengths">
+                <p class="no-strengths">Noch keine Stärken ausgewählt</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Stärken-Bewertung -->
+    <div class="workflow-step" data-step="2">
+        <div class="step-header">
+            <h3>Schritt 2: Stärken-Bewertung</h3>
+            <p>Bewerte deine ausgewählten Stärken und verstehe ihre Ausprägung in verschiedenen Situationen.</p>
+        </div>
+        
+        <div class="strengths-evaluation">
+            <div class="evaluation-tools">
+                <h4>📊 Stärken-Bewertung</h4>
+                <div class="strengths-scoring-list" id="strengths-scoring-list">
+                    <!-- Scoring wird hier dynamisch eingefügt -->
+                </div>
+            </div>
+            
+            <div class="strengths-insights">
+                <h4>💡 Stärken-Insights</h4>
+                <div class="insights-container" id="insights-container">
+                    <p class="no-insights">Wähle Stärken aus, um Insights zu erhalten</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Entwicklungsplan -->
+    <div class="workflow-step" data-step="3">
+        <div class="step-header">
+            <h3>Schritt 3: Entwicklungsplan</h3>
+            <p>Entwickle einen Plan, um deine Stärken weiter auszubauen und optimal zu nutzen.</p>
+        </div>
+        
+        <div class="development-planning">
+            <div class="strength-development">
+                <h4>🚀 Stärken-Entwicklung</h4>
+                <div class="development-areas" id="development-areas">
+                    <!-- Entwicklungsbereiche werden hier dynamisch generiert -->
+                </div>
+            </div>
+            
+            <div class="action-plan">
+                <h4>📝 Aktionsplan</h4>
+                <div class="action-items" id="action-items">
+                    <!-- Aktionspunkte werden hier dynamisch generiert -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Anwendungsbereiche -->
+    <div class="workflow-step" data-step="4">
+        <div class="step-header">
+            <h3>Schritt 4: Anwendungsbereiche</h3>
+            <p>Identifiziere konkrete Bereiche, in denen du deine Stärken optimal einsetzen kannst.</p>
+        </div>
+        
+        <div class="application-areas">
+            <div class="areas-grid">
+                <div class="application-area" data-area="career">
+                    <h4>💼 Beruf & Karriere</h4>
+                    <div class="area-strengths" id="career-strengths"></div>
+                    <div class="area-opportunities">
+                        <h5>Möglichkeiten</h5>
+                        <ul id="career-opportunities"></ul>
+                    </div>
+                </div>
+                
+                <div class="application-area" data-area="relationships">
+                    <h4>💕 Beziehungen</h4>
+                    <div class="area-strengths" id="relationships-strengths"></div>
+                    <div class="area-opportunities">
+                        <h5>Möglichkeiten</h5>
+                        <ul id="relationships-opportunities"></ul>
+                    </div>
+                </div>
+                
+                <div class="application-area" data-area="personal-growth">
+                    <h4>🌱 Persönliche Entwicklung</h4>
+                    <div class="area-strengths" id="personal-growth-strengths"></div>
+                    <div class="area-opportunities">
+                        <h5>Möglichkeiten</h5>
+                        <ul id="personal-growth-opportunities"></ul>
+                    </div>
+                </div>
+                
+                <div class="application-area" data-area="hobbies">
+                    <h4>🎨 Hobbys & Interessen</h4>
+                    <div class="area-strengths" id="hobbies-strengths"></div>
+                    <div class="area-opportunities">
+                        <h5>Möglichkeiten</h5>
+                        <ul id="hobbies-opportunities"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 5: Stärken-Tracking -->
+    <div class="workflow-step" data-step="5">
+        <div class="step-header">
+            <h3>Schritt 5: Stärken-Tracking</h3>
+            <p>Verfolge deine Fortschritte bei der Entwicklung und Anwendung deiner Stärken.</p>
+        </div>
+        
+        <div class="strengths-tracking">
+            <div class="tracking-setup">
+                <h4>📅 Tracking-Setup</h4>
+                <div class="tracking-options">
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="daily-strength-check">
+                            Täglicher Stärken-Check (5 Min)
+                        </label>
+                    </div>
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="weekly-strength-review">
+                            Wöchentliche Stärken-Review (15 Min)
+                        </label>
+                    </div>
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="monthly-strength-assessment">
+                            Monatliche Stärken-Bewertung (30 Min)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="strengths-challenges">
+                <h4>🎯 Stärken-Challenges</h4>
+                <p>30-Tage-Herausforderungen für jede deiner Top-Stärken.</p>
+                <div class="challenge-list" id="strength-challenge-list">
+                    <!-- Challenges werden hier dynamisch generiert -->
+                </div>
+            </div>
+            
+            <div class="strengths-analytics">
+                <h4>📊 Stärken-Analytics</h4>
+                <div class="analytics-dashboard" id="strengths-analytics-dashboard">
+                    <div class="analytics-chart" id="strengths-trend-chart"></div>
+                    <div class="analytics-insights" id="strengths-analytics-insights"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" id="prev-step" disabled onclick="previousStep()">Zurück</button>
+            <button class="btn btn-primary" id="next-step" onclick="nextStep()">Weiter</button>
+        </div>
+        <div class="progress-info">
+            <span id="progress-text">Schritt 1 von 5</span>
+        </div>
+    </div>
+</div>
