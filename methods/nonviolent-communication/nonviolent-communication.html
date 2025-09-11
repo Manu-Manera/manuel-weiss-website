@@ -1,0 +1,360 @@
+<div class="workflow-container">
+    <div class="workflow-intro">
+        <h3>Gewaltfreie Kommunikation (GfK)</h3>
+        <p>Lerne die 4-Schritte-Methode der Gewaltfreien Kommunikation nach Marshall Rosenberg für authentische und empathische Gespräche.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Empathisch</span>
+            <span class="feature-badge">Authentisch</span>
+            <span class="feature-badge">Verbindend</span>
+            <span class="feature-badge">Lösungsorientiert</span>
+        </div>
+    </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Beobachtung</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Gefühl</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Bedürfnis</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Bitte</div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Beobachtung -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Beobachtung ohne Bewertung</h3>
+            <p>Beschreibe die Situation objektiv, ohne zu bewerten oder zu interpretieren.</p>
+        </div>
+        
+        <div class="gfk-method">
+            <div class="observation-section">
+                <h4>👁️ Beobachtung</h4>
+                <p>Beschreibe, was du konkret siehst, hörst oder erlebst, ohne zu bewerten.</p>
+                
+                <div class="observation-form">
+                    <div class="observation-item">
+                        <label>Was ist passiert? (Objektive Beschreibung)</label>
+                        <textarea id="observation-description" placeholder="Beschreibe die Situation ohne Bewertung..."></textarea>
+                    </div>
+                    
+                    <div class="observation-examples">
+                        <h5>✅ Gute Beobachtungen</h5>
+                        <div class="example-list">
+                            <div class="example-item">
+                                <input type="checkbox" id="obs-example-1">
+                                <label for="obs-example-1">"Du hast heute 30 Minuten später angefangen zu arbeiten"</label>
+                            </div>
+                            <div class="example-item">
+                                <input type="checkbox" id="obs-example-2">
+                                <label for="obs-example-2">"Ich sehe, dass die Küche unaufgeräumt ist"</label>
+                            </div>
+                            <div class="example-item">
+                                <input type="checkbox" id="obs-example-3">
+                                <label for="obs-example-3">"Du hast mir nicht geantwortet, als ich dich gefragt habe"</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="observation-avoid">
+                        <h5>❌ Vermeide Bewertungen</h5>
+                        <div class="avoid-list">
+                            <div class="avoid-item">
+                                <input type="checkbox" id="avoid-example-1">
+                                <label for="avoid-example-1">"Du bist immer unpünktlich" (Bewertung)</label>
+                            </div>
+                            <div class="avoid-item">
+                                <input type="checkbox" id="avoid-example-2">
+                                <label for="avoid-example-2">"Du bist unordentlich" (Bewertung)</label>
+                            </div>
+                            <div class="avoid-item">
+                                <input type="checkbox" id="avoid-example-3">
+                                <label for="avoid-example-3">"Du ignorierst mich" (Interpretation)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Gefühl -->
+    <div class="workflow-step" data-step="2">
+        <div class="step-header">
+            <h3>Schritt 2: Gefühle ausdrücken</h3>
+            <p>Drücke deine echten Gefühle aus, die durch die Beobachtung ausgelöst wurden.</p>
+        </div>
+        
+        <div class="feeling-section">
+            <div class="feeling-intro">
+                <h4>💝 Gefühle</h4>
+                <p>Drücke deine echten Gefühle aus, die durch die Beobachtung ausgelöst wurden.</p>
+            </div>
+            
+            <div class="feeling-form">
+                <div class="feeling-item">
+                    <label>Wie fühlst du dich? (Echte Gefühle)</label>
+                    <textarea id="feeling-description" placeholder="Beschreibe deine Gefühle..."></textarea>
+                </div>
+                
+                <div class="feeling-categories">
+                    <div class="feeling-category">
+                        <h5>😊 Angenehme Gefühle</h5>
+                        <div class="feeling-list">
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-happy">
+                                <label for="feeling-happy">Glücklich</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-joyful">
+                                <label for="feeling-joyful">Freudig</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-peaceful">
+                                <label for="feeling-peaceful">Friedlich</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-grateful">
+                                <label for="feeling-grateful">Dankbar</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feeling-category">
+                        <h5>😔 Unangenehme Gefühle</h5>
+                        <div class="feeling-list">
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-sad">
+                                <label for="feeling-sad">Traurig</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-angry">
+                                <label for="feeling-angry">Wütend</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-frustrated">
+                                <label for="feeling-frustrated">Frustriert</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-worried">
+                                <label for="feeling-worried">Besorgt</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feeling-avoid">
+                    <h5>❌ Vermeide Pseudo-Gefühle</h5>
+                    <div class="pseudo-feelings">
+                        <div class="pseudo-item">
+                            <input type="checkbox" id="pseudo-example-1">
+                            <label for="pseudo-example-1">"Ich fühle mich ignoriert" (Bewertung)</label>
+                        </div>
+                        <div class="pseudo-item">
+                            <input type="checkbox" id="pseudo-example-2">
+                            <label for="pseudo-example-2">"Ich fühle mich nicht respektiert" (Bewertung)</label>
+                        </div>
+                        <div class="pseudo-item">
+                            <input type="checkbox" id="pseudo-example-3">
+                            <label for="pseudo-example-3">"Ich fühle mich verletzt" (Interpretation)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Bedürfnis -->
+    <div class="workflow-step" data-step="3">
+        <div class="step-header">
+            <h3>Schritt 3: Bedürfnisse identifizieren</h3>
+            <p>Identifiziere die Bedürfnisse, die hinter deinen Gefühlen stehen.</p>
+        </div>
+        
+        <div class="need-section">
+            <div class="need-intro">
+                <h4>❤️ Bedürfnisse</h4>
+                <p>Identifiziere die universellen Bedürfnisse, die hinter deinen Gefühlen stehen.</p>
+            </div>
+            
+            <div class="need-form">
+                <div class="need-item">
+                    <label>Welche Bedürfnisse sind nicht erfüllt?</label>
+                    <textarea id="need-description" placeholder="Beschreibe deine unerfüllten Bedürfnisse..."></textarea>
+                </div>
+                
+                <div class="need-categories">
+                    <div class="need-category">
+                        <h5>🏠 Grundbedürfnisse</h5>
+                        <div class="need-list">
+                            <div class="need-option">
+                                <input type="checkbox" id="need-safety">
+                                <label for="need-safety">Sicherheit</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-shelter">
+                                <label for="need-shelter">Unterkunft</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-food">
+                                <label for="need-food">Nahrung</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-rest">
+                                <label for="need-rest">Ruhe</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="need-category">
+                        <h5>🤝 Beziehungsbedürfnisse</h5>
+                        <div class="need-list">
+                            <div class="need-option">
+                                <input type="checkbox" id="need-connection">
+                                <label for="need-connection">Verbindung</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-understanding">
+                                <label for="need-understanding">Verständnis</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-respect">
+                                <label for="need-respect">Respekt</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-trust">
+                                <label for="need-trust">Vertrauen</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="need-category">
+                        <h5>🎯 Entwicklungsbedürfnisse</h5>
+                        <div class="need-list">
+                            <div class="need-option">
+                                <input type="checkbox" id="need-autonomy">
+                                <label for="need-autonomy">Autonomie</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-growth">
+                                <label for="need-growth">Wachstum</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-contribution">
+                                <label for="need-contribution">Beitrag</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-meaning">
+                                <label for="need-meaning">Sinn</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Bitte -->
+    <div class="workflow-step" data-step="4">
+        <div class="step-header">
+            <h3>Schritt 4: Konkrete Bitte äußern</h3>
+            <p>Äußere eine konkrete, erfüllbare Bitte, die dein Bedürfnis erfüllen könnte.</p>
+        </div>
+        
+        <div class="request-section">
+            <div class="request-intro">
+                <h4>🙏 Bitte</h4>
+                <p>Äußere eine konkrete, erfüllbare Bitte, die dein Bedürfnis erfüllen könnte.</p>
+            </div>
+            
+            <div class="request-form">
+                <div class="request-item">
+                    <label>Was möchtest du konkret?</label>
+                    <textarea id="request-description" placeholder="Formuliere deine konkrete Bitte..."></textarea>
+                </div>
+                
+                <div class="request-criteria">
+                    <h5>✅ Gute Bitten</h5>
+                    <div class="criteria-list">
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-concrete">
+                            <label for="request-concrete">Konkret und spezifisch</label>
+                        </div>
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-positive">
+                            <label for="request-positive">Positiv formuliert</label>
+                        </div>
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-actionable">
+                            <label for="request-actionable">Handlungsorientiert</label>
+                        </div>
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-now">
+                            <label for="request-now">Jetzt erfüllbar</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="request-examples">
+                    <h5>💡 Beispiele für gute Bitten</h5>
+                    <div class="example-list">
+                        <div class="example-item">
+                            <input type="checkbox" id="request-example-1">
+                            <label for="request-example-1">"Kannst du mir bitte helfen, die Küche aufzuräumen?"</label>
+                        </div>
+                        <div class="example-item">
+                            <input type="checkbox" id="request-example-2">
+                            <label for="request-example-2">"Würdest du mir bitte zuhören, wenn ich dir von meinem Tag erzähle?"</label>
+                        </div>
+                        <div class="example-item">
+                            <input type="checkbox" id="request-example-3">
+                            <label for="request-example-3">"Könntest du bitte pünktlich um 18 Uhr zu Hause sein?"</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="request-avoid">
+                    <h5>❌ Vermeide Forderungen</h5>
+                    <div class="avoid-list">
+                        <div class="avoid-item">
+                            <input type="checkbox" id="avoid-demand-1">
+                            <label for="avoid-demand-1">"Du musst..." (Forderung)</label>
+                        </div>
+                        <div class="avoid-item">
+                            <input type="checkbox" id="avoid-demand-2">
+                            <label for="avoid-demand-2">"Du solltest..." (Forderung)</label>
+                        </div>
+                        <div class="avoid-item">
+                            <input type="checkbox" id="avoid-demand-3">
+                            <label for="avoid-demand-3">"Du hast zu..." (Forderung)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
+            </div>
+            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
