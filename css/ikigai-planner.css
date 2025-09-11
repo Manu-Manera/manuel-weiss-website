@@ -359,30 +359,60 @@
     z-index: 2;
     background: white;
     padding: 0 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.progress-step:hover {
+    transform: translateY(-2px);
 }
 
 .step-number {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     background: #e2e8f0;
     color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
     transition: all 0.3s ease;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 3;
+}
+
+.step-number:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .progress-step.active .step-number {
-    background: #667eea;
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    border-color: #667eea;
 }
 
 .progress-step.completed .step-number {
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981, #059669);
     color: white;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    border-color: #10b981;
+}
+
+.progress-step.completed .step-number::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .step-title {
@@ -7630,9 +7660,29 @@ html {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.method-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-radius: 0.75rem;
+    z-index: 1;
+}
+
+.method-icon i {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .method-card h3 {
@@ -7719,13 +7769,31 @@ html {
 }
 
 .method-card .btn-outline {
-    background: transparent;
+    background: rgba(99, 102, 241, 0.1);
     color: #6366f1;
     border: 2px solid #6366f1;
     text-shadow: none;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
-    font-weight: 600;
-    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    font-weight: 700;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card .btn-outline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.method-card .btn-outline:hover::before {
+    left: 100%;
 }
 
 .method-card .btn-outline:hover {
