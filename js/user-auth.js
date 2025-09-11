@@ -306,6 +306,7 @@ class UserAuth {
     switchAuthForm(e) {
         e.preventDefault();
         const targetForm = e.target.getAttribute('data-form');
+        console.log('Switching to form:', targetForm);
         this.switchToForm(targetForm);
     }
 

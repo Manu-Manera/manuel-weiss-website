@@ -20,10 +20,21 @@ class VIAStrengthsAssessment {
     }
 
     setupEventListeners() {
-        document.getElementById('next-step').addEventListener('click', () => this.nextStep());
-        document.getElementById('prev-step').addEventListener('click', () => this.previousStep());
-        document.getElementById('next-question').addEventListener('click', () => this.nextQuestion());
-        document.getElementById('prev-question').addEventListener('click', () => this.previousQuestion());
+        const nextStepBtn = document.getElementById('next-step');
+        const prevStepBtn = document.getElementById('prev-step');
+        const nextQuestionBtn = document.getElementById('next-question');
+        const prevQuestionBtn = document.getElementById('prev-question');
+        
+        if (nextStepBtn) nextStepBtn.addEventListener('click', () => this.nextStep());
+        if (prevStepBtn) prevStepBtn.addEventListener('click', () => this.previousStep());
+        if (nextQuestionBtn) nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
+        if (prevQuestionBtn) prevQuestionBtn.addEventListener('click', () => this.previousQuestion());
+        
+        // Add global navigation functions
+        window.nextStep = () => this.nextStep();
+        window.previousStep = () => this.previousStep();
+        window.nextQuestion = () => this.nextQuestion();
+        window.previousQuestion = () => this.previousQuestion();
     }
 
     loadStrengthDefinitions() {
