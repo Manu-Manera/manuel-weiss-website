@@ -562,7 +562,26 @@ class UserProfile {
 
     // Helper methods
     getDefaultAvatar() {
-        return `https://via.placeholder.com/100x100/6366f1/ffffff?text=${this.currentUser.firstName.charAt(0)}`;
+        // Create a data URL for a simple avatar with user's initial
+        const canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d');
+        
+        // Background circle
+        ctx.fillStyle = '#6366f1';
+        ctx.beginPath();
+        ctx.arc(50, 50, 50, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.currentUser.firstName.charAt(0).toUpperCase(), 50, 50);
+        
+        return canvas.toDataURL();
     }
 
     renderInterests() {
