@@ -82,6 +82,51 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="observation-practice">
+                        <h5>🎯 Übung: Beobachtung vs. Bewertung</h5>
+                        <div class="practice-exercises">
+                            <div class="exercise-item">
+                                <label>Übung 1: Schreibe eine objektive Beobachtung zu einer aktuellen Situation</label>
+                                <textarea id="practice-observation-1" placeholder="Beschreibe eine Situation rein objektiv..."></textarea>
+                            </div>
+                            <div class="exercise-item">
+                                <label>Übung 2: Identifiziere Bewertungen in deiner Beschreibung</label>
+                                <textarea id="practice-evaluation-1" placeholder="Welche Wörter könnten Bewertungen sein?"></textarea>
+                            </div>
+                            <div class="exercise-item">
+                                <label>Übung 3: Formuliere die Beobachtung ohne Bewertungen neu</label>
+                                <textarea id="practice-rewrite-1" placeholder="Neue, objektive Formulierung..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="observation-tips">
+                        <h5>💡 Tipps für gute Beobachtungen</h5>
+                        <div class="tips-list">
+                            <div class="tip-item">
+                                <div class="tip-icon">📅</div>
+                                <div class="tip-content">
+                                    <h6>Zeitangaben verwenden</h6>
+                                    <p>Nutze konkrete Zeitangaben: "gestern", "heute um 14 Uhr", "letzte Woche"</p>
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">👀</div>
+                                <div class="tip-content">
+                                    <h6>Konkrete Handlungen beschreiben</h6>
+                                    <p>Beschreibe, was du siehst, hörst oder erlebst, nicht was du denkst</p>
+                                </div>
+                            </div>
+                            <div class="tip-item">
+                                <div class="tip-icon">🎯</div>
+                                <div class="tip-content">
+                                    <h6>Spezifisch sein</h6>
+                                    <p>Vermeide Verallgemeinerungen wie "immer", "nie", "ständig"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,6 +171,22 @@
                                 <input type="checkbox" id="feeling-grateful">
                                 <label for="feeling-grateful">Dankbar</label>
                             </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-excited">
+                                <label for="feeling-excited">Begeistert</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-proud">
+                                <label for="feeling-proud">Stolz</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-loved">
+                                <label for="feeling-loved">Geliebt</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-confident">
+                                <label for="feeling-confident">Selbstbewusst</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -148,6 +209,22 @@
                                 <input type="checkbox" id="feeling-worried">
                                 <label for="feeling-worried">Besorgt</label>
                             </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-disappointed">
+                                <label for="feeling-disappointed">Enttäuscht</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-lonely">
+                                <label for="feeling-lonely">Einsam</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-afraid">
+                                <label for="feeling-afraid">Ängstlich</label>
+                            </div>
+                            <div class="feeling-option">
+                                <input type="checkbox" id="feeling-overwhelmed">
+                                <label for="feeling-overwhelmed">Überwältigt</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -166,6 +243,56 @@
                         <div class="pseudo-item">
                             <input type="checkbox" id="pseudo-example-3">
                             <label for="pseudo-example-3">"Ich fühle mich verletzt" (Interpretation)</label>
+                        </div>
+                        <div class="pseudo-item">
+                            <input type="checkbox" id="pseudo-example-4">
+                            <label for="pseudo-example-4">"Ich fühle mich missverstanden" (Bewertung)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feeling-practice">
+                    <h5>🎯 Übung: Echte Gefühle identifizieren</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Welche Gefühle löst die Situation in dir aus?</label>
+                            <textarea id="practice-feelings-1" placeholder="Beschreibe deine echten Gefühle..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Wo spürst du diese Gefühle in deinem Körper?</label>
+                            <textarea id="practice-body-feelings" placeholder="Wo spürst du die Gefühle körperlich?"></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Wie intensiv sind diese Gefühle? (1-10)</label>
+                            <input type="range" id="feeling-intensity" min="1" max="10" value="5">
+                            <span id="feeling-intensity-value">5/10</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feeling-tips">
+                    <h5>💡 Tipps für authentische Gefühle</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🎭</div>
+                            <div class="tip-content">
+                                <h6>Eigene Gefühle</h6>
+                                <p>Verwende "Ich fühle mich..." statt "Du machst mich..."</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💭</div>
+                            <div class="tip-content">
+                                <h6>Gefühle vs. Gedanken</h6>
+                                <p>Unterscheide zwischen echten Gefühlen und Gedanken über andere</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🌊</div>
+                            <div class="tip-content">
+                                <h6>Gefühle sind okay</h6>
+                                <p>Alle Gefühle sind berechtigt - es geht um den Ausdruck, nicht um die Bewertung</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,6 +339,14 @@
                                 <input type="checkbox" id="need-rest">
                                 <label for="need-rest">Ruhe</label>
                             </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-health">
+                                <label for="need-health">Gesundheit</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-physical-wellbeing">
+                                <label for="need-physical-wellbeing">Körperliches Wohlbefinden</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -234,6 +369,22 @@
                                 <input type="checkbox" id="need-trust">
                                 <label for="need-trust">Vertrauen</label>
                             </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-love">
+                                <label for="need-love">Liebe</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-acceptance">
+                                <label for="need-acceptance">Akzeptanz</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-support">
+                                <label for="need-support">Unterstützung</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-community">
+                                <label for="need-community">Gemeinschaft</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -255,6 +406,89 @@
                             <div class="need-option">
                                 <input type="checkbox" id="need-meaning">
                                 <label for="need-meaning">Sinn</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-achievement">
+                                <label for="need-achievement">Erfolg</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-creativity">
+                                <label for="need-creativity">Kreativität</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-learning">
+                                <label for="need-learning">Lernen</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-challenge">
+                                <label for="need-challenge">Herausforderung</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="need-category">
+                        <h5>🎨 Kreativitätsbedürfnisse</h5>
+                        <div class="need-list">
+                            <div class="need-option">
+                                <input type="checkbox" id="need-beauty">
+                                <label for="need-beauty">Schönheit</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-harmony">
+                                <label for="need-harmony">Harmonie</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-order">
+                                <label for="need-order">Ordnung</label>
+                            </div>
+                            <div class="need-option">
+                                <input type="checkbox" id="need-play">
+                                <label for="need-play">Spiel</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="need-practice">
+                    <h5>🎯 Übung: Bedürfnisse erkunden</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Welche Bedürfnisse stehen hinter deinen Gefühlen?</label>
+                            <textarea id="practice-needs-1" placeholder="Verbinde deine Gefühle mit den dahinterliegenden Bedürfnissen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Welche Bedürfnisse sind am wichtigsten für dich?</label>
+                            <textarea id="practice-priority-needs" placeholder="Priorisiere deine wichtigsten Bedürfnisse..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Wie könnten diese Bedürfnisse erfüllt werden?</label>
+                            <textarea id="practice-need-fulfillment" placeholder="Überlege, wie deine Bedürfnisse erfüllt werden könnten..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="need-tips">
+                    <h5>💡 Tipps für Bedürfnisse</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🌍</div>
+                            <div class="tip-content">
+                                <h6>Universelle Bedürfnisse</h6>
+                                <p>Alle Menschen haben die gleichen Grundbedürfnisse - das verbindet uns</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔗</div>
+                            <div class="tip-content">
+                                <h6>Gefühle als Wegweiser</h6>
+                                <p>Gefühle zeigen uns, ob unsere Bedürfnisse erfüllt oder unerfüllt sind</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💪</div>
+                            <div class="tip-content">
+                                <h6>Eigene Verantwortung</h6>
+                                <p>Du bist für die Erfüllung deiner Bedürfnisse verantwortlich</p>
                             </div>
                         </div>
                     </div>
@@ -301,6 +535,14 @@
                             <input type="checkbox" id="request-now">
                             <label for="request-now">Jetzt erfüllbar</label>
                         </div>
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-voluntary">
+                            <label for="request-voluntary">Freiwillig erfüllbar</label>
+                        </div>
+                        <div class="criteria-item">
+                            <input type="checkbox" id="request-connection">
+                            <label for="request-connection">Verbindung schaffend</label>
+                        </div>
                     </div>
                 </div>
                 
@@ -319,6 +561,14 @@
                             <input type="checkbox" id="request-example-3">
                             <label for="request-example-3">"Könntest du bitte pünktlich um 18 Uhr zu Hause sein?"</label>
                         </div>
+                        <div class="example-item">
+                            <input type="checkbox" id="request-example-4">
+                            <label for="request-example-4">"Würdest du mir bitte deine Meinung zu diesem Thema sagen?"</label>
+                        </div>
+                        <div class="example-item">
+                            <input type="checkbox" id="request-example-5">
+                            <label for="request-example-5">"Kannst du mir bitte zeigen, wie du das machst?"</label>
+                        </div>
                     </div>
                 </div>
                 
@@ -336,6 +586,77 @@
                         <div class="avoid-item">
                             <input type="checkbox" id="avoid-demand-3">
                             <label for="avoid-demand-3">"Du hast zu..." (Forderung)</label>
+                        </div>
+                        <div class="avoid-item">
+                            <input type="checkbox" id="avoid-demand-4">
+                            <label for="avoid-demand-4">"Du musst verstehen..." (Forderung)</label>
+                        </div>
+                        <div class="avoid-item">
+                            <input type="checkbox" id="avoid-demand-5">
+                            <label for="avoid-demand-5">"Du solltest wissen..." (Forderung)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="request-practice">
+                    <h5>🎯 Übung: Bitten formulieren</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Formuliere eine Bitte für dein wichtigstes Bedürfnis</label>
+                            <textarea id="practice-request-1" placeholder="Formuliere eine konkrete, positive Bitte..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Überprüfe deine Bitte auf die Kriterien</label>
+                            <textarea id="practice-request-check" placeholder="Ist deine Bitte konkret, positiv, handlungsorientiert und jetzt erfüllbar?"></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Formuliere alternative Bitten</label>
+                            <textarea id="practice-alternative-requests" placeholder="Überlege dir alternative Formulierungen für deine Bitte..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="request-tips">
+                    <h5>💡 Tipps für gute Bitten</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Konkret sein</h6>
+                                <p>Je konkreter deine Bitte, desto wahrscheinlicher wird sie erfüllt</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Freiwilligkeit</h6>
+                                <p>Eine echte Bitte kann auch abgelehnt werden - das ist okay</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💝</div>
+                            <div class="tip-content">
+                                <h6>Verbindung schaffen</h6>
+                                <p>Gute Bitten schaffen Verbindung statt Distanz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gfk-summary">
+                    <h5>🎉 GfK-Zusammenfassung</h5>
+                    <div class="summary-form">
+                        <div class="summary-item">
+                            <label>Deine vollständige GfK-Nachricht</label>
+                            <textarea id="gfk-complete-message" placeholder="Kombiniere Beobachtung, Gefühl, Bedürfnis und Bitte zu einer vollständigen Nachricht..."></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Wie fühlst du dich nach der Formulierung?</label>
+                            <textarea id="gfk-feeling-after" placeholder="Beschreibe, wie du dich nach der Formulierung fühlst..."></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Was nimmst du aus dieser Übung mit?</label>
+                            <textarea id="gfk-takeaway" placeholder="Was war für dich besonders wertvoll?"></textarea>
                         </div>
                     </div>
                 </div>
