@@ -1,0 +1,239 @@
+/* Johari Window Styles */
+
+.johari-window {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.johari-quadrant {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #6366f1;
+    transition: all 0.3s ease;
+}
+
+.johari-quadrant:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.johari-quadrant.public {
+    border-left-color: #10b981;
+}
+
+.johari-quadrant.blind {
+    border-left-color: #f59e0b;
+}
+
+.johari-quadrant.hidden {
+    border-left-color: #3b82f6;
+}
+
+.johari-quadrant.unknown {
+    border-left-color: #8b5cf6;
+}
+
+.johari-quadrant h4 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.johari-quadrant p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.johari-traits {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.trait-category h5 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.trait-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.trait-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.trait-item:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.trait-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #6366f1;
+}
+
+.trait-item span {
+    font-weight: 500;
+    color: #374151;
+    flex: 1;
+}
+
+.custom-traits {
+    margin-top: 1.5rem;
+}
+
+.custom-traits h5 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.add-trait-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.add-trait-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.add-trait-form input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.add-trait-form button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-trait-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.feedback-section {
+    margin-top: 1.5rem;
+}
+
+.feedback-section h5 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.feedback-section textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.feedback-section textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.exploration-section {
+    margin-top: 1.5rem;
+}
+
+.exploration-section h5 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.exploration-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.exploration-questions .question-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.exploration-questions label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.exploration-questions textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.exploration-questions textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .johari-quadrant {
+        padding: 1.5rem;
+    }
+    
+    .johari-quadrant h4 {
+        font-size: 1.1rem;
+    }
+    
+    .trait-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .add-trait-form {
+        flex-direction: column;
+    }
+    
+    .add-trait-form button {
+        width: 100%;
+    }
+}
