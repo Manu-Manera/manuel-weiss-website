@@ -1,0 +1,341 @@
+<div class="workflow-container">
+    <div class="workflow-intro">
+        <h3>Zeitmanagement: Meistere deine Zeit</h3>
+        <p>Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität. Von der Zeit-Analyse über Priorisierung bis hin zu Zeitblocking - entwickle ein System, das zu dir passt.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Zeit-Analyse</span>
+            <span class="feature-badge">Priorisierung</span>
+            <span class="feature-badge">Zeitblocking</span>
+            <span class="feature-badge">Produktivitäts-Tools</span>
+        </div>
+    </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Zeit-Analyse</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Priorisierung</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Zeitblocking</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Produktivitäts-Tools</div>
+        </div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Zeit-Optimierung</div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Zeit-Analyse -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Zeit-Analyse</h3>
+            <p>Analysiere, wie du deine Zeit aktuell verbringst und identifiziere Zeitfresser und Optimierungspotentiale.</p>
+        </div>
+        
+        <div class="time-analysis">
+            <div class="analysis-intro">
+                <h4>⏰ Deine Zeit unter der Lupe</h4>
+                <p>Bevor du dein Zeitmanagement optimieren kannst, musst du verstehen, wofür du deine Zeit verwendest.</p>
+            </div>
+            
+            <div class="time-categories">
+                <h4>📊 Zeit-Kategorien</h4>
+                <div class="categories-grid">
+                    <div class="time-category">
+                        <label>Arbeit/Beruf</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                    <div class="time-category">
+                        <label>Schlaf</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                    <div class="time-category">
+                        <label>Familie/Beziehung</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                    <div class="time-category">
+                        <label>Hobbys/Freizeit</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                    <div class="time-category">
+                        <label>Lernen/Entwicklung</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                    <div class="time-category">
+                        <label>Haushalt/Alltag</label>
+                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-summary">
+                <h4>📈 Zeit-Zusammenfassung</h4>
+                <div class="summary-stats">
+                    <div class="time-total">
+                        <span>Gesamtzeit:</span>
+                        <span id="total-time">0</span>
+                        <span>Stunden</span>
+                    </div>
+                    <div class="time-balance" id="time-balance">
+                        <p>Fülle die Zeit-Kategorien aus, um deine Zeit-Balance zu sehen.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-wasters">
+                <h4>⏱️ Zeitfresser identifizieren</h4>
+                <p>Welche Aktivitäten verschwenden deine Zeit?</p>
+                <div class="waster-list">
+                    <div class="waster-item">
+                        <input type="text" class="waster-input" placeholder="z.B. 'Zu viel Zeit auf Social Media'">
+                        <input type="number" class="waster-hours" placeholder="h" min="0" max="24">
+                        <span>Stunden pro Tag</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="addTimeWaster()">+ Zeitfresser hinzufügen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Priorisierung -->
+    <div class="workflow-step" data-step="2">
+        <div class="step-header">
+            <h3>Schritt 2: Priorisierung</h3>
+            <p>Lerne verschiedene Priorisierungsmethoden kennen und wende sie auf deine Aufgaben an.</p>
+        </div>
+        
+        <div class="prioritization">
+            <div class="prioritization-intro">
+                <h4>🎯 Priorisierung meistern</h4>
+                <p>Nicht alle Aufgaben sind gleich wichtig. Lerne, deine Prioritäten richtig zu setzen.</p>
+            </div>
+            
+            <div class="prioritization-methods">
+                <h4>📋 Priorisierungs-Methoden</h4>
+                <div class="methods-grid">
+                    <div class="method-card">
+                        <h5>Eisenhower-Matrix</h5>
+                        <p>Teile Aufgaben nach Wichtigkeit und Dringlichkeit ein.</p>
+                        <button class="btn btn-outline" onclick="showEisenhowerMatrix()">Anwenden</button>
+                    </div>
+                    <div class="method-card">
+                        <h5>ABC-Analyse</h5>
+                        <p>Kategorisiere Aufgaben nach ihrer Bedeutung.</p>
+                        <button class="btn btn-outline" onclick="showABCAnalysis()">Anwenden</button>
+                    </div>
+                    <div class="method-card">
+                        <h5>MoSCoW-Methode</h5>
+                        <p>Must have, Should have, Could have, Won't have.</p>
+                        <button class="btn btn-outline" onclick="showMoSCoW()">Anwenden</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="task-prioritization">
+                <h4>✅ Aufgaben priorisieren</h4>
+                <div class="task-input">
+                    <input type="text" id="new-task" placeholder="Neue Aufgabe hinzufügen...">
+                    <button class="btn btn-primary" onclick="addTask()">Hinzufügen</button>
+                </div>
+                <div class="tasks-list" id="tasks-list">
+                    <p>Füge Aufgaben hinzu, um sie zu priorisieren.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Zeitblocking -->
+    <div class="workflow-step" data-step="3">
+        <div class="step-header">
+            <h3>Schritt 3: Zeitblocking</h3>
+            <p>Plane deine Zeit in Blöcken und erstelle einen strukturierten Tagesablauf.</p>
+        </div>
+        
+        <div class="time-blocking">
+            <div class="blocking-intro">
+                <h4>📅 Zeitblocking</h4>
+                <p>Teile deinen Tag in Zeitblöcke ein und weise jeder Aktivität einen festen Zeitraum zu.</p>
+            </div>
+            
+            <div class="daily-schedule">
+                <h4>🗓️ Tagesplan erstellen</h4>
+                <div class="schedule-builder">
+                    <div class="time-blocks" id="time-blocks">
+                        <div class="time-block">
+                            <input type="time" class="start-time" value="06:00">
+                            <input type="time" class="end-time" value="07:00">
+                            <input type="text" class="activity" placeholder="Aktivität">
+                            <button class="btn btn-sm btn-danger" onclick="removeTimeBlock(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="addTimeBlock()">+ Zeitblock hinzufügen</button>
+                </div>
+            </div>
+            
+            <div class="blocking-tips">
+                <h4>💡 Zeitblocking-Tipps</h4>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <h6>🎯 Realistische Zeiten</h6>
+                        <p>Plane mehr Zeit ein als du denkst, dass du brauchst.</p>
+                    </div>
+                    <div class="tip-item">
+                        <h6>⏰ Pufferzeiten</h6>
+                        <p>Lasse zwischen den Blöcken Pufferzeiten für Unvorhergesehenes.</p>
+                    </div>
+                    <div class="tip-item">
+                        <h6>🔄 Flexibilität</h6>
+                        <p>Behalte die Möglichkeit, Blöcke zu verschieben.</p>
+                    </div>
+                    <div class="tip-item">
+                        <h6>📱 Ablenkungen vermeiden</h6>
+                        <p>Schalte Benachrichtigungen während wichtiger Blöcke aus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Produktivitäts-Tools -->
+    <div class="workflow-step" data-step="4">
+        <div class="step-header">
+            <h3>Schritt 4: Produktivitäts-Tools</h3>
+            <p>Entdecke bewährte Techniken und Tools, um deine Produktivität zu steigern.</p>
+        </div>
+        
+        <div class="productivity-tools">
+            <div class="tools-intro">
+                <h4>🛠️ Produktivitäts-Tools</h4>
+                <p>Nutze bewährte Techniken, um deine Effizienz zu maximieren.</p>
+            </div>
+            
+            <div class="productivity-techniques">
+                <h4>⚡ Produktivitäts-Techniken</h4>
+                <div class="techniques-grid">
+                    <div class="technique-card">
+                        <h5>Pomodoro-Technik</h5>
+                        <p>25 Minuten fokussiert arbeiten, 5 Minuten Pause.</p>
+                        <button class="btn btn-outline" onclick="startPomodoro()">Starten</button>
+                    </div>
+                    <div class="technique-card">
+                        <h5>2-Minuten-Regel</h5>
+                        <p>Wenn etwas weniger als 2 Minuten dauert, mache es sofort.</p>
+                        <button class="btn btn-outline" onclick="showTwoMinuteRule()">Anwenden</button>
+                    </div>
+                    <div class="technique-card">
+                        <h5>Eat the Frog</h5>
+                        <p>Beginne mit der schwierigsten Aufgabe des Tages.</p>
+                        <button class="btn btn-outline" onclick="showEatTheFrog()">Anwenden</button>
+                    </div>
+                    <div class="technique-card">
+                        <h5>Time Boxing</h5>
+                        <p>Setze feste Zeitlimits für Aufgaben.</p>
+                        <button class="btn btn-outline" onclick="showTimeBoxing()">Anwenden</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="productivity-timer">
+                <h4>⏱️ Produktivitäts-Timer</h4>
+                <div class="timer-container">
+                    <div class="timer-display">
+                        <div class="timer-circle">
+                            <div class="timer-time" id="timer-time">25:00</div>
+                        </div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" id="timer-start" onclick="startTimer()">Start</button>
+                        <button class="btn btn-secondary" id="timer-pause" onclick="pauseTimer()" disabled>Pause</button>
+                        <button class="btn btn-outline" id="timer-reset" onclick="resetTimer()">Reset</button>
+                    </div>
+                    <div class="timer-settings">
+                        <label>Arbeitszeit (Minuten):</label>
+                        <input type="number" id="work-time" value="25" min="1" max="60">
+                        <label>Pausenzeit (Minuten):</label>
+                        <input type="number" id="break-time" value="5" min="1" max="30">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 5: Zeit-Optimierung -->
+    <div class="workflow-step" data-step="5">
+        <div class="step-header">
+            <h3>Schritt 5: Zeit-Optimierung</h3>
+            <p>Optimiere dein Zeitmanagement basierend auf deinen Erkenntnissen und entwickle nachhaltige Gewohnheiten.</p>
+        </div>
+        
+        <div class="time-optimization">
+            <div class="optimization-intro">
+                <h4>🚀 Zeit-Optimierung</h4>
+                <p>Basierend auf deiner Analyse kannst du dein Zeitmanagement weiter optimieren.</p>
+            </div>
+            
+            <div class="optimization-areas">
+                <div class="area-card">
+                    <h5>📊 Zeit-Analyse Review</h5>
+                    <p>Überprüfe deine Zeitverteilung und identifiziere Verbesserungen.</p>
+                    <div class="analysis-review" id="analysis-review">
+                        <p>Führe zuerst die Zeit-Analyse durch, um Erkenntnisse zu erhalten.</p>
+                    </div>
+                </div>
+                
+                <div class="area-card">
+                    <h5>🎯 Prioritäten optimieren</h5>
+                    <p>Verfeinere deine Priorisierung basierend auf deinen Zielen.</p>
+                    <div class="priorities-optimization" id="priorities-optimization">
+                        <p>Setze Prioritäten, um Optimierungsvorschläge zu erhalten.</p>
+                    </div>
+                </div>
+                
+                <div class="area-card">
+                    <h5>⚡ Produktivität steigern</h5>
+                    <p>Entwickle Strategien für mehr Effizienz.</p>
+                    <div class="productivity-optimization" id="productivity-optimization">
+                        <p>Nutze die Produktivitäts-Tools für Verbesserungsvorschläge.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="optimization-plan">
+                <h4>📋 Optimierungs-Plan</h4>
+                <div class="plan-builder">
+                    <div class="plan-items" id="optimization-plan-items">
+                        <p>Erstelle einen Plan basierend auf deinen Optimierungen.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateOptimizationPlan()">Plan generieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
+            </div>
+            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
