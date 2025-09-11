@@ -1540,9 +1540,9 @@
 }
 
 .featured-method .method-content h3 {
-    color: white !important;
+    color: #1f2937 !important;
     margin-bottom: 1rem;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: none !important;
     position: relative;
     z-index: 2;
     font-size: 2rem !important;
@@ -1551,9 +1551,9 @@
 }
 
 .featured-method .method-description {
-    color: rgba(255, 255, 255, 0.95) !important;
+    color: #374151 !important;
     margin-bottom: 1.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    text-shadow: none !important;
     position: relative;
     z-index: 2;
     font-size: 1.1rem !important;
