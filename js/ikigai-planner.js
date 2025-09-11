@@ -66,6 +66,9 @@ class IkigaiPlanner {
             console.warn('Save button not found');
         }
 
+        // Progress step click handlers
+        this.setupProgressStepClicks();
+
         // Video links
         document.querySelectorAll('.video-link').forEach(link => {
             link.addEventListener('click', (e) => this.handleVideoClick(e));
@@ -100,6 +103,30 @@ class IkigaiPlanner {
                 this.saveProgress();
             }
         });
+    }
+
+    setupProgressStepClicks() {
+        // Add click handlers to progress steps
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            const stepNumber = index + 1;
+            step.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Progress step clicked:', stepNumber);
+                this.goToStep(stepNumber);
+            });
+        });
+    }
+
+    goToStep(stepNumber) {
+        if (stepNumber >= 1 && stepNumber <= this.totalSteps) {
+            this.saveCurrentStepData();
+            this.currentStep = stepNumber;
+            this.updateProgress();
+            this.updateNavigation();
+            this.scrollToTop();
+            console.log('Successfully moved to step:', this.currentStep);
+        }
     }
 
     nextStep() {
