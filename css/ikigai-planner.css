@@ -7530,3 +7530,53 @@ body {
         font-size: 1rem !important;
     }
 }
+
+/* Method Category Sections */
+.method-category-section {
+    margin-bottom: 4rem;
+    padding: 2rem 0;
+}
+
+.method-category-section:last-child {
+    margin-bottom: 0;
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #e5e7eb;
+}
+
+.category-title i {
+    color: #6366f1;
+    font-size: 1.5rem;
+}
+
+/* Visual Item as Link */
+.visual-item {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.visual-item:hover {
+    text-decoration: none;
+    color: inherit;
+    transform: translateY(-2px);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Section spacing */
+.method-category-section {
+    scroll-margin-top: 2rem;
+}

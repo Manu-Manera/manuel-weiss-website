@@ -72,42 +72,42 @@
         <div class="container">
             <div class="personality-visual">
                 <div class="visual-grid">
-                    <div class="visual-item" data-method="ikigai">
+                    <a href="#ikigai-section" class="visual-item" data-method="ikigai">
                         <i class="fas fa-compass"></i>
                         <span>Ikigai</span>
-                    </div>
-                    <div class="visual-item" data-method="values">
+                    </a>
+                    <a href="#values-section" class="visual-item" data-method="values">
                         <i class="fas fa-heart"></i>
                         <span>Werte</span>
-                    </div>
-                    <div class="visual-item" data-method="strengths">
+                    </a>
+                    <a href="#strengths-section" class="visual-item" data-method="strengths">
                         <i class="fas fa-star"></i>
                         <span>Stärken</span>
-                    </div>
-                    <div class="visual-item" data-method="goals">
+                    </a>
+                    <a href="#goals-section" class="visual-item" data-method="goals">
                         <i class="fas fa-bullseye"></i>
                         <span>Ziele</span>
-                    </div>
-                    <div class="visual-item" data-method="mindfulness">
+                    </a>
+                    <a href="#mindfulness-section" class="visual-item" data-method="mindfulness">
                         <i class="fas fa-leaf"></i>
                         <span>Achtsamkeit</span>
-                    </div>
-                    <div class="visual-item" data-method="eq">
+                    </a>
+                    <a href="#eq-section" class="visual-item" data-method="eq">
                         <i class="fas fa-brain"></i>
                         <span>EQ</span>
-                    </div>
-                    <div class="visual-item" data-method="habits">
+                    </a>
+                    <a href="#habits-section" class="visual-item" data-method="habits">
                         <i class="fas fa-sync-alt"></i>
                         <span>Gewohnheiten</span>
-                    </div>
-                    <div class="visual-item" data-method="communication">
+                    </a>
+                    <a href="#communication-section" class="visual-item" data-method="communication">
                         <i class="fas fa-comments"></i>
                         <span>Kommunikation</span>
-                    </div>
-                    <div class="visual-item" data-method="time">
+                    </a>
+                    <a href="#time-section" class="visual-item" data-method="time">
                         <i class="fas fa-clock"></i>
                         <span>Zeit</span>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -122,8 +122,14 @@
                     Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
                 </p>
             </div>
-            
-            <div class="methods-grid">
+
+            <!-- Ikigai Section -->
+            <section id="ikigai-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-compass"></i>
+                    Ikigai & Lebenssinn
+                </h3>
+                <div class="methods-grid">
                 <!-- Ikigai - Hauptmethode -->
                 <div class="method-card featured-method" onclick="startMethod('ikigai')">
                     <div class="method-icon">
@@ -163,8 +169,16 @@
                         </button>
                     </div>
                 </div>
+                </div>
+            </section>
 
-                <!-- Weitere Methoden -->
+            <!-- Werte Section -->
+            <section id="values-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-heart"></i>
+                    Werte & Überzeugungen
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('values-clarification')">
                     <div class="method-icon">
                         <i class="fas fa-heart"></i>
@@ -187,7 +201,16 @@
                         </button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Stärken Section -->
+            <section id="strengths-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-star"></i>
+                    Stärken & Talente
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('strengths-finder')">
                     <div class="method-icon">
                         <i class="fas fa-star"></i>
@@ -210,7 +233,16 @@
                         </button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Ziele Section -->
+            <section id="goals-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-bullseye"></i>
+                    Ziele & Planung
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('goal-setting')">
                     <div class="method-icon">
                         <i class="fas fa-bullseye"></i>
@@ -230,7 +262,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Achtsamkeit Section -->
+            <section id="mindfulness-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-leaf"></i>
+                    Achtsamkeit & Meditation
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('mindfulness')">
                     <div class="method-icon">
                         <i class="fas fa-leaf"></i>
@@ -250,7 +291,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Emotionale Intelligenz Section -->
+            <section id="eq-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-brain"></i>
+                    Emotionale Intelligenz
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('emotional-intelligence')">
                     <div class="method-icon">
                         <i class="fas fa-brain"></i>
@@ -270,7 +320,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Gewohnheiten Section -->
+            <section id="habits-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-sync-alt"></i>
+                    Gewohnheiten & Verhalten
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('habit-building')">
                     <div class="method-icon">
                         <i class="fas fa-sync-alt"></i>
@@ -290,7 +349,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Kommunikation Section -->
+            <section id="communication-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-comments"></i>
+                    Kommunikation & Beziehungen
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('communication')">
                     <div class="method-icon">
                         <i class="fas fa-comments"></i>
@@ -310,7 +378,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
+            <!-- Zeitmanagement Section -->
+            <section id="time-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-clock"></i>
+                    Zeitmanagement & Produktivität
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('time-management')">
                     <div class="method-icon">
                         <i class="fas fa-clock"></i>
@@ -330,8 +407,16 @@
                         <button class="btn btn-outline">Jetzt starten</button>
                     </div>
                 </div>
+                </div>
+            </section>
 
-                <!-- Weitere Methoden werden hier dynamisch geladen -->
+            <!-- Weitere Methoden Section -->
+            <section id="other-methods-section" class="method-category-section">
+                <h3 class="category-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Weitere Methoden
+                </h3>
+                <div class="methods-grid">
                 <div class="method-card" onclick="startMethod('nlp-dilts')">
                     <div class="method-icon">
                         <i class="fas fa-layer-group"></i>
