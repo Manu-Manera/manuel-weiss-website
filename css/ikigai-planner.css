@@ -7430,3 +7430,44 @@ body {
     border: 2px solid red !important;
     min-height: 200px !important;
 }
+
+/* Enhanced Mobile Styles for Featured Method */
+@media (max-width: 768px) {
+    .featured-method {
+        flex-direction: column !important;
+        text-align: center !important;
+        padding: 1.5rem !important;
+        gap: 1rem !important;
+    }
+    
+    .featured-method .method-content h3 {
+        font-size: 1.5rem !important;
+        text-align: center !important;
+    }
+    
+    .featured-method .method-description {
+        font-size: 1rem !important;
+        text-align: center !important;
+    }
+    
+    .featured-method .method-stats {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        align-items: center !important;
+    }
+    
+    .featured-method .stat {
+        padding: 0.5rem !important;
+        min-width: 120px !important;
+    }
+    
+    .featured-method .method-features {
+        justify-content: center !important;
+    }
+    
+    .featured-method .method-action .btn {
+        width: 100% !important;
+        padding: 0.875rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+}
