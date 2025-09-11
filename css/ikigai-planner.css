@@ -2,9 +2,11 @@
 
 /* Ikigai Hero Section */
 .ikigai-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
     color: white !important;
     padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .ikigai-hero * {
@@ -24,13 +26,23 @@
     font-weight: 800;
     margin-bottom: 1.5rem;
     line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .ikigai-hero .hero-subtitle {
     font-size: 1.25rem;
     margin-bottom: 2rem;
-    opacity: 0.9;
+    opacity: 0.95;
     line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.ikigai-hero .gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
 }
 
 /* Ikigai Visual Circle */
