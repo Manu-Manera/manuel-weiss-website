@@ -1,0 +1,1014 @@
+/* Gallup StrengthsFinder Assessment Styles */
+
+.assessment-intro {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.intro-content h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.intro-content p {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.assessment-benefits {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #6366f1;
+}
+
+.assessment-benefits h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.assessment-benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.assessment-benefits li {
+    padding: 0.5rem 0;
+    color: #374151;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.assessment-benefits li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.assessment-structure {
+    margin-bottom: 2rem;
+}
+
+.assessment-structure h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.structure-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.structure-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.structure-item i {
+    font-size: 2rem;
+    color: #6366f1;
+    margin-bottom: 0.5rem;
+}
+
+.structure-item h6 {
+    color: #1f2937;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.structure-item p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.preparation-tips {
+    background: #fef3c7;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #f59e0b;
+}
+
+.preparation-tips h5 {
+    color: #92400e;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.preparation-tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.preparation-tips li {
+    padding: 0.5rem 0;
+    color: #92400e;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.preparation-tips li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #f59e0b;
+    font-weight: 600;
+    font-size: 1.2em;
+}
+
+/* Assessment Questions */
+.assessment-questions {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.question-progress {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-text {
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.question-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+
+.question-card h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.question-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-card {
+    display: block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-card input[type="radio"] {
+    display: none;
+}
+
+.option-content {
+    padding: 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.option-card:hover .option-content {
+    border-color: #6366f1;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.option-card input[type="radio"]:checked + .option-content {
+    border-color: #6366f1;
+    background: #f0f4ff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.option-content strong {
+    color: #6366f1;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.option-content p {
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.question-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+/* Results Analysis */
+.results-analysis {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.talent-overview h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.talent-overview p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+.talent-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.talent-category {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.talent-category h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.talent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.talent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.talent-item.top-talent {
+    background: #f0f4ff;
+    border: 1px solid #6366f1;
+}
+
+.talent-item:hover {
+    background: #f8fafc;
+}
+
+.talent-name {
+    color: #374151;
+    font-weight: 500;
+}
+
+.talent-score {
+    color: #6366f1;
+    font-weight: 600;
+    background: #f0f4ff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.top-talents-preview {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+}
+
+.top-talents-preview h4 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.top-talent-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.talent-rank {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.talent-info h5 {
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.talent-info p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Top 5 Talents Detail */
+.top-talents-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.talent-detail-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.talent-header {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.talent-header .talent-rank {
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.talent-header h4 {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0;
+    flex: 1;
+    font-weight: 700;
+}
+
+.talent-header .talent-score {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.talent-content {
+    padding: 2rem;
+}
+
+.talent-content h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.talent-content p {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.talent-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.talent-content li {
+    padding: 0.5rem 0;
+    color: #374151;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.talent-content li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #6366f1;
+    font-weight: 600;
+    font-size: 1.2em;
+}
+
+.talent-strengths {
+    margin-bottom: 1.5rem;
+}
+
+.talent-challenges {
+    margin-bottom: 1.5rem;
+}
+
+.talent-applications {
+    margin-bottom: 1.5rem;
+}
+
+.application-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.application-area {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.application-area h6 {
+    color: #1f2937;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.application-area ul {
+    margin: 0;
+}
+
+.application-area li {
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+}
+
+/* Development Plan */
+.development-plan {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.plan-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.plan-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.plan-section h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.strengthening-plan {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.strengthening-item {
+    background: #f0f4ff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #c7d2fe;
+}
+
+.strengthening-item h5 {
+    color: #6366f1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.strengthening-item ul {
+    margin: 0;
+}
+
+.strengthening-item li {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.application-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.application-area {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.application-area h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.career-application,
+.relationship-application,
+.personal-application {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.career-application h6,
+.relationship-application h6,
+.personal-application h6 {
+    color: #6366f1;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.career-application p,
+.relationship-application p,
+.personal-application p {
+    color: #4b5563;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.team-integration {
+    background: #fef3c7;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #fbbf24;
+}
+
+.team-integration p {
+    color: #92400e;
+    margin-bottom: 1rem;
+}
+
+.team-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-role {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #fbbf24;
+}
+
+.team-role h6 {
+    color: #92400e;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.team-role p {
+    color: #92400e;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Practical Application */
+.practical-application {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.application-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.exercise-category {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.exercise-category h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.daily-strategies,
+.weekly-exercises,
+.long-term-goals {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.daily-strategy,
+.weekly-exercise,
+.long-term-goal {
+    background: #f0f4ff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #c7d2fe;
+}
+
+.daily-strategy h6,
+.weekly-exercise h6,
+.long-term-goal h6 {
+    color: #6366f1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.daily-strategy p,
+.weekly-exercise p,
+.long-term-goal p {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.daily-strategy ul,
+.weekly-exercise ul,
+.long-term-goal ul {
+    margin: 0;
+}
+
+.daily-strategy li,
+.weekly-exercise li,
+.long-term-goal li {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.challenge-areas {
+    background: #fef2f2;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid #fecaca;
+}
+
+.challenge-areas h4 {
+    color: #dc2626;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.challenge-areas p {
+    color: #7f1d1d;
+    margin-bottom: 1.5rem;
+}
+
+.challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.challenge-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #fecaca;
+}
+
+.challenge-item h6 {
+    color: #dc2626;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.challenge-item ul {
+    margin: 0;
+}
+
+.challenge-item li {
+    color: #7f1d1d;
+    font-size: 0.9rem;
+}
+
+/* Final Results */
+.final-results {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.results-summary {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+
+.results-summary h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.summary-item {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.summary-item h5 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.top-5-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.top-5-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.top-5-item .rank {
+    color: #6366f1;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.top-5-item .talent-name {
+    color: #1f2937;
+    font-weight: 600;
+    flex: 1;
+}
+
+.top-5-item .score {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.category-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.category-name {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.category-count {
+    color: #6366f1;
+    font-weight: 600;
+    background: #f0f4ff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.next-steps {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+
+.next-steps h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.action-plan {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.action-item {
+    background: #f0f4ff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #c7d2fe;
+}
+
+.action-item h6 {
+    color: #6366f1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.action-item ul {
+    margin: 0;
+}
+
+.action-item li {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.export-options {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.export-options h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.export-buttons .btn {
+    min-width: 150px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .structure-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .talent-categories {
+        grid-template-columns: 1fr;
+    }
+    
+    .application-areas {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .export-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .question-options {
+        gap: 0.75rem;
+    }
+    
+    .option-content {
+        padding: 1rem;
+    }
+    
+    .talent-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .talent-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .structure-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .question-card {
+        padding: 1.5rem;
+    }
+    
+    .talent-detail-card {
+        margin-bottom: 1rem;
+    }
+    
+    .plan-section,
+    .exercise-category,
+    .results-summary,
+    .next-steps,
+    .export-options {
+        padding: 1.5rem;
+    }
+}
