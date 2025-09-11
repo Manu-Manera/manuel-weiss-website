@@ -302,13 +302,13 @@ class UserAuth {
     switchToForm(formName) {
         // Hide all forms
         document.querySelectorAll('.auth-form').forEach(form => {
-            form.style.display = 'none';
+            form.classList.remove('active');
         });
 
         // Show target form
         const targetForm = document.getElementById(formName + 'Form');
         if (targetForm) {
-            targetForm.style.display = 'block';
+            targetForm.classList.add('active');
         }
 
         // Update active tab
