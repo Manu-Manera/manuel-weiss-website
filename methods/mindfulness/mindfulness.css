@@ -1,0 +1,984 @@
+/* Achtsamkeit & Meditation Styles */
+
+.mindfulness-assessment {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.assessment-intro {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.assessment-intro h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.5rem;
+}
+
+.mindfulness-questions {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.question-group {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.question-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.question-group h5 {
+    margin: 0 0 1.5rem;
+    color: #374151;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.question-item {
+    margin-bottom: 1.5rem;
+}
+
+.question-item:last-child {
+    margin-bottom: 0;
+}
+
+.question-item label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.rating-scale {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.rating-scale span:first-child,
+.rating-scale span:last-child {
+    font-size: 0.9rem;
+    color: #6b7280;
+    min-width: 50px;
+    text-align: center;
+}
+
+.mindfulness-slider {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.mindfulness-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.mindfulness-slider::-webkit-slider-thumb:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+.mindfulness-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.assessment-results {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.assessment-results h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.score-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.score-number {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.score-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.score-description {
+    color: #6b7280;
+    font-size: 1rem;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* Meditation Timer Styles */
+.meditation-timer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.timer-display {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.time-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.progress-ring-progress {
+    stroke-dasharray: 565.48;
+    stroke-dashoffset: 565.48;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.time-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    font-family: 'Courier New', monospace;
+}
+
+.timer-controls {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.time-presets {
+    margin-bottom: 2rem;
+}
+
+.time-presets h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.preset-btn {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #374151;
+}
+
+.preset-btn:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.preset-btn.active {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: white;
+}
+
+.custom-time {
+    margin-bottom: 2rem;
+}
+
+.custom-time h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.time-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-input-group input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100px;
+}
+
+.time-input-group span {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.timer-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.timer-settings {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1.5rem;
+}
+
+.timer-settings h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.setting-group {
+    margin-bottom: 1rem;
+}
+
+.setting-group:last-child {
+    margin-bottom: 0;
+}
+
+.setting-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+.setting-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+}
+
+.meditation-stats {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.meditation-stats h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Guided Exercises Styles */
+.guided-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.exercise-categories {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-categories h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #374151;
+}
+
+.tab-btn:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.tab-btn.active {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: white;
+}
+
+.exercises-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-category {
+    display: none;
+}
+
+.exercise-category.active {
+    display: block;
+}
+
+.exercise-category h5 {
+    margin: 0 0 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exercise-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.exercise-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-header h6 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.exercise-duration {
+    background: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.exercise-item p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.exercise-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.exercise-player {
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.player-header h4 {
+    margin: 0;
+    color: #1f2937;
+}
+
+.player-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.exercise-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.instruction-step {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.instruction-step.active {
+    opacity: 1;
+    background: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-text {
+    flex: 1;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.exercise-timer {
+    text-align: center;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+    border: 1px solid #0ea5e9;
+}
+
+.exercise-timer .timer-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0c4a6e;
+    font-family: 'Courier New', monospace;
+}
+
+/* Daily Integration Styles */
+.daily-integration {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.integration-strategies {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.integration-strategies h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.strategy-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.strategy-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.strategy-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.strategy-item h5 {
+    margin: 0 0 0.5rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.strategy-item p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.strategy-trigger {
+    margin-top: 1rem;
+}
+
+.strategy-trigger label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.trigger-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.mindfulness-reminders {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mindfulness-reminders h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.reminder-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reminder-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.reminder-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.reminder-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+}
+
+.reminder-item select {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.mindfulness-journal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mindfulness-journal h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.journal-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.entry-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.entry-date label {
+    color: #374151;
+    font-weight: 500;
+}
+
+.entry-date input {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.entry-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.entry-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.entry-section label {
+    color: #374151;
+    font-weight: 500;
+}
+
+.entry-section input[type="range"] {
+    width: 100%;
+}
+
+.entry-section textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.journal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.progress-tracking {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.progress-tracking h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.tracking-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.metric-item h5 {
+    margin: 0 0 0.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.journal-entry-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.journal-entry-item:last-child {
+    margin-bottom: 0;
+}
+
+.journal-entry-item h5 {
+    margin: 0 0 0.5rem;
+    color: #1f2937;
+}
+
+.entry-mood {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.entry-content p {
+    margin: 0.25rem 0;
+    color: #374151;
+    line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .time-circle {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .time-text {
+        font-size: 2rem;
+    }
+    
+    .score-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .score-number {
+        font-size: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .timer-settings {
+        padding-top: 1rem;
+    }
+    
+    .time-presets {
+        margin-bottom: 1rem;
+    }
+    
+    .preset-buttons {
+        justify-content: center;
+    }
+    
+    .preset-btn {
+        flex: 1;
+        min-width: 60px;
+    }
+    
+    .strategy-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reminder-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .tracking-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .journal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .modal-header,
+    .modal-body {
+        padding: 1rem;
+    }
+}
