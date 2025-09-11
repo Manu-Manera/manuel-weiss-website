@@ -1,0 +1,1081 @@
+/* Stress Management Styles */
+
+.stress-analysis,
+.coping-strategies,
+.relaxation-techniques,
+.stress-prevention {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.analysis-intro,
+.strategies-intro,
+.techniques-intro,
+.prevention-intro {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.analysis-intro h4,
+.strategies-intro h4,
+.techniques-intro h4,
+.prevention-intro h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.5rem;
+}
+
+/* Stress Sources */
+.stress-sources {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stress-sources h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.sources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.source-category {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.source-category h5 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.stress-item input[type="text"] {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.stress-item input[type="text"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.stress-intensity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.stress-intensity label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.stress-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.stress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stress-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stress-value {
+    font-weight: bold;
+    color: #3b82f6;
+    min-width: 20px;
+    text-align: center;
+}
+
+.remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stress Symptoms */
+.stress-symptoms {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stress-symptoms h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.stress-symptoms p {
+    margin-bottom: 1.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.symptom-category {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.symptom-category h5 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.symptom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.symptom-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.symptom-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.symptom-item label {
+    color: #374151;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Stress Assessment */
+.stress-assessment {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stress-assessment h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.assessment-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.question-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.question-item label {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.rating-scale {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rating-scale span {
+    font-size: 0.8rem;
+    color: #6b7280;
+    min-width: 80px;
+}
+
+.assessment-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.assessment-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.assessment-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.assessment-result {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.assessment-result h5 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.stress-level-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.level-bar {
+    flex: 1;
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.level-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    width: 0%;
+}
+
+.level-text {
+    font-weight: bold;
+    color: #1f2937;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Coping Strategies */
+.strategy-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.strategy-category {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.strategy-category h5 {
+    margin: 0 0 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.strategy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.strategy-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.strategy-item h6 {
+    margin: 0 0 0.5rem;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.strategy-item p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.personal-strategies {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.personal-strategies h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.strategy-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.strategy-input {
+    display: flex;
+    gap: 1rem;
+}
+
+.strategy-input input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.strategy-input input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.strategies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.strategy-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.strategy-text {
+    flex: 1;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.remove-strategy {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.remove-strategy:hover {
+    background: #fef2f2;
+}
+
+/* Relaxation Techniques */
+.techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.technique-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.technique-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.technique-card h5 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.technique-card p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.technique-card ul {
+    margin: 0 0 1.5rem;
+    padding-left: 1.5rem;
+    color: #374151;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.technique-card li {
+    margin-bottom: 0.25rem;
+}
+
+.relaxation-schedule {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.relaxation-schedule h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.schedule-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.schedule-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.schedule-item label {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.schedule-item select {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.schedule-item select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Stress Prevention */
+.prevention-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.prevention-area {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.prevention-area h5 {
+    margin: 0 0 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prevention-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tip-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.tip-item label {
+    color: #374151;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.prevention-plan {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.prevention-plan h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.plan-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.plan-input {
+    display: flex;
+    gap: 1rem;
+}
+
+.plan-input input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.plan-input input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.prevention-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prevention-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.prevention-text {
+    flex: 1;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.remove-prevention {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.remove-prevention:hover {
+    background: #fef2f2;
+}
+
+.stress-monitoring {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stress-monitoring h4 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.monitoring-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.monitoring-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.monitoring-item h5 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.monitoring-item p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Modal Styles */
+.breathing-modal,
+.meditation-modal,
+.muscle-relaxation-modal,
+.visualization-modal,
+.music-modal,
+.movement-modal,
+.guide-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Breathing Modal */
+.breathing-circle {
+    width: 200px;
+    height: 200px;
+    border: 3px solid #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    transition: all 0.3s ease;
+}
+
+.breathing-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.breathing-instruction {
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+.breathing-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.breathing-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.cycle-counter {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+/* Meditation Modal */
+.meditation-content {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.meditation-timer {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+.meditation-instruction {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.meditation-instruction p {
+    margin-bottom: 1rem;
+}
+
+/* Muscle Relaxation Modal */
+.relaxation-content {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.relaxation-step h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.5rem;
+}
+
+.relaxation-step p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.countdown {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3b82f6;
+    margin: 1rem 0;
+}
+
+/* Visualization Modal */
+.visualization-content {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.visualization-text {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.visualization-text h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.5rem;
+}
+
+.visualization-text p {
+    margin-bottom: 1rem;
+}
+
+/* Music Modal */
+.music-content {
+    text-align: center;
+}
+
+.music-options h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.music-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.music-player {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.music-info h5 {
+    margin: 0 0 0.5rem;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.music-info p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.music-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+/* Movement Modal */
+.movement-content {
+    margin-bottom: 2rem;
+}
+
+.movement-exercises h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.exercise-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.exercise-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.exercise-item h5 {
+    margin: 0 0 0.5rem;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.exercise-item p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.movement-timer {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+.movement-controls {
+    display: flex;
+    justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sources-grid,
+    .symptoms-grid,
+    .strategy-categories,
+    .techniques-grid,
+    .prevention-areas,
+    .monitoring-tools {
+        grid-template-columns: 1fr;
+    }
+    
+    .strategy-input,
+    .plan-input {
+        flex-direction: column;
+    }
+    
+    .rating-scale {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .rating-scale span {
+        min-width: auto;
+        text-align: center;
+    }
+    
+    .stress-level-display {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .breathing-circle {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .breathing-text {
+        font-size: 1.2rem;
+    }
+    
+    .meditation-timer,
+    .music-timer,
+    .movement-timer {
+        font-size: 2rem;
+    }
+    
+    .music-types {
+        grid-template-columns: 1fr;
+    }
+    
+    .exercise-list {
+        grid-template-columns: 1fr;
+    }
+}
