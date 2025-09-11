@@ -19,8 +19,12 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link rel="stylesheet" href="css/user-auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js for Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -41,6 +45,42 @@
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
                 <a href="admin-persoenlichkeitsentwicklung.html" class="nav-link">Admin</a>
+                
+                <!-- Authentication Section -->
+                <button id="loginBtn" class="btn btn-primary" onclick="showLoginModal()" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i> Anmelden
+                </button>
+                
+                <div id="userMenu" class="user-menu" style="display: none;">
+                    <button class="user-menu-button" onclick="toggleUserDropdown()">
+                        <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+                        <div class="user-info">
+                            <div id="userName" class="user-name"></div>
+                            <div id="userEmail" class="user-email"></div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div id="userDropdown" class="user-dropdown">
+                        <button class="dropdown-item" onclick="showDashboard()">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </button>
+                        <button class="dropdown-item" onclick="showProfile()">
+                            <i class="fas fa-user"></i>
+                            Profil
+                        </button>
+                        <button class="dropdown-item" onclick="showSettings()">
+                            <i class="fas fa-cog"></i>
+                            Einstellungen
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Abmelden
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -63,6 +103,59 @@
                     Verschiedene bewährte Methoden für deine persönliche Entwicklung. 
                     Von Selbstfindung bis Zielerreichung - finde deinen Weg zu mehr Klarheit und Erfolg.
                 </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Dashboard Section -->
+    <section id="dashboardSection" class="dashboard-section" style="display: none;">
+        <div class="container">
+            <div class="dashboard-nav">
+                <button class="dashboard-nav-item active" data-tab="overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Übersicht
+                </button>
+                <button class="dashboard-nav-item" data-tab="progress">
+                    <i class="fas fa-play-circle"></i>
+                    In Bearbeitung
+                </button>
+                <button class="dashboard-nav-item" data-tab="completed">
+                    <i class="fas fa-check-circle"></i>
+                    Abgeschlossen
+                </button>
+                <button class="dashboard-nav-item" data-tab="goals">
+                    <i class="fas fa-bullseye"></i>
+                    Ziele
+                </button>
+                <button class="dashboard-nav-item" data-tab="statistics">
+                    <i class="fas fa-chart-line"></i>
+                    Statistiken
+                </button>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overviewSection" class="dashboard-section active">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progressSection" class="dashboard-section">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <!-- Completed Section -->
+            <div id="completedSection" class="dashboard-section">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <!-- Goals Section -->
+            <div id="goalsSection" class="dashboard-section">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <!-- Statistics Section -->
+            <div id="statisticsSection" class="dashboard-section">
+                <!-- Content will be populated by JavaScript -->
             </div>
         </div>
     </section>
@@ -1336,8 +1429,212 @@
         });
     </script>
     
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <div class="auth-header">
+                <button class="auth-close" onclick="closeAuthModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 id="authTitle">Anmelden</h2>
+                <p id="authSubtitle">Melde dich an, um deinen Fortschritt zu verfolgen</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-form="login">Anmelden</button>
+                <button class="auth-tab" data-form="register">Registrieren</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">E-Mail-Adresse</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Passwort</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" name="password" required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <label for="rememberMe">Angemeldet bleiben</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="auth-submit">Anmelden</button>
+                
+                <div class="auth-switch">
+                    <a href="#" class="auth-switch" data-form="forgotPassword">Passwort vergessen?</a>
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="firstName">Vorname *</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Nachname *</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail">E-Mail-Adresse *</label>
+                    <input type="email" id="registerEmail" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Passwort *</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="registerPassword" name="password" required minlength="8">
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Passwort bestätigen *</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate">Geburtsdatum</label>
+                    <input type="date" id="birthDate" name="birthDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="goals">Deine Ziele (optional)</label>
+                    <textarea id="goals" name="goals" rows="3" placeholder="Was möchtest du mit der Persönlichkeitsentwicklung erreichen?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="experience">Erfahrung mit Persönlichkeitsentwicklung</label>
+                    <select id="experience" name="experience">
+                        <option value="beginner">Anfänger</option>
+                        <option value="intermediate">Fortgeschritten</option>
+                        <option value="advanced">Experte</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="auth-submit">Registrieren</button>
+                
+                <div class="auth-switch">
+                    Bereits registriert? <a href="#" class="auth-switch" data-form="login">Jetzt anmelden</a>
+                </div>
+            </form>
+            
+            <!-- Forgot Password Form -->
+            <form id="forgotPasswordForm" class="auth-form">
+                <div class="form-group">
+                    <label for="forgotEmail">E-Mail-Adresse</label>
+                    <input type="email" id="forgotEmail" name="email" required>
+                </div>
+                
+                <button type="submit" class="auth-submit">Reset-Link senden</button>
+                
+                <div class="auth-switch">
+                    <a href="#" class="auth-switch" data-form="login">Zurück zur Anmeldung</a>
+                </div>
+            </form>
+            
+            <!-- Reset Password Form -->
+            <form id="resetPasswordForm" class="auth-form">
+                <div class="form-group">
+                    <label for="resetToken">Reset-Token</label>
+                    <input type="text" id="resetToken" name="token" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resetPassword">Neues Passwort</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="resetPassword" name="password" required minlength="8">
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resetConfirmPassword">Passwort bestätigen</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="resetConfirmPassword" name="confirmPassword" required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="auth-submit">Passwort zurücksetzen</button>
+                
+                <div class="auth-switch">
+                    <a href="#" class="auth-switch" data-form="login">Zurück zur Anmeldung</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Method Loader System -->
     <script src="js/method-loader.js"></script>
     <script src="js/workshop-scripts.js"></script>
+    <script src="js/user-auth.js"></script>
+    <script src="js/user-dashboard.js"></script>
+    
+    <script>
+        // Global functions for user interface
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        function showDashboard() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.remove('show');
+            
+            // Show dashboard section
+            const dashboardSection = document.getElementById('dashboardSection');
+            if (dashboardSection) {
+                dashboardSection.style.display = 'block';
+                dashboardSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function showProfile() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.remove('show');
+            alert('Profil-Funktion wird noch implementiert');
+        }
+        
+        function showSettings() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.remove('show');
+            alert('Einstellungen-Funktion wird noch implementiert');
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (userMenu && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>
