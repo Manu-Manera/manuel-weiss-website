@@ -1504,8 +1504,8 @@
 
 .featured-method {
     grid-column: 1 / -1;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-    color: white;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1f2937;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1514,10 +1514,11 @@
     box-sizing: border-box;
     min-height: 200px;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
     padding: 2rem;
+    border: 1px solid #e5e7eb;
 }
 
 .featured-method::before {
@@ -1562,17 +1563,17 @@
 }
 
 .featured-method .feature-tag {
-    background: rgba(255, 255, 255, 0.25) !important;
-    color: white !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: #6366f1 !important;
     margin-bottom: 1.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    text-shadow: none !important;
     position: relative;
     z-index: 2;
     font-weight: 500 !important;
     font-size: 0.9rem !important;
     padding: 0.5rem 1rem !important;
     border-radius: 20px !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
 }
 
 .featured-method .method-features {
@@ -1637,10 +1638,26 @@
 }
 
 .featured-method .method-action .btn:hover {
-    background: rgba(255, 255, 255, 0.3) !important;
-    border-color: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Workshop Script Buttons */
+.method-action {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.method-action .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+.method-action .btn i {
+    margin-right: 5px;
 }
 
 .method-icon {
@@ -7468,9 +7485,8 @@ body {
     margin-bottom: 1.5rem !important;
 }
 
-/* Debug: Make sure all method cards are visible */
+/* Method cards styling */
 .method-card {
-    border: 2px solid red !important;
     min-height: 200px !important;
 }
 
