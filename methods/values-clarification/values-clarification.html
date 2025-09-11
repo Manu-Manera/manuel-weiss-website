@@ -1,0 +1,557 @@
+<div class="workflow-container">
+    <div class="workflow-intro">
+        <h3>Werte-Klärung: Finde heraus, was dir wirklich wichtig ist</h3>
+        <p>Deine Werte sind die Grundlage für alle deine Entscheidungen. In diesem Workflow identifizierst du deine wichtigsten Werte und lernst, sie in deinem Alltag zu leben.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">200+ Werte-Bibliothek</span>
+            <span class="feature-badge">Konflikt-Detektor</span>
+            <span class="feature-badge">Lebensbereiche-Mapping</span>
+            <span class="feature-badge">Werte-Tracking</span>
+        </div>
+    </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Werte-Identifikation</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Werte-Ranking</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Konflikt-Analyse</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Lebensbereiche</div>
+        </div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Werte-Tracking</div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Werte-Identifikation -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Werte-Identifikation</h3>
+            <p>Identifiziere alle Werte, die dir wichtig sind. Nutze unsere umfangreiche Werte-Bibliothek mit 200+ vordefinierten Werten oder füge eigene hinzu.</p>
+        </div>
+        
+        <div class="values-identification-tools">
+            <div class="values-quiz-section">
+                <h4>🎯 Werte-Quiz</h4>
+                <p>Beantworte 10 situative Fragen, um deine wichtigsten Werte zu identifizieren.</p>
+                <button class="btn btn-primary" onclick="startValuesQuiz()">Werte-Quiz starten</button>
+            </div>
+            
+            <div class="values-search-section">
+                <h4>🔍 Werte-Suche</h4>
+                <div class="values-search-bar">
+                    <input type="text" id="values-search" placeholder="Suche nach Werten..." onkeyup="searchValues()">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="values-grid">
+            <div class="value-category">
+                <h4>💕 Beziehungen & Familie</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="liebe">
+                        <span>Liebe</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="familie">
+                        <span>Familie</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="freundschaft">
+                        <span>Freundschaft</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="partnerschaft">
+                        <span>Partnerschaft</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="zugehörigkeit">
+                        <span>Zugehörigkeit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="vertrauen">
+                        <span>Vertrauen</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="loyalität">
+                        <span>Loyalität</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="respekt">
+                        <span>Respekt</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="value-category">
+                <h4>💼 Beruf & Karriere</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="erfolg">
+                        <span>Erfolg</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="karriere">
+                        <span>Karriere</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="finanzielle-sicherheit">
+                        <span>Finanzielle Sicherheit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="anerkennung">
+                        <span>Anerkennung</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="verantwortung">
+                        <span>Verantwortung</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="führung">
+                        <span>Führung</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="teamwork">
+                        <span>Teamwork</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="innovation">
+                        <span>Innovation</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="value-category">
+                <h4>🧠 Persönliche Entwicklung</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="wachstum">
+                        <span>Wachstum</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="lernen">
+                        <span>Lernen</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="kreativität">
+                        <span>Kreativität</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="weisheit">
+                        <span>Weisheit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="selbstverwirklichung">
+                        <span>Selbstverwirklichung</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="authentizität">
+                        <span>Authentizität</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="selbstbewusstsein">
+                        <span>Selbstbewusstsein</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="disziplin">
+                        <span>Disziplin</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="value-category">
+                <h4>🌍 Gesellschaft & Spiritualität</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="glaube">
+                        <span>Glaube</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="spiritualität">
+                        <span>Spiritualität</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="hilfsbereitschaft">
+                        <span>Hilfsbereitschaft</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="gerechtigkeit">
+                        <span>Gerechtigkeit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="umwelt">
+                        <span>Umwelt</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="frieden">
+                        <span>Frieden</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="toleranz">
+                        <span>Toleranz</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="gemeinschaft">
+                        <span>Gemeinschaft</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="value-category">
+                <h4>💎 Materielle Werte</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="wohlstand">
+                        <span>Wohlstand</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="luxus">
+                        <span>Luxus</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="besitz">
+                        <span>Besitz</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="status">
+                        <span>Status</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="prestige">
+                        <span>Prestige</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="sicherheit">
+                        <span>Sicherheit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="stabilität">
+                        <span>Stabilität</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="komfort">
+                        <span>Komfort</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="value-category">
+                <h4>🎨 Kreative & Kulturelle Werte</h4>
+                <div class="values-list">
+                    <label class="value-item">
+                        <input type="checkbox" value="schönheit">
+                        <span>Schönheit</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="kunst">
+                        <span>Kunst</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="musik">
+                        <span>Musik</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="kultur">
+                        <span>Kultur</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="ästhetik">
+                        <span>Ästhetik</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="harmonie">
+                        <span>Harmonie</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="eleganz">
+                        <span>Eleganz</span>
+                    </label>
+                    <label class="value-item">
+                        <input type="checkbox" value="stil">
+                        <span>Stil</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="custom-values-section">
+                <h4>➕ Eigene Werte hinzufügen</h4>
+                <div class="custom-values-input">
+                    <input type="text" id="custom-value" placeholder="Eigenen Wert eingeben...">
+                    <button class="btn btn-outline" onclick="addCustomValue()">Hinzufügen</button>
+                </div>
+                <div class="custom-values-list" id="custom-values-list"></div>
+            </div>
+        </div>
+        
+        <div class="selected-values-summary">
+            <h4>📋 Ausgewählte Werte</h4>
+            <div class="selected-values" id="selected-values">
+                <p class="no-values">Noch keine Werte ausgewählt</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Werte-Ranking -->
+    <div class="workflow-step" data-step="2">
+        <div class="step-header">
+            <h3>Schritt 2: Werte-Ranking</h3>
+            <p>Priorisiere deine ausgewählten Werte und erstelle eine Hierarchie. Nutze Drag & Drop oder das Paarvergleich-System.</p>
+        </div>
+        
+        <div class="values-ranking-tools">
+            <div class="ranking-method-selector">
+                <h4>🎯 Ranking-Methode wählen</h4>
+                <div class="method-options">
+                    <button class="btn btn-outline active" onclick="selectRankingMethod('drag-drop')">Drag & Drop</button>
+                    <button class="btn btn-outline" onclick="selectRankingMethod('pairwise')">Paarvergleich</button>
+                    <button class="btn btn-outline" onclick="selectRankingMethod('slider')">Slider-Ranking</button>
+                </div>
+            </div>
+            
+            <div class="values-ranking-container" id="values-ranking-container">
+                <div class="ranking-instructions">
+                    <p>Ziehe deine Werte in die gewünschte Reihenfolge. Die wichtigsten Werte sollten oben stehen.</p>
+                </div>
+                <div class="values-ranking-list" id="values-ranking-list">
+                    <!-- Werte werden hier dynamisch eingefügt -->
+                </div>
+            </div>
+            
+            <div class="values-scoring">
+                <h4>📊 Werte-Bewertung</h4>
+                <p>Bewerte jeden Wert von 1-10 und erkläre, warum er dir wichtig ist.</p>
+                <div class="values-scoring-list" id="values-scoring-list">
+                    <!-- Scoring wird hier dynamisch eingefügt -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Konflikt-Analyse -->
+    <div class="workflow-step" data-step="3">
+        <div class="step-header">
+            <h3>Schritt 3: Konflikt-Analyse</h3>
+            <p>Identifiziere potenzielle Konflikte zwischen deinen Werten und entwickle Lösungsstrategien.</p>
+        </div>
+        
+        <div class="conflict-analysis-tools">
+            <div class="conflict-detector">
+                <h4>🔍 Automatischer Konflikt-Detektor</h4>
+                <button class="btn btn-primary" onclick="detectValueConflicts()">Konflikte analysieren</button>
+                <div class="conflict-results" id="conflict-results"></div>
+            </div>
+            
+            <div class="conflict-scenarios">
+                <h4>🎭 Konflikt-Szenarien</h4>
+                <p>Übe den Umgang mit typischen Wertkonflikten in verschiedenen Situationen.</p>
+                <div class="scenario-list">
+                    <div class="scenario-item">
+                        <h5>Szenario 1: Karriere vs. Familie</h5>
+                        <p>Du hast die Möglichkeit für eine Beförderung, die mehr Zeit und Reisen erfordert. Wie entscheidest du dich?</p>
+                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                    </div>
+                    <div class="scenario-item">
+                        <h5>Szenario 2: Sicherheit vs. Abenteuer</h5>
+                        <p>Du kannst einen sicheren Job behalten oder ein Risiko eingehen und dein eigenes Unternehmen gründen.</p>
+                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                    </div>
+                    <div class="scenario-item">
+                        <h5>Szenario 3: Individualität vs. Zugehörigkeit</h5>
+                        <p>Du stehst vor der Wahl, deine Meinung zu vertreten oder dich der Gruppe anzupassen.</p>
+                        <textarea placeholder="Deine Antwort..." class="scenario-response"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="conflict-resolution">
+                <h4>💡 Lösungsstrategien</h4>
+                <div class="resolution-strategies">
+                    <div class="strategy-item">
+                        <h5>Kompromiss finden</h5>
+                        <p>Suche nach Wegen, beide Werte zu berücksichtigen.</p>
+                    </div>
+                    <div class="strategy-item">
+                        <h5>Prioritäten setzen</h5>
+                        <p>Entscheide, welcher Wert in dieser Situation wichtiger ist.</p>
+                    </div>
+                    <div class="strategy-item">
+                        <h5>Kreative Lösungen</h5>
+                        <p>Entwickle innovative Ansätze, die beide Werte erfüllen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Lebensbereiche -->
+    <div class="workflow-step" data-step="4">
+        <div class="step-header">
+            <h3>Schritt 4: Lebensbereiche-Mapping</h3>
+            <p>Verteile deine Werte auf verschiedene Lebensbereiche und schaffe Balance.</p>
+        </div>
+        
+        <div class="life-areas-mapping">
+            <div class="life-areas-grid">
+                <div class="life-area" data-area="career">
+                    <h4>💼 Beruf & Karriere</h4>
+                    <div class="values-in-area" id="career-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="career-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="career">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="relationships">
+                    <h4>💕 Beziehungen & Familie</h4>
+                    <div class="values-in-area" id="relationships-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="relationships-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="relationships">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="health">
+                    <h4>🏃‍♀️ Gesundheit & Fitness</h4>
+                    <div class="values-in-area" id="health-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="health-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="health">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="finances">
+                    <h4>💰 Finanzen & Vermögen</h4>
+                    <div class="values-in-area" id="finances-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="finances-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="finances">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="spirituality">
+                    <h4>🧘‍♀️ Spiritualität & Sinn</h4>
+                    <div class="values-in-area" id="spirituality-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="spirituality-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="spirituality">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="hobbies">
+                    <h4>🎨 Hobbys & Freizeit</h4>
+                    <div class="values-in-area" id="hobbies-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="hobbies-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="hobbies">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="family">
+                    <h4>👨‍👩‍👧‍👦 Familie & Kinder</h4>
+                    <div class="values-in-area" id="family-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="family-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="family">
+                    </div>
+                </div>
+                
+                <div class="life-area" data-area="personal-growth">
+                    <h4>🌱 Persönliche Entwicklung</h4>
+                    <div class="values-in-area" id="personal-growth-values"></div>
+                    <div class="area-satisfaction">
+                        <label>Zufriedenheit: <span id="personal-growth-satisfaction">5</span>/10</label>
+                        <input type="range" min="1" max="10" value="5" class="satisfaction-slider" data-area="personal-growth">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="balance-analysis">
+                <h4>⚖️ Balance-Analyse</h4>
+                <div class="balance-chart" id="balance-chart"></div>
+                <div class="balance-recommendations" id="balance-recommendations"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 5: Werte-Tracking -->
+    <div class="workflow-step" data-step="5">
+        <div class="step-header">
+            <h3>Schritt 5: Werte-Tracking</h3>
+            <p>Entwickle ein System, um deine Werte regelmäßig zu überprüfen und zu leben.</p>
+        </div>
+        
+        <div class="values-tracking-system">
+            <div class="tracking-setup">
+                <h4>📅 Tracking-Setup</h4>
+                <div class="tracking-options">
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="daily-check-in">
+                            Täglicher Check-in (5 Min)
+                        </label>
+                    </div>
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="weekly-review">
+                            Wöchentliche Werte-Review (15 Min)
+                        </label>
+                    </div>
+                    <div class="tracking-option">
+                        <label>
+                            <input type="checkbox" id="monthly-assessment">
+                            Monatliche Werte-Bewertung (30 Min)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="values-challenges">
+                <h4>🎯 Werte-Challenges</h4>
+                <p>30-Tage-Herausforderungen für jeden deiner wichtigsten Werte.</p>
+                <div class="challenge-list" id="challenge-list">
+                    <!-- Challenges werden hier dynamisch generiert -->
+                </div>
+            </div>
+            
+            <div class="values-buddy-system">
+                <h4>👥 Werte-Buddy-System</h4>
+                <p>Finde einen Partner, der dich bei der Umsetzung deiner Werte unterstützt.</p>
+                <div class="buddy-setup">
+                    <input type="email" placeholder="E-Mail deines Werte-Buddys..." id="buddy-email">
+                    <button class="btn btn-primary" onclick="inviteBuddy()">Einladen</button>
+                </div>
+            </div>
+            
+            <div class="values-analytics">
+                <h4>📊 Werte-Analytics</h4>
+                <div class="analytics-dashboard" id="analytics-dashboard">
+                    <div class="analytics-chart" id="values-trend-chart"></div>
+                    <div class="analytics-insights" id="analytics-insights"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" id="prev-step" disabled onclick="previousStep()">Zurück</button>
+            <button class="btn btn-primary" id="next-step" onclick="nextStep()">Weiter</button>
+        </div>
+        <div class="progress-info">
+            <span id="progress-text">Schritt 1 von 5</span>
+        </div>
+    </div>
+</div>
