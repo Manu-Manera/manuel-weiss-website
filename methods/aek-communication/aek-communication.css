@@ -317,6 +317,72 @@
     box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
+/* Scenarios Styles */
+.assertive-scenarios, .empathetic-scenarios, .kind-scenarios, .integration-scenarios {
+    background: #fef3c7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #f59e0b;
+    margin-top: 1.5rem;
+}
+
+.assertive-scenarios h5, .empathetic-scenarios h5, .kind-scenarios h5, .integration-scenarios h5 {
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.scenarios-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.scenario-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #f59e0b;
+    transition: all 0.3s ease;
+}
+
+.scenario-item:hover {
+    border-color: #d97706;
+    background: #fef3c7;
+}
+
+.scenario-item h6 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.scenario-item p {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.scenario-item textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.scenario-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .aek-method {
@@ -333,6 +399,7 @@
     
     .assertive-practice, .empathetic-practice, .kind-practice, .integration-practice,
     .assertive-tips, .empathetic-tips, .kind-tips, .integration-tips,
+    .assertive-scenarios, .empathetic-scenarios, .kind-scenarios, .integration-scenarios,
     .aek-summary {
         padding: 1rem;
     }
