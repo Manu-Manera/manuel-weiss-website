@@ -2596,10 +2596,51 @@
                         </div>
                     </div>
                     
-                    <!-- Step 1: Ziel-Brainstorming -->
+                    <!-- Step 1: Ziel-Identifikation -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3>Schritt 1: Ziel-Brainstorming</h3>
+                            <h3>Schritt 1: Ziel-Identifikation</h3>
+                            <p>Identifiziere deine wichtigsten Ziele in verschiedenen Lebensbereichen und priorisiere sie nach Wichtigkeit.</p>
+                        </div>
+                        
+                        <div class="goal-identification-tools">
+                            <div class="goal-categories">
+                                <h4>🎯 Ziel-Kategorien</h4>
+                                <div class="category-grid">
+                                    <div class="goal-category" data-category="career">
+                                        <div class="category-icon">💼</div>
+                                        <h5>Beruf & Karriere</h5>
+                                        <p>Berufliche Ziele und Entwicklungen</p>
+                                    </div>
+                                    <div class="goal-category" data-category="health">
+                                        <div class="category-icon">💪</div>
+                                        <h5>Gesundheit & Fitness</h5>
+                                        <p>Körperliche und mentale Gesundheit</p>
+                                    </div>
+                                    <div class="goal-category" data-category="relationships">
+                                        <div class="category-icon">❤️</div>
+                                        <h5>Beziehungen</h5>
+                                        <p>Familie, Freunde, Partnerschaft</p>
+                                    </div>
+                                    <div class="goal-category" data-category="finance">
+                                        <div class="category-icon">💰</div>
+                                        <h5>Finanzen</h5>
+                                        <p>Geld, Investitionen, Vermögen</p>
+                                    </div>
+                                    <div class="goal-category" data-category="personal">
+                                        <div class="category-icon">🌟</div>
+                                        <h5>Persönliche Entwicklung</h5>
+                                        <p>Lernen, Skills, Selbstverbesserung</p>
+                                    </div>
+                                    <div class="goal-category" data-category="hobbies">
+                                        <div class="category-icon">🎨</div>
+                                        <h5>Hobbys & Freizeit</h5>
+                                        <p>Kreativität, Spaß, Entspannung</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                             <p>Welche Ziele möchtest du in verschiedenen Lebensbereichen erreichen?</p>
                         </div>
                         
@@ -2647,31 +2688,77 @@
                     <div class="workflow-intro">
                         <h3>Achtsamkeit & Meditation: Finde innere Ruhe</h3>
                         <p>Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und praktische Übungen.</p>
+                        <div class="workflow-features">
+                            <span class="feature-badge">Geführte Meditationen</span>
+                            <span class="feature-badge">Achtsamkeits-Timer</span>
+                            <span class="feature-badge">Stress-Reduktion</span>
+                            <span class="feature-badge">Progress-Tracking</span>
+                        </div>
                     </div>
                     
                     <div class="workflow-progress">
                         <div class="progress-step active" data-step="1">
                             <div class="step-number">1</div>
-                            <div class="step-title">Achtsamkeits-Check</div>
+                            <div class="step-title">Achtsamkeits-Assessment</div>
                         </div>
                         <div class="progress-step" data-step="2">
                             <div class="step-number">2</div>
-                            <div class="step-title">Atem-Meditation</div>
+                            <div class="step-title">Meditations-Timer</div>
                         </div>
                         <div class="progress-step" data-step="3">
                             <div class="step-number">3</div>
-                            <div class="step-title">Body-Scan</div>
+                            <div class="step-title">Geführte Übungen</div>
                         </div>
                         <div class="progress-step" data-step="4">
                             <div class="step-number">4</div>
                             <div class="step-title">Alltags-Integration</div>
                         </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Progress-Tracking</div>
+                        </div>
                     </div>
                     
-                    <!-- Step 1: Achtsamkeits-Check -->
+                    <!-- Step 1: Achtsamkeits-Assessment -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3>Schritt 1: Achtsamkeits-Check</h3>
+                            <h3>Schritt 1: Achtsamkeits-Assessment</h3>
+                            <p>Bewerte dein aktuelles Achtsamkeits-Level und identifiziere Bereiche für Verbesserung.</p>
+                        </div>
+                        
+                        <div class="mindfulness-assessment">
+                            <div class="assessment-intro">
+                                <h4>🧘 Dein Achtsamkeits-Level</h4>
+                                <p>Beantworte die folgenden Fragen ehrlich, um dein aktuelles Achtsamkeits-Level zu bewerten.</p>
+                            </div>
+                            
+                            <div class="mindfulness-questions">
+                                <div class="question-group">
+                                    <h5>🎯 Gegenwärtigkeit</h5>
+                                    <div class="question-item">
+                                        <label>Wie oft lebst du im Moment, anstatt in der Vergangenheit oder Zukunft zu verweilen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="mindfulness-slider" data-question="present-moment">
+                                            <div class="scale-labels">
+                                                <span>Selten</span>
+                                                <span>Häufig</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="assessment-results">
+                                <h4>📊 Dein Achtsamkeits-Score</h4>
+                                <div class="score-display">
+                                    <div class="score-circle">
+                                        <span class="score-number" id="mindfulness-score">0</span>
+                                        <span class="score-label">/ 100</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                             <p>Wie achtsam lebst du aktuell? Bewerte verschiedene Bereiche deines Lebens.</p>
                         </div>
                         
@@ -2748,6 +2835,12 @@
                     <div class="workflow-intro">
                         <h3>Emotionale Intelligenz: Verstehe und reguliere deine Emotionen</h3>
                         <p>Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.</p>
+                        <div class="workflow-features">
+                            <span class="feature-badge">EQ-Test</span>
+                            <span class="feature-badge">Emotions-Tracking</span>
+                            <span class="feature-badge">Regulations-Tools</span>
+                            <span class="feature-badge">Empathie-Training</span>
+                        </div>
                     </div>
                     
                     <div class="workflow-progress">
@@ -2757,15 +2850,19 @@
                         </div>
                         <div class="progress-step" data-step="2">
                             <div class="step-number">2</div>
-                            <div class="step-title">Emotions-Tagebuch</div>
+                            <div class="step-title">Emotions-Tracking</div>
                         </div>
                         <div class="progress-step" data-step="3">
                             <div class="step-number">3</div>
-                            <div class="step-title">Regulations-Techniken</div>
+                            <div class="step-title">Regulations-Tools</div>
                         </div>
                         <div class="progress-step" data-step="4">
                             <div class="step-number">4</div>
                             <div class="step-title">Empathie-Training</div>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">EQ-Entwicklung</div>
                         </div>
                     </div>
                     
@@ -2773,6 +2870,185 @@
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
                             <h3>Schritt 1: EQ-Assessment</h3>
+                            <p>Bewerte deine emotionale Intelligenz in den vier Kernbereichen: Selbstwahrnehmung, Selbstregulation, Empathie und soziale Kompetenz.</p>
+                        </div>
+                        
+                        <div class="eq-assessment">
+                            <div class="assessment-intro">
+                                <h4>🧠 Die 4 Säulen der Emotionalen Intelligenz</h4>
+                                <div class="eq-pillars">
+                                    <div class="pillar">
+                                        <div class="pillar-icon">🔍</div>
+                                        <h5>Selbstwahrnehmung</h5>
+                                        <p>Deine eigenen Emotionen erkennen und verstehen</p>
+                                    </div>
+                                    <div class="pillar">
+                                        <div class="pillar-icon">🎛️</div>
+                                        <h5>Selbstregulation</h5>
+                                        <p>Deine Emotionen kontrollieren und lenken</p>
+                                    </div>
+                                    <div class="pillar">
+                                        <div class="pillar-icon">❤️</div>
+                                        <h5>Empathie</h5>
+                                        <p>Emotionen anderer verstehen und nachempfinden</p>
+                                    </div>
+                                    <div class="pillar">
+                                        <div class="pillar-icon">🤝</div>
+                                        <h5>Soziale Kompetenz</h5>
+                                        <p>Beziehungen aufbauen und Konflikte lösen</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="eq-questions">
+                                <div class="question-section" data-pillar="self-awareness">
+                                    <h4>🔍 Selbstwahrnehmung</h4>
+                                    <div class="question-item">
+                                        <label>Wie gut erkennst du deine eigenen Emotionen in verschiedenen Situationen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="emotion-recognition">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="question-item">
+                                        <label>Wie gut verstehst du die Ursachen deiner Emotionen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="emotion-understanding">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="question-section" data-pillar="self-regulation">
+                                    <h4>🎛️ Selbstregulation</h4>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du deine Emotionen kontrollieren, wenn du gestresst bist?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="emotion-control">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du negative Emotionen in positive umwandeln?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="emotion-transformation">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="question-section" data-pillar="empathy">
+                                    <h4>❤️ Empathie</h4>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du die Emotionen anderer Menschen erkennen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="others-emotions">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du dich in die Situation anderer hineinversetzen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="perspective-taking">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="question-section" data-pillar="social-skills">
+                                    <h4>🤝 Soziale Kompetenz</h4>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du Konflikte mit anderen lösen?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="conflict-resolution">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="question-item">
+                                        <label>Wie gut kannst du andere Menschen motivieren und inspirieren?</label>
+                                        <div class="rating-scale">
+                                            <input type="range" min="1" max="10" value="5" class="eq-slider" data-question="motivating-others">
+                                            <div class="scale-labels">
+                                                <span>Schlecht</span>
+                                                <span>Sehr gut</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="eq-results">
+                                <h4>📊 Dein EQ-Score</h4>
+                                <div class="eq-score-display">
+                                    <div class="overall-score">
+                                        <div class="score-circle">
+                                            <span class="score-number" id="eq-overall-score">0</span>
+                                            <span class="score-label">/ 100</span>
+                                        </div>
+                                        <div class="score-description" id="eq-description">
+                                            Bewerte alle Fragen, um deinen EQ-Score zu sehen.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pillar-scores">
+                                        <div class="pillar-score" data-pillar="self-awareness">
+                                            <div class="pillar-name">Selbstwahrnehmung</div>
+                                            <div class="pillar-bar">
+                                                <div class="pillar-fill" id="self-awareness-score"></div>
+                                            </div>
+                                            <div class="pillar-value" id="self-awareness-value">0%</div>
+                                        </div>
+                                        <div class="pillar-score" data-pillar="self-regulation">
+                                            <div class="pillar-name">Selbstregulation</div>
+                                            <div class="pillar-bar">
+                                                <div class="pillar-fill" id="self-regulation-score"></div>
+                                            </div>
+                                            <div class="pillar-value" id="self-regulation-value">0%</div>
+                                        </div>
+                                        <div class="pillar-score" data-pillar="empathy">
+                                            <div class="pillar-name">Empathie</div>
+                                            <div class="pillar-bar">
+                                                <div class="pillar-fill" id="empathy-score"></div>
+                                            </div>
+                                            <div class="pillar-value" id="empathy-value">0%</div>
+                                        </div>
+                                        <div class="pillar-score" data-pillar="social-skills">
+                                            <div class="pillar-name">Soziale Kompetenz</div>
+                                            <div class="pillar-bar">
+                                                <div class="pillar-fill" id="social-skills-score"></div>
+                                            </div>
+                                            <div class="pillar-value" id="social-skills-value">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="improvement-suggestions" id="improvement-suggestions">
+                                    <!-- Wird dynamisch gefüllt -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                             <p>Bewerte deine emotionale Intelligenz in verschiedenen Bereichen.</p>
                         </div>
                         
@@ -2862,6 +3138,12 @@
                     <div class="workflow-intro">
                         <h3>Gewohnheiten aufbauen: Entwickle positive Routinen</h3>
                         <p>Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.</p>
+                        <div class="workflow-features">
+                            <span class="feature-badge">Habit-Stacking</span>
+                            <span class="feature-badge">21-Tage-Regel</span>
+                            <span class="feature-badge">Progress-Tracking</span>
+                            <span class="feature-badge">Gewohnheits-Analyse</span>
+                        </div>
                     </div>
                     
                     <div class="workflow-progress">
@@ -2879,7 +3161,11 @@
                         </div>
                         <div class="progress-step" data-step="4">
                             <div class="step-number">4</div>
-                            <div class="step-title">Tracking-System</div>
+                            <div class="step-title">Progress-Tracking</div>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-title">Gewohnheits-Optimierung</div>
                         </div>
                     </div>
                     
@@ -2887,6 +3173,76 @@
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
                             <h3>Schritt 1: Gewohnheits-Analyse</h3>
+                            <p>Analysiere deine aktuellen Gewohnheiten und identifiziere positive und negative Routinen in deinem Leben.</p>
+                        </div>
+                        
+                        <div class="habit-analysis">
+                            <div class="analysis-intro">
+                                <h4>🔍 Gewohnheits-Inventar</h4>
+                                <p>Erstelle eine Liste deiner aktuellen Gewohnheiten und bewerte sie nach ihrem Nutzen für dein Leben.</p>
+                            </div>
+                            
+                            <div class="habit-categories">
+                                <div class="category-section">
+                                    <h5>✅ Positive Gewohnheiten</h5>
+                                    <div class="habit-list" id="positive-habits">
+                                        <div class="habit-item">
+                                            <input type="text" placeholder="Positive Gewohnheit hinzufügen..." class="habit-input">
+                                            <button class="btn btn-sm btn-success" onclick="addHabit('positive')">Hinzufügen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-section">
+                                    <h5>❌ Negative Gewohnheiten</h5>
+                                    <div class="habit-list" id="negative-habits">
+                                        <div class="habit-item">
+                                            <input type="text" placeholder="Negative Gewohnheit hinzufügen..." class="habit-input">
+                                            <button class="btn btn-sm btn-danger" onclick="addHabit('negative')">Hinzufügen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="category-section">
+                                    <h5>🆕 Neue Gewohnheiten</h5>
+                                    <div class="habit-list" id="new-habits">
+                                        <div class="habit-item">
+                                            <input type="text" placeholder="Neue Gewohnheit hinzufügen..." class="habit-input">
+                                            <button class="btn btn-sm btn-primary" onclick="addHabit('new')">Hinzufügen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="habit-evaluation">
+                                <h4>📊 Gewohnheits-Bewertung</h4>
+                                <div class="evaluation-grid">
+                                    <div class="evaluation-item">
+                                        <h6>Positive Gewohnheiten</h6>
+                                        <div class="habit-count" id="positive-count">0</div>
+                                        <div class="habit-percentage" id="positive-percentage">0%</div>
+                                    </div>
+                                    <div class="evaluation-item">
+                                        <h6>Negative Gewohnheiten</h6>
+                                        <div class="habit-count" id="negative-count">0</div>
+                                        <div class="habit-percentage" id="negative-percentage">0%</div>
+                                    </div>
+                                    <div class="evaluation-item">
+                                        <h6>Neue Gewohnheiten</h6>
+                                        <div class="habit-count" id="new-count">0</div>
+                                        <div class="habit-percentage" id="new-percentage">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="habit-insights">
+                                <h4>💡 Gewohnheits-Insights</h4>
+                                <div class="insights-container" id="habit-insights">
+                                    <p class="no-insights">Füge Gewohnheiten hinzu, um Insights zu erhalten.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                             <p>Analysiere deine aktuellen Gewohnheiten und identifiziere Verbesserungspotential.</p>
                         </div>
                         
@@ -5672,18 +6028,917 @@
 
         function initGoalSetting() {
             console.log('Initializing Goal Setting');
+            
+            // Initialize goal categories
+            document.querySelectorAll('.goal-category').forEach(category => {
+                category.addEventListener('click', function() {
+                    selectGoalCategory(this.dataset.category);
+                });
+            });
+            
+            // Load saved goals
+            loadSavedGoals();
         }
+        
+        // Goal Setting Helper Functions
+        function selectGoalCategory(category) {
+            // Remove active class from all categories
+            document.querySelectorAll('.goal-category').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            
+            // Add active class to selected category
+            const selectedCategory = document.querySelector(`[data-category="${category}"]`);
+            if (selectedCategory) {
+                selectedCategory.classList.add('active');
+            }
+            
+            // Show goal input for this category
+            showGoalInput(category);
+        }
+        
+        function showGoalInput(category) {
+            // Create or show goal input modal/form
+            const categoryNames = {
+                'career': 'Beruf & Karriere',
+                'health': 'Gesundheit & Fitness',
+                'relationships': 'Beziehungen',
+                'finance': 'Finanzen',
+                'personal': 'Persönliche Entwicklung',
+                'hobbies': 'Hobbys & Freizeit'
+            };
+            
+            const goalText = prompt(`Welche Ziele hast du für ${categoryNames[category]}?`);
+            if (goalText && goalText.trim()) {
+                addGoal(goalText.trim(), category);
+            }
+        }
+        
+        function addGoal(goalText, category) {
+            const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+            const newGoal = {
+                id: Date.now(),
+                text: goalText,
+                category: category,
+                smart: null,
+                priority: 0,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+            
+            goals.push(newGoal);
+            localStorage.setItem('userGoals', JSON.stringify(goals));
+            
+            updateGoalsList();
+            showNotification('Ziel hinzugefügt!', 'success');
+        }
+        
+        function updateGoalsList() {
+            const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+            const goalsList = document.getElementById('goals-list');
+            
+            if (!goalsList) return;
+            
+            if (goals.length === 0) {
+                goalsList.innerHTML = '<p class="no-goals">Noch keine Ziele hinzugefügt</p>';
+                return;
+            }
+            
+            goalsList.innerHTML = goals.map(goal => `
+                <div class="goal-item" data-goal-id="${goal.id}">
+                    <div class="goal-content">
+                        <div class="goal-text">${goal.text}</div>
+                        <div class="goal-category-badge">${getCategoryName(goal.category)}</div>
+                    </div>
+                    <div class="goal-actions">
+                        <button class="btn btn-sm btn-outline" onclick="editGoal(${goal.id})">Bearbeiten</button>
+                        <button class="btn btn-sm btn-primary" onclick="makeSMART(${goal.id})">SMART machen</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteGoal(${goal.id})">Löschen</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                'career': '💼 Beruf',
+                'health': '💪 Gesundheit',
+                'relationships': '❤️ Beziehungen',
+                'finance': '💰 Finanzen',
+                'personal': '🌟 Persönlich',
+                'hobbies': '🎨 Hobbys'
+            };
+            return names[category] || category;
+        }
+        
+        function editGoal(goalId) {
+            const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+            const goal = goals.find(g => g.id === goalId);
+            
+            if (goal) {
+                const newText = prompt('Ziel bearbeiten:', goal.text);
+                if (newText && newText.trim()) {
+                    goal.text = newText.trim();
+                    localStorage.setItem('userGoals', JSON.stringify(goals));
+                    updateGoalsList();
+                    showNotification('Ziel aktualisiert!', 'success');
+                }
+            }
+        }
+        
+        function makeSMART(goalId) {
+            // Switch to SMART formulation step
+            const goalSelect = document.getElementById('goal-select');
+            if (goalSelect) {
+                goalSelect.value = goalId;
+                loadGoalForSMART();
+            }
+            
+            // Switch to step 2
+            switchWorkflowStep(2);
+        }
+        
+        function deleteGoal(goalId) {
+            if (confirm('Ziel wirklich löschen?')) {
+                const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+                const filteredGoals = goals.filter(g => g.id !== goalId);
+                localStorage.setItem('userGoals', JSON.stringify(filteredGoals));
+                updateGoalsList();
+                showNotification('Ziel gelöscht!', 'info');
+            }
+        }
+        
+        function loadSavedGoals() {
+            updateGoalsList();
+            
+            // Update goal select dropdown
+            const goalSelect = document.getElementById('goal-select');
+            if (goalSelect) {
+                const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+                goalSelect.innerHTML = '<option value="">Ziel auswählen...</option>' +
+                    goals.map(goal => `<option value="${goal.id}">${goal.text}</option>`).join('');
+            }
+        }
+        
+        function loadGoalForSMART() {
+            const goalId = document.getElementById('goal-select').value;
+            const smartCriteria = document.getElementById('smart-criteria');
+            
+            if (goalId) {
+                smartCriteria.style.display = 'block';
+                
+                const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+                const goal = goals.find(g => g.id == goalId);
+                
+                if (goal && goal.smart) {
+                    // Load existing SMART data
+                    document.getElementById('specific-goal').value = goal.smart.specific || '';
+                    document.getElementById('measurable-goal').value = goal.smart.measurable || '';
+                    document.getElementById('achievable-goal').value = goal.smart.achievable || '';
+                    document.getElementById('relevant-goal').value = goal.smart.relevant || '';
+                    document.getElementById('timebound-goal').value = goal.smart.timebound || '';
+                } else {
+                    // Clear form
+                    document.getElementById('specific-goal').value = '';
+                    document.getElementById('measurable-goal').value = '';
+                    document.getElementById('achievable-goal').value = '';
+                    document.getElementById('relevant-goal').value = '';
+                    document.getElementById('timebound-goal').value = '';
+                }
+                
+                updateSMARTGoal();
+            } else {
+                smartCriteria.style.display = 'none';
+            }
+        }
+        
+        function updateSMARTGoal() {
+            const specific = document.getElementById('specific-goal').value;
+            const measurable = document.getElementById('measurable-goal').value;
+            const achievable = document.getElementById('achievable-goal').value;
+            const relevant = document.getElementById('relevant-goal').value;
+            const timebound = document.getElementById('timebound-goal').value;
+            
+            const smartGoalText = document.getElementById('smart-goal-text');
+            
+            if (specific && measurable && achievable && relevant && timebound) {
+                smartGoalText.innerHTML = `
+                    <strong>${specific}</strong><br>
+                    <em>Messbar durch: ${measurable}</em><br>
+                    <em>Erreichbar weil: ${achievable}</em><br>
+                    <em>Relevant weil: ${relevant}</em><br>
+                    <em>Zeitlimit: ${timebound}</em>
+                `;
+            } else {
+                smartGoalText.textContent = 'Formuliere alle Kriterien, um dein SMART-Ziel zu sehen.';
+            }
+        }
+        
+        function saveSMARTGoal() {
+            const goalId = document.getElementById('goal-select').value;
+            if (!goalId) {
+                alert('Bitte wähle zuerst ein Ziel aus.');
+                return;
+            }
+            
+            const smartData = {
+                specific: document.getElementById('specific-goal').value,
+                measurable: document.getElementById('measurable-goal').value,
+                achievable: document.getElementById('achievable-goal').value,
+                relevant: document.getElementById('relevant-goal').value,
+                timebound: document.getElementById('timebound-goal').value
+            };
+            
+            if (!smartData.specific || !smartData.measurable || !smartData.achievable || !smartData.relevant || !smartData.timebound) {
+                alert('Bitte fülle alle SMART-Kriterien aus.');
+                return;
+            }
+            
+            const goals = JSON.parse(localStorage.getItem('userGoals') || '[]');
+            const goal = goals.find(g => g.id == goalId);
+            
+            if (goal) {
+                goal.smart = smartData;
+                localStorage.setItem('userGoals', JSON.stringify(goals));
+                showNotification('SMART-Ziel gespeichert!', 'success');
+                updateGoalsList();
+            }
+        }
+        
+        function resetSMARTForm() {
+            document.getElementById('specific-goal').value = '';
+            document.getElementById('measurable-goal').value = '';
+            document.getElementById('achievable-goal').value = '';
+            document.getElementById('relevant-goal').value = '';
+            document.getElementById('timebound-goal').value = '';
+            updateSMARTGoal();
+        }
+        
+        // Add event listeners for SMART form updates
+        document.addEventListener('DOMContentLoaded', function() {
+            const smartInputs = ['specific-goal', 'measurable-goal', 'achievable-goal', 'relevant-goal', 'timebound-goal'];
+            smartInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', updateSMARTGoal);
+                }
+            });
+        });
 
         function initMindfulness() {
             console.log('Initializing Mindfulness');
+            
+            // Initialize mindfulness sliders
+            document.querySelectorAll('.mindfulness-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    updateMindfulnessScore();
+                });
+            });
+            
+            // Initialize meditation timer
+            initializeMeditationTimer();
+            
+            // Load saved data
+            loadMindfulnessData();
+        }
+        
+        // Mindfulness Helper Functions
+        function updateMindfulnessScore() {
+            const sliders = document.querySelectorAll('.mindfulness-slider');
+            let totalScore = 0;
+            let answeredQuestions = 0;
+            
+            sliders.forEach(slider => {
+                const value = parseInt(slider.value);
+                totalScore += value;
+                answeredQuestions++;
+            });
+            
+            const averageScore = answeredQuestions > 0 ? Math.round(totalScore / answeredQuestions * 10) : 0;
+            
+            const scoreElement = document.getElementById('mindfulness-score');
+            if (scoreElement) {
+                scoreElement.textContent = averageScore;
+            }
+            
+            // Update score description
+            updateScoreDescription(averageScore);
+            
+            // Save to localStorage
+            localStorage.setItem('mindfulnessScore', averageScore);
+        }
+        
+        function updateScoreDescription(score) {
+            const descriptions = {
+                0: 'Beginne mit kurzen Achtsamkeits-Übungen',
+                20: 'Du bist auf dem richtigen Weg - übe weiter!',
+                40: 'Gute Grundlagen - vertiefe deine Praxis',
+                60: 'Solide Achtsamkeits-Praxis - sehr gut!',
+                80: 'Ausgezeichnete Achtsamkeit - du bist ein Vorbild!',
+                100: 'Meister der Achtsamkeit - bewundernswert!'
+            };
+            
+            let description = 'Beginne mit kurzen Achtsamkeits-Übungen';
+            for (let threshold in descriptions) {
+                if (score >= parseInt(threshold)) {
+                    description = descriptions[threshold];
+                }
+            }
+            
+            const descriptionElement = document.getElementById('score-description');
+            if (descriptionElement) {
+                descriptionElement.textContent = description;
+            }
+        }
+        
+        // Meditation Timer Functions
+        let meditationTimer = null;
+        let meditationTimeLeft = 0;
+        let meditationStartTime = null;
+        let isMeditating = false;
+        
+        function initializeMeditationTimer() {
+            // Set default timer to 5 minutes
+            setTimer(5);
+        }
+        
+        function setTimer(minutes) {
+            meditationTimeLeft = minutes * 60;
+            updateTimerDisplay();
+            
+            // Update preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(meditationTimeLeft / 60);
+            const seconds = meditationTimeLeft % 60;
+            
+            const minutesElement = document.getElementById('timer-minutes');
+            const secondsElement = document.getElementById('timer-seconds');
+            
+            if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+            if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
+            
+            // Update progress ring
+            updateProgressRing();
+        }
+        
+        function updateProgressRing() {
+            const totalTime = parseInt(document.getElementById('timer-minutes').textContent) * 60;
+            const remainingTime = meditationTimeLeft;
+            const progress = (totalTime - remainingTime) / totalTime;
+            
+            const progressRing = document.querySelector('.progress-ring-progress');
+            if (progressRing) {
+                const circumference = 2 * Math.PI * 90;
+                const offset = circumference - (progress * circumference);
+                progressRing.style.strokeDashoffset = offset;
+            }
+        }
+        
+        function startMeditation() {
+            if (meditationTimeLeft <= 0) {
+                alert('Bitte wähle eine Zeit für deine Meditation.');
+                return;
+            }
+            
+            isMeditating = true;
+            meditationStartTime = new Date();
+            
+            // Update UI
+            document.getElementById('start-timer').style.display = 'none';
+            document.getElementById('pause-timer').style.display = 'inline-block';
+            document.getElementById('stop-timer').style.display = 'inline-block';
+            
+            // Start timer
+            meditationTimer = setInterval(() => {
+                meditationTimeLeft--;
+                updateTimerDisplay();
+                
+                if (meditationTimeLeft <= 0) {
+                    completeMeditation();
+                }
+            }, 1000);
+            
+            showNotification('Meditation gestartet! 🧘', 'success');
+        }
+        
+        function pauseMeditation() {
+            if (meditationTimer) {
+                clearInterval(meditationTimer);
+                meditationTimer = null;
+            }
+            
+            // Update UI
+            document.getElementById('pause-timer').style.display = 'none';
+            document.getElementById('start-timer').style.display = 'inline-block';
+            
+            showNotification('Meditation pausiert', 'info');
+        }
+        
+        function stopMeditation() {
+            if (meditationTimer) {
+                clearInterval(meditationTimer);
+                meditationTimer = null;
+            }
+            
+            isMeditating = false;
+            meditationTimeLeft = 0;
+            
+            // Update UI
+            document.getElementById('start-timer').style.display = 'inline-block';
+            document.getElementById('pause-timer').style.display = 'none';
+            document.getElementById('stop-timer').style.display = 'none';
+            
+            updateTimerDisplay();
+            showNotification('Meditation beendet', 'info');
+        }
+        
+        function completeMeditation() {
+            if (meditationTimer) {
+                clearInterval(meditationTimer);
+                meditationTimer = null;
+            }
+            
+            isMeditating = false;
+            
+            // Calculate session duration
+            const sessionDuration = meditationStartTime ? 
+                Math.round((new Date() - meditationStartTime) / 1000 / 60) : 0;
+            
+            // Save meditation session
+            saveMeditationSession(sessionDuration);
+            
+            // Update UI
+            document.getElementById('start-timer').style.display = 'inline-block';
+            document.getElementById('pause-timer').style.display = 'none';
+            document.getElementById('stop-timer').style.display = 'none';
+            
+            // Show completion message
+            showNotification(`Meditation abgeschlossen! 🎉 (${sessionDuration} Min)`, 'success');
+            
+            // Play completion sound if enabled
+            if (document.getElementById('sound-notifications').checked) {
+                playCompletionSound();
+            }
+        }
+        
+        function saveMeditationSession(duration) {
+            const sessions = JSON.parse(localStorage.getItem('meditationSessions') || '[]');
+            const newSession = {
+                date: new Date().toISOString(),
+                duration: duration,
+                timestamp: Date.now()
+            };
+            
+            sessions.push(newSession);
+            localStorage.setItem('meditationSessions', JSON.stringify(sessions));
+            
+            updateMeditationStats();
+        }
+        
+        function updateMeditationStats() {
+            const sessions = JSON.parse(localStorage.getItem('meditationSessions') || '[]');
+            
+            // Total sessions
+            document.getElementById('total-sessions').textContent = sessions.length;
+            
+            // Total time
+            const totalMinutes = sessions.reduce((sum, session) => sum + session.duration, 0);
+            const totalHours = Math.floor(totalMinutes / 60);
+            document.getElementById('total-time').textContent = `${totalHours}h`;
+            
+            // Current streak
+            const currentStreak = calculateCurrentStreak(sessions);
+            document.getElementById('current-streak').textContent = currentStreak;
+            
+            // Longest session
+            const longestSession = Math.max(...sessions.map(s => s.duration), 0);
+            document.getElementById('longest-session').textContent = `${longestSession}min`;
+        }
+        
+        function calculateCurrentStreak(sessions) {
+            if (sessions.length === 0) return 0;
+            
+            let streak = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let i = sessions.length - 1; i >= 0; i--) {
+                const sessionDate = new Date(sessions[i].date);
+                sessionDate.setHours(0, 0, 0, 0);
+                
+                const daysDiff = Math.floor((today - sessionDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff === streak) {
+                    streak++;
+                } else if (daysDiff > streak) {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+        
+        function playCompletionSound() {
+            // Simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+        
+        function loadMindfulnessData() {
+            // Load mindfulness score
+            const savedScore = localStorage.getItem('mindfulnessScore');
+            if (savedScore) {
+                document.getElementById('mindfulness-score').textContent = savedScore;
+                updateScoreDescription(parseInt(savedScore));
+            }
+            
+            // Load meditation stats
+            updateMeditationStats();
         }
 
         function initEmotionalIntelligence() {
             console.log('Initializing Emotional Intelligence');
+            
+            // Initialize EQ sliders
+            document.querySelectorAll('.eq-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    updateEQScore();
+                });
+            });
+            
+            // Load saved EQ data
+            loadEQData();
+        }
+        
+        // Emotional Intelligence Helper Functions
+        function updateEQScore() {
+            const pillars = {
+                'self-awareness': ['emotion-recognition', 'emotion-understanding'],
+                'self-regulation': ['emotion-control', 'emotion-transformation'],
+                'empathy': ['others-emotions', 'perspective-taking'],
+                'social-skills': ['conflict-resolution', 'motivating-others']
+            };
+            
+            let totalScore = 0;
+            let totalQuestions = 0;
+            const pillarScores = {};
+            
+            // Calculate scores for each pillar
+            for (const [pillar, questions] of Object.entries(pillars)) {
+                let pillarScore = 0;
+                let pillarQuestions = 0;
+                
+                questions.forEach(question => {
+                    const slider = document.querySelector(`[data-question="${question}"]`);
+                    if (slider) {
+                        const value = parseInt(slider.value);
+                        pillarScore += value;
+                        pillarQuestions++;
+                        totalScore += value;
+                        totalQuestions++;
+                    }
+                });
+                
+                pillarScores[pillar] = pillarQuestions > 0 ? Math.round((pillarScore / pillarQuestions) * 10) : 0;
+            }
+            
+            // Update overall score
+            const overallScore = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 10) : 0;
+            document.getElementById('eq-overall-score').textContent = overallScore;
+            
+            // Update pillar scores
+            updatePillarScores(pillarScores);
+            
+            // Update description
+            updateEQDescription(overallScore);
+            
+            // Update improvement suggestions
+            updateImprovementSuggestions(pillarScores);
+            
+            // Save to localStorage
+            localStorage.setItem('eqScores', JSON.stringify({
+                overall: overallScore,
+                pillars: pillarScores,
+                timestamp: new Date().toISOString()
+            }));
+        }
+        
+        function updatePillarScores(pillarScores) {
+            const pillarNames = {
+                'self-awareness': 'Selbstwahrnehmung',
+                'self-regulation': 'Selbstregulation',
+                'empathy': 'Empathie',
+                'social-skills': 'Soziale Kompetenz'
+            };
+            
+            for (const [pillar, score] of Object.entries(pillarScores)) {
+                const fillElement = document.getElementById(`${pillar}-score`);
+                const valueElement = document.getElementById(`${pillar}-value`);
+                
+                if (fillElement && valueElement) {
+                    fillElement.style.width = `${score}%`;
+                    valueElement.textContent = `${score}%`;
+                    
+                    // Color coding based on score
+                    if (score >= 80) {
+                        fillElement.style.background = '#10b981'; // Green
+                    } else if (score >= 60) {
+                        fillElement.style.background = '#f59e0b'; // Yellow
+                    } else {
+                        fillElement.style.background = '#ef4444'; // Red
+                    }
+                }
+            }
+        }
+        
+        function updateEQDescription(score) {
+            const descriptions = {
+                0: 'Beginne mit der Entwicklung deiner emotionalen Intelligenz',
+                20: 'Du hast erste Grundlagen - arbeite weiter an deiner EQ',
+                40: 'Gute Fortschritte - vertiefe deine emotionalen Fähigkeiten',
+                60: 'Solide emotionale Intelligenz - sehr gut!',
+                80: 'Ausgezeichnete EQ - du bist emotional sehr kompetent!',
+                100: 'Meister der emotionalen Intelligenz - bewundernswert!'
+            };
+            
+            let description = 'Beginne mit der Entwicklung deiner emotionalen Intelligenz';
+            for (let threshold in descriptions) {
+                if (score >= parseInt(threshold)) {
+                    description = descriptions[threshold];
+                }
+            }
+            
+            document.getElementById('eq-description').textContent = description;
+        }
+        
+        function updateImprovementSuggestions(pillarScores) {
+            const suggestions = {
+                'self-awareness': [
+                    'Führe ein Emotions-Tagebuch',
+                    'Übe regelmäßige Selbstreflexion',
+                    'Lerne deine emotionalen Auslöser kennen'
+                ],
+                'self-regulation': [
+                    'Übe Atemtechniken zur Beruhigung',
+                    'Lerne Entspannungsmethoden',
+                    'Entwickle positive Bewältigungsstrategien'
+                ],
+                'empathy': [
+                    'Übe aktives Zuhören',
+                    'Stelle mehr Fragen über die Gefühle anderer',
+                    'Versuche dich in verschiedene Perspektiven hineinzuversetzen'
+                ],
+                'social-skills': [
+                    'Übe deine Kommunikationsfähigkeiten',
+                    'Lerne Konfliktlösungsstrategien',
+                    'Arbeite an deiner Teamfähigkeit'
+                ]
+            };
+            
+            const suggestionsContainer = document.getElementById('improvement-suggestions');
+            if (!suggestionsContainer) return;
+            
+            let lowestPillar = null;
+            let lowestScore = 100;
+            
+            for (const [pillar, score] of Object.entries(pillarScores)) {
+                if (score < lowestScore) {
+                    lowestScore = score;
+                    lowestPillar = pillar;
+                }
+            }
+            
+            if (lowestPillar && lowestScore < 70) {
+                const pillarNames = {
+                    'self-awareness': 'Selbstwahrnehmung',
+                    'self-regulation': 'Selbstregulation',
+                    'empathy': 'Empathie',
+                    'social-skills': 'Soziale Kompetenz'
+                };
+                
+                suggestionsContainer.innerHTML = `
+                    <h5>💡 Verbesserungsvorschläge für ${pillarNames[lowestPillar]}</h5>
+                    <ul>
+                        ${suggestions[lowestPillar].map(suggestion => `<li>${suggestion}</li>`).join('')}
+                    </ul>
+                `;
+            } else {
+                suggestionsContainer.innerHTML = `
+                    <h5>🎉 Ausgezeichnet!</h5>
+                    <p>Deine emotionale Intelligenz ist in allen Bereichen sehr gut entwickelt. Weiter so!</p>
+                `;
+            }
+        }
+        
+        function loadEQData() {
+            const savedData = localStorage.getItem('eqScores');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Load overall score
+                document.getElementById('eq-overall-score').textContent = data.overall;
+                updateEQDescription(data.overall);
+                
+                // Load pillar scores
+                updatePillarScores(data.pillars);
+                updateImprovementSuggestions(data.pillars);
+            }
         }
 
         function initHabitBuilding() {
             console.log('Initializing Habit Building');
+            
+            // Initialize habit input listeners
+            document.querySelectorAll('.habit-input').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const category = this.closest('.category-section').querySelector('h5').textContent.includes('Positive') ? 'positive' :
+                                       this.closest('.category-section').querySelector('h5').textContent.includes('Negative') ? 'negative' : 'new';
+                        addHabit(category);
+                    }
+                });
+            });
+            
+            // Load saved habits
+            loadSavedHabits();
+        }
+        
+        // Habit Building Helper Functions
+        function addHabit(category) {
+            const categoryMap = {
+                'positive': 'positive-habits',
+                'negative': 'negative-habits',
+                'new': 'new-habits'
+            };
+            
+            const container = document.getElementById(categoryMap[category]);
+            const input = container.querySelector('.habit-input');
+            const habitText = input.value.trim();
+            
+            if (!habitText) {
+                alert('Bitte gib eine Gewohnheit ein.');
+                return;
+            }
+            
+            // Create habit item
+            const habitItem = document.createElement('div');
+            habitItem.className = 'habit-item-added';
+            habitItem.innerHTML = `
+                <span class="habit-text">${habitText}</span>
+                <div class="habit-actions">
+                    <button class="btn btn-sm btn-outline" onclick="editHabit(this)">Bearbeiten</button>
+                    <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">Löschen</button>
+                </div>
+            `;
+            
+            // Insert before the input item
+            container.insertBefore(habitItem, container.querySelector('.habit-item'));
+            
+            // Clear input
+            input.value = '';
+            
+            // Update evaluation
+            updateHabitEvaluation();
+            
+            // Save to localStorage
+            saveHabits();
+            
+            showNotification('Gewohnheit hinzugefügt!', 'success');
+        }
+        
+        function editHabit(button) {
+            const habitItem = button.closest('.habit-item-added');
+            const habitText = habitItem.querySelector('.habit-text');
+            const currentText = habitText.textContent;
+            
+            const newText = prompt('Gewohnheit bearbeiten:', currentText);
+            if (newText && newText.trim() && newText.trim() !== currentText) {
+                habitText.textContent = newText.trim();
+                saveHabits();
+                showNotification('Gewohnheit aktualisiert!', 'success');
+            }
+        }
+        
+        function removeHabit(button) {
+            if (confirm('Gewohnheit wirklich löschen?')) {
+                const habitItem = button.closest('.habit-item-added');
+                habitItem.remove();
+                updateHabitEvaluation();
+                saveHabits();
+                showNotification('Gewohnheit gelöscht!', 'info');
+            }
+        }
+        
+        function updateHabitEvaluation() {
+            const categories = ['positive', 'negative', 'new'];
+            const totalHabits = { positive: 0, negative: 0, new: 0 };
+            
+            categories.forEach(category => {
+                const container = document.getElementById(`${category}-habits`);
+                const habitItems = container.querySelectorAll('.habit-item-added');
+                totalHabits[category] = habitItems.length;
+                
+                // Update count
+                document.getElementById(`${category}-count`).textContent = totalHabits[category];
+            });
+            
+            const grandTotal = totalHabits.positive + totalHabits.negative + totalHabits.new;
+            
+            // Update percentages
+            categories.forEach(category => {
+                const percentage = grandTotal > 0 ? Math.round((totalHabits[category] / grandTotal) * 100) : 0;
+                document.getElementById(`${category}-percentage`).textContent = `${percentage}%`;
+            });
+            
+            // Update insights
+            updateHabitInsights(totalHabits);
+        }
+        
+        function updateHabitInsights(habits) {
+            const insightsContainer = document.getElementById('habit-insights');
+            const insights = [];
+            
+            if (habits.positive > habits.negative) {
+                insights.push('🎉 Du hast mehr positive als negative Gewohnheiten - das ist großartig!');
+            } else if (habits.negative > habits.positive) {
+                insights.push('⚠️ Du hast mehr negative als positive Gewohnheiten. Fokussiere dich auf das Aufbauen positiver Routinen.');
+            }
+            
+            if (habits.new > 0) {
+                insights.push(`🆕 Du planst ${habits.new} neue Gewohnheit${habits.new > 1 ? 'en' : ''} - das ist ein guter Start!`);
+            }
+            
+            if (habits.positive > 0) {
+                insights.push(`✅ Du hast ${habits.positive} positive Gewohnheit${habits.positive > 1 ? 'en' : ''} - behalte diese bei!`);
+            }
+            
+            if (habits.negative > 0) {
+                insights.push(`❌ Du hast ${habits.negative} negative Gewohnheit${habits.negative > 1 ? 'en' : ''} - arbeite daran, diese zu reduzieren.`);
+            }
+            
+            if (insights.length === 0) {
+                insightsContainer.innerHTML = '<p class="no-insights">Füge Gewohnheiten hinzu, um Insights zu erhalten.</p>';
+            } else {
+                insightsContainer.innerHTML = insights.map(insight => `<div class="insight-item">${insight}</div>`).join('');
+            }
+        }
+        
+        function saveHabits() {
+            const habits = {
+                positive: [],
+                negative: [],
+                new: []
+            };
+            
+            ['positive', 'negative', 'new'].forEach(category => {
+                const container = document.getElementById(`${category}-habits`);
+                const habitItems = container.querySelectorAll('.habit-item-added .habit-text');
+                habits[category] = Array.from(habitItems).map(item => item.textContent);
+            });
+            
+            localStorage.setItem('userHabits', JSON.stringify(habits));
+        }
+        
+        function loadSavedHabits() {
+            const savedHabits = localStorage.getItem('userHabits');
+            if (savedHabits) {
+                const habits = JSON.parse(savedHabits);
+                
+                ['positive', 'negative', 'new'].forEach(category => {
+                    const container = document.getElementById(`${category}-habits`);
+                    habits[category].forEach(habitText => {
+                        const habitItem = document.createElement('div');
+                        habitItem.className = 'habit-item-added';
+                        habitItem.innerHTML = `
+                            <span class="habit-text">${habitText}</span>
+                            <div class="habit-actions">
+                                <button class="btn btn-sm btn-outline" onclick="editHabit(this)">Bearbeiten</button>
+                                <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">Löschen</button>
+                            </div>
+                        `;
+                        container.insertBefore(habitItem, container.querySelector('.habit-item'));
+                    });
+                });
+                
+                updateHabitEvaluation();
+            }
         }
 
         function initCommunication() {
