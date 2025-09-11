@@ -52,6 +52,16 @@ class UserAuth {
         document.querySelectorAll('.auth-switch').forEach(link => {
             link.addEventListener('click', (e) => this.switchAuthForm(e));
         });
+
+        // Tab switching
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const formName = e.target.getAttribute('data-form');
+                console.log('Switching to form:', formName);
+                this.switchToForm(formName);
+            });
+        });
     }
 
     handleLogin(e) {
