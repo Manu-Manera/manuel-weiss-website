@@ -1,0 +1,428 @@
+/* Change Stages Specific Styles */
+
+.change-method {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.precontemplation-section, .contemplation-section, .preparation-section, .action-section, .maintenance-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.precontemplation-section h4, .contemplation-section h4, .preparation-section h4, .action-section h4, .maintenance-section h4 {
+    color: #6366f1;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.precontemplation-section p, .contemplation-section p, .preparation-section p, .action-section p, .maintenance-section p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Form Elements */
+.precontemplation-form, .contemplation-form, .preparation-form, .action-form, .maintenance-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.precontemplation-item, .contemplation-item, .preparation-item, .action-item, .maintenance-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.precontemplation-item label, .contemplation-item label, .preparation-item label, .action-item label, .maintenance-item label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.precontemplation-item textarea, .contemplation-item textarea, .preparation-item textarea, .action-item textarea, .maintenance-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.precontemplation-item textarea:focus, .contemplation-item textarea:focus, .preparation-item textarea:focus, .action-item textarea:focus, .maintenance-item textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Awareness Questions */
+.awareness-questions {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+}
+
+.awareness-questions h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.question-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.question-item label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.question-item textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.question-item textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Pros and Cons Analysis */
+.pros-cons-analysis {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+}
+
+.pros-cons-analysis h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.pros-column, .cons-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pros-column h6, .cons-column h6 {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.pros-list, .cons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pro-item, .cons-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.pro-item:hover {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.cons-item:hover {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.pro-item input, .cons-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: #10b981;
+}
+
+.cons-item input {
+    accent-color: #ef4444;
+}
+
+.pro-item label, .cons-item label {
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Resistance Factors, Elements, Strategies */
+.resistance-factors, .preparation-elements, .action-strategies, .maintenance-elements {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+}
+
+.resistance-factors h5, .preparation-elements h5, .action-strategies h5, .maintenance-elements h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.factors-list, .elements-list, .strategies-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.factor-item, .element-item, .strategy-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.factor-item:hover, .element-item:hover, .strategy-item:hover {
+    border-color: #6366f1;
+    background: #f0f9ff;
+}
+
+.factor-item input, .element-item input, .strategy-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: #6366f1;
+}
+
+.factor-item label, .element-item label, .strategy-item label {
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Practice and Tips Styles */
+.precontemplation-practice, .contemplation-practice, .preparation-practice, .action-practice, .maintenance-practice {
+    background: #f0f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #bae6fd;
+    margin-top: 1.5rem;
+}
+
+.precontemplation-practice h5, .contemplation-practice h5, .preparation-practice h5, .action-practice h5, .maintenance-practice h5 {
+    color: #0284c7;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.practice-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exercise-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.exercise-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.exercise-item textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.exercise-item textarea:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.precontemplation-tips, .contemplation-tips, .preparation-tips, .action-tips, .maintenance-tips {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #bbf7d0;
+    margin-top: 1.5rem;
+}
+
+.precontemplation-tips h5, .contemplation-tips h5, .preparation-tips h5, .action-tips h5, .maintenance-tips h5 {
+    color: #16a34a;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #bbf7d0;
+    transition: all 0.3s ease;
+}
+
+.tip-item:hover {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.tip-content h6 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tip-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Summary */
+.change-summary {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #f59e0b;
+    margin-top: 1.5rem;
+}
+
+.change-summary h5 {
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.summary-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.summary-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.summary-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .change-method {
+        padding: 1rem;
+    }
+    
+    .precontemplation-section, .contemplation-section, .preparation-section, .action-section, .maintenance-section {
+        padding: 1.5rem;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .factors-list, .elements-list, .strategies-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .precontemplation-practice, .contemplation-practice, .preparation-practice, .action-practice, .maintenance-practice,
+    .precontemplation-tips, .contemplation-tips, .preparation-tips, .action-tips, .maintenance-tips,
+    .change-summary {
+        padding: 1rem;
+    }
+    
+    .tip-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
