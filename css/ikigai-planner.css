@@ -7627,11 +7627,12 @@ html {
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .method-card h3 {
@@ -7697,8 +7698,10 @@ html {
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: #ffffff;
     border: 2px solid #6366f1;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    font-weight: 700;
+    font-size: 0.9rem;
 }
 
 .method-card .btn-primary:hover {
@@ -7720,7 +7723,9 @@ html {
     color: #6366f1;
     border: 2px solid #6366f1;
     text-shadow: none;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    font-weight: 600;
+    font-size: 0.85rem;
 }
 
 .method-card .btn-outline:hover {
