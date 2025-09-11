@@ -472,6 +472,32 @@ a:hover {
     padding-left: var(--spacing-lg);
 }
 
+/* Service Card Content Layout */
+.service-card .service-icon {
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.service-card h3 {
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.service-card p {
+    flex: 1;
+    margin-bottom: var(--spacing-lg);
+}
+
+.service-features {
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-lg);
+}
+
+.service-card .btn {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
 .service-features li::before {
     content: '✓';
     position: absolute;
@@ -903,6 +929,22 @@ a:hover {
     
     .btn {
         justify-content: center;
+    }
+    
+    /* Service Cards Mobile Optimization */
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .service-card {
+        min-height: auto;
+        padding: var(--spacing-lg);
+    }
+    
+    .service-card .btn {
+        min-height: 44px;
+        font-size: var(--font-size-sm);
     }
     
     .profile-image {
