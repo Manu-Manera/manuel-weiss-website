@@ -1,599 +1,751 @@
-<div class="workflow-container">
-    <div class="workflow-intro">
-        <h3>Kommunikation: Meistere die Kunst des Miteinanders</h3>
-        <p>Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren. Von aktivem Zuhören über nonverbale Kommunikation bis hin zur Konfliktlösung - entwickle deine zwischenmenschlichen Fähigkeiten.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Aktives Zuhören</span>
-            <span class="feature-badge">Nonverbale Kommunikation</span>
-            <span class="feature-badge">Konfliktlösung</span>
-            <span class="feature-badge">Rhetorik & Präsentation</span>
-        </div>
-    </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Kommunikations-Assessment</div>
-        </div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Aktives Zuhören</div>
-        </div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Nonverbale Kommunikation</div>
-        </div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Konfliktlösung</div>
-        </div>
-    </div>
-    
-    <!-- Step 1: Kommunikations-Assessment -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Kommunikations-Assessment</h3>
-            <p>Bewerte deine aktuellen Kommunikationsfähigkeiten und identifiziere Bereiche für Verbesserungen.</p>
-        </div>
-        
-        <div class="communication-assessment">
-            <div class="assessment-intro">
-                <h4>🗣️ Deine Kommunikationsfähigkeiten</h4>
-                <p>Beantworte die folgenden Fragen ehrlich, um dein Kommunikations-Level zu bewerten.</p>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication - Kommunikationsmodelle</title>
+    <link rel="stylesheet" href="../../css/ikigai-planner.css">
+    <link rel="stylesheet" href="communication.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="communication-method">
+        <div class="method-header">
+            <div class="method-icon">
+                <i class="fas fa-comments"></i>
             </div>
-            
-            <div class="communication-questions">
-                <div class="question-section">
-                    <h5>🎧 Aktives Zuhören</h5>
-                    <div class="question-item">
-                        <label>Ich höre anderen vollständig zu, ohne zu unterbrechen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="listening">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich stelle Rückfragen, um sicherzustellen, dass ich richtig verstanden habe</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="listening">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann die wichtigsten Punkte aus Gesprächen zusammenfassen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="listening">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h5>💬 Verbale Kommunikation</h5>
-                    <div class="question-item">
-                        <label>Ich kann meine Gedanken klar und verständlich ausdrücken</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="verbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich passe meinen Kommunikationsstil an mein Gegenüber an</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="verbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann überzeugend argumentieren und präsentieren</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="verbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h5>👁️ Nonverbale Kommunikation</h5>
-                    <div class="question-item">
-                        <label>Ich achte auf meine Körpersprache und Gestik</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="nonverbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann die Körpersprache anderer interpretieren</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="nonverbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich halte angemessenen Augenkontakt während Gesprächen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="nonverbal">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h5>🤝 Konfliktlösung</h5>
-                    <div class="question-item">
-                        <label>Ich kann Konflikte konstruktiv angehen und lösen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="conflict">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann Kompromisse finden, die alle Parteien zufriedenstellen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="conflict">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann Kritik konstruktiv äußern und annehmen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="communication-slider" min="1" max="10" value="5" data-category="conflict">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="communication-results">
-                <h4>📊 Dein Kommunikations-Score</h4>
-                <div class="score-breakdown">
-                    <div class="score-category">
-                        <h5>Aktives Zuhören</h5>
-                        <div class="score-bar">
-                            <div class="score-fill" id="listening-score" style="width: 0%"></div>
-                        </div>
-                        <span class="score-value" id="listening-value">0/100</span>
-                    </div>
-                    <div class="score-category">
-                        <h5>Verbale Kommunikation</h5>
-                        <div class="score-bar">
-                            <div class="score-fill" id="verbal-score" style="width: 0%"></div>
-                        </div>
-                        <span class="score-value" id="verbal-value">0/100</span>
-                    </div>
-                    <div class="score-category">
-                        <h5>Nonverbale Kommunikation</h5>
-                        <div class="score-bar">
-                            <div class="score-fill" id="nonverbal-score" style="width: 0%"></div>
-                        </div>
-                        <span class="score-value" id="nonverbal-value">0/100</span>
-                    </div>
-                    <div class="score-category">
-                        <h5>Konfliktlösung</h5>
-                        <div class="score-bar">
-                            <div class="score-fill" id="conflict-score" style="width: 0%"></div>
-                        </div>
-                        <span class="score-value" id="conflict-value">0/100</span>
-                    </div>
-                </div>
-                
-                <div class="overall-score">
-                    <h5>Gesamt-Score</h5>
-                    <div class="score-circle">
-                        <div class="score-number" id="overall-communication-score">0</div>
-                        <div class="score-label">von 100</div>
-                    </div>
-                    <div class="score-description" id="communication-description">
-                        Fülle das Assessment aus, um deinen Score zu sehen.
-                    </div>
-                </div>
+            <div class="method-title">
+                <h1>Communication</h1>
+                <p>Effektive Kommunikationsmodelle für bessere Beziehungen</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Step 2: Aktives Zuhören -->
-    <div class="workflow-step" data-step="2">
-        <div class="step-header">
-            <h3>Schritt 2: Aktives Zuhören</h3>
-            <p>Lerne die Kunst des aktiven Zuhörens und verbessere deine Fähigkeit, andere wirklich zu verstehen.</p>
-        </div>
-        
-        <div class="active-listening">
-            <div class="listening-intro">
-                <h4>🎧 Aktives Zuhören</h4>
-                <p>Aktives Zuhören bedeutet, vollständig präsent zu sein und dem Sprecher zu zeigen, dass du wirklich verstehst.</p>
+
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Kommunikationsanalyse</div>
             </div>
-            
-            <div class="listening-techniques">
-                <h4>🛠️ Zuhör-Techniken</h4>
-                <div class="techniques-grid">
-                    <div class="technique-card">
-                        <h5>📝 Paraphrasieren</h5>
-                        <p>Wiederhole das Gehörte in deinen eigenen Worten.</p>
-                        <div class="technique-example">
-                            <strong>Beispiel:</strong> "Du sagst also, dass du dich überfordert fühlst, weil..."
-                        </div>
-                        <button class="btn btn-outline" onclick="practiceTechnique('paraphrasing')">Üben</button>
-                    </div>
-                    
-                    <div class="technique-card">
-                        <h5>❓ Offene Fragen</h5>
-                        <p>Stelle Fragen, die zu ausführlichen Antworten einladen.</p>
-                        <div class="technique-example">
-                            <strong>Beispiel:</strong> "Wie hast du dich dabei gefühlt?"
-                        </div>
-                        <button class="btn btn-outline" onclick="practiceTechnique('open-questions')">Üben</button>
-                    </div>
-                    
-                    <div class="technique-card">
-                        <h5>🔄 Zusammenfassen</h5>
-                        <p>Fasse die wichtigsten Punkte zusammen.</p>
-                        <div class="technique-example">
-                            <strong>Beispiel:</strong> "Lass mich zusammenfassen, was ich verstanden habe..."
-                        </div>
-                        <button class="btn btn-outline" onclick="practiceTechnique('summarizing')">Üben</button>
-                    </div>
-                    
-                    <div class="technique-card">
-                        <h5>💭 Gefühle spiegeln</h5>
-                        <p>Erkenne und spiegle die Emotionen des Sprechers.</p>
-                        <div class="technique-example">
-                            <strong>Beispiel:</strong> "Du wirkst frustriert über diese Situation."
-                        </div>
-                        <button class="btn btn-outline" onclick="practiceTechnique('reflecting')">Üben</button>
-                    </div>
-                </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">Aktives Zuhören</div>
             </div>
-            
-            <div class="listening-practice">
-                <h4>🎯 Zuhör-Übungen</h4>
-                <div class="practice-scenarios">
-                    <div class="scenario-card">
-                        <h5>💼 Arbeitsplatz-Konflikt</h5>
-                        <p>Ein Kollege beschwert sich über die Arbeitsbelastung.</p>
-                        <button class="btn btn-primary" onclick="startListeningExercise('workplace-conflict')">Übung starten</button>
-                    </div>
-                    
-                    <div class="scenario-card">
-                        <h5>👨‍👩‍👧‍👦 Familienproblem</h5>
-                        <p>Ein Familienmitglied teilt persönliche Sorgen mit.</p>
-                        <button class="btn btn-primary" onclick="startListeningExercise('family-issue')">Übung starten</button>
-                    </div>
-                    
-                    <div class="scenario-card">
-                        <h5>👥 Freundschafts-Krise</h5>
-                        <p>Ein Freund ist verletzt und möchte reden.</p>
-                        <button class="btn btn-primary" onclick="startListeningExercise('friendship-crisis')">Übung starten</button>
-                    </div>
-                </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Ich-Botschaften</div>
             </div>
-            
-            <div class="listening-tips">
-                <h4>💡 Zuhör-Tipps</h4>
-                <div class="tips-list">
-                    <div class="tip-item">
-                        <h6>🎯 Vollständige Aufmerksamkeit</h6>
-                        <p>Schalte Ablenkungen aus und konzentriere dich nur auf das Gespräch.</p>
-                    </div>
-                    <div class="tip-item">
-                        <h6>⏸️ Nicht unterbrechen</h6>
-                        <p>Lasse den Sprecher ausreden, auch wenn du etwas Wichtiges sagen möchtest.</p>
-                    </div>
-                    <div class="tip-item">
-                        <h6>👁️ Körpersprache beachten</h6>
-                        <p>Achte auf nonverbale Signale und zeige Interesse durch deine Haltung.</p>
-                    </div>
-                    <div class="tip-item">
-                        <h6>🤔 Vorurteile ablegen</h6>
-                        <p>Höre ohne zu urteilen und mit offenem Geist zu.</p>
-                    </div>
-                </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-title">Konfliktlösung</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-title">Feedback & Reflexion</div>
             </div>
         </div>
-    </div>
-    
-    <!-- Step 3: Nonverbale Kommunikation -->
-    <div class="workflow-step" data-step="3">
-        <div class="step-header">
-            <h3>Schritt 3: Nonverbale Kommunikation</h3>
-            <p>Entwickle dein Bewusstsein für Körpersprache, Gestik und andere nonverbale Signale.</p>
+
+        <div class="workflow-content">
+            <!-- Step 1: Kommunikationsanalyse -->
+            <div class="workflow-step active" id="step-1">
+                <div class="step-header">
+                    <h2>Schritt 1: Kommunikationsanalyse</h2>
+                    <p>Analysiere deine aktuelle Kommunikation und identifiziere Verbesserungsmöglichkeiten</p>
+                </div>
+
+                <div class="communication-analysis">
+                    <h3>🔍 Kommunikationsstile</h3>
+                    <div class="communication-styles">
+                        <div class="style-item">
+                            <h4>Passiv</h4>
+                            <p>Vermeidet Konflikte, unterdrückt eigene Bedürfnisse</p>
+                            <textarea id="passive-style" placeholder="Beschreibe deine passiven Kommunikationsmuster..."></textarea>
+                        </div>
+                        <div class="style-item">
+                            <h4>Aggressiv</h4>
+                            <p>Dominant, verletzt andere, ignoriert deren Bedürfnisse</p>
+                            <textarea id="aggressive-style" placeholder="Beschreibe deine aggressiven Kommunikationsmuster..."></textarea>
+                        </div>
+                        <div class="style-item">
+                            <h4>Passiv-Aggressiv</h4>
+                            <p>Indirekte Aggression, Sarkasmus, Schweigen</p>
+                            <textarea id="passive-aggressive-style" placeholder="Beschreibe deine passiv-aggressiven Muster..."></textarea>
+                        </div>
+                        <div class="style-item">
+                            <h4>Assertiv</h4>
+                            <p>Respektvoll, ehrlich, berücksichtigt beide Seiten</p>
+                            <textarea id="assertive-style" placeholder="Beschreibe deine assertiven Kommunikationsmuster..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="communication-analysis-practice">
+                    <h5>🎯 Übung: Kommunikationsanalyse</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Stil-Identifikation</label>
+                            <textarea id="practice-style-identification" placeholder="Identifiziere deine häufigsten Kommunikationsstile..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Situationsanalyse</label>
+                            <textarea id="practice-situation-analysis" placeholder="Analysiere verschiedene Kommunikationssituationen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Trigger-Erkennung</label>
+                            <textarea id="practice-trigger-recognition" placeholder="Erkenne deine Kommunikations-Trigger..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Muster-Analyse</label>
+                            <textarea id="practice-pattern-analysis" placeholder="Analysiere wiederkehrende Kommunikationsmuster..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Verbesserungsbereiche</label>
+                            <textarea id="practice-improvement-areas" placeholder="Identifiziere Verbesserungsbereiche..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Zielsetzung</label>
+                            <textarea id="practice-goal-setting" placeholder="Setze Kommunikationsziele..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="communication-analysis-tips">
+                    <h5>💡 Tipps für die Kommunikationsanalyse</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🔍</div>
+                            <div class="tip-content">
+                                <h6>Selbstbeobachtung</h6>
+                                <p>Beobachte dich selbst in verschiedenen Situationen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📝</div>
+                            <div class="tip-content">
+                                <h6>Tagebuch führen</h6>
+                                <p>Führe ein Kommunikationstagebuch</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👥</div>
+                            <div class="tip-content">
+                                <h6>Feedback einholen</h6>
+                                <p>Hole Feedback von vertrauten Personen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Fokus auf Muster</h6>
+                                <p>Erkenne wiederkehrende Kommunikationsmuster</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⚖️</div>
+                            <div class="tip-content">
+                                <h6>Neutralität</h6>
+                                <p>Bleibe neutral bei der Selbstanalyse</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Kontinuierlich</h6>
+                                <p>Analysiere kontinuierlich deine Kommunikation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="communication-analysis-scenarios">
+                    <h5>🎭 Kommunikationsanalyse-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Vorgesetzten-Gespräch</h6>
+                            <p><strong>Situation:</strong> Du musst mit deinem Vorgesetzten über ein Problem sprechen.</p>
+                            <textarea id="scenario-boss-conversation" placeholder="Wie würdest du deine Kommunikation analysieren?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Konfliktgespräch</h6>
+                            <p><strong>Situation:</strong> Du hast einen Konflikt mit einem Familienmitglied.</p>
+                            <textarea id="scenario-family-conflict" placeholder="Welche Kommunikationsmuster erkennst du?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Partnerschaftsgespräch</h6>
+                            <p><strong>Situation:</strong> Du möchtest ein wichtiges Thema mit deinem Partner besprechen.</p>
+                            <textarea id="scenario-partner-conversation" placeholder="Wie analysierst du deine Kommunikation?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Aktives Zuhören -->
+            <div class="workflow-step" id="step-2">
+                <div class="step-header">
+                    <h2>Schritt 2: Aktives Zuhören</h2>
+                    <p>Lerne aktives Zuhören für bessere Verständigung und Beziehungen</p>
+                </div>
+
+                <div class="active-listening">
+                    <h3>👂 Aktive Zuhörtechniken</h3>
+                    <div class="listening-techniques">
+                        <div class="technique-item">
+                            <h4>Paraphrasieren</h4>
+                            <p>Wiederhole das Gesagte mit eigenen Worten</p>
+                            <textarea id="paraphrasing-technique" placeholder="Übe das Paraphrasieren..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Spiegeln</h4>
+                            <p>Spiegle Gefühle und Emotionen wider</p>
+                            <textarea id="mirroring-technique" placeholder="Übe das Spiegeln von Emotionen..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Nachfragen</h4>
+                            <p>Stelle offene Fragen für mehr Verständnis</p>
+                            <textarea id="questioning-technique" placeholder="Übe das Nachfragen..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Zusammenfassen</h4>
+                            <p>Fasse das Gesagte zusammen</p>
+                            <textarea id="summarizing-technique" placeholder="Übe das Zusammenfassen..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="active-listening-practice">
+                    <h5>🎯 Übung: Aktives Zuhören</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Paraphrasieren üben</label>
+                            <textarea id="practice-paraphrasing" placeholder="Übe das Paraphrasieren in verschiedenen Situationen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Emotionen spiegeln</label>
+                            <textarea id="practice-emotion-mirroring" placeholder="Übe das Spiegeln von Emotionen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Offene Fragen stellen</label>
+                            <textarea id="practice-open-questions" placeholder="Übe das Stellen offener Fragen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Zusammenfassungen</label>
+                            <textarea id="practice-summarizing" placeholder="Übe das Zusammenfassen von Gesprächen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Körpersprache beachten</label>
+                            <textarea id="practice-body-language" placeholder="Achte auf Körpersprache beim Zuhören..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Störungen vermeiden</label>
+                            <textarea id="practice-distraction-avoidance" placeholder="Vermeide Störungen beim Zuhören..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="active-listening-tips">
+                    <h5>💡 Tipps für aktives Zuhören</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">👂</div>
+                            <div class="tip-content">
+                                <h6>Vollständig zuhören</h6>
+                                <p>Höre vollständig zu, bevor du antwortest</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👁️</div>
+                            <div class="tip-content">
+                                <h6>Augenkontakt halten</h6>
+                                <p>Halte angemessenen Augenkontakt</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Offene Körperhaltung</h6>
+                                <p>Zeige eine offene und zugewandte Körperhaltung</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⏰</div>
+                            <div class="tip-content">
+                                <h6>Zeit geben</h6>
+                                <p>Gib dem Sprecher Zeit zum Formulieren</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Rückmeldung geben</h6>
+                                <p>Gib regelmäßig Rückmeldung über das Verstandene</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Fokus halten</h6>
+                                <p>Halte den Fokus auf den Sprecher</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="active-listening-scenarios">
+                    <h5>🎭 Aktives Zuhören-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Beratung: Klientengespräch</h6>
+                            <p><strong>Situation:</strong> Du führst ein Beratungsgespräch mit einem Klienten.</p>
+                            <textarea id="scenario-client-listening" placeholder="Wie würdest du aktives Zuhören anwenden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Konfliktgespräch</h6>
+                            <p><strong>Situation:</strong> Du hörst einem Familienmitglied in einem Konflikt zu.</p>
+                            <textarea id="scenario-family-listening" placeholder="Welche Zuhörtechniken würdest du verwenden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Arbeit: Teammeeting</h6>
+                            <p><strong>Situation:</strong> Du moderierst ein Teammeeting und hörst verschiedenen Meinungen zu.</p>
+                            <textarea id="scenario-team-listening" placeholder="Wie würdest du aktives Zuhören im Team anwenden?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Ich-Botschaften -->
+            <div class="workflow-step" id="step-3">
+                <div class="step-header">
+                    <h2>Schritt 3: Ich-Botschaften</h2>
+                    <p>Lerne Ich-Botschaften für respektvolle und effektive Kommunikation</p>
+                </div>
+
+                <div class="i-messages">
+                    <h3>💬 Ich-Botschaften Formulierung</h3>
+                    <div class="message-structure">
+                        <div class="structure-item">
+                            <h4>Gefühl ausdrücken</h4>
+                            <p>Ich fühle mich...</p>
+                            <textarea id="feeling-expression" placeholder="Übe das Ausdrücken von Gefühlen..."></textarea>
+                        </div>
+                        <div class="structure-item">
+                            <h4>Situation beschreiben</h4>
+                            <p>Wenn... / Weil...</p>
+                            <textarea id="situation-description" placeholder="Übe das Beschreiben von Situationen..."></textarea>
+                        </div>
+                        <div class="structure-item">
+                            <h4>Bedürfnis kommunizieren</h4>
+                            <p>Ich brauche... / Ich wünsche mir...</p>
+                            <textarea id="need-communication" placeholder="Übe das Kommunizieren von Bedürfnissen..."></textarea>
+                        </div>
+                        <div class="structure-item">
+                            <h4>Bitte formulieren</h4>
+                            <p>Könntest du... / Würdest du...</p>
+                            <textarea id="request-formulation" placeholder="Übe das Formulieren von Bitten..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="i-messages-practice">
+                    <h5>🎯 Übung: Ich-Botschaften</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Gefühle identifizieren</label>
+                            <textarea id="practice-feeling-identification" placeholder="Identifiziere deine Gefühle in verschiedenen Situationen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Situationen beschreiben</label>
+                            <textarea id="practice-situation-description" placeholder="Beschreibe Situationen objektiv..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Bedürfnisse erkennen</label>
+                            <textarea id="practice-need-recognition" placeholder="Erkenne deine Bedürfnisse..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Bitten formulieren</label>
+                            <textarea id="practice-request-formulation" placeholder="Formuliere respektvolle Bitten..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Vollständige Ich-Botschaften</label>
+                            <textarea id="practice-complete-i-messages" placeholder="Formuliere vollständige Ich-Botschaften..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Du-Botschaften vermeiden</label>
+                            <textarea id="practice-avoiding-you-messages" placeholder="Vermeide Du-Botschaften..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="i-messages-tips">
+                    <h5>💡 Tipps für Ich-Botschaften</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">💭</div>
+                            <div class="tip-content">
+                                <h6>Eigene Gefühle</h6>
+                                <p>Spreche über deine eigenen Gefühle</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📝</div>
+                            <div class="tip-content">
+                                <h6>Konkret beschreiben</h6>
+                                <p>Beschreibe die Situation konkret</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Bedürfnisse klar machen</h6>
+                                <p>Mache deine Bedürfnisse klar</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Respektvoll bitten</h6>
+                                <p>Formuliere respektvolle Bitten</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⚖️</div>
+                            <div class="tip-content">
+                                <h6>Verantwortung übernehmen</h6>
+                                <p>Übernimm Verantwortung für deine Gefühle</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Üben</h6>
+                                <p>Übe regelmäßig Ich-Botschaften</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="i-messages-scenarios">
+                    <h5>🎭 Ich-Botschaften-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Kritik äußern</h6>
+                            <p><strong>Situation:</strong> Du möchtest konstruktive Kritik an einem Kollegen äußern.</p>
+                            <textarea id="scenario-work-criticism" placeholder="Wie würdest du eine Ich-Botschaft formulieren?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Grenzen setzen</h6>
+                            <p><strong>Situation:</strong> Du möchtest Grenzen in der Familie setzen.</p>
+                            <textarea id="scenario-family-boundaries" placeholder="Welche Ich-Botschaft würdest du verwenden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Bedürfnisse äußern</h6>
+                            <p><strong>Situation:</strong> Du möchtest deine Bedürfnisse in der Beziehung äußern.</p>
+                            <textarea id="scenario-relationship-needs" placeholder="Wie würdest du deine Bedürfnisse kommunizieren?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Konfliktlösung -->
+            <div class="workflow-step" id="step-4">
+                <div class="step-header">
+                    <h2>Schritt 4: Konfliktlösung</h2>
+                    <p>Lerne effektive Konfliktlösungsstrategien für bessere Beziehungen</p>
+                </div>
+
+                <div class="conflict-resolution">
+                    <h3>⚖️ Konfliktlösungsstrategien</h3>
+                    <div class="resolution-strategies">
+                        <div class="strategy-item">
+                            <h4>Win-Win-Lösung</h4>
+                            <p>Beide Seiten gewinnen durch kreative Lösungen</p>
+                            <textarea id="win-win-solution" placeholder="Übe Win-Win-Lösungen..."></textarea>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>Kompromiss</h4>
+                            <p>Beide Seiten geben etwas auf für eine Lösung</p>
+                            <textarea id="compromise-solution" placeholder="Übe Kompromisse..."></textarea>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>Kollaboration</h4>
+                            <p>Gemeinsame Problemlösung durch Zusammenarbeit</p>
+                            <textarea id="collaboration-solution" placeholder="Übe Kollaboration..."></textarea>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>Mediation</h4>
+                            <p>Neutrale dritte Person hilft bei der Lösung</p>
+                            <textarea id="mediation-solution" placeholder="Übe Mediation..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conflict-resolution-practice">
+                    <h5>🎯 Übung: Konfliktlösung</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Konfliktanalyse</label>
+                            <textarea id="practice-conflict-analysis" placeholder="Analysiere Konflikte systematisch..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Interessen identifizieren</label>
+                            <textarea id="practice-interest-identification" placeholder="Identifiziere die Interessen beider Seiten..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Lösungsoptionen entwickeln</label>
+                            <textarea id="practice-solution-development" placeholder="Entwickle verschiedene Lösungsoptionen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Verhandlungstechniken</label>
+                            <textarea id="practice-negotiation-techniques" placeholder="Übe Verhandlungstechniken..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Emotionen regulieren</label>
+                            <textarea id="practice-emotion-regulation" placeholder="Reguliere Emotionen in Konflikten..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Vereinbarungen treffen</label>
+                            <textarea id="practice-agreement-making" placeholder="Treffe klare Vereinbarungen..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conflict-resolution-tips">
+                    <h5>💡 Tipps für Konfliktlösung</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🔍</div>
+                            <div class="tip-content">
+                                <h6>Konflikt verstehen</h6>
+                                <p>Verstehe den Konflikt vollständig</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👥</div>
+                            <div class="tip-content">
+                                <h6>Beide Seiten hören</h6>
+                                <p>Höre beide Seiten des Konflikts an</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Interessen fokussieren</h6>
+                                <p>Fokussiere auf Interessen, nicht auf Positionen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💡</div>
+                            <div class="tip-content">
+                                <h6>Kreative Lösungen</h6>
+                                <p>Entwickle kreative Lösungsansätze</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Respektvoll bleiben</h6>
+                                <p>Bleibe respektvoll und wertschätzend</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📋</div>
+                            <div class="tip-content">
+                                <h6>Vereinbarungen dokumentieren</h6>
+                                <p>Dokumentiere getroffene Vereinbarungen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conflict-resolution-scenarios">
+                    <h5>🎭 Konfliktlösung-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Teamkonflikt</h6>
+                            <p><strong>Situation:</strong> Du musst einen Konflikt zwischen zwei Teamkollegen lösen.</p>
+                            <textarea id="scenario-team-conflict" placeholder="Wie würdest du den Konflikt lösen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Geschwisterkonflikt</h6>
+                            <p><strong>Situation:</strong> Du moderierst einen Konflikt zwischen Geschwistern.</p>
+                            <textarea id="scenario-sibling-conflict" placeholder="Welche Konfliktlösungsstrategie würdest du anwenden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Partnerschaftskonflikt</h6>
+                            <p><strong>Situation:</strong> Du hast einen Konflikt mit deinem Partner.</p>
+                            <textarea id="scenario-partner-conflict" placeholder="Wie würdest du den Konflikt angehen?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Feedback & Reflexion -->
+            <div class="workflow-step" id="step-5">
+                <div class="step-header">
+                    <h2>Schritt 5: Feedback & Reflexion</h2>
+                    <p>Lerne konstruktives Feedback zu geben und zu empfangen</p>
+                </div>
+
+                <div class="feedback-reflection">
+                    <h3>🔄 Feedback & Reflexion</h3>
+                    <div class="feedback-elements">
+                        <div class="element-item">
+                            <h4>Konstruktives Feedback</h4>
+                            <p>Gebe spezifisches, hilfreiches Feedback</p>
+                            <textarea id="constructive-feedback" placeholder="Übe konstruktives Feedback..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Feedback empfangen</h4>
+                            <p>Empfange Feedback offen und dankbar</p>
+                            <textarea id="receiving-feedback" placeholder="Übe das Empfangen von Feedback..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Selbstreflexion</h4>
+                            <p>Reflektiere über deine Kommunikation</p>
+                            <textarea id="self-reflection" placeholder="Übe Selbstreflexion..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Verbesserungsplan</h4>
+                            <p>Entwickle einen Plan zur Verbesserung</p>
+                            <textarea id="improvement-plan" placeholder="Entwickle einen Verbesserungsplan..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-reflection-practice">
+                    <h5>🎯 Übung: Feedback & Reflexion</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Feedback geben</label>
+                            <textarea id="practice-giving-feedback" placeholder="Übe das Geben von konstruktivem Feedback..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Feedback empfangen</label>
+                            <textarea id="practice-receiving-feedback" placeholder="Übe das Empfangen von Feedback..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Selbstreflexion</label>
+                            <textarea id="practice-self-reflection" placeholder="Übe regelmäßige Selbstreflexion..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Verbesserungsziele</label>
+                            <textarea id="practice-improvement-goals" placeholder="Setze konkrete Verbesserungsziele..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Fortschritt messen</label>
+                            <textarea id="practice-progress-measurement" placeholder="Messe deinen Kommunikationsfortschritt..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Kontinuierliche Verbesserung</label>
+                            <textarea id="practice-continuous-improvement" placeholder="Plane kontinuierliche Verbesserung..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-reflection-tips">
+                    <h5>💡 Tipps für Feedback & Reflexion</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">💬</div>
+                            <div class="tip-content">
+                                <h6>Spezifisch sein</h6>
+                                <p>Gebe spezifisches und konkretes Feedback</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⏰</div>
+                            <div class="tip-content">
+                                <h6>Rechtzeitig</h6>
+                                <p>Gebe Feedback rechtzeitig und regelmäßig</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Respektvoll</h6>
+                                <p>Bleibe respektvoll und wertschätzend</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👂</div>
+                            <div class="tip-content">
+                                <h6>Offen empfangen</h6>
+                                <p>Empfange Feedback offen und dankbar</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔍</div>
+                            <div class="tip-content">
+                                <h6>Regelmäßig reflektieren</h6>
+                                <p>Reflektiere regelmäßig über deine Kommunikation</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📈</div>
+                            <div class="tip-content">
+                                <h6>Fortschritt verfolgen</h6>
+                                <p>Verfolge deinen Kommunikationsfortschritt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-reflection-scenarios">
+                    <h5>🎭 Feedback & Reflexion-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Mitarbeiterfeedback</h6>
+                            <p><strong>Situation:</strong> Du gibst Feedback an einen Mitarbeiter.</p>
+                            <textarea id="scenario-employee-feedback" placeholder="Wie würdest du konstruktives Feedback geben?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Familienfeedback</h6>
+                            <p><strong>Situation:</strong> Du reflektierst über die Kommunikation in deiner Familie.</p>
+                            <textarea id="scenario-family-feedback" placeholder="Wie würdest du die Familienkommunikation verbessern?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Partnerschaftsfeedback</h6>
+                            <p><strong>Situation:</strong> Du möchtest die Kommunikation in deiner Beziehung verbessern.</p>
+                            <textarea id="scenario-relationship-feedback" placeholder="Wie würdest du die Partnerschaftskommunikation verbessern?"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="communication-summary">
+                    <h5>🎉 Communication Zusammenfassung</h5>
+                    <div class="summary-form">
+                        <div class="summary-item">
+                            <label>Hauptkommunikationsstil:</label>
+                            <textarea id="main-communication-style" placeholder="Welcher ist dein Hauptkommunikationsstil?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Wichtigste Erkenntnisse:</label>
+                            <textarea id="key-communication-insights" placeholder="Was waren deine wichtigsten Erkenntnisse?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Verbesserungsbereiche:</label>
+                            <textarea id="communication-improvement-areas" placeholder="Welche Bereiche möchtest du verbessern?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Nächste Schritte:</label>
+                            <textarea id="communication-next-steps" placeholder="Welche nächsten Schritte sind sinnvoll?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Lernpunkte:</label>
+                            <textarea id="communication-learning-points" placeholder="Was hast du für die Zukunft gelernt?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="nonverbal-communication">
-            <div class="nonverbal-intro">
-                <h4>👁️ Nonverbale Kommunikation</h4>
-                <p>Über 70% unserer Kommunikation erfolgt nonverbal. Lerne, diese Signale zu verstehen und bewusst einzusetzen.</p>
-            </div>
-            
-            <div class="nonverbal-elements">
-                <h4>🧩 Elemente der Körpersprache</h4>
-                <div class="elements-grid">
-                    <div class="element-card">
-                        <h5>👀 Augenkontakt</h5>
-                        <p>Zeigt Aufmerksamkeit und Vertrauen</p>
-                        <div class="element-tips">
-                            <ul>
-                                <li>Halte angemessenen Augenkontakt</li>
-                                <li>Vermeide starren Blick</li>
-                                <li>Schau bei Gedanken kurz weg</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="element-card">
-                        <h5>🤲 Gestik</h5>
-                        <p>Unterstützt und verstärkt deine Worte</p>
-                        <div class="element-tips">
-                            <ul>
-                                <li>Nutze offene Handhaltungen</li>
-                                <li>Vermeide verschränkte Arme</li>
-                                <li>Gestikuliere natürlich</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="element-card">
-                        <h5>🚶 Körperhaltung</h5>
-                        <p>Zeigt Selbstbewusstsein und Offenheit</p>
-                        <div class="element-tips">
-                            <ul>
-                                <li>Stehe/sitze aufrecht</li>
-                                <li>Lehne dich leicht vor</li>
-                                <li>Vermeide verschlossene Haltungen</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="element-card">
-                        <h5>😊 Gesichtsausdruck</h5>
-                        <p>Spiegelt deine Emotionen wider</p>
-                        <div class="element-tips">
-                            <ul>
-                                <li>Lächele angemessen</li>
-                                <li>Zeige echte Emotionen</li>
-                                <li>Vermeide Pokerface</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="nonverbal-practice">
-                <h4>🎭 Körpersprache-Übungen</h4>
-                <div class="practice-exercises">
-                    <div class="exercise-card">
-                        <h5>🪞 Spiegel-Übung</h5>
-                        <p>Übe vor dem Spiegel verschiedene Gesichtsausdrücke und Gesten.</p>
-                        <button class="btn btn-outline" onclick="startMirrorExercise()">Übung starten</button>
-                    </div>
-                    
-                    <div class="exercise-card">
-                        <h5>👥 Beobachtungs-Übung</h5>
-                        <p>Beobachte die Körpersprache anderer Menschen in verschiedenen Situationen.</p>
-                        <button class="btn btn-outline" onclick="startObservationExercise()">Übung starten</button>
-                    </div>
-                    
-                    <div class="exercise-card">
-                        <h5>🎬 Video-Analyse</h5>
-                        <p>Analysiere deine eigene Körpersprache in Videoaufnahmen.</p>
-                        <button class="btn btn-outline" onclick="startVideoAnalysis()">Übung starten</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="nonverbal-scenarios">
-                <h4>🎯 Situations-spezifische Körpersprache</h4>
-                <div class="scenarios-list">
-                    <div class="scenario-item">
-                        <h5>💼 Job-Interview</h5>
-                        <div class="scenario-tips">
-                            <p><strong>Do's:</strong> Aufrechte Haltung, fester Händedruck, direkter Augenkontakt</p>
-                            <p><strong>Don'ts:</strong> Verschränkte Arme, wegschauen, nervöse Gesten</p>
-                        </div>
-                    </div>
-                    
-                    <div class="scenario-item">
-                        <h5>👥 Präsentation</h5>
-                        <div class="scenario-tips">
-                            <p><strong>Do's:</strong> Offene Gesten, Blickkontakt mit Publikum, entspannte Haltung</p>
-                            <p><strong>Don'ts:</strong> In den Taschen spielen, monoton stehen, Publikum ignorieren</p>
-                        </div>
-                    </div>
-                    
-                    <div class="scenario-item">
-                        <h5>💕 Romantisches Date</h5>
-                        <div class="scenario-tips">
-                            <p><strong>Do's:</strong> Lächeln, offene Körperhaltung, Interesse zeigen</p>
-                            <p><strong>Don'ts:</strong> Abweisende Gesten, Handy checken, verschlossene Haltung</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Step 4: Konfliktlösung -->
-    <div class="workflow-step" data-step="4">
-        <div class="step-header">
-            <h3>Schritt 4: Konfliktlösung</h3>
-            <p>Lerne, Konflikte konstruktiv zu lösen und aus schwierigen Situationen positive Ergebnisse zu erzielen.</p>
-        </div>
-        
-        <div class="conflict-resolution">
-            <div class="conflict-intro">
-                <h4>🤝 Konfliktlösung</h4>
-                <p>Konflikte sind unvermeidlich, aber sie können konstruktiv gelöst werden. Lerne verschiedene Strategien kennen.</p>
-            </div>
-            
-            <div class="conflict-styles">
-                <h4>🎭 Konfliktlösungs-Stile</h4>
-                <div class="styles-grid">
-                    <div class="style-card">
-                        <h5>🏆 Durchsetzen</h5>
-                        <p>Deine Interessen durchsetzen, auch auf Kosten anderer.</p>
-                        <div class="style-when">
-                            <strong>Wann anwenden:</strong> Bei wichtigen Prinzipien oder Zeitdruck
-                        </div>
-                    </div>
-                    
-                    <div class="style-card">
-                        <h5>🤝 Zusammenarbeiten</h5>
-                        <p>Gemeinsam eine Lösung finden, die alle zufriedenstellt.</p>
-                        <div class="style-when">
-                            <strong>Wann anwenden:</strong> Bei komplexen Problemen oder wichtigen Beziehungen
-                        </div>
-                    </div>
-                    
-                    <div class="style-card">
-                        <h5>🔄 Kompromiss</h5>
-                        <p>Teilweise Zugeständnisse von beiden Seiten.</p>
-                        <div class="style-when">
-                            <strong>Wann anwenden:</strong> Bei gleichwertigen Interessen oder Zeitdruck
-                        </div>
-                    </div>
-                    
-                    <div class="style-card">
-                        <h5>😌 Nachgeben</h5>
-                        <p>Deine Interessen zurückstellen für Harmonie.</p>
-                        <div class="style-when">
-                            <strong>Wann anwenden:</strong> Bei unwichtigen Themen oder um Beziehungen zu schützen
-                        </div>
-                    </div>
-                    
-                    <div class="style-card">
-                        <h5>🚫 Vermeiden</h5>
-                        <p>Konflikt umgehen oder aufschieben.</p>
-                        <div class="style-when">
-                            <strong>Wann anwenden:</strong> Bei emotionalen Situationen oder wenn Zeit fehlt
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="conflict-process">
-                <h4>📋 Konfliktlösungs-Prozess</h4>
-                <div class="process-steps">
-                    <div class="step-item">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h5>Konflikt erkennen</h5>
-                            <p>Identifiziere den Konflikt und seine Ursachen.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h5>Perspektiven verstehen</h5>
-                            <p>Verstehe die Sichtweisen aller Beteiligten.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h5>Lösungen entwickeln</h5>
-                            <p>Brainstorming für verschiedene Lösungsansätze.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h5>Lösung wählen</h5>
-                            <p>Bewerte Optionen und wähle die beste Lösung.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h5>Umsetzen und evaluieren</h5>
-                            <p>Setze die Lösung um und überprüfe den Erfolg.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="conflict-tools">
-                <h4>🛠️ Konfliktlösungs-Tools</h4>
-                <div class="tools-list">
-                    <div class="tool-item">
-                        <h5>🎯 Ich-Botschaften</h5>
-                        <p>Drücke deine Gefühle aus, ohne zu beschuldigen.</p>
-                        <div class="tool-example">
-                            <strong>Statt:</strong> "Du machst mich wütend!"<br>
-                            <strong>Besser:</strong> "Ich fühle mich wütend, wenn..."
-                        </div>
-                    </div>
-                    
-                    <div class="tool-item">
-                        <h5>🔄 Aktives Zuhören</h5>
-                        <p>Zeige Verständnis für die andere Seite.</p>
-                        <div class="tool-example">
-                            <strong>Beispiel:</strong> "Ich verstehe, dass du dich so fühlst, weil..."
-                        </div>
-                    </div>
-                    
-                    <div class="tool-item">
-                        <h5>🤝 Win-Win-Lösungen</h5>
-                        <p>Suche nach Lösungen, die allen nützen.</p>
-                        <div class="tool-example">
-                            <strong>Frage:</strong> "Wie können wir beide bekommen, was wir brauchen?"
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="conflict-practice">
-                <h4>🎯 Konflikt-Übungen</h4>
-                <div class="practice-scenarios">
-                    <div class="scenario-card">
-                        <h5>💼 Arbeitsplatz-Konflikt</h5>
-                        <p>Meinungsverschiedenheit mit einem Kollegen über ein Projekt.</p>
-                        <button class="btn btn-primary" onclick="startConflictExercise('workplace')">Übung starten</button>
-                    </div>
-                    
-                    <div class="scenario-card">
-                        <h5>🏠 Familien-Konflikt</h5>
-                        <p>Streit mit Familienmitgliedern über wichtige Entscheidungen.</p>
-                        <button class="btn btn-primary" onclick="startConflictExercise('family')">Übung starten</button>
-                    </div>
-                    
-                    <div class="scenario-card">
-                        <h5>👥 Freundschafts-Konflikt</h5>
-                        <p>Missverständnis mit einem guten Freund.</p>
-                        <button class="btn btn-primary" onclick="startConflictExercise('friendship')">Übung starten</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+
+        <div class="workflow-navigation">
+            <button id="prev-step" class="nav-button prev-button" onclick="previousStep()">
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button id="next-step" class="nav-button next-button" onclick="nextStep()">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
-</div>
+
+    <script src="communication.js"></script>
+</body>
+</html>

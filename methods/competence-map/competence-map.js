@@ -1,5 +1,5 @@
-// Communication Method JavaScript
-class Communication {
+// Competence Map Method JavaScript
+class CompetenceMap {
     constructor() {
         this.currentStep = 1;
         this.totalSteps = 5;
@@ -91,7 +91,7 @@ class Communication {
 
     saveProgress() {
         const formData = this.getFormData();
-        localStorage.setItem('communication-progress', JSON.stringify({
+        localStorage.setItem('competence-map-progress', JSON.stringify({
             currentStep: this.currentStep,
             formData: formData,
             timestamp: new Date().toISOString()
@@ -99,7 +99,7 @@ class Communication {
     }
 
     loadSavedData() {
-        const savedData = localStorage.getItem('communication-progress');
+        const savedData = localStorage.getItem('competence-map-progress');
         if (savedData) {
             try {
                 const data = JSON.parse(savedData);
@@ -137,7 +137,7 @@ class Communication {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new Communication();
+    new CompetenceMap();
 });
 
-window.Communication = Communication;
+window.CompetenceMap = CompetenceMap;
