@@ -1,5 +1,5 @@
-/* Emotional Intelligence Method Styles */
-.emotional-method {
+/* Conflict Escalation Method Styles */
+.conflict-method {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
@@ -20,7 +20,7 @@
 
 .method-icon {
     font-size: 3rem;
-    color: #ec4899;
+    color: #dc2626;
     margin-bottom: 1rem;
 }
 
@@ -29,7 +29,7 @@
     font-weight: 700;
     color: #1f2937;
     margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -65,15 +65,15 @@
 }
 
 .progress-step:hover {
-    background: rgba(236, 72, 153, 0.1);
+    background: rgba(220, 38, 38, 0.1);
     transform: translateY(-2px);
 }
 
 .progress-step.active {
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
 }
 
 .step-number {
@@ -91,7 +91,7 @@
 
 .progress-step.active .step-number {
     background: white;
-    color: #ec4899;
+    color: #dc2626;
 }
 
 .step-title {
@@ -130,7 +130,7 @@
     font-weight: 700;
     color: #1f2937;
     margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -143,23 +143,23 @@
     font-weight: 500;
 }
 
-/* Self Awareness */
-.self-awareness {
-    background: #fdf2f8;
+/* Conflict Analysis */
+.conflict-analysis {
+    background: #fef2f2;
     border-radius: 12px;
     padding: 1.5rem;
-    border: 2px solid #ec4899;
+    border: 2px solid #dc2626;
     margin-bottom: 2rem;
 }
 
-.self-awareness h3 {
-    color: #be185d;
+.conflict-analysis h3 {
+    color: #991b1b;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.awareness-elements {
+.analysis-elements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -169,13 +169,13 @@
     background: white;
     border-radius: 8px;
     padding: 1.5rem;
-    border: 1px solid #ec4899;
+    border: 1px solid #dc2626;
     transition: all 0.3s ease;
 }
 
 .element-item:hover {
-    border-color: #be185d;
-    box-shadow: 0 5px 15px rgba(236, 72, 153, 0.1);
+    border-color: #b91c1c;
+    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.1);
 }
 
 .element-item h4 {
@@ -204,12 +204,77 @@
 
 .element-item textarea:focus {
     outline: none;
-    border-color: #ec4899;
-    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
-/* Self Regulation */
-.self-regulation {
+/* Escalation Stages */
+.escalation-stages {
+    background: #fef3c7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #f59e0b;
+    margin-bottom: 2rem;
+}
+
+.escalation-stages h3 {
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.stages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.stage-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #f59e0b;
+    transition: all 0.3s ease;
+}
+
+.stage-item:hover {
+    border-color: #d97706;
+    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.1);
+}
+
+.stage-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.stage-item p {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.stage-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.stage-item textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Deescalation Techniques */
+.deescalation-techniques {
     background: #f0f9ff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -217,14 +282,14 @@
     margin-bottom: 2rem;
 }
 
-.self-regulation h3 {
+.deescalation-techniques h3 {
     color: #0c4a6e;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.regulation-techniques {
+.techniques-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -273,30 +338,8 @@
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-/* Motivation Development */
-.motivation-development {
-    background: #fef3c7;
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 2px solid #f59e0b;
-    margin-bottom: 2rem;
-}
-
-.motivation-development h3 {
-    color: #92400e;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-}
-
-.motivation-elements {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Empathy Development */
-.empathy-development {
+/* Conflict Prevention */
+.conflict-prevention {
     background: #f3e8ff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -304,20 +347,20 @@
     margin-bottom: 2rem;
 }
 
-.empathy-development h3 {
+.conflict-prevention h3 {
     color: #6b21a8;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.empathy-skills {
+.prevention-strategies {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.skill-item {
+.strategy-item {
     background: white;
     border-radius: 8px;
     padding: 1.5rem;
@@ -325,25 +368,25 @@
     transition: all 0.3s ease;
 }
 
-.skill-item:hover {
+.strategy-item:hover {
     border-color: #7c3aed;
     box-shadow: 0 5px 15px rgba(139, 92, 246, 0.1);
 }
 
-.skill-item h4 {
+.strategy-item h4 {
     margin: 0 0 0.5rem 0;
     color: #1f2937;
     font-size: 1.1rem;
     font-weight: 600;
 }
 
-.skill-item p {
+.strategy-item p {
     margin: 0 0 1rem 0;
     color: #6b7280;
     font-size: 0.9rem;
 }
 
-.skill-item textarea {
+.strategy-item textarea {
     width: 100%;
     min-height: 100px;
     padding: 0.75rem 1rem;
@@ -354,14 +397,14 @@
     transition: all 0.3s ease;
 }
 
-.skill-item textarea:focus {
+.strategy-item textarea:focus {
     outline: none;
     border-color: #8b5cf6;
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
-/* Social Skills */
-.social-skills {
+/* Reflection Learning */
+.reflection-learning {
     background: #ecfdf5;
     border-radius: 12px;
     padding: 1.5rem;
@@ -369,22 +412,22 @@
     margin-bottom: 2rem;
 }
 
-.social-skills h3 {
+.reflection-learning h3 {
     color: #047857;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.social-skills-elements {
+.learning-elements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
 /* Practice Exercises */
-.self-awareness-practice, .self-regulation-practice, .motivation-development-practice, 
-.empathy-development-practice, .social-skills-practice {
+.conflict-analysis-practice, .escalation-stages-practice, .deescalation-techniques-practice, 
+.conflict-prevention-practice, .reflection-learning-practice {
     background: #f8fafc;
     border-radius: 12px;
     padding: 1.5rem;
@@ -392,8 +435,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-practice h5, .self-regulation-practice h5, .motivation-development-practice h5, 
-.empathy-development-practice h5, .social-skills-practice h5 {
+.conflict-analysis-practice h5, .escalation-stages-practice h5, .deescalation-techniques-practice h5, 
+.conflict-prevention-practice h5, .reflection-learning-practice h5 {
     color: #1f2937;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -415,8 +458,8 @@
 }
 
 .exercise-item:hover {
-    border-color: #ec4899;
-    box-shadow: 0 3px 10px rgba(236, 72, 153, 0.1);
+    border-color: #dc2626;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.1);
 }
 
 .exercise-item label {
@@ -440,13 +483,13 @@
 
 .exercise-item textarea:focus {
     outline: none;
-    border-color: #ec4899;
-    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* Tips */
-.self-awareness-tips, .self-regulation-tips, .motivation-development-tips, 
-.empathy-development-tips, .social-skills-tips {
+.conflict-analysis-tips, .escalation-stages-tips, .deescalation-techniques-tips, 
+.conflict-prevention-tips, .reflection-learning-tips {
     background: #fef3c7;
     border-radius: 12px;
     padding: 1.5rem;
@@ -454,8 +497,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-tips h5, .self-regulation-tips h5, .motivation-development-tips h5, 
-.empathy-development-tips h5, .social-skills-tips h5 {
+.conflict-analysis-tips h5, .escalation-stages-tips h5, .deescalation-techniques-tips h5, 
+.conflict-prevention-tips h5, .reflection-learning-tips h5 {
     color: #92400e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -505,8 +548,8 @@
 }
 
 /* Scenarios */
-.self-awareness-scenarios, .self-regulation-scenarios, .motivation-development-scenarios, 
-.empathy-development-scenarios, .social-skills-scenarios {
+.conflict-analysis-scenarios, .escalation-stages-scenarios, .deescalation-techniques-scenarios, 
+.conflict-prevention-scenarios, .reflection-learning-scenarios {
     background: #fef3c7;
     border-radius: 12px;
     padding: 1.5rem;
@@ -514,8 +557,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-scenarios h5, .self-regulation-scenarios h5, .motivation-development-scenarios h5, 
-.empathy-development-scenarios h5, .social-skills-scenarios h5 {
+.conflict-analysis-scenarios h5, .escalation-stages-scenarios h5, .deescalation-techniques-scenarios h5, 
+.conflict-prevention-scenarios h5, .reflection-learning-scenarios h5 {
     color: #92400e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -573,7 +616,7 @@
 }
 
 /* Summary */
-.emotional-summary {
+.conflict-summary {
     background: #f0f9ff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -581,7 +624,7 @@
     margin-top: 1.5rem;
 }
 
-.emotional-summary h5 {
+.conflict-summary h5 {
     color: #0c4a6e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -661,13 +704,13 @@
 }
 
 .next-button {
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
     color: white;
 }
 
 .next-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
 }
 
 .nav-button:disabled {
@@ -678,7 +721,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .emotional-method {
+    .conflict-method {
         padding: 1rem;
     }
     
@@ -703,8 +746,8 @@
         padding: 1.5rem;
     }
     
-    .awareness-elements, .regulation-techniques, .motivation-elements, 
-    .empathy-skills, .social-skills-elements {
+    .analysis-elements, .stages-grid, .techniques-grid, 
+    .prevention-strategies, .learning-elements {
         grid-template-columns: 1fr;
     }
     

@@ -1,140 +1,764 @@
-<div class="workflow-container">
-    <div class="workflow-intro">
-        <h3>Johari Window - Selbst- und Fremdbild</h3>
-        <p>Entdecke die vier Bereiche deines Selbst: Was du über dich weißt und was andere über dich wissen.</p>
-    </div>
-
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Selbstbild</div>
-        </div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Fremdbild</div>
-        </div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Blinder Fleck</div>
-        </div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Unbekanntes</div>
-        </div>
-    </div>
-
-    <div class="workflow-content">
-        <div class="workflow-step active" data-step="1">
-            <div class="step-header">
-                <h3>Schritt 1: Selbstbild - Was du über dich weißt</h3>
-                <p>Identifiziere deine eigenen Stärken, Schwächen und Eigenschaften.</p>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johari Window - Selbst- und Fremdbild</title>
+    <link rel="stylesheet" href="../../css/ikigai-planner.css">
+    <link rel="stylesheet" href="johari-window.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="johari-method">
+        <div class="method-header">
+            <div class="method-icon">
+                <i class="fas fa-window-maximize"></i>
             </div>
+            <div class="method-title">
+                <h1>Johari Window</h1>
+                <p>Selbst- und Fremdbild analysieren für bessere Selbsterkenntnis</p>
+            </div>
+        </div>
 
-            <div class="johari-window">
-                <div class="johari-quadrant public">
-                    <h4>Öffentlich (Ich weiß, andere wissen)</h4>
-                    <p>Eigenschaften, die sowohl dir als auch anderen bekannt sind.</p>
-                    <div class="johari-traits">
-                        <div class="trait-category">
-                            <h5>Stärken</h5>
-                            <div class="trait-list">
-                                <div class="trait-item">
-                                    <input type="checkbox" id="trait1">
-                                    <span>Kommunikativ</span>
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Selbstbild</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">Fremdbild</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Blinder Fleck</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-title">Unbekanntes</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-title">Integration</div>
+            </div>
+        </div>
+
+        <div class="workflow-content">
+            <!-- Step 1: Selbstbild -->
+            <div class="workflow-step active" id="step-1">
+                <div class="step-header">
+                    <h2>Schritt 1: Selbstbild - Was du über dich weißt</h2>
+                    <p>Identifiziere deine eigenen Stärken, Schwächen und Eigenschaften</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-user"></i> Was ist das Selbstbild?</h3>
+                        <p>Das Selbstbild ist die Art, wie du dich selbst siehst. Es umfasst deine bewussten Eigenschaften, Stärken, Schwächen und Verhaltensweisen.</p>
+                    </div>
+
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: Selbstbild-Analyse</h3>
+                        <div class="exercise-content">
+                            <div class="self-image-analysis">
+                                <h4>Persönliche Eigenschaften</h4>
+                                <div class="trait-categories">
+                                    <div class="trait-category">
+                                        <h5>Stärken und Talente</h5>
+                                        <div class="trait-list">
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="strength-1">
+                                                <label for="strength-1">Kommunikativ</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="strength-2">
+                                                <label for="strength-2">Zuverlässig</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="strength-3">
+                                                <label for="strength-3">Kreativ</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="strength-4">
+                                                <label for="strength-4">Analytisch</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="strength-5">
+                                                <label for="strength-5">Empathisch</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="trait-category">
+                                        <h5>Schwächen und Entwicklungsfelder</h5>
+                                        <div class="trait-list">
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="weakness-1">
+                                                <label for="weakness-1">Perfektionismus</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="weakness-2">
+                                                <label for="weakness-2">Prokrastination</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="weakness-3">
+                                                <label for="weakness-3">Konfliktvermeidung</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="weakness-4">
+                                                <label for="weakness-4">Ungeduld</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
+                                            </div>
+                                            <div class="trait-item">
+                                                <input type="checkbox" id="weakness-5">
+                                                <label for="weakness-5">Kritikempfindlichkeit</label>
+                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="trait-item">
-                                    <input type="checkbox" id="trait2">
-                                    <span>Zuverlässig</span>
+
+                                <h4>Verhaltensmuster</h4>
+                                <div class="behavior-patterns">
+                                    <div class="pattern-item">
+                                        <label>Wie reagierst du unter Stress?</label>
+                                        <textarea placeholder="Beschreibe deine typischen Stressreaktionen..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Wie verhältst du dich in Konflikten?</label>
+                                        <textarea placeholder="Beschreibe dein Konfliktverhalten..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Wie gehst du mit Kritik um?</label>
+                                        <textarea placeholder="Beschreibe deine Reaktion auf Kritik..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Wie verhältst du dich in Gruppen?</label>
+                                        <textarea placeholder="Beschreibe dein Gruppenverhalten..."></textarea>
+                                    </div>
                                 </div>
-                                <div class="trait-item">
-                                    <input type="checkbox" id="trait3">
-                                    <span>Kreativ</span>
+
+                                <h4>Werte und Überzeugungen</h4>
+                                <div class="values-beliefs">
+                                    <div class="value-item">
+                                        <label>Was sind deine wichtigsten Werte?</label>
+                                        <textarea placeholder="Liste deine wichtigsten Werte auf..."></textarea>
+                                    </div>
+                                    <div class="value-item">
+                                        <label>Welche Überzeugungen leiten dich?</label>
+                                        <textarea placeholder="Beschreibe deine wichtigsten Überzeugungen..."></textarea>
+                                    </div>
+                                    <div class="value-item">
+                                        <label>Was motiviert dich?</label>
+                                        <textarea placeholder="Was treibt dich an?"></textarea>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Selbstbild-Analyse</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Ehrlich sein</h4>
+                                <p>Sei ehrlich zu dir selbst, auch wenn es unangenehm ist.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-balance-scale"></i>
+                                <h4>Ausgewogen betrachten</h4>
+                                <p>Betrachte sowohl Stärken als auch Schwächen objektiv.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-history"></i>
+                                <h4>Vergangenheit reflektieren</h4>
+                                <p>Denke an konkrete Situationen aus der Vergangenheit.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-eye"></i>
+                                <h4>Selbstbeobachtung</h4>
+                                <p>Beobachte dich selbst in verschiedenen Situationen.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="examples-section">
+                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
+                        <div class="example-item">
+                            <h4>Stärke: Kommunikativ</h4>
+                            <p><strong>Beschreibung:</strong> "Ich kann gut erklären und andere für meine Ideen begeistern. In Meetings fühle ich mich wohl und kann komplexe Sachverhalte verständlich darstellen."</p>
+                        </div>
+                        <div class="example-item">
+                            <h4>Schwäche: Perfektionismus</h4>
+                            <p><strong>Beschreibung:</strong> "Ich verbringe zu viel Zeit mit Details und kann schwer loslassen. Manchmal verzögert das meine Projekte."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Fremdbild -->
+            <div class="workflow-step" id="step-2">
+                <div class="step-header">
+                    <h2>Schritt 2: Fremdbild - Was andere über dich wissen</h2>
+                    <p>Erkenne, wie andere dich wahrnehmen und welche Eigenschaften sie dir zuschreiben</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-users"></i> Was ist das Fremdbild?</h3>
+                        <p>Das Fremdbild ist die Art, wie andere dich wahrnehmen. Es kann sich vom Selbstbild unterscheiden und bietet wertvolle Erkenntnisse.</p>
+                    </div>
+
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: Fremdbild-Analyse</h3>
+                        <div class="exercise-content">
+                            <div class="external-image-analysis">
+                                <h4>Feedback sammeln</h4>
+                                <div class="feedback-sources">
+                                    <div class="source-category">
+                                        <h5>Berufliches Umfeld</h5>
+                                        <div class="feedback-item">
+                                            <label>Kollegen</label>
+                                            <textarea placeholder="Was sagen deine Kollegen über dich?"></textarea>
+                                        </div>
+                                        <div class="feedback-item">
+                                            <label>Vorgesetzte</label>
+                                            <textarea placeholder="Welches Feedback hast du von Vorgesetzten erhalten?"></textarea>
+                                        </div>
+                                        <div class="feedback-item">
+                                            <label>Mitarbeiter</label>
+                                            <textarea placeholder="Wie sehen dich deine Mitarbeiter?"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="source-category">
+                                        <h5>Privates Umfeld</h5>
+                                        <div class="feedback-item">
+                                            <label>Familie</label>
+                                            <textarea placeholder="Was sagt deine Familie über dich?"></textarea>
+                                        </div>
+                                        <div class="feedback-item">
+                                            <label>Freunde</label>
+                                            <textarea placeholder="Wie beschreiben dich deine Freunde?"></textarea>
+                                        </div>
+                                        <div class="feedback-item">
+                                            <label>Partner</label>
+                                            <textarea placeholder="Welches Feedback gibt dir dein Partner/deine Partnerin?"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4>Wahrnehmungsmuster</h4>
+                                <div class="perception-patterns">
+                                    <div class="pattern-item">
+                                        <label>Wie wirst du in verschiedenen Situationen wahrgenommen?</label>
+                                        <textarea placeholder="Beschreibe, wie andere dich in verschiedenen Kontexten sehen..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Welche Eigenschaften werden dir zugeschrieben?</label>
+                                        <textarea placeholder="Liste Eigenschaften auf, die andere dir zuschreiben..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Welche Erwartungen haben andere an dich?</label>
+                                        <textarea placeholder="Welche Erwartungen spürst du von anderen?"></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Körpersprache und Ausstrahlung</h4>
+                                <div class="body-language">
+                                    <div class="language-item">
+                                        <label>Wie wirkst du auf andere?</label>
+                                        <textarea placeholder="Beschreibe deine Ausstrahlung und Wirkung..."></textarea>
+                                    </div>
+                                    <div class="language-item">
+                                        <label>Welche Körpersprache zeigst du?</label>
+                                        <textarea placeholder="Wie verhältst du dich körperlich?"></textarea>
+                                    </div>
+                                    <div class="language-item">
+                                        <label>Wie kommunizierst du?</label>
+                                        <textarea placeholder="Beschreibe deinen Kommunikationsstil..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Fremdbild-Analyse</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-comments"></i>
+                                <h4>Feedback einholen</h4>
+                                <p>Bitte andere um ehrliches, konstruktives Feedback.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-search"></i>
+                                <h4>Beobachten</h4>
+                                <p>Beobachte, wie andere auf dich reagieren.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-balance-scale"></i>
+                                <h4>Verschiedene Quellen</h4>
+                                <p>Hole Feedback aus verschiedenen Lebensbereichen.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Offen bleiben</h4>
+                                <p>Sei offen für überraschende Erkenntnisse.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="examples-section">
+                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
+                        <div class="example-item">
+                            <h4>Kollegen-Feedback</h4>
+                            <p><strong>Feedback:</strong> "Du bist sehr strukturiert und organisiert, manchmal aber auch etwas starr in deinen Ansätzen."</p>
+                        </div>
+                        <div class="example-item">
+                            <h4>Freunde-Feedback</h4>
+                            <p><strong>Feedback:</strong> "Du bist ein guter Zuhörer und immer da, wenn man dich braucht. Du machst dir aber oft zu viele Sorgen."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Blinder Fleck -->
+            <div class="workflow-step" id="step-3">
+                <div class="step-header">
+                    <h2>Schritt 3: Blinder Fleck - Was andere sehen, du aber nicht</h2>
+                    <p>Entdecke Eigenschaften, die andere an dir bemerken, die dir aber nicht bewusst sind</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-eye-slash"></i> Was ist der Blinde Fleck?</h3>
+                        <p>Der Blinde Fleck umfasst Eigenschaften und Verhaltensweisen, die andere an dir bemerken, die dir aber selbst nicht bewusst sind.</p>
+                    </div>
+
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: Blinder Fleck entdecken</h3>
+                        <div class="exercise-content">
+                            <div class="blind-spot-analysis">
+                                <h4>Direktes Feedback einholen</h4>
+                                <div class="feedback-request">
+                                    <div class="request-item">
+                                        <label>Frage an Kollegen: "Was fällt dir an mir auf, was ich vielleicht nicht über mich weiß?"</label>
+                                        <textarea placeholder="Notiere die Antworten..."></textarea>
+                                    </div>
+                                    <div class="request-item">
+                                        <label>Frage an Freunde: "Wie würdest du mich beschreiben, wenn ich nicht dabei wäre?"</label>
+                                        <textarea placeholder="Notiere die Antworten..."></textarea>
+                                    </div>
+                                    <div class="request-item">
+                                        <label>Frage an Familie: "Welche Eigenschaften habe ich, die mir vielleicht nicht bewusst sind?"</label>
+                                        <textarea placeholder="Notiere die Antworten..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Indirekte Beobachtungen</h4>
+                                <div class="indirect-observations">
+                                    <div class="observation-item">
+                                        <label>Wie reagieren andere auf dich?</label>
+                                        <textarea placeholder="Beobachte Reaktionen und Verhaltensweisen anderer..."></textarea>
+                                    </div>
+                                    <div class="observation-item">
+                                        <label>Welche Rollen werden dir zugeschrieben?</label>
+                                        <textarea placeholder="Welche Rollen übernimmst du automatisch?"></textarea>
+                                    </div>
+                                    <div class="observation-item">
+                                        <label>Was wird von dir erwartet?</label>
+                                        <textarea placeholder="Welche Erwartungen spürst du?"></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Verhaltensmuster erkennen</h4>
+                                <div class="behavior-patterns">
+                                    <div class="pattern-item">
+                                        <label>Welche Gewohnheiten hast du, die dir nicht bewusst sind?</label>
+                                        <textarea placeholder="Identifiziere unbewusste Gewohnheiten..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Wie verhältst du dich in Stresssituationen?</label>
+                                        <textarea placeholder="Beschreibe unbewusste Stressreaktionen..."></textarea>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <label>Welche Körpersprache zeigst du?</label>
+                                        <textarea placeholder="Welche körperlichen Signale sendest du?"></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Blinde Flecken kategorisieren</h4>
+                                <div class="blind-spot-categories">
+                                    <div class="category-item">
+                                        <h5>Positive blinde Flecken</h5>
+                                        <textarea placeholder="Welche positiven Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
+                                    </div>
+                                    <div class="category-item">
+                                        <h5>Negative blinde Flecken</h5>
+                                        <textarea placeholder="Welche negativen Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
+                                    </div>
+                                    <div class="category-item">
+                                        <h5>Neutrale blinde Flecken</h5>
+                                        <textarea placeholder="Welche neutralen Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Entdeckung des Blinden Flecks</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-video"></i>
+                                <h4>Videoaufnahmen</h4>
+                                <p>Lass dich in verschiedenen Situationen filmen.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-comments"></i>
+                                <h4>360°-Feedback</h4>
+                                <p>Hole strukturiertes Feedback von verschiedenen Personen.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-mirror"></i>
+                                <h4>Selbstreflexion</h4>
+                                <p>Reflektiere über deine Verhaltensmuster.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Offenheit</h4>
+                                <p>Sei offen für überraschende Erkenntnisse.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="examples-section">
+                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
+                        <div class="example-item">
+                            <h4>Positiver blinder Fleck</h4>
+                            <p><strong>Erkenntnis:</strong> "Andere sagen, ich bin sehr inspirierend und motivierend, obwohl ich mich selbst als eher zurückhaltend sehe."</p>
+                        </div>
+                        <div class="example-item">
+                            <h4>Negativer blinder Fleck</h4>
+                            <p><strong>Erkenntnis:</strong> "Ich merke nicht, dass ich oft unterbreche, wenn andere sprechen. Das stört andere, aber mir ist es nicht bewusst."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Unbekanntes -->
+            <div class="workflow-step" id="step-4">
+                <div class="step-header">
+                    <h2>Schritt 4: Unbekanntes - Was niemand weiß</h2>
+                    <p>Erkunde unbewusste Potenziale und versteckte Talente</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-question-circle"></i> Was ist das Unbekannte?</h3>
+                        <p>Das Unbekannte umfasst Potenziale, Talente und Eigenschaften, die weder dir noch anderen bewusst sind. Diese zu entdecken kann zu überraschenden Erkenntnissen führen.</p>
+                    </div>
+
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: Unbekanntes erkunden</h3>
+                        <div class="exercise-content">
+                            <div class="unknown-exploration">
+                                <h4>Neue Erfahrungen sammeln</h4>
+                                <div class="new-experiences">
+                                    <div class="experience-item">
+                                        <label>Welche Aktivitäten hast du noch nie ausprobiert?</label>
+                                        <textarea placeholder="Liste Aktivitäten auf, die du gerne ausprobieren würdest..."></textarea>
+                                    </div>
+                                    <div class="experience-item">
+                                        <label>Was würdest du tun, wenn du keine Angst hättest?</label>
+                                        <textarea placeholder="Beschreibe deine Wünsche ohne Ängste..."></textarea>
+                                    </div>
+                                    <div class="experience-item">
+                                        <label>Welche Träume hast du, die du noch nie verfolgt hast?</label>
+                                        <textarea placeholder="Liste deine unverfolgten Träume auf..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Versteckte Talente entdecken</h4>
+                                <div class="hidden-talents">
+                                    <div class="talent-item">
+                                        <label>Welche Fähigkeiten könntest du haben, ohne es zu wissen?</label>
+                                        <textarea placeholder="Überlege, welche Talente in dir schlummern könnten..."></textarea>
+                                    </div>
+                                    <div class="talent-item">
+                                        <label>Was machen andere, was dich interessiert?</label>
+                                        <textarea placeholder="Welche Fähigkeiten anderer faszinieren dich?"></textarea>
+                                    </div>
+                                    <div class="talent-item">
+                                        <label>Welche Hobbys könnten zu dir passen?</label>
+                                        <textarea placeholder="Überlege, welche neuen Hobbys zu dir passen könnten..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Unbewusste Potenziale</h4>
+                                <div class="unconscious-potential">
+                                    <div class="potential-item">
+                                        <label>In welchen Bereichen könntest du noch wachsen?</label>
+                                        <textarea placeholder="Identifiziere Wachstumsbereiche..."></textarea>
+                                    </div>
+                                    <div class="potential-item">
+                                        <label>Welche Herausforderungen könntest du meistern?</label>
+                                        <textarea placeholder="Überlege, welche Herausforderungen du angehen könntest..."></textarea>
+                                    </div>
+                                    <div class="potential-item">
+                                        <label>Was würde dich überraschen, wenn du es könntest?</label>
+                                        <textarea placeholder="Stelle dir vor, was dich überraschen würde..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Experimente planen</h4>
+                                <div class="experiments">
+                                    <div class="experiment-item">
+                                        <label>Welche Experimente möchtest du durchführen?</label>
+                                        <textarea placeholder="Plane konkrete Experimente zur Selbsterkundung..."></textarea>
+                                    </div>
+                                    <div class="experiment-item">
+                                        <label>Wie kannst du neue Erfahrungen sammeln?</label>
+                                        <textarea placeholder="Überlege, wie du neue Erfahrungen sammeln kannst..."></textarea>
+                                    </div>
+                                    <div class="experiment-item">
+                                        <label>Welche Risiken bist du bereit einzugehen?</label>
+                                        <textarea placeholder="Definiere deine Risikobereitschaft..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Erkundung des Unbekannten</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-rocket"></i>
+                                <h4>Experimentieren</h4>
+                                <p>Probiere neue Dinge aus und experimentiere.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Neugierde</h4>
+                                <p>Bleibe neugierig und offen für Neues.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-users"></i>
+                                <h4>Andere beobachten</h4>
+                                <p>Beobachte andere und lerne von ihnen.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-star"></i>
+                                <h4>Träume verfolgen</h4>
+                                <p>Verfolge deine Träume und Wünsche.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="examples-section">
+                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
+                        <div class="example-item">
+                            <h4>Verstecktes Talent</h4>
+                            <p><strong>Entdeckung:</strong> "Ich habe nie gedacht, dass ich gut im Zeichnen bin, aber als ich es ausprobiert habe, war ich überrascht von meinen Fähigkeiten."</p>
+                        </div>
+                        <div class="example-item">
+                            <h4>Unbewusstes Potenzial</h4>
+                            <p><strong>Entdeckung:</strong> "Ich dachte, ich bin nicht kreativ, aber in einem Workshop habe ich gemerkt, dass ich sehr innovative Ideen entwickeln kann."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Integration -->
+            <div class="workflow-step" id="step-5">
+                <div class="step-header">
+                    <h2>Schritt 5: Integration - Alles zusammenführen</h2>
+                    <p>Integriere alle Erkenntnisse und entwickle einen Aktionsplan</p>
+                </div>
+
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-puzzle-piece"></i> Was ist Integration?</h3>
+                        <p>Integration bedeutet, alle Erkenntnisse aus den vier Bereichen des Johari-Fensters zusammenzuführen und daraus konkrete Handlungsschritte abzuleiten.</p>
+                    </div>
+
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: Integration und Aktionsplan</h3>
+                        <div class="exercise-content">
+                            <div class="integration-analysis">
+                                <h4>Erkenntnisse zusammenfassen</h4>
+                                <div class="insights-summary">
+                                    <div class="insight-item">
+                                        <label>Wichtigste Erkenntnisse aus dem Selbstbild:</label>
+                                        <textarea placeholder="Fasse deine wichtigsten Selbsterkenntnisse zusammen..."></textarea>
+                                    </div>
+                                    <div class="insight-item">
+                                        <label>Wichtigste Erkenntnisse aus dem Fremdbild:</label>
+                                        <textarea placeholder="Fasse deine wichtigsten Fremdbild-Erkenntnisse zusammen..."></textarea>
+                                    </div>
+                                    <div class="insight-item">
+                                        <label>Wichtigste Erkenntnisse aus dem Blinden Fleck:</label>
+                                        <textarea placeholder="Fasse deine wichtigsten Blinden-Fleck-Erkenntnisse zusammen..."></textarea>
+                                    </div>
+                                    <div class="insight-item">
+                                        <label>Wichtigste Erkenntnisse aus dem Unbekannten:</label>
+                                        <textarea placeholder="Fasse deine wichtigsten Unbekannten-Erkenntnisse zusammen..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Widersprüche und Übereinstimmungen</h4>
+                                <div class="contradictions-alignment">
+                                    <div class="analysis-item">
+                                        <label>Wo stimmen Selbstbild und Fremdbild überein?</label>
+                                        <textarea placeholder="Identifiziere Übereinstimmungen..."></textarea>
+                                    </div>
+                                    <div class="analysis-item">
+                                        <label>Wo gibt es Widersprüche zwischen Selbstbild und Fremdbild?</label>
+                                        <textarea placeholder="Identifiziere Widersprüche..."></textarea>
+                                    </div>
+                                    <div class="analysis-item">
+                                        <label>Welche Überraschungen gab es?</label>
+                                        <textarea placeholder="Beschreibe überraschende Erkenntnisse..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Entwicklungsbereiche identifizieren</h4>
+                                <div class="development-areas">
+                                    <div class="area-item">
+                                        <label>Welche Bereiche möchtest du entwickeln?</label>
+                                        <textarea placeholder="Identifiziere konkrete Entwicklungsbereiche..."></textarea>
+                                    </div>
+                                    <div class="area-item">
+                                        <label>Welche Stärken möchtest du ausbauen?</label>
+                                        <textarea placeholder="Identifiziere Stärken zum Ausbauen..."></textarea>
+                                    </div>
+                                    <div class="area-item">
+                                        <label>Welche Schwächen möchtest du angehen?</label>
+                                        <textarea placeholder="Identifiziere Schwächen zum Angehen..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Aktionsplan erstellen</h4>
+                                <div class="action-plan">
+                                    <div class="plan-item">
+                                        <label>Kurzfristige Ziele (1-3 Monate):</label>
+                                        <textarea placeholder="Definiere kurzfristige Entwicklungsziele..."></textarea>
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Mittelfristige Ziele (3-12 Monate):</label>
+                                        <textarea placeholder="Definiere mittelfristige Entwicklungsziele..."></textarea>
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Langfristige Ziele (1+ Jahre):</label>
+                                        <textarea placeholder="Definiere langfristige Entwicklungsziele..."></textarea>
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Konkrete Schritte:</label>
+                                        <textarea placeholder="Definiere konkrete Handlungsschritte..."></textarea>
+                                    </div>
+                                </div>
+
+                                <h4>Unterstützung und Ressourcen</h4>
+                                <div class="support-resources">
+                                    <div class="resource-item">
+                                        <label>Wer kann dich unterstützen?</label>
+                                        <textarea placeholder="Identifiziere Unterstützer..."></textarea>
+                                    </div>
+                                    <div class="resource-item">
+                                        <label>Welche Ressourcen brauchst du?</label>
+                                        <textarea placeholder="Identifiziere benötigte Ressourcen..."></textarea>
+                                    </div>
+                                    <div class="resource-item">
+                                        <label>Wie wirst du deinen Fortschritt messen?</label>
+                                        <textarea placeholder="Definiere Erfolgskriterien..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Integration</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-calendar"></i>
+                                <h4>Regelmäßige Reflexion</h4>
+                                <p>Reflektiere regelmäßig über deine Entwicklung.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-users"></i>
+                                <h4>Feedback einholen</h4>
+                                <p>Hole regelmäßig Feedback von anderen ein.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-chart-line"></i>
+                                <h4>Fortschritt verfolgen</h4>
+                                <p>Verfolge deinen Fortschritt systematisch.</p>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Geduldig sein</h4>
+                                <p>Entwicklung braucht Zeit und Geduld.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="examples-section">
+                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
+                        <div class="example-item">
+                            <h4>Entwicklungsplan</h4>
+                            <p><strong>Ziel:</strong> Bessere Kommunikation</p>
+                            <p><strong>Schritte:</strong> Aktives Zuhören üben, Feedback einholen, Kommunikationskurse besuchen</p>
+                            <p><strong>Zeitrahmen:</strong> 6 Monate</p>
+                        </div>
+                        <div class="example-item">
+                            <h4>Stärken ausbauen</h4>
+                            <p><strong>Stärke:</strong> Kreativität</p>
+                            <p><strong>Plan:</strong> Regelmäßig kreative Projekte starten, Kreativitätsworkshops besuchen</p>
+                            <p><strong>Ziel:</strong> Kreativität in den Beruf integrieren</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="workflow-step" data-step="2">
-            <div class="step-header">
-                <h3>Schritt 2: Fremdbild - Was andere über dich wissen</h3>
-                <p>Erkenne, wie andere dich wahrnehmen und welche Eigenschaften sie dir zuschreiben.</p>
-            </div>
-
-            <div class="johari-window">
-                <div class="johari-quadrant hidden">
-                    <h4>Versteckt (Ich weiß, andere wissen nicht)</h4>
-                    <p>Eigenschaften, die nur dir bekannt sind.</p>
-                    <div class="custom-traits">
-                        <h5>Deine versteckten Eigenschaften</h5>
-                        <div class="add-trait-form">
-                            <input type="text" placeholder="Eigenschaft hinzufügen...">
-                            <button type="button" onclick="addTrait()">Hinzufügen</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="workflow-step" data-step="3">
-            <div class="step-header">
-                <h3>Schritt 3: Blinder Fleck - Was andere sehen, du aber nicht</h3>
-                <p>Entdecke Eigenschaften, die andere an dir bemerken, die dir aber nicht bewusst sind.</p>
-            </div>
-
-            <div class="johari-window">
-                <div class="johari-quadrant blind">
-                    <h4>Blinder Fleck (Andere wissen, ich weiß nicht)</h4>
-                    <p>Eigenschaften, die andere an dir sehen, die dir aber nicht bewusst sind.</p>
-                    <div class="feedback-section">
-                        <h5>Feedback von anderen sammeln</h5>
-                        <textarea placeholder="Bitte andere um ehrliches Feedback über deine Eigenschaften..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="workflow-step" data-step="4">
-            <div class="step-header">
-                <h3>Schritt 4: Unbekanntes - Was niemand weiß</h3>
-                <p>Erkunde unbewusste Potenziale und versteckte Talente.</p>
-            </div>
-
-            <div class="johari-window">
-                <div class="johari-quadrant unknown">
-                    <h4>Unbekannt (Niemand weiß)</h4>
-                    <p>Unbewusste Potenziale und versteckte Talente.</p>
-                    <div class="exploration-section">
-                        <h5>Selbstexploration</h5>
-                        <div class="exploration-questions">
-                            <div class="question-item">
-                                <label>Welche Aktivitäten machen dir Spaß, die du noch nie ausprobiert hast?</label>
-                                <textarea placeholder="Deine Antwort..."></textarea>
-                            </div>
-                            <div class="question-item">
-                                <label>Was würdest du tun, wenn du keine Angst hättest?</label>
-                                <textarea placeholder="Deine Antwort..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="previousStep()" id="prevBtn" disabled>
+        <div class="workflow-navigation">
+            <button id="prev-step" class="btn btn-secondary" onclick="previousStep()">
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
-            <button class="btn btn-primary" onclick="nextStep()" id="nextBtn">
+            <button id="next-step" class="btn btn-primary" onclick="nextStep()">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>
-        <div class="progress-info">
-            <span id="stepCounter">Schritt 1 von 4</span>
+
+        <div class="method-footer">
+            <div class="progress-summary">
+                <h3>Dein Fortschritt</h3>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Schritte abgeschlossen:</span>
+                        <span class="stat-value" id="completed-steps">0/5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Erkenntnisse gesammelt:</span>
+                        <span class="stat-value" id="insights-collected">0</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+    <script src="johari-window.js"></script>
+</body>
+</html>

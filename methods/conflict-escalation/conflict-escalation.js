@@ -1,5 +1,5 @@
-// Communication Method JavaScript
-class Communication {
+// Conflict Escalation Method JavaScript
+class ConflictEscalation {
     constructor() {
         this.currentStep = 1;
         this.totalSteps = 5;
@@ -91,7 +91,7 @@ class Communication {
 
     saveProgress() {
         const formData = this.getFormData();
-        localStorage.setItem('communication-progress', JSON.stringify({
+        localStorage.setItem('conflict-escalation-progress', JSON.stringify({
             currentStep: this.currentStep,
             formData: formData,
             timestamp: new Date().toISOString()
@@ -99,7 +99,7 @@ class Communication {
     }
 
     loadSavedData() {
-        const savedData = localStorage.getItem('communication-progress');
+        const savedData = localStorage.getItem('conflict-escalation-progress');
         if (savedData) {
             try {
                 const data = JSON.parse(savedData);
@@ -137,7 +137,7 @@ class Communication {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new Communication();
+    new ConflictEscalation();
 });
 
-window.Communication = Communication;
+window.ConflictEscalation = ConflictEscalation;

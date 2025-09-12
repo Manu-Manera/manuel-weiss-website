@@ -1,645 +1,755 @@
-<div class="workflow-container">
-    <div class="workflow-intro">
-        <h3>Emotionale Intelligenz: Meistere deine Emotionen</h3>
-        <p>Entwickle deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen, zu regulieren und in Beziehungen zu nutzen. Werde zum Meister deiner Gefühlswelt.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">EQ-Assessment</span>
-            <span class="feature-badge">Emotionsregulation</span>
-            <span class="feature-badge">Empathie-Training</span>
-            <span class="feature-badge">Soziale Kompetenz</span>
-        </div>
-    </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">EQ-Assessment</div>
-        </div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Emotions-Tracking</div>
-        </div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Regulations-Tools</div>
-        </div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Empathie-Training</div>
-        </div>
-        <div class="progress-step" data-step="5">
-            <div class="step-number">5</div>
-            <div class="step-title">EQ-Entwicklung</div>
-        </div>
-    </div>
-    
-    <!-- Step 1: EQ-Assessment -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: EQ-Assessment</h3>
-            <p>Bewerte deine aktuelle emotionale Intelligenz in den vier Hauptbereichen und erkenne deine Stärken und Entwicklungsfelder.</p>
-        </div>
-        
-        <div class="eq-assessment">
-            <div class="assessment-intro">
-                <h4>🧠 Deine Emotionale Intelligenz</h4>
-                <p>Die emotionale Intelligenz besteht aus vier Hauptbereichen. Bewerte dich in jedem Bereich ehrlich.</p>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotional Intelligence - Emotionale Intelligenz</title>
+    <link rel="stylesheet" href="../../css/ikigai-planner.css">
+    <link rel="stylesheet" href="emotional-intelligence.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="emotional-method">
+        <div class="method-header">
+            <div class="method-icon">
+                <i class="fas fa-heart"></i>
             </div>
-            
-            <div class="eq-pillars">
-                <div class="pillar">
-                    <div class="pillar-icon">🎯</div>
-                    <h5>Selbstwahrnehmung</h5>
-                    <p>Wie gut erkennst du deine eigenen Emotionen?</p>
-                </div>
-                <div class="pillar">
-                    <div class="pillar-icon">🎛️</div>
-                    <h5>Selbstregulation</h5>
-                    <p>Wie gut kannst du deine Emotionen steuern?</p>
-                </div>
-                <div class="pillar">
-                    <div class="pillar-icon">👥</div>
-                    <h5>Soziale Kompetenz</h5>
-                    <p>Wie gut verstehst du andere Menschen?</p>
-                </div>
-                <div class="pillar">
-                    <div class="pillar-icon">💝</div>
-                    <h5>Empathie</h5>
-                    <p>Wie gut kannst du dich in andere einfühlen?</p>
-                </div>
-            </div>
-            
-            <div class="eq-questions">
-                <div class="question-section">
-                    <h4>🎯 Selbstwahrnehmung</h4>
-                    <div class="question-item">
-                        <label>Ich kann meine Emotionen genau benennen und beschreiben</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-awareness" data-question="emotion-naming">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich erkenne, wie meine Emotionen meine Gedanken beeinflussen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-awareness" data-question="emotion-thoughts">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich bin mir meiner emotionalen Auslöser bewusst</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-awareness" data-question="emotional-triggers">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h4>🎛️ Selbstregulation</h4>
-                    <div class="question-item">
-                        <label>Ich kann negative Emotionen beruhigen und kontrollieren</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-regulation" data-question="emotion-control">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich reagiere nicht impulsiv, sondern überlegt</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-regulation" data-question="impulse-control">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann mich selbst motivieren, auch bei Rückschlägen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="self-regulation" data-question="self-motivation">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h4>👥 Soziale Kompetenz</h4>
-                    <div class="question-item">
-                        <label>Ich kann gut mit anderen kommunizieren und Beziehungen aufbauen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="social-skills" data-question="communication">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann Konflikte konstruktiv lösen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="social-skills" data-question="conflict-resolution">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann andere inspirieren und führen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="social-skills" data-question="leadership">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question-section">
-                    <h4>💝 Empathie</h4>
-                    <div class="question-item">
-                        <label>Ich kann die Emotionen anderer Menschen erkennen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="empathy" data-question="emotion-recognition">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich kann mich in die Perspektive anderer hineinversetzen</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="empathy" data-question="perspective-taking">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                    <div class="question-item">
-                        <label>Ich reagiere angemessen auf die Bedürfnisse anderer</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" class="eq-slider" min="1" max="10" value="5" data-pillar="empathy" data-question="responding-to-needs">
-                            <span>Immer</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="eq-results">
-                <h4>📊 Dein EQ-Score</h4>
-                <div class="eq-score-display">
-                    <div class="overall-score">
-                        <div class="score-circle">
-                            <div class="score-number" id="overall-eq-score">0</div>
-                            <div class="score-label">von 100</div>
-                        </div>
-                        <div class="score-description" id="eq-score-description">
-                            Fülle das Assessment aus, um deinen EQ-Score zu sehen.
-                        </div>
-                    </div>
-                    
-                    <div class="pillar-scores">
-                        <h5>Bereichs-Scores</h5>
-                        <div class="pillar-score">
-                            <div class="pillar-name">Selbstwahrnehmung</div>
-                            <div class="pillar-bar">
-                                <div class="pillar-fill" id="self-awareness-fill"></div>
-                            </div>
-                            <div class="pillar-value" id="self-awareness-value">0</div>
-                        </div>
-                        <div class="pillar-score">
-                            <div class="pillar-name">Selbstregulation</div>
-                            <div class="pillar-bar">
-                                <div class="pillar-fill" id="self-regulation-fill"></div>
-                            </div>
-                            <div class="pillar-value" id="self-regulation-value">0</div>
-                        </div>
-                        <div class="pillar-score">
-                            <div class="pillar-name">Soziale Kompetenz</div>
-                            <div class="pillar-bar">
-                                <div class="pillar-fill" id="social-skills-fill"></div>
-                            </div>
-                            <div class="pillar-value" id="social-skills-value">0</div>
-                        </div>
-                        <div class="pillar-score">
-                            <div class="pillar-name">Empathie</div>
-                            <div class="pillar-bar">
-                                <div class="pillar-fill" id="empathy-fill"></div>
-                            </div>
-                            <div class="pillar-value" id="empathy-value">0</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="method-title">
+                <h1>Emotional Intelligence</h1>
+                <p>Entwickle deine emotionale Intelligenz für bessere Beziehungen und Erfolg</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Step 2: Emotions-Tracking -->
-    <div class="workflow-step" data-step="2">
-        <div class="step-header">
-            <h3>Schritt 2: Emotions-Tracking</h3>
-            <p>Lerne, deine Emotionen bewusst zu beobachten und zu dokumentieren. Erkenne Muster und Auslöser.</p>
-        </div>
-        
-        <div class="emotion-tracking">
-            <div class="tracking-intro">
-                <h4>📝 Emotionen-Tagebuch</h4>
-                <p>Dokumentiere deine Emotionen täglich, um Muster und Auslöser zu erkennen.</p>
+
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Selbstwahrnehmung</div>
             </div>
-            
-            <div class="emotion-log">
-                <div class="log-form">
-                    <div class="form-group">
-                        <label>Datum und Uhrzeit:</label>
-                        <input type="datetime-local" id="emotion-timestamp" value="">
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">Selbstregulation</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Motivation</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-title">Empathie</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-title">Soziale Kompetenz</div>
+            </div>
+        </div>
+
+        <div class="workflow-content">
+            <!-- Step 1: Selbstwahrnehmung -->
+            <div class="workflow-step active" id="step-1">
+                <div class="step-header">
+                    <h2>Schritt 1: Selbstwahrnehmung</h2>
+                    <p>Lerne deine eigenen Emotionen zu erkennen und zu verstehen</p>
+                </div>
+
+                <div class="self-awareness">
+                    <h3>🔍 Selbstwahrnehmung</h3>
+                    <div class="awareness-elements">
+                        <div class="element-item">
+                            <h4>Emotionen erkennen</h4>
+                            <p>Erkenne deine aktuellen Emotionen</p>
+                            <textarea id="emotion-recognition" placeholder="Beschreibe, wie du deine Emotionen erkennst..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Emotionale Muster</h4>
+                            <p>Identifiziere wiederkehrende emotionale Muster</p>
+                            <textarea id="emotional-patterns" placeholder="Identifiziere deine emotionalen Muster..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Körperliche Signale</h4>
+                            <p>Erkenne körperliche Reaktionen auf Emotionen</p>
+                            <textarea id="physical-signals" placeholder="Beschreibe deine körperlichen Reaktionen..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Emotionale Auslöser</h4>
+                            <p>Identifiziere Situationen, die Emotionen auslösen</p>
+                            <textarea id="emotional-triggers" placeholder="Identifiziere deine emotionalen Auslöser..."></textarea>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Was ist passiert? (Situation)</label>
-                        <textarea id="emotion-situation" placeholder="Beschreibe die Situation, die deine Emotion ausgelöst hat..."></textarea>
+                </div>
+
+                <div class="self-awareness-practice">
+                    <h5>🎯 Übung: Selbstwahrnehmung</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Emotionstagebuch</label>
+                            <textarea id="practice-emotion-diary" placeholder="Führe ein Emotionstagebuch..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Körperwahrnehmung</label>
+                            <textarea id="practice-body-awareness" placeholder="Übe Körperwahrnehmung..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Emotionale Check-ins</label>
+                            <textarea id="practice-emotional-check-ins" placeholder="Führe regelmäßige emotionale Check-ins durch..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Musteranalyse</label>
+                            <textarea id="practice-pattern-analysis" placeholder="Analysiere deine emotionalen Muster..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Auslöser-Identifikation</label>
+                            <textarea id="practice-trigger-identification" placeholder="Identifiziere deine emotionalen Auslöser..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Achtsamkeitsübungen</label>
+                            <textarea id="practice-mindfulness" placeholder="Übe Achtsamkeit für deine Emotionen..."></textarea>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Welche Emotion fühlst du?</label>
-                        <div class="emotion-selector">
-                            <div class="emotion-category">
-                                <h5>😊 Positive Emotionen</h5>
-                                <div class="emotion-options">
-                                    <label><input type="radio" name="emotion" value="freude"> Freude</label>
-                                    <label><input type="radio" name="emotion" value="begeisterung"> Begeisterung</label>
-                                    <label><input type="radio" name="emotion" value="zufriedenheit"> Zufriedenheit</label>
-                                    <label><input type="radio" name="emotion" value="liebe"> Liebe</label>
-                                    <label><input type="radio" name="emotion" value="stolz"> Stolz</label>
-                                </div>
+                </div>
+
+                <div class="self-awareness-tips">
+                    <h5>💡 Tipps für Selbstwahrnehmung</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🔍</div>
+                            <div class="tip-content">
+                                <h6>Beobachte dich</h6>
+                                <p>Beobachte dich selbst ohne Urteil</p>
                             </div>
-                            
-                            <div class="emotion-category">
-                                <h5>😔 Negative Emotionen</h5>
-                                <div class="emotion-options">
-                                    <label><input type="radio" name="emotion" value="trauer"> Trauer</label>
-                                    <label><input type="radio" name="emotion" value="wut"> Wut</label>
-                                    <label><input type="radio" name="emotion" value="angst"> Angst</label>
-                                    <label><input type="radio" name="emotion" value="eifersucht"> Eifersucht</label>
-                                    <label><input type="radio" name="emotion" value="scham"> Scham</label>
-                                </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">📝</div>
+                            <div class="tip-content">
+                                <h6>Tagebuch führen</h6>
+                                <p>Führe ein Emotionstagebuch</p>
                             </div>
-                            
-                            <div class="emotion-category">
-                                <h5>😐 Neutrale Emotionen</h5>
-                                <div class="emotion-options">
-                                    <label><input type="radio" name="emotion" value="neutral"> Neutral</label>
-                                    <label><input type="radio" name="emotion" value="verwirrung"> Verwirrung</label>
-                                    <label><input type="radio" name="emotion" value="interesse"> Interesse</label>
-                                    <label><input type="radio" name="emotion" value="überraschung"> Überraschung</label>
-                                </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⏰</div>
+                            <div class="tip-content">
+                                <h6>Regelmäßig checken</h6>
+                                <p>Checke regelmäßig deine Emotionen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Muster erkennen</h6>
+                                <p>Erkenne wiederkehrende Muster</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💭</div>
+                            <div class="tip-content">
+                                <h6>Achtsam sein</h6>
+                                <p>Sei achtsam für deine Emotionen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Feedback einholen</h6>
+                                <p>Hole Feedback von anderen ein</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Intensität der Emotion (1-10):</label>
-                        <input type="range" id="emotion-intensity" min="1" max="10" value="5">
-                        <span id="intensity-value">5</span>
+                </div>
+
+                <div class="self-awareness-scenarios">
+                    <h5>🎭 Selbstwahrnehmung-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Stresssituation</h6>
+                            <p><strong>Situation:</strong> Du bist in einer stressigen Arbeitssituation.</p>
+                            <textarea id="scenario-work-stress" placeholder="Wie würdest du deine Emotionen wahrnehmen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Konfliktsituation</h6>
+                            <p><strong>Situation:</strong> Du hast einen Konflikt mit einem Familienmitglied.</p>
+                            <textarea id="scenario-family-conflict" placeholder="Welche Emotionen würdest du erkennen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Streit</h6>
+                            <p><strong>Situation:</strong> Du hast einen Streit mit deinem Partner.</p>
+                            <textarea id="scenario-relationship-fight" placeholder="Wie würdest du deine Emotionen wahrnehmen?"></textarea>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Welche Gedanken hattest du?</label>
-                        <textarea id="emotion-thoughts" placeholder="Was ging dir durch den Kopf?"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Wie hast du reagiert?</label>
-                        <textarea id="emotion-response" placeholder="Beschreibe deine Reaktion oder dein Verhalten..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Was hat dir geholfen? (Optional)</label>
-                        <textarea id="emotion-coping" placeholder="Welche Strategien haben dir geholfen?"></textarea>
-                    </div>
-                    
-                    <button class="btn btn-primary" onclick="saveEmotionLog()">Emotion speichern</button>
                 </div>
             </div>
-            
-            <div class="emotion-patterns">
-                <h4>📈 Emotionale Muster</h4>
-                <div class="pattern-analysis">
-                    <div class="pattern-card">
-                        <h5>Häufigste Emotionen</h5>
-                        <div class="pattern-list" id="frequent-emotions">
-                            <p>Speichere Emotionen, um Muster zu sehen.</p>
+
+            <!-- Step 2: Selbstregulation -->
+            <div class="workflow-step" id="step-2">
+                <div class="step-header">
+                    <h2>Schritt 2: Selbstregulation</h2>
+                    <p>Lerne deine Emotionen zu regulieren und zu kontrollieren</p>
+                </div>
+
+                <div class="self-regulation">
+                    <h3>🎛️ Selbstregulation</h3>
+                    <div class="regulation-techniques">
+                        <div class="technique-item">
+                            <h4>Atemtechniken</h4>
+                            <p>Nutze Atemtechniken zur Beruhigung</p>
+                            <textarea id="breathing-techniques" placeholder="Beschreibe Atemtechniken..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Kognitive Umstrukturierung</h4>
+                            <p>Ändere deine Gedankenmuster</p>
+                            <textarea id="cognitive-restructuring" placeholder="Beschreibe kognitive Umstrukturierung..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Entspannungstechniken</h4>
+                            <p>Nutze Entspannungstechniken</p>
+                            <textarea id="relaxation-techniques" placeholder="Beschreibe Entspannungstechniken..."></textarea>
+                        </div>
+                        <div class="technique-item">
+                            <h4>Emotionale Pause</h4>
+                            <p>Nimm dir eine emotionale Pause</p>
+                            <textarea id="emotional-pause" placeholder="Beschreibe emotionale Pausen..."></textarea>
                         </div>
                     </div>
-                    
-                    <div class="pattern-card">
-                        <h5>Emotionale Auslöser</h5>
-                        <div class="pattern-list" id="emotional-triggers">
-                            <p>Analysiere deine Auslöser.</p>
+                </div>
+
+                <div class="self-regulation-practice">
+                    <h5>🎯 Übung: Selbstregulation</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Atemübungen</label>
+                            <textarea id="practice-breathing-exercises" placeholder="Übe verschiedene Atemtechniken..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Gedankenstopp</label>
+                            <textarea id="practice-thought-stopping" placeholder="Übe Gedankenstopp-Techniken..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Progressive Muskelentspannung</label>
+                            <textarea id="practice-progressive-relaxation" placeholder="Übe progressive Muskelentspannung..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Meditation</label>
+                            <textarea id="practice-meditation" placeholder="Übe Meditation..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Emotionale Pausen</label>
+                            <textarea id="practice-emotional-breaks" placeholder="Übe emotionale Pausen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Stressbewältigung</label>
+                            <textarea id="practice-stress-management" placeholder="Übe Stressbewältigungstechniken..."></textarea>
                         </div>
                     </div>
-                    
-                    <div class="pattern-card">
-                        <h5>Bewältigungsstrategien</h5>
-                        <div class="pattern-list" id="coping-strategies">
-                            <p>Erkenne, was dir hilft.</p>
+                </div>
+
+                <div class="self-regulation-tips">
+                    <h5>💡 Tipps für Selbstregulation</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">🫁</div>
+                            <div class="tip-content">
+                                <h6>Atemtechniken</h6>
+                                <p>Nutze Atemtechniken zur Beruhigung</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🧠</div>
+                            <div class="tip-content">
+                                <h6>Gedanken ändern</h6>
+                                <p>Ändere deine Gedankenmuster</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">😌</div>
+                            <div class="tip-content">
+                                <h6>Entspannung</h6>
+                                <p>Nutze Entspannungstechniken</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">⏸️</div>
+                            <div class="tip-content">
+                                <h6>Pause machen</h6>
+                                <p>Nimm dir emotionale Pausen</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Fokus halten</h6>
+                                <p>Halte den Fokus auf das Positive</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Regelmäßig üben</h6>
+                                <p>Übe regelmäßig Selbstregulation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="self-regulation-scenarios">
+                    <h5>🎭 Selbstregulation-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Wutausbruch</h6>
+                            <p><strong>Situation:</strong> Du bist kurz davor, einen Wutausbruch zu haben.</p>
+                            <textarea id="scenario-anger-outburst" placeholder="Wie würdest du dich regulieren?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Überwältigung</h6>
+                            <p><strong>Situation:</strong> Du fühlst dich von familiären Verpflichtungen überwältigt.</p>
+                            <textarea id="scenario-family-overwhelm" placeholder="Welche Regulationstechniken würdest du anwenden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Eifersucht</h6>
+                            <p><strong>Situation:</strong> Du fühlst Eifersucht in deiner Beziehung.</p>
+                            <textarea id="scenario-relationship-jealousy" placeholder="Wie würdest du deine Eifersucht regulieren?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Motivation -->
+            <div class="workflow-step" id="step-3">
+                <div class="step-header">
+                    <h2>Schritt 3: Motivation</h2>
+                    <p>Entwickle intrinsische Motivation und emotionale Antriebskraft</p>
+                </div>
+
+                <div class="motivation-development">
+                    <h3>🚀 Motivation</h3>
+                    <div class="motivation-elements">
+                        <div class="element-item">
+                            <h4>Intrinsische Motivation</h4>
+                            <p>Entwickle innere Motivation</p>
+                            <textarea id="intrinsic-motivation" placeholder="Beschreibe deine intrinsische Motivation..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Zielsetzung</h4>
+                            <p>Setze dir emotionale Ziele</p>
+                            <textarea id="goal-setting" placeholder="Beschreibe deine emotionalen Ziele..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Leidenschaft</h4>
+                            <p>Entwickle Leidenschaft für deine Ziele</p>
+                            <textarea id="passion-development" placeholder="Beschreibe deine Leidenschaften..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Resilienz</h4>
+                            <p>Baue emotionale Widerstandsfähigkeit auf</p>
+                            <textarea id="resilience-building" placeholder="Beschreibe deine Resilienzstrategien..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivation-development-practice">
+                    <h5>🎯 Übung: Motivation</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Werte identifizieren</label>
+                            <textarea id="practice-values-identification" placeholder="Identifiziere deine Werte..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Ziele visualisieren</label>
+                            <textarea id="practice-goal-visualization" placeholder="Visualisiere deine Ziele..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Leidenschaft entwickeln</label>
+                            <textarea id="practice-passion-development" placeholder="Entwickle Leidenschaft für deine Ziele..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Resilienz aufbauen</label>
+                            <textarea id="practice-resilience-building" placeholder="Baue Resilienz auf..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Motivation aufrechterhalten</label>
+                            <textarea id="practice-motivation-maintenance" placeholder="Erhalte deine Motivation aufrecht..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Rückschläge bewältigen</label>
+                            <textarea id="practice-setback-management" placeholder="Bewältige Rückschläge..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivation-development-tips">
+                    <h5>💡 Tipps für Motivation</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">💎</div>
+                            <div class="tip-content">
+                                <h6>Werte leben</h6>
+                                <p>Lebe deine Werte</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-content">
+                                <h6>Klare Ziele</h6>
+                                <p>Setze dir klare Ziele</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔥</div>
+                            <div class="tip-content">
+                                <h6>Leidenschaft</h6>
+                                <p>Entwickle Leidenschaft</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💪</div>
+                            <div class="tip-content">
+                                <h6>Resilienz</h6>
+                                <p>Baue Resilienz auf</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🎉</div>
+                            <div class="tip-content">
+                                <h6>Erfolge feiern</h6>
+                                <p>Feiere deine Erfolge</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Kontinuierlich motivieren</h6>
+                                <p>Motiviere dich kontinuierlich</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivation-development-scenarios">
+                    <h5>🎭 Motivation-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Demotivation</h6>
+                            <p><strong>Situation:</strong> Du fühlst dich bei der Arbeit demotiviert.</p>
+                            <textarea id="scenario-work-demotivation" placeholder="Wie würdest du deine Motivation wiederfinden?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Persönlich: Ziele erreichen</h6>
+                            <p><strong>Situation:</strong> Du möchtest persönliche Ziele erreichen.</p>
+                            <textarea id="scenario-personal-goals" placeholder="Wie würdest du dich motivieren?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Beziehung verbessern</h6>
+                            <p><strong>Situation:</strong> Du möchtest deine Beziehung verbessern.</p>
+                            <textarea id="scenario-relationship-improvement" placeholder="Welche Motivation würdest du entwickeln?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Empathie -->
+            <div class="workflow-step" id="step-4">
+                <div class="step-header">
+                    <h2>Schritt 4: Empathie</h2>
+                    <p>Entwickle die Fähigkeit, die Emotionen anderer zu verstehen</p>
+                </div>
+
+                <div class="empathy-development">
+                    <h3>💝 Empathie</h3>
+                    <div class="empathy-skills">
+                        <div class="skill-item">
+                            <h4>Emotionale Empathie</h4>
+                            <p>Verstehe die Emotionen anderer</p>
+                            <textarea id="emotional-empathy" placeholder="Beschreibe emotionale Empathie..."></textarea>
+                        </div>
+                        <div class="skill-item">
+                            <h4>Kognitive Empathie</h4>
+                            <p>Verstehe die Perspektive anderer</p>
+                            <textarea id="cognitive-empathy" placeholder="Beschreibe kognitive Empathie..."></textarea>
+                        </div>
+                        <div class="skill-item">
+                            <h4>Mitgefühl</h4>
+                            <p>Zeige Mitgefühl für andere</p>
+                            <textarea id="compassion" placeholder="Beschreibe Mitgefühl..."></textarea>
+                        </div>
+                        <div class="skill-item">
+                            <h4>Perspektivenwechsel</h4>
+                            <p>Wechsle die Perspektive</p>
+                            <textarea id="perspective-taking" placeholder="Beschreibe Perspektivenwechsel..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empathy-development-practice">
+                    <h5>🎯 Übung: Empathie</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Aktives Zuhören</label>
+                            <textarea id="practice-active-listening" placeholder="Übe aktives Zuhören..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Emotionen spiegeln</label>
+                            <textarea id="practice-emotion-mirroring" placeholder="Übe das Spiegeln von Emotionen..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Perspektivenwechsel</label>
+                            <textarea id="practice-perspective-taking" placeholder="Übe Perspektivenwechsel..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Mitgefühl zeigen</label>
+                            <textarea id="practice-compassion-showing" placeholder="Übe das Zeigen von Mitgefühl..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Körpersprache lesen</label>
+                            <textarea id="practice-body-language-reading" placeholder="Übe das Lesen von Körpersprache..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Emotionale Validierung</label>
+                            <textarea id="practice-emotional-validation" placeholder="Übe emotionale Validierung..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empathy-development-tips">
+                    <h5>💡 Tipps für Empathie</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">👂</div>
+                            <div class="tip-content">
+                                <h6>Aktiv zuhören</h6>
+                                <p>Höre aktiv zu</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🪞</div>
+                            <div class="tip-content">
+                                <h6>Emotionen spiegeln</h6>
+                                <p>Spiegle die Emotionen anderer</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👥</div>
+                            <div class="tip-content">
+                                <h6>Perspektive wechseln</h6>
+                                <p>Wechsle die Perspektive</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">💝</div>
+                            <div class="tip-content">
+                                <h6>Mitgefühl zeigen</h6>
+                                <p>Zeige Mitgefühl</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👁️</div>
+                            <div class="tip-content">
+                                <h6>Körpersprache beachten</h6>
+                                <p>Beachte die Körpersprache</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">✅</div>
+                            <div class="tip-content">
+                                <h6>Emotionen validieren</h6>
+                                <p>Validiere die Emotionen anderer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empathy-development-scenarios">
+                    <h5>🎭 Empathie-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Kollege ist traurig</h6>
+                            <p><strong>Situation:</strong> Ein Kollege ist traurig wegen eines persönlichen Problems.</p>
+                            <textarea id="scenario-colleague-sadness" placeholder="Wie würdest du Empathie zeigen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Kind ist wütend</h6>
+                            <p><strong>Situation:</strong> Dein Kind ist wütend wegen einer schlechten Note.</p>
+                            <textarea id="scenario-child-anger" placeholder="Welche Empathie würdest du zeigen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Partner ist gestresst</h6>
+                            <p><strong>Situation:</strong> Dein Partner ist gestresst wegen der Arbeit.</p>
+                            <textarea id="scenario-partner-stress" placeholder="Wie würdest du Empathie zeigen?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Soziale Kompetenz -->
+            <div class="workflow-step" id="step-5">
+                <div class="step-header">
+                    <h2>Schritt 5: Soziale Kompetenz</h2>
+                    <p>Entwickle die Fähigkeit, Beziehungen zu gestalten und zu führen</p>
+                </div>
+
+                <div class="social-skills">
+                    <h3>🤝 Soziale Kompetenz</h3>
+                    <div class="social-skills-elements">
+                        <div class="element-item">
+                            <h4>Kommunikation</h4>
+                            <p>Verbessere deine Kommunikationsfähigkeiten</p>
+                            <textarea id="communication-skills" placeholder="Beschreibe deine Kommunikationsfähigkeiten..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Konfliktlösung</h4>
+                            <p>Löse Konflikte konstruktiv</p>
+                            <textarea id="conflict-resolution" placeholder="Beschreibe deine Konfliktlösungsfähigkeiten..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Führung</h4>
+                            <p>Führe andere emotional intelligent</p>
+                            <textarea id="emotional-leadership" placeholder="Beschreibe deine Führungsfähigkeiten..."></textarea>
+                        </div>
+                        <div class="element-item">
+                            <h4>Teamarbeit</h4>
+                            <p>Arbeite effektiv im Team</p>
+                            <textarea id="teamwork" placeholder="Beschreibe deine Teamarbeitsfähigkeiten..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-skills-practice">
+                    <h5>🎯 Übung: Soziale Kompetenz</h5>
+                    <div class="practice-exercises">
+                        <div class="exercise-item">
+                            <label>Übung 1: Kommunikation verbessern</label>
+                            <textarea id="practice-communication-improvement" placeholder="Verbessere deine Kommunikation..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 2: Konflikte lösen</label>
+                            <textarea id="practice-conflict-solving" placeholder="Übe Konfliktlösung..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 3: Führung entwickeln</label>
+                            <textarea id="practice-leadership-development" placeholder="Entwickle Führungsfähigkeiten..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 4: Teamarbeit</label>
+                            <textarea id="practice-teamwork" placeholder="Übe Teamarbeit..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 5: Beziehungen aufbauen</label>
+                            <textarea id="practice-relationship-building" placeholder="Baue Beziehungen auf..."></textarea>
+                        </div>
+                        <div class="exercise-item">
+                            <label>Übung 6: Netzwerken</label>
+                            <textarea id="practice-networking" placeholder="Übe Networking..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-skills-tips">
+                    <h5>💡 Tipps für soziale Kompetenz</h5>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-icon">💬</div>
+                            <div class="tip-content">
+                                <h6>Kommunikation</h6>
+                                <p>Verbessere deine Kommunikation</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-content">
+                                <h6>Konflikte lösen</h6>
+                                <p>Löse Konflikte konstruktiv</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👑</div>
+                            <div class="tip-content">
+                                <h6>Führen</h6>
+                                <p>Führe emotional intelligent</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">👥</div>
+                            <div class="tip-content">
+                                <h6>Teamarbeit</h6>
+                                <p>Arbeite effektiv im Team</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🌐</div>
+                            <div class="tip-content">
+                                <h6>Netzwerken</h6>
+                                <p>Baue ein starkes Netzwerk auf</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-content">
+                                <h6>Kontinuierlich entwickeln</h6>
+                                <p>Entwickle dich kontinuierlich</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-skills-scenarios">
+                    <h5>🎭 Soziale Kompetenz-Szenarien</h5>
+                    <div class="scenarios-list">
+                        <div class="scenario-item">
+                            <h6>Arbeit: Team führen</h6>
+                            <p><strong>Situation:</strong> Du führst ein Team durch eine schwierige Phase.</p>
+                            <textarea id="scenario-team-leadership" placeholder="Wie würdest du das Team führen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Familie: Familienkonflikt lösen</h6>
+                            <p><strong>Situation:</strong> Du musst einen Familienkonflikt lösen.</p>
+                            <textarea id="scenario-family-conflict-resolution" placeholder="Wie würdest du den Konflikt lösen?"></textarea>
+                        </div>
+                        <div class="scenario-item">
+                            <h6>Beziehung: Partnerschaftskommunikation</h6>
+                            <p><strong>Situation:</strong> Du möchtest die Kommunikation in deiner Beziehung verbessern.</p>
+                            <textarea id="scenario-relationship-communication" placeholder="Wie würdest du die Kommunikation verbessern?"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="emotional-summary">
+                    <h5>🎉 Emotional Intelligence Zusammenfassung</h5>
+                    <div class="summary-form">
+                        <div class="summary-item">
+                            <label>Selbstwahrnehmung:</label>
+                            <textarea id="self-awareness-summary" placeholder="Wie gut kennst du deine Emotionen?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Selbstregulation:</label>
+                            <textarea id="self-regulation-summary" placeholder="Wie gut kannst du deine Emotionen regulieren?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Motivation:</label>
+                            <textarea id="motivation-summary" placeholder="Wie motiviert bist du?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Empathie:</label>
+                            <textarea id="empathy-summary" placeholder="Wie empathisch bist du?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Soziale Kompetenz:</label>
+                            <textarea id="social-skills-summary" placeholder="Wie gut sind deine sozialen Kompetenzen?"></textarea>
+                        </div>
+                        <div class="summary-item">
+                            <label>Entwicklungsziele:</label>
+                            <textarea id="development-goals" placeholder="Welche Bereiche möchtest du weiterentwickeln?"></textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Step 3: Regulations-Tools -->
-    <div class="workflow-step" data-step="3">
-        <div class="step-header">
-            <h3>Schritt 3: Regulations-Tools</h3>
-            <p>Lerne praktische Techniken, um deine Emotionen zu regulieren und in schwierigen Situationen gelassen zu bleiben.</p>
-        </div>
-        
-        <div class="regulation-tools">
-            <div class="tools-intro">
-                <h4>🛠️ Emotionsregulations-Tools</h4>
-                <p>Wähle die passenden Techniken für verschiedene emotionale Situationen.</p>
-            </div>
-            
-            <div class="tool-categories">
-                <div class="tool-category">
-                    <h5>😤 Bei Wut und Ärger</h5>
-                    <div class="tool-list">
-                        <div class="tool-item" data-tool="breathing-technique">
-                            <h6>Atemtechnik 4-7-8</h6>
-                            <p>Beruhige dich durch kontrolliertes Atmen.</p>
-                            <button class="btn btn-outline" onclick="startTool('breathing-technique')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="countdown">
-                            <h6>Countdown-Technik</h6>
-                            <p>Zähle von 10 rückwärts, um dich zu beruhigen.</p>
-                            <button class="btn btn-outline" onclick="startTool('countdown')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="perspective-shift">
-                            <h6>Perspektivenwechsel</h6>
-                            <p>Betrachte die Situation aus einer anderen Sicht.</p>
-                            <button class="btn btn-outline" onclick="startTool('perspective-shift')">Anwenden</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tool-category">
-                    <h5>😰 Bei Angst und Sorgen</h5>
-                    <div class="tool-list">
-                        <div class="tool-item" data-tool="grounding">
-                            <h6>5-4-3-2-1 Technik</h6>
-                            <p>Erde dich durch deine Sinne.</p>
-                            <button class="btn btn-outline" onclick="startTool('grounding')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="worry-time">
-                            <h6>Sorgen-Zeit</h6>
-                            <p>Verschiebe Sorgen auf eine feste Zeit.</p>
-                            <button class="btn btn-outline" onclick="startTool('worry-time')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="reality-check">
-                            <h6>Realitäts-Check</h6>
-                            <p>Überprüfe die Wahrscheinlichkeit deiner Sorgen.</p>
-                            <button class="btn btn-outline" onclick="startTool('reality-check')">Anwenden</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tool-category">
-                    <h5>😔 Bei Trauer und Niedergeschlagenheit</h5>
-                    <div class="tool-list">
-                        <div class="tool-item" data-tool="self-compassion">
-                            <h6>Selbstmitgefühl</h6>
-                            <p>Behandle dich mit Freundlichkeit.</p>
-                            <button class="btn btn-outline" onclick="startTool('self-compassion')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="gratitude-practice">
-                            <h6>Dankbarkeits-Übung</h6>
-                            <p>Fokussiere dich auf positive Aspekte.</p>
-                            <button class="btn btn-outline" onclick="startTool('gratitude-practice')">Anwenden</button>
-                        </div>
-                        <div class="tool-item" data-tool="activity-scheduling">
-                            <h6>Aktivitäts-Planung</h6>
-                            <p>Plane angenehme Aktivitäten.</p>
-                            <button class="btn btn-outline" onclick="startTool('activity-scheduling')">Anwenden</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tool-player" id="tool-player" style="display: none;">
-                <div class="player-header">
-                    <h4 id="current-tool-title">Tool läuft...</h4>
-                    <button class="btn btn-outline" onclick="stopTool()">Beenden</button>
-                </div>
-                <div class="player-content">
-                    <div class="tool-instructions" id="tool-instructions">
-                        <!-- Instructions will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Step 4: Empathie-Training -->
-    <div class="workflow-step" data-step="4">
-        <div class="step-header">
-            <h3>Schritt 4: Empathie-Training</h3>
-            <p>Entwickle deine Fähigkeit, andere zu verstehen und angemessen auf ihre Emotionen zu reagieren.</p>
-        </div>
-        
-        <div class="empathy-training">
-            <div class="training-intro">
-                <h4>💝 Empathie-Übungen</h4>
-                <p>Trainiere deine Empathie-Fähigkeiten mit praktischen Übungen.</p>
-            </div>
-            
-            <div class="empathy-exercises">
-                <div class="exercise-category">
-                    <h5>👁️ Emotionen erkennen</h5>
-                    <div class="exercise-item">
-                        <h6>Gesichtsausdrücke lesen</h6>
-                        <p>Lerne, Emotionen in Gesichtern zu erkennen.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('facial-expressions')">Übung starten</button>
-                    </div>
-                    <div class="exercise-item">
-                        <h6>Körpersprache verstehen</h6>
-                        <p>Erkenne Emotionen in der Körpersprache.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('body-language')">Übung starten</button>
-                    </div>
-                </div>
-                
-                <div class="exercise-category">
-                    <h5>🎭 Perspektivenwechsel</h5>
-                    <div class="exercise-item">
-                        <h6>Rollentausch</h6>
-                        <p>Versetze dich in die Lage anderer.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('role-switching')">Übung starten</button>
-                    </div>
-                    <div class="exercise-item">
-                        <h6>Konflikt-Mediation</h6>
-                        <p>Lerne, Konflikte aus verschiedenen Blickwinkeln zu sehen.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('conflict-mediation')">Übung starten</button>
-                    </div>
-                </div>
-                
-                <div class="exercise-category">
-                    <h5>🤝 Aktives Zuhören</h5>
-                    <div class="exercise-item">
-                        <h6>Zuhör-Techniken</h6>
-                        <p>Verbessere deine Zuhör-Fähigkeiten.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('listening-techniques')">Übung starten</button>
-                    </div>
-                    <div class="exercise-item">
-                        <h6>Emotionale Validierung</h6>
-                        <p>Lerne, die Emotionen anderer anzuerkennen.</p>
-                        <button class="btn btn-primary" onclick="startEmpathyExercise('emotional-validation')">Übung starten</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="empathy-scenarios">
-                <h4>🎬 Empathie-Szenarien</h4>
-                <p>Übe Empathie in realistischen Situationen.</p>
-                
-                <div class="scenario-list">
-                    <div class="scenario-item">
-                        <h5>Kollege ist gestresst</h5>
-                        <p>Dein Kollege wirkt überfordert und gereizt. Wie reagierst du?</p>
-                        <button class="btn btn-outline" onclick="startScenario('stressed-colleague')">Szenario starten</button>
-                    </div>
-                    
-                    <div class="scenario-item">
-                        <h5>Freund ist traurig</h5>
-                        <p>Ein guter Freund hat eine schlechte Nachricht erhalten. Wie zeigst du Mitgefühl?</p>
-                        <button class="btn btn-outline" onclick="startScenario('sad-friend')">Szenario starten</button>
-                    </div>
-                    
-                    <div class="scenario-item">
-                        <h5>Familienkonflikt</h5>
-                        <p>Es gibt Spannungen in der Familie. Wie vermittelst du?</p>
-                        <button class="btn btn-outline" onclick="startScenario('family-conflict')">Szenario starten</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Step 5: EQ-Entwicklung -->
-    <div class="workflow-step" data-step="5">
-        <div class="step-header">
-            <h3>Schritt 5: EQ-Entwicklung</h3>
-            <p>Erstelle einen persönlichen Entwicklungsplan für deine emotionale Intelligenz und verfolge deinen Fortschritt.</p>
-        </div>
-        
-        <div class="eq-development">
-            <div class="development-plan">
-                <h4>📋 Dein EQ-Entwicklungsplan</h4>
-                <p>Basierend auf deinem Assessment erstelle einen persönlichen Entwicklungsplan.</p>
-                
-                <div class="development-areas">
-                    <div class="area-card" id="self-awareness-area">
-                        <h5>🎯 Selbstwahrnehmung</h5>
-                        <div class="area-score" id="self-awareness-score">0/100</div>
-                        <div class="improvement-suggestions" id="self-awareness-suggestions">
-                            <p>Fülle das Assessment aus, um Vorschläge zu sehen.</p>
-                        </div>
-                        <div class="action-items" id="self-awareness-actions">
-                            <!-- Action items will be generated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="area-card" id="self-regulation-area">
-                        <h5>🎛️ Selbstregulation</h5>
-                        <div class="area-score" id="self-regulation-score">0/100</div>
-                        <div class="improvement-suggestions" id="self-regulation-suggestions">
-                            <p>Fülle das Assessment aus, um Vorschläge zu sehen.</p>
-                        </div>
-                        <div class="action-items" id="self-regulation-actions">
-                            <!-- Action items will be generated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="area-card" id="social-skills-area">
-                        <h5>👥 Soziale Kompetenz</h5>
-                        <div class="area-score" id="social-skills-score">0/100</div>
-                        <div class="improvement-suggestions" id="social-skills-suggestions">
-                            <p>Fülle das Assessment aus, um Vorschläge zu sehen.</p>
-                        </div>
-                        <div class="action-items" id="social-skills-actions">
-                            <!-- Action items will be generated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="area-card" id="empathy-area">
-                        <h5>💝 Empathie</h5>
-                        <div class="area-score" id="empathy-score">0/100</div>
-                        <div class="improvement-suggestions" id="empathy-suggestions">
-                            <p>Fülle das Assessment aus, um Vorschläge zu sehen.</p>
-                        </div>
-                        <div class="action-items" id="empathy-actions">
-                            <!-- Action items will be generated here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="progress-tracking">
-                <h4>📊 Fortschritts-Tracking</h4>
-                <div class="tracking-metrics">
-                    <div class="metric-item">
-                        <h5>EQ-Score Entwicklung</h5>
-                        <div class="metric-value" id="eq-progress">0 → 0</div>
-                    </div>
-                    <div class="metric-item">
-                        <h5>Emotionen getrackt</h5>
-                        <div class="metric-value" id="emotions-tracked">0</div>
-                    </div>
-                    <div class="metric-item">
-                        <h5>Tools verwendet</h5>
-                        <div class="metric-value" id="tools-used">0</div>
-                    </div>
-                    <div class="metric-item">
-                        <h5>Empathie-Übungen</h5>
-                        <div class="metric-value" id="empathy-exercises">0</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="development-actions">
-                <h4>🎯 Nächste Schritte</h4>
-                <div class="action-plan">
-                    <div class="action-item">
-                        <input type="checkbox" id="action-1">
-                        <label for="action-1">Täglich Emotionen tracken</label>
-                    </div>
-                    <div class="action-item">
-                        <input type="checkbox" id="action-2">
-                        <label for="action-2">Mindestens 1 Regulations-Tool pro Woche anwenden</label>
-                    </div>
-                    <div class="action-item">
-                        <input type="checkbox" id="action-3">
-                        <label for="action-3">Empathie-Übungen machen</label>
-                    </div>
-                    <div class="action-item">
-                        <input type="checkbox" id="action-4">
-                        <label for="action-4">Wöchentliches EQ-Review</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+
+        <div class="workflow-navigation">
+            <button id="prev-step" class="nav-button prev-button" onclick="previousStep()">
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
-            </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button id="next-step" class="nav-button next-button" onclick="nextStep()">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
-</div>
+
+    <script src="emotional-intelligence.js"></script>
+</body>
+</html>

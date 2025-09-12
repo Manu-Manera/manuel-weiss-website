@@ -1,5 +1,5 @@
-/* Emotional Intelligence Method Styles */
-.emotional-method {
+/* Competence Map Method Styles */
+.competence-method {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
@@ -20,7 +20,7 @@
 
 .method-icon {
     font-size: 3rem;
-    color: #ec4899;
+    color: #667eea;
     margin-bottom: 1rem;
 }
 
@@ -29,7 +29,7 @@
     font-weight: 700;
     color: #1f2937;
     margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -65,15 +65,15 @@
 }
 
 .progress-step:hover {
-    background: rgba(236, 72, 153, 0.1);
+    background: rgba(102, 126, 234, 0.1);
     transform: translateY(-2px);
 }
 
 .progress-step.active {
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
 .step-number {
@@ -91,7 +91,7 @@
 
 .progress-step.active .step-number {
     background: white;
-    color: #ec4899;
+    color: #667eea;
 }
 
 .step-title {
@@ -130,7 +130,7 @@
     font-weight: 700;
     color: #1f2937;
     margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -143,23 +143,153 @@
     font-weight: 500;
 }
 
-/* Self Awareness */
-.self-awareness {
-    background: #fdf2f8;
+/* Competence Identification */
+.competence-identification {
+    background: #f8fafc;
     border-radius: 12px;
     padding: 1.5rem;
-    border: 2px solid #ec4899;
+    border: 2px solid #e2e8f0;
     margin-bottom: 2rem;
 }
 
-.self-awareness h3 {
-    color: #be185d;
+.competence-identification h3 {
+    color: #1f2937;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.awareness-elements {
+.competence-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.category-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+}
+
+.category-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-item p {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.category-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.category-item textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Competence Evaluation */
+.competence-evaluation {
+    background: #f0f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #0ea5e9;
+    margin-bottom: 2rem;
+}
+
+.competence-evaluation h3 {
+    color: #0c4a6e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.evaluation-criteria {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.criteria-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #0ea5e9;
+    transition: all 0.3s ease;
+}
+
+.criteria-item:hover {
+    border-color: #0284c7;
+    box-shadow: 0 5px 15px rgba(14, 165, 233, 0.1);
+}
+
+.criteria-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.criteria-item p {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.criteria-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.criteria-item textarea:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Gap Analysis */
+.gap-analysis {
+    background: #fef3c7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #f59e0b;
+    margin-bottom: 2rem;
+}
+
+.gap-analysis h3 {
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.gap-elements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -169,13 +299,13 @@
     background: white;
     border-radius: 8px;
     padding: 1.5rem;
-    border: 1px solid #ec4899;
+    border: 1px solid #f59e0b;
     transition: all 0.3s ease;
 }
 
 .element-item:hover {
-    border-color: #be185d;
-    box-shadow: 0 5px 15px rgba(236, 72, 153, 0.1);
+    border-color: #d97706;
+    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.1);
 }
 
 .element-item h4 {
@@ -204,99 +334,12 @@
 
 .element-item textarea:focus {
     outline: none;
-    border-color: #ec4899;
-    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
-/* Self Regulation */
-.self-regulation {
-    background: #f0f9ff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 2px solid #0ea5e9;
-    margin-bottom: 2rem;
-}
-
-.self-regulation h3 {
-    color: #0c4a6e;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-}
-
-.regulation-techniques {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.technique-item {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #0ea5e9;
-    transition: all 0.3s ease;
-}
-
-.technique-item:hover {
-    border-color: #0284c7;
-    box-shadow: 0 5px 15px rgba(14, 165, 233, 0.1);
-}
-
-.technique-item h4 {
-    margin: 0 0 0.5rem 0;
-    color: #1f2937;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.technique-item p {
-    margin: 0 0 1rem 0;
-    color: #6b7280;
-    font-size: 0.9rem;
-}
-
-.technique-item textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    resize: vertical;
-    transition: all 0.3s ease;
-}
-
-.technique-item textarea:focus {
-    outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-}
-
-/* Motivation Development */
-.motivation-development {
-    background: #fef3c7;
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 2px solid #f59e0b;
-    margin-bottom: 2rem;
-}
-
-.motivation-development h3 {
-    color: #92400e;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-}
-
-.motivation-elements {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Empathy Development */
-.empathy-development {
+/* Development Planning */
+.development-planning {
     background: #f3e8ff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -304,64 +347,21 @@
     margin-bottom: 2rem;
 }
 
-.empathy-development h3 {
+.development-planning h3 {
     color: #6b21a8;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.empathy-skills {
+.planning-elements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.skill-item {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #8b5cf6;
-    transition: all 0.3s ease;
-}
-
-.skill-item:hover {
-    border-color: #7c3aed;
-    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.1);
-}
-
-.skill-item h4 {
-    margin: 0 0 0.5rem 0;
-    color: #1f2937;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.skill-item p {
-    margin: 0 0 1rem 0;
-    color: #6b7280;
-    font-size: 0.9rem;
-}
-
-.skill-item textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    resize: vertical;
-    transition: all 0.3s ease;
-}
-
-.skill-item textarea:focus {
-    outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-/* Social Skills */
-.social-skills {
+/* Implementation Tracking */
+.implementation-tracking {
     background: #ecfdf5;
     border-radius: 12px;
     padding: 1.5rem;
@@ -369,22 +369,22 @@
     margin-bottom: 2rem;
 }
 
-.social-skills h3 {
+.implementation-tracking h3 {
     color: #047857;
     font-weight: 600;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
-.social-skills-elements {
+.tracking-elements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
 /* Practice Exercises */
-.self-awareness-practice, .self-regulation-practice, .motivation-development-practice, 
-.empathy-development-practice, .social-skills-practice {
+.competence-identification-practice, .competence-evaluation-practice, .gap-analysis-practice, 
+.development-planning-practice, .implementation-tracking-practice {
     background: #f8fafc;
     border-radius: 12px;
     padding: 1.5rem;
@@ -392,8 +392,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-practice h5, .self-regulation-practice h5, .motivation-development-practice h5, 
-.empathy-development-practice h5, .social-skills-practice h5 {
+.competence-identification-practice h5, .competence-evaluation-practice h5, .gap-analysis-practice h5, 
+.development-planning-practice h5, .implementation-tracking-practice h5 {
     color: #1f2937;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -415,8 +415,8 @@
 }
 
 .exercise-item:hover {
-    border-color: #ec4899;
-    box-shadow: 0 3px 10px rgba(236, 72, 153, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.1);
 }
 
 .exercise-item label {
@@ -440,13 +440,13 @@
 
 .exercise-item textarea:focus {
     outline: none;
-    border-color: #ec4899;
-    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Tips */
-.self-awareness-tips, .self-regulation-tips, .motivation-development-tips, 
-.empathy-development-tips, .social-skills-tips {
+.competence-identification-tips, .competence-evaluation-tips, .gap-analysis-tips, 
+.development-planning-tips, .implementation-tracking-tips {
     background: #fef3c7;
     border-radius: 12px;
     padding: 1.5rem;
@@ -454,8 +454,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-tips h5, .self-regulation-tips h5, .motivation-development-tips h5, 
-.empathy-development-tips h5, .social-skills-tips h5 {
+.competence-identification-tips h5, .competence-evaluation-tips h5, .gap-analysis-tips h5, 
+.development-planning-tips h5, .implementation-tracking-tips h5 {
     color: #92400e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -505,8 +505,8 @@
 }
 
 /* Scenarios */
-.self-awareness-scenarios, .self-regulation-scenarios, .motivation-development-scenarios, 
-.empathy-development-scenarios, .social-skills-scenarios {
+.competence-identification-scenarios, .competence-evaluation-scenarios, .gap-analysis-scenarios, 
+.development-planning-scenarios, .implementation-tracking-scenarios {
     background: #fef3c7;
     border-radius: 12px;
     padding: 1.5rem;
@@ -514,8 +514,8 @@
     margin-top: 1.5rem;
 }
 
-.self-awareness-scenarios h5, .self-regulation-scenarios h5, .motivation-development-scenarios h5, 
-.empathy-development-scenarios h5, .social-skills-scenarios h5 {
+.competence-identification-scenarios h5, .competence-evaluation-scenarios h5, .gap-analysis-scenarios h5, 
+.development-planning-scenarios h5, .implementation-tracking-scenarios h5 {
     color: #92400e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -573,7 +573,7 @@
 }
 
 /* Summary */
-.emotional-summary {
+.competence-summary {
     background: #f0f9ff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -581,7 +581,7 @@
     margin-top: 1.5rem;
 }
 
-.emotional-summary h5 {
+.competence-summary h5 {
     color: #0c4a6e;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -661,13 +661,13 @@
 }
 
 .next-button {
-    background: linear-gradient(135deg, #ec4899, #be185d);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
 }
 
 .next-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
 .nav-button:disabled {
@@ -678,7 +678,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .emotional-method {
+    .competence-method {
         padding: 1rem;
     }
     
@@ -703,8 +703,8 @@
         padding: 1.5rem;
     }
     
-    .awareness-elements, .regulation-techniques, .motivation-elements, 
-    .empathy-skills, .social-skills-elements {
+    .competence-categories, .evaluation-criteria, .gap-elements, 
+    .planning-elements, .tracking-elements {
         grid-template-columns: 1fr;
     }
     
