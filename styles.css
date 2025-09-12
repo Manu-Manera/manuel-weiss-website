@@ -165,6 +165,18 @@ a:hover {
     border-radius: var(--radius-lg);
 }
 
+.nav-profile-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    aspect-ratio: 1/1;
+    margin-left: var(--spacing-sm);
+    border: 2px solid var(--primary-500);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .nav-name {
     font-size: var(--font-size-lg);
     font-weight: 600;
@@ -980,6 +992,12 @@ a:hover {
 }
 
 @media (max-width: 768px) {
+    .nav-profile-mini {
+        width: 28px;
+        height: 28px;
+        margin-left: var(--spacing-xs);
+    }
+    
     .nav-menu {
         position: fixed;
         top: var(--header-height);
