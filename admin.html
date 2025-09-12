@@ -1557,6 +1557,36 @@
 
                 <!-- Media Management Section -->
                 <section id="media" class="admin-section">
+                    <div class="section-header">
+                        <h2>Zentrale Medienverwaltung</h2>
+                        <p>Verwalte alle Bilder, Dokumente und Medien zentral</p>
+                    </div>
+                    
+                    <div class="media-categories">
+                        <div class="category-tabs">
+                            <button class="category-tab active" data-category="profile">
+                                <i class="fas fa-user"></i>
+                                Profilbilder
+                            </button>
+                            <button class="category-tab" data-category="application">
+                                <i class="fas fa-file-alt"></i>
+                                Bewerbungsunterlagen
+                            </button>
+                            <button class="category-tab" data-category="portfolio">
+                                <i class="fas fa-briefcase"></i>
+                                Portfolio
+                            </button>
+                            <button class="category-tab" data-category="documents">
+                                <i class="fas fa-file-pdf"></i>
+                                Dokumente
+                            </button>
+                            <button class="category-tab" data-category="gallery">
+                                <i class="fas fa-images"></i>
+                                Galerie
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="section-toolbar">
                         <div class="toolbar-left">
                             <button class="btn btn-primary" onclick="adminPanel.openMediaUpload()">
@@ -1580,8 +1610,141 @@
                         </div>
                     </div>
                     
-                    <div class="media-gallery" id="mediaGallery">
-                        <!-- Media items will be dynamically loaded here -->
+                    <!-- Profilbilder Kategorie -->
+                    <div class="media-category-content active" id="category-profile">
+                        <div class="category-header">
+                            <h3><i class="fas fa-user"></i> Profilbilder</h3>
+                            <p>Verwalte deine Profilbilder für verschiedene Bereiche</p>
+                        </div>
+                        <div class="profile-images-grid">
+                            <div class="profile-image-item">
+                                <h4>Navigation (Logo)</h4>
+                                <div class="image-preview">
+                                    <img id="navLogoPreview" src="manuel-weiss-photo.svg" alt="Navigation Logo">
+                                </div>
+                                <input type="file" id="navLogoUpload" accept="image/*" onchange="uploadProfileImage('nav-logo', this)">
+                                <button onclick="document.getElementById('navLogoUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Logo hochladen
+                                </button>
+                            </div>
+                            <div class="profile-image-item">
+                                <h4>Hero-Bereich (Hauptbild)</h4>
+                                <div class="image-preview">
+                                    <img id="heroImagePreview" src="manuel-weiss-photo.svg" alt="Hero Bild">
+                                </div>
+                                <input type="file" id="heroImageUpload" accept="image/*" onchange="uploadProfileImage('hero-image', this)">
+                                <button onclick="document.getElementById('heroImageUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Hero-Bild hochladen
+                                </button>
+                            </div>
+                            <div class="profile-image-item">
+                                <h4>Footer (Kleines Logo)</h4>
+                                <div class="image-preview">
+                                    <img id="footerLogoPreview" src="manuel-weiss-photo.svg" alt="Footer Logo">
+                                </div>
+                                <input type="file" id="footerLogoUpload" accept="image/*" onchange="uploadProfileImage('footer-logo', this)">
+                                <button onclick="document.getElementById('footerLogoUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Footer-Logo hochladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bewerbungsunterlagen Kategorie -->
+                    <div class="media-category-content" id="category-application">
+                        <div class="category-header">
+                            <h3><i class="fas fa-file-alt"></i> Bewerbungsunterlagen</h3>
+                            <p>Verwalte deine Bewerbungsbilder und Dokumente</p>
+                        </div>
+                        <div class="application-documents-grid">
+                            <div class="document-item">
+                                <h4>Bewerbungsbild</h4>
+                                <div class="image-preview">
+                                    <img id="applicationPhotoPreview" src="manuel-weiss-photo.svg" alt="Bewerbungsbild">
+                                </div>
+                                <input type="file" id="applicationPhotoUpload" accept="image/*" onchange="uploadApplicationDocument('application-photo', this)">
+                                <button onclick="document.getElementById('applicationPhotoUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Bewerbungsbild hochladen
+                                </button>
+                            </div>
+                            <div class="document-item">
+                                <h4>Lebenslauf (PDF)</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
+                                    <p id="cvFileName">Manuel_Weiss_CV.pdf</p>
+                                </div>
+                                <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('cv', this)">
+                                <button onclick="document.getElementById('cvUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Lebenslauf hochladen
+                                </button>
+                            </div>
+                            <div class="document-item">
+                                <h4>Zeugnisse (PDF)</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
+                                    <p id="certificatesFileName">Zugnisse.pdf</p>
+                                </div>
+                                <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('certificates', this)">
+                                <button onclick="document.getElementById('certificatesUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Zeugnisse hochladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Portfolio Kategorie -->
+                    <div class="media-category-content" id="category-portfolio">
+                        <div class="category-header">
+                            <h3><i class="fas fa-briefcase"></i> Portfolio</h3>
+                            <p>Verwalte deine Portfolio-Bilder und Projektdokumentationen</p>
+                        </div>
+                        <div class="portfolio-grid">
+                            <div class="portfolio-item">
+                                <h4>Projektbilder</h4>
+                                <div class="image-gallery">
+                                    <div class="gallery-placeholder">
+                                        <i class="fas fa-images" style="font-size: 2rem; color: #999;"></i>
+                                        <p>Projektbilder hier hochladen</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="portfolioImagesUpload" accept="image/*" multiple onchange="uploadPortfolioImages(this)">
+                                <button onclick="document.getElementById('portfolioImagesUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Projektbilder hochladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dokumente Kategorie -->
+                    <div class="media-category-content" id="category-documents">
+                        <div class="category-header">
+                            <h3><i class="fas fa-file-pdf"></i> Dokumente</h3>
+                            <p>Verwalte alle wichtigen Dokumente</p>
+                        </div>
+                        <div class="documents-grid">
+                            <div class="document-item">
+                                <h4>Persönlichkeitsentwicklung (PDF)</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
+                                    <p id="personalityFileName">Persönlichkeitsentwicklung.pdf</p>
+                                </div>
+                                <input type="file" id="personalityUpload" accept=".pdf" onchange="uploadDocument('personality-development', this)">
+                                <button onclick="document.getElementById('personalityUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> PDF hochladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Galerie Kategorie -->
+                    <div class="media-category-content" id="category-gallery">
+                        <div class="category-header">
+                            <h3><i class="fas fa-images"></i> Galerie</h3>
+                            <p>Allgemeine Bilder und Medien</p>
+                        </div>
+                        <div class="media-gallery" id="mediaGallery">
+                            <!-- Media items will be dynamically loaded here -->
+                        </div>
                     </div>
                 </section>
 
@@ -2357,6 +2520,155 @@
                 reader.readAsDataURL(file);
             } else {
                 alert('Bitte wähle eine Datei aus!');
+            }
+        }
+        
+        // Zentrale Medienverwaltung - Kategorie-Tabs
+        function initMediaCategories() {
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            const categoryContents = document.querySelectorAll('.media-category-content');
+            
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const category = tab.dataset.category;
+                    
+                    // Alle Tabs deaktivieren
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    categoryContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Aktiven Tab und Content aktivieren
+                    tab.classList.add('active');
+                    document.getElementById(`category-${category}`).classList.add('active');
+                });
+            });
+        }
+        
+        // Profilbild-Upload für verschiedene Bereiche
+        function uploadProfileImage(type, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                // Bild in localStorage speichern
+                localStorage.setItem(`profileImage_${type}`, imageData);
+                
+                // Vorschau aktualisieren
+                const previewId = type === 'nav-logo' ? 'navLogoPreview' : 
+                                 type === 'hero-image' ? 'heroImagePreview' : 'footerLogoPreview';
+                document.getElementById(previewId).src = imageData;
+                
+                // Website-Synchronisation
+                if (type === 'nav-logo') {
+                    // Navigation Logo aktualisieren
+                    updateWebsiteImages('nav-logo', imageData);
+                } else if (type === 'hero-image') {
+                    // Hero-Bild aktualisieren
+                    updateWebsiteImages('hero-image', imageData);
+                } else if (type === 'footer-logo') {
+                    // Footer Logo aktualisieren
+                    updateWebsiteImages('footer-logo', imageData);
+                }
+                
+                console.log(`✅ ${type} Profilbild aktualisiert`);
+                alert(`${type} Profilbild erfolgreich aktualisiert!`);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Bewerbungsunterlagen-Upload
+        function uploadApplicationDocument(type, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (type === 'application-photo') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    localStorage.setItem('applicationPhoto', imageData);
+                    document.getElementById('applicationPhotoPreview').src = imageData;
+                    console.log('✅ Bewerbungsbild aktualisiert');
+                    alert('Bewerbungsbild erfolgreich aktualisiert!');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // PDF/DOC Dateien
+                const fileName = file.name;
+                localStorage.setItem(`${type}FileName`, fileName);
+                localStorage.setItem(`${type}File`, file);
+                
+                // Dateiname anzeigen
+                const fileNameElement = type === 'cv' ? 'cvFileName' : 'certificatesFileName';
+                document.getElementById(fileNameElement).textContent = fileName;
+                
+                console.log(`✅ ${type} Dokument aktualisiert: ${fileName}`);
+                alert(`${type} Dokument erfolgreich hochgeladen: ${fileName}`);
+            }
+        }
+        
+        // Portfolio-Bilder-Upload
+        function uploadPortfolioImages(input) {
+            const files = input.files;
+            if (!files.length) return;
+            
+            const portfolioImages = [];
+            let loadedCount = 0;
+            
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    portfolioImages.push({
+                        name: file.name,
+                        data: e.target.result,
+                        timestamp: Date.now()
+                    });
+                    
+                    loadedCount++;
+                    if (loadedCount === files.length) {
+                        localStorage.setItem('portfolioImages', JSON.stringify(portfolioImages));
+                        console.log(`✅ ${files.length} Portfolio-Bilder hochgeladen`);
+                        alert(`${files.length} Portfolio-Bilder erfolgreich hochgeladen!`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Dokument-Upload
+        function uploadDocument(type, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const fileName = file.name;
+            localStorage.setItem(`${type}FileName`, fileName);
+            localStorage.setItem(`${type}File`, file);
+            
+            // Dateiname anzeigen
+            const fileNameElement = `${type}FileName`;
+            if (document.getElementById(fileNameElement)) {
+                document.getElementById(fileNameElement).textContent = fileName;
+            }
+            
+            console.log(`✅ ${type} Dokument aktualisiert: ${fileName}`);
+            alert(`${type} Dokument erfolgreich hochgeladen: ${fileName}`);
+        }
+        
+        // Website-Bilder aktualisieren
+        function updateWebsiteImages(type, imageData) {
+            // Speichere in localStorage für Website-Synchronisation
+            localStorage.setItem(`websiteImage_${type}`, imageData);
+            
+            // Optional: Netlify Storage
+            if (window.netlifyStorage) {
+                window.netlifyStorage.saveProfileImage(imageData, `${type}-${Date.now()}`)
+                    .then(result => {
+                        console.log(`✅ ${type} auch bei Netlify gespeichert:`, result);
+                    })
+                    .catch(error => {
+                        console.warn(`⚠️ Netlify Storage für ${type} nicht verfügbar:`, error);
+                    });
             }
         }
         
@@ -4064,6 +4376,9 @@ Bitte antworte im folgenden JSON-Format:
             
             // Lade gespeichertes Profilbild
             loadProfileImageFromStorage();
+            
+            // Initialisiere Medien-Kategorien
+            initMediaCategories();
             
             // Lade Hero-Content
             loadHeroContentFromStorage();
