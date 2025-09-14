@@ -16,6 +16,7 @@ class GallupStrengthsAssessment {
         this.setupEventListeners();
         this.loadTalentDefinitions();
         this.generateQuestions();
+        this.updateStep();
         this.updateProgress();
     }
 
@@ -136,6 +137,309 @@ class GallupStrengthsAssessment {
                     relationships: ['Konfliktlösung', 'Beziehungsprobleme'],
                     personal: ['Lebensprobleme', 'Herausforderungen']
                 }
+            },
+            // Influencing Talents
+            'Activator': {
+                name: 'Activator',
+                category: 'Influencing',
+                description: 'Du kannst Dinge in Bewegung setzen.',
+                strengths: ['Initiative', 'Dynamik', 'Umsetzungskraft'],
+                challenges: ['Ungeduld', 'Schwierigkeit zu warten'],
+                applications: {
+                    career: ['Unternehmertum', 'Vertrieb', 'Projektleitung'],
+                    relationships: ['Motivation anderer', 'Familienaktivitäten'],
+                    personal: ['Zielerreichung', 'Lebensveränderungen']
+                }
+            },
+            'Command': {
+                name: 'Command',
+                category: 'Influencing',
+                description: 'Du kannst die Kontrolle übernehmen.',
+                strengths: ['Führung', 'Entscheidungsfähigkeit', 'Autorität'],
+                challenges: ['Dominanz', 'Schwierigkeit zu delegieren'],
+                applications: {
+                    career: ['Management', 'Militär', 'Politik'],
+                    relationships: ['Familienführung', 'Krisenmanagement'],
+                    personal: ['Selbstführung', 'Lebensentscheidungen']
+                }
+            },
+            'Communication': {
+                name: 'Communication',
+                category: 'Influencing',
+                description: 'Du kannst Ideen lebendig werden lassen.',
+                strengths: ['Überzeugungskraft', 'Klarheit', 'Engagement'],
+                challenges: ['Überkommunikation', 'Schwierigkeit zuzuhören'],
+                applications: {
+                    career: ['Verkauf', 'Training', 'Medien'],
+                    relationships: ['Konfliktlösung', 'Familienkommunikation'],
+                    personal: ['Selbstausdruck', 'Networking']
+                }
+            },
+            'Competition': {
+                name: 'Competition',
+                category: 'Influencing',
+                description: 'Du misst deinen Fortschritt an dem anderer.',
+                strengths: ['Antrieb', 'Leistungsorientierung', 'Motivation'],
+                challenges: ['Aggressivität', 'Schwierigkeit zu kooperieren'],
+                applications: {
+                    career: ['Vertrieb', 'Sport', 'Wettbewerb'],
+                    relationships: ['Familienaktivitäten', 'Freundschaften'],
+                    personal: ['Fitness', 'Lernziele']
+                }
+            },
+            'Maximizer': {
+                name: 'Maximizer',
+                category: 'Influencing',
+                description: 'Du willst Stärken zu Exzellenz entwickeln.',
+                strengths: ['Exzellenz', 'Verbesserung', 'Qualität'],
+                challenges: ['Perfektionismus', 'Schwierigkeit mit Durchschnitt'],
+                applications: {
+                    career: ['Qualitätsmanagement', 'Training', 'Beratung'],
+                    relationships: ['Beziehungsverbesserung', 'Familienentwicklung'],
+                    personal: ['Selbstverbesserung', 'Fähigkeiten']
+                }
+            },
+            'Self-Assurance': {
+                name: 'Self-Assurance',
+                category: 'Influencing',
+                description: 'Du vertraust auf deine Fähigkeiten.',
+                strengths: ['Vertrauen', 'Unabhängigkeit', 'Entscheidungsfähigkeit'],
+                challenges: ['Arroganz', 'Schwierigkeit Hilfe anzunehmen'],
+                applications: {
+                    career: ['Führung', 'Unternehmertum', 'Beratung'],
+                    relationships: ['Selbstvertrauen', 'Familienführung'],
+                    personal: ['Selbstvertrauen', 'Lebensentscheidungen']
+                }
+            },
+            'Significance': {
+                name: 'Significance',
+                category: 'Influencing',
+                description: 'Du willst von anderen als wichtig angesehen werden.',
+                strengths: ['Motivation', 'Leistung', 'Einfluss'],
+                challenges: ['Egoismus', 'Schwierigkeit zu teilen'],
+                applications: {
+                    career: ['Führung', 'Öffentlichkeitsarbeit', 'Politik'],
+                    relationships: ['Familienführung', 'Gemeinschaft'],
+                    personal: ['Selbstwert', 'Lebensziele']
+                }
+            },
+            'Woo': {
+                name: 'Woo',
+                category: 'Influencing',
+                description: 'Du genießt es, neue Menschen kennenzulernen.',
+                strengths: ['Networking', 'Beziehungsaufbau', 'Charme'],
+                challenges: ['Oberflächlichkeit', 'Schwierigkeit tiefe Beziehungen'],
+                applications: {
+                    career: ['Vertrieb', 'Marketing', 'Event-Management'],
+                    relationships: ['Freundschaften', 'Networking'],
+                    personal: ['Soziale Fähigkeiten', 'Gemeinschaft']
+                }
+            },
+            // Relationship Building Talents
+            'Adaptability': {
+                name: 'Adaptability',
+                category: 'Relationship Building',
+                description: 'Du lebst im Moment und gehst mit dem Strom.',
+                strengths: ['Flexibilität', 'Gelassenheit', 'Anpassungsfähigkeit'],
+                challenges: ['Schwierigkeit zu planen', 'Unvorhersagbarkeit'],
+                applications: {
+                    career: ['Beratung', 'Krisenmanagement', 'Service'],
+                    relationships: ['Familienflexibilität', 'Konfliktlösung'],
+                    personal: ['Lebensveränderungen', 'Stressmanagement']
+                }
+            },
+            'Connectedness': {
+                name: 'Connectedness',
+                category: 'Relationship Building',
+                description: 'Du glaubst, dass alles miteinander verbunden ist.',
+                strengths: ['Ganzheitlichkeit', 'Spiritualität', 'Zusammenhalt'],
+                challenges: ['Schwierigkeit mit Details', 'Übermäßige Spiritualität'],
+                applications: {
+                    career: ['Beratung', 'Therapie', 'Spiritualität'],
+                    relationships: ['Familienzusammenhalt', 'Gemeinschaft'],
+                    personal: ['Lebenssinn', 'Spiritualität']
+                }
+            },
+            'Developer': {
+                name: 'Developer',
+                category: 'Relationship Building',
+                description: 'Du siehst das Potenzial in anderen.',
+                strengths: ['Mentoring', 'Entwicklung', 'Geduld'],
+                challenges: ['Schwierigkeit mit Leistungsschwachen', 'Übermäßige Geduld'],
+                applications: {
+                    career: ['Training', 'HR', 'Bildung'],
+                    relationships: ['Familienentwicklung', 'Freundschaften'],
+                    personal: ['Selbstentwicklung', 'Mentoring']
+                }
+            },
+            'Empathy': {
+                name: 'Empathy',
+                category: 'Relationship Building',
+                description: 'Du kannst die Gefühle anderer spüren.',
+                strengths: ['Verständnis', 'Mitgefühl', 'Intuition'],
+                challenges: ['Emotionale Überlastung', 'Schwierigkeit Abstand zu halten'],
+                applications: {
+                    career: ['Therapie', 'Beratung', 'Pflege'],
+                    relationships: ['Familienverständnis', 'Freundschaften'],
+                    personal: ['Emotionale Intelligenz', 'Beziehungen']
+                }
+            },
+            'Harmony': {
+                name: 'Harmony',
+                category: 'Relationship Building',
+                description: 'Du suchst nach Übereinstimmung.',
+                strengths: ['Konfliktlösung', 'Harmonie', 'Vermittlung'],
+                challenges: ['Schwierigkeit mit Konflikten', 'Vermeidung'],
+                applications: {
+                    career: ['Mediation', 'HR', 'Teamleitung'],
+                    relationships: ['Familienharmonie', 'Freundschaften'],
+                    personal: ['Beziehungen', 'Konfliktlösung']
+                }
+            },
+            'Includer': {
+                name: 'Includer',
+                category: 'Relationship Building',
+                description: 'Du akzeptierst andere.',
+                strengths: ['Inklusion', 'Akzeptanz', 'Vielfalt'],
+                challenges: ['Schwierigkeit Grenzen zu setzen', 'Übermäßige Toleranz'],
+                applications: {
+                    career: ['Diversity Management', 'Bildung', 'Sozialarbeit'],
+                    relationships: ['Familienintegration', 'Gemeinschaft'],
+                    personal: ['Toleranz', 'Vielfalt']
+                }
+            },
+            'Individualization': {
+                name: 'Individualization',
+                category: 'Relationship Building',
+                description: 'Du interessierst dich für die Einzigartigkeit anderer.',
+                strengths: ['Individualität', 'Verständnis', 'Anpassung'],
+                challenges: ['Schwierigkeit mit Gruppen', 'Übermäßige Individualisierung'],
+                applications: {
+                    career: ['Beratung', 'HR', 'Therapie'],
+                    relationships: ['Familienverständnis', 'Freundschaften'],
+                    personal: ['Selbstverständnis', 'Beziehungen']
+                }
+            },
+            'Positivity': {
+                name: 'Positivity',
+                category: 'Relationship Building',
+                description: 'Du bist enthusiastisch und optimistisch.',
+                strengths: ['Optimismus', 'Enthusiasmus', 'Motivation'],
+                challenges: ['Schwierigkeit mit Negativität', 'Übermäßiger Optimismus'],
+                applications: {
+                    career: ['Training', 'Vertrieb', 'Event-Management'],
+                    relationships: ['Familienstimmung', 'Freundschaften'],
+                    personal: ['Lebensfreude', 'Motivation']
+                }
+            },
+            'Relator': {
+                name: 'Relator',
+                category: 'Relationship Building',
+                description: 'Du genießt enge Beziehungen.',
+                strengths: ['Tiefe', 'Loyalität', 'Vertrauen'],
+                challenges: ['Schwierigkeit mit neuen Menschen', 'Übermäßige Abhängigkeit'],
+                applications: {
+                    career: ['Beratung', 'Kundenbetreuung', 'Teamarbeit'],
+                    relationships: ['Familie', 'Freundschaften'],
+                    personal: ['Beziehungen', 'Vertrauen']
+                }
+            },
+            // Strategic Thinking Talents
+            'Analytical': {
+                name: 'Analytical',
+                category: 'Strategic Thinking',
+                description: 'Du suchst nach Gründen und Ursachen.',
+                strengths: ['Logik', 'Objektivität', 'Genauigkeit'],
+                challenges: ['Übermäßige Analyse', 'Schwierigkeit mit Intuition'],
+                applications: {
+                    career: ['Forschung', 'Finanzen', 'Datenanalyse'],
+                    relationships: ['Problemlösung', 'Entscheidungen'],
+                    personal: ['Logisches Denken', 'Problemlösung']
+                }
+            },
+            'Context': {
+                name: 'Context',
+                category: 'Strategic Thinking',
+                description: 'Du verstehst die Gegenwart durch die Vergangenheit.',
+                strengths: ['Geschichtsverständnis', 'Lernen', 'Perspektive'],
+                challenges: ['Schwierigkeit mit Neuem', 'Übermäßige Vergangenheitsorientierung'],
+                applications: {
+                    career: ['Geschichte', 'Beratung', 'Forschung'],
+                    relationships: ['Familienverständnis', 'Lernen'],
+                    personal: ['Selbstverständnis', 'Lernen']
+                }
+            },
+            'Futuristic': {
+                name: 'Futuristic',
+                category: 'Strategic Thinking',
+                description: 'Du siehst die Zukunft mit Begeisterung.',
+                strengths: ['Vision', 'Inspiration', 'Zukunftsorientierung'],
+                challenges: ['Schwierigkeit mit Gegenwart', 'Übermäßige Zukunftsfokussierung'],
+                applications: {
+                    career: ['Strategie', 'Innovation', 'Führung'],
+                    relationships: ['Familienplanung', 'Zukunftsgestaltung'],
+                    personal: ['Lebensplanung', 'Visionen']
+                }
+            },
+            'Ideation': {
+                name: 'Ideation',
+                category: 'Strategic Thinking',
+                description: 'Du liebst Ideen.',
+                strengths: ['Kreativität', 'Innovation', 'Konzepte'],
+                challenges: ['Schwierigkeit mit Details', 'Übermäßige Ideen'],
+                applications: {
+                    career: ['Innovation', 'Marketing', 'Beratung'],
+                    relationships: ['Kreative Lösungen', 'Problemlösung'],
+                    personal: ['Kreativität', 'Innovation']
+                }
+            },
+            'Input': {
+                name: 'Input',
+                category: 'Strategic Thinking',
+                description: 'Du sammelst gerne Dinge.',
+                strengths: ['Wissenssammlung', 'Ressourcen', 'Information'],
+                challenges: ['Übermäßige Sammlung', 'Schwierigkeit zu organisieren'],
+                applications: {
+                    career: ['Forschung', 'Bibliothek', 'Beratung'],
+                    relationships: ['Wissensvermittlung', 'Ressourcen'],
+                    personal: ['Lernen', 'Wissenssammlung']
+                }
+            },
+            'Intellection': {
+                name: 'Intellection',
+                category: 'Strategic Thinking',
+                description: 'Du liebst es zu denken.',
+                strengths: ['Reflexion', 'Tiefe', 'Philosophie'],
+                challenges: ['Übermäßige Reflexion', 'Schwierigkeit mit Aktion'],
+                applications: {
+                    career: ['Forschung', 'Philosophie', 'Beratung'],
+                    relationships: ['Tiefe Gespräche', 'Reflexion'],
+                    personal: ['Selbstreflexion', 'Philosophie']
+                }
+            },
+            'Learner': {
+                name: 'Learner',
+                category: 'Strategic Thinking',
+                description: 'Du liebst es zu lernen.',
+                strengths: ['Wachstum', 'Neugier', 'Entwicklung'],
+                challenges: ['Schwierigkeit mit Routine', 'Übermäßiges Lernen'],
+                applications: {
+                    career: ['Bildung', 'Forschung', 'Beratung'],
+                    relationships: ['Wissensvermittlung', 'Entwicklung'],
+                    personal: ['Lebenslanges Lernen', 'Entwicklung']
+                }
+            },
+            'Strategic': {
+                name: 'Strategic',
+                category: 'Strategic Thinking',
+                description: 'Du kannst alternative Wege sehen.',
+                strengths: ['Strategie', 'Alternativen', 'Effizienz'],
+                challenges: ['Übermäßige Strategie', 'Schwierigkeit mit Spontaneität'],
+                applications: {
+                    career: ['Strategie', 'Führung', 'Beratung'],
+                    relationships: ['Problemlösung', 'Planung'],
+                    personal: ['Lebensstrategie', 'Entscheidungen']
+                }
             }
         };
     }
@@ -164,6 +468,7 @@ class GallupStrengthsAssessment {
 
     getTalentStatement(talent) {
         const statements = {
+            // Executing Talents
             'Achiever': 'Ich fühle mich am besten, wenn ich produktiv bin und Dinge erreiche.',
             'Arranger': 'Ich kann viele verschiedene Dinge gleichzeitig organisieren.',
             'Belief': 'Ich habe feste Werte, die mein Handeln leiten.',
@@ -172,7 +477,38 @@ class GallupStrengthsAssessment {
             'Discipline': 'Ich brauche Struktur und Routine in meinem Leben.',
             'Focus': 'Ich kann mich sehr gut auf Ziele konzentrieren.',
             'Responsibility': 'Ich übernehme gerne Verantwortung für meine Aufgaben.',
-            'Restorative': 'Ich liebe es, Probleme zu lösen und Dinge zu reparieren.'
+            'Restorative': 'Ich liebe es, Probleme zu lösen und Dinge zu reparieren.',
+            
+            // Influencing Talents
+            'Activator': 'Ich kann Dinge in Bewegung setzen und andere motivieren.',
+            'Command': 'Ich kann die Kontrolle übernehmen und führen.',
+            'Communication': 'Ich kann Ideen lebendig werden lassen und überzeugen.',
+            'Competition': 'Ich messe meinen Fortschritt an dem anderer.',
+            'Maximizer': 'Ich will Stärken zu Exzellenz entwickeln.',
+            'Self-Assurance': 'Ich vertraue auf meine Fähigkeiten und Entscheidungen.',
+            'Significance': 'Ich will von anderen als wichtig angesehen werden.',
+            'Woo': 'Ich genieße es, neue Menschen kennenzulernen.',
+            
+            // Relationship Building Talents
+            'Adaptability': 'Ich lebe im Moment und gehe mit dem Strom.',
+            'Connectedness': 'Ich glaube, dass alles miteinander verbunden ist.',
+            'Developer': 'Ich sehe das Potenzial in anderen Menschen.',
+            'Empathy': 'Ich kann die Gefühle anderer spüren und verstehen.',
+            'Harmony': 'Ich suche nach Übereinstimmung und Harmonie.',
+            'Includer': 'Ich akzeptiere andere und schließe sie ein.',
+            'Individualization': 'Ich interessiere mich für die Einzigartigkeit anderer.',
+            'Positivity': 'Ich bin enthusiastisch und optimistisch.',
+            'Relator': 'Ich genieße enge, tiefe Beziehungen.',
+            
+            // Strategic Thinking Talents
+            'Analytical': 'Ich suche nach Gründen und Ursachen.',
+            'Context': 'Ich verstehe die Gegenwart durch die Vergangenheit.',
+            'Futuristic': 'Ich sehe die Zukunft mit Begeisterung.',
+            'Ideation': 'Ich liebe Ideen und Konzepte.',
+            'Input': 'Ich sammle gerne Informationen und Wissen.',
+            'Intellection': 'Ich liebe es zu denken und zu reflektieren.',
+            'Learner': 'Ich liebe es zu lernen und mich zu entwickeln.',
+            'Strategic': 'Ich kann alternative Wege und Strategien sehen.'
         };
         return statements[talent] || `Ich zeige Eigenschaften von ${talent}.`;
     }
@@ -338,12 +674,13 @@ class GallupStrengthsAssessment {
         const categories = {
             'Executing': ['Achiever', 'Arranger', 'Belief', 'Consistency', 'Deliberative', 'Discipline', 'Focus', 'Responsibility', 'Restorative'],
             'Influencing': ['Activator', 'Command', 'Communication', 'Competition', 'Maximizer', 'Self-Assurance', 'Significance', 'Woo'],
-            'Relationship': ['Adaptability', 'Connectedness', 'Developer', 'Empathy', 'Harmony', 'Includer', 'Individualization', 'Positivity', 'Relator'],
-            'Thinking': ['Analytical', 'Context', 'Futuristic', 'Ideation', 'Input', 'Intellection', 'Learner', 'Strategic']
+            'Relationship Building': ['Adaptability', 'Connectedness', 'Developer', 'Empathy', 'Harmony', 'Includer', 'Individualization', 'Positivity', 'Relator'],
+            'Strategic Thinking': ['Analytical', 'Context', 'Futuristic', 'Ideation', 'Input', 'Intellection', 'Learner', 'Strategic']
         };
 
         Object.entries(categories).forEach(([category, talents]) => {
-            const container = document.getElementById(`${category.toLowerCase()}-talents`);
+            const categoryKey = category.toLowerCase().replace(' ', '-');
+            const container = document.getElementById(`${categoryKey}-talents`);
             if (container) {
                 container.innerHTML = talents.map(talent => {
                     const score = this.talents[talent] || 0;
