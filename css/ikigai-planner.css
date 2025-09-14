@@ -8087,7 +8087,7 @@ html {
 /* Modern Gallup StrengthsFinder Assessment Styles */
 .assessment-intro {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: #1e293b;
     padding: 3rem;
     border-radius: 20px;
     margin-bottom: 2rem;
@@ -8112,6 +8112,20 @@ html {
     50% { transform: translateY(-20px) rotate(180deg); }
 }
 
+.assessment-intro h3 {
+    color: #1e293b !important;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.assessment-intro p {
+    color: #1e293b !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
 .assessment-benefits {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -8128,6 +8142,7 @@ html {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    color: #1e293b;
 }
 
 .assessment-benefits .benefit-item:hover {
@@ -8151,8 +8166,28 @@ html {
     left: 100%;
 }
 
+.assessment-benefits .benefit-item h4 {
+    color: #1e293b !important;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.assessment-benefits .benefit-item p {
+    color: #1e293b !important;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
 .assessment-structure {
     margin: 2rem 0;
+}
+
+.assessment-structure h5 {
+    color: #1e293b !important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .structure-grid {
@@ -8171,6 +8206,7 @@ html {
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
     position: relative;
+    color: #1e293b;
 }
 
 .structure-item:hover {
@@ -8191,12 +8227,12 @@ html {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #f8fafc;
+    color: #1e293b;
 }
 
 .structure-item p {
     font-size: 1rem;
-    color: #e2e8f0;
+    color: #1e293b;
     font-weight: 500;
 }
 
@@ -8208,10 +8244,11 @@ html {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
+    color: #1e293b;
 }
 
 .preparation-tips h5 {
-    color: #f8fafc;
+    color: #1e293b;
     font-size: 1.3rem;
     font-weight: 600;
     margin-bottom: 1.5rem;

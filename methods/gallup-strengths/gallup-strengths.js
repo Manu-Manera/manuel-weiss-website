@@ -597,49 +597,260 @@ class GallupStrengthsAssessment {
 
     getTalentStatement(talent) {
         const statements = {
-            // Executing Talents - Authentic-style statements inspired by Gallup methodology
-            'Achiever': 'Ich fühle mich am besten, wenn ich produktiv bin und Dinge erreiche.',
-            'Arranger': 'Ich kann viele verschiedene Dinge gleichzeitig organisieren.',
-            'Belief': 'Ich habe feste Werte, die mein Handeln leiten.',
-            'Consistency': 'Ich behandle alle Menschen gleich und fair.',
-            'Deliberative': 'Ich treffe Entscheidungen sehr sorgfältig und durchdacht.',
-            'Discipline': 'Ich brauche Struktur und Routine in meinem Leben.',
-            'Focus': 'Ich kann mich sehr gut auf Ziele konzentrieren.',
-            'Responsibility': 'Ich übernehme gerne Verantwortung für meine Aufgaben.',
-            'Restorative': 'Ich liebe es, Probleme zu lösen und Dinge zu reparieren.',
+            // Executing Talents - Multiple statements per talent for variety
+            'Achiever': [
+                'Ich fühle mich am besten, wenn ich produktiv bin und Dinge erreiche.',
+                'Ich brauche das Gefühl, jeden Tag etwas geschafft zu haben.',
+                'Meine Energie kommt aus dem Erreichen von Zielen.',
+                'Ich bin motiviert, wenn ich Fortschritte sehe.',
+                'Ich fühle mich unwohl, wenn ich nicht produktiv bin.'
+            ],
+            'Arranger': [
+                'Ich kann viele verschiedene Dinge gleichzeitig organisieren.',
+                'Ich sehe, wie verschiedene Elemente zusammenpassen.',
+                'Ich bin gut darin, komplexe Situationen zu koordinieren.',
+                'Ich kann flexibel auf Veränderungen reagieren.',
+                'Ich organisiere gerne Menschen und Ressourcen.'
+            ],
+            'Belief': [
+                'Ich habe feste Werte, die mein Handeln leiten.',
+                'Meine Überzeugungen geben meinem Leben Sinn.',
+                'Ich handele nach meinen tiefsten Überzeugungen.',
+                'Meine Werte sind wichtiger als Geld oder Ruhm.',
+                'Ich brauche eine Arbeit, die zu meinen Werten passt.'
+            ],
+            'Consistency': [
+                'Ich behandle alle Menschen gleich und fair.',
+                'Ich glaube an klare Regeln und Standards.',
+                'Ich bin gegen Bevorzugung oder Diskriminierung.',
+                'Ich schätze Vorhersagbarkeit und Gleichheit.',
+                'Ich setze mich für Gerechtigkeit ein.'
+            ],
+            'Deliberative': [
+                'Ich treffe Entscheidungen sehr sorgfältig und durchdacht.',
+                'Ich denke über alle Konsequenzen nach.',
+                'Ich bin vorsichtig und überlege gründlich.',
+                'Ich vermeide Risiken und unüberlegte Entscheidungen.',
+                'Ich plane gerne im Voraus.'
+            ],
+            'Discipline': [
+                'Ich brauche Struktur und Routine in meinem Leben.',
+                'Ich organisiere gerne und schaffe Ordnung.',
+                'Ich fühle mich wohl in vorhersagbaren Abläufen.',
+                'Ich schätze Regelmäßigkeit und Systematik.',
+                'Ich kann gut mit Fristen und Plänen umgehen.'
+            ],
+            'Focus': [
+                'Ich kann mich sehr gut auf Ziele konzentrieren.',
+                'Ich lasse mich nicht leicht ablenken.',
+                'Ich richte meine Energie auf das Wichtigste.',
+                'Ich brauche klare Prioritäten.',
+                'Ich arbeite gerne an einem Ziel nach dem anderen.'
+            ],
+            'Responsibility': [
+                'Ich übernehme gerne Verantwortung für meine Aufgaben.',
+                'Ich fühle mich verpflichtet, meine Versprechen zu halten.',
+                'Ich bin zuverlässig und vertrauenswürdig.',
+                'Ich übernehme die Verantwortung für meine Handlungen.',
+                'Ich fühle mich verantwortlich für andere.'
+            ],
+            'Restorative': [
+                'Ich liebe es, Probleme zu lösen und Dinge zu reparieren.',
+                'Ich sehe Herausforderungen als Rätsel, die gelöst werden müssen.',
+                'Ich bin gut darin, kaputte Dinge wieder funktionsfähig zu machen.',
+                'Ich fühle mich erfüllt, wenn ich Probleme behebe.',
+                'Ich analysiere gerne, was schiefgelaufen ist.'
+            ],
             
-            // Influencing Talents - Authentic-style statements inspired by Gallup methodology
-            'Activator': 'Ich kann Dinge in Bewegung setzen und andere motivieren.',
-            'Command': 'Ich kann die Kontrolle übernehmen und führen.',
-            'Communication': 'Ich kann Ideen lebendig werden lassen und überzeugen.',
-            'Competition': 'Ich messe meinen Fortschritt an dem anderer.',
-            'Maximizer': 'Ich will Stärken zu Exzellenz entwickeln.',
-            'Self-Assurance': 'Ich vertraue auf meine Fähigkeiten und Entscheidungen.',
-            'Significance': 'Ich will von anderen als wichtig angesehen werden.',
-            'Woo': 'Ich genieße es, neue Menschen kennenzulernen.',
+            // Influencing Talents - Multiple statements per talent for variety
+            'Activator': [
+                'Ich kann Dinge in Bewegung setzen und andere motivieren.',
+                'Ich werde ungeduldig, wenn nichts passiert.',
+                'Ich liebe es, Aktionen zu starten.',
+                'Ich kann andere dazu bringen, zu handeln.',
+                'Ich bin gut darin, Dinge ins Rollen zu bringen.'
+            ],
+            'Command': [
+                'Ich kann die Kontrolle übernehmen und führen.',
+                'Ich bin nicht schüchtern, meine Meinung zu äußern.',
+                'Ich kann schwierige Situationen meistern.',
+                'Ich übernehme gerne die Führung.',
+                'Ich kann andere überzeugen und beeinflussen.'
+            ],
+            'Communication': [
+                'Ich kann Ideen lebendig werden lassen und überzeugen.',
+                'Ich liebe es, Geschichten zu erzählen.',
+                'Ich kann komplexe Dinge einfach erklären.',
+                'Ich bin gut darin, andere zu motivieren.',
+                'Ich verwende gerne Bilder und Metaphern.'
+            ],
+            'Competition': [
+                'Ich messe meinen Fortschritt an dem anderer.',
+                'Ich liebe es, zu gewinnen.',
+                'Ich brauche Vergleichsmöglichkeiten.',
+                'Ich bin motiviert durch Wettbewerb.',
+                'Ich sehe andere als Maßstab für meine Leistung.'
+            ],
+            'Maximizer': [
+                'Ich will Stärken zu Exzellenz entwickeln.',
+                'Ich konzentriere mich auf das, was gut funktioniert.',
+                'Ich will aus dem Guten das Beste machen.',
+                'Ich ignoriere Schwächen und fokussiere auf Stärken.',
+                'Ich bin motiviert, Exzellenz zu erreichen.'
+            ],
+            'Self-Assurance': [
+                'Ich vertraue auf meine Fähigkeiten und Entscheidungen.',
+                'Ich bin mir meiner selbst sicher.',
+                'Ich kann schwierige Entscheidungen treffen.',
+                'Ich vertraue auf mein Urteilsvermögen.',
+                'Ich bin unabhängig in meinen Entscheidungen.'
+            ],
+            'Significance': [
+                'Ich will von anderen als wichtig angesehen werden.',
+                'Ich brauche Anerkennung für meine Leistungen.',
+                'Ich will einen Unterschied machen.',
+                'Ich strebe nach Einfluss und Bedeutung.',
+                'Ich will, dass andere meine Arbeit schätzen.'
+            ],
+            'Woo': [
+                'Ich genieße es, neue Menschen kennenzulernen.',
+                'Ich kann leicht mit Fremden ins Gespräch kommen.',
+                'Ich fühle mich wohl in neuen sozialen Situationen.',
+                'Ich liebe es, neue Kontakte zu knüpfen.',
+                'Ich bin gut darin, andere für mich zu gewinnen.'
+            ],
             
-            // Relationship Building Talents - Authentic-style statements inspired by Gallup methodology
-            'Adaptability': 'Ich lebe im Moment und gehe mit dem Strom.',
-            'Connectedness': 'Ich glaube, dass alles miteinander verbunden ist.',
-            'Developer': 'Ich sehe das Potenzial in anderen Menschen.',
-            'Empathy': 'Ich kann die Gefühle anderer spüren und verstehen.',
-            'Harmony': 'Ich suche nach Übereinstimmung und Harmonie.',
-            'Includer': 'Ich akzeptiere andere und schließe sie ein.',
-            'Individualization': 'Ich interessiere mich für die Einzigartigkeit anderer.',
-            'Positivity': 'Ich bin enthusiastisch und optimistisch.',
-            'Relator': 'Ich genieße enge, tiefe Beziehungen.',
+            // Relationship Building Talents - Multiple statements per talent for variety
+            'Adaptability': [
+                'Ich lebe im Moment und gehe mit dem Strom.',
+                'Ich kann mich gut an Veränderungen anpassen.',
+                'Ich bin flexibel und spontan.',
+                'Ich reagiere gut auf unerwartete Situationen.',
+                'Ich fühle mich wohl mit Ungewissheit.'
+            ],
+            'Connectedness': [
+                'Ich glaube, dass alles miteinander verbunden ist.',
+                'Ich sehe Verbindungen zwischen verschiedenen Ereignissen.',
+                'Ich glaube an eine höhere Macht oder Schicksal.',
+                'Ich fühle mich mit anderen und der Welt verbunden.',
+                'Ich sehe einen größeren Sinn in den Dingen.'
+            ],
+            'Developer': [
+                'Ich sehe das Potenzial in anderen Menschen.',
+                'Ich liebe es, andere zu fördern und zu entwickeln.',
+                'Ich kann das Beste in Menschen zum Vorschein bringen.',
+                'Ich bin geduldig mit dem Wachstum anderer.',
+                'Ich fühle mich erfüllt, wenn andere Fortschritte machen.'
+            ],
+            'Empathy': [
+                'Ich kann die Gefühle anderer spüren und verstehen.',
+                'Ich fühle mit anderen mit.',
+                'Ich kann mich in die Lage anderer versetzen.',
+                'Ich spüre die Emotionen anderer Menschen.',
+                'Ich bin einfühlsam und mitfühlend.'
+            ],
+            'Harmony': [
+                'Ich suche nach Übereinstimmung und Harmonie.',
+                'Ich vermeide Konflikte und Streit.',
+                'Ich bringe Menschen zusammen.',
+                'Ich schätze Frieden und Einigkeit.',
+                'Ich bin gut darin, Kompromisse zu finden.'
+            ],
+            'Includer': [
+                'Ich akzeptiere andere und schließe sie ein.',
+                'Ich will, dass sich alle willkommen fühlen.',
+                'Ich vermeide es, Menschen auszuschließen.',
+                'Ich bin offen für alle Arten von Menschen.',
+                'Ich schätze Vielfalt und Inklusion.'
+            ],
+            'Individualization': [
+                'Ich interessiere mich für die Einzigartigkeit anderer.',
+                'Ich sehe, was jeden Menschen besonders macht.',
+                'Ich kann die individuellen Stärken anderer erkennen.',
+                'Ich behandle jeden Menschen als Individuum.',
+                'Ich schätze die Unterschiede zwischen Menschen.'
+            ],
+            'Positivity': [
+                'Ich bin enthusiastisch und optimistisch.',
+                'Ich kann andere motivieren und begeistern.',
+                'Ich sehe das Positive in schwierigen Situationen.',
+                'Ich verbreite gute Laune.',
+                'Ich bin eine Quelle der Ermutigung für andere.'
+            ],
+            'Relator': [
+                'Ich genieße enge, tiefe Beziehungen.',
+                'Ich baue gerne vertrauensvolle Freundschaften auf.',
+                'Ich bevorzuge wenige, aber intensive Beziehungen.',
+                'Ich bin loyal und treu zu meinen Freunden.',
+                'Ich teile gerne persönliche Erfahrungen.'
+            ],
             
-            // Strategic Thinking Talents - Authentic-style statements inspired by Gallup methodology
-            'Analytical': 'Ich suche nach Gründen und Ursachen.',
-            'Context': 'Ich verstehe die Gegenwart durch die Vergangenheit.',
-            'Futuristic': 'Ich sehe die Zukunft mit Begeisterung.',
-            'Ideation': 'Ich liebe Ideen und Konzepte.',
-            'Input': 'Ich sammle gerne Informationen und Wissen.',
-            'Intellection': 'Ich liebe es zu denken und zu reflektieren.',
-            'Learner': 'Ich liebe es zu lernen und mich zu entwickeln.',
-            'Strategic': 'Ich kann alternative Wege und Strategien sehen.'
+            // Strategic Thinking Talents - Multiple statements per talent for variety
+            'Analytical': [
+                'Ich suche nach Gründen und Ursachen.',
+                'Ich denke logisch und systematisch.',
+                'Ich analysiere gerne Daten und Fakten.',
+                'Ich hinterfrage Annahmen und suche Beweise.',
+                'Ich bin objektiv und unvoreingenommen.'
+            ],
+            'Context': [
+                'Ich verstehe die Gegenwart durch die Vergangenheit.',
+                'Ich lerne gerne aus der Geschichte.',
+                'Ich schaue gerne zurück, um die Zukunft zu verstehen.',
+                'Ich schätze Traditionen und Erfahrungen.',
+                'Ich sehe Muster in historischen Ereignissen.'
+            ],
+            'Futuristic': [
+                'Ich sehe die Zukunft mit Begeisterung.',
+                'Ich liebe es, über die Zukunft nachzudenken.',
+                'Ich kann andere für Zukunftsvisionen begeistern.',
+                'Ich plane gerne langfristig.',
+                'Ich sehe Möglichkeiten, die andere nicht sehen.'
+            ],
+            'Ideation': [
+                'Ich liebe Ideen und Konzepte.',
+                'Ich denke gerne über abstrakte Dinge nach.',
+                'Ich komme gerne auf neue Ideen.',
+                'Ich sehe Verbindungen zwischen verschiedenen Konzepten.',
+                'Ich bin kreativ und innovativ.'
+            ],
+            'Input': [
+                'Ich sammle gerne Informationen und Wissen.',
+                'Ich lese gerne und lerne ständig dazu.',
+                'Ich sammle gerne interessante Dinge.',
+                'Ich bin neugierig und wissbegierig.',
+                'Ich teile gerne mein Wissen mit anderen.'
+            ],
+            'Intellection': [
+                'Ich liebe es zu denken und zu reflektieren.',
+                'Ich denke gerne über komplexe Themen nach.',
+                'Ich brauche Zeit zum Nachdenken.',
+                'Ich genieße intellektuelle Diskussionen.',
+                'Ich bin ein nachdenklicher Mensch.'
+            ],
+            'Learner': [
+                'Ich liebe es zu lernen und mich zu entwickeln.',
+                'Ich bin motiviert, neue Fähigkeiten zu erwerben.',
+                'Ich genieße den Lernprozess selbst.',
+                'Ich bin neugierig auf neue Themen.',
+                'Ich sehe Lernen als lebenslangen Prozess.'
+            ],
+            'Strategic': [
+                'Ich kann alternative Wege und Strategien sehen.',
+                'Ich sehe Muster, wo andere nur Komplexität sehen.',
+                'Ich kann verschiedene Optionen durchdenken.',
+                'Ich bin gut darin, Pläne zu entwickeln.',
+                'Ich sehe die großen Zusammenhänge.'
+            ]
         };
-        return statements[talent] || `Ich zeige Eigenschaften von ${talent}.`;
+        
+        const talentStatements = statements[talent];
+        if (talentStatements && talentStatements.length > 0) {
+            // Return a random statement from the array
+            return talentStatements[Math.floor(Math.random() * talentStatements.length)];
+        }
+        
+        return `Ich zeige Eigenschaften von ${talent}.`;
     }
 
     nextStep() {
