@@ -22,20 +22,24 @@ class GallupStrengthsAssessment {
             console.log('Setting up event listeners...');
             this.setupEventListeners();
             
-            console.log('Updating step display...');
-            this.updateStep();
-            
             console.log('Updating progress...');
             this.updateProgress();
             
             console.log('Assessment initialized successfully');
             
-            // Force show step 1 content
+            // Force show step 1 content immediately
             const step1 = document.querySelector('[data-step="1"]');
             if (step1) {
                 step1.classList.add('active');
-                console.log('Force activated step 1');
+                step1.style.display = 'block';
+                console.log('Force activated step 1 with inline style');
             }
+            
+            // Update step display after a short delay
+            setTimeout(() => {
+                console.log('Updating step display...');
+                this.updateStep();
+            }, 100);
         }, 200);
     }
 
@@ -577,25 +581,22 @@ class GallupStrengthsAssessment {
         setTimeout(() => {
             console.log('Updating to step:', this.currentStep);
             
-            // Hide all steps
+            // Hide all steps except current one
             const allSteps = document.querySelectorAll('.workflow-step');
             console.log('Found workflow steps:', allSteps.length);
             
             allSteps.forEach((step, index) => {
-                step.classList.remove('active');
-                console.log(`Step ${index + 1} classes:`, step.className);
+                const stepNumber = step.getAttribute('data-step');
+                if (stepNumber == this.currentStep) {
+                    step.classList.add('active');
+                    step.style.display = 'block';
+                    console.log(`Activated step ${stepNumber}`);
+                } else {
+                    step.classList.remove('active');
+                    step.style.display = 'none';
+                    console.log(`Deactivated step ${stepNumber}`);
+                }
             });
-
-            // Show current step
-            const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
-            console.log('Current step element:', currentStepElement);
-            
-            if (currentStepElement) {
-                currentStepElement.classList.add('active');
-                console.log('Added active class to step:', this.currentStep);
-            } else {
-                console.error('Could not find step element for step:', this.currentStep);
-            }
 
             // Update navigation buttons
             const prevButton = document.getElementById('prev-step');
@@ -1114,6 +1115,17 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         window.gallupAssessment = new GallupStrengthsAssessment();
         console.log('Gallup Assessment instance created:', window.gallupAssessment);
+        
+        // Additional safety check to ensure step 1 is visible
+        setTimeout(() => {
+            const step1 = document.querySelector('[data-step="1"]');
+            if (step1 && !step1.classList.contains('active')) {
+                step1.classList.add('active');
+                step1.style.display = 'block';
+                console.log('Emergency activation of step 1');
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('Error initializing Gallup Assessment:', error);
     }
@@ -1128,6 +1140,17 @@ if (document.readyState === 'loading') {
     try {
         window.gallupAssessment = new GallupStrengthsAssessment();
         console.log('Gallup Assessment instance created (fallback):', window.gallupAssessment);
+        
+        // Additional safety check to ensure step 1 is visible
+        setTimeout(() => {
+            const step1 = document.querySelector('[data-step="1"]');
+            if (step1 && !step1.classList.contains('active')) {
+                step1.classList.add('active');
+                step1.style.display = 'block';
+                console.log('Emergency activation of step 1 (fallback)');
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('Error initializing Gallup Assessment (fallback):', error);
     }
