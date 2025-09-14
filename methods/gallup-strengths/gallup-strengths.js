@@ -824,11 +824,12 @@ class GallupStrengthsAssessment {
             if (timerDisplay) {
                 timerDisplay.textContent = timeLeft;
                 
-                // Change color when time is running low
+                // Change color when time is running low using CSS classes
+                timerDisplay.className = '';
                 if (timeLeft <= 5) {
-                    timerDisplay.style.background = '#ef4444'; // Red
+                    timerDisplay.classList.add('danger');
                 } else if (timeLeft <= 10) {
-                    timerDisplay.style.background = '#f59e0b'; // Orange
+                    timerDisplay.classList.add('warning');
                 }
             }
             
