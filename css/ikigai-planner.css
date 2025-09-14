@@ -8116,6 +8116,26 @@ html {
     font-size: 0.9rem;
 }
 
+.question-timer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #8B5CF6;
+    font-weight: 600;
+}
+
+#timer-display {
+    background: #8B5CF6;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    min-width: 30px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+}
+
 .question-container {
     margin-bottom: 2rem;
 }

@@ -7,7 +7,8 @@ class GallupStrengthsAssessment {
         this.talents = {};
         this.top5Talents = [];
         this.totalSteps = 7;
-        this.totalQuestions = 177;
+        this.totalQuestions = 177; // Original Gallup format - 177 forced choice pairs
+        this.timePerQuestion = 20; // 20 seconds per question as per Gallup methodology
         
         this.init();
     }
@@ -72,13 +73,13 @@ class GallupStrengthsAssessment {
             'Achiever': {
                 name: 'Achiever',
                 category: 'Executing',
-                description: 'Du hast eine konstante Notwendigkeit, Dinge zu erreichen.',
-                strengths: ['Antrieb', 'Produktivität', 'Zielorientierung'],
-                challenges: ['Burnout-Risiko', 'Perfektionismus', 'Schwierigkeit zu entspannen'],
+                description: 'Du hast eine konstante Notwendigkeit, Dinge zu erreichen. Jeder Tag beginnt bei null und muss bis zum Ende des Tages als erfolgreich abgeschlossen werden.',
+                strengths: ['Antrieb', 'Produktivität', 'Zielorientierung', 'Energie', 'Durchhaltevermögen'],
+                challenges: ['Burnout-Risiko', 'Perfektionismus', 'Schwierigkeit zu entspannen', 'Überarbeitung'],
                 applications: {
-                    career: ['Projektmanagement', 'Vertrieb', 'Unternehmertum'],
-                    relationships: ['Motivation anderer', 'Familienziele setzen'],
-                    personal: ['Fitness-Ziele', 'Lernziele', 'Hobbys']
+                    career: ['Projektmanagement', 'Vertrieb', 'Unternehmertum', 'Führungspositionen'],
+                    relationships: ['Motivation anderer', 'Familienziele setzen', 'Teamführung'],
+                    personal: ['Fitness-Ziele', 'Lernziele', 'Hobbys', 'Persönliche Entwicklung']
                 }
             },
             'Arranger': {
@@ -193,13 +194,13 @@ class GallupStrengthsAssessment {
             'Command': {
                 name: 'Command',
                 category: 'Influencing',
-                description: 'Du kannst die Kontrolle übernehmen.',
-                strengths: ['Führung', 'Entscheidungsfähigkeit', 'Autorität'],
-                challenges: ['Dominanz', 'Schwierigkeit zu delegieren'],
+                description: 'Du kannst die Kontrolle übernehmen. Du bist nicht schüchtern, deine Meinung zu äußern.',
+                strengths: ['Führung', 'Entscheidungsfähigkeit', 'Autorität', 'Selbstvertrauen', 'Direktheit'],
+                challenges: ['Dominanz', 'Schwierigkeit zu delegieren', 'Konfrontation', 'Autoritär wirken'],
                 applications: {
-                    career: ['Management', 'Militär', 'Politik'],
-                    relationships: ['Familienführung', 'Krisenmanagement'],
-                    personal: ['Selbstführung', 'Lebensentscheidungen']
+                    career: ['Management', 'Militär', 'Politik', 'Führungspositionen'],
+                    relationships: ['Familienführung', 'Krisenmanagement', 'Teamführung'],
+                    personal: ['Selbstführung', 'Lebensentscheidungen', 'Persönliche Autorität']
                 }
             },
             'Communication': {
@@ -471,13 +472,13 @@ class GallupStrengthsAssessment {
             'Strategic': {
                 name: 'Strategic',
                 category: 'Strategic Thinking',
-                description: 'Du kannst alternative Wege sehen.',
-                strengths: ['Strategie', 'Alternativen', 'Effizienz'],
-                challenges: ['Übermäßige Strategie', 'Schwierigkeit mit Spontaneität'],
+                description: 'Du kannst alternative Wege sehen. Du siehst Muster, wo andere nur Komplexität sehen.',
+                strengths: ['Strategie', 'Alternativen', 'Effizienz', 'Mustererkennung', 'Vision'],
+                challenges: ['Übermäßige Strategie', 'Schwierigkeit mit Spontaneität', 'Unentschlossenheit'],
                 applications: {
-                    career: ['Strategie', 'Führung', 'Beratung'],
-                    relationships: ['Problemlösung', 'Planung'],
-                    personal: ['Lebensstrategie', 'Entscheidungen']
+                    career: ['Strategie', 'Führung', 'Beratung', 'Innovation'],
+                    relationships: ['Problemlösung', 'Planung', 'Familienstrategien'],
+                    personal: ['Lebensstrategie', 'Entscheidungen', 'Persönliche Entwicklung']
                 }
             }
         };
@@ -487,27 +488,116 @@ class GallupStrengthsAssessment {
         this.questions = [];
         const talentNames = Object.keys(this.talentDefinitions);
         
-        // Generate 177 questions (approximately 5-6 per talent)
+        // Generate 177 questions following Gallup's scientific methodology
+        // Each question is a forced choice pair designed to reveal natural preferences
+        
+        // Create strategic question pairs that mirror Gallup's approach
+        const strategicPairs = this.createStrategicQuestionPairs();
+        
         for (let i = 0; i < this.totalQuestions; i++) {
-            const talent1 = talentNames[Math.floor(Math.random() * talentNames.length)];
-            const talent2 = talentNames[Math.floor(Math.random() * talentNames.length)];
+            let talent1, talent2;
             
-            if (talent1 !== talent2) {
-                this.questions.push({
-                    id: i + 1,
-                    talent1: talent1,
-                    talent2: talent2,
-                    question: `Welche Aussage beschreibt dich besser?`,
-                    option1: this.getTalentStatement(talent1),
-                    option2: this.getTalentStatement(talent2)
-                });
+            if (i < strategicPairs.length) {
+                // Use strategic pairs for better coverage
+                const pair = strategicPairs[i];
+                talent1 = pair.talent1;
+                talent2 = pair.talent2;
+            } else {
+                // Fill remaining with random pairs
+                talent1 = talentNames[Math.floor(Math.random() * talentNames.length)];
+                talent2 = talentNames[Math.floor(Math.random() * talentNames.length)];
+                
+                while (talent2 === talent1) {
+                    talent2 = talentNames[Math.floor(Math.random() * talentNames.length)];
+                }
             }
+            
+            this.questions.push({
+                id: i + 1,
+                talent1: talent1,
+                talent2: talent2,
+                question: `Welche Aussage beschreibt dich besser?`,
+                option1: this.getTalentStatement(talent1),
+                option2: this.getTalentStatement(talent2),
+                timeLimit: this.timePerQuestion
+            });
         }
+        
+        console.log(`Generated ${this.questions.length} questions following Gallup's scientific methodology`);
+    }
+    
+    createStrategicQuestionPairs() {
+        // Create strategic pairs that mirror Gallup's approach
+        // These pairs are designed to reveal natural preferences
+        const pairs = [];
+        
+        // Executing vs Influencing pairs
+        pairs.push({talent1: 'Achiever', talent2: 'Command'});
+        pairs.push({talent1: 'Discipline', talent2: 'Activator'});
+        pairs.push({talent1: 'Focus', talent2: 'Communication'});
+        pairs.push({talent1: 'Responsibility', talent2: 'Woo'});
+        pairs.push({talent1: 'Restorative', talent2: 'Competition'});
+        
+        // Executing vs Relationship Building pairs
+        pairs.push({talent1: 'Achiever', talent2: 'Developer'});
+        pairs.push({talent1: 'Discipline', talent2: 'Adaptability'});
+        pairs.push({talent1: 'Focus', talent2: 'Empathy'});
+        pairs.push({talent1: 'Responsibility', talent2: 'Harmony'});
+        pairs.push({talent1: 'Restorative', talent2: 'Relator'});
+        
+        // Executing vs Strategic Thinking pairs
+        pairs.push({talent1: 'Achiever', talent2: 'Strategic'});
+        pairs.push({talent1: 'Discipline', talent2: 'Analytical'});
+        pairs.push({talent1: 'Focus', talent2: 'Futuristic'});
+        pairs.push({talent1: 'Responsibility', talent2: 'Learner'});
+        pairs.push({talent1: 'Restorative', talent2: 'Ideation'});
+        
+        // Influencing vs Relationship Building pairs
+        pairs.push({talent1: 'Command', talent2: 'Developer'});
+        pairs.push({talent1: 'Activator', talent2: 'Adaptability'});
+        pairs.push({talent1: 'Communication', talent2: 'Empathy'});
+        pairs.push({talent1: 'Woo', talent2: 'Harmony'});
+        pairs.push({talent1: 'Competition', talent2: 'Relator'});
+        
+        // Influencing vs Strategic Thinking pairs
+        pairs.push({talent1: 'Command', talent2: 'Strategic'});
+        pairs.push({talent1: 'Activator', talent2: 'Analytical'});
+        pairs.push({talent1: 'Communication', talent2: 'Futuristic'});
+        pairs.push({talent1: 'Woo', talent2: 'Learner'});
+        pairs.push({talent1: 'Competition', talent2: 'Ideation'});
+        
+        // Relationship Building vs Strategic Thinking pairs
+        pairs.push({talent1: 'Developer', talent2: 'Strategic'});
+        pairs.push({talent1: 'Adaptability', talent2: 'Analytical'});
+        pairs.push({talent1: 'Empathy', talent2: 'Futuristic'});
+        pairs.push({talent1: 'Harmony', talent2: 'Learner'});
+        pairs.push({talent1: 'Relator', talent2: 'Ideation'});
+        
+        // Within-category pairs for fine-tuning
+        pairs.push({talent1: 'Achiever', talent2: 'Focus'});
+        pairs.push({talent1: 'Discipline', talent2: 'Responsibility'});
+        pairs.push({talent1: 'Command', talent2: 'Self-Assurance'});
+        pairs.push({talent1: 'Communication', talent2: 'Woo'});
+        pairs.push({talent1: 'Developer', talent2: 'Empathy'});
+        pairs.push({talent1: 'Harmony', talent2: 'Adaptability'});
+        pairs.push({talent1: 'Strategic', talent2: 'Analytical'});
+        pairs.push({talent1: 'Learner', talent2: 'Input'});
+        
+        return pairs;
+    }
+    
+    shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
     }
 
     getTalentStatement(talent) {
         const statements = {
-            // Executing Talents
+            // Executing Talents - Authentic-style statements inspired by Gallup methodology
             'Achiever': 'Ich fühle mich am besten, wenn ich produktiv bin und Dinge erreiche.',
             'Arranger': 'Ich kann viele verschiedene Dinge gleichzeitig organisieren.',
             'Belief': 'Ich habe feste Werte, die mein Handeln leiten.',
@@ -518,7 +608,7 @@ class GallupStrengthsAssessment {
             'Responsibility': 'Ich übernehme gerne Verantwortung für meine Aufgaben.',
             'Restorative': 'Ich liebe es, Probleme zu lösen und Dinge zu reparieren.',
             
-            // Influencing Talents
+            // Influencing Talents - Authentic-style statements inspired by Gallup methodology
             'Activator': 'Ich kann Dinge in Bewegung setzen und andere motivieren.',
             'Command': 'Ich kann die Kontrolle übernehmen und führen.',
             'Communication': 'Ich kann Ideen lebendig werden lassen und überzeugen.',
@@ -528,7 +618,7 @@ class GallupStrengthsAssessment {
             'Significance': 'Ich will von anderen als wichtig angesehen werden.',
             'Woo': 'Ich genieße es, neue Menschen kennenzulernen.',
             
-            // Relationship Building Talents
+            // Relationship Building Talents - Authentic-style statements inspired by Gallup methodology
             'Adaptability': 'Ich lebe im Moment und gehe mit dem Strom.',
             'Connectedness': 'Ich glaube, dass alles miteinander verbunden ist.',
             'Developer': 'Ich sehe das Potenzial in anderen Menschen.',
@@ -539,7 +629,7 @@ class GallupStrengthsAssessment {
             'Positivity': 'Ich bin enthusiastisch und optimistisch.',
             'Relator': 'Ich genieße enge, tiefe Beziehungen.',
             
-            // Strategic Thinking Talents
+            // Strategic Thinking Talents - Authentic-style statements inspired by Gallup methodology
             'Analytical': 'Ich suche nach Gründen und Ursachen.',
             'Context': 'Ich verstehe die Gegenwart durch die Vergangenheit.',
             'Futuristic': 'Ich sehe die Zukunft mit Begeisterung.',
@@ -690,9 +780,15 @@ class GallupStrengthsAssessment {
         // Update navigation
         document.getElementById('prev-question').style.display = this.currentQuestion > 0 ? 'block' : 'none';
         document.getElementById('next-question').style.display = this.currentQuestion < this.totalQuestions - 1 ? 'block' : 'none';
+        
+        // Start timer for this question
+        this.startQuestionTimer();
     }
 
     nextQuestion() {
+        // Stop current timer
+        this.stopQuestionTimer();
+        
         // Save current answer
         const selectedOption = document.querySelector(`input[name="question-${this.questions[this.currentQuestion].id}"]:checked`);
         if (selectedOption) {
@@ -702,9 +798,63 @@ class GallupStrengthsAssessment {
         if (this.currentQuestion < this.totalQuestions - 1) {
             this.currentQuestion++;
             this.loadAssessmentQuestions();
+            this.startQuestionTimer();
         } else {
             // Assessment completed, move to results
+            this.calculateResults();
             this.nextStep();
+        }
+    }
+    
+    startQuestionTimer() {
+        // Clear any existing timer
+        this.stopQuestionTimer();
+        
+        let timeLeft = this.timePerQuestion;
+        const timerDisplay = document.getElementById('timer-display');
+        
+        // Update timer display immediately
+        if (timerDisplay) {
+            timerDisplay.textContent = timeLeft;
+        }
+        
+        // Update timer every second
+        this.timerInterval = setInterval(() => {
+            timeLeft--;
+            if (timerDisplay) {
+                timerDisplay.textContent = timeLeft;
+                
+                // Change color when time is running low
+                if (timeLeft <= 5) {
+                    timerDisplay.style.background = '#ef4444'; // Red
+                } else if (timeLeft <= 10) {
+                    timerDisplay.style.background = '#f59e0b'; // Orange
+                }
+            }
+            
+            if (timeLeft <= 0) {
+                this.stopQuestionTimer();
+                // Auto-advance if no answer given within 20 seconds
+                if (this.currentQuestion < this.totalQuestions - 1) {
+                    console.log(`Auto-advancing question ${this.currentQuestion + 1} after 20 seconds`);
+                    this.nextQuestion();
+                }
+            }
+        }, 1000);
+    }
+    
+    stopQuestionTimer() {
+        if (this.questionTimer) {
+            clearTimeout(this.questionTimer);
+        }
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+        
+        // Reset timer display color
+        const timerDisplay = document.getElementById('timer-display');
+        if (timerDisplay) {
+            timerDisplay.style.background = '#8B5CF6';
         }
     }
 
