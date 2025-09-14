@@ -2198,8 +2198,8 @@ body {
 }
 
 .submenu .nav-item a:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: rgba(99, 102, 241, 0.1);
+    color: #1f2937;
 }
 
 .submenu .nav-item.active a {
