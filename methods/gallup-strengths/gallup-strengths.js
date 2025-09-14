@@ -13,18 +13,40 @@ class GallupStrengthsAssessment {
     }
 
     init() {
-        this.setupEventListeners();
+        console.log('Initializing Gallup StrengthsFinder Assessment');
         this.loadTalentDefinitions();
         this.generateQuestions();
-        this.updateStep();
-        this.updateProgress();
+        
+        // Wait for DOM to be fully ready
+        setTimeout(() => {
+            this.setupEventListeners();
+            this.updateStep();
+            this.updateProgress();
+            console.log('Assessment initialized successfully');
+        }, 200);
     }
 
     setupEventListeners() {
-        document.getElementById('next-step').addEventListener('click', () => this.nextStep());
-        document.getElementById('prev-step').addEventListener('click', () => this.previousStep());
-        document.getElementById('next-question').addEventListener('click', () => this.nextQuestion());
-        document.getElementById('prev-question').addEventListener('click', () => this.previousQuestion());
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const nextStepBtn = document.getElementById('next-step');
+            const prevStepBtn = document.getElementById('prev-step');
+            const nextQuestionBtn = document.getElementById('next-question');
+            const prevQuestionBtn = document.getElementById('prev-question');
+            
+            if (nextStepBtn) {
+                nextStepBtn.addEventListener('click', () => this.nextStep());
+            }
+            if (prevStepBtn) {
+                prevStepBtn.addEventListener('click', () => this.previousStep());
+            }
+            if (nextQuestionBtn) {
+                nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
+            }
+            if (prevQuestionBtn) {
+                prevQuestionBtn.addEventListener('click', () => this.previousQuestion());
+            }
+        }, 100);
     }
 
     loadTalentDefinitions() {
@@ -514,45 +536,63 @@ class GallupStrengthsAssessment {
     }
 
     nextStep() {
+        console.log('Next step clicked, current step:', this.currentStep);
         if (this.currentStep < this.totalSteps) {
             this.currentStep++;
+            console.log('Moving to step:', this.currentStep);
             this.updateStep();
             this.updateProgress();
+        } else {
+            console.log('Already at last step');
         }
     }
 
     previousStep() {
+        console.log('Previous step clicked, current step:', this.currentStep);
         if (this.currentStep > 1) {
             this.currentStep--;
+            console.log('Moving to step:', this.currentStep);
             this.updateStep();
             this.updateProgress();
+        } else {
+            console.log('Already at first step');
         }
     }
 
     updateStep() {
-        // Hide all steps
-        document.querySelectorAll('.workflow-step').forEach(step => {
-            step.classList.remove('active');
-        });
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            // Hide all steps
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('active');
+            });
 
-        // Show current step
-        const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-        }
+            // Show current step
+            const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('active');
+            }
 
-        // Update navigation buttons
-        const prevButton = document.getElementById('prev-step');
-        const nextButton = document.getElementById('next-step');
+            // Update navigation buttons
+            const prevButton = document.getElementById('prev-step');
+            const nextButton = document.getElementById('next-step');
 
-        prevButton.style.display = this.currentStep > 1 ? 'block' : 'none';
-        nextButton.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
+            if (prevButton) {
+                prevButton.style.display = this.currentStep > 1 ? 'block' : 'none';
+            }
+            if (nextButton) {
+                nextButton.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
+            }
 
-        // Update step info
-        document.getElementById('step-info').textContent = `Schritt ${this.currentStep} von ${this.totalSteps}`;
+            // Update step info
+            const stepInfo = document.getElementById('step-info');
+            if (stepInfo) {
+                stepInfo.textContent = `Schritt ${this.currentStep} von ${this.totalSteps}`;
+            }
 
-        // Load step-specific content
-        this.loadStepContent();
+            // Load step-specific content
+            this.loadStepContent();
+        }, 50);
     }
 
     loadStepContent() {
@@ -1036,5 +1076,25 @@ class GallupStrengthsAssessment {
 
 // Initialize assessment when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    new GallupStrengthsAssessment();
+    console.log('DOM Content Loaded - Starting Gallup StrengthsFinder Assessment');
+    try {
+        window.gallupAssessment = new GallupStrengthsAssessment();
+        console.log('Gallup Assessment instance created:', window.gallupAssessment);
+    } catch (error) {
+        console.error('Error initializing Gallup Assessment:', error);
+    }
 });
+
+// Fallback initialization if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // DOM is still loading, wait for DOMContentLoaded
+} else {
+    // DOM is already loaded
+    console.log('DOM already loaded - Starting Gallup StrengthsFinder Assessment immediately');
+    try {
+        window.gallupAssessment = new GallupStrengthsAssessment();
+        console.log('Gallup Assessment instance created (fallback):', window.gallupAssessment);
+    } catch (error) {
+        console.error('Error initializing Gallup Assessment (fallback):', error);
+    }
+}
