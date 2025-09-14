@@ -8310,7 +8310,7 @@ html {
 }
 
 .progress-text {
-    color: #475569;
+    color: #1e293b;
     font-size: 1rem;
     font-weight: 600;
     text-align: center;
@@ -8551,6 +8551,26 @@ html {
 
 .question-navigation .btn-primary:disabled::before {
     display: none;
+}
+
+.question-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.question-counter .progress-text {
+    color: #1e293b;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Results Analysis */
