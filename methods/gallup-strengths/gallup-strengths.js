@@ -19,10 +19,23 @@ class GallupStrengthsAssessment {
         
         // Wait for DOM to be fully ready
         setTimeout(() => {
+            console.log('Setting up event listeners...');
             this.setupEventListeners();
+            
+            console.log('Updating step display...');
             this.updateStep();
+            
+            console.log('Updating progress...');
             this.updateProgress();
+            
             console.log('Assessment initialized successfully');
+            
+            // Force show step 1 content
+            const step1 = document.querySelector('[data-step="1"]');
+            if (step1) {
+                step1.classList.add('active');
+                console.log('Force activated step 1');
+            }
         }, 200);
     }
 
@@ -562,15 +575,26 @@ class GallupStrengthsAssessment {
     updateStep() {
         // Wait for DOM to be ready
         setTimeout(() => {
+            console.log('Updating to step:', this.currentStep);
+            
             // Hide all steps
-            document.querySelectorAll('.workflow-step').forEach(step => {
+            const allSteps = document.querySelectorAll('.workflow-step');
+            console.log('Found workflow steps:', allSteps.length);
+            
+            allSteps.forEach((step, index) => {
                 step.classList.remove('active');
+                console.log(`Step ${index + 1} classes:`, step.className);
             });
 
             // Show current step
             const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
+            console.log('Current step element:', currentStepElement);
+            
             if (currentStepElement) {
                 currentStepElement.classList.add('active');
+                console.log('Added active class to step:', this.currentStep);
+            } else {
+                console.error('Could not find step element for step:', this.currentStep);
             }
 
             // Update navigation buttons
@@ -579,15 +603,18 @@ class GallupStrengthsAssessment {
 
             if (prevButton) {
                 prevButton.style.display = this.currentStep > 1 ? 'block' : 'none';
+                console.log('Previous button display:', prevButton.style.display);
             }
             if (nextButton) {
                 nextButton.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
+                console.log('Next button display:', nextButton.style.display);
             }
 
             // Update step info
             const stepInfo = document.getElementById('step-info');
             if (stepInfo) {
                 stepInfo.textContent = `Schritt ${this.currentStep} von ${this.totalSteps}`;
+                console.log('Updated step info:', stepInfo.textContent);
             }
 
             // Load step-specific content
@@ -596,7 +623,12 @@ class GallupStrengthsAssessment {
     }
 
     loadStepContent() {
+        console.log('Loading content for step:', this.currentStep);
         switch (this.currentStep) {
+            case 1:
+                // Step 1 content is already in HTML, just ensure it's visible
+                console.log('Step 1: Introduction - content should be visible');
+                break;
             case 2:
                 this.loadAssessmentQuestions();
                 break;
@@ -616,6 +648,8 @@ class GallupStrengthsAssessment {
             case 7:
                 this.displayFinalResults();
                 break;
+            default:
+                console.log('Unknown step:', this.currentStep);
         }
     }
 
