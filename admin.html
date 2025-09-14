@@ -353,6 +353,14 @@
                                 <i class="fas fa-sync"></i>
                                 Aktualisieren
                             </button>
+                            <button class="btn btn-success" onclick="syncServicesWithWebsite()">
+                                <i class="fas fa-link"></i>
+                                Mit Website synchronisieren
+                            </button>
+                            <button class="btn btn-info" onclick="loadServicesFromWebsite()">
+                                <i class="fas fa-download"></i>
+                                Von Website laden
+                            </button>
                         </div>
                         <div class="toolbar-right">
                             <input type="search" class="search-input" placeholder="Services suchen...">
@@ -3708,38 +3716,66 @@ Bitte antworte im folgenden JSON-Format:
             const servicesList = document.getElementById('servicesList');
             if (!servicesList) return;
             
-            // Standard-Services (können später bearbeitet werden)
+            // Services synchronisiert mit der Website
             const defaultServices = [
                 {
-                    name: 'Projektmanagement',
-                    category: 'projekte',
-                    description: 'Professionelles Projektmanagement für komplexe IT- und Geschäftsprojekte',
-                    icon: 'fas fa-project-diagram',
-                    color: '#8b5cf6',
+                    name: 'AI & Digitalisierung',
+                    category: 'beratung',
+                    description: 'Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe.',
+                    icon: 'fas fa-robot',
+                    color: '#6366f1',
+                    features: ['KI-Strategieentwicklung', 'Prozessautomatisierung', 'Digital Workplace'],
+                    link: null,
                     image: null
                 },
                 {
-                    name: 'Persönlichkeitsentwicklung',
-                    category: 'weitere',
-                    description: 'Coaching und Beratung für persönliches Wachstum und Entwicklung',
-                    icon: 'fas fa-user-graduate',
+                    name: 'HR Transformation',
+                    category: 'beratung',
+                    description: 'Moderne HR-Strukturen und -Prozesse für zukunftsfähige Unternehmen.',
+                    icon: 'fas fa-users',
                     color: '#10b981',
+                    features: ['HR-Strategie', 'Organisationsentwicklung', 'Change Management'],
+                    link: null,
+                    image: null
+                },
+                {
+                    name: 'Geschäftsprozesse',
+                    category: 'beratung',
+                    description: 'Optimierung und Restrukturierung von Geschäftsprozessen für maximale Effizienz.',
+                    icon: 'fas fa-cogs',
+                    color: '#f59e0b',
+                    features: ['Prozessanalyse', 'Workflow-Optimierung', 'Performance Management'],
+                    link: null,
                     image: null
                 },
                 {
                     name: 'Ernährungsberatung',
-                    category: 'weitere',
-                    description: 'Professionelle Beratung für gesunde Ernährung und Lebensweise',
-                    icon: 'fas fa-apple-alt',
-                    color: '#f59e0b',
+                    category: 'gesundheit',
+                    description: 'Professionelle Ernährungsberatung für optimale Gesundheit und Fitness mit modernen digitalen Tools.',
+                    icon: 'fas fa-utensils',
+                    color: '#ef4444',
+                    features: ['Personalisierte Ernährungspläne', 'KI-gestützte Rezept-Generierung', 'Kalender-Integration', 'Einkaufslisten-Automatisierung'],
+                    link: 'ernaehrungsberatung.html',
                     image: null
                 },
                 {
-                    name: 'Balance & Fitness',
-                    category: 'weitere',
-                    description: 'Ganzheitliches Training für Körper, Geist und Seele',
+                    name: 'Persönlichkeitsentwicklung',
+                    category: 'coaching',
+                    description: 'Entdecke 29 bewährte Methoden für deine persönliche Entwicklung. Von Ikigai bis Stress-Management - finde deinen Weg zu mehr Klarheit und Wachstum.',
+                    icon: 'fas fa-seedling',
+                    color: '#8b5cf6',
+                    features: ['29 verschiedene Methoden', 'Interaktive Workflows', 'Progress-Tracking', 'Export-Funktionen'],
+                    link: 'persoenlichkeitsentwicklung-uebersicht.html',
+                    image: null
+                },
+                {
+                    name: 'Personal Training',
+                    category: 'gesundheit',
+                    description: 'KI-gestützte Trainingspläne für Gym oder Home-Workout. Personalisierte Pläne mit Kalender-Integration und Fortschritts-Tracking.',
                     icon: 'fas fa-dumbbell',
-                    color: '#ef4444',
+                    color: '#06b6d4',
+                    features: ['AI-Trainingsplan-Generator', 'Gym & Bodyweight-Optionen', 'Kalender-Export (Google/Apple)', 'Fortschritts-Tracking'],
+                    link: 'personal-training.html',
                     image: null
                 }
             ];
@@ -3773,11 +3809,22 @@ Bitte antworte im folgenden JSON-Format:
                         </div>
                     </div>
                     <p style="color: #666; margin-bottom: 1rem; line-height: 1.5;">${service.description}</p>
+                    ${service.features ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h5 style="margin: 0 0 0.5rem 0; color: #374151; font-size: 0.9rem;">Features:</h5>
+                            <ul style="margin: 0; padding-left: 1.2rem; color: #6b7280; font-size: 0.85rem;">
+                                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="background: ${service.color}20; color: ${service.color}; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
                             ${service.category}
                         </span>
-                        ${service.image ? `<img src="${service.image}" alt="${service.name}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">` : ''}
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            ${service.link ? `<a href="${service.link}" target="_blank" style="color: ${service.color}; text-decoration: none; font-weight: 500; font-size: 0.85rem;">→ Zur Seite</a>` : ''}
+                            ${service.image ? `<img src="${service.image}" alt="${service.name}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -3880,6 +3927,40 @@ Bitte antworte im folgenden JSON-Format:
         function refreshServices() {
             loadServices();
             alert('Services aktualisiert!');
+        }
+        
+        // Services mit Website synchronisieren
+        function syncServicesWithWebsite() {
+            const services = JSON.parse(localStorage.getItem('adminServices') || '[]');
+            
+            // Speichere Services für Website-Synchronisation
+            localStorage.setItem('websiteServices', JSON.stringify(services));
+            
+            // Optional: Netlify Storage
+            if (window.netlifyStorage) {
+                window.netlifyStorage.saveData('services', services)
+                    .then(result => {
+                        console.log('✅ Services auch bei Netlify gespeichert:', result);
+                    })
+                    .catch(error => {
+                        console.warn('⚠️ Netlify Storage für Services nicht verfügbar:', error);
+                    });
+            }
+            
+            console.log('✅ Services mit Website synchronisiert');
+            alert('Services erfolgreich mit der Website synchronisiert!');
+        }
+        
+        // Services von Website laden
+        function loadServicesFromWebsite() {
+            const websiteServices = JSON.parse(localStorage.getItem('websiteServices') || '[]');
+            if (websiteServices.length > 0) {
+                localStorage.setItem('adminServices', JSON.stringify(websiteServices));
+                loadServices();
+                alert('Services von der Website geladen!');
+            } else {
+                alert('Keine Services auf der Website gefunden. Verwende die Standard-Services.');
+            }
         }
         
         // ===== VERMIETUNGS- UND BUCHUNGSSYSTEM =====
