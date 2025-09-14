@@ -439,11 +439,16 @@
 
 /* Hide vertical workflow steps - only show horizontal progress */
 .workflow-step {
-    display: none;
+    display: none !important;
 }
 
 .workflow-step.active {
-    display: block;
+    display: block !important;
+}
+
+/* Force visibility for step 1 */
+.workflow-step[data-step="1"] {
+    display: block !important;
 }
 
 /* Progress step styling with checkmarks for completed steps */
