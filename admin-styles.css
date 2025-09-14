@@ -2156,6 +2156,285 @@ body {
     border-color: #0891b2;
 }
 
+/* Submenu Styles */
+.nav-item.has-submenu > a {
+    position: relative;
+}
+
+.submenu-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.nav-item.has-submenu.active .submenu-arrow {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.submenu {
+    display: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--primary-color);
+    margin-left: 1rem;
+    padding-left: 0;
+}
+
+.nav-item.has-submenu.active .submenu {
+    display: block;
+}
+
+.submenu .nav-item {
+    margin: 0;
+    border-radius: 0;
+}
+
+.submenu .nav-item a {
+    padding: 0.75rem 1rem 0.75rem 2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.submenu .nav-item a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.submenu .nav-item.active a {
+    background: rgba(99, 102, 241, 0.2);
+    color: white;
+}
+
+.submenu .nav-item i.fa-circle {
+    font-size: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+/* Persönlichkeitsentwicklung Übersicht */
+.methods-overview {
+    padding: 2rem 0;
+}
+
+.methods-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.stat-card p {
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+.methods-categories h3 {
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.category-card h4 {
+    color: #1f2937;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-card p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Workflow Admin Container */
+.workflow-admin-container {
+    padding: 2rem;
+}
+
+.workflow-admin-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.workflow-admin-header h2 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.workflow-admin-header p {
+    color: #6b7280;
+    margin: 0;
+}
+
+.workflow-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.workflow-tabs .tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.workflow-tabs .tab-btn:hover {
+    background: #f1f5f9;
+    color: #374151;
+}
+
+.workflow-tabs .tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.workflow-tab-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tab-panel {
+    display: none;
+    padding: 2rem;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.tab-panel h3 {
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+}
+
+.tab-panel p {
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Alle Methoden verwalten */
+.all-methods-container {
+    padding: 2rem;
+}
+
+.all-methods-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.all-methods-header h2 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.all-methods-header p {
+    color: #6b7280;
+    margin: 0;
+}
+
+.methods-management {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.methods-list h3 {
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.method-items {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.method-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.method-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.method-info h4 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.method-info p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.method-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.method-actions .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
 /* Zentrale Medienverwaltung - Kategorien */
 .media-categories {
     margin-bottom: 2rem;
