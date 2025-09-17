@@ -571,8 +571,18 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             progress: this.userProfile.progress[methodId] || {}
         };
         
+        // Add personal anecdotes based on method
+        let personalContext = '';
+        if (methodId === 'ikigai') {
+            personalContext = ' In meinen UKG HRSD Projekten habe ich gelernt, dass die besten Lösungen entstehen, wenn man die Kernwerte und Motivationen der Menschen versteht.';
+        } else if (methodId === 'goal-setting') {
+            personalContext = ' Als Scrum Master weiß ich: Ziele müssen SMART sein, aber auch emotional berühren. In meinen Projekten setze ich immer auf messbare Ergebnisse mit echter Begeisterung.';
+        } else if (methodId === 'communication') {
+            personalContext = ' Stakeholder-Management ist mein tägliches Brot. Ich habe gelernt, dass echte Kommunikation auf Augenhöhe mehr bewirkt als jede Präsentation.';
+        }
+        
         const response = await this.processAdvancedMessage(
-            `Ich möchte den Benutzer durch die ${methodId}-Methode führen. Bitte erkläre den ersten Schritt und stelle eine motivierende Frage.`,
+            `Ich möchte den Benutzer durch die ${methodId}-Methode führen.${personalContext} Bitte erkläre den ersten Schritt und stelle eine motivierende Frage.`,
             context
         );
         
