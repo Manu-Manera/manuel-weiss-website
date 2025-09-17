@@ -2536,6 +2536,9 @@
                 // Force API key reload when chatbot is opened
                 console.log('Chatbot opened - forcing API key reload...');
                 forceApiKeyReload();
+                
+                // Also try direct injection
+                injectApiKeyDirectly();
             } else {
                 chatbot.classList.remove('active');
                 toggle.classList.remove('hidden');
@@ -2551,6 +2554,9 @@
             // Force API key reload before sending message
             console.log('sendMessage called - forcing API key reload...');
             forceApiKeyReload();
+            
+            // Also try direct injection
+            injectApiKeyDirectly();
             
             // Add user message to chat
             addMessage(message, 'user');
@@ -2640,6 +2646,9 @@
                 // Force API key reload before processing
                 console.log('processMessageWithAI - forcing API key reload...');
                 forceApiKeyReload();
+                
+                // Also try direct injection
+                injectApiKeyDirectly();
                 
                 // Check if API key is available
                 if (!window.aiCoach || !window.aiCoach.apiKey || window.aiCoach.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
@@ -2956,6 +2965,27 @@
         
         // Make test function globally available
         window.testApiKey = testApiKey;
+        window.injectApiKeyDirectly = injectApiKeyDirectly;
+        
+        // Simple test function to check if API key is working
+        function testApiKeyWorking() {
+            console.log('=== TESTING API KEY WORKING ===');
+            
+            // First inject the API key
+            const injected = injectApiKeyDirectly();
+            console.log('API key injected:', injected);
+            
+            // Check if it's set
+            if (window.aiCoach && window.aiCoach.apiKey && window.aiCoach.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                console.log('✅ API key is set:', window.aiCoach.apiKey.substring(0, 10) + '...');
+                return true;
+            } else {
+                console.log('❌ API key is not set or invalid');
+                return false;
+            }
+        }
+        
+        window.testApiKeyWorking = testApiKeyWorking;
         
         // Force API key reload when chatbot is opened
         function forceApiKeyReload() {
@@ -2988,6 +3018,46 @@
             } else {
                 console.log('No admin settings found in localStorage');
             }
+            
+            // Fallback: try to reload from AI Coach
+            if (typeof reloadAICoachApiKey === 'function') {
+                const newKey = reloadAICoachApiKey();
+                if (newKey) {
+                    console.log('API key reloaded from AI Coach:', newKey.substring(0, 10) + '...');
+                    return newKey;
+                }
+            }
+            
+            return null;
+        }
+        
+        // Direct API key injection - simpler approach
+        function injectApiKeyDirectly() {
+            console.log('=== INJECTING API KEY DIRECTLY ===');
+            const adminSettings = localStorage.getItem('aiCoachSettings');
+            if (adminSettings) {
+                try {
+                    const settings = JSON.parse(adminSettings);
+                    if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                        // Set API key on window.aiCoach directly
+                        if (window.aiCoach) {
+                            window.aiCoach.apiKey = settings.apiKey;
+                            console.log('✅ API key injected directly:', settings.apiKey.substring(0, 10) + '...');
+                            
+                            // Also call the update function
+                            if (typeof updateAICoachApiKey === 'function') {
+                                updateAICoachApiKey(settings.apiKey);
+                            }
+                            
+                            return true;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error injecting API key:', error);
+                }
+            }
+            return false;
+        }
             
             // Fallback to function call
             if (typeof reloadAICoachApiKey === 'function') {
