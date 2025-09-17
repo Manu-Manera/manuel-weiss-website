@@ -335,7 +335,7 @@
         .coach-info p {
             margin: 0;
             font-size: 0.875rem;
-            color: white;
+            color: white !important;
             font-weight: 500;
         }
         
@@ -2848,6 +2848,22 @@
                 aiCoachToggle.style.display = 'none';
             }
         }
+        
+        // Debug function to check API key status
+        function debugApiKey() {
+            console.log('=== API Key Debug ===');
+            console.log('Current API Key:', window.aiCoach?.apiKey?.substring(0, 10) + '...');
+            console.log('Admin Settings:', localStorage.getItem('aiCoachSettings'));
+            console.log('Training Settings:', localStorage.getItem('digitalTwinTraining'));
+            
+            if (typeof reloadAICoachApiKey === 'function') {
+                const reloadedKey = reloadAICoachApiKey();
+                console.log('Reloaded API Key:', reloadedKey?.substring(0, 10) + '...');
+            }
+        }
+        
+        // Make debug function globally available
+        window.debugApiKey = debugApiKey;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
