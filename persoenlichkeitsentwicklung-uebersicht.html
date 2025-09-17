@@ -310,12 +310,19 @@
         .coach-avatar {
             width: 3rem;
             height: 3rem;
-            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .coach-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .coach-info h3 {
@@ -375,6 +382,13 @@
         .coach-message .message-avatar {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
+            overflow: hidden;
+        }
+        
+        .coach-message .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .user-message {
@@ -387,24 +401,44 @@
         }
         
         .message-content {
-            background: #f8fafc;
+            background: #ffffff;
             padding: 0.75rem 1rem;
             border-radius: 15px;
             max-width: 80%;
             line-height: 1.5;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .user-message .message-content {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
+            border: none;
+        }
+        
+        .coach-message .message-content {
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #e2e8f0;
         }
         
         .message-content p {
             margin: 0 0 0.5rem 0;
+            color: inherit;
         }
         
         .message-content p:last-child {
             margin-bottom: 0;
+        }
+        
+        .message-content strong {
+            color: inherit;
+            font-weight: 600;
+        }
+        
+        .message-content em {
+            color: inherit;
+            font-style: italic;
         }
         
         .quick-actions {
@@ -415,48 +449,67 @@
         }
         
         .quick-action-btn {
-            background: white;
+            background: #f8fafc;
             border: 2px solid #4f46e5;
             color: #4f46e5;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
             font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .quick-action-btn:hover {
             background: #4f46e5;
             color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.2);
+        }
+        
+        .quick-action-btn:active {
+            transform: translateY(0);
         }
         
         .chatbot-input-container {
             padding: 1rem;
             border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
+            background: #ffffff;
         }
         
         .input-wrapper {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 0.75rem;
+            background: #f8fafc;
+            border-radius: 25px;
+            padding: 0.25rem;
+            border: 2px solid #e2e8f0;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         
         .chatbot-input {
             flex: 1;
             padding: 0.75rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
+            border: none;
+            background: transparent;
             font-size: 0.875rem;
             outline: none;
-            transition: border-color 0.3s ease;
+            color: #1f2937;
         }
         
-        .chatbot-input:focus {
-            border-color: #4f46e5;
+        .chatbot-input::placeholder {
+            color: #9ca3af;
         }
         
         .send-button {
@@ -484,22 +537,27 @@
         }
         
         .action-btn {
-            background: none;
+            background: #ffffff;
             border: 1px solid #d1d5db;
             color: #6b7280;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.75rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.25rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .action-btn:hover {
-            background: #f3f4f6;
+            background: #f8fafc;
             border-color: #9ca3af;
+            color: #374151;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .ai-coach-toggle {
@@ -2040,27 +2098,27 @@
 
     <!-- AI Coach Chatbot -->
     <div id="aiCoachChatbot" class="ai-coach-chatbot">
-        <div class="chatbot-header">
-            <div class="coach-avatar">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="coach-info">
-                <h3>AI Persönlichkeitscoach</h3>
-                <p>Dein intelligenter Begleiter für persönliche Entwicklung</p>
-            </div>
+            <div class="chatbot-header">
+                <div class="coach-avatar">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" id="coachAvatar">
+                </div>
+                <div class="coach-info">
+                    <h3>Manuel Weiss</h3>
+                    <p>Dein persönlicher Digital Twin für Persönlichkeitsentwicklung</p>
+                </div>
             <button class="chatbot-toggle" onclick="toggleChatbot()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         
         <div class="chatbot-messages" id="chatbotMessages">
-            <div class="message coach-message">
-                <div class="message-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="message-content">
-                    <p>Hallo! Ich bin dein AI-Persönlichkeitscoach. Ich helfe dir dabei, strukturiert an deiner persönlichen Entwicklung zu arbeiten.</p>
-                    <p>Ich kann dich durch verschiedene Methoden führen, Assessments durchführen und personalisierte Workflows erstellen.</p>
+                <div class="message coach-message">
+                    <div class="message-avatar">
+                        <img src="manuel-weiss-photo.svg" alt="Manuel Weiss">
+                    </div>
+                    <div class="message-content">
+                        <p>Hallo! Ich bin Manuel Weiss, dein persönlicher Digital Twin. Mit über 6 Jahren Erfahrung in der HR-Tech Beratung und digitalen Transformation helfe ich dir dabei, strukturiert an deiner persönlichen Entwicklung zu arbeiten.</p>
+                        <p>Meine Expertise liegt in der strukturierten Problemlösung, Prozessmanagement und Change Management. Ich kann dich durch verschiedene Methoden führen, Assessments durchführen und personalisierte Workflows erstellen - ganz nach dem Motto "Struktur schafft Freiheit".</p>
                     <div class="quick-actions">
                         <button class="quick-action-btn" onclick="startAssessment()">
                             <i class="fas fa-clipboard-list"></i> Assessment starten

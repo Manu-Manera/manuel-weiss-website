@@ -43,11 +43,16 @@ class UserProfile {
                 <div class="profile-avatar-section">
                     <div class="avatar-preview">
                         <img id="avatarPreview" src="${this.currentUser.profile.avatar || this.getDefaultAvatar()}" alt="Avatar">
-                        <button type="button" class="avatar-change-btn" onclick="this.changeAvatar()">
+                        <button type="button" class="avatar-change-btn" onclick="window.userProfile.changeAvatar()">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
-                    <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="this.handleAvatarChange(event)">
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="window.userProfile.handleAvatarChange(event)">
+                    <div class="avatar-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="window.userProfile.removeAvatar()">
+                            <i class="fas fa-trash"></i> Entfernen
+                        </button>
+                    </div>
                 </div>
 
                 <form id="profileForm" class="profile-form">
@@ -64,7 +69,18 @@ class UserProfile {
 
                     <div class="form-group">
                         <label for="editEmail">E-Mail-Adresse</label>
-                        <input type="email" id="editEmail" name="email" value="${this.currentUser.email}" required>
+                        <div class="email-change-section">
+                            <input type="email" id="editEmail" name="email" value="${this.currentUser.email}" required>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="window.userProfile.showEmailChangeModal()">
+                                <i class="fas fa-edit"></i> Ändern
+                            </button>
+                        </div>
+                        <div class="email-status">
+                            ${this.currentUser.emailVerified ? 
+                                '<span class="status-verified"><i class="fas fa-check-circle"></i> E-Mail bestätigt</span>' : 
+                                '<span class="status-unverified"><i class="fas fa-exclamation-circle"></i> E-Mail nicht bestätigt</span>'
+                            }
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -81,7 +97,7 @@ class UserProfile {
                         <label for="editInterests">Interessen</label>
                         <div class="interests-input">
                             <input type="text" id="interestsInput" placeholder="Interesse hinzufügen...">
-                            <button type="button" onclick="this.addInterest()">Hinzufügen</button>
+                            <button type="button" onclick="window.userProfile.addInterest()">Hinzufügen</button>
                         </div>
                         <div id="interestsList" class="interests-list">
                             ${this.renderInterests()}
@@ -89,7 +105,7 @@ class UserProfile {
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="this.closeModal()">Abbrechen</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.userProfile.closeModal()">Abbrechen</button>
                         <button type="submit" class="btn btn-primary">Speichern</button>
                     </div>
                 </form>
@@ -250,7 +266,7 @@ class UserProfile {
                 </div>
 
                 <div class="settings-actions">
-                    <button type="button" class="btn btn-secondary" onclick="this.closeModal()">Schließen</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.userProfile.closeModal()">Schließen</button>
                 </div>
             </div>
         `;
@@ -320,7 +336,7 @@ class UserProfile {
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="this.closeModal()">Abbrechen</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.userProfile.closeModal()">Abbrechen</button>
                         <button type="submit" class="btn btn-primary">${goal ? 'Aktualisieren' : 'Erstellen'}</button>
                     </div>
                 </form>
@@ -706,7 +722,7 @@ class UserProfile {
             <div class="profile-modal-content">
                 <div class="profile-modal-header">
                     <h2>${title}</h2>
-                    <button class="profile-modal-close" onclick="this.closeModal()">
+                    <button class="profile-modal-close" onclick="window.userProfile.closeModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -721,6 +737,22 @@ class UserProfile {
         
         // Store reference for closing
         this.currentModal = modal;
+        
+        // Add click outside to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeModal();
+            }
+        });
+        
+        // Add escape key to close
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.closeModal();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
     }
 
     closeModal() {
@@ -793,6 +825,275 @@ class UserProfile {
     showError(message) {
         if (window.userAuth) {
             window.userAuth.showError(message);
+        }
+    }
+    
+    // Avatar management
+    changeAvatar() {
+        const input = document.getElementById('avatarInput');
+        if (input) {
+            input.click();
+        }
+    }
+    
+    handleAvatarChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                this.showError('Bitte wähle eine gültige Bilddatei aus.');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                this.showError('Die Bilddatei ist zu groß. Maximal 5MB erlaubt.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('avatarPreview');
+                if (preview) {
+                    preview.src = e.target.result;
+                }
+                
+                // Save to user profile
+                this.currentUser.profile.avatar = e.target.result;
+                
+                // Save to storage
+                if (window.userAuth) {
+                    window.userAuth.updateUserInStorage();
+                    window.userAuth.saveUserToStorage(true);
+                }
+                
+                this.showSuccess('Profilbild erfolgreich aktualisiert!');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    removeAvatar() {
+        if (confirm('Möchtest du dein Profilbild wirklich entfernen?')) {
+            this.currentUser.profile.avatar = null;
+            
+            const preview = document.getElementById('avatarPreview');
+            if (preview) {
+                preview.src = this.getDefaultAvatar();
+            }
+            
+            // Save to storage
+            if (window.userAuth) {
+                window.userAuth.updateUserInStorage();
+                window.userAuth.saveUserToStorage(true);
+            }
+            
+            this.showSuccess('Profilbild entfernt!');
+        }
+    }
+    
+    // Email change functionality
+    showEmailChangeModal() {
+        const modalContent = `
+            <div class="email-change-modal">
+                <div class="email-change-info">
+                    <h3>E-Mail-Adresse ändern</h3>
+                    <p>Um deine E-Mail-Adresse zu ändern, musst du dein aktuelles Passwort bestätigen und die neue E-Mail-Adresse bestätigen.</p>
+                </div>
+                
+                <form id="emailChangeForm" class="email-change-form">
+                    <div class="form-group">
+                        <label for="currentPasswordEmail">Aktuelles Passwort</label>
+                        <input type="password" id="currentPasswordEmail" name="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newEmail">Neue E-Mail-Adresse</label>
+                        <input type="email" id="newEmail" name="newEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmNewEmail">E-Mail-Adresse bestätigen</label>
+                        <input type="email" id="confirmNewEmail" name="confirmNewEmail" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.userProfile.closeModal()">Abbrechen</button>
+                        <button type="submit" class="btn btn-primary">E-Mail ändern</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        this.createModal('E-Mail-Adresse ändern', modalContent);
+        this.setupEmailChangeEvents();
+    }
+    
+    setupEmailChangeEvents() {
+        const form = document.getElementById('emailChangeForm');
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleEmailChange(e));
+        }
+    }
+    
+    handleEmailChange(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const currentPassword = formData.get('currentPassword');
+        const newEmail = formData.get('newEmail');
+        const confirmNewEmail = formData.get('confirmNewEmail');
+        
+        // Validate current password
+        if (this.currentUser.password !== window.userAuth.hashPassword(currentPassword)) {
+            this.showError('Aktuelles Passwort ist falsch.');
+            return;
+        }
+        
+        // Validate email match
+        if (newEmail !== confirmNewEmail) {
+            this.showError('Die E-Mail-Adressen stimmen nicht überein.');
+            return;
+        }
+        
+        // Check if email is different
+        if (newEmail === this.currentUser.email) {
+            this.showError('Die neue E-Mail-Adresse ist identisch mit der aktuellen.');
+            return;
+        }
+        
+        // Check if email already exists
+        const users = window.userAuth.getStoredUsers();
+        if (users.find(u => u.email === newEmail && u.id !== this.currentUser.id)) {
+            this.showError('Diese E-Mail-Adresse wird bereits verwendet.');
+            return;
+        }
+        
+        // Send verification email (simulate)
+        this.sendEmailVerification(newEmail);
+        
+        // Update user data
+        this.currentUser.email = newEmail;
+        this.currentUser.emailVerified = false;
+        this.currentUser.emailVerificationToken = this.generateVerificationToken();
+        this.currentUser.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+        
+        // Save to storage
+        if (window.userAuth) {
+            window.userAuth.updateUserInStorage();
+            window.userAuth.saveUserToStorage(true);
+        }
+        
+        this.closeModal();
+        this.showSuccess('E-Mail-Adresse geändert! Bitte bestätige deine neue E-Mail-Adresse.');
+        
+        // Refresh profile editor
+        setTimeout(() => {
+            this.showProfileEditor();
+        }, 1000);
+    }
+    
+    sendEmailVerification(email) {
+        // In a real application, this would send an actual email
+        // For demo purposes, we'll simulate it
+        console.log(`Verification email sent to: ${email}`);
+        console.log(`Verification token: ${this.currentUser.emailVerificationToken}`);
+        
+        // Show a demo notification
+        setTimeout(() => {
+            this.showSuccess(`Demo: Bestätigungs-E-Mail an ${email} gesendet!`);
+        }, 2000);
+    }
+    
+    generateVerificationToken() {
+        return 'verify_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Email verification
+    verifyEmail(token) {
+        if (this.currentUser.emailVerificationToken === token) {
+            const now = new Date();
+            const expires = new Date(this.currentUser.emailVerificationExpires);
+            
+            if (now < expires) {
+                this.currentUser.emailVerified = true;
+                this.currentUser.emailVerificationToken = null;
+                this.currentUser.emailVerificationExpires = null;
+                
+                // Save to storage
+                if (window.userAuth) {
+                    window.userAuth.updateUserInStorage();
+                    window.userAuth.saveUserToStorage(true);
+                }
+                
+                this.showSuccess('E-Mail-Adresse erfolgreich bestätigt!');
+                return true;
+            } else {
+                this.showError('Der Bestätigungslink ist abgelaufen. Bitte fordere einen neuen an.');
+                return false;
+            }
+        } else {
+            this.showError('Ungültiger Bestätigungslink.');
+            return false;
+        }
+    }
+    
+    resendVerificationEmail() {
+        if (this.currentUser.emailVerified) {
+            this.showError('E-Mail-Adresse ist bereits bestätigt.');
+            return;
+        }
+        
+        this.sendEmailVerification(this.currentUser.email);
+        this.showSuccess('Bestätigungs-E-Mail erneut gesendet!');
+    }
+    
+    // Interest management
+    addInterest() {
+        const input = document.getElementById('interestsInput');
+        const interest = input.value.trim();
+        
+        if (interest) {
+            if (!this.currentUser.profile.interests) {
+                this.currentUser.profile.interests = [];
+            }
+            
+            if (!this.currentUser.profile.interests.includes(interest)) {
+                this.currentUser.profile.interests.push(interest);
+                
+                // Save to storage
+                if (window.userAuth) {
+                    window.userAuth.updateUserInStorage();
+                    window.userAuth.saveUserToStorage(true);
+                }
+                
+                // Update display
+                this.updateInterestsDisplay();
+                input.value = '';
+            } else {
+                this.showError('Dieses Interesse existiert bereits.');
+            }
+        }
+    }
+    
+    removeInterest(interest) {
+        if (this.currentUser.profile.interests) {
+            this.currentUser.profile.interests = this.currentUser.profile.interests.filter(i => i !== interest);
+            
+            // Save to storage
+            if (window.userAuth) {
+                window.userAuth.updateUserInStorage();
+                window.userAuth.saveUserToStorage(true);
+            }
+            
+            // Update display
+            this.updateInterestsDisplay();
+        }
+    }
+    
+    updateInterestsDisplay() {
+        const interestsList = document.getElementById('interestsList');
+        if (interestsList) {
+            interestsList.innerHTML = this.renderInterests();
         }
     }
 }

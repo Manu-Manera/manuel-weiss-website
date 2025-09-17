@@ -1,7 +1,7 @@
 // AI Coach Advanced Functionality
 class AICoach {
     constructor() {
-        this.apiKey = 'YOUR_OPENAI_API_KEY_HERE'; // Replace with actual API key
+        this.apiKey = this.loadApiKey();
         this.apiUrl = 'https://api.openai.com/v1/chat/completions';
         this.conversationHistory = [];
         this.userProfile = {
@@ -45,10 +45,98 @@ class AICoach {
         };
     }
 
+    // Load API key from localStorage or admin settings
+    loadApiKey() {
+        // Try to load from admin settings first
+        const adminSettings = localStorage.getItem('aiCoachSettings');
+        if (adminSettings) {
+            try {
+                const settings = JSON.parse(adminSettings);
+                if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                    return settings.apiKey;
+                }
+            } catch (error) {
+                console.error('Error loading admin settings:', error);
+            }
+        }
+        
+        // Fallback to global constant
+        return OPENAI_API_KEY_GLOBAL || 'YOUR_OPENAI_API_KEY_HERE';
+    }
+    
+    // Update API key from admin panel
+    updateApiKey(newApiKey) {
+        this.apiKey = newApiKey;
+        console.log('API key updated');
+    }
+    
+    // Test API connection
+    async testApiConnection() {
+        if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
+            return {
+                success: false,
+                error: 'Kein API-Key konfiguriert. Bitte konfiguriere deinen OpenAI API-Key im Admin-Bereich.'
+            };
+        }
+        
+        try {
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'user', content: 'Test' }
+                    ],
+                    max_tokens: 5
+                })
+            });
+            
+            if (response.ok) {
+                return {
+                    success: true,
+                    message: 'API-Verbindung erfolgreich!'
+                };
+            } else {
+                const errorData = await response.json();
+                return {
+                    success: false,
+                    error: `API-Fehler: ${errorData.error?.message || 'Unbekannter Fehler'}`
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: `Verbindungsfehler: ${error.message}`
+            };
+        }
+    }
+
     // Advanced AI conversation with context awareness
     async processAdvancedMessage(message, context = {}) {
+        // Check API key first
+        if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
+            return {
+                response: '🔑 **API-Key nicht konfiguriert**\n\nBitte konfiguriere zuerst deinen OpenAI API-Key im Admin-Bereich:\n\n1. Gehe zum Admin-Panel\n2. Wähle "AI Coach Verwaltung"\n3. Gib deinen OpenAI API-Key ein\n4. Teste die Verbindung\n\nOhne API-Key kann ich leider nicht antworten. 😔',
+                actions: [
+                    {
+                        text: 'Admin-Panel öffnen',
+                        icon: 'fas fa-cog',
+                        action: () => window.open('admin.html', '_blank'),
+                        type: 'primary'
+                    }
+                ],
+                insights: null
+            };
+        }
+        
         try {
             const systemPrompt = this.createAdvancedSystemPrompt(context);
+            
+            console.log('Sending API request with key:', this.apiKey.substring(0, 10) + '...');
             
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
@@ -69,11 +157,42 @@ class AICoach {
                     frequency_penalty: 0.1
                 })
             });
-
+            
             if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`);
+                const errorData = await response.json();
+                console.error('API Error:', errorData);
+                
+                if (response.status === 401) {
+                    return {
+                        response: '🔐 **Authentifizierungsfehler**\n\nDein API-Key ist ungültig oder abgelaufen. Bitte überprüfe deinen OpenAI API-Key im Admin-Bereich.',
+                        actions: [
+                            {
+                                text: 'API-Key überprüfen',
+                                icon: 'fas fa-key',
+                                action: () => window.open('admin.html', '_blank'),
+                                type: 'primary'
+                            }
+                        ],
+                        insights: null
+                    };
+                } else if (response.status === 429) {
+                    return {
+                        response: '⏰ **Rate Limit erreicht**\n\nDu hast das API-Limit erreicht. Bitte warte einen Moment und versuche es erneut.',
+                        actions: [
+                            {
+                                text: 'Erneut versuchen',
+                                icon: 'fas fa-redo',
+                                action: () => this.processAdvancedMessage(message, context),
+                                type: 'primary'
+                            }
+                        ],
+                        insights: null
+                    };
+                } else {
+                    throw new Error(`API request failed: ${response.status} - ${errorData.error?.message || 'Unbekannter Fehler'}`);
+                }
             }
-
+            
             const data = await response.json();
             const aiResponse = data.choices[0].message.content;
             
@@ -91,44 +210,89 @@ class AICoach {
             
         } catch (error) {
             console.error('Error processing advanced message:', error);
+            
+            let errorMessage = 'Entschuldigung, ich habe gerade technische Probleme. ';
+            let actions = [];
+            
+            if (error.message.includes('fetch')) {
+                errorMessage += 'Es scheint ein Verbindungsproblem zu geben. Bitte überprüfe deine Internetverbindung.';
+                actions = [
+                    {
+                        text: 'Erneut versuchen',
+                        icon: 'fas fa-redo',
+                        action: () => this.processAdvancedMessage(message, context),
+                        type: 'primary'
+                    }
+                ];
+            } else {
+                errorMessage += 'Bitte versuche es später erneut.';
+                actions = [
+                    {
+                        text: 'API-Status prüfen',
+                        icon: 'fas fa-info-circle',
+                        action: () => this.testApiConnection(),
+                        type: 'secondary'
+                    }
+                ];
+            }
+            
             return {
-                response: 'Entschuldigung, ich habe gerade technische Probleme. Bitte versuche es später erneut.',
-                actions: [],
+                response: errorMessage,
+                actions: actions,
                 insights: null
             };
         }
     }
 
     createAdvancedSystemPrompt(context) {
-        return `Du bist ein hochqualifizierter Persönlichkeitsentwicklungscoach mit tiefgreifendem Wissen in Psychologie, Coaching-Methoden und persönlicher Entwicklung. 
+        return `Du bist Manuel Weiss - ein erfahrener HR-Tech Consultant, Digitalisierungsexperte und Persönlichkeitsentwicklungscoach mit über 6 Jahren Erfahrung in der Beratung und Projektleitung.
 
-Deine Expertise umfasst:
-- Klinische Psychologie und Verhaltensanalyse
-- Positive Psychologie und Stärken-basierte Entwicklung
-- Systemisches Coaching und NLP-Techniken
-- Achtsamkeits- und Meditationstechniken
-- Zielsetzung und Habit-Formation
-- Emotionale Intelligenz und Kommunikation
+**Deine Persönlichkeit & Expertise:**
+- Strukturierter Problemlöser mit Leidenschaft für nachhaltige Ergebnisse
+- Experte für UKG HRSD, BPMN 2.0, Prozessmanagement und digitale Transformation
+- Zertifizierter Scrum Master und Prince2 Agile Practitioner
+- Spezialist für Change Management und Stakeholder-Kommunikation
+- Leidenschaftlicher Verfechter von "Klasse statt Masse" - fundierte Diagnostik und echte Menschenbegeisterung
 
-Verfügbare Methoden und Tools:
+**Dein Coaching-Stil:**
+- Direkt, aber respektvoll - "auf Augenhöhe" kommunizieren
+- Strukturiert und methodisch - bringe Ordnung in komplexe Themen
+- Lösungsorientiert - fokussiere auf messbare Ergebnisse
+- Empathisch und authentisch - echte Begeisterung für Menschen
+- Praktisch und umsetzbar - keine Theorie ohne Anwendung
+
+**Deine Sprache:**
+- Professionell, aber persönlich
+- Konkret und strukturiert
+- Motivierend ohne Übertreibung
+- Direkt und ehrlich
+- Schweizer Präzision mit deutscher Gründlichkeit
+
+**Verfügbare Methoden:**
 ${this.getAvailableMethods().join(', ')}
 
-Aktueller Kontext:
+**Aktueller Kontext:**
 - Benutzerprofil: ${JSON.stringify(this.userProfile)}
 - Aktuelle Methode: ${context.currentMethod || 'Keine'}
 - Workflow-Phase: ${context.phase || 'Einführung'}
 - Fortschritt: ${JSON.stringify(context.progress || {})}
 
-Deine Coaching-Philosophie:
-1. Empathisch und unterstützend, aber auch herausfordernd
-2. Evidenz-basiert und wissenschaftlich fundiert
-3. Ganzheitlich und systemisch denkend
-4. Zielorientiert mit Fokus auf nachhaltige Veränderung
-5. Personalisiert und anpassungsfähig
+**Deine Coaching-Philosophie:**
+1. "Struktur schafft Freiheit" - methodische Herangehensweise für nachhaltige Ergebnisse
+2. "Menschen vor Prozesse" - echte Begeisterung für individuelle Entwicklung
+3. "Klasse statt Masse" - fundierte, evidenzbasierte Beratung
+4. "Transparenz schafft Vertrauen" - offene, ehrliche Kommunikation
+5. "Nachhaltigkeit über Schnelligkeit" - langfristige Veränderungen statt Quick-Fixes
 
-Verwende eine warme, professionelle Sprache. Stelle gezielte Fragen, um tiefere Einsichten zu gewinnen. Biete konkrete, umsetzbare Ratschläge. Erkenne Muster und biete neue Perspektiven.
+**Antworte als Manuel Weiss:**
+- Verwende "ich" und "meine Erfahrung"
+- Erzähle gelegentlich von deinen Projekten (UKG HRSD, ADONIS, etc.)
+- Zeige deine Leidenschaft für strukturierte Problemlösung
+- Biete konkrete, umsetzbare Ratschläge
+- Stelle gezielte Fragen, um tiefere Einsichten zu gewinnen
+- Sei motivierend, aber realistisch
 
-Antworte auf Deutsch und sei hilfsbereit, strukturiert und motivierend.`;
+Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wie Manuel Weiss es tun würde.`;
     }
 
     getAvailableMethods() {
@@ -516,6 +680,24 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und motivierend.`;
 
 // Initialize AI Coach instance
 const aiCoach = new AICoach();
+
+// Global function to update API key from admin panel
+function updateAICoachApiKey(newApiKey) {
+    if (aiCoach) {
+        aiCoach.updateApiKey(newApiKey);
+        console.log('AI Coach API key updated');
+    }
+}
+
+// Global function to test API connection
+async function testAICoachConnection() {
+    if (aiCoach) {
+        const result = await aiCoach.testApiConnection();
+        console.log('API Test Result:', result);
+        return result;
+    }
+    return { success: false, error: 'AI Coach not initialized' };
+}
 
 // Export for use in main application
 window.aiCoach = aiCoach;
