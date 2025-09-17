@@ -2154,7 +2154,7 @@
     </div>
 
         <!-- AI Coach Toggle Button -->
-        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="toggleChatbot()">
+        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="window.toggleChatbot ? window.toggleChatbot() : console.error('toggleChatbot not found')">
             <img src="manuel-weiss-photo.svg" alt="Manu" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
             <span class="toggle-text">Manu</span>
             <div class="notification-badge" id="coachNotification" style="display: none;">1</div>
@@ -2563,6 +2563,21 @@
         // Make toggleChatbot globally available
         window.toggleChatbot = toggleChatbot;
         
+        // Add direct event listener as backup
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('aiCoachToggle');
+            if (toggleButton) {
+                toggleButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Toggle button clicked via event listener');
+                    toggleChatbot();
+                });
+                console.log('✅ Event listener added to toggle button');
+            } else {
+                console.error('❌ Toggle button not found for event listener');
+            }
+        });
+        
         // Debug function to check chatbot elements
         function debugChatbotElements() {
             console.log('=== DEBUGGING CHATBOT ELEMENTS ===');
@@ -2594,6 +2609,33 @@
         }
         
         window.forceOpenChatbot = forceOpenChatbot;
+        
+        // Simple test function to open chatbot directly
+        function testOpenChatbot() {
+            console.log('=== TESTING CHATBOT OPEN ===');
+            
+            // Check if elements exist
+            const chatbot = document.getElementById('aiCoachChatbot');
+            const toggle = document.getElementById('aiCoachToggle');
+            
+            console.log('Chatbot element:', chatbot);
+            console.log('Toggle element:', toggle);
+            
+            if (chatbot && toggle) {
+                // Force open
+                chatbot.classList.add('active');
+                toggle.classList.add('hidden');
+                isChatbotOpen = true;
+                
+                console.log('✅ Chatbot should be open now');
+                return true;
+            } else {
+                console.error('❌ Elements not found');
+                return false;
+            }
+        }
+        
+        window.testOpenChatbot = testOpenChatbot;
 
         function sendMessage() {
             const input = document.getElementById('chatbotInput');
