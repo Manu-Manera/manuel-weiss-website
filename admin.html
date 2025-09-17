@@ -23,6 +23,261 @@
             max-width: 1400px;
             margin: 0 auto;
         }
+
+        /* Digital Twin Training Styles */
+        .digital-twin-training-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .training-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .training-tabs .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .training-tabs .tab-btn:hover {
+            color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .training-tabs .tab-btn.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .training-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .training-card h3 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .training-card p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        .training-form, .experience-form, .communication-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.3s ease;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .analytics-card h4 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 0 auto;
+        }
+
+        .score-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .data-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .training-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #b45309;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            .training-tabs {
+                flex-direction: column;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .training-actions {
+                flex-direction: column;
+            }
+        }
         
         .ai-coach-tabs {
             margin-top: 2rem;
@@ -945,6 +1200,12 @@
                                     <a href="#ai-coach-admin">
                                         <i class="fas fa-robot"></i>
                                         <span>AI Coach Verwaltung</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" data-section="digital-twin-training">
+                                    <a href="#digital-twin-training">
+                                        <i class="fas fa-brain"></i>
+                                        <span>Digital Twin Training</span>
                                     </a>
                                 </li>
                             </ul>
@@ -3903,6 +4164,197 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Digital Twin Training Section -->
+                <section id="digital-twin-training" class="admin-section">
+                    <div class="digital-twin-training-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-brain"></i> Digital Twin Training</h2>
+                            <p>Trainiere deinen Digital Twin kontinuierlich, damit er immer authentischer wird</p>
+                        </div>
+
+                        <div class="training-tabs">
+                            <button class="tab-btn active" data-tab="personality-training">
+                                <i class="fas fa-user"></i>
+                                Persönlichkeit
+                            </button>
+                            <button class="tab-btn" data-tab="experience-training">
+                                <i class="fas fa-briefcase"></i>
+                                Erfahrungen
+                            </button>
+                            <button class="tab-btn" data-tab="communication-training">
+                                <i class="fas fa-comments"></i>
+                                Kommunikation
+                            </button>
+                            <button class="tab-btn" data-tab="training-analytics">
+                                <i class="fas fa-chart-line"></i>
+                                Training Analytics
+                            </button>
+                        </div>
+
+                        <!-- Personality Training Tab -->
+                        <div id="personality-training" class="tab-content active">
+                            <div class="training-card">
+                                <h3><i class="fas fa-user-circle"></i> Persönlichkeits-Training</h3>
+                                <p>Definiere deine Persönlichkeitsmerkmale, Werte und Coaching-Philosophie</p>
+                                
+                                <div class="training-form">
+                                    <div class="form-group">
+                                        <label for="personality-traits">Persönlichkeitsmerkmale</label>
+                                        <textarea id="personality-traits" placeholder="z.B. strukturierter Problemlöser, empathisch, lösungsorientiert..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="core-values">Kernwerte</label>
+                                        <textarea id="core-values" placeholder="z.B. 'Klasse statt Masse', 'Struktur schafft Freiheit', 'Menschen vor Prozesse'..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="coaching-philosophy">Coaching-Philosophie</label>
+                                        <textarea id="coaching-philosophy" placeholder="Beschreibe deine Herangehensweise an Coaching und Beratung..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="communication-style">Kommunikationsstil</label>
+                                        <textarea id="communication-style" placeholder="Wie kommunizierst du? Direkt, empathisch, strukturiert..."></textarea>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary" onclick="savePersonalityTraining()">
+                                        <i class="fas fa-save"></i> Persönlichkeit speichern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Experience Training Tab -->
+                        <div id="experience-training" class="tab-content">
+                            <div class="training-card">
+                                <h3><i class="fas fa-briefcase"></i> Erfahrungs-Training</h3>
+                                <p>Füge persönliche Anekdoten, Projekterfahrungen und Fachwissen hinzu</p>
+                                
+                                <div class="experience-form">
+                                    <div class="form-group">
+                                        <label for="project-anecdotes">Projekt-Anekdoten</label>
+                                        <textarea id="project-anecdotes" placeholder="Erzähle von deinen UKG HRSD Projekten, ADONIS Implementierungen, etc..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="professional-insights">Berufliche Erkenntnisse</label>
+                                        <textarea id="professional-insights" placeholder="Was hast du in deiner Beratungstätigkeit gelernt?"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="method-experiences">Methoden-Erfahrungen</label>
+                                        <textarea id="method-experiences" placeholder="Wie wendest du bestimmte Methoden in der Praxis an?"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="client-stories">Kunden-Geschichten</label>
+                                        <textarea id="client-stories" placeholder="Erzähle von erfolgreichen Kundenprojekten (anonymisiert)..."></textarea>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary" onclick="saveExperienceTraining()">
+                                        <i class="fas fa-save"></i> Erfahrungen speichern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Communication Training Tab -->
+                        <div id="communication-training" class="tab-content">
+                            <div class="training-card">
+                                <h3><i class="fas fa-comments"></i> Kommunikations-Training</h3>
+                                <p>Trainiere deinen Schreibstil und Kommunikationsmuster</p>
+                                
+                                <div class="communication-form">
+                                    <div class="form-group">
+                                        <label for="writing-samples">Schreibproben</label>
+                                        <textarea id="writing-samples" placeholder="Füge Beispiele deines Schreibstils hinzu (E-Mails, Berichte, etc.)..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="favorite-phrases">Lieblings-Phrasen</label>
+                                        <textarea id="favorite-phrases" placeholder="Welche Ausdrücke verwendest du häufig?"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="communication-patterns">Kommunikationsmuster</label>
+                                        <textarea id="communication-patterns" placeholder="Wie strukturierst du deine Antworten?"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="coaching-questions">Coaching-Fragen</label>
+                                        <textarea id="coaching-questions" placeholder="Welche Fragen stellst du häufig in Gesprächen?"></textarea>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary" onclick="saveCommunicationTraining()">
+                                        <i class="fas fa-save"></i> Kommunikation speichern
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Training Analytics Tab -->
+                        <div id="training-analytics" class="tab-content">
+                            <div class="training-card">
+                                <h3><i class="fas fa-chart-line"></i> Training Analytics</h3>
+                                <p>Verfolge den Fortschritt deines Digital Twin Trainings</p>
+                                
+                                <div class="analytics-grid">
+                                    <div class="analytics-card">
+                                        <h4>Training-Status</h4>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="trainingProgress" style="width: 0%"></div>
+                                        </div>
+                                        <p id="trainingStatus">Noch nicht trainiert</p>
+                                    </div>
+                                    
+                                    <div class="analytics-card">
+                                        <h4>Persönlichkeits-Score</h4>
+                                        <div class="score-circle" id="personalityScore">
+                                            <span class="score-number">0</span>
+                                            <span class="score-label">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analytics-card">
+                                        <h4>Erfahrungs-Datenbank</h4>
+                                        <div class="data-stats">
+                                            <div class="stat-item">
+                                                <span class="stat-number" id="anecdotesCount">0</span>
+                                                <span class="stat-label">Anekdoten</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-number" id="insightsCount">0</span>
+                                                <span class="stat-label">Erkenntnisse</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analytics-card">
+                                        <h4>Letzte Aktivität</h4>
+                                        <p id="lastTraining">Noch keine Aktivität</p>
+                                        <button class="btn btn-secondary" onclick="refreshAnalytics()">
+                                            <i class="fas fa-refresh"></i> Aktualisieren
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="training-actions">
+                                    <button class="btn btn-success" onclick="applyTrainingToChatbot()">
+                                        <i class="fas fa-sync"></i> Training auf Chatbot anwenden
+                                    </button>
+                                    <button class="btn btn-warning" onclick="exportTrainingData()">
+                                        <i class="fas fa-download"></i> Training exportieren
+                                    </button>
+                                    <button class="btn btn-danger" onclick="resetTrainingData()">
+                                        <i class="fas fa-trash"></i> Training zurücksetzen
+                                    </button>
                                 </div>
                             </div>
                         </div>
