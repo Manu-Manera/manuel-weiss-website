@@ -60,12 +60,18 @@ class AICoach {
 
     // Load API key from localStorage or admin settings
     loadApiKey() {
+        console.log('Loading API key...');
+        
         // Try to load from admin settings first
         const adminSettings = localStorage.getItem('aiCoachSettings');
+        console.log('Admin settings:', adminSettings);
+        
         if (adminSettings) {
             try {
                 const settings = JSON.parse(adminSettings);
+                console.log('Parsed settings:', settings);
                 if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                    console.log('API key found in admin settings:', settings.apiKey.substring(0, 10) + '...');
                     return settings.apiKey;
                 }
             } catch (error) {
@@ -73,14 +79,43 @@ class AICoach {
             }
         }
         
+        // Try to load from digital twin training settings
+        const trainingSettings = localStorage.getItem('digitalTwinTraining');
+        if (trainingSettings) {
+            try {
+                const training = JSON.parse(trainingSettings);
+                if (training.apiKey && training.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                    console.log('API key found in training settings:', training.apiKey.substring(0, 10) + '...');
+                    return training.apiKey;
+                }
+            } catch (error) {
+                console.error('Error loading training settings:', error);
+            }
+        }
+        
         // Fallback to global constant
-        return OPENAI_API_KEY_GLOBAL || 'YOUR_OPENAI_API_KEY_HERE';
+        const fallbackKey = OPENAI_API_KEY_GLOBAL || 'YOUR_OPENAI_API_KEY_HERE';
+        console.log('Using fallback API key:', fallbackKey.substring(0, 10) + '...');
+        return fallbackKey;
     }
     
     // Update API key from admin panel
     updateApiKey(newApiKey) {
         this.apiKey = newApiKey;
-        console.log('API key updated');
+        console.log('API key updated to:', newApiKey.substring(0, 10) + '...');
+        
+        // Also save to localStorage for persistence
+        const adminSettings = JSON.parse(localStorage.getItem('aiCoachSettings') || '{}');
+        adminSettings.apiKey = newApiKey;
+        localStorage.setItem('aiCoachSettings', JSON.stringify(adminSettings));
+    }
+    
+    // Reload API key from localStorage
+    reloadApiKey() {
+        const newApiKey = this.loadApiKey();
+        this.apiKey = newApiKey;
+        console.log('API key reloaded:', newApiKey.substring(0, 10) + '...');
+        return newApiKey;
     }
     
     // Test API connection
@@ -130,6 +165,9 @@ class AICoach {
 
     // Advanced AI conversation with context awareness
     async processAdvancedMessage(message, context = {}) {
+        // Reload API key before each request to ensure it's up to date
+        this.reloadApiKey();
+        
         // Check API key first
         if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
             return {
@@ -817,6 +855,24 @@ function updateAICoachPersonality(trainingData) {
     }
 }
 
+// Function to update AI Coach API key
+function updateAICoachApiKey(newApiKey) {
+    if (aiCoach) {
+        aiCoach.updateApiKey(newApiKey);
+        console.log('AI Coach API key updated');
+    }
+}
+
+// Function to reload AI Coach API key
+function reloadAICoachApiKey() {
+    if (aiCoach) {
+        return aiCoach.reloadApiKey();
+    }
+    return null;
+}
+
 // Export for use in main application
 window.aiCoach = aiCoach;
 window.updateAICoachPersonality = updateAICoachPersonality;
+window.updateAICoachApiKey = updateAICoachApiKey;
+window.reloadAICoachApiKey = reloadAICoachApiKey;

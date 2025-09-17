@@ -7326,11 +7326,14 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         function updateChatbotApiSettings() {
+            const apiKey = document.getElementById('openaiApiKey').value;
+            aiCoachSettings.apiKey = apiKey;
+            localStorage.setItem('aiCoachSettings', JSON.stringify(aiCoachSettings));
+            
             // Update the AI Coach API key
             if (typeof updateAICoachApiKey === 'function') {
-                const apiKey = document.getElementById('openaiApiKey').value;
                 updateAICoachApiKey(apiKey);
-                console.log('AI Coach API key updated');
+                console.log('AI Coach API key updated:', apiKey.substring(0, 10) + '...');
             }
             
             console.log('Updating chatbot API settings:', aiCoachSettings);
