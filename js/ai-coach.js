@@ -367,6 +367,13 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
         console.log('AI Coach personality updated from training data');
     }
 
+    loadAndApplyTrainingData() {
+        const trainingData = this.loadTrainingData();
+        if (trainingData) {
+            this.updatePersonalityFromTraining(trainingData);
+        }
+    }
+
     getAvailableMethods() {
         return [
             'Ikigai-Workflow', 'Werte-Klärung', 'Stärken-Analyse', 'Ziel-Setting',
@@ -801,5 +808,14 @@ async function testAICoachConnection() {
     return { success: false, error: 'AI Coach not initialized' };
 }
 
+// Function to update AI Coach personality from training data
+function updateAICoachPersonality(trainingData) {
+    if (aiCoach) {
+        aiCoach.updatePersonalityFromTraining(trainingData);
+        console.log('AI Coach personality updated from training data');
+    }
+}
+
 // Export for use in main application
 window.aiCoach = aiCoach;
+window.updateAICoachPersonality = updateAICoachPersonality;
