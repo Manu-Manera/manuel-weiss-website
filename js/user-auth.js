@@ -188,9 +188,17 @@ class UserAuth {
 
     login(email, password, rememberMe) {
         const users = this.getStoredUsers();
-        const user = users.find(u => u.email === email && u.password === this.hashPassword(password));
+        console.log('Stored users:', users);
+        console.log('Login attempt for email:', email);
+        console.log('Hashed password:', this.hashPassword(password));
+        
+        const user = users.find(u => {
+            console.log('Checking user:', u.email, 'Password match:', u.password === this.hashPassword(password));
+            return u.email === email && u.password === this.hashPassword(password);
+        });
 
         if (user) {
+            console.log('Login successful for user:', user);
             this.currentUser = {
                 ...user,
                 lastLogin: new Date().toISOString(),
@@ -209,11 +217,14 @@ class UserAuth {
                 window.userDashboard.init();
             }
         } else {
+            console.log('Login failed - no matching user found');
             this.showError('Ungültige E-Mail-Adresse oder Passwort.');
         }
     }
 
     register(userData) {
+        console.log('Registering new user:', userData);
+        
         const newUser = {
             id: this.generateUserId(),
             firstName: userData.firstName,
@@ -242,9 +253,16 @@ class UserAuth {
             }
         };
 
+        console.log('New user object:', newUser);
+        console.log('Hashed password:', newUser.password);
+
         const users = this.getStoredUsers();
+        console.log('Existing users before registration:', users);
+        
         users.push(newUser);
         localStorage.setItem('personalityUsers', JSON.stringify(users));
+        
+        console.log('Users after registration:', this.getStoredUsers());
 
         this.showSuccess('Registrierung erfolgreich! Du kannst dich jetzt einloggen.');
         this.switchToForm('login');
@@ -393,8 +411,13 @@ class UserAuth {
     }
 
     getStoredUsers() {
-        const users = localStorage.getItem('personalityUsers');
-        return users ? JSON.parse(users) : [];
+        try {
+            const users = localStorage.getItem('personalityUsers');
+            return users ? JSON.parse(users) : [];
+        } catch (error) {
+            console.error('Error loading stored users:', error);
+            return [];
+        }
     }
 
     saveUserToStorage(rememberMe) {
@@ -577,6 +600,67 @@ class UserAuth {
         if (!this.currentUser) return [];
         return this.currentUser.profile.completedMethods;
     }
+    
+    // Debug and repair functions
+    debugAuthSystem() {
+        console.log('=== AUTH SYSTEM DEBUG ===');
+        console.log('Current user:', this.currentUser);
+        console.log('Is logged in:', this.isLoggedIn);
+        console.log('Stored users:', this.getStoredUsers());
+        console.log('Current user in storage:', localStorage.getItem('currentPersonalityUser'));
+        console.log('Session storage:', sessionStorage.getItem('currentPersonalityUser'));
+        console.log('========================');
+    }
+    
+    repairAuthSystem() {
+        console.log('Repairing auth system...');
+        
+        // Clear corrupted data
+        try {
+            const users = this.getStoredUsers();
+            console.log('Found', users.length, 'users');
+            
+            // Validate each user
+            const validUsers = users.filter(user => {
+                return user && 
+                       user.email && 
+                       user.password && 
+                       user.firstName && 
+                       user.lastName;
+            });
+            
+            if (validUsers.length !== users.length) {
+                console.log('Found invalid users, cleaning up...');
+                localStorage.setItem('personalityUsers', JSON.stringify(validUsers));
+            }
+            
+            // Check current user
+            if (this.currentUser && this.currentUser.id) {
+                const userExists = validUsers.find(u => u.id === this.currentUser.id);
+                if (!userExists) {
+                    console.log('Current user not found in valid users, logging out...');
+                    this.logout();
+                }
+            }
+            
+            console.log('Auth system repair completed');
+            return true;
+        } catch (error) {
+            console.error('Error repairing auth system:', error);
+            return false;
+        }
+    }
+    
+    resetAuthSystem() {
+        console.log('Resetting auth system...');
+        localStorage.removeItem('personalityUsers');
+        localStorage.removeItem('currentPersonalityUser');
+        sessionStorage.removeItem('currentPersonalityUser');
+        this.currentUser = null;
+        this.isLoggedIn = false;
+        this.updateUI();
+        console.log('Auth system reset completed');
+    }
 }
 
 // Initialize authentication system
@@ -591,6 +675,24 @@ function showLoginModal() {
 function showRegisterModal() {
     window.userAuth.showAuthModal();
     window.userAuth.switchToForm('register');
+}
+
+// Debug functions (available in console)
+function debugAuth() {
+    window.userAuth.debugAuthSystem();
+}
+
+function repairAuth() {
+    return window.userAuth.repairAuthSystem();
+}
+
+function resetAuth() {
+    window.userAuth.resetAuthSystem();
+}
+
+function clearAllUsers() {
+    window.userAuth.resetAuthSystem();
+    console.log('All users cleared');
 }
 
 function showForgotPasswordModal() {

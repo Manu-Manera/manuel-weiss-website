@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Debug - Manuel Weiss</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .debug-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .debug-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Auth System Debug</h1>
+    
+    <div class="debug-container">
+        <h2>LocalStorage Debug</h2>
+        
+        <div class="debug-section">
+            <h3>Gespeicherte Benutzer</h3>
+            <button onclick="showStoredUsers()">Benutzer anzeigen</button>
+            <button onclick="clearAllUsers()">Alle Benutzer löschen</button>
+            <div id="storedUsers" class="debug-info"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Aktueller Benutzer</h3>
+            <button onclick="showCurrentUser()">Aktuellen Benutzer anzeigen</button>
+            <div id="currentUser" class="debug-info"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Alle LocalStorage Daten</h3>
+            <button onclick="showAllLocalStorage()">Alle Daten anzeigen</button>
+            <div id="allLocalStorage" class="debug-info"></div>
+        </div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>Test Registrierung</h2>
+        
+        <form id="testRegisterForm">
+            <div class="form-group">
+                <label>Vorname:</label>
+                <input type="text" id="testFirstName" value="Test" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nachname:</label>
+                <input type="text" id="testLastName" value="User" required>
+            </div>
+            
+            <div class="form-group">
+                <label>E-Mail:</label>
+                <input type="email" id="testEmail" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Passwort:</label>
+                <input type="password" id="testPassword" value="test123" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Passwort bestätigen:</label>
+                <input type="password" id="testConfirmPassword" value="test123" required>
+            </div>
+            
+            <button type="submit">Test Registrierung</button>
+        </form>
+        
+        <div id="registerResult" class="debug-info"></div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>Test Anmeldung</h2>
+        
+        <form id="testLoginForm">
+            <div class="form-group">
+                <label>E-Mail:</label>
+                <input type="email" id="loginEmail" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Passwort:</label>
+                <input type="password" id="loginPassword" value="test123" required>
+            </div>
+            
+            <button type="submit">Test Anmeldung</button>
+        </form>
+        
+        <div id="loginResult" class="debug-info"></div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>Hash Test</h2>
+        
+        <div class="form-group">
+            <label>Passwort zum Hashen:</label>
+            <input type="text" id="hashInput" value="test123">
+            <button onclick="testHash()">Hash generieren</button>
+        </div>
+        
+        <div id="hashResult" class="debug-info"></div>
+    </div>
+
+    <script src="js/user-auth.js"></script>
+    <script>
+        // Debug functions
+        function showStoredUsers() {
+            const users = JSON.parse(localStorage.getItem('personalityUsers') || '[]');
+            document.getElementById('storedUsers').textContent = JSON.stringify(users, null, 2);
+        }
+        
+        function showCurrentUser() {
+            const currentUser = localStorage.getItem('currentPersonalityUser') || 
+                               sessionStorage.getItem('currentPersonalityUser');
+            document.getElementById('currentUser').textContent = currentUser ? 
+                JSON.stringify(JSON.parse(currentUser), null, 2) : 'Kein Benutzer angemeldet';
+        }
+        
+        function showAllLocalStorage() {
+            const allData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                allData[key] = localStorage.getItem(key);
+            }
+            document.getElementById('allLocalStorage').textContent = JSON.stringify(allData, null, 2);
+        }
+        
+        function clearAllUsers() {
+            localStorage.removeItem('personalityUsers');
+            localStorage.removeItem('currentPersonalityUser');
+            sessionStorage.removeItem('currentPersonalityUser');
+            document.getElementById('storedUsers').textContent = 'Alle Benutzer gelöscht';
+            document.getElementById('currentUser').textContent = 'Kein Benutzer angemeldet';
+        }
+        
+        function testHash() {
+            const password = document.getElementById('hashInput').value;
+            const hashed = window.userAuth.hashPassword(password);
+            document.getElementById('hashResult').textContent = `Original: ${password}\nHashed: ${hashed}`;
+        }
+        
+        // Test registration
+        document.getElementById('testRegisterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userData = {
+                firstName: document.getElementById('testFirstName').value,
+                lastName: document.getElementById('testLastName').value,
+                email: document.getElementById('testEmail').value,
+                password: document.getElementById('testPassword').value,
+                confirmPassword: document.getElementById('testConfirmPassword').value,
+                birthDate: '1990-01-01',
+                goals: 'Test',
+                experience: 'Beginner'
+            };
+            
+            console.log('Test registration with data:', userData);
+            
+            try {
+                window.userAuth.register(userData);
+                document.getElementById('registerResult').textContent = 'Registrierung erfolgreich!';
+                document.getElementById('registerResult').className = 'debug-info success';
+                showStoredUsers();
+            } catch (error) {
+                document.getElementById('registerResult').textContent = 'Fehler: ' + error.message;
+                document.getElementById('registerResult').className = 'debug-info error';
+            }
+        });
+        
+        // Test login
+        document.getElementById('testLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            console.log('Test login with:', email, password);
+            
+            try {
+                window.userAuth.login(email, password, false);
+                document.getElementById('loginResult').textContent = 'Anmeldung erfolgreich!';
+                document.getElementById('loginResult').className = 'debug-info success';
+                showCurrentUser();
+            } catch (error) {
+                document.getElementById('loginResult').textContent = 'Fehler: ' + error.message;
+                document.getElementById('loginResult').className = 'debug-info error';
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showStoredUsers();
+            showCurrentUser();
+            showAllLocalStorage();
+        });
+    </script>
+</body>
+</html>
