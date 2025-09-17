@@ -2637,6 +2637,19 @@
                 // Remove typing indicator
                 removeTypingIndicator();
                 
+                // Force API key reload before processing
+                console.log('processMessageWithAI - forcing API key reload...');
+                forceApiKeyReload();
+                
+                // Check if API key is available
+                if (!window.aiCoach || !window.aiCoach.apiKey || window.aiCoach.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
+                    console.error('No valid API key found in aiCoach');
+                    addMessage('🔑 **API-Key Problem**\n\nBitte konfiguriere zuerst deinen OpenAI API-Key im Admin-Bereich:\n\n1. Gehe zum Admin-Panel\n2. Wähle "AI Coach Verwaltung"\n3. Gib deinen OpenAI API-Key ein\n4. Teste die Verbindung', 'coach');
+                    return;
+                }
+                
+                console.log('Using API key:', window.aiCoach.apiKey.substring(0, 10) + '...');
+                
                 // Use advanced AI Coach functionality
                 const context = {
                     currentMethod: userProfile.currentMethod,
@@ -2885,6 +2898,61 @@
             
             console.log('After force reload - window.aiCoach.apiKey:', window.aiCoach?.apiKey?.substring(0, 10) + '...');
         }
+        
+        // Test API call directly
+        async function testDirectApiCall() {
+            console.log('=== TESTING DIRECT API CALL ===');
+            
+            const adminSettings = localStorage.getItem('aiCoachSettings');
+            if (!adminSettings) {
+                console.error('No admin settings found');
+                return;
+            }
+            
+            const settings = JSON.parse(adminSettings);
+            const apiKey = settings.apiKey;
+            
+            if (!apiKey || apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
+                console.error('No valid API key found');
+                return;
+            }
+            
+            console.log('Using API key:', apiKey.substring(0, 10) + '...');
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            { role: 'user', content: 'Test message' }
+                        ],
+                        max_tokens: 10
+                    })
+                });
+                
+                console.log('API Response Status:', response.status);
+                console.log('API Response OK:', response.ok);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API Response Data:', data);
+                    console.log('✅ API call successful!');
+                } else {
+                    const errorData = await response.json();
+                    console.error('❌ API call failed:', errorData);
+                }
+            } catch (error) {
+                console.error('❌ API call error:', error);
+            }
+        }
+        
+        // Make test function globally available
+        window.testDirectApiCall = testDirectApiCall;
         
         // Make test function globally available
         window.testApiKey = testApiKey;
