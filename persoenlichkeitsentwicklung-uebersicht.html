@@ -24,6 +24,279 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Custom Styles for Method Cards -->
+    <style>
+        /* Search and Filter Styles */
+        .search-filter-section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container {
+            margin-bottom: 2rem;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.2rem;
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .search-clear:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .filter-tag {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            background: white;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-tag:hover {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+        }
+        
+        .filter-tag.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Methods Grid Styles */
+        .methods-grid-container {
+            margin-top: 3rem;
+        }
+        
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .method-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .method-card.hidden {
+            display: none;
+        }
+        
+        .method-category-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .method-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .method-content h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .method-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .method-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .method-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .method-action {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .method-action .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+        
+        .no-results h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+        
+        .no-results p {
+            margin-bottom: 2rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .methods-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .filter-tags {
+                gap: 0.5rem;
+            }
+            
+            .filter-tag {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .search-input {
+                font-size: 1rem;
+                padding: 0.875rem 2.5rem 0.875rem 2.5rem;
+            }
+            
+            .method-action {
+                flex-direction: column;
+            }
+            
+            .method-action .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    
     <!-- Chart.js for Dashboard -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -159,51 +432,6 @@
         </div>
     </section>
 
-    <!-- Method Preview Section -->
-    <section class="method-preview-section">
-        <div class="container">
-            <div class="personality-visual">
-                <div class="visual-grid">
-                    <a href="#ikigai-section" class="visual-item" data-method="ikigai">
-                        <i class="fas fa-compass"></i>
-                        <span>Ikigai</span>
-                    </a>
-                    <a href="#values-section" class="visual-item" data-method="values">
-                        <i class="fas fa-heart"></i>
-                        <span>Werte</span>
-                    </a>
-                    <a href="#strengths-section" class="visual-item" data-method="strengths">
-                        <i class="fas fa-star"></i>
-                        <span>Stärken</span>
-                    </a>
-                    <a href="#goals-section" class="visual-item" data-method="goals">
-                        <i class="fas fa-bullseye"></i>
-                        <span>Ziele</span>
-                    </a>
-                    <a href="#mindfulness-section" class="visual-item" data-method="mindfulness">
-                        <i class="fas fa-leaf"></i>
-                        <span>Achtsamkeit</span>
-                    </a>
-                    <a href="#eq-section" class="visual-item" data-method="eq">
-                        <i class="fas fa-brain"></i>
-                        <span>EQ</span>
-                    </a>
-                    <a href="#habits-section" class="visual-item" data-method="habits">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Gewohnheiten</span>
-                    </a>
-                    <a href="#communication-section" class="visual-item" data-method="communication">
-                        <i class="fas fa-comments"></i>
-                        <span>Kommunikation</span>
-                    </a>
-                    <a href="#time-section" class="visual-item" data-method="time">
-                        <i class="fas fa-clock"></i>
-                        <span>Zeit</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Methods Overview Section -->
     <section id="methods-overview" class="personality-methods-overview">
@@ -215,1020 +443,1244 @@
                 </p>
             </div>
 
-            <!-- Ikigai Section -->
-            <section id="ikigai-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-compass"></i>
-                    Ikigai & Lebenssinn
-                </h3>
-                <div class="methods-grid">
-                <!-- Ikigai - Hauptmethode -->
-                <div class="method-card featured-method">
-                    <div class="method-icon">
-                        <i class="fas fa-infinity"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ikigai-Workflow</h3>
-                        <p class="method-description">
-                            Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
-                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">7 Schritte</span>
-                            <span class="feature-tag">Tiefe Reflexion</span>
-                            <span class="feature-tag">Export-Funktionen</span>
-                            <span class="feature-tag">Progress-Tracking</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">7</span>
-                                <span class="stat-label">Schritte</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">45+</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">2-3h</span>
-                                <span class="stat-label">Dauer</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('ikigai')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('ikigai')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
+            <!-- Search and Filter Section -->
+            <div class="search-filter-section">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="methodSearch" placeholder="Methoden durchsuchen..." class="search-input">
+                        <button class="search-clear" id="searchClear" style="display: none;">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
+                
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-category="all">Alle</button>
+                    <button class="filter-tag" data-category="selbstfindung">Selbstfindung & Sinn</button>
+                    <button class="filter-tag" data-category="ziele">Ziele & Planung</button>
+                    <button class="filter-tag" data-category="kommunikation">Kommunikation & Beziehungen</button>
+                    <button class="filter-tag" data-category="produktivitaet">Zeitmanagement & Produktivität</button>
+                    <button class="filter-tag" data-category="coaching">Coaching & Beratung</button>
+                    <button class="filter-tag" data-category="assessment">Assessments & Tests</button>
+                    <button class="filter-tag" data-category="achtsamkeit">Achtsamkeit & Wellness</button>
                 </div>
-            </section>
+            </div>
 
-            <!-- Werte Section -->
-            <section id="values-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-heart"></i>
-                    Werte & Überzeugungen
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card">
-                    <div class="method-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Werte-Klärung</h3>
-                        <p class="method-description">
-                            Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Werte-Ranking</span>
-                            <span class="feature-tag">Konflikt-Analyse</span>
-                            <span class="feature-tag">Lebensbereiche</span>
+            <!-- Methods Grid -->
+            <div class="methods-grid-container">
+                <div class="methods-grid" id="methodsGrid">
+                    <!-- Ikigai -->
+                    <div class="method-card" data-category="selbstfindung" data-search="ikigai lebenssinn sinn finden">
+                        <div class="method-category-tag">Selbstfindung & Sinn</div>
+                        <div class="method-icon">
+                            <i class="fas fa-infinity"></i>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">5</span>
-                                <span class="stat-label">Schritte</span>
+                        <div class="method-content">
+                            <h3>Ikigai-Workflow</h3>
+                            <p class="method-description">
+                                Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
+                                Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">7 Schritte</span>
+                                <span class="feature-tag">Tiefe Reflexion</span>
+                                <span class="feature-tag">Export-Funktionen</span>
+                                <span class="feature-tag">Progress-Tracking</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">30+</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">1-2h</span>
-                                <span class="stat-label">Dauer</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('values-clarification')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('values')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Stärken Section -->
-            <section id="strengths-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-star"></i>
-                    Stärken & Talente
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"strengths-finder>
-                    <div class="method-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Stärken-Analyse</h3>
-                        <p class="method-description">
-                            Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Gallup-Stärken</span>
-                            <span class="feature-tag">VIA-Test</span>
-                            <span class="feature-tag">Entwicklungsplan</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">6</span>
-                                <span class="stat-label">Schritte</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">40+</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">2-3h</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">7</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('strengths-analysis')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('strengths')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Ziele Section -->
-            <section id="goals-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-bullseye"></i>
-                    Ziele & Planung
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"goal-setting>
-                    <div class="method-icon">
-                        <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ziel-Setting</h3>
-                        <p class="method-description">
-                            Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">SMART-Ziele</span>
-                            <span class="feature-tag">Aktionsplan</span>
-                            <span class="feature-tag">Tracking</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('ikigai')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('ikigai')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">4</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Werte-Klärung -->
+                    <div class="method-card" data-category="selbstfindung" data-search="werte klärung überzeugungen identität">
+                        <div class="method-category-tag">Selbstfindung & Sinn</div>
+                        <div class="method-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Werte-Klärung</h3>
+                            <p class="method-description">
+                                Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Werte-Ranking</span>
+                                <span class="feature-tag">Konflikt-Analyse</span>
+                                <span class="feature-tag">Lebensbereiche</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">25+</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">1-2h</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('goal-setting')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('goals')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Achtsamkeit Section -->
-            <section id="mindfulness-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-leaf"></i>
-                    Achtsamkeit & Meditation
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"mindfulness>
-                    <div class="method-icon">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Achtsamkeit & Meditation</h3>
-                        <p class="method-description">
-                            Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Geführte Meditation</span>
-                            <span class="feature-tag">Achtsamkeitsübungen</span>
-                            <span class="feature-tag">Stress-Reduktion</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('values-clarification')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('values')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">5</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Stärken-Analyse -->
+                    <div class="method-card" data-category="assessment" data-search="stärken talente gallup via">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Stärken-Analyse</h3>
+                            <p class="method-description">
+                                Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Gallup-Stärken</span>
+                                <span class="feature-tag">VIA-Test</span>
+                                <span class="feature-tag">Entwicklungsplan</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">20+</span>
-                                <span class="stat-label">Übungen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">30min</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">40+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('mindfulness')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('mindfulness')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Emotionale Intelligenz Section -->
-            <section id="eq-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-brain"></i>
-                    Emotionale Intelligenz
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"emotional-intelligence>
-                    <div class="method-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Emotionale Intelligenz</h3>
-                        <p class="method-description">
-                            Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">EQ-Test</span>
-                            <span class="feature-tag">Emotionsregulation</span>
-                            <span class="feature-tag">Empathie-Training</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('strengths-analysis')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('strengths')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">6</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Ziel-Setting -->
+                    <div class="method-card" data-category="ziele" data-search="ziele planung smart zielsetzung">
+                        <div class="method-category-tag">Ziele & Planung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Ziel-Setting</h3>
+                            <p class="method-description">
+                                Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">SMART-Ziele</span>
+                                <span class="feature-tag">Aktionsplan</span>
+                                <span class="feature-tag">Tracking</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">35+</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">2-3h</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">4</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">25+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('emotional-intelligence')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('eq')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Gewohnheiten Section -->
-            <section id="habits-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-sync-alt"></i>
-                    Gewohnheiten & Verhalten
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"habit-building>
-                    <div class="method-icon">
-                        <i class="fas fa-sync-alt"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Gewohnheiten aufbauen</h3>
-                        <p class="method-description">
-                            Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Habit-Stacking</span>
-                            <span class="feature-tag">21-Tage-Regel</span>
-                            <span class="feature-tag">Tracking</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('goal-setting')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('goals')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">7</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Achtsamkeit & Meditation -->
+                    <div class="method-card" data-category="achtsamkeit" data-search="achtsamkeit meditation entspannung stress">
+                        <div class="method-category-tag">Achtsamkeit & Wellness</div>
+                        <div class="method-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Achtsamkeit & Meditation</h3>
+                            <p class="method-description">
+                                Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Geführte Meditation</span>
+                                <span class="feature-tag">Achtsamkeitsübungen</span>
+                                <span class="feature-tag">Stress-Reduktion</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">25+</span>
-                                <span class="stat-label">Tools</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">21 Tage</span>
-                                <span class="stat-label">Programm</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('habit-building')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('habits')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Kommunikation Section -->
-            <section id="communication-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-comments"></i>
-                    Kommunikation & Beziehungen
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"communication>
-                    <div class="method-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Kommunikation</h3>
-                        <p class="method-description">
-                            Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Aktives Zuhören</span>
-                            <span class="feature-tag">Nonverbale Kommunikation</span>
-                            <span class="feature-tag">Konfliktlösung</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('mindfulness')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('mindfulness')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">5</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Emotionale Intelligenz -->
+                    <div class="method-card" data-category="selbstfindung" data-search="emotionale intelligenz eq emotionen">
+                        <div class="method-category-tag">Selbstfindung & Sinn</div>
+                        <div class="method-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Emotionale Intelligenz</h3>
+                            <p class="method-description">
+                                Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">EQ-Test</span>
+                                <span class="feature-tag">Emotionsregulation</span>
+                                <span class="feature-tag">Empathie-Training</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">30+</span>
-                                <span class="stat-label">Übungen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">1-2h</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">35+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('communication')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('communication')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Zeitmanagement Section -->
-            <section id="time-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-clock"></i>
-                    Zeitmanagement & Produktivität
-                </h3>
-                <div class="methods-grid">
-                <div class="method-card"time-management>
-                    <div class="method-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Zeitmanagement</h3>
-                        <p class="method-description">
-                            Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Priorisierung</span>
-                            <span class="feature-tag">Zeitblocking</span>
-                            <span class="feature-tag">Produktivität</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('emotional-intelligence')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('eq')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">6</span>
-                                <span class="stat-label">Schritte</span>
+                    </div>
+
+                    <!-- Gewohnheiten aufbauen -->
+                    <div class="method-card" data-category="ziele" data-search="gewohnheiten habit building verhalten">
+                        <div class="method-category-tag">Ziele & Planung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Gewohnheiten aufbauen</h3>
+                            <p class="method-description">
+                                Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Habit-Stacking</span>
+                                <span class="feature-tag">21-Tage-Regel</span>
+                                <span class="feature-tag">Tracking</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">20+</span>
-                                <span class="stat-label">Tools</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">1-2h</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">7</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">25+</span>
+                                    <span class="stat-label">Tools</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">21 Tage</span>
+                                    <span class="stat-label">Programm</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('time-management')">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('time')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </section>
-
-            <!-- Weitere Methoden Section -->
-            <section id="other-methods-section" class="method-category-section">
-                <h3 class="category-title">
-                    <i class="fas fa-plus-circle"></i>
-                    Weitere Methoden
-                </h3>
-                <div class="methods-grid">
-                <!-- Assessment Cards -->
-                <div class="method-card">
-                    <div class="method-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Gallup StrengthsFinder</h3>
-                        <p class="method-description">
-                            Der weltweit führende Stärken-Test mit 34 Talent-Themen. Entdecke deine Top 5 Talente und lerne, sie optimal einzusetzen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">34 Talente</span>
-                            <span class="feature-tag">Wissenschaftlich</span>
-                            <span class="feature-tag">Detailliert</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('habit-building')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('habits')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">34</span>
-                                <span class="stat-label">Talente</span>
+                    </div>
+
+                    <!-- Kommunikation -->
+                    <div class="method-card" data-category="kommunikation" data-search="kommunikation beziehungen gespräch">
+                        <div class="method-category-tag">Kommunikation & Beziehungen</div>
+                        <div class="method-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Kommunikation</h3>
+                            <p class="method-description">
+                                Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Aktives Zuhören</span>
+                                <span class="feature-tag">Nonverbale Kommunikation</span>
+                                <span class="feature-tag">Konfliktlösung</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">177</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">30-45min</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('communication')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('communication')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
+                        </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('gallup-strengths')">Start Assessment</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('gallup')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
 
-                <div class="method-card">
-                    <div class="method-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>VIA Character Strengths</h3>
-                        <p class="method-description">
-                            Identifiziere deine 24 Charakterstärken und entdecke, wie du sie in deinem Alltag optimal nutzen kannst.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">24 Stärken</span>
-                            <span class="feature-tag">Kostenlos</span>
-                            <span class="feature-tag">Charakter</span>
+                    <!-- Zeitmanagement -->
+                    <div class="method-card" data-category="produktivitaet" data-search="zeitmanagement produktivität zeit">
+                        <div class="method-category-tag">Zeitmanagement & Produktivität</div>
+                        <div class="method-icon">
+                            <i class="fas fa-clock"></i>
                         </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">24</span>
-                                <span class="stat-label">Stärken</span>
+                        <div class="method-content">
+                            <h3>Zeitmanagement</h3>
+                            <p class="method-description">
+                                Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Priorisierung</span>
+                                <span class="feature-tag">Zeitblocking</span>
+                                <span class="feature-tag">Produktivität</span>
                             </div>
-                            <div class="stat">
-                                <span class="stat-number">120</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">30min</span>
-                                <span class="stat-label">Dauer</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('via-strengths')">Start Assessment</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('via')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-
-                <div class="method-card">
-                    <div class="method-icon">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Selbsteinschätzung</h3>
-                        <p class="method-description">
-                            Bewerte dich selbst in verschiedenen Bereichen und erhalte ein umfassendes Profil deiner Fähigkeiten und Potenziale.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Schnell</span>
-                            <span class="feature-tag">Individuell</span>
-                            <span class="feature-tag">Flexibel</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <span class="stat-number">8</span>
-                                <span class="stat-label">Bereiche</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">64</span>
-                                <span class="stat-label">Fragen</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-number">20min</span>
-                                <span class="stat-label">Dauer</span>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Tools</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary" onclick="startMethod('self-assessment')">Start Assessment</button>
-                        <button class="btn btn-outline" onclick="downloadWorkshopScript('self-assessment')" style="margin-left: 10px;">
-                            <i class="fas fa-download"></i> Workshop-Skript
-                        </button>
-                    </div>
-                </div>
-
-                <div class="method-card"nlp-dilts>
-                    <div class="method-icon">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>NLP Dilts</h3>
-                        <p class="method-description">
-                            Die logischen Ebenen der Veränderung - verstehe die verschiedenen Ebenen deiner Persönlichkeit.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Logische Ebenen</span>
-                            <span class="feature-tag">Veränderung</span>
-                            <span class="feature-tag">Persönlichkeit</span>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('time-management')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('time')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"johari-window>
-                    <div class="method-icon">
-                        <i class="fas fa-window-maximize"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Johari Window</h3>
-                        <p class="method-description">
-                            Erweitere dein Selbstbewusstsein durch das Johari-Fenster-Modell.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Selbstbewusstsein</span>
-                            <span class="feature-tag">Feedback</span>
-                            <span class="feature-tag">Entwicklung</span>
+                    <!-- Gallup StrengthsFinder -->
+                    <div class="method-card" data-category="assessment" data-search="gallup strengthsfinder stärken test">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Gallup StrengthsFinder</h3>
+                            <p class="method-description">
+                                Der weltweit führende Stärken-Test mit 34 Talent-Themen. Entdecke deine Top 5 Talente und lerne, sie optimal einzusetzen.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">34 Talente</span>
+                                <span class="feature-tag">Wissenschaftlich</span>
+                                <span class="feature-tag">Detailliert</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">34</span>
+                                    <span class="stat-label">Talente</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">177</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30-45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('gallup-strengths')">Start Assessment</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('gallup')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"walt-disney>
-                    <div class="method-icon">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Walt Disney</h3>
-                        <p class="method-description">
-                            Die Walt-Disney-Strategie für kreative Problemlösung und Visionen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Kreativität</span>
-                            <span class="feature-tag">Problemlösung</span>
-                            <span class="feature-tag">Visionen</span>
+                    <!-- VIA Character Strengths -->
+                    <div class="method-card" data-category="assessment" data-search="via character strengths charakterstärken">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>VIA Character Strengths</h3>
+                            <p class="method-description">
+                                Identifiziere deine 24 Charakterstärken und entdecke, wie du sie in deinem Alltag optimal nutzen kannst.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">24 Stärken</span>
+                                <span class="feature-tag">Kostenlos</span>
+                                <span class="feature-tag">Charakter</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">24</span>
+                                    <span class="stat-label">Stärken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">120</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('via-strengths')">Start Assessment</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('via')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"nonviolent-communication>
-                    <div class="method-icon">
-                        <i class="fas fa-dove"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Gewaltfreie Kommunikation</h3>
-                        <p class="method-description">
-                            Lerne gewaltfreie Kommunikation nach Marshall Rosenberg.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Empathie</span>
-                            <span class="feature-tag">Konfliktlösung</span>
-                            <span class="feature-tag">Verständnis</span>
+                    <!-- Selbsteinschätzung -->
+                    <div class="method-card" data-category="assessment" data-search="selbsteinschätzung assessment test">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Selbsteinschätzung</h3>
+                            <p class="method-description">
+                                Bewerte dich selbst in verschiedenen Bereichen und erhalte ein umfassendes Profil deiner Fähigkeiten und Potenziale.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Schnell</span>
+                                <span class="feature-tag">Individuell</span>
+                                <span class="feature-tag">Flexibel</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">8</span>
+                                    <span class="stat-label">Bereiche</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">64</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('self-assessment')">Start Assessment</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('self-assessment')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"five-pillars>
-                    <div class="method-icon">
-                        <i class="fas fa-columns"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Fünf Säulen</h3>
-                        <p class="method-description">
-                            Die fünf Säulen der Identität - verstehe die Grundpfeiler deiner Persönlichkeit.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Identität</span>
-                            <span class="feature-tag">Persönlichkeit</span>
-                            <span class="feature-tag">Grundpfeiler</span>
+                    <!-- NLP Dilts -->
+                    <div class="method-card" data-category="coaching" data-search="nlp dilts veränderung logische ebenen">
+                        <div class="method-category-tag">Coaching & Beratung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>NLP Dilts</h3>
+                            <p class="method-description">
+                                Die logischen Ebenen der Veränderung - verstehe die verschiedenen Ebenen deiner Persönlichkeit.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Logische Ebenen</span>
+                                <span class="feature-tag">Veränderung</span>
+                                <span class="feature-tag">Persönlichkeit</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Ebenen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('nlp-dilts')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('nlp-dilts')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"nlp-meta-goal>
-                    <div class="method-icon">
-                        <i class="fas fa-crosshairs"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>NLP Meta-Goal</h3>
-                        <p class="method-description">
-                            NLP Meta-Ziel-Techniken für tiefere Zielerreichung.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Meta-Ziele</span>
-                            <span class="feature-tag">NLP</span>
-                            <span class="feature-tag">Zielerreichung</span>
+                    <!-- Johari Window -->
+                    <div class="method-card" data-category="selbstfindung" data-search="johari window selbstbewusstsein feedback">
+                        <div class="method-category-tag">Selbstfindung & Sinn</div>
+                        <div class="method-icon">
+                            <i class="fas fa-window-maximize"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Johari Window</h3>
+                            <p class="method-description">
+                                Erweitere dein Selbstbewusstsein durch das Johari-Fenster-Modell.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Selbstbewusstsein</span>
+                                <span class="feature-tag">Feedback</span>
+                                <span class="feature-tag">Entwicklung</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">4</span>
+                                    <span class="stat-label">Quadranten</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('johari-window')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('johari')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"aek-communication>
-                    <div class="method-icon">
-                        <i class="fas fa-comment-dots"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>AEK Kommunikation</h3>
-                        <p class="method-description">
-                            Aspektbezogene Kommunikation für besseres Verständnis.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Aspekte</span>
-                            <span class="feature-tag">Kommunikation</span>
-                            <span class="feature-tag">Verständnis</span>
+                    <!-- Walt Disney Strategie -->
+                    <div class="method-card" data-category="ziele" data-search="walt disney kreativität problemlösung visionen">
+                        <div class="method-category-tag">Ziele & Planung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Walt Disney Strategie</h3>
+                            <p class="method-description">
+                                Die Walt-Disney-Strategie für kreative Problemlösung und Visionen.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Kreativität</span>
+                                <span class="feature-tag">Problemlösung</span>
+                                <span class="feature-tag">Visionen</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">3</span>
+                                    <span class="stat-label">Phasen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">15+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('walt-disney')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('walt-disney')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"rubikon-model>
-                    <div class="method-icon">
-                        <i class="fas fa-river"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Rubikon-Modell</h3>
-                        <p class="method-description">
-                            Das Rubikon-Modell der Handlungsphasen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Handlungsphasen</span>
-                            <span class="feature-tag">Motivation</span>
-                            <span class="feature-tag">Umsetzung</span>
+                    <!-- Gewaltfreie Kommunikation -->
+                    <div class="method-card" data-category="kommunikation" data-search="gewaltfreie kommunikation marshall rosenberg empathie">
+                        <div class="method-category-tag">Kommunikation & Beziehungen</div>
+                        <div class="method-icon">
+                            <i class="fas fa-dove"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Gewaltfreie Kommunikation</h3>
+                            <p class="method-description">
+                                Lerne gewaltfreie Kommunikation nach Marshall Rosenberg.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Empathie</span>
+                                <span class="feature-tag">Konfliktlösung</span>
+                                <span class="feature-tag">Verständnis</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">4</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('nonviolent-communication')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('nonviolent-communication')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"systemic-coaching>
-                    <div class="method-icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Systemisches Coaching</h3>
-                        <p class="method-description">
-                            Systemisches Coaching für ganzheitliche Entwicklung.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Systemisch</span>
-                            <span class="feature-tag">Ganzheitlich</span>
-                            <span class="feature-tag">Coaching</span>
+                    <!-- Fünf Säulen der Identität -->
+                    <div class="method-card" data-category="selbstfindung" data-search="fünf säulen identität persönlichkeit grundpfeiler">
+                        <div class="method-category-tag">Selbstfindung & Sinn</div>
+                        <div class="method-icon">
+                            <i class="fas fa-columns"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Fünf Säulen der Identität</h3>
+                            <p class="method-description">
+                                Die fünf Säulen der Identität - verstehe die Grundpfeiler deiner Persönlichkeit.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Identität</span>
+                                <span class="feature-tag">Persönlichkeit</span>
+                                <span class="feature-tag">Grundpfeiler</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Säulen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">25+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('five-pillars')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('five-pillars')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"rafael-method>
-                    <div class="method-icon">
-                        <i class="fas fa-angel"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Rafael-Methode</h3>
-                        <p class="method-description">
-                            Die Rafael-Methode für spirituelle Entwicklung.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Spiritualität</span>
-                            <span class="feature-tag">Entwicklung</span>
-                            <span class="feature-tag">Methode</span>
+                    <!-- NLP Meta-Goal -->
+                    <div class="method-card" data-category="ziele" data-search="nlp meta goal ziele zielerreichung">
+                        <div class="method-category-tag">Ziele & Planung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>NLP Meta-Goal</h3>
+                            <p class="method-description">
+                                NLP Meta-Ziel-Techniken für tiefere Zielerreichung.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Meta-Ziele</span>
+                                <span class="feature-tag">NLP</span>
+                                <span class="feature-tag">Zielerreichung</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Ebenen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('nlp-meta-goal')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('nlp-meta-goal')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"conflict-escalation>
-                    <div class="method-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Konflikt-Eskalation</h3>
-                        <p class="method-description">
-                            Das 9-Stufen-Modell der Konflikteskalation nach Glasl.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Konflikte</span>
-                            <span class="feature-tag">Eskalation</span>
-                            <span class="feature-tag">9 Stufen</span>
+                    <!-- Stress-Management -->
+                    <div class="method-card" data-category="achtsamkeit" data-search="stress management stressbewältigung entspannung">
+                        <div class="method-category-tag">Achtsamkeit & Wellness</div>
+                        <div class="method-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Stress-Management</h3>
+                            <p class="method-description">
+                                Effektive Techniken für Stressbewältigung und Entspannung.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Stress</span>
+                                <span class="feature-tag">Bewältigung</span>
+                                <span class="feature-tag">Entspannung</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">8</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">15+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('stress-management')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('stress-management')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"harvard-method>
-                    <div class="method-icon">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Harvard-Methode</h3>
-                        <p class="method-description">
-                            Das Harvard-Konzept für erfolgreiche Verhandlungen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Verhandlungen</span>
-                            <span class="feature-tag">Harvard</span>
-                            <span class="feature-tag">Erfolg</span>
+                    <!-- Journaling -->
+                    <div class="method-card" data-category="achtsamkeit" data-search="journaling selbstreflexion tagebuch wachstum">
+                        <div class="method-category-tag">Achtsamkeit & Wellness</div>
+                        <div class="method-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Journaling</h3>
+                            <p class="method-description">
+                                Journaling für Selbstreflexion und persönliches Wachstum.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Journaling</span>
+                                <span class="feature-tag">Selbstreflexion</span>
+                                <span class="feature-tag">Wachstum</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">7</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Prompts</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30min</span>
+                                    <span class="stat-label">Täglich</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('journaling')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('journaling')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"circular-interview>
-                    <div class="method-icon">
-                        <i class="fas fa-sync"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Zirkuläres Interview</h3>
-                        <p class="method-description">
-                            Zirkuläre Fragen für systemische Beratung.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Zirkulär</span>
-                            <span class="feature-tag">Fragen</span>
-                            <span class="feature-tag">Systemisch</span>
+                    <!-- Vision Board -->
+                    <div class="method-card" data-category="ziele" data-search="vision board ziele träume visualisierung">
+                        <div class="method-category-tag">Ziele & Planung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Vision Board</h3>
+                            <p class="method-description">
+                                Erstelle dein persönliches Vision Board für Ziele und Träume.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Vision Board</span>
+                                <span class="feature-tag">Ziele</span>
+                                <span class="feature-tag">Träume</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">Individuell</span>
+                                    <span class="stat-label">Bilder</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('vision-board')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('vision-board')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"target-coaching>
-                    <div class="method-icon">
-                        <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ziel-Coaching</h3>
-                        <p class="method-description">
-                            Zielorientiertes Coaching für nachhaltige Ergebnisse.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Zielorientiert</span>
-                            <span class="feature-tag">Coaching</span>
-                            <span class="feature-tag">Ergebnisse</span>
+                    <!-- SWOT-Analyse -->
+                    <div class="method-card" data-category="assessment" data-search="swot analyse stärken schwächen chancen risiken">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>SWOT-Analyse</h3>
+                            <p class="method-description">
+                                Stärken, Schwächen, Chancen und Risiken analysieren.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">SWOT</span>
+                                <span class="feature-tag">Analyse</span>
+                                <span class="feature-tag">Strategie</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">4</span>
+                                    <span class="stat-label">Quadranten</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">40+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('swot-analysis')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('swot-analysis')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"solution-focused>
-                    <div class="method-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Lösungsfokussiertes Coaching</h3>
-                        <p class="method-description">
-                            Lösungsorientierte Kurzzeitberatung für schnelle Ergebnisse.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Lösungsorientiert</span>
-                            <span class="feature-tag">Kurzzeit</span>
-                            <span class="feature-tag">Ergebnisse</span>
+                    <!-- Wheel of Life -->
+                    <div class="method-card" data-category="achtsamkeit" data-search="wheel of life lebensrad balance ganzheitlich">
+                        <div class="method-category-tag">Achtsamkeit & Wellness</div>
+                        <div class="method-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Wheel of Life</h3>
+                            <p class="method-description">
+                                Das Lebensrad für ganzheitliche Lebensbalance.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Lebensrad</span>
+                                <span class="feature-tag">Balance</span>
+                                <span class="feature-tag">Ganzheitlich</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">8</span>
+                                    <span class="stat-label">Bereiche</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">24+</span>
+                                    <span class="stat-label">Fragen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('wheel-of-life')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('wheel-of-life')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"change-stages>
-                    <div class="method-icon">
-                        <i class="fas fa-route"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Veränderungsstufen</h3>
-                        <p class="method-description">
-                            Die 6 Stufen der Veränderung nach Prochaska.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Veränderung</span>
-                            <span class="feature-tag">6 Stufen</span>
-                            <span class="feature-tag">Prochaska</span>
+                    <!-- AEK Kommunikation -->
+                    <div class="method-card" data-category="kommunikation" data-search="aek kommunikation aspekte verständnis">
+                        <div class="method-category-tag">Kommunikation & Beziehungen</div>
+                        <div class="method-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>AEK Kommunikation</h3>
+                            <p class="method-description">
+                                Aspektbezogene Kommunikation für besseres Verständnis.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Aspekte</span>
+                                <span class="feature-tag">Kommunikation</span>
+                                <span class="feature-tag">Verständnis</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">3</span>
+                                    <span class="stat-label">Aspekte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">15+</span>
+                                    <span class="stat-label">Übungen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('aek-communication')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('aek-communication')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"competence-map>
-                    <div class="method-icon">
-                        <i class="fas fa-map"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Kompetenz-Landkarte</h3>
-                        <p class="method-description">
-                            Erstelle deine persönliche Kompetenz-Landkarte.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Kompetenzen</span>
-                            <span class="feature-tag">Landkarte</span>
-                            <span class="feature-tag">Übersicht</span>
+                    <!-- Harvard-Methode -->
+                    <div class="method-card" data-category="kommunikation" data-search="harvard methode verhandlungen erfolg">
+                        <div class="method-category-tag">Kommunikation & Beziehungen</div>
+                        <div class="method-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Harvard-Methode</h3>
+                            <p class="method-description">
+                                Das Harvard-Konzept für erfolgreiche Verhandlungen.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Verhandlungen</span>
+                                <span class="feature-tag">Harvard</span>
+                                <span class="feature-tag">Erfolg</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">4</span>
+                                    <span class="stat-label">Prinzipien</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('harvard-method')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('harvard-method')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"moment-excellence>
-                    <div class="method-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Moment of Excellence</h3>
-                        <p class="method-description">
-                            NLP-Technik für Spitzenleistungen.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Excellence</span>
-                            <span class="feature-tag">NLP</span>
-                            <span class="feature-tag">Spitzenleistung</span>
+                    <!-- Konflikt-Eskalation -->
+                    <div class="method-card" data-category="kommunikation" data-search="konflikt eskalation glasl 9 stufen">
+                        <div class="method-category-tag">Kommunikation & Beziehungen</div>
+                        <div class="method-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Konflikt-Eskalation</h3>
+                            <p class="method-description">
+                                Das 9-Stufen-Modell der Konflikteskalation nach Glasl.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Konflikte</span>
+                                <span class="feature-tag">Eskalation</span>
+                                <span class="feature-tag">9 Stufen</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">9</span>
+                                    <span class="stat-label">Stufen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">25+</span>
+                                    <span class="stat-label">Indikatoren</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('conflict-escalation')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('conflict-escalation')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"resource-analysis>
-                    <div class="method-icon">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ressourcen-Analyse</h3>
-                        <p class="method-description">
-                            Analysiere und nutze deine Ressourcen optimal.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Ressourcen</span>
-                            <span class="feature-tag">Analyse</span>
-                            <span class="feature-tag">Optimierung</span>
+                    <!-- Systemisches Coaching -->
+                    <div class="method-card" data-category="coaching" data-search="systemisches coaching ganzheitlich entwicklung">
+                        <div class="method-category-tag">Coaching & Beratung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Systemisches Coaching</h3>
+                            <p class="method-description">
+                                Systemisches Coaching für ganzheitliche Entwicklung.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Systemisch</span>
+                                <span class="feature-tag">Ganzheitlich</span>
+                                <span class="feature-tag">Coaching</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">6</span>
+                                    <span class="stat-label">Prinzipien</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">2-3h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('systemic-coaching')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('systemic-coaching')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"swot-analysis>
-                    <div class="method-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>SWOT-Analyse</h3>
-                        <p class="method-description">
-                            Stärken, Schwächen, Chancen und Risiken analysieren.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">SWOT</span>
-                            <span class="feature-tag">Analyse</span>
-                            <span class="feature-tag">Strategie</span>
+                    <!-- Ziel-Coaching -->
+                    <div class="method-card" data-category="coaching" data-search="ziel coaching zielorientiert ergebnisse">
+                        <div class="method-category-tag">Coaching & Beratung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Ziel-Coaching</h3>
+                            <p class="method-description">
+                                Zielorientiertes Coaching für nachhaltige Ergebnisse.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Zielorientiert</span>
+                                <span class="feature-tag">Coaching</span>
+                                <span class="feature-tag">Ergebnisse</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Phasen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">20+</span>
+                                    <span class="stat-label">Tools</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('target-coaching')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('target-coaching')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"wheel-of-life>
-                    <div class="method-icon">
-                        <i class="fas fa-circle"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Wheel of Life</h3>
-                        <p class="method-description">
-                            Das Lebensrad für ganzheitliche Lebensbalance.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Lebensrad</span>
-                            <span class="feature-tag">Balance</span>
-                            <span class="feature-tag">Ganzheitlich</span>
+                    <!-- Lösungsfokussiertes Coaching -->
+                    <div class="method-card" data-category="coaching" data-search="lösungsfokussiert coaching kurzzeit sfbt">
+                        <div class="method-category-tag">Coaching & Beratung</div>
+                        <div class="method-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Lösungsfokussiertes Coaching</h3>
+                            <p class="method-description">
+                                Lösungsorientierte Kurzzeitberatung für schnelle Ergebnisse.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Lösungsorientiert</span>
+                                <span class="feature-tag">Kurzzeit</span>
+                                <span class="feature-tag">Ergebnisse</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">3</span>
+                                    <span class="stat-label">Schritte</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">10+</span>
+                                    <span class="stat-label">Techniken</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">45min</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('solution-focused')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('solution-focused')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"journaling>
-                    <div class="method-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Journaling</h3>
-                        <p class="method-description">
-                            Journaling für Selbstreflexion und persönliches Wachstum.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Journaling</span>
-                            <span class="feature-tag">Selbstreflexion</span>
-                            <span class="feature-tag">Wachstum</span>
+                    <!-- Ressourcen-Analyse -->
+                    <div class="method-card" data-category="assessment" data-search="ressourcen analyse optimierung tools">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Ressourcen-Analyse</h3>
+                            <p class="method-description">
+                                Analysiere und nutze deine Ressourcen optimal.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Ressourcen</span>
+                                <span class="feature-tag">Analyse</span>
+                                <span class="feature-tag">Optimierung</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">5</span>
+                                    <span class="stat-label">Bereiche</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">30+</span>
+                                    <span class="stat-label">Ressourcen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('resource-analysis')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('resource-analysis')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
 
-                <div class="method-card"vision-board>
-                    <div class="method-icon">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Vision Board</h3>
-                        <p class="method-description">
-                            Erstelle dein persönliches Vision Board für Ziele und Träume.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Vision Board</span>
-                            <span class="feature-tag">Ziele</span>
-                            <span class="feature-tag">Träume</span>
+                    <!-- Kompetenz-Landkarte -->
+                    <div class="method-card" data-category="assessment" data-search="kompetenz landkarte übersicht skills">
+                        <div class="method-category-tag">Assessments & Tests</div>
+                        <div class="method-icon">
+                            <i class="fas fa-map"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Kompetenz-Landkarte</h3>
+                            <p class="method-description">
+                                Erstelle deine persönliche Kompetenz-Landkarte.
+                            </p>
+                            <div class="method-features">
+                                <span class="feature-tag">Kompetenzen</span>
+                                <span class="feature-tag">Landkarte</span>
+                                <span class="feature-tag">Übersicht</span>
+                            </div>
+                            <div class="method-stats">
+                                <div class="stat">
+                                    <span class="stat-number">8</span>
+                                    <span class="stat-label">Bereiche</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">40+</span>
+                                    <span class="stat-label">Kompetenzen</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">1-2h</span>
+                                    <span class="stat-label">Dauer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-action">
+                            <button class="btn btn-primary" onclick="startMethod('competence-map')">Jetzt starten</button>
+                            <button class="btn btn-outline" onclick="downloadWorkshopScript('competence-map')" style="margin-left: 10px;">
+                                <i class="fas fa-download"></i> Workshop-Skript
+                            </button>
                         </div>
                     </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card"stress-management>
-                    <div class="method-icon">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Stress-Management</h3>
-                        <p class="method-description">
-                            Effektive Techniken für Stressbewältigung und Entspannung.
-                        </p>
-                        <div class="method-features">
-                            <span class="feature-tag">Stress</span>
-                            <span class="feature-tag">Bewältigung</span>
-                            <span class="feature-tag">Entspannung</span>
-                        </div>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-outline">Jetzt starten</button>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -1449,9 +1901,173 @@
             }, 5000);
         }
 
+        // Search and Filter Functionality
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        function initializeSearchAndFilter() {
+            const searchInput = document.getElementById('methodSearch');
+            const searchClear = document.getElementById('searchClear');
+            const filterTags = document.querySelectorAll('.filter-tag');
+            const methodCards = document.querySelectorAll('.method-card');
+
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    currentSearch = e.target.value.toLowerCase();
+                    updateSearchClear();
+                    filterMethods();
+                });
+            }
+
+            // Clear search functionality
+            if (searchClear) {
+                searchClear.addEventListener('click', function() {
+                    searchInput.value = '';
+                    currentSearch = '';
+                    updateSearchClear();
+                    filterMethods();
+                });
+            }
+
+            // Filter functionality
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // Remove active class from all tags
+                    filterTags.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tag
+                    this.classList.add('active');
+                    
+                    // Update current filter
+                    currentFilter = this.dataset.category;
+                    
+                    // Filter methods
+                    filterMethods();
+                });
+            });
+
+            function updateSearchClear() {
+                if (searchClear) {
+                    if (currentSearch.length > 0) {
+                        searchClear.style.display = 'block';
+                    } else {
+                        searchClear.style.display = 'none';
+                    }
+                }
+            }
+
+            function filterMethods() {
+                const methodCards = document.querySelectorAll('.method-card');
+                let visibleCount = 0;
+
+                methodCards.forEach(card => {
+                    const category = card.dataset.category;
+                    const searchText = card.dataset.search || '';
+                    const cardText = card.textContent.toLowerCase();
+                    
+                    let showByCategory = currentFilter === 'all' || category === currentFilter;
+                    let showBySearch = currentSearch === '' || 
+                                     searchText.includes(currentSearch) || 
+                                     cardText.includes(currentSearch);
+                    
+                    if (showByCategory && showBySearch) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide no results message
+                updateNoResultsMessage(visibleCount);
+            }
+
+            function updateNoResultsMessage(visibleCount) {
+                let noResultsDiv = document.querySelector('.no-results');
+                
+                if (visibleCount === 0) {
+                    if (!noResultsDiv) {
+                        noResultsDiv = document.createElement('div');
+                        noResultsDiv.className = 'no-results';
+                        noResultsDiv.innerHTML = `
+                            <h3>Keine Methoden gefunden</h3>
+                            <p>Versuche andere Suchbegriffe oder wähle eine andere Kategorie.</p>
+                            <button class="btn btn-primary" onclick="resetFilters()">Alle Filter zurücksetzen</button>
+                        `;
+                        document.getElementById('methodsGrid').appendChild(noResultsDiv);
+                    }
+                } else {
+                    if (noResultsDiv) {
+                        noResultsDiv.remove();
+                    }
+                }
+            }
+        }
+
+        function resetFilters() {
+            const searchInput = document.getElementById('methodSearch');
+            const allFilterTag = document.querySelector('[data-category="all"]');
+            
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            currentSearch = '';
+            currentFilter = 'all';
+            
+            if (allFilterTag) {
+                document.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+                allFilterTag.classList.add('active');
+            }
+            
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.classList.remove('hidden');
+            });
+            
+            const noResultsDiv = document.querySelector('.no-results');
+            if (noResultsDiv) {
+                noResultsDiv.remove();
+            }
+            
+            const searchClear = document.getElementById('searchClear');
+            if (searchClear) {
+                searchClear.style.display = 'none';
+            }
+        }
+
+        // Method count display
+        function updateMethodCount() {
+            const totalMethods = document.querySelectorAll('.method-card').length;
+            const visibleMethods = document.querySelectorAll('.method-card:not(.hidden)').length;
+            
+            // Update subtitle with method count
+            const subtitle = document.querySelector('.section-subtitle');
+            if (subtitle && totalMethods > 0) {
+                if (currentFilter === 'all' && currentSearch === '') {
+                    subtitle.textContent = `Entdecke ${totalMethods} verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung`;
+                } else {
+                    subtitle.textContent = `${visibleMethods} von ${totalMethods} Methoden entsprechen deinen Filterkriterien`;
+                }
+            }
+        }
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Personality Development Overview initialized');
+            initializeSearchAndFilter();
+            updateMethodCount();
+            
+            // Update method count when filters change
+            const observer = new MutationObserver(updateMethodCount);
+            const methodsGrid = document.getElementById('methodsGrid');
+            if (methodsGrid) {
+                observer.observe(methodsGrid, { 
+                    childList: true, 
+                    subtree: true, 
+                    attributes: true, 
+                    attributeFilter: ['class'] 
+                });
+            }
         });
     </script>
     
