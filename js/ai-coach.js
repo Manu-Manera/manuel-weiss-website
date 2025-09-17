@@ -360,6 +360,26 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             });
         }
         
+        // Process management actions (Manuel's expertise)
+        if (lowerResponse.includes('prozess') || lowerResponse.includes('struktur') || lowerResponse.includes('organisation')) {
+            actions.push({
+                text: 'Prozess-Optimierung',
+                icon: 'fas fa-cogs',
+                action: () => this.startMethod('process-optimization'),
+                type: 'primary'
+            });
+        }
+        
+        // Communication actions (Manuel's strength)
+        if (lowerResponse.includes('kommunikation') || lowerResponse.includes('gespräch') || lowerResponse.includes('stakeholder')) {
+            actions.push({
+                text: 'Kommunikations-Training',
+                icon: 'fas fa-comments',
+                action: () => this.startMethod('communication'),
+                type: 'primary'
+            });
+        }
+        
         // Workflow actions
         if (lowerResponse.includes('workflow') || lowerResponse.includes('plan')) {
             actions.push({
