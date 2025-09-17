@@ -2532,6 +2532,10 @@
                 chatbot.classList.add('active');
                 toggle.classList.add('hidden');
                 document.getElementById('chatbotInput').focus();
+                
+                // Force API key reload when chatbot is opened
+                console.log('Chatbot opened - forcing API key reload...');
+                forceApiKeyReload();
             } else {
                 chatbot.classList.remove('active');
                 toggle.classList.remove('hidden');
@@ -2543,6 +2547,10 @@
             const message = input.value.trim();
             
             if (!message) return;
+            
+            // Force API key reload before sending message
+            console.log('sendMessage called - forcing API key reload...');
+            forceApiKeyReload();
             
             // Add user message to chat
             addMessage(message, 'user');
@@ -2865,14 +2873,62 @@
         // Make debug function globally available
         window.debugApiKey = debugApiKey;
         
+        // Simple test function to check API key
+        function testApiKey() {
+            console.log('=== API KEY TEST ===');
+            console.log('window.aiCoach exists:', !!window.aiCoach);
+            console.log('window.aiCoach.apiKey:', window.aiCoach?.apiKey?.substring(0, 10) + '...');
+            console.log('localStorage aiCoachSettings:', localStorage.getItem('aiCoachSettings'));
+            
+            // Try to force reload
+            forceApiKeyReload();
+            
+            console.log('After force reload - window.aiCoach.apiKey:', window.aiCoach?.apiKey?.substring(0, 10) + '...');
+        }
+        
+        // Make test function globally available
+        window.testApiKey = testApiKey;
+        
         // Force API key reload when chatbot is opened
         function forceApiKeyReload() {
+            console.log('=== FORCE API KEY RELOAD ===');
+            
+            // Try to get API key directly from localStorage
+            const adminSettings = localStorage.getItem('aiCoachSettings');
+            console.log('Admin settings from localStorage:', adminSettings);
+            
+            if (adminSettings) {
+                try {
+                    const settings = JSON.parse(adminSettings);
+                    console.log('Parsed admin settings:', settings);
+                    
+                    if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                        console.log('Found valid API key in admin settings:', settings.apiKey.substring(0, 10) + '...');
+                        
+                        // Directly update the AI Coach API key
+                        if (window.aiCoach) {
+                            window.aiCoach.apiKey = settings.apiKey;
+                            console.log('API key directly set on aiCoach:', window.aiCoach.apiKey.substring(0, 10) + '...');
+                            return settings.apiKey;
+                        }
+                    } else {
+                        console.log('No valid API key found in admin settings');
+                    }
+                } catch (error) {
+                    console.error('Error parsing admin settings:', error);
+                }
+            } else {
+                console.log('No admin settings found in localStorage');
+            }
+            
+            // Fallback to function call
             if (typeof reloadAICoachApiKey === 'function') {
-                console.log('Forcing API key reload...');
+                console.log('Using fallback reload function...');
                 const newKey = reloadAICoachApiKey();
                 console.log('API key reloaded:', newKey ? newKey.substring(0, 10) + '...' : 'No key found');
                 return newKey;
             }
+            
             return null;
         }
         
