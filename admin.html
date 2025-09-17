@@ -7481,6 +7481,230 @@ Bitte antworte im folgenden JSON-Format:
             }, 3000);
         }
         
+        // Digital Twin Training Functions
+        let digitalTwinTraining = {
+            personality: {
+                traits: '',
+                values: '',
+                philosophy: '',
+                communicationStyle: ''
+            },
+            experience: {
+                anecdotes: '',
+                insights: '',
+                methods: '',
+                stories: ''
+            },
+            communication: {
+                samples: '',
+                phrases: '',
+                patterns: '',
+                questions: ''
+            },
+            analytics: {
+                progress: 0,
+                personalityScore: 0,
+                anecdotesCount: 0,
+                insightsCount: 0,
+                lastTraining: null
+            }
+        };
+
+        // Initialize Digital Twin Training when section is loaded
+        function initDigitalTwinTraining() {
+            if (document.getElementById('digital-twin-training')) {
+                initTrainingTabs();
+                loadTrainingData();
+                refreshAnalytics();
+            }
+        }
+
+        // Tab Management for Training
+        function initTrainingTabs() {
+            const tabButtons = document.querySelectorAll('.training-tabs .tab-btn');
+            const tabContents = document.querySelectorAll('.training-tabs .tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // Load Training Data
+        function loadTrainingData() {
+            const savedData = localStorage.getItem('digitalTwinTraining');
+            if (savedData) {
+                digitalTwinTraining = JSON.parse(savedData);
+                populateTrainingForms();
+            }
+        }
+
+        // Populate Training Forms
+        function populateTrainingForms() {
+            // Personality Training
+            document.getElementById('personality-traits').value = digitalTwinTraining.personality.traits || '';
+            document.getElementById('core-values').value = digitalTwinTraining.personality.values || '';
+            document.getElementById('coaching-philosophy').value = digitalTwinTraining.personality.philosophy || '';
+            document.getElementById('communication-style').value = digitalTwinTraining.personality.communicationStyle || '';
+            
+            // Experience Training
+            document.getElementById('project-anecdotes').value = digitalTwinTraining.experience.anecdotes || '';
+            document.getElementById('professional-insights').value = digitalTwinTraining.experience.insights || '';
+            document.getElementById('method-experiences').value = digitalTwinTraining.experience.methods || '';
+            document.getElementById('client-stories').value = digitalTwinTraining.experience.stories || '';
+            
+            // Communication Training
+            document.getElementById('writing-samples').value = digitalTwinTraining.communication.samples || '';
+            document.getElementById('favorite-phrases').value = digitalTwinTraining.communication.phrases || '';
+            document.getElementById('communication-patterns').value = digitalTwinTraining.communication.patterns || '';
+            document.getElementById('coaching-questions').value = digitalTwinTraining.communication.questions || '';
+        }
+
+        // Save Personality Training
+        function savePersonalityTraining() {
+            digitalTwinTraining.personality.traits = document.getElementById('personality-traits').value;
+            digitalTwinTraining.personality.values = document.getElementById('core-values').value;
+            digitalTwinTraining.personality.philosophy = document.getElementById('coaching-philosophy').value;
+            digitalTwinTraining.personality.communicationStyle = document.getElementById('communication-style').value;
+            
+            saveTrainingData();
+            updateAnalytics();
+            showNotification('Persönlichkeits-Training gespeichert!', 'success');
+        }
+
+        // Save Experience Training
+        function saveExperienceTraining() {
+            digitalTwinTraining.experience.anecdotes = document.getElementById('project-anecdotes').value;
+            digitalTwinTraining.experience.insights = document.getElementById('professional-insights').value;
+            digitalTwinTraining.experience.methods = document.getElementById('method-experiences').value;
+            digitalTwinTraining.experience.stories = document.getElementById('client-stories').value;
+            
+            saveTrainingData();
+            updateAnalytics();
+            showNotification('Erfahrungs-Training gespeichert!', 'success');
+        }
+
+        // Save Communication Training
+        function saveCommunicationTraining() {
+            digitalTwinTraining.communication.samples = document.getElementById('writing-samples').value;
+            digitalTwinTraining.communication.phrases = document.getElementById('favorite-phrases').value;
+            digitalTwinTraining.communication.patterns = document.getElementById('communication-patterns').value;
+            digitalTwinTraining.communication.questions = document.getElementById('coaching-questions').value;
+            
+            saveTrainingData();
+            updateAnalytics();
+            showNotification('Kommunikations-Training gespeichert!', 'success');
+        }
+
+        // Save Training Data to LocalStorage
+        function saveTrainingData() {
+            digitalTwinTraining.analytics.lastTraining = new Date().toISOString();
+            localStorage.setItem('digitalTwinTraining', JSON.stringify(digitalTwinTraining));
+        }
+
+        // Update Analytics
+        function updateAnalytics() {
+            // Calculate progress
+            let completedFields = 0;
+            let totalFields = 12; // Total number of training fields
+            
+            Object.values(digitalTwinTraining.personality).forEach(value => {
+                if (value && value.trim() !== '') completedFields++;
+            });
+            Object.values(digitalTwinTraining.experience).forEach(value => {
+                if (value && value.trim() !== '') completedFields++;
+            });
+            Object.values(digitalTwinTraining.communication).forEach(value => {
+                if (value && value.trim() !== '') completedFields++;
+            });
+            
+            digitalTwinTraining.analytics.progress = Math.round((completedFields / totalFields) * 100);
+            digitalTwinTraining.analytics.personalityScore = digitalTwinTraining.analytics.progress;
+            
+            // Count anecdotes and insights
+            digitalTwinTraining.analytics.anecdotesCount = (digitalTwinTraining.experience.anecdotes.match(/\n/g) || []).length + 1;
+            digitalTwinTraining.analytics.insightsCount = (digitalTwinTraining.experience.insights.match(/\n/g) || []).length + 1;
+        }
+
+        // Refresh Analytics Display
+        function refreshAnalytics() {
+            updateAnalytics();
+            
+            // Update progress bar
+            const progressBar = document.getElementById('trainingProgress');
+            const progressText = document.getElementById('trainingStatus');
+            if (progressBar && progressText) {
+                progressBar.style.width = digitalTwinTraining.analytics.progress + '%';
+                progressText.textContent = `${digitalTwinTraining.analytics.progress}% abgeschlossen`;
+            }
+            
+            // Update personality score
+            const scoreNumber = document.querySelector('#personalityScore .score-number');
+            if (scoreNumber) {
+                scoreNumber.textContent = digitalTwinTraining.analytics.personalityScore;
+            }
+            
+            // Update data stats
+            const anecdotesCount = document.getElementById('anecdotesCount');
+            const insightsCount = document.getElementById('insightsCount');
+            if (anecdotesCount) anecdotesCount.textContent = digitalTwinTraining.analytics.anecdotesCount;
+            if (insightsCount) insightsCount.textContent = digitalTwinTraining.analytics.insightsCount;
+            
+            // Update last training
+            const lastTraining = document.getElementById('lastTraining');
+            if (lastTraining && digitalTwinTraining.analytics.lastTraining) {
+                const date = new Date(digitalTwinTraining.analytics.lastTraining);
+                lastTraining.textContent = date.toLocaleDateString('de-DE') + ' ' + date.toLocaleTimeString('de-DE');
+            }
+        }
+
+        // Apply Training to Chatbot
+        function applyTrainingToChatbot() {
+            // Update AI Coach with training data
+            if (typeof updateAICoachPersonality === 'function') {
+                updateAICoachPersonality(digitalTwinTraining);
+            }
+            
+            showNotification('Training auf Chatbot angewendet!', 'success');
+        }
+
+        // Export Training Data
+        function exportTrainingData() {
+            const dataStr = JSON.stringify(digitalTwinTraining, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'digital-twin-training.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Reset Training Data
+        function resetTrainingData() {
+            if (confirm('Möchtest du wirklich alle Trainingsdaten zurücksetzen?')) {
+                digitalTwinTraining = {
+                    personality: { traits: '', values: '', philosophy: '', communicationStyle: '' },
+                    experience: { anecdotes: '', insights: '', methods: '', stories: '' },
+                    communication: { samples: '', phrases: '', patterns: '', questions: '' },
+                    analytics: { progress: 0, personalityScore: 0, anecdotesCount: 0, insightsCount: 0, lastTraining: null }
+                };
+                localStorage.removeItem('digitalTwinTraining');
+                populateTrainingForms();
+                refreshAnalytics();
+                showNotification('Trainingsdaten zurückgesetzt!', 'warning');
+            }
+        }
+
         // Initialize AI Coach Admin when section is loaded
         function initAICoachAdmin() {
             if (document.getElementById('ai-coach-admin')) {
@@ -7520,12 +7744,18 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initAICoachAdmin);
+        document.addEventListener('DOMContentLoaded', () => {
+            initAICoachAdmin();
+            initDigitalTwinTraining();
+        });
         
-        // Re-initialize when navigating to AI Coach Admin section
+        // Re-initialize when navigating to sections
         document.addEventListener('click', (e) => {
             if (e.target.closest('[data-section="ai-coach-admin"]')) {
                 setTimeout(initAICoachAdmin, 100);
+            }
+            if (e.target.closest('[data-section="digital-twin-training"]')) {
+                setTimeout(initDigitalTwinTraining, 100);
             }
         });
     </script>
