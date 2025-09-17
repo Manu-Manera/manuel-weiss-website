@@ -118,6 +118,50 @@ class AICoach {
         return newApiKey;
     }
     
+    // Force reload API key from admin settings
+    forceReloadApiKey() {
+        console.log('Force reloading API key...');
+        
+        // Try multiple sources
+        const adminSettings = localStorage.getItem('aiCoachSettings');
+        const trainingSettings = localStorage.getItem('digitalTwinTraining');
+        
+        let apiKey = null;
+        
+        if (adminSettings) {
+            try {
+                const settings = JSON.parse(adminSettings);
+                if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                    apiKey = settings.apiKey;
+                    console.log('Found API key in admin settings');
+                }
+            } catch (error) {
+                console.error('Error parsing admin settings:', error);
+            }
+        }
+        
+        if (!apiKey && trainingSettings) {
+            try {
+                const training = JSON.parse(trainingSettings);
+                if (training.apiKey && training.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
+                    apiKey = training.apiKey;
+                    console.log('Found API key in training settings');
+                }
+            } catch (error) {
+                console.error('Error parsing training settings:', error);
+            }
+        }
+        
+        if (apiKey) {
+            this.apiKey = apiKey;
+            console.log('API key force reloaded:', apiKey.substring(0, 10) + '...');
+            return apiKey;
+        } else {
+            console.error('No valid API key found in any settings');
+            return null;
+        }
+    }
+    
     // Test API connection
     async testApiConnection() {
         if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
@@ -165,8 +209,8 @@ class AICoach {
 
     // Advanced AI conversation with context awareness
     async processAdvancedMessage(message, context = {}) {
-        // Reload API key before each request to ensure it's up to date
-        this.reloadApiKey();
+        // Force reload API key before each request to ensure it's up to date
+        this.forceReloadApiKey();
         
         // Check API key first
         if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
@@ -871,8 +915,17 @@ function reloadAICoachApiKey() {
     return null;
 }
 
+// Function to force reload AI Coach API key
+function forceReloadAICoachApiKey() {
+    if (aiCoach) {
+        return aiCoach.forceReloadApiKey();
+    }
+    return null;
+}
+
 // Export for use in main application
 window.aiCoach = aiCoach;
 window.updateAICoachPersonality = updateAICoachPersonality;
 window.updateAICoachApiKey = updateAICoachApiKey;
 window.reloadAICoachApiKey = reloadAICoachApiKey;
+window.forceReloadAICoachApiKey = forceReloadAICoachApiKey;

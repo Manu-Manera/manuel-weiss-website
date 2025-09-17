@@ -2864,6 +2864,27 @@
         
         // Make debug function globally available
         window.debugApiKey = debugApiKey;
+        
+        // Force API key reload when chatbot is opened
+        function forceApiKeyReload() {
+            if (typeof reloadAICoachApiKey === 'function') {
+                console.log('Forcing API key reload...');
+                const newKey = reloadAICoachApiKey();
+                console.log('API key reloaded:', newKey ? newKey.substring(0, 10) + '...' : 'No key found');
+                return newKey;
+            }
+            return null;
+        }
+        
+        // Override the sendMessage function to force API key reload
+        const originalSendMessage = window.sendMessage;
+        window.sendMessage = function() {
+            console.log('sendMessage called - forcing API key reload...');
+            if (typeof forceReloadAICoachApiKey === 'function') {
+                forceReloadAICoachApiKey();
+            }
+            return originalSendMessage.apply(this, arguments);
+        };
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -2871,6 +2892,14 @@
             initializeSearchAndFilter();
             updateMethodCount();
             checkUserLogin();
+            
+            // Force API key reload on page load
+            setTimeout(() => {
+                if (typeof forceReloadAICoachApiKey === 'function') {
+                    console.log('Forcing API key reload on page load...');
+                    forceReloadAICoachApiKey();
+                }
+            }, 1000);
             
             // Check login status periodically
             setInterval(checkUserLogin, 1000);
