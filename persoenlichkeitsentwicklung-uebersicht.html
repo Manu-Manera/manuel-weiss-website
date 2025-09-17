@@ -2523,15 +2523,30 @@
         const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
         function toggleChatbot() {
+            console.log('toggleChatbot called, current state:', isChatbotOpen);
             const chatbot = document.getElementById('aiCoachChatbot');
             const toggle = document.getElementById('aiCoachToggle');
             
+            if (!chatbot) {
+                console.error('Chatbot element not found');
+                return;
+            }
+            
+            if (!toggle) {
+                console.error('Toggle element not found');
+                return;
+            }
+            
             isChatbotOpen = !isChatbotOpen;
+            console.log('New state:', isChatbotOpen);
             
             if (isChatbotOpen) {
                 chatbot.classList.add('active');
                 toggle.classList.add('hidden');
-                document.getElementById('chatbotInput').focus();
+                const input = document.getElementById('chatbotInput');
+                if (input) {
+                    input.focus();
+                }
                 
                 // Force API key reload when chatbot is opened
                 console.log('Chatbot opened - forcing API key reload...');
@@ -2544,6 +2559,41 @@
                 toggle.classList.remove('hidden');
             }
         }
+        
+        // Make toggleChatbot globally available
+        window.toggleChatbot = toggleChatbot;
+        
+        // Debug function to check chatbot elements
+        function debugChatbotElements() {
+            console.log('=== DEBUGGING CHATBOT ELEMENTS ===');
+            console.log('aiCoachChatbot element:', document.getElementById('aiCoachChatbot'));
+            console.log('aiCoachToggle element:', document.getElementById('aiCoachToggle'));
+            console.log('chatbotInput element:', document.getElementById('chatbotInput'));
+            console.log('isChatbotOpen:', isChatbotOpen);
+            console.log('toggleChatbot function:', typeof toggleChatbot);
+        }
+        
+        window.debugChatbotElements = debugChatbotElements;
+        
+        // Simple function to force open chatbot
+        function forceOpenChatbot() {
+            console.log('=== FORCING CHATBOT OPEN ===');
+            const chatbot = document.getElementById('aiCoachChatbot');
+            const toggle = document.getElementById('aiCoachToggle');
+            
+            if (chatbot && toggle) {
+                chatbot.classList.add('active');
+                toggle.classList.add('hidden');
+                isChatbotOpen = true;
+                console.log('✅ Chatbot forced open');
+                return true;
+            } else {
+                console.error('❌ Chatbot elements not found');
+                return false;
+            }
+        }
+        
+        window.forceOpenChatbot = forceOpenChatbot;
 
         function sendMessage() {
             const input = document.getElementById('chatbotInput');
