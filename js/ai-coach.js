@@ -43,6 +43,19 @@ class AICoach {
                 "Was motiviert dich am meisten?"
             ]
         };
+        
+        // Training data properties
+        this.personalityTraits = '';
+        this.coreValues = '';
+        this.coachingPhilosophy = '';
+        this.communicationStyle = '';
+        this.experienceAnecdotes = '';
+        this.professionalInsights = '';
+        this.communicationSamples = '';
+        this.favoritePhrases = '';
+        
+        // Load training data on initialization
+        this.loadAndApplyTrainingData();
     }
 
     // Load API key from localStorage or admin settings
@@ -245,6 +258,9 @@ class AICoach {
     }
 
     createAdvancedSystemPrompt(context) {
+        // Load training data from localStorage
+        const trainingData = this.loadTrainingData();
+        
         return `Du bist Manuel Weiss - ein erfahrener HR-Tech Consultant, Digitalisierungsexperte und Persönlichkeitsentwicklungscoach mit über 6 Jahren Erfahrung in der Beratung und Projektleitung.
 
 **Deine Persönlichkeit & Expertise:**
@@ -293,6 +309,62 @@ ${this.getAvailableMethods().join(', ')}
 - Sei motivierend, aber realistisch
 
 Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wie Manuel Weiss es tun würde.`;
+    }
+
+    loadTrainingData() {
+        try {
+            const trainingData = localStorage.getItem('digitalTwinTraining');
+            return trainingData ? JSON.parse(trainingData) : null;
+        } catch (error) {
+            console.error('Error loading training data:', error);
+            return null;
+        }
+    }
+
+    updatePersonalityFromTraining(trainingData) {
+        if (!trainingData) return;
+        
+        // Update personality traits
+        if (trainingData.personality && trainingData.personality.traits) {
+            this.personalityTraits = trainingData.personality.traits;
+        }
+        
+        // Update core values
+        if (trainingData.personality && trainingData.personality.values) {
+            this.coreValues = trainingData.personality.values;
+        }
+        
+        // Update coaching philosophy
+        if (trainingData.personality && trainingData.personality.philosophy) {
+            this.coachingPhilosophy = trainingData.personality.philosophy;
+        }
+        
+        // Update communication style
+        if (trainingData.personality && trainingData.personality.communicationStyle) {
+            this.communicationStyle = trainingData.personality.communicationStyle;
+        }
+        
+        // Update experience anecdotes
+        if (trainingData.experience && trainingData.experience.anecdotes) {
+            this.experienceAnecdotes = trainingData.experience.anecdotes;
+        }
+        
+        // Update professional insights
+        if (trainingData.experience && trainingData.experience.insights) {
+            this.professionalInsights = trainingData.experience.insights;
+        }
+        
+        // Update communication samples
+        if (trainingData.communication && trainingData.communication.samples) {
+            this.communicationSamples = trainingData.communication.samples;
+        }
+        
+        // Update favorite phrases
+        if (trainingData.communication && trainingData.communication.phrases) {
+            this.favoritePhrases = trainingData.communication.phrases;
+        }
+        
+        console.log('AI Coach personality updated from training data');
     }
 
     getAvailableMethods() {
