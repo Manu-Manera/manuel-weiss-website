@@ -2616,30 +2616,164 @@
         window.toggleChatbot = toggleChatbot;
 
         function sendMessage() {
-            console.log('sendMessage called');
             const input = document.getElementById('chatbotInput');
-            if (!input) {
-                console.error('chatbotInput not found');
-                return;
-            }
+            if (!input) return;
             
             const message = input.value.trim();
-            if (!message) {
-                console.log('No message to send');
-                return;
-            }
+            if (!message) return;
             
-            console.log('Sending message:', message);
             input.value = '';
             addMessage(message, 'user');
             
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate AI response with better logic
             setTimeout(() => {
-                addMessage('Entschuldigung, der AI Coach ist momentan nicht verfügbar. Bitte versuche es später erneut.', 'coach');
-            }, 1000);
+                hideTypingIndicator();
+                const response = generateAIResponse(message);
+                addMessage(response.text, 'coach', response.actions);
+            }, 1500 + Math.random() * 1000); // Random delay for realism
         }
         
-        // Ensure sendMessage is globally available
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'message coach-message typing-message';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // Keyword-based responses
+            if (message.includes('ziel') || message.includes('zielsetzung')) {
+                return {
+                    text: 'Zielsetzung ist ein wichtiger Schritt in der Persönlichkeitsentwicklung! Ich kann dir dabei helfen, deine Ziele zu definieren und einen Plan zu erstellen.',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('goal-setting')">
+                            <i class="fas fa-bullseye"></i> Ziel-Setting Workflow starten
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('ikigai')">
+                            <i class="fas fa-compass"></i> Ikigai-Methode
+                        </button>
+                    `
+                };
+            }
+            
+            if (message.includes('stärk') || message.includes('talent')) {
+                return {
+                    text: 'Deine Stärken zu kennen ist fundamental für deine Entwicklung! Lass uns deine Stärken identifizieren und nutzen.',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('strengths-analysis')">
+                            <i class="fas fa-star"></i> Stärken-Analyse
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('gallup-strengths')">
+                            <i class="fas fa-clipboard-list"></i> Gallup StrengthsFinder
+                        </button>
+                    `
+                };
+            }
+            
+            if (message.includes('wert') || message.includes('prinzip')) {
+                return {
+                    text: 'Werte sind das Fundament deiner Entscheidungen. Lass uns deine wichtigsten Werte identifizieren.',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('values-clarification')">
+                            <i class="fas fa-heart"></i> Werte-Klärung
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('five-pillars')">
+                            <i class="fas fa-pillar"></i> Fünf Säulen der Identität
+                        </button>
+                    `
+                };
+            }
+            
+            if (message.includes('stress') || message.includes('entspann')) {
+                return {
+                    text: 'Stress-Management ist essentiell für dein Wohlbefinden. Hier sind einige Methoden, die dir helfen können.',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('mindfulness')">
+                            <i class="fas fa-leaf"></i> Achtsamkeit & Meditation
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('emotional-intelligence')">
+                            <i class="fas fa-brain"></i> Emotionale Intelligenz
+                        </button>
+                    `
+                };
+            }
+            
+            if (message.includes('kommunikation') || message.includes('gespräch')) {
+                return {
+                    text: 'Kommunikation ist eine Schlüsselkompetenz! Lass uns deine Kommunikationsfähigkeiten verbessern.',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('communication')">
+                            <i class="fas fa-comments"></i> Kommunikations-Training
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('nonviolent-communication')">
+                            <i class="fas fa-handshake"></i> Gewaltfreie Kommunikation
+                        </button>
+                    `
+                };
+            }
+            
+            if (message.includes('zeit') || message.includes('organis')) {
+                return {
+                    text: 'Zeitmanagement ist der Schlüssel zu mehr Produktivität und weniger Stress. Lass uns deine Zeit optimieren!',
+                    actions: `
+                        <button class="quick-action-btn" onclick="startMethod('time-management')">
+                            <i class="fas fa-clock"></i> Zeitmanagement
+                        </button>
+                        <button class="quick-action-btn" onclick="startMethod('habit-building')">
+                            <i class="fas fa-repeat"></i> Gewohnheiten aufbauen
+                        </button>
+                    `
+                };
+            }
+            
+            // Default response
+            return {
+                text: 'Das ist ein interessantes Thema! Ich kann dir verschiedene Methoden der Persönlichkeitsentwicklung vorschlagen. Was möchtest du als nächstes erkunden?',
+                actions: `
+                    <button class="quick-action-btn" onclick="startAssessment()">
+                        <i class="fas fa-clipboard-list"></i> Assessment starten
+                    </button>
+                    <button class="quick-action-btn" onclick="exploreMethods()">
+                        <i class="fas fa-compass"></i> Methoden erkunden
+                    </button>
+                    <button class="quick-action-btn" onclick="personalizedWorkflow()">
+                        <i class="fas fa-route"></i> Personalisierten Workflow
+                    </button>
+                `
+            };
+        }
+        
+        // CRITICAL: Make sendMessage globally available immediately
         window.sendMessage = sendMessage;
+        window.showTypingIndicator = showTypingIndicator;
+        window.hideTypingIndicator = hideTypingIndicator;
+        window.generateAIResponse = generateAIResponse;
 
         function addMessage(content, sender, actions = null) {
             const messagesContainer = document.getElementById('chatbotMessages');
@@ -2920,6 +3054,36 @@
             `;
             conversationHistory = [];
         }
+        
+        function startAssessment() {
+            addMessage('Welches Assessment möchtest du starten? Ich kann dir verschiedene Tests vorschlagen.', 'coach', `
+                <button class="quick-action-btn" onclick="runAssessment('strengths')"><i class="fas fa-star"></i> Stärken-Assessment</button>
+                <button class="quick-action-btn" onclick="runAssessment('values')"><i class="fas fa-heart"></i> Werte-Assessment</button>
+                <button class="quick-action-btn" onclick="runAssessment('goals')"><i class="fas fa-bullseye"></i> Ziele-Assessment</button>
+            `);
+        }
+
+        function exploreMethods() {
+            addMessage('Hier sind die beliebtesten Methoden der Persönlichkeitsentwicklung:', 'coach', `
+                <button class="quick-action-btn" onclick="startMethod('ikigai')"><i class="fas fa-compass"></i> Ikigai</button>
+                <button class="quick-action-btn" onclick="startMethod('values-clarification')"><i class="fas fa-heart"></i> Werte-Klärung</button>
+                <button class="quick-action-btn" onclick="startMethod('strengths-analysis')"><i class="fas fa-star"></i> Stärken-Analyse</button>
+                <button class="quick-action-btn" onclick="startMethod('goal-setting')"><i class="fas fa-bullseye"></i> Ziel-Setting</button>
+                <button class="quick-action-btn" onclick="startMethod('mindfulness')"><i class="fas fa-leaf"></i> Achtsamkeit</button>
+            `);
+        }
+
+        function personalizedWorkflow() {
+            addMessage('Lass uns einen personalisierten Workflow für dich erstellen. Erzähle mir von deinen aktuellen Zielen und Herausforderungen.', 'coach');
+        }
+
+        // CRITICAL: Make all chatbot functions globally available
+        window.clearChat = clearChat;
+        window.startAssessment = startAssessment;
+        window.exploreMethods = exploreMethods;
+        window.personalizedWorkflow = personalizedWorkflow;
+        window.exportChat = exportChat;
+        window.addMessage = addMessage;
 
         function exportChat() {
             const chatData = {
