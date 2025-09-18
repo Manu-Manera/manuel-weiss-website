@@ -2508,37 +2508,18 @@
 
         // AI Coach Chatbot Functionality
         let isChatbotOpen = false;
-        let conversationHistory = [];
-        let currentWorkflow = null;
-        let userProfile = {
-            name: '',
-            goals: [],
-            interests: [],
-            currentMethod: null,
-            progress: {}
-        };
 
         // OpenAI API Configuration
         const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE'; // Replace with actual API key
         const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
         function toggleChatbot() {
-            console.log('toggleChatbot called, current state:', isChatbotOpen);
             const chatbot = document.getElementById('aiCoachChatbot');
             const toggle = document.getElementById('aiCoachToggle');
             
-            if (!chatbot) {
-                console.error('Chatbot element not found');
-                return;
-            }
-            
-            if (!toggle) {
-                console.error('Toggle element not found');
-                return;
-            }
+            if (!chatbot || !toggle) return;
             
             isChatbotOpen = !isChatbotOpen;
-            console.log('New state:', isChatbotOpen);
             
             if (isChatbotOpen) {
                 chatbot.classList.add('active');
@@ -2547,13 +2528,6 @@
                 if (input) {
                     input.focus();
                 }
-                
-                // Force API key reload when chatbot is opened
-                console.log('Chatbot opened - forcing API key reload...');
-                forceApiKeyReload();
-                
-                // Also try direct injection
-                injectApiKeyDirectly();
             } else {
                 chatbot.classList.remove('active');
                 toggle.classList.remove('hidden');
@@ -2562,17 +2536,6 @@
         
         // Make toggleChatbot globally available
         window.toggleChatbot = toggleChatbot;
-        
-        // Simple event listener for chatbot toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleButton = document.getElementById('aiCoachToggle');
-            if (toggleButton) {
-                toggleButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    toggleChatbot();
-                });
-            }
-        });
         
         // Simple function to open chatbot
         function openChatbot() {
@@ -2601,11 +2564,10 @@
             addMessage(message, 'user');
             input.value = '';
             
-            // Show typing indicator
-            showTypingIndicator();
-            
-            // Process message with AI
-            processMessageWithAI(message);
+            // Simple AI response
+            setTimeout(() => {
+                addMessage('Entschuldigung, der AI Coach ist momentan nicht verfügbar. Bitte versuche es später erneut.', 'coach');
+            }, 1000);
         }
         
         // Make sendMessage globally available
@@ -3011,9 +2973,9 @@
         
         // Simple API key loading
         function loadApiKey() {
-            const adminSettings = localStorage.getItem('aiCoachSettings');
-            if (adminSettings) {
-                try {
+            try {
+                const adminSettings = localStorage.getItem('aiCoachSettings');
+                if (adminSettings) {
                     const settings = JSON.parse(adminSettings);
                     if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
                         if (window.aiCoach) {
@@ -3021,9 +2983,9 @@
                         }
                         return settings.apiKey;
                     }
-                } catch (error) {
-                    console.error('Error loading API key:', error);
                 }
+            } catch (error) {
+                console.error('Error loading API key:', error);
             }
             return null;
         }
@@ -3045,20 +3007,6 @@
             initializeSearchAndFilter();
             updateMethodCount();
             checkUserLogin();
-            loadApiKey();
-            
-            // Check login status periodically
-            setInterval(checkUserLogin, 1000);
-            
-            // Add Enter key support for chatbot input
-            const chatbotInput = document.getElementById('chatbotInput');
-            if (chatbotInput) {
-                chatbotInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        sendMessage();
-                    }
-                });
-            }
         });
     </script>
     
