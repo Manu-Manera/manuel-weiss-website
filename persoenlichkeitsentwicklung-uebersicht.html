@@ -2137,37 +2137,8 @@
         
         <div class="chatbot-input-container">
             <div class="input-wrapper">
-                <input type="text" id="chatbotInput" placeholder="Frage mich alles über Persönlichkeitsentwicklung..." class="chatbot-input" onkeypress="
-                    if (event.key === 'Enter') {
-                        console.log('Enter key pressed!');
-                        const message = this.value.trim();
-                        if (message) {
-                            console.log('Sending message via Enter:', message);
-                            if (window.sendMessage) {
-                                window.sendMessage();
-                            } else {
-                                console.error('sendMessage function not found');
-                            }
-                        } else {
-                            console.log('No message to send via Enter');
-                        }
-                    }
-                ">
-                <button class="send-button" onclick="
-                    console.log('Send button clicked!');
-                    const input = document.getElementById('chatbotInput');
-                    const message = input.value.trim();
-                    if (message) {
-                        console.log('Sending message:', message);
-                        if (window.sendMessage) {
-                            window.sendMessage();
-                        } else {
-                            console.error('sendMessage function not found');
-                        }
-                    } else {
-                        console.log('No message to send');
-                    }
-                ">
+                <input type="text" id="chatbotInput" placeholder="Frage mich alles über Persönlichkeitsentwicklung..." class="chatbot-input">
+                <button class="send-button" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
@@ -2183,18 +2154,7 @@
     </div>
 
         <!-- AI Coach Toggle Button -->
-        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="
-            console.log('Button clicked!');
-            const chatbot = document.getElementById('aiCoachChatbot');
-            const toggle = document.getElementById('aiCoachToggle');
-            if (chatbot && toggle) {
-                chatbot.classList.add('active');
-                toggle.classList.add('hidden');
-                console.log('Chatbot opened!');
-            } else {
-                console.error('Elements not found!');
-            }
-        ">
+        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="toggleChatbot()">
             <img src="manuel-weiss-photo.svg" alt="Manu" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
             <span class="toggle-text">Manu</span>
             <div class="notification-badge" id="coachNotification" style="display: none;">1</div>
@@ -2603,125 +2563,39 @@
         // Make toggleChatbot globally available
         window.toggleChatbot = toggleChatbot;
         
-        // Add direct event listener as backup
+        // Simple event listener for chatbot toggle
         document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.getElementById('aiCoachToggle');
             if (toggleButton) {
                 toggleButton.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('Toggle button clicked via event listener');
                     toggleChatbot();
                 });
-                console.log('✅ Event listener added to toggle button');
-            } else {
-                console.error('❌ Toggle button not found for event listener');
             }
         });
         
-        // Debug function to check chatbot elements
-        function debugChatbotElements() {
-            console.log('=== DEBUGGING CHATBOT ELEMENTS ===');
-            console.log('aiCoachChatbot element:', document.getElementById('aiCoachChatbot'));
-            console.log('aiCoachToggle element:', document.getElementById('aiCoachToggle'));
-            console.log('chatbotInput element:', document.getElementById('chatbotInput'));
-            console.log('isChatbotOpen:', isChatbotOpen);
-            console.log('toggleChatbot function:', typeof toggleChatbot);
-        }
-        
-        window.debugChatbotElements = debugChatbotElements;
-        
-        // Simple function to force open chatbot
-        function forceOpenChatbot() {
-            console.log('=== FORCING CHATBOT OPEN ===');
-            const chatbot = document.getElementById('aiCoachChatbot');
-            const toggle = document.getElementById('aiCoachToggle');
-            
-            if (chatbot && toggle) {
-                chatbot.classList.add('active');
-                toggle.classList.add('hidden');
-                isChatbotOpen = true;
-                console.log('✅ Chatbot forced open');
-                return true;
-            } else {
-                console.error('❌ Chatbot elements not found');
-                return false;
-            }
-        }
-        
-        window.forceOpenChatbot = forceOpenChatbot;
-        
-        // Simple test function to open chatbot directly
-        function testOpenChatbot() {
-            console.log('=== TESTING CHATBOT OPEN ===');
-            
-            // Check if elements exist
-            const chatbot = document.getElementById('aiCoachChatbot');
-            const toggle = document.getElementById('aiCoachToggle');
-            
-            console.log('Chatbot element:', chatbot);
-            console.log('Toggle element:', toggle);
-            
-            if (chatbot && toggle) {
-                // Force open
-                chatbot.classList.add('active');
-                toggle.classList.add('hidden');
-                isChatbotOpen = true;
-                
-                console.log('✅ Chatbot should be open now');
-                return true;
-            } else {
-                console.error('❌ Elements not found');
-                return false;
-            }
-        }
-        
-        window.testOpenChatbot = testOpenChatbot;
-        
         // Simple function to open chatbot
         function openChatbot() {
-            console.log('=== OPENING CHATBOT ===');
             const chatbot = document.getElementById('aiCoachChatbot');
             const toggle = document.getElementById('aiCoachToggle');
-            
-            console.log('Chatbot element:', chatbot);
-            console.log('Toggle element:', toggle);
             
             if (chatbot && toggle) {
                 chatbot.classList.add('active');
                 toggle.classList.add('hidden');
-                console.log('✅ Chatbot opened successfully!');
+                isChatbotOpen = true;
                 return true;
-            } else {
-                console.error('❌ Chatbot elements not found!');
-                return false;
             }
+            return false;
         }
         
-        // Make it globally available
         window.openChatbot = openChatbot;
 
         function sendMessage() {
-            console.log('sendMessage function called');
             const input = document.getElementById('chatbotInput');
-            if (!input) {
-                console.error('Chatbot input not found');
-                return;
-            }
+            if (!input) return;
             
             const message = input.value.trim();
-            console.log('Message:', message);
-            
-            if (!message) {
-                console.log('No message to send');
-                return;
-            }
-            
-            // Force API key reload before sending message
-            console.log('sendMessage called - forcing API key reload...');
-            forceApiKeyReload();
-            
-            // Also try direct injection
-            injectApiKeyDirectly();
+            if (!message) return;
             
             // Add user message to chat
             addMessage(message, 'user');
@@ -3128,103 +3002,30 @@
             }
         }
         
-        // Make test function globally available
-        window.testDirectApiCall = testDirectApiCall;
+        // Simple test function
+        function testApiKey() {
+            return loadApiKey();
+        }
         
-        // Make test function globally available
         window.testApiKey = testApiKey;
-        window.injectApiKeyDirectly = injectApiKeyDirectly;
         
-        // Simple test function to check if API key is working
-        function testApiKeyWorking() {
-            console.log('=== TESTING API KEY WORKING ===');
-            
-            // First inject the API key
-            const injected = injectApiKeyDirectly();
-            console.log('API key injected:', injected);
-            
-            // Check if it's set
-            if (window.aiCoach && window.aiCoach.apiKey && window.aiCoach.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
-                console.log('✅ API key is set:', window.aiCoach.apiKey.substring(0, 10) + '...');
-                return true;
-            } else {
-                console.log('❌ API key is not set or invalid');
-                return false;
-            }
-        }
-        
-        window.testApiKeyWorking = testApiKeyWorking;
-        
-        // Force API key reload when chatbot is opened
-        function forceApiKeyReload() {
-            console.log('=== FORCE API KEY RELOAD ===');
-            
-            // Try to get API key directly from localStorage
+        // Simple API key loading
+        function loadApiKey() {
             const adminSettings = localStorage.getItem('aiCoachSettings');
-            console.log('Admin settings from localStorage:', adminSettings);
-            
             if (adminSettings) {
                 try {
                     const settings = JSON.parse(adminSettings);
-                    console.log('Parsed admin settings:', settings);
-                    
                     if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
-                        console.log('Found valid API key in admin settings:', settings.apiKey.substring(0, 10) + '...');
-                        
-                        // Directly update the AI Coach API key
                         if (window.aiCoach) {
                             window.aiCoach.apiKey = settings.apiKey;
-                            console.log('API key directly set on aiCoach:', window.aiCoach.apiKey.substring(0, 10) + '...');
-                            return settings.apiKey;
                         }
-                    } else {
-                        console.log('No valid API key found in admin settings');
+                        return settings.apiKey;
                     }
                 } catch (error) {
-                    console.error('Error parsing admin settings:', error);
-                }
-            } else {
-                console.log('No admin settings found in localStorage');
-            }
-            
-            // Fallback: try to reload from AI Coach
-            if (typeof reloadAICoachApiKey === 'function') {
-                const newKey = reloadAICoachApiKey();
-                if (newKey) {
-                    console.log('API key reloaded from AI Coach:', newKey.substring(0, 10) + '...');
-                    return newKey;
+                    console.error('Error loading API key:', error);
                 }
             }
-            
             return null;
-        }
-        
-        // Direct API key injection - simpler approach
-        function injectApiKeyDirectly() {
-            console.log('=== INJECTING API KEY DIRECTLY ===');
-            const adminSettings = localStorage.getItem('aiCoachSettings');
-            if (adminSettings) {
-                try {
-                    const settings = JSON.parse(adminSettings);
-                    if (settings.apiKey && settings.apiKey !== 'YOUR_OPENAI_API_KEY_HERE') {
-                        // Set API key on window.aiCoach directly
-                        if (window.aiCoach) {
-                            window.aiCoach.apiKey = settings.apiKey;
-                            console.log('✅ API key injected directly:', settings.apiKey.substring(0, 10) + '...');
-                            
-                            // Also call the update function
-                            if (typeof updateAICoachApiKey === 'function') {
-                                updateAICoachApiKey(settings.apiKey);
-                            }
-                            
-                            return true;
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error injecting API key:', error);
-                }
-            }
-            return false;
         }
             
             // Fallback to function call
@@ -3238,50 +3039,24 @@
             return null;
         }
         
-        // Override the sendMessage function to force API key reload
-        const originalSendMessage = window.sendMessage;
-        window.sendMessage = function() {
-            console.log('sendMessage called - forcing API key reload...');
-            if (typeof forceReloadAICoachApiKey === 'function') {
-                forceReloadAICoachApiKey();
-            }
-            return originalSendMessage.apply(this, arguments);
-        };
-
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Personality Development Overview initialized');
             initializeSearchAndFilter();
             updateMethodCount();
             checkUserLogin();
-            
-            // Force API key reload on page load
-            setTimeout(() => {
-                if (typeof forceReloadAICoachApiKey === 'function') {
-                    console.log('Forcing API key reload on page load...');
-                    forceReloadAICoachApiKey();
-                }
-            }, 1000);
+            loadApiKey();
             
             // Check login status periodically
             setInterval(checkUserLogin, 1000);
             
             // Add Enter key support for chatbot input
-            document.getElementById('chatbotInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // Update method count when filters change
-            const observer = new MutationObserver(updateMethodCount);
-            const methodsGrid = document.getElementById('methodsGrid');
-            if (methodsGrid) {
-                observer.observe(methodsGrid, { 
-                    childList: true, 
-                    subtree: true, 
-                    attributes: true, 
-                    attributeFilter: ['class'] 
+            const chatbotInput = document.getElementById('chatbotInput');
+            if (chatbotInput) {
+                chatbotInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
                 });
             }
         });
