@@ -2280,6 +2280,37 @@
             });
             
             console.log('Event listeners set up for', document.querySelectorAll('button[data-method], button[onclick*="startMethod"]').length, 'buttons');
+            
+            // Add event listeners for chatbot buttons
+            const sendButton = document.querySelector('.send-button');
+            if (sendButton) {
+                sendButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Send button clicked');
+                    sendMessage();
+                });
+            }
+            
+            const chatbotToggle = document.querySelector('.chatbot-toggle');
+            if (chatbotToggle) {
+                chatbotToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Chatbot toggle clicked');
+                    toggleChatbot();
+                });
+            }
+            
+            const aiCoachToggle = document.getElementById('aiCoachToggle');
+            if (aiCoachToggle) {
+                aiCoachToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('AI Coach toggle clicked');
+                    toggleChatbot();
+                });
+            }
         });
 
         // Ensure startMethod is available after all scripts load
@@ -2288,6 +2319,16 @@
             if (typeof window.startMethod !== 'function') {
                 window.startMethod = startMethod;
                 console.log('startMethod function restored');
+            }
+            
+            // Re-ensure chatbot functions are available
+            if (typeof window.sendMessage !== 'function') {
+                window.sendMessage = sendMessage;
+                console.log('sendMessage function restored');
+            }
+            if (typeof window.toggleChatbot !== 'function') {
+                window.toggleChatbot = toggleChatbot;
+                console.log('toggleChatbot function restored');
             }
         });
 
@@ -2576,12 +2617,20 @@
         window.toggleChatbot = toggleChatbot;
 
         function sendMessage() {
+            console.log('sendMessage called');
             const input = document.getElementById('chatbotInput');
-            if (!input) return;
+            if (!input) {
+                console.error('chatbotInput not found');
+                return;
+            }
             
             const message = input.value.trim();
-            if (!message) return;
+            if (!message) {
+                console.log('No message to send');
+                return;
+            }
             
+            console.log('Sending message:', message);
             input.value = '';
             addMessage(message, 'user');
             
@@ -2590,6 +2639,7 @@
             }, 1000);
         }
         
+        // Ensure sendMessage is globally available
         window.sendMessage = sendMessage;
 
         function addMessage(content, sender, actions = null) {
