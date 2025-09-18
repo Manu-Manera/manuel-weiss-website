@@ -935,7 +935,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('ikigai')">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="window.location.href='persoenlichkeitsentwicklung.html'">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('ikigai')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -974,7 +974,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('values-clarification')">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="window.location.href='methods/values-clarification/values-clarification.html'">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('values')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -1013,7 +1013,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('strengths-analysis')">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="window.location.href='methods/strengths-analysis/strengths-analysis.html'">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('strengths')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -1052,7 +1052,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('goal-setting')">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="window.location.href='methods/goal-setting/goal-setting.html'">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('goals')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -1091,7 +1091,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('mindfulness')">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="window.location.href='methods/mindfulness/mindfulness.html'">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('mindfulness')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -2176,7 +2176,7 @@
         <div class="chatbot-input-container">
             <div class="input-wrapper">
                 <input type="text" id="chatbotInput" placeholder="Frage mich alles über Persönlichkeitsentwicklung..." class="chatbot-input">
-                <button class="send-button" onclick="sendMessage()">
+                <button class="send-button" onclick="window.sendMessage ? window.sendMessage() : alert('Chatbot wird geladen...')">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
