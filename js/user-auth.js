@@ -376,6 +376,13 @@ class UserAuth {
         }
         return hash.toString();
     }
+    
+    // Debug function to check password hashing
+    debugPasswordHash(password) {
+        console.log('Original password:', password);
+        console.log('Hashed password:', this.hashPassword(password));
+        return this.hashPassword(password);
+    }
 
     generateUserId() {
         return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -693,6 +700,10 @@ function resetAuth() {
 function clearAllUsers() {
     window.userAuth.resetAuthSystem();
     console.log('All users cleared');
+}
+
+function debugPasswordHash(password) {
+    return window.userAuth.debugPasswordHash(password);
 }
 
 function showForgotPasswordModal() {

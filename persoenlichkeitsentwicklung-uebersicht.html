@@ -2137,8 +2137,37 @@
         
         <div class="chatbot-input-container">
             <div class="input-wrapper">
-                <input type="text" id="chatbotInput" placeholder="Frage mich alles über Persönlichkeitsentwicklung..." class="chatbot-input">
-                <button class="send-button" onclick="sendMessage()">
+                <input type="text" id="chatbotInput" placeholder="Frage mich alles über Persönlichkeitsentwicklung..." class="chatbot-input" onkeypress="
+                    if (event.key === 'Enter') {
+                        console.log('Enter key pressed!');
+                        const message = this.value.trim();
+                        if (message) {
+                            console.log('Sending message via Enter:', message);
+                            if (window.sendMessage) {
+                                window.sendMessage();
+                            } else {
+                                console.error('sendMessage function not found');
+                            }
+                        } else {
+                            console.log('No message to send via Enter');
+                        }
+                    }
+                ">
+                <button class="send-button" onclick="
+                    console.log('Send button clicked!');
+                    const input = document.getElementById('chatbotInput');
+                    const message = input.value.trim();
+                    if (message) {
+                        console.log('Sending message:', message);
+                        if (window.sendMessage) {
+                            window.sendMessage();
+                        } else {
+                            console.error('sendMessage function not found');
+                        }
+                    } else {
+                        console.log('No message to send');
+                    }
+                ">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
@@ -2672,10 +2701,20 @@
         window.openChatbot = openChatbot;
 
         function sendMessage() {
+            console.log('sendMessage function called');
             const input = document.getElementById('chatbotInput');
-            const message = input.value.trim();
+            if (!input) {
+                console.error('Chatbot input not found');
+                return;
+            }
             
-            if (!message) return;
+            const message = input.value.trim();
+            console.log('Message:', message);
+            
+            if (!message) {
+                console.log('No message to send');
+                return;
+            }
             
             // Force API key reload before sending message
             console.log('sendMessage called - forcing API key reload...');
@@ -2694,6 +2733,9 @@
             // Process message with AI
             processMessageWithAI(message);
         }
+        
+        // Make sendMessage globally available
+        window.sendMessage = sendMessage;
 
         function addMessage(content, sender, actions = null) {
             const messagesContainer = document.getElementById('chatbotMessages');
