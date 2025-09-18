@@ -2507,22 +2507,18 @@
         }
 
         // Simple chatbot functionality
-        let isChatbotOpen = false;
-
         function toggleChatbot() {
             const chatbot = document.getElementById('aiCoachChatbot');
             const toggle = document.getElementById('aiCoachToggle');
             
             if (!chatbot || !toggle) return;
             
-            isChatbotOpen = !isChatbotOpen;
-            
-            if (isChatbotOpen) {
-                chatbot.classList.add('active');
-                toggle.classList.add('hidden');
-            } else {
+            if (chatbot.classList.contains('active')) {
                 chatbot.classList.remove('active');
                 toggle.classList.remove('hidden');
+            } else {
+                chatbot.classList.add('active');
+                toggle.classList.add('hidden');
             }
         }
         
@@ -2535,11 +2531,9 @@
             const message = input.value.trim();
             if (!message) return;
             
-            // Add user message to chat
-            addMessage(message, 'user');
             input.value = '';
+            addMessage(message, 'user');
             
-            // Simple AI response
             setTimeout(() => {
                 addMessage('Entschuldigung, der AI Coach ist momentan nicht verfügbar. Bitte versuche es später erneut.', 'coach');
             }, 1000);
@@ -2981,6 +2975,16 @@
             initializeSearchAndFilter();
             updateMethodCount();
             checkUserLogin();
+            
+            // Add Enter key support for chatbot input
+            const chatbotInput = document.getElementById('chatbotInput');
+            if (chatbotInput) {
+                chatbotInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
         });
     </script>
     
