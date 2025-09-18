@@ -897,7 +897,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('ikigai')" data-method="ikigai">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="startMethod('ikigai')">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('ikigai')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -936,7 +936,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('values-clarification')" data-method="values-clarification">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="startMethod('values-clarification')">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('values')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -975,7 +975,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('strengths-analysis')" data-method="strengths-analysis">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="startMethod('strengths-analysis')">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('strengths')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -1014,7 +1014,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('goal-setting')" data-method="goal-setting">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="startMethod('goal-setting')">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('goals')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -1053,7 +1053,7 @@
                             </div>
                         </div>
                         <div class="method-action">
-                            <button class="btn btn-primary" onclick="startMethod('mindfulness')" data-method="mindfulness">Jetzt starten</button>
+                            <button class="btn btn-primary" onclick="startMethod('mindfulness')">Jetzt starten</button>
                             <button class="btn btn-outline" onclick="downloadWorkshopScript('mindfulness')" style="margin-left: 10px;">
                                 <i class="fas fa-download"></i> Workshop-Skript
                             </button>
@@ -2246,91 +2246,6 @@
         // Ensure startMethod is globally available and not overwritten
         window.startMethod = startMethod;
 
-        // Add event listeners for method buttons as fallback
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOMContentLoaded - Setting up event listeners');
-            
-            // Method 1: Use data-method attribute
-            document.querySelectorAll('button[data-method]').forEach(button => {
-                const methodId = button.getAttribute('data-method');
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Button clicked for method (data-method):', methodId);
-                    startMethod(methodId);
-                });
-            });
-            
-            // Method 2: Parse onclick attribute
-            document.querySelectorAll('button[onclick*="startMethod"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                if (onclickAttr && onclickAttr.includes('startMethod')) {
-                    // Extract method ID from onclick attribute
-                    const match = onclickAttr.match(/startMethod\('([^']+)'\)/);
-                    if (match) {
-                        const methodId = match[1];
-                        button.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('Button clicked for method (onclick):', methodId);
-                            startMethod(methodId);
-                        });
-                    }
-                }
-            });
-            
-            console.log('Event listeners set up for', document.querySelectorAll('button[data-method], button[onclick*="startMethod"]').length, 'buttons');
-            
-            // Add event listeners for chatbot buttons
-            const sendButton = document.querySelector('.send-button');
-            if (sendButton) {
-                sendButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Send button clicked');
-                    sendMessage();
-                });
-            }
-            
-            const chatbotToggle = document.querySelector('.chatbot-toggle');
-            if (chatbotToggle) {
-                chatbotToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Chatbot toggle clicked');
-                    toggleChatbot();
-                });
-            }
-            
-            const aiCoachToggle = document.getElementById('aiCoachToggle');
-            if (aiCoachToggle) {
-                aiCoachToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('AI Coach toggle clicked');
-                    toggleChatbot();
-                });
-            }
-        });
-
-        // Ensure startMethod is available after all scripts load
-        window.addEventListener('load', function() {
-            // Re-ensure startMethod is available
-            if (typeof window.startMethod !== 'function') {
-                window.startMethod = startMethod;
-                console.log('startMethod function restored');
-            }
-            
-            // Re-ensure chatbot functions are available
-            if (typeof window.sendMessage !== 'function') {
-                window.sendMessage = sendMessage;
-                console.log('sendMessage function restored');
-            }
-            if (typeof window.toggleChatbot !== 'function') {
-                window.toggleChatbot = toggleChatbot;
-                console.log('toggleChatbot function restored');
-            }
-        });
 
         function showOverview() {
             document.getElementById('methods-overview').style.display = 'block';
@@ -3256,6 +3171,109 @@
     <script src="js/user-dashboard.js"></script>
     <script src="js/user-profile.js"></script>
     <script src="js/progress-tracker.js"></script>
+    
+    <!-- Re-ensure critical functions after all scripts load -->
+    <script>
+        // Ensure critical functions are not overwritten by other scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Re-define startMethod if it was overwritten
+            if (typeof window.startMethod !== 'function') {
+                window.startMethod = function(methodId) {
+                    console.log('startMethod called with:', methodId);
+                    const methodUrls = {
+                        'ikigai': 'persoenlichkeitsentwicklung.html',
+                        'gallup-strengths': 'methods/gallup-strengths/gallup-strengths.html',
+                        'via-strengths': 'methods/via-strengths/via-strengths.html',
+                        'self-assessment': 'methods/self-assessment/self-assessment.html',
+                        'values-clarification': 'methods/values-clarification/values-clarification.html',
+                        'strengths-analysis': 'methods/strengths-analysis/strengths-analysis.html',
+                        'goal-setting': 'methods/goal-setting/goal-setting.html',
+                        'mindfulness': 'methods/mindfulness/mindfulness.html',
+                        'emotional-intelligence': 'methods/emotional-intelligence/emotional-intelligence.html',
+                        'habit-building': 'methods/habit-building/habit-building.html',
+                        'johari-window': 'methods/johari-window/johari-window.html',
+                        'nlp-dilts': 'methods/nlp-dilts/nlp-dilts.html',
+                        'five-pillars': 'methods/five-pillars/five-pillars.html',
+                        'harvard-method': 'methods/harvard-method/harvard-method.html',
+                        'moment-excellence': 'methods/moment-excellence/moment-excellence.html',
+                        'nlp-meta-goal': 'methods/nlp-meta-goal/nlp-meta-goal.html',
+                        'nonviolent-communication': 'methods/nonviolent-communication/nonviolent-communication.html',
+                        'resource-analysis': 'methods/resource-analysis/resource-analysis.html',
+                        'rafael-method': 'methods/rafael-method/rafael-method.html',
+                        'walt-disney': 'methods/walt-disney/walt-disney.html',
+                        'aek-communication': 'methods/aek-communication/aek-communication.html',
+                        'change-stages': 'methods/change-stages/change-stages.html',
+                        'circular-interview': 'methods/circular-interview/circular-interview.html',
+                        'communication': 'methods/communication/communication.html',
+                        'competence-map': 'methods/competence-map/competence-map.html',
+                        'conflict-escalation': 'methods/conflict-escalation/conflict-escalation.html',
+                        'rubikon-model': 'methods/rubikon-model/rubikon-model.html',
+                        'solution-focused': 'methods/solution-focused/solution-focused.html',
+                        'systemic-coaching': 'methods/systemic-coaching/systemic-coaching.html',
+                        'target-coaching': 'methods/target-coaching/target-coaching.html'
+                    };
+                    const url = methodUrls[methodId];
+                    if (url) {
+                        window.location.href = url;
+                    } else {
+                        alert('Diese Methode ist noch nicht verfügbar.');
+                    }
+                };
+            }
+            
+            // Re-define sendMessage if it was overwritten
+            if (typeof window.sendMessage !== 'function') {
+                window.sendMessage = function() {
+                    const input = document.getElementById('chatbotInput');
+                    if (!input) return;
+                    const message = input.value.trim();
+                    if (!message) return;
+                    input.value = '';
+                    // Add message to chat
+                    const messagesContainer = document.getElementById('chatbotMessages');
+                    if (messagesContainer) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message user-message';
+                        messageDiv.innerHTML = `
+                            <div class="message-avatar"><i class="fas fa-user"></i></div>
+                            <div class="message-content"><p>${message}</p></div>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                    setTimeout(() => {
+                        const messagesContainer = document.getElementById('chatbotMessages');
+                        if (messagesContainer) {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message coach-message';
+                            messageDiv.innerHTML = `
+                                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                                <div class="message-content"><p>Entschuldigung, der AI Coach ist momentan nicht verfügbar.</p></div>
+                            `;
+                            messagesContainer.appendChild(messageDiv);
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }, 1000);
+                };
+            }
+            
+            // Re-define toggleChatbot if it was overwritten
+            if (typeof window.toggleChatbot !== 'function') {
+                window.toggleChatbot = function() {
+                    const chatbot = document.getElementById('aiCoachChatbot');
+                    const toggle = document.getElementById('aiCoachToggle');
+                    if (!chatbot || !toggle) return;
+                    if (chatbot.classList.contains('active')) {
+                        chatbot.classList.remove('active');
+                        toggle.classList.remove('hidden');
+                    } else {
+                        chatbot.classList.add('active');
+                        toggle.classList.add('hidden');
+                    }
+                };
+            }
+        });
+    </script>
     
     <script>
         // Global functions for user interface
