@@ -2154,7 +2154,18 @@
     </div>
 
         <!-- AI Coach Toggle Button -->
-        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="window.toggleChatbot ? window.toggleChatbot() : console.error('toggleChatbot not found')">
+        <button id="aiCoachToggle" class="ai-coach-toggle" onclick="
+            console.log('Button clicked!');
+            const chatbot = document.getElementById('aiCoachChatbot');
+            const toggle = document.getElementById('aiCoachToggle');
+            if (chatbot && toggle) {
+                chatbot.classList.add('active');
+                toggle.classList.add('hidden');
+                console.log('Chatbot opened!');
+            } else {
+                console.error('Elements not found!');
+            }
+        ">
             <img src="manuel-weiss-photo.svg" alt="Manu" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
             <span class="toggle-text">Manu</span>
             <div class="notification-badge" id="coachNotification" style="display: none;">1</div>
@@ -2636,6 +2647,29 @@
         }
         
         window.testOpenChatbot = testOpenChatbot;
+        
+        // Simple function to open chatbot
+        function openChatbot() {
+            console.log('=== OPENING CHATBOT ===');
+            const chatbot = document.getElementById('aiCoachChatbot');
+            const toggle = document.getElementById('aiCoachToggle');
+            
+            console.log('Chatbot element:', chatbot);
+            console.log('Toggle element:', toggle);
+            
+            if (chatbot && toggle) {
+                chatbot.classList.add('active');
+                toggle.classList.add('hidden');
+                console.log('✅ Chatbot opened successfully!');
+                return true;
+            } else {
+                console.error('❌ Chatbot elements not found!');
+                return false;
+            }
+        }
+        
+        // Make it globally available
+        window.openChatbot = openChatbot;
 
         function sendMessage() {
             const input = document.getElementById('chatbotInput');
