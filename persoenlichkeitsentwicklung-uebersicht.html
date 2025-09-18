@@ -2554,7 +2554,7 @@
             }, 1000);
         }
         
-        // Ensure sendMessage is globally available
+        // CRITICAL: Make sendMessage globally available immediately
         window.sendMessage = sendMessage;
 
         function addMessage(content, sender, actions = null) {
@@ -2836,6 +2836,13 @@
             `;
             conversationHistory = [];
         }
+        
+        // CRITICAL: Make all chatbot functions globally available
+        window.clearChat = clearChat;
+        window.startAssessment = startAssessment;
+        window.exploreMethods = exploreMethods;
+        window.personalizedWorkflow = personalizedWorkflow;
+        window.exportChat = exportChat;
 
         function exportChat() {
             const chatData = {
