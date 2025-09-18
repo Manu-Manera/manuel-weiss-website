@@ -2506,12 +2506,8 @@
             }
         }
 
-        // AI Coach Chatbot Functionality
+        // Simple chatbot functionality
         let isChatbotOpen = false;
-
-        // OpenAI API Configuration
-        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE'; // Replace with actual API key
-        const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
         function toggleChatbot() {
             const chatbot = document.getElementById('aiCoachChatbot');
@@ -2524,34 +2520,13 @@
             if (isChatbotOpen) {
                 chatbot.classList.add('active');
                 toggle.classList.add('hidden');
-                const input = document.getElementById('chatbotInput');
-                if (input) {
-                    input.focus();
-                }
             } else {
                 chatbot.classList.remove('active');
                 toggle.classList.remove('hidden');
             }
         }
         
-        // Make toggleChatbot globally available
         window.toggleChatbot = toggleChatbot;
-        
-        // Simple function to open chatbot
-        function openChatbot() {
-            const chatbot = document.getElementById('aiCoachChatbot');
-            const toggle = document.getElementById('aiCoachToggle');
-            
-            if (chatbot && toggle) {
-                chatbot.classList.add('active');
-                toggle.classList.add('hidden');
-                isChatbotOpen = true;
-                return true;
-            }
-            return false;
-        }
-        
-        window.openChatbot = openChatbot;
 
         function sendMessage() {
             const input = document.getElementById('chatbotInput');
@@ -2570,7 +2545,6 @@
             }, 1000);
         }
         
-        // Make sendMessage globally available
         window.sendMessage = sendMessage;
 
         function addMessage(content, sender, actions = null) {
