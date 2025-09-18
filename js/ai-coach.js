@@ -480,7 +480,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Ikigai-Workflow starten',
                 icon: 'fas fa-compass',
-                action: () => this.startMethod('ikigai'),
+                action: () => this.startAIMethod('ikigai'),
                 type: 'primary'
             });
         }
@@ -489,7 +489,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Werte-Klärung beginnen',
                 icon: 'fas fa-heart',
-                action: () => this.startMethod('values-clarification'),
+                action: () => this.startAIMethod('values-clarification'),
                 type: 'primary'
             });
         }
@@ -498,7 +498,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Stärken-Analyse starten',
                 icon: 'fas fa-star',
-                action: () => this.startMethod('strengths-finder'),
+                action: () => this.startAIMethod('strengths-finder'),
                 type: 'primary'
             });
         }
@@ -507,7 +507,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Ziel-Setting beginnen',
                 icon: 'fas fa-bullseye',
-                action: () => this.startMethod('goal-setting'),
+                action: () => this.startAIMethod('goal-setting'),
                 type: 'primary'
             });
         }
@@ -527,7 +527,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Prozess-Optimierung',
                 icon: 'fas fa-cogs',
-                action: () => this.startMethod('process-optimization'),
+                action: () => this.startAIMethod('process-optimization'),
                 type: 'primary'
             });
         }
@@ -537,7 +537,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
             actions.push({
                 text: 'Kommunikations-Training',
                 icon: 'fas fa-comments',
-                action: () => this.startMethod('communication'),
+                action: () => this.startAIMethod('communication'),
                 type: 'primary'
             });
         }
@@ -686,7 +686,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
     }
 
     // Method integration
-    startMethod(methodId) {
+    startAIMethod(methodId) {
         this.userProfile.currentMethod = methodId;
         this.userProfile.progress[methodId] = {
             started: new Date().toISOString(),
@@ -695,8 +695,8 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
         };
         
         // Trigger method start in main application
-        if (typeof startMethod === 'function') {
-            startMethod(methodId);
+        if (typeof window.startMethod === 'function') {
+            window.startMethod(methodId);
         }
         
         return {
@@ -759,7 +759,7 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
                 actions: [{
                     text: 'Methode starten',
                     icon: 'fas fa-play',
-                    action: () => this.startMethod(methodId),
+                    action: () => this.startAIMethod(methodId),
                     type: 'primary'
                 }]
             };
@@ -819,25 +819,25 @@ Antworte auf Deutsch und sei hilfsbereit, strukturiert und authentisch - ganz wi
                 {
                     text: 'Ikigai-Workflow',
                     icon: 'fas fa-compass',
-                    action: () => this.startMethod('ikigai'),
+                    action: () => this.startAIMethod('ikigai'),
                     type: 'secondary'
                 },
                 {
                     text: 'Werte-Klärung',
                     icon: 'fas fa-heart',
-                    action: () => this.startMethod('values-clarification'),
+                    action: () => this.startAIMethod('values-clarification'),
                     type: 'secondary'
                 },
                 {
                     text: 'Stärken-Analyse',
                     icon: 'fas fa-star',
-                    action: () => this.startMethod('strengths-finder'),
+                    action: () => this.startAIMethod('strengths-finder'),
                     type: 'secondary'
                 },
                 {
                     text: 'Ziel-Setting',
                     icon: 'fas fa-bullseye',
-                    action: () => this.startMethod('goal-setting'),
+                    action: () => this.startAIMethod('goal-setting'),
                     type: 'secondary'
                 }
             ]

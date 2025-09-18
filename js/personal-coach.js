@@ -331,7 +331,7 @@ class PersonalCoach {
                 break;
             case 'start-method':
                 const method = event.target.dataset.method;
-                this.startMethod(method);
+                this.startPersonalMethod(method);
                 break;
             case 'test-whatsapp':
                 this.testWhatsApp();
@@ -350,7 +350,7 @@ class PersonalCoach {
         }
     }
     
-    startMethod(method) {
+    startPersonalMethod(method) {
         // Navigate to method
         window.location.href = `persoenlichkeitsentwicklung-uebersicht.html#method-${method}`;
         
