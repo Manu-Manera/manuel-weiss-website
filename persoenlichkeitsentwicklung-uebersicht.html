@@ -107,16 +107,23 @@
             <div class="methods-grid">
                 <!-- Ikigai - Hauptmethode -->
                 <div class="method-card" onclick="startMethod('ikigai')">
-                    <div class="method-header">
-                        <div class="method-icon ikigai">
-                            <i class="fas fa-compass"></i>
-                        </div>
-                        <div class="method-info">
-                            <h3>Ikigai-Workflow</h3>
-                            <p>Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
+        <div class="method-header">
+            <div class="method-icon ikigai">
+                <i class="fas fa-compass"></i>
+            </div>
+            <div class="method-info">
+                <h3>Ikigai-Workflow</h3>
+                <p>Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
                             Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.</p>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('ikigai')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
                     <div class="method-tags">
                         <span class="method-tag">7 Schritte</span>
                         <span class="method-tag">Tiefe Reflexion</span>
@@ -147,15 +154,22 @@
 
                 <!-- Weitere Methoden -->
                 <div class="method-card" onclick="startMethod('values-clarification')">
-                    <div class="method-header">
-                        <div class="method-icon values">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="method-info">
-                            <h3>Werte-Klärung</h3>
-                            <p>Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.</p>
-                        </div>
-                    </div>
+        <div class="method-header">
+            <div class="method-icon values-clarification">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="method-info">
+                <h3>Werte-Klärung</h3>
+                <p>Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.</p>
+            </div>
+        </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('values-clarification')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
                     <div class="method-tags">
                         <span class="method-tag">Werte-Ranking</span>
                         <span class="method-tag">Konflikt-Analyse</span>
@@ -195,6 +209,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('strengths-finder')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Gallup-Stärken</span>
             <span class="method-tag">VIA-Test</span>
@@ -221,6 +242,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('goal-setting')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">SMART-Ziele</span>
             <span class="method-tag">Aktionsplan</span>
@@ -247,6 +275,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('mindfulness')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Geführte Meditation</span>
             <span class="method-tag">Achtsamkeitsübungen</span>
@@ -273,6 +308,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('emotional-intelligence')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">EQ-Test</span>
             <span class="method-tag">Emotionsregulation</span>
@@ -299,6 +341,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('habit-building')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Habit-Stacking</span>
             <span class="method-tag">21-Tage-Regel</span>
@@ -325,6 +374,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('communication')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Aktives Zuhören</span>
             <span class="method-tag">Nonverbale Kommunikation</span>
@@ -351,6 +407,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('time-management')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Pomodoro-Technik</span>
             <span class="method-tag">Eisenhower-Matrix</span>
@@ -377,6 +440,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nlp-dilts')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">6 Ebenen</span>
             <span class="method-tag">NLP-Techniken</span>
@@ -403,6 +473,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('johari-window')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">4 Bereiche</span>
             <span class="method-tag">Selbstbewusstsein</span>
@@ -429,6 +506,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('walt-disney')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('walt-disney')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">3 Rollen</span>
             <span class="method-tag">Kreativität</span>
@@ -455,6 +546,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nonviolent-communication')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">4 Schritte</span>
             <span class="method-tag">Empathie</span>
@@ -481,6 +579,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('five-pillars')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('five-pillars')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Identitätsanalyse</span>
             <span class="method-tag">5 Säulen</span>
@@ -507,6 +619,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nlp-meta-goal')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nlp-meta-goal')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Meta-Ziele</span>
             <span class="method-tag">Motivation</span>
@@ -533,6 +659,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('aek-communication')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('aek-communication')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Inneres Team</span>
             <span class="method-tag">Authentizität</span>
@@ -559,6 +699,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('rubikon-model')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('rubikon-model')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">4 Phasen</span>
             <span class="method-tag">Zielverfolgung</span>
@@ -585,6 +739,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('systemic-coaching')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('systemic-coaching')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Systemisches Denken</span>
             <span class="method-tag">Gesprächsführung</span>
@@ -611,6 +779,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('rafael-method')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('rafael-method')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Problemlösung</span>
             <span class="method-tag">Entscheidungsfindung</span>
@@ -637,6 +819,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('conflict-escalation')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('conflict-escalation')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Konfliktanalyse</span>
             <span class="method-tag">9 Stufen</span>
@@ -663,6 +859,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('harvard-method')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('harvard-method')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Verhandlungen</span>
             <span class="method-tag">Win-Win</span>
@@ -689,6 +899,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('circular-interview')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('circular-interview')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Zirkuläre Fragen</span>
             <span class="method-tag">Beziehungen</span>
@@ -715,6 +939,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('target-coaching')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('target-coaching')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Strukturiert</span>
             <span class="method-tag">Messbar</span>
@@ -741,6 +979,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('solution-focused')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('solution-focused')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Lösungsfokus</span>
             <span class="method-tag">Kurzzeit</span>
@@ -767,6 +1019,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('change-stages')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('change-stages')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">6 Stufen</span>
             <span class="method-tag">Veränderung</span>
@@ -793,6 +1059,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('competence-map')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('competence-map')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Kompetenzen</span>
             <span class="method-tag">Entwicklung</span>
@@ -819,6 +1099,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('moment-excellence')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('moment-excellence')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Exzellenz</span>
             <span class="method-tag">Erfolg</span>
@@ -845,6 +1139,20 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('resource-analysis')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('resource-analysis')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Ressourcen</span>
             <span class="method-tag">Resilienz</span>
@@ -871,6 +1179,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('swot-analysis')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Selbsteinschätzung</span>
             <span class="method-tag">Strategische Planung</span>
@@ -897,6 +1212,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('wheel-of-life')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Lebensbalance</span>
             <span class="method-tag">Bereichsbewertung</span>
@@ -923,6 +1245,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('journaling')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Selbstreflexion</span>
             <span class="method-tag">Gewohnheitsaufbau</span>
@@ -949,6 +1278,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('vision-board')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Visuelle Ziele</span>
             <span class="method-tag">Motivation</span>
@@ -975,6 +1311,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('stress-management')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Entspannungstechniken</span>
             <span class="method-tag">Stress-Identifikation</span>
@@ -1001,6 +1344,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nlp-dilts')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">6 Ebenen</span>
             <span class="method-tag">Systemische Veränderung</span>
@@ -1027,6 +1377,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('johari-window')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Selbstreflexion</span>
             <span class="method-tag">Feedback</span>
@@ -1079,6 +1436,13 @@
                         </p>
             </div>
         </div>
+        <div class="method-action">
+            <button class="btn btn-outline">Jetzt starten</button>
+            <button class="btn btn-outline" onclick="downloadPDF('nonviolent-communication')">
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
         <div class="method-tags">
             <span class="method-tag">Empathie</span>
             <span class="method-tag">Konfliktlösung</span>
