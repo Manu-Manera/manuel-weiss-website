@@ -92,6 +92,9 @@
     border-radius: 24px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 1px solid #f1f5f9;
+    position: sticky;
+    top: 2rem;
+    z-index: 100;
 }
 
 .search-container {
@@ -153,33 +156,53 @@
 .filter-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.8rem;
     justify-content: center;
+    margin-top: 1rem;
 }
 
 .filter-tag {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     background: white;
     border: 2px solid #e2e8f0;
-    border-radius: 25px;
+    border-radius: 20px;
     color: #6b7280;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.filter-tag:hover::before {
+    left: 100%;
 }
 
 .filter-tag:hover {
-    border-color: #4f46e5;
-    color: #4f46e5;
+    border-color: #667eea;
+    color: #667eea;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 .filter-tag.active {
-    background: #4f46e5;
-    border-color: #4f46e5;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: #667eea;
     color: white;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
 }
 
 /* Method Cards Grid - Modern Design */
