@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeitsentwicklung - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung. Von Ikigai bis Zeitmanagement - finde deinen Weg zu mehr Klarheit und Erfolg.">
+    <meta name="keywords" content="Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Coaching, Selbstreflexion">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Persönlichkeitsentwicklung - Manuel Weiss">
+    <meta property="og:description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app/persoenlichkeitsentwicklung-uebersicht.html">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero personality-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Persönlichkeitsentwicklung</span><br>
+                    Entdecke dein Potenzial
+                </h1>
+                <p class="hero-subtitle">
+                    Verschiedene bewährte Methoden für deine persönliche Entwicklung. 
+                    Von Selbstfindung bis Zielerreichung - finde deinen Weg zu mehr Klarheit und Erfolg.
+                </p>
+            </div>
+            <div class="hero-visual">
+                <div class="personality-visual">
+                    <div class="visual-grid">
+                        <div class="visual-item" data-method="ikigai">
+                            <i class="fas fa-compass"></i>
+                            <span>Ikigai</span>
+                        </div>
+                        <div class="visual-item" data-method="values">
+                            <i class="fas fa-heart"></i>
+                            <span>Werte</span>
+                        </div>
+                        <div class="visual-item" data-method="strengths">
+                            <i class="fas fa-star"></i>
+                            <span>Stärken</span>
+                        </div>
+                        <div class="visual-item" data-method="goals">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Ziele</span>
+                        </div>
+                        <div class="visual-item" data-method="mindfulness">
+                            <i class="fas fa-leaf"></i>
+                            <span>Achtsamkeit</span>
+                        </div>
+                        <div class="visual-item" data-method="eq">
+                            <i class="fas fa-brain"></i>
+                            <span>EQ</span>
+                        </div>
+                        <div class="visual-item" data-method="habits">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Gewohnheiten</span>
+                        </div>
+                        <div class="visual-item" data-method="communication">
+                            <i class="fas fa-comments"></i>
+                            <span>Kommunikation</span>
+                        </div>
+                        <div class="visual-item" data-method="time">
+                            <i class="fas fa-clock"></i>
+                            <span>Zeit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methods Overview Section -->
+    <section id="methods-overview" class="personality-methods-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Persönlichkeitsentwicklung Methoden</h2>
+                <p class="section-subtitle">
+                    Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
+                </p>
+            </div>
+            
+            <div class="methods-grid">
+                <!-- Ikigai - Hauptmethode -->
+                <div class="method-card featured-method" onclick="startMethod('ikigai')">
+                    <div class="method-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ikigai-Workflow</h3>
+                        <p class="method-description">
+                            Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
+                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">7 Schritte</span>
+                            <span class="feature-tag">Tiefe Reflexion</span>
+                            <span class="feature-tag">Export-Funktionen</span>
+                            <span class="feature-tag">Progress-Tracking</span>
+                        </div>
+                        <div class="method-stats">
+                            <div class="stat">
+                                <span class="stat-number">7</span>
+                                <span class="stat-label">Schritte</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">45+</span>
+                                <span class="stat-label">Fragen</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">2-3h</span>
+                                <span class="stat-label">Dauer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-primary">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <!-- Weitere Methoden -->
+                <div class="method-card" onclick="startMethod('values-clarification')">
+                    <div class="method-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Werte-Klärung</h3>
+                        <p class="method-description">
+                            Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Werte-Ranking</span>
+                            <span class="feature-tag">Konflikt-Analyse</span>
+                            <span class="feature-tag">Lebensbereiche</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('strengths-finder')">
+                    <div class="method-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Stärken-Analyse</h3>
+                        <p class="method-description">
+                            Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Gallup-Stärken</span>
+                            <span class="feature-tag">VIA-Test</span>
+                            <span class="feature-tag">Entwicklungsplan</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('goal-setting')">
+                    <div class="method-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ziel-Setting</h3>
+                        <p class="method-description">
+                            Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">SMART-Ziele</span>
+                            <span class="feature-tag">Aktionsplan</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('mindfulness')">
+                    <div class="method-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Achtsamkeit & Meditation</h3>
+                        <p class="method-description">
+                            Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Geführte Meditation</span>
+                            <span class="feature-tag">Achtsamkeitsübungen</span>
+                            <span class="feature-tag">Stress-Reduktion</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('emotional-intelligence')">
+                    <div class="method-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Emotionale Intelligenz</h3>
+                        <p class="method-description">
+                            Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">EQ-Test</span>
+                            <span class="feature-tag">Emotionsregulation</span>
+                            <span class="feature-tag">Empathie-Training</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('habit-building')">
+                    <div class="method-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Gewohnheiten aufbauen</h3>
+                        <p class="method-description">
+                            Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Habit-Stacking</span>
+                            <span class="feature-tag">21-Tage-Regel</span>
+                            <span class="feature-tag">Tracking</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('communication')">
+                    <div class="method-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Kommunikation</h3>
+                        <p class="method-description">
+                            Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Aktives Zuhören</span>
+                            <span class="feature-tag">Nonverbale Kommunikation</span>
+                            <span class="feature-tag">Konfliktlösung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('time-management')">
+                    <div class="method-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Zeitmanagement</h3>
+                        <p class="method-description">
+                            Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Priorisierung</span>
+                            <span class="feature-tag">Zeitblocking</span>
+                            <span class="feature-tag">Produktivität</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <!-- Weitere Methoden werden hier dynamisch geladen -->
+                <div class="method-card" onclick="startMethod('nlp-dilts')">
+                    <div class="method-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>NLP Dilts</h3>
+                        <p class="method-description">
+                            Die logischen Ebenen der Veränderung - verstehe die verschiedenen Ebenen deiner Persönlichkeit.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Logische Ebenen</span>
+                            <span class="feature-tag">Veränderung</span>
+                            <span class="feature-tag">Persönlichkeit</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('johari-window')">
+                    <div class="method-icon">
+                        <i class="fas fa-window-maximize"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Johari Window</h3>
+                        <p class="method-description">
+                            Erweitere dein Selbstbewusstsein durch das Johari-Fenster-Modell.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Selbstbewusstsein</span>
+                            <span class="feature-tag">Feedback</span>
+                            <span class="feature-tag">Entwicklung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('walt-disney')">
+                    <div class="method-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Walt Disney</h3>
+                        <p class="method-description">
+                            Die Walt-Disney-Strategie für kreative Problemlösung und Visionen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Kreativität</span>
+                            <span class="feature-tag">Problemlösung</span>
+                            <span class="feature-tag">Visionen</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('nonviolent-communication')">
+                    <div class="method-icon">
+                        <i class="fas fa-dove"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Gewaltfreie Kommunikation</h3>
+                        <p class="method-description">
+                            Lerne gewaltfreie Kommunikation nach Marshall Rosenberg.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Empathie</span>
+                            <span class="feature-tag">Konfliktlösung</span>
+                            <span class="feature-tag">Verständnis</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('five-pillars')">
+                    <div class="method-icon">
+                        <i class="fas fa-columns"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Fünf Säulen</h3>
+                        <p class="method-description">
+                            Die fünf Säulen der Identität - verstehe die Grundpfeiler deiner Persönlichkeit.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Identität</span>
+                            <span class="feature-tag">Persönlichkeit</span>
+                            <span class="feature-tag">Grundpfeiler</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('nlp-meta-goal')">
+                    <div class="method-icon">
+                        <i class="fas fa-crosshairs"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>NLP Meta-Goal</h3>
+                        <p class="method-description">
+                            NLP Meta-Ziel-Techniken für tiefere Zielerreichung.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Meta-Ziele</span>
+                            <span class="feature-tag">NLP</span>
+                            <span class="feature-tag">Zielerreichung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('aek-communication')">
+                    <div class="method-icon">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>AEK Kommunikation</h3>
+                        <p class="method-description">
+                            Aspektbezogene Kommunikation für besseres Verständnis.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Aspekte</span>
+                            <span class="feature-tag">Kommunikation</span>
+                            <span class="feature-tag">Verständnis</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('rubikon-model')">
+                    <div class="method-icon">
+                        <i class="fas fa-river"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Rubikon-Modell</h3>
+                        <p class="method-description">
+                            Das Rubikon-Modell der Handlungsphasen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Handlungsphasen</span>
+                            <span class="feature-tag">Motivation</span>
+                            <span class="feature-tag">Umsetzung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('systemic-coaching')">
+                    <div class="method-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Systemisches Coaching</h3>
+                        <p class="method-description">
+                            Systemisches Coaching für ganzheitliche Entwicklung.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Systemisch</span>
+                            <span class="feature-tag">Ganzheitlich</span>
+                            <span class="feature-tag">Coaching</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('rafael-method')">
+                    <div class="method-icon">
+                        <i class="fas fa-angel"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Rafael-Methode</h3>
+                        <p class="method-description">
+                            Die Rafael-Methode für spirituelle Entwicklung.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Spiritualität</span>
+                            <span class="feature-tag">Entwicklung</span>
+                            <span class="feature-tag">Methode</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('conflict-escalation')">
+                    <div class="method-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Konflikt-Eskalation</h3>
+                        <p class="method-description">
+                            Das 9-Stufen-Modell der Konflikteskalation nach Glasl.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Konflikte</span>
+                            <span class="feature-tag">Eskalation</span>
+                            <span class="feature-tag">9 Stufen</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('harvard-method')">
+                    <div class="method-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Harvard-Methode</h3>
+                        <p class="method-description">
+                            Das Harvard-Konzept für erfolgreiche Verhandlungen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Verhandlungen</span>
+                            <span class="feature-tag">Harvard</span>
+                            <span class="feature-tag">Erfolg</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('circular-interview')">
+                    <div class="method-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Zirkuläres Interview</h3>
+                        <p class="method-description">
+                            Zirkuläre Fragen für systemische Beratung.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Zirkulär</span>
+                            <span class="feature-tag">Fragen</span>
+                            <span class="feature-tag">Systemisch</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('target-coaching')">
+                    <div class="method-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ziel-Coaching</h3>
+                        <p class="method-description">
+                            Zielorientiertes Coaching für nachhaltige Ergebnisse.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Zielorientiert</span>
+                            <span class="feature-tag">Coaching</span>
+                            <span class="feature-tag">Ergebnisse</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('solution-focused')">
+                    <div class="method-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Lösungsfokussiertes Coaching</h3>
+                        <p class="method-description">
+                            Lösungsorientierte Kurzzeitberatung für schnelle Ergebnisse.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Lösungsorientiert</span>
+                            <span class="feature-tag">Kurzzeit</span>
+                            <span class="feature-tag">Ergebnisse</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('change-stages')">
+                    <div class="method-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Veränderungsstufen</h3>
+                        <p class="method-description">
+                            Die 6 Stufen der Veränderung nach Prochaska.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Veränderung</span>
+                            <span class="feature-tag">6 Stufen</span>
+                            <span class="feature-tag">Prochaska</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('competence-map')">
+                    <div class="method-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Kompetenz-Landkarte</h3>
+                        <p class="method-description">
+                            Erstelle deine persönliche Kompetenz-Landkarte.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Kompetenzen</span>
+                            <span class="feature-tag">Landkarte</span>
+                            <span class="feature-tag">Übersicht</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('moment-excellence')">
+                    <div class="method-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Moment of Excellence</h3>
+                        <p class="method-description">
+                            NLP-Technik für Spitzenleistungen.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Excellence</span>
+                            <span class="feature-tag">NLP</span>
+                            <span class="feature-tag">Spitzenleistung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('resource-analysis')">
+                    <div class="method-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Ressourcen-Analyse</h3>
+                        <p class="method-description">
+                            Analysiere und nutze deine Ressourcen optimal.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Ressourcen</span>
+                            <span class="feature-tag">Analyse</span>
+                            <span class="feature-tag">Optimierung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('swot-analysis')">
+                    <div class="method-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>SWOT-Analyse</h3>
+                        <p class="method-description">
+                            Stärken, Schwächen, Chancen und Risiken analysieren.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">SWOT</span>
+                            <span class="feature-tag">Analyse</span>
+                            <span class="feature-tag">Strategie</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('wheel-of-life')">
+                    <div class="method-icon">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Wheel of Life</h3>
+                        <p class="method-description">
+                            Das Lebensrad für ganzheitliche Lebensbalance.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Lebensrad</span>
+                            <span class="feature-tag">Balance</span>
+                            <span class="feature-tag">Ganzheitlich</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('journaling')">
+                    <div class="method-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Journaling</h3>
+                        <p class="method-description">
+                            Journaling für Selbstreflexion und persönliches Wachstum.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Journaling</span>
+                            <span class="feature-tag">Selbstreflexion</span>
+                            <span class="feature-tag">Wachstum</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('vision-board')">
+                    <div class="method-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Vision Board</h3>
+                        <p class="method-description">
+                            Erstelle dein persönliches Vision Board für Ziele und Träume.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Vision Board</span>
+                            <span class="feature-tag">Ziele</span>
+                            <span class="feature-tag">Träume</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+
+                <div class="method-card" onclick="startMethod('stress-management')">
+                    <div class="method-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="method-content">
+                        <h3>Stress-Management</h3>
+                        <p class="method-description">
+                            Effektive Techniken für Stressbewältigung und Entspannung.
+                        </p>
+                        <div class="method-features">
+                            <span class="feature-tag">Stress</span>
+                            <span class="feature-tag">Bewältigung</span>
+                            <span class="feature-tag">Entspannung</span>
+                        </div>
+                    </div>
+                    <div class="method-action">
+                        <button class="btn btn-outline">Jetzt starten</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Method Workflow Section -->
+    <section id="method-workflow" class="method-workflow-section" style="display: none;">
+        <div class="container">
+            <div class="workflow-header">
+                <button class="btn btn-secondary" onclick="showOverview()">
+                    <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+                </button>
+                <h2 id="workflow-title">Methode wird geladen...</h2>
+            </div>
+            
+            <div id="workflow-content">
+                <div class="loading-message">
+                    <h3>🔄 Methode wird geladen...</h3>
+                    <p>Bitte warten Sie, während die Methode geladen wird.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR & AI Berater</p>
+                    <p>Persönlichkeitsentwicklung & Coaching</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="index.html#services">HR Beratung</a></li>
+                        <li><a href="index.html#services">AI Consulting</a></li>
+                        <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <p>📧 info@mawps.de</p>
+                    <p>📱 +49 123 456 789</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // Method Navigation Functions
+        function startMethod(methodId) {
+            if (methodId === 'ikigai') {
+                window.location.href = 'persoenlichkeitsentwicklung.html';
+                return;
+            }
+            
+            // Hide overview and show workflow
+            document.getElementById('methods-overview').style.display = 'none';
+            document.getElementById('method-workflow').style.display = 'block';
+            
+            // Load method workflow
+            loadMethodWorkflow(methodId);
+            
+            // Scroll to workflow
+            document.getElementById('method-workflow').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showOverview() {
+            document.getElementById('methods-overview').style.display = 'block';
+            document.getElementById('method-workflow').style.display = 'none';
+            document.getElementById('methods-overview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Workflow Navigation Functions
+        function switchWorkflowStep(stepNumber) {
+            // Remove active class from all steps
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Add active class to current step
+            const currentStep = document.querySelector(`[data-step="${stepNumber}"]`);
+            if (currentStep) {
+                currentStep.classList.add('active');
+            }
+            
+            // Hide all workflow steps
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show current workflow step
+            const currentWorkflowStep = document.querySelector(`.workflow-step[data-step="${stepNumber}"]`);
+            if (currentWorkflowStep) {
+                currentWorkflowStep.classList.add('active');
+            }
+            
+            // Update progress bar
+            updateProgressBar(stepNumber);
+            
+            // Update navigation buttons
+            updateNavigationButtons(stepNumber);
+        }
+
+        function updateProgressBar(currentStep) {
+            const totalSteps = document.querySelectorAll('.progress-step').length;
+            const progressPercentage = (currentStep / totalSteps) * 100;
+            
+            // Update progress bar if it exists
+            const progressBar = document.querySelector('.progress-bar-fill');
+            if (progressBar) {
+                progressBar.style.width = progressPercentage + '%';
+            }
+        }
+
+        function nextStep() {
+            const currentStep = document.querySelector('.progress-step.active');
+            if (currentStep) {
+                const currentStepNumber = parseInt(currentStep.dataset.step);
+                const totalSteps = document.querySelectorAll('.progress-step').length;
+                
+                if (currentStepNumber < totalSteps) {
+                    switchWorkflowStep(currentStepNumber + 1);
+                }
+            }
+        }
+
+        function previousStep() {
+            const currentStep = document.querySelector('.progress-step.active');
+            if (currentStep) {
+                const currentStepNumber = parseInt(currentStep.dataset.step);
+                
+                if (currentStepNumber > 1) {
+                    switchWorkflowStep(currentStepNumber - 1);
+                }
+            }
+        }
+
+        function updateNavigationButtons(currentStep) {
+            const totalSteps = document.querySelectorAll('.progress-step').length;
+            const prevButton = document.getElementById('prev-step');
+            const nextButton = document.getElementById('next-step');
+            const progressText = document.getElementById('progress-text');
+            
+            if (prevButton) {
+                prevButton.disabled = currentStep === 1;
+            }
+            
+            if (nextButton) {
+                nextButton.disabled = currentStep === totalSteps;
+            }
+            
+            if (progressText) {
+                progressText.textContent = `Schritt ${currentStep} von ${totalSteps}`;
+            }
+        }
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Personality Development Overview initialized');
+        });
+    </script>
+    
+    <!-- Method Loader System -->
+    <script src="js/method-loader.js"></script>
+</body>
+</html>
