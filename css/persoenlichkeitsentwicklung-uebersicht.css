@@ -389,7 +389,7 @@
     position: relative;
     overflow: hidden;
     height: fit-content;
-    min-height: 280px;
+    min-height: 420px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -507,7 +507,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin: 1rem 0 1.5rem 0;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f1f5f9;
 }
 
 .method-tag {
@@ -530,11 +532,12 @@
 .method-stats {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin: 1rem 0 1.5rem 0;
     padding: 1rem;
     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
     border-radius: 8px;
     border: 1px solid #e2e8f0;
+    border-top: 1px solid #cbd5e1;
 }
 
 .stat-item {
@@ -707,7 +710,7 @@
     
     .method-card {
         padding: 1.5rem;
-        min-height: 280px;
+        min-height: 380px;
     }
     
     .hero-title {
@@ -747,7 +750,7 @@
     
     .method-card {
         padding: 1.2rem;
-        min-height: 260px;
+        min-height: 360px;
     }
     
     .method-header {
