@@ -127,19 +127,19 @@
             <div class="methods-grid">
                 <!-- Ikigai - Hauptmethode -->
                 <div class="method-card" onclick="startMethod('ikigai')" data-category="self-discovery">
-                    <div class="method-header">
-                        <div class="method-icon ikigai">
-                            <i class="fas fa-compass"></i>
-                        </div>
-                        <div class="method-info">
+        <div class="method-header">
+            <div class="method-icon ikigai">
+                <i class="fas fa-compass"></i>
+            </div>
+            <div class="method-info">
                             <h3 data-translate="personality.method_ikigai">Ikigai-Workflow</h3>
                             <p data-translate="personality.method_ikigai_desc">Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.</p>
-                        </div>
-                    </div>
+            </div>
+        </div>
                     
-                    <div class="method-action">
+        <div class="method-action">
                         <button class="btn btn-primary" data-translate="personality.start_method">Jetzt starten</button>
-                        <button class="btn btn-outline" onclick="downloadPDF('ikigai')">
+            <button class="btn btn-outline" onclick="downloadPDF('ikigai')">
                             <i class="fas fa-download"></i> <span data-translate="personality.download_pdf">PDF</span>
                         </button>
                     </div>
@@ -160,30 +160,30 @@
                     <div class="method-action">
                         <button class="btn btn-primary">Jetzt starten</button>
                         <button class="btn btn-outline" onclick="downloadPDF('values-clarification')">
-                            <i class="fas fa-download"></i> PDF
-                        </button>
-                    </div>
-                </div>
+                <i class="fas fa-download"></i> PDF
+            </button>
+        </div>
+    </div>
 
                 <!-- Stärken-Analyse -->
                 <div class="method-card" onclick="startMethod('strengths-finder')" data-category="self-discovery">
                     <div class="method-header">
                         <div class="method-icon strengths-finder">
                             <i class="fas fa-star"></i>
-                        </div>
+                    </div>
                         <div class="method-info">
                             <h3>Stärken-Analyse</h3>
                             <p>Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.</p>
                         </div>
-                    </div>
+                        </div>
                     
                     <div class="method-action">
                         <button class="btn btn-primary">Jetzt starten</button>
                         <button class="btn btn-outline" onclick="downloadPDF('strengths-finder')">
                             <i class="fas fa-download"></i> PDF
                         </button>
+                        </div>
                     </div>
-                </div>
 
                 <!-- Ziel-Setting -->
                 <div class="method-card" onclick="startMethod('goal-setting')" data-category="goals">
@@ -304,9 +304,156 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Weitere Methoden -->
-                <div class="method-card" onclick="startMethod('values-clarification')">
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-translate="contact.title">Kontakt</h2>
+                <p class="section-subtitle" data-translate="contact.subtitle">
+                    Bereit für deine persönliche Entwicklung? Lass uns sprechen!
+                </p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4 data-translate="contact.email">E-Mail</h4>
+                            <p>manuel.weiss@example.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p>+49 123 456 789</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4 data-translate="contact.location">Standort</h4>
+                            <p>Deutschland</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="E-Mail" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="subject" name="subject" placeholder="Betreff" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Nachricht" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" data-translate="contact.form.send">Nachricht senden</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                <span class="footer-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="index.html" data-translate="nav.home">Home</a>
+                <a href="index.html#services" data-translate="nav.services">Services</a>
+                <a href="index.html#about" data-translate="nav.about">Über mich</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" data-translate="nav.personality">Persönlichkeitsentwicklung</a>
+                <a href="index.html#contact" data-translate="nav.contact">Kontakt</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="js/translation-manager.js"></script>
+<script src="js/persoenlichkeitsentwicklung-methods.js"></script>
+<script src="js/persoenlichkeitsentwicklung-search.js"></script>
+<script>
+    // Methoden-Funktionen
+    function startMethod(methodName) {
+        console.log('Starting method:', methodName);
+        // Hier würde die jeweilige Methode gestartet werden
+        alert('Methode ' + methodName + ' wird gestartet...');
+    }
+    
+    function downloadPDF(methodName) {
+        console.log('Downloading PDF for method:', methodName);
+        // Hier würde der PDF-Download gestartet werden
+        alert('PDF für ' + methodName + ' wird heruntergeladen...');
+    }
+    
+    // Filter-Funktionen
+    function filterMethods(category) {
+        console.log('Filtering methods by category:', category);
+        const cards = document.querySelectorAll('.method-card');
+        
+        cards.forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update active filter
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${category}"]`).classList.add('active');
+    }
+    
+    // Search function
+    function searchMethods() {
+        const searchTerm = document.getElementById('methodSearch').value.toLowerCase();
+        const cards = document.querySelectorAll('.method-card');
+        
+        cards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Personality Development Overview loaded');
+        
+        // Set default filter to 'all'
+        filterMethods('all');
+    });
+</script>
+</body>
+</html>
         <div class="method-header">
             <div class="method-icon values-clarification">
                 <i class="fas fa-heart"></i>
