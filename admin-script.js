@@ -1057,13 +1057,21 @@ function loadApplications() {
             <div style="flex: 1;">
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                     <h4 style="margin: 0; color: #333;">${app.company}</h4>
-                    <span class="status-badge" style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white;">
-                        ${getStatusText(app.status)}
-                    </span>
+                    <div style="position: relative;">
+                        <select onchange="updateApplicationStatus('${app.id}', this.value, this)" style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white; border: none; cursor: pointer; appearance: none; padding-right: 1.5rem;" class="status-dropdown">
+                            <option value="pending" ${app.status === 'pending' ? 'selected' : ''} style="background: #6366f1; color: white;">Ausstehend</option>
+                            <option value="reviewed" ${app.status === 'reviewed' ? 'selected' : ''} style="background: #f59e0b; color: white;">In Bearbeitung</option>
+                            <option value="interview" ${app.status === 'interview' ? 'selected' : ''} style="background: #10b981; color: white;">Interview</option>
+                            <option value="accepted" ${app.status === 'accepted' ? 'selected' : ''} style="background: #10b981; color: white;">Angenommen</option>
+                            <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''} style="background: #ef4444; color: white;">Absage</option>
+                        </select>
+                        <i class="fas fa-chevron-down" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: white; font-size: 0.7rem;"></i>
+                    </div>
                 </div>
                 <p style="margin: 0; color: #666; font-weight: 500;">${app.position}</p>
                 <p style="margin: 0; color: #999; font-size: 0.875rem;">Datum: ${new Date(app.date).toLocaleDateString('de-DE')}</p>
                 ${app.contact ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Kontakt: ${app.contact}</p>` : ''}
+                ${app.statusDate ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Status-Datum: ${new Date(app.statusDate).toLocaleDateString('de-DE')}</p>` : ''}
             </div>
             <div style="display: flex; gap: 0.5rem;">
                 <button onclick="editApplication('${app.id}')" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
@@ -1141,7 +1149,7 @@ function closeNewApplicationModal() {
     }
 }
 
-// Add new application
+// Add new application form handler
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('newApplicationForm');
     if (form) {
@@ -1170,9 +1178,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Load applications on page load
-    loadApplications();
 });
 
 // Edit application
@@ -1207,6 +1212,54 @@ function deleteApplication(id) {
         if (window.adminPanel && window.adminPanel.showToast) {
             window.adminPanel.showToast('Bewerbung gelöscht', 'info');
         }
+    }
+}
+
+// Update application status with date picker
+function updateApplicationStatus(id, newStatus, selectElement) {
+    const app = applications.find(a => a.id === id);
+    if (!app) return;
+    
+    // Show date picker for certain statuses
+    if (['reviewed', 'interview', 'accepted', 'rejected'].includes(newStatus)) {
+        const statusDate = prompt(`Datum für Status "${getStatusText(newStatus)}" eingeben (Format: DD.MM.YYYY):`, 
+            app.statusDate ? new Date(app.statusDate).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE'));
+        
+        if (statusDate) {
+            // Parse German date format
+            const [day, month, year] = statusDate.split('.');
+            const parsedDate = new Date(year, month - 1, day);
+            
+            if (!isNaN(parsedDate.getTime())) {
+                app.statusDate = parsedDate.toISOString();
+            } else {
+                alert('Ungültiges Datum. Verwenden Sie das Format DD.MM.YYYY');
+                // Reset to original status
+                selectElement.value = app.status;
+                return;
+            }
+        } else {
+            // User cancelled, reset to original status
+            selectElement.value = app.status;
+            return;
+        }
+    }
+    
+    // Update the application
+    app.status = newStatus;
+    app.updatedAt = new Date().toISOString();
+    
+    // Save to localStorage
+    localStorage.setItem('applications', JSON.stringify(applications));
+    
+    // Update the select element background color
+    selectElement.style.background = getStatusColor(newStatus);
+    
+    // Reload applications to show updated data
+    loadApplications();
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast(`Status geändert zu: ${getStatusText(newStatus)}`, 'success');
     }
 }
 
