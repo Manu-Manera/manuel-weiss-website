@@ -543,6 +543,7 @@ class AdminPanel {
         const titles = {
             'dashboard': 'Dashboard',
             'content': 'Inhalte',
+            'applications': 'Bewerbungen',
             'ai-twin': 'AI Twin',
             'media': 'Medien',
             'rentals': 'Vermietungen',
