@@ -1616,26 +1616,32 @@ function loadDocuments() {
 // Document upload functionality - FIXED VERSION
 function triggerDocumentUpload() {
     console.log('🔄 triggerDocumentUpload called');
-    const uploadInput = document.getElementById('doc-upload');
-    console.log('Upload input found:', !!uploadInput);
     
-    if (uploadInput) {
-        console.log('Triggering document upload...');
-        uploadInput.click();
-    } else {
-        console.error('Upload input not found!');
-        // Try to re-initialize
-        setTimeout(() => {
-            console.log('Retrying upload input initialization...');
-            initializeDocumentUpload();
-            const retryInput = document.getElementById('doc-upload');
-            if (retryInput) {
-                retryInput.click();
-            } else if (window.adminPanel && window.adminPanel.showToast) {
-                window.adminPanel.showToast('Upload-Funktion nicht verfügbar', 'error');
-            }
-        }, 100);
+    // Remove any existing input first
+    const existingInput = document.getElementById('doc-upload');
+    if (existingInput) {
+        existingInput.remove();
     }
+    
+    // Create new file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'doc-upload';
+    fileInput.multiple = true;
+    fileInput.accept = '.pdf,.doc,.docx,.html,.jpg,.jpeg,.png';
+    fileInput.style.display = 'none';
+    
+    // Add event listener
+    fileInput.addEventListener('change', function(event) {
+        console.log('📁 File input changed, files selected:', event.target.files.length);
+        handleDocumentUpload(event);
+    });
+    
+    // Add to DOM and trigger
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    
+    console.log('✅ File input created and triggered');
 }
 
 // Initialize document upload handler
@@ -2169,6 +2175,8 @@ function closePDFEditor() {
 
 // Smart Workflow Functions
 function startSmartWorkflow() {
+    console.log('🚀 Starting Smart Workflow...');
+    
     // Create workflow modal
     const modal = document.createElement('div');
     modal.id = 'smartWorkflowModal';
