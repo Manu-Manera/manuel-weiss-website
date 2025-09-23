@@ -564,6 +564,9 @@ class AdminPanel {
             case 'content':
                 this.loadContent();
                 break;
+            case 'applications':
+                this.loadApplicationsSection();
+                break;
             case 'ai-twin':
                 this.loadAITwin();
                 break;
@@ -732,6 +735,14 @@ class AdminPanel {
     loadSettings() {
         console.log('⚙️ Loading settings section...');
         this.loadSettingsSection('general');
+    }
+
+    loadApplicationsSection() {
+        console.log('📋 Loading applications section...');
+        // Load applications when section is shown
+        if (typeof loadApplications === 'function') {
+            loadApplications();
+        }
     }
 
     // Setup Drag & Drop functionality
@@ -972,4 +983,345 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global function definitions for onclick handlers
 window.adminPanel = null; // Will be set after DOM loads
+
+// Applications Management Functions
+let applications = JSON.parse(localStorage.getItem('applications') || '[]');
+let currentFilter = 'all';
+let editingApplicationId = null;
+
+// Load and display applications
+function loadApplications() {
+    const filteredApps = currentFilter === 'all' 
+        ? applications 
+        : applications.filter(app => app.status === currentFilter);
+    
+    const listContainer = document.getElementById('applicationsList');
+    if (!listContainer) return;
+    
+    if (filteredApps.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>Keine Bewerbungen vorhanden</p>
+            </div>
+        `;
+        return;
+    }
+    
+    listContainer.innerHTML = filteredApps.map(app => `
+        <div class="application-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0; color: #333;">${app.company}</h4>
+                    <span class="status-badge" style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white;">
+                        ${getStatusText(app.status)}
+                    </span>
+                </div>
+                <p style="margin: 0; color: #666; font-weight: 500;">${app.position}</p>
+                <p style="margin: 0; color: #999; font-size: 0.875rem;">Datum: ${new Date(app.date).toLocaleDateString('de-DE')}</p>
+                ${app.contact ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Kontakt: ${app.contact}</p>` : ''}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="editApplication('${app.id}')" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteApplication('${app.id}')" style="padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    updateStatistics();
+}
+
+// Update statistics
+function updateStatistics() {
+    const total = applications.length;
+    const positive = applications.filter(app => app.status === 'accepted').length;
+    const interviews = applications.filter(app => app.status === 'interview').length;
+    const rejected = applications.filter(app => app.status === 'rejected').length;
+    const pending = applications.filter(app => app.status === 'pending').length;
+    const successRate = total > 0 ? Math.round((positive / total) * 100) : 0;
+    
+    // Update dashboard stats
+    const updateStat = (id, value) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.textContent = value;
+    };
+    
+    updateStat('total-applications-count', total);
+    updateStat('positive-responses-count', positive);
+    updateStat('interviews-count', interviews);
+    updateStat('rejections-count', rejected);
+    updateStat('pending-applications-count', pending);
+    updateStat('success-rate-count', successRate + '%');
+    
+    // Also update dashboard widget if visible
+    updateStat('dashboard-total-apps', total);
+    updateStat('dashboard-pending-apps', pending);
+    updateStat('dashboard-success-rate', successRate + '%');
+}
+
+// Filter applications
+function filterApplications(filter) {
+    currentFilter = filter;
+    
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.style.borderBottomColor = 'transparent';
+        if (tab.dataset.filter === filter) {
+            tab.style.borderBottomColor = '#6366f1';
+        }
+    });
+    
+    loadApplications();
+}
+
+// Open new application modal
+function openNewApplicationModal() {
+    const modal = document.getElementById('newApplicationModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Set today's date as default
+        document.getElementById('applicationDate').value = new Date().toISOString().split('T')[0];
+    }
+}
+
+// Close new application modal
+function closeNewApplicationModal() {
+    const modal = document.getElementById('newApplicationModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('newApplicationForm').reset();
+    }
+}
+
+// Add new application
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('newApplicationForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newApp = {
+                id: Date.now().toString(),
+                date: document.getElementById('applicationDate').value,
+                company: document.getElementById('applicationCompany').value,
+                position: document.getElementById('applicationPosition').value,
+                status: document.getElementById('applicationStatus').value,
+                contact: document.getElementById('applicationContact').value,
+                notes: document.getElementById('applicationNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            applications.push(newApp);
+            localStorage.setItem('applications', JSON.stringify(applications));
+            
+            closeNewApplicationModal();
+            loadApplications();
+            
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast('Bewerbung erfolgreich hinzugefügt', 'success');
+            }
+        });
+    }
+    
+    // Load applications on page load
+    loadApplications();
+});
+
+// Edit application
+function editApplication(id) {
+    const app = applications.find(a => a.id === id);
+    if (!app) return;
+    
+    editingApplicationId = id;
+    const modal = document.getElementById('editApplicationModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // TODO: Populate edit form with application data
+    }
+}
+
+// Close edit modal
+function closeEditApplicationModal() {
+    const modal = document.getElementById('editApplicationModal');
+    if (modal) {
+        modal.style.display = 'none';
+        editingApplicationId = null;
+    }
+}
+
+// Delete application
+function deleteApplication(id) {
+    if (confirm('Möchten Sie diese Bewerbung wirklich löschen?')) {
+        applications = applications.filter(app => app.id !== id);
+        localStorage.setItem('applications', JSON.stringify(applications));
+        loadApplications();
+        
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Bewerbung gelöscht', 'info');
+        }
+    }
+}
+
+// Switch workflow tab
+function switchWorkflowTab(tab) {
+    // Update tab buttons
+    document.querySelectorAll('.workflow-tab').forEach(btn => {
+        btn.style.borderBottomColor = 'transparent';
+        if (btn.dataset.tab === tab) {
+            btn.style.borderBottomColor = '#6366f1';
+        }
+    });
+    
+    // Update tab content
+    document.querySelectorAll('.workflow-tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    const tabContent = document.getElementById(tab + 'Tab');
+    if (tabContent) {
+        tabContent.style.display = 'block';
+    }
+}
+
+// AI Cover Letter Generator
+async function generateAICoverLetter() {
+    const company = document.getElementById('ai-company').value;
+    const position = document.getElementById('ai-position').value;
+    const jobDescription = document.getElementById('ai-job-description').value;
+    
+    if (!company || !position) {
+        alert('Bitte geben Sie Unternehmen und Position ein.');
+        return;
+    }
+    
+    // Get selected focus areas
+    const focusAreas = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        focusAreas.push(cb.value);
+    });
+    
+    // Show loading state
+    const contentDiv = document.getElementById('aiGeneratedContent');
+    const letterContent = document.getElementById('aiCoverLetterContent');
+    
+    contentDiv.style.display = 'block';
+    letterContent.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI generiert Ihr Anschreiben...';
+    
+    // Simulate AI generation (replace with actual API call)
+    setTimeout(() => {
+        const coverLetter = generateMockCoverLetter(company, position, jobDescription, focusAreas);
+        letterContent.textContent = coverLetter;
+        
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Anschreiben erfolgreich generiert', 'success');
+        }
+    }, 2000);
+}
+
+// Mock cover letter generator
+function generateMockCoverLetter(company, position, jobDescription, focusAreas) {
+    const focusText = focusAreas.length > 0 
+        ? `Mit besonderem Fokus auf ${focusAreas.join(', ')} bringe ich die idealen Voraussetzungen mit.`
+        : '';
+    
+    return `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${position} bei ${company} gelesen.
+
+Als erfahrener Professional mit über 6 Jahren Expertise in den Bereichen Digitalisierung, Prozessmanagement und HR-Tech Beratung bin ich überzeugt, einen wertvollen Beitrag zu Ihrem Unternehmen leisten zu können.
+
+${focusText}
+
+In meiner bisherigen Laufbahn konnte ich erfolgreich:
+• Komplexe Digitalisierungsprojekte von der Konzeption bis zur Implementierung begleiten
+• Prozesse analysieren, optimieren und nachhaltig verbessern
+• Teams führen und Veränderungsprozesse erfolgreich gestalten
+• Innovative HR-Tech Lösungen entwickeln und einführen
+
+Besonders reizt mich an der ausgeschriebenen Position die Möglichkeit, meine Expertise in einem dynamischen Umfeld einzusetzen und gemeinsam mit Ihrem Team innovative Lösungen zu entwickeln.
+
+Gerne überzeuge ich Sie in einem persönlichen Gespräch von meinen Qualifikationen.
+
+Mit freundlichen Grüßen
+Manuel Weiss`;
+}
+
+// Copy cover letter
+function copyAICoverLetter() {
+    const content = document.getElementById('aiCoverLetterContent').textContent;
+    navigator.clipboard.writeText(content).then(() => {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Anschreiben in Zwischenablage kopiert', 'success');
+        }
+    });
+}
+
+// Edit cover letter
+function editAICoverLetter() {
+    const contentDiv = document.getElementById('aiCoverLetterContent');
+    contentDiv.contentEditable = true;
+    contentDiv.style.border = '2px solid #6366f1';
+    contentDiv.focus();
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Sie können das Anschreiben jetzt bearbeiten', 'info');
+    }
+}
+
+// Save cover letter
+function saveAICoverLetter() {
+    const content = document.getElementById('aiCoverLetterContent').textContent;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Anschreiben_${document.getElementById('ai-company').value}_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Anschreiben gespeichert', 'success');
+    }
+}
+
+// Helper functions
+function getStatusColor(status) {
+    const colors = {
+        pending: '#6366f1',
+        reviewed: '#f59e0b',
+        interview: '#10b981',
+        accepted: '#10b981',
+        rejected: '#ef4444'
+    };
+    return colors[status] || '#6b7280';
+}
+
+function getStatusText(status) {
+    const texts = {
+        pending: 'Ausstehend',
+        reviewed: 'In Bearbeitung',
+        interview: 'Interview',
+        accepted: 'Angenommen',
+        rejected: 'Abgelehnt'
+    };
+    return texts[status] || status;
+}
+
+// CV Management
+function uploadCV() {
+    const fileInput = document.getElementById('cv-upload');
+    if (fileInput.files.length === 0) {
+        alert('Bitte wählen Sie eine Datei aus.');
+        return;
+    }
+    
+    // Here you would implement actual file upload
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Lebenslauf hochgeladen', 'success');
+    }
+}
 
