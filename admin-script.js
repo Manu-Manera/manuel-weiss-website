@@ -1137,9 +1137,26 @@ function filterApplications(filter) {
             tab.style.borderBottomColor = '#6366f1';
         }
     });
-    
+
     loadApplications();
 }
+
+// Make all application functions globally available
+window.filterApplications = filterApplications;
+window.editApplication = editApplication;
+window.deleteApplication = deleteApplication;
+window.updateApplicationStatus = updateApplicationStatus;
+window.openNewApplicationModal = openNewApplicationModal;
+window.closeNewApplicationModal = closeNewApplicationModal;
+window.viewApplicationPage = viewApplicationPage;
+window.editApplicationPage = editApplicationPage;
+window.filterDocuments = filterDocuments;
+window.triggerDocumentUpload = triggerDocumentUpload;
+window.openPDFEditor = openPDFEditor;
+window.closePDFEditor = closePDFEditor;
+window.mergeDocuments = mergeDocuments;
+window.createTemplate = createTemplate;
+window.startSmartWorkflow = startSmartWorkflow;
 
 // Open new application modal
 function openNewApplicationModal() {
