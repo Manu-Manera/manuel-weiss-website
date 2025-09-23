@@ -127,24 +127,46 @@
             
             <div class="methods-grid">
                 <!-- Ikigai - Hauptmethode -->
-                <div class="method-card" onclick="startMethod('ikigai')">
-        <div class="method-header">
-            <div class="method-icon ikigai">
-                <i class="fas fa-compass"></i>
-            </div>
-            <div class="method-info">
-                <h3>Ikigai-Workflow</h3>
-                <p>Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
-                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.</p>
-            </div>
-        </div>
-        <div class="method-action">
-            <button class="btn btn-outline" data-translate="personality.start_method">Jetzt starten</button>
-            <button class="btn btn-outline" onclick="downloadPDF('ikigai')">
-                <i class="fas fa-download"></i> <span data-translate="personality.download_pdf">PDF</span>
-            </button>
-        </div>
-    </div>
+                <div class="method-card" onclick="startMethod('ikigai')" data-category="self-discovery">
+                    <div class="method-header">
+                        <div class="method-icon ikigai">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <div class="method-info">
+                            <h3 data-translate="personality.method_ikigai">Ikigai-Workflow</h3>
+                            <p data-translate="personality.method_ikigai_desc">Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="method-tags">
+                        <span class="method-tag">7 Schritte</span>
+                        <span class="method-tag">Tiefe Reflexion</span>
+                        <span class="method-tag">Export-Funktionen</span>
+                        <span class="method-tag">Progress-Tracking</span>
+                    </div>
+                    
+                    <div class="method-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">7</span>
+                            <span class="stat-label">Schritte</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">45+</span>
+                            <span class="stat-label">Fragen</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">2-3h</span>
+                            <span class="stat-label">Dauer</span>
+                        </div>
+                    </div>
+                    
+                    <div class="method-action">
+                        <button class="btn btn-primary" data-translate="personality.start_method">Jetzt starten</button>
+                        <button class="btn btn-outline" onclick="downloadPDF('ikigai')">
+                            <i class="fas fa-download"></i> <span data-translate="personality.download_pdf">PDF</span>
+                        </button>
+                    </div>
+                </div>
                     <div class="method-tags">
                         <span class="method-tag">7 Schritte</span>
                         <span class="method-tag">Tiefe Reflexion</span>
