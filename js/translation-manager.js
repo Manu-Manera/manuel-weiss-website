@@ -17,27 +17,46 @@ class TranslationManager {
     }
     
     async init() {
+        console.log('🚀 Initializing Translation Manager...');
         await this.loadTranslations();
-        this.applyLanguage();
-        this.createLanguageSwitcher();
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.applyLanguage();
+                this.createLanguageSwitcher();
+            });
+        } else {
+            this.applyLanguage();
+            this.createLanguageSwitcher();
+        }
     }
     
     async loadTranslations() {
         try {
+            console.log('📥 Loading translation files...');
             // Load all translation files
             const languages = Object.keys(this.availableLanguages);
             
             for (const lang of languages) {
-                const response = await fetch(`translations/${lang}.json`);
-                if (response.ok) {
-                    this.translations[lang] = await response.json();
-                } else {
-                    console.warn(`Translation file for ${lang} not found, using fallback`);
+                try {
+                    const response = await fetch(`translations/${lang}.json`);
+                    if (response.ok) {
+                        this.translations[lang] = await response.json();
+                        console.log(`✅ Loaded translations for ${lang}:`, Object.keys(this.translations[lang]).length, 'keys');
+                    } else {
+                        console.warn(`⚠️ Translation file for ${lang} not found, using fallback`);
+                        this.translations[lang] = this.getFallbackTranslations(lang);
+                    }
+                } catch (fetchError) {
+                    console.error(`❌ Error loading ${lang}.json:`, fetchError);
                     this.translations[lang] = this.getFallbackTranslations(lang);
                 }
             }
+            
+            console.log('📚 All translations loaded:', Object.keys(this.translations));
         } catch (error) {
-            console.error('Error loading translations:', error);
+            console.error('❌ Critical error loading translations:', error);
             this.translations = this.getFallbackTranslations();
         }
     }
@@ -169,9 +188,19 @@ class TranslationManager {
     }
     
     translate(key, params = {}) {
-        const translation = this.translations[this.currentLanguage]?.[key] || 
-                          this.translations['de']?.[key] || 
-                          key;
+        // Try current language first
+        let translation = this.translations[this.currentLanguage]?.[key];
+        
+        // Fallback to German if not found
+        if (!translation) {
+            translation = this.translations['de']?.[key];
+        }
+        
+        // Final fallback to key itself
+        if (!translation) {
+            console.warn(`⚠️ Translation missing for key: ${key} in language: ${this.currentLanguage}`);
+            translation = key;
+        }
         
         // Replace parameters in translation
         return translation.replace(/\{(\w+)\}/g, (match, param) => params[param] || match);
@@ -187,26 +216,39 @@ class TranslationManager {
     }
     
     applyLanguage() {
-        // Update all elements with data-translate attribute
-        document.querySelectorAll('[data-translate]').forEach(element => {
-            const key = element.getAttribute('data-translate');
-            const translation = this.translate(key);
-            
-            if (element.tagName === 'INPUT' && element.type === 'placeholder') {
-                element.placeholder = translation;
-            } else if (element.tagName === 'INPUT' && element.type === 'value') {
-                element.value = translation;
-            } else {
-                element.textContent = translation;
-            }
-        });
+        console.log('🔄 Applying language:', this.currentLanguage);
+        console.log('📚 Available translations:', Object.keys(this.translations));
         
-        // Update title and meta description
-        document.title = this.translate('page.title');
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (metaDescription) {
-            metaDescription.content = this.translate('page.description');
-        }
+        // Wait a bit for DOM to be fully ready
+        setTimeout(() => {
+            // Update all elements with data-translate attribute
+            const elements = document.querySelectorAll('[data-translate]');
+            console.log(`🔍 Found ${elements.length} elements to translate`);
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const translation = this.translate(key);
+                
+                console.log(`🔤 Translating ${key}: ${translation}`);
+                
+                if (element.tagName === 'INPUT' && element.type === 'placeholder') {
+                    element.placeholder = translation;
+                } else if (element.tagName === 'INPUT' && element.type === 'value') {
+                    element.value = translation;
+                } else {
+                    element.textContent = translation;
+                }
+            });
+            
+            // Update title and meta description
+            document.title = this.translate('page.title');
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.content = this.translate('page.description');
+            }
+            
+            console.log('✅ Language applied successfully');
+        }, 100);
     }
     
     createLanguageSwitcher() {
@@ -256,8 +298,20 @@ class TranslationManager {
     }
 }
 
-// Initialize translation manager
+// Initialize translation manager immediately
+console.log('🚀 Initializing Translation Manager...');
 window.translationManager = new TranslationManager();
+
+// Also initialize when DOM is ready as backup
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 DOM ready, re-initializing Translation Manager...');
+    if (!window.translationManager) {
+        window.translationManager = new TranslationManager();
+    } else {
+        // Re-apply translations if already initialized
+        window.translationManager.applyLanguage();
+    }
+});
 
 // Helper function for easy translation
 function t(key, params = {}) {
