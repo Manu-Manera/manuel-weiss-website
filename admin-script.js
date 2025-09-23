@@ -637,6 +637,37 @@ class AdminPanel {
                 </div>
             </div>
         `).join('');
+        
+        // Load recent applications in dashboard widget
+        this.loadRecentApplications();
+    }
+    
+    // Load recent applications for dashboard widget
+    loadRecentApplications() {
+        const recentAppsList = document.getElementById('recentApplicationsList');
+        if (!recentAppsList) return;
+        
+        // Get last 5 applications
+        const recentApps = applications.slice(-5).reverse();
+        
+        if (recentApps.length === 0) {
+            recentAppsList.innerHTML = '<p style="color: #666; text-align: center;">Noch keine Bewerbungen vorhanden</p>';
+            return;
+        }
+        
+        recentAppsList.innerHTML = recentApps.map(app => `
+            <div style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="font-weight: 600; margin: 0;">${app.company}</p>
+                        <p style="color: #666; font-size: 0.875rem; margin: 0;">${app.position}</p>
+                    </div>
+                    <span style="padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; background: ${getStatusColor(app.status)}; color: white;">
+                        ${getStatusText(app.status)}
+                    </span>
+                </div>
+            </div>
+        `).join('');
     }
 
     // Setup Quick Actions
