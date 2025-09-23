@@ -1063,7 +1063,13 @@ document.addEventListener('DOMContentLoaded', function() {
         createTemplate,
         startSmartWorkflow,
         analyzeJobDescription,
-        nextWorkflowStep
+        nextWorkflowStep,
+        showDocumentTypeModal,
+        confirmDocumentType,
+        closeDocumentTypeModal,
+        getDocumentTypeName,
+        getDocumentIcon,
+        getDocumentColor
     };
     
     // Assign all functions to window
@@ -1223,6 +1229,12 @@ window.createTemplate = createTemplate;
 window.startSmartWorkflow = startSmartWorkflow;
 window.analyzeJobDescription = analyzeJobDescription;
 window.nextWorkflowStep = nextWorkflowStep;
+window.showDocumentTypeModal = showDocumentTypeModal;
+window.confirmDocumentType = confirmDocumentType;
+window.closeDocumentTypeModal = closeDocumentTypeModal;
+window.getDocumentTypeName = getDocumentTypeName;
+window.getDocumentIcon = getDocumentIcon;
+window.getDocumentColor = getDocumentColor;
 
 // Force immediate availability
 console.log('🔧 Making functions available globally...', {
@@ -1723,106 +1735,11 @@ function handleDocumentUpload(event) {
         uploadButton.disabled = true;
     }
     
-    let processedFiles = 0;
-    const totalFiles = files.length;
+    // Process files one by one with manual type selection
+    processFilesSequentially(files, 0);
     
-    Array.from(files).forEach((file, index) => {
-        console.log(`📁 Processing file ${index + 1}/${totalFiles}:`, file.name, 'Size:', formatFileSize(file.size));
-        
-        // Check file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            console.error('File too large:', file.name);
-            showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
-            processedFiles++;
-            checkUploadComplete();
-            return;
-        }
-        
-        // Check file type
-        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'image/jpeg', 'image/jpg', 'image/png'];
-        if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().match(/\.(pdf|doc|docx|html|jpg|jpeg|png)$/)) {
-            console.error('Invalid file type:', file.name, file.type);
-            showToast(`Datei ${file.name} hat ein ungültiges Format`, 'error');
-            processedFiles++;
-            checkUploadComplete();
-            return;
-        }
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const doc = {
-                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-                    name: file.name,
-                    type: determineDocumentType(file.name),
-                    size: formatFileSize(file.size),
-                    uploadedAt: new Date().toISOString(),
-                    dataUrl: e.target.result,
-                    mimeType: file.type,
-                    originalSize: file.size
-                };
-                
-                // Get existing documents
-                let existingDocs = [];
-                try {
-                    existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
-                } catch (error) {
-                    console.error('Error parsing existing documents:', error);
-                    existingDocs = [];
-                }
-                
-                // Check for duplicates
-                const isDuplicate = existingDocs.some(existingDoc => 
-                    existingDoc.name === doc.name && existingDoc.originalSize === doc.originalSize
-                );
-                
-                if (isDuplicate) {
-                    console.warn('Duplicate file detected:', file.name);
-                    showToast(`Datei ${file.name} existiert bereits`, 'warning');
-                } else {
-                    // Add new document
-                    existingDocs.push(doc);
-                    
-                    // Save to localStorage with error handling
-                    try {
-                        localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
-                        console.log('✅ Document saved successfully:', doc.name);
-                        showToast(`${file.name} erfolgreich hochgeladen`, 'success');
-                    } catch (error) {
-                        console.error('Error saving to localStorage:', error);
-                        if (error.name === 'QuotaExceededError') {
-                            showToast('Speicher voll. Bitte löschen Sie alte Dokumente.', 'error');
-                        } else {
-                            showToast(`Fehler beim Speichern von ${file.name}`, 'error');
-                        }
-                    }
-                }
-                
-                // Update global documents array
-                documents = existingDocs;
-                
-            } catch (error) {
-                console.error('Error processing file:', file.name, error);
-                showToast(`Fehler beim Verarbeiten von ${file.name}`, 'error');
-            }
-            
-            processedFiles++;
-            checkUploadComplete();
-        };
-        
-        reader.onerror = function(error) {
-            console.error('FileReader error for file:', file.name, error);
-            showToast(`Fehler beim Lesen von ${file.name}`, 'error');
-            processedFiles++;
-            checkUploadComplete();
-        };
-        
-        reader.readAsDataURL(file);
-    });
-    
-    function checkUploadComplete() {
-        if (processedFiles === totalFiles) {
+    function processFilesSequentially(files, index) {
+        if (index >= files.length) {
             console.log('🎉 All files processed. Reloading documents...');
             
             // Reload documents display
@@ -1840,7 +1757,33 @@ function handleDocumentUpload(event) {
             event.target.value = '';
             
             console.log('📊 Upload process completed. Total documents:', documents.length);
+            return;
         }
+        
+        const file = files[index];
+        console.log(`📁 Processing file ${index + 1}/${files.length}:`, file.name, 'Size:', formatFileSize(file.size));
+        
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            console.error('File too large:', file.name);
+            showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
+            processFilesSequentially(files, index + 1);
+            return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().match(/\.(pdf|doc|docx|html|jpg|jpeg|png)$/)) {
+            console.error('Invalid file type:', file.name, file.type);
+            showToast(`Datei ${file.name} hat ein ungültiges Format`, 'error');
+            processFilesSequentially(files, index + 1);
+            return;
+        }
+        
+        // Show document type selection modal
+        showDocumentTypeModal(file, () => {
+            processFilesSequentially(files, index + 1);
+        });
     }
     
     // Helper function for toast notifications
@@ -1853,6 +1796,294 @@ function handleDocumentUpload(event) {
             if (type === 'error') {
                 alert(message);
             }
+        }
+    }
+}
+
+// Show document type selection modal
+function showDocumentTypeModal(file, onComplete) {
+    console.log('📋 Showing document type selection for:', file.name);
+    
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'document-type-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        ">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0 0 0.5rem 0; color: #333;">Dokumenttyp auswählen</h3>
+                <p style="margin: 0; color: #666; font-size: 0.9rem;">Für: <strong>${file.name}</strong></p>
+            </div>
+            
+            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    <input type="radio" name="documentType" value="cv" style="margin-right: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">📄 Lebenslauf</div>
+                        <div style="font-size: 0.85rem; color: #666;">CV, Resume, Curriculum Vitae</div>
+                    </div>
+                </label>
+                
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    <input type="radio" name="documentType" value="cover-letter" style="margin-right: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">✉️ Anschreiben</div>
+                        <div style="font-size: 0.85rem; color: #666;">Cover Letter, Motivationsschreiben</div>
+                    </div>
+                </label>
+                
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    <input type="radio" name="documentType" value="certificate" style="margin-right: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">🏆 Zeugnis</div>
+                        <div style="font-size: 0.85rem; color: #666;">Arbeitszeugnis, Schulzeugnis</div>
+                    </div>
+                </label>
+                
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    <input type="radio" name="documentType" value="certification" style="margin-right: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">🎓 Zertifikat</div>
+                        <div style="font-size: 0.85rem; color: #666;">Zertifikat, Bescheinigung, Diplom</div>
+                    </div>
+                </label>
+                
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    <input type="radio" name="documentType" value="bundle" style="margin-right: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 600; color: #333;">📦 Bewerbungs-Bundle</div>
+                        <div style="font-size: 0.85rem; color: #666;">Komplette Bewerbungsmappe</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="closeDocumentTypeModal()" style="
+                    padding: 0.75rem 1.5rem;
+                    background: #f3f4f6;
+                    color: #374151;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: 500;
+                ">Abbrechen</button>
+                <button onclick="confirmDocumentType('${file.name}', '${file.size}', '${file.type}')" style="
+                    padding: 0.75rem 1.5rem;
+                    background: #6366f1;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">Speichern</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Store file and callback for later use
+    window.currentUploadFile = file;
+    window.currentUploadCallback = onComplete;
+}
+
+// Confirm document type selection
+function confirmDocumentType(fileName, fileSize, fileType) {
+    const selectedType = document.querySelector('input[name="documentType"]:checked');
+    
+    if (!selectedType) {
+        showToast('Bitte wählen Sie einen Dokumenttyp aus.', 'warning');
+        return;
+    }
+    
+    const documentType = selectedType.value;
+    const file = window.currentUploadFile;
+    
+    console.log('✅ Document type selected:', documentType, 'for file:', fileName);
+    
+    // Process the file
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const doc = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                name: file.name,
+                type: documentType,
+                size: formatFileSize(file.size),
+                uploadedAt: new Date().toISOString(),
+                dataUrl: e.target.result,
+                mimeType: file.type,
+                originalSize: file.size
+            };
+            
+            // Get existing documents
+            let existingDocs = [];
+            try {
+                existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+            } catch (error) {
+                console.error('Error parsing existing documents:', error);
+                existingDocs = [];
+            }
+            
+            // Add new document
+            existingDocs.push(doc);
+            
+            // Save to localStorage with error handling
+            try {
+                localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
+                console.log('✅ Document saved successfully:', doc.name, 'as', documentType);
+                showToast(`${file.name} als ${getDocumentTypeName(documentType)} gespeichert`, 'success');
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                if (error.name === 'QuotaExceededError') {
+                    showToast('Speicher voll. Bitte löschen Sie alte Dokumente.', 'error');
+                } else {
+                    showToast(`Fehler beim Speichern von ${file.name}`, 'error');
+                }
+            }
+            
+            // Update global documents array
+            documents = existingDocs;
+            
+        } catch (error) {
+            console.error('Error processing file:', file.name, error);
+            showToast(`Fehler beim Verarbeiten von ${file.name}`, 'error');
+        }
+        
+        // Close modal and continue
+        closeDocumentTypeModal();
+        if (window.currentUploadCallback) {
+            window.currentUploadCallback();
+        }
+    };
+    
+    reader.onerror = function(error) {
+        console.error('FileReader error for file:', file.name, error);
+        showToast(`Fehler beim Lesen von ${file.name}`, 'error');
+        closeDocumentTypeModal();
+        if (window.currentUploadCallback) {
+            window.currentUploadCallback();
+        }
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Close document type modal
+function closeDocumentTypeModal() {
+    const modal = document.querySelector('.document-type-modal');
+    if (modal) {
+        modal.remove();
+    }
+    window.currentUploadFile = null;
+    window.currentUploadCallback = null;
+}
+
+// Get document type display name
+function getDocumentTypeName(type) {
+    const typeNames = {
+        'cv': 'Lebenslauf',
+        'cover-letter': 'Anschreiben',
+        'certificate': 'Zeugnis',
+        'certification': 'Zertifikat',
+        'bundle': 'Bewerbungs-Bundle'
+    };
+    return typeNames[type] || type;
+}
+
+// Get document icon
+function getDocumentIcon(type) {
+    const icons = {
+        'cv': 'fa-file-alt',
+        'cover-letter': 'fa-envelope',
+        'certificate': 'fa-certificate',
+        'certification': 'fa-graduation-cap',
+        'bundle': 'fa-archive'
+    };
+    return icons[type] || 'fa-file';
+}
+
+// Get document color
+function getDocumentColor(type) {
+    const colors = {
+        'cv': '#6366f1',
+        'cover-letter': '#10b981',
+        'certificate': '#f59e0b',
+        'certification': '#8b5cf6',
+        'bundle': '#ef4444'
+    };
+    return colors[type] || '#6b7280';
+}
+
+// Helper function for toast notifications
+function showToast(message, type = 'info') {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast(message, type);
+    } else {
+        console.log(`Toast [${type}]:`, message);
+        // Fallback: show alert for important messages
+        if (type === 'error') {
+            alert(message);
         }
     }
 }
