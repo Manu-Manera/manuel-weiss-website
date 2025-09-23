@@ -445,26 +445,73 @@ function findRelatedProjects(skill) {
 }
 
 function analyzeWritingStyle(coverLetter) {
-    // Extract greetings
-    const greetingMatch = coverLetter.match(/^(Sehr geehrte.*?,|Liebe.*?,|Hallo.*?,)/m);
+    // Initialize writing style structures
+    if (!userProfile.writingStyle.sentenceStructures) {
+        userProfile.writingStyle.sentenceStructures = [];
+    }
+    if (!userProfile.writingStyle.introductionPatterns) {
+        userProfile.writingStyle.introductionPatterns = [];
+    }
+    if (!userProfile.writingStyle.skillPresentations) {
+        userProfile.writingStyle.skillPresentations = [];
+    }
+    
+    // Extract greetings with context
+    const greetingMatch = coverLetter.match(/^(Sehr geehrte.*?,|Liebe.*?,|Hallo.*?,|Guten Tag.*?,)/m);
     if (greetingMatch && !userProfile.writingStyle.greetings.includes(greetingMatch[1])) {
         userProfile.writingStyle.greetings.push(greetingMatch[1]);
     }
     
-    // Extract closings
-    const closingMatch = coverLetter.match(/(Mit freundlichen Grüßen|Beste Grüße|Freundliche Grüße|Herzliche Grüße)/);
-    if (closingMatch && !userProfile.writingStyle.closings.includes(closingMatch[1])) {
-        userProfile.writingStyle.closings.push(closingMatch[1]);
-    }
+    // Extract closings with variations
+    const closingPatterns = [
+        /(Mit freundlichen Grüßen|Beste Grüße|Freundliche Grüße|Herzliche Grüße|Viele Grüße|Mit besten Grüßen)/,
+        /(Ich freue mich.*?(?:\.|$))/,
+        /(Über.*?Gespräch.*?(?:\.|$))/,
+        /(Gerne.*?persönlich.*?(?:\.|$))/
+    ];
     
-    // Extract transition phrases
+    closingPatterns.forEach(pattern => {
+        const match = coverLetter.match(pattern);
+        if (match && !userProfile.writingStyle.closings.includes(match[1])) {
+            userProfile.writingStyle.closings.push(match[1]);
+        }
+    });
+    
+    // Extract introduction patterns
+    const introPatterns = [
+        /mit (großem|besonderem|starkem) Interesse habe ich/gi,
+        /Ihre Stellenanzeige.*?hat (mich|meine Aufmerksamkeit)/gi,
+        /als.*?habe ich.*?gelesen/gi,
+        /durch.*?bin ich auf/gi,
+        /mit Begeisterung/gi
+    ];
+    
+    introPatterns.forEach(pattern => {
+        const matches = coverLetter.match(pattern);
+        if (matches) {
+            matches.forEach(match => {
+                if (!userProfile.writingStyle.introductionPatterns.includes(match)) {
+                    userProfile.writingStyle.introductionPatterns.push(match);
+                }
+            });
+        }
+    });
+    
+    // Extract transition phrases with more variety
     const transitions = [
         /[Dd]arüber hinaus/g,
         /[Zz]udem/g,
         /[Dd]es Weiteren/g,
         /[Aa]ußerdem/g,
         /[Ii]nsbesondere/g,
-        /[Dd]abei/g
+        /[Dd]abei/g,
+        /[Gg]leichzeitig/g,
+        /[Ee]benso/g,
+        /[Ff]erner/g,
+        /[Nn]icht zuletzt/g,
+        /[Ii]n diesem Zusammenhang/g,
+        /[Aa]ufgrund/g,
+        /[Dd]urch meine/g
     ];
     
     transitions.forEach(pattern => {
@@ -477,6 +524,113 @@ function analyzeWritingStyle(coverLetter) {
             });
         }
     });
+    
+    // Extract action verbs and personal expressions
+    const actionVerbs = extractActionVerbs(coverLetter);
+    userProfile.writingStyle.actionVerbs = [...new Set([...userProfile.writingStyle.actionVerbs, ...actionVerbs])];
+    
+    // Extract skill presentation patterns
+    const skillPatterns = [
+        /[Mm]eine (Expertise|Erfahrung|Kenntnisse) in (.+?) (ermöglicht|befähigt|erlaubt)/g,
+        /[Ii]ch verfüge über (.+?) (Kenntnisse|Erfahrung|Expertise)/g,
+        /[Dd]urch meine (.+?) konnte ich/g,
+        /[Aa]ls (.+?) habe ich/g,
+        /[Mm]it (.+?) Jahren Erfahrung/g
+    ];
+    
+    skillPatterns.forEach(pattern => {
+        const matches = coverLetter.matchAll(pattern);
+        for (const match of matches) {
+            const presentation = match[0];
+            if (!userProfile.writingStyle.skillPresentations.includes(presentation)) {
+                userProfile.writingStyle.skillPresentations.push(presentation);
+            }
+        }
+    });
+    
+    // Analyze sentence structures
+    analyzeSentenceStructures(coverLetter);
+    
+    // Extract personal tone indicators
+    analyzePersonalTone(coverLetter);
+}
+
+function extractActionVerbs(text) {
+    const actionVerbs = [];
+    const verbPatterns = [
+        /\b(entwickelte|entwickelt|implementierte|implementiert|führte|geführt|leitete|geleitet|verantwortete|verantwortet)\b/gi,
+        /\b(optimierte|optimiert|verbesserte|verbessert|steigerte|gesteigert|reduzierte|reduziert)\b/gi,
+        /\b(analysierte|analysiert|konzipierte|konzipiert|koordinierte|koordiniert|betreute|betreut)\b/gi,
+        /\b(erreichte|erreicht|erzielte|erzielt|schaffte|geschafft|realisierte|realisiert)\b/gi,
+        /\b(unterstützte|unterstützt|beriet|beraten|schulte|geschult|coachte|gecoacht)\b/gi
+    ];
+    
+    verbPatterns.forEach(pattern => {
+        const matches = text.match(pattern);
+        if (matches) {
+            actionVerbs.push(...matches);
+        }
+    });
+    
+    return [...new Set(actionVerbs)];
+}
+
+function analyzeSentenceStructures(text) {
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+    
+    sentences.forEach(sentence => {
+        // Analyze sentence beginnings
+        const beginning = sentence.trim().substring(0, 50);
+        
+        // Common patterns
+        if (/^(Als|Mit|Durch|In meiner|Während|Bei)/.test(beginning)) {
+            const structure = beginning.match(/^(\w+\s+\w+(?:\s+\w+)?)/);
+            if (structure && !userProfile.writingStyle.sentenceStructures.includes(structure[1])) {
+                userProfile.writingStyle.sentenceStructures.push(structure[1]);
+            }
+        }
+    });
+}
+
+function analyzePersonalTone(text) {
+    if (!userProfile.writingStyle.personalTone) {
+        userProfile.writingStyle.personalTone = {
+            formality: 'formal', // formal, semi-formal, casual
+            enthusiasm: 'moderate', // high, moderate, low
+            confidence: 'confident', // very confident, confident, modest
+            directness: 'direct' // direct, indirect
+        };
+    }
+    
+    // Analyze formality
+    const casualIndicators = /\b(toll|super|klasse|spannend|cool)\b/gi;
+    const formalIndicators = /\b(hiermit|bezugnehmend|diesbezüglich|nachfolgend)\b/gi;
+    
+    if (casualIndicators.test(text)) {
+        userProfile.writingStyle.personalTone.formality = 'casual';
+    } else if (formalIndicators.test(text)) {
+        userProfile.writingStyle.personalTone.formality = 'very formal';
+    }
+    
+    // Analyze enthusiasm
+    const enthusiasmIndicators = /\b(begeistert|fasziniert|leidenschaftlich|sehr gerne|mit Freude)\b/gi;
+    const enthusiasmMatches = text.match(enthusiasmIndicators);
+    if (enthusiasmMatches && enthusiasmMatches.length > 2) {
+        userProfile.writingStyle.personalTone.enthusiasm = 'high';
+    }
+    
+    // Analyze confidence
+    const confidenceIndicators = /\b(überzeugt|sicher|definitiv|zweifellos|selbstverständlich)\b/gi;
+    const modestIndicators = /\b(glaube|denke|vielleicht|eventuell|möglicherweise)\b/gi;
+    
+    const confidenceCount = (text.match(confidenceIndicators) || []).length;
+    const modestCount = (text.match(modestIndicators) || []).length;
+    
+    if (confidenceCount > modestCount * 2) {
+        userProfile.writingStyle.personalTone.confidence = 'very confident';
+    } else if (modestCount > confidenceCount * 2) {
+        userProfile.writingStyle.personalTone.confidence = 'modest';
+    }
 }
 
 function extractAchievementsAndKeywords() {
@@ -620,36 +774,68 @@ function extractActionFromRequirement(requirementText) {
 
 // Generate personalized greetings
 function generateGreetings(source = 'Stellenanzeige') {
-    const defaultGreetings = [
-        `mit großem Interesse habe ich Ihre ${source} gelesen`,
-        `Ihre ${source} hat meine Aufmerksamkeit geweckt`,
-        `mit Begeisterung habe ich Ihre ${source} zur Kenntnis genommen`,
-        `beim Lesen Ihrer ${source} war ich sofort überzeugt`,
-        `Ihre ${source} spricht mich in besonderem Maße an`
-    ];
+    // Use user's learned greeting patterns or defaults
+    const userGreetings = userProfile.writingStyle.greetings.length > 0 
+        ? userProfile.writingStyle.greetings 
+        : ['Sehr geehrte Damen und Herren,', 'Sehr geehrtes Team,'];
+    
+    const userIntros = userProfile.writingStyle.introductionPatterns.length > 0
+        ? userProfile.writingStyle.introductionPatterns
+        : [
+            `mit großem Interesse habe ich Ihre ${source} gelesen`,
+            `Ihre ${source} hat meine Aufmerksamkeit geweckt`,
+            `mit Begeisterung habe ich Ihre ${source} zur Kenntnis genommen`
+        ];
     
     const sources = {
         'LinkedIn': ['auf LinkedIn', 'in Ihrem LinkedIn-Post', 'über LinkedIn'],
         'Stellenanzeige': ['auf Ihrer Webseite', 'im Internet', 'online'],
         'Xing': ['auf Xing', 'über Xing'],
         'Indeed': ['auf Indeed', 'über Indeed'],
-        'StepStone': ['auf StepStone', 'über StepStone']
+        'StepStone': ['auf StepStone', 'über StepStone'],
+        'Sonstiges': ['', 'in Ihrer Ausschreibung', 'in Ihrem Inserat']
     };
     
     const sourceVariations = sources[source] || [''];
-    const greeting = defaultGreetings[Math.floor(Math.random() * defaultGreetings.length)];
-    const variation = sourceVariations[Math.floor(Math.random() * sourceVariations.length)];
+    const position = workflowData?.position || 'die ausgeschriebene Position';
+    const company = workflowData?.company || 'Ihrem Unternehmen';
     
-    // Combine user's style if available
-    const userGreeting = userProfile.writingStyle.greetings[0] || 'Sehr geehrte Damen und Herren,';
+    // Generate variations based on user's style
+    const variations = [];
+    
+    // Style 1: Classic formal
+    variations.push(`${userGreetings[0]}\n\n${userIntros[0]} ${sourceVariations[0]}.`);
+    
+    // Style 2: Position-focused
+    variations.push(`${userGreetings[0]}\n\nmit großer Freude habe ich ${sourceVariations[0]} entdeckt, dass Sie eine/n ${position} suchen.`);
+    
+    // Style 3: Experience-focused
+    const userPosition = userProfile.experiences[0]?.position || 'erfahrener Experte';
+    variations.push(`${userGreetings[0]}\n\nals ${userPosition} hat mich Ihre Stellenausschreibung ${sourceVariations[0]} sofort angesprochen.`);
+    
+    // Style 4: Requirements-focused
+    const mainReqs = extractMainRequirements();
+    variations.push(`${userGreetings[0]}\n\ndie Kombination aus ${mainReqs} in Ihrer Stellenbeschreibung ${sourceVariations[0]} entspricht exakt meinem Profil.`);
+    
+    // Style 5: Company-focused
+    variations.push(`${userGreetings[0]}\n\ndie Möglichkeit, als ${position} bei ${company} tätig zu werden, begeistert mich sehr.`);
+    
+    // Style 6: Enthusiasm-focused (if user shows high enthusiasm)
+    if (userProfile.writingStyle.personalTone?.enthusiasm === 'high') {
+        variations.push(`${userGreetings[0]}\n\nmit Begeisterung und großem Interesse habe ich ${sourceVariations[0]} von Ihrer offenen Position als ${position} erfahren.`);
+    }
+    
+    // Style 7: Direct approach
+    variations.push(`${userGreetings[0]}\n\nhiermit bewerbe ich mich auf die von Ihnen ${sourceVariations[0]} ausgeschriebene Stelle als ${position}.`);
+    
+    // Style 8: Network/referral (for "Sonstiges")
+    if (source === 'Sonstiges') {
+        variations.push(`${userGreetings[0]}\n\ndurch eine Empfehlung wurde ich auf die vakante Position als ${position} in Ihrem Unternehmen aufmerksam.`);
+    }
     
     return {
-        formal: `${userGreeting}\n\n${greeting} ${variation}.`,
-        variations: [
-            `${userGreeting}\n\nmit großer Freude habe ich ${variation} entdeckt, dass Sie eine/n ${workflowData.position} suchen.`,
-            `${userGreeting}\n\nals ${userProfile.experiences[0]?.position || 'erfahrener Experte'} hat mich Ihre Stellenausschreibung ${variation} sofort angesprochen.`,
-            `${userGreeting}\n\ndie Kombination aus ${extractMainRequirements()} in Ihrer Stellenbeschreibung ${variation} entspricht exakt meinem Profil.`
-        ]
+        formal: variations[0],
+        variations: variations.slice(0, 5) // Return top 5 variations
     };
 }
 
@@ -667,20 +853,58 @@ function extractMainRequirements() {
 
 // Generate closings based on user style
 function generateClosings() {
-    const defaultClosings = [
-        'Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.',
-        'Ich freue mich darauf, Sie in einem persönlichen Gespräch von meinen Qualifikationen zu überzeugen.',
-        'Gerne stelle ich Ihnen meine Expertise in einem persönlichen Gespräch vor.',
-        'Auf eine positive Rückmeldung und die Möglichkeit eines persönlichen Austauschs freue ich mich.',
-        'Ich bin überzeugt, dass ich mit meiner Erfahrung einen wertvollen Beitrag zu Ihrem Team leisten kann und freue mich auf Ihre Rückmeldung.'
-    ];
+    // Use user's learned closing patterns
+    const userClosingPhrases = userProfile.writingStyle.closings.filter(c => 
+        c.includes('freue') || c.includes('Gespräch') || c.includes('Gerne')
+    );
     
-    const userClosing = userProfile.writingStyle.closings[0] || 'Mit freundlichen Grüßen';
+    const userFormalClosings = userProfile.writingStyle.closings.filter(c =>
+        c.includes('Grüßen') || c.includes('Grüße')
+    );
+    
+    const formalClosing = userFormalClosings[0] || 'Mit freundlichen Grüßen';
+    
+    // Generate variations based on user style and tone
+    const variations = [];
+    
+    // Style 1: Enthusiastic
+    if (userProfile.writingStyle.personalTone?.enthusiasm === 'high') {
+        variations.push('Mit großer Begeisterung sehe ich einem persönlichen Gespräch entgegen.');
+        variations.push('Ich freue mich sehr darauf, Sie persönlich kennenzulernen und bin gespannt auf unseren Austausch.');
+    }
+    
+    // Style 2: Confident
+    if (userProfile.writingStyle.personalTone?.confidence === 'very confident') {
+        variations.push('Ich bin überzeugt, dass meine Expertise perfekt zu Ihren Anforderungen passt und freue mich auf ein persönliches Gespräch.');
+        variations.push('Gerne überzeuge ich Sie in einem persönlichen Gespräch von meiner Eignung für diese Position.');
+    }
+    
+    // Style 3: Professional
+    variations.push('Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.');
+    variations.push('Ich stehe Ihnen gerne für ein persönliches Gespräch zur Verfügung.');
+    
+    // Style 4: Value-focused
+    variations.push('Ich bin davon überzeugt, mit meiner Erfahrung einen wertvollen Beitrag zu Ihrem Team leisten zu können.');
+    variations.push('Gerne erläutere ich Ihnen in einem persönlichen Gespräch, wie ich zum Erfolg Ihres Unternehmens beitragen kann.');
+    
+    // Style 5: Action-oriented
+    variations.push('Für ein persönliches Kennenlernen stehe ich Ihnen jederzeit zur Verfügung.');
+    variations.push('Lassen Sie uns in einem persönlichen Gespräch besprechen, wie ich Ihr Team optimal unterstützen kann.');
+    
+    // Add user's own patterns if available
+    if (userClosingPhrases.length > 0) {
+        variations.unshift(...userClosingPhrases.slice(0, 2));
+    }
+    
+    // Style 6: Availability-focused
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    variations.push(`Für ein Gespräch stehe ich Ihnen ab dem ${nextWeek.toLocaleDateString('de-DE')} gerne zur Verfügung.`);
     
     return {
-        selected: defaultClosings[0],
-        formal: userClosing,
-        variations: defaultClosings
+        selected: variations[0] || 'Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.',
+        formal: formalClosing,
+        variations: variations.slice(0, 5) // Return top 5 variations
     };
 }
 
