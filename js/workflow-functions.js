@@ -853,6 +853,29 @@ function generateStep5() {
     `;
 }
 
+// Make workflow functions globally available
+window.startSmartWorkflow = startSmartWorkflow;
+window.closeSmartWorkflow = closeSmartWorkflow;
+window.nextWorkflowStep = nextWorkflowStep;
+window.previousWorkflowStep = previousWorkflowStep;
+window.saveAndContinue = saveAndContinue;
+window.analyzeRequirements = analyzeRequirements;
+window.regenerateSuggestions = regenerateSuggestions;
+window.skipToManualWriting = skipToManualWriting;
+window.proceedWithRequirements = proceedWithRequirements;
+window.updateGreeting = updateGreeting;
+window.previewFullLetter = previewFullLetter;
+window.exportCoverLetterPDF = exportCoverLetterPDF;
+window.exportCoverLetterWord = exportCoverLetterWord;
+window.exportCoverLetterODT = exportCoverLetterODT;
+window.triggerWorkflowDocumentUpload = triggerWorkflowDocumentUpload;
+window.removeSelectedDocument = removeSelectedDocument;
+window.publishOnline = publishOnline;
+window.exportPDF = exportPDF;
+window.exportWord = exportWord;
+window.finishWorkflow = finishWorkflow;
+window.copyShareLink = copyShareLink;
+
 // Generate Step 6: Final Review and Export
 function generateStep6() {
     return `
