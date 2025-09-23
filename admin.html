@@ -7656,6 +7656,26 @@ Bitte antworte im folgenden JSON-Format:
         smartCVScript.src = `js/smart-cv.js?v=1.0&t=${timestamp}`;
         document.head.appendChild(smartCVScript);
         
+        // Load job requirement analyzer
+        const jobAnalyzerScript = document.createElement('script');
+        jobAnalyzerScript.src = `js/job-requirement-analyzer.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(jobAnalyzerScript);
+        
+        // Load smart workflow steps
+        const smartWorkflowScript = document.createElement('script');
+        smartWorkflowScript.src = `js/smart-workflow-steps.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(smartWorkflowScript);
+        
+        // Load application learning system
+        const learningSystemScript = document.createElement('script');
+        learningSystemScript.src = `js/application-learning-system.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(learningSystemScript);
+        
+        // Load AI Twin presenter
+        const aiTwinScript = document.createElement('script');
+        aiTwinScript.src = `js/ai-twin-presenter.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(aiTwinScript);
+        
         // AI Coach Admin Script
         const aiCoachAdminScript = document.createElement('script');
         aiCoachAdminScript.src = `js/ai-coach-admin.js?v=1.0&t=${timestamp}`;
