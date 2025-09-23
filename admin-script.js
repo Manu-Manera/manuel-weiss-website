@@ -1021,6 +1021,18 @@ let applications = JSON.parse(localStorage.getItem('applications') || '[]');
 let currentFilter = 'all';
 let editingApplicationId = null;
 
+// Initialize applications on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set 'all' filter as active by default
+    const allTab = document.querySelector('.filter-tab[data-filter="all"]');
+    if (allTab) {
+        allTab.style.borderBottomColor = '#6366f1';
+    }
+    
+    // Load applications immediately
+    loadApplications();
+});
+
 // Load and display applications
 function loadApplications() {
     const filteredApps = currentFilter === 'all' 
