@@ -1093,11 +1093,11 @@ function loadApplications() {
 // Update statistics
 function updateStatistics() {
     const total = applications.length;
-    const positive = applications.filter(app => app.status === 'interview').length;
+    const inProgress = applications.filter(app => app.status === 'in-progress').length;
     const interviews = applications.filter(app => app.status === 'interview').length;
     const rejected = applications.filter(app => app.status === 'rejected').length;
     const sent = applications.filter(app => app.status === 'sent').length;
-    const successRate = total > 0 ? Math.round((positive / total) * 100) : 0;
+    const successRate = total > 0 ? Math.round((interviews / total) * 100) : 0;
     
     // Update dashboard stats
     const updateStat = (id, value) => {
@@ -1106,7 +1106,7 @@ function updateStatistics() {
     };
     
     updateStat('total-applications-count', total);
-    updateStat('positive-responses-count', positive);
+    updateStat('positive-responses-count', inProgress);
     updateStat('interviews-count', interviews);
     updateStat('rejections-count', rejected);
     updateStat('pending-applications-count', sent);
