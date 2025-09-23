@@ -1416,17 +1416,191 @@ function getStatusText(status) {
     return texts[status] || status;
 }
 
-// CV Management
-function uploadCV() {
-    const fileInput = document.getElementById('cv-upload');
-    if (fileInput.files.length === 0) {
-        alert('Bitte wählen Sie eine Datei aus.');
+// Document Management
+let documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+let currentDocumentFilter = 'all';
+
+function filterDocuments(type) {
+    currentDocumentFilter = type;
+    
+    // Update active tab
+    document.querySelectorAll('.doc-tab').forEach(tab => {
+        tab.style.borderBottomColor = 'transparent';
+        if (tab.dataset.type === type) {
+            tab.style.borderBottomColor = '#6366f1';
+        }
+    });
+    
+    loadDocuments();
+}
+
+function loadDocuments() {
+    const filteredDocs = currentDocumentFilter === 'all' 
+        ? documents 
+        : documents.filter(doc => doc.type === currentDocumentFilter);
+    
+    const listContainer = document.getElementById('documentsList');
+    if (!listContainer) return;
+    
+    if (filteredDocs.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #666;">
+                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                <p>Keine Dokumente vorhanden</p>
+            </div>
+        `;
         return;
     }
     
-    // Here you would implement actual file upload
+    listContainer.innerHTML = filteredDocs.map(doc => `
+        <div class="document-item" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fas ${getDocumentIcon(doc.type)}" style="font-size: 1.5rem; color: ${getDocumentColor(doc.type)};"></i>
+                <div>
+                    <p style="font-weight: 600; margin: 0;">${doc.name}</p>
+                    <p style="color: #666; margin: 0; font-size: 0.875rem;">${doc.size} • ${new Date(doc.uploadedAt).toLocaleDateString('de-DE')}</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="viewDocument('${doc.id}')" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button onclick="downloadDocument('${doc.id}')" style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button onclick="deleteDocument('${doc.id}')" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getDocumentIcon(type) {
+    const icons = {
+        'cv': 'fa-file-alt',
+        'portrait': 'fa-portrait',
+        'certificate': 'fa-certificate',
+        'certification': 'fa-award',
+        'cover-letter': 'fa-envelope-open-text'
+    };
+    return icons[type] || 'fa-file';
+}
+
+function getDocumentColor(type) {
+    const colors = {
+        'cv': '#6366f1',
+        'portrait': '#10b981',
+        'certificate': '#f59e0b',
+        'certification': '#8b5cf6',
+        'cover-letter': '#ef4444'
+    };
+    return colors[type] || '#6b7280';
+}
+
+// PDF Editor Functions
+function openPDFEditor() {
+    const modal = document.getElementById('pdfEditorModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closePDFEditor() {
+    const modal = document.getElementById('pdfEditorModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Smart Workflow Functions
+function startSmartWorkflow() {
+    // Create workflow modal
+    const modal = document.createElement('div');
+    modal.id = 'smartWorkflowModal';
+    modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;';
+    
+    modal.innerHTML = `
+        <div style="background: white; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">Smart Bewerbungs-Workflow</h2>
+                <button onclick="closeSmartWorkflow()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="padding: 2rem; overflow-y: auto;">
+                <!-- Step 1: Job Details -->
+                <div id="workflowStep1" class="workflow-step">
+                    <h3 style="margin-bottom: 1.5rem;">Schritt 1: Stelleninformationen</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Stellenbeschreibung einfügen:</label>
+                        <textarea id="jobDescription" placeholder="Füge hier die komplette Stellenbeschreibung ein..." style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; height: 200px; resize: vertical;"></textarea>
+                        <button onclick="analyzeJobDescription()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-magic"></i> Automatisch analysieren
+                        </button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Unternehmen:</label>
+                            <input type="text" id="workflowCompany" placeholder="z.B. SAP SE" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Position:</label>
+                            <input type="text" id="workflowPosition" placeholder="z.B. Senior Consultant" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                    </div>
+                    
+                    <button onclick="nextWorkflowStep(2)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        Weiter <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <!-- More steps will be added dynamically -->
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeSmartWorkflow() {
+    const modal = document.getElementById('smartWorkflowModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function analyzeJobDescription() {
+    const description = document.getElementById('jobDescription').value;
+    if (!description) {
+        alert('Bitte füge zuerst eine Stellenbeschreibung ein.');
+        return;
+    }
+    
+    // Simple extraction logic (in real app, this would use AI)
+    const companyMatch = description.match(/(?:bei|at|für)\s+([A-Z][A-Za-z\s&]+)(?:GmbH|AG|SE|Ltd|Inc)?/);
+    const positionMatch = description.match(/(?:als|as|position:|rolle:)\s+([A-Za-z\s]+)(?:\(|,|\n)/i);
+    
+    if (companyMatch || positionMatch) {
+        const extractedCompany = companyMatch ? companyMatch[1].trim() : '';
+        const extractedPosition = positionMatch ? positionMatch[1].trim() : '';
+        
+        if (confirm(`Extrahierte Daten:\nUnternehmen: ${extractedCompany}\nPosition: ${extractedPosition}\n\nDaten übernehmen?`)) {
+            if (extractedCompany) document.getElementById('workflowCompany').value = extractedCompany;
+            if (extractedPosition) document.getElementById('workflowPosition').value = extractedPosition;
+        }
+    }
+    
     if (window.adminPanel && window.adminPanel.showToast) {
-        window.adminPanel.showToast('Lebenslauf hochgeladen', 'success');
+        window.adminPanel.showToast('Stellenbeschreibung analysiert', 'success');
+    }
+}
+
+function nextWorkflowStep(step) {
+    // Implementation for workflow steps
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast(`Weiter zu Schritt ${step}`, 'info');
     }
 }
 

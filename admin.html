@@ -2558,189 +2558,29 @@
 
 
 
-                                        <!-- KI Anschreiben Generator -->
+                                        <!-- Smart Workflow Button -->
 
 
-                                        <div class="ai-cover-letter" style="margin-bottom: 3rem;">
+                                        <div class="smart-workflow-section" style="margin-bottom: 3rem;">
 
 
-                                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center;">
 
 
-                                                🤖 KI Anschreiben-Generator
+                                                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem;">
+                                                    🚀 Smart Bewerbungs-Workflow
+                                                </h3>
 
 
-                                            </h3>
-                            
+                                                <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; font-size: 1.1rem;">
+                                                    Erstelle professionelle Bewerbungen mit KI-Unterstützung
+                                                </p>
 
 
-                                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-
-
-                                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-
-
-                                                    <div>
-
-
-                                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Unternehmen:</label>
-
-
-                                                        <input type="text" id="ai-company" placeholder="z.B. SAP, Siemens..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-
-
-                                                    </div>
-
-
-                                                    <div>
-
-
-                                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Position:</label>
-
-
-                                                        <input type="text" id="ai-position" placeholder="z.B. Senior Consultant" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-
-
-                                                    </div>
-
-
-                                                </div>
-                                
-
-
-                                                <div style="margin-bottom: 1.5rem;">
-
-
-                                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Stellenbeschreibung (optional):</label>
-
-
-                                                    <textarea id="ai-job-description" placeholder="Füge hier die Stellenbeschreibung ein..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 120px; resize: vertical;"></textarea>
-
-
-                                                </div>
-                                
-
-
-                                                <div style="margin-bottom: 1.5rem;">
-
-
-                                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Besondere Schwerpunkte:</label>
-
-
-                                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-
-
-                                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
-
-
-                                                            <input type="checkbox" value="leadership"> Führungserfahrung
-
-
-                                                        </label>
-
-
-                                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
-
-
-                                                            <input type="checkbox" value="digitalization"> Digitalisierung
-
-
-                                                        </label>
-
-
-                                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
-
-
-                                                            <input type="checkbox" value="hr-tech"> HR-Tech
-
-
-                                                        </label>
-
-
-                                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
-
-
-                                                            <input type="checkbox" value="process-optimization"> Prozessoptimierung
-
-
-                                                        </label>
-
-
-                                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
-
-
-                                                            <input type="checkbox" value="change-management"> Change Management
-
-
-                                                        </label>
-
-
-                                                    </div>
-
-
-                                                </div>
-                                
-
-
-                                                <button onclick="generateAICoverLetter()" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-
-
-                                                    <i class="fas fa-magic"></i> KI Anschreiben generieren
-
-
+                                                <button onclick="startSmartWorkflow()" style="padding: 1.5rem 3rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.2rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                                                    <i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
+                                                    Neue Bewerbung erstellen
                                                 </button>
-                                
-
-
-                                                <div id="aiGeneratedContent" style="margin-top: 2rem; display: none;">
-
-
-                                                    <h4 style="color: #555; margin-bottom: 1rem;">Generiertes Anschreiben:</h4>
-
-
-                                                    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 6px; border: 1px solid #e5e7eb;">
-
-
-                                                        <div id="aiCoverLetterContent" style="white-space: pre-wrap; line-height: 1.6;"></div>
-
-
-                                                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-
-
-                                                            <button onclick="copyAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
-
-
-                                                                <i class="fas fa-copy"></i> Kopieren
-
-
-                                                            </button>
-
-
-                                                            <button onclick="editAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
-
-
-                                                                <i class="fas fa-edit"></i> Bearbeiten
-
-
-                                                            </button>
-
-
-                                                            <button onclick="saveAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer;">
-
-
-                                                                <i class="fas fa-save"></i> Speichern
-
-
-                                                            </button>
-
-
-                                                        </div>
-
-
-                                                    </div>
-
-
-                                                </div>
 
 
                                             </div>
@@ -2750,7 +2590,7 @@
 
 
 
-                                        <!-- Lebenslauf-Verwaltung -->
+                                        <!-- Medienverwaltung Bewerbungsunterlagen -->
 
 
                                         <div class="cv-management" style="margin-bottom: 3rem;">
@@ -2759,7 +2599,7 @@
                                             <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
 
 
-                                                📄 Lebenslauf-Verwaltung
+                                                📁 Medienverwaltung Bewerbungsunterlagen
 
 
                                             </h3>
@@ -2767,154 +2607,112 @@
 
 
                                             <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-
-
-                                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-
-
-                                                    <div>
-
-
-                                                        <h4 style="color: #555; margin-bottom: 1rem;">Aktuelle Versionen</h4>
-
-
-                                                        <div style="display: flex; flex-direction: column; gap: 1rem;">
-
-
-                                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
-
-
-                                                                <div>
-
-
-                                                                    <p style="font-weight: 600; margin: 0;">Lebenslauf_Manuel_Weiss.pdf</p>
-
-
-                                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
-
-
-                                                                </div>
-
-
-                                                                <div style="display: flex; gap: 0.5rem;">
-
-
-                                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
-
-
-                                                                        👁️ Ansehen
-
-
-                                                                    </button>
-
-
-                                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
-
-
-                                                                        📥 Download
-
-
-                                                                    </button>
-
-
-                                                                </div>
-
-
-                                                            </div>
-
-
-                                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
-
-
-                                                                <div>
-
-
-                                                                    <p style="font-weight: 600; margin: 0;">Bewerbungsmappe.html</p>
-
-
-                                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
-
-
-                                                                </div>
-
-
-                                                                <div style="display: flex; gap: 0.5rem;">
-
-
-                                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
-
-
-                                                                        👁️ Ansehen
-
-
-                                                                    </button>
-
-
-                                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
-
-
-                                                                        📥 Download
-
-
-                                                                    </button>
-
-
-                                                                </div>
-
-
-                                                            </div>
-
-
-                                                        </div>
-
-
-                                                    </div>
-                                    
-
-
-                                                    <div>
-
-
-                                                        <h4 style="color: #555; margin-bottom: 1rem;">Neue Version hochladen</h4>
-
-
-                                                        <div style="border: 2px dashed #ddd; border-radius: 6px; padding: 2rem; text-align: center;">
-
-
-                                                            <input type="file" id="cv-upload" accept=".pdf,.doc,.docx,.html" style="display: none;">
-
-
-                                                            <button onclick="document.getElementById('cv-upload').click()" style="padding: 1rem 2rem; background: #f8fafc; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 1.1rem;">
-
-
-                                                                📁 Datei auswählen
-
-
-                                                            </button>
-
-
-                                                            <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, DOC, DOCX oder HTML</p>
-
-
-                                                        </div>
-                                        
-
-
-                                                        <button onclick="uploadCV()" style="width: 100%; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 1rem;">
-
-
-                                                            📤 Lebenslauf hochladen
-
-
-                                                        </button>
-
-
-                                                    </div>
-
-
+                                                <!-- Tabs für verschiedene Dokumenttypen -->
+                                                <div class="document-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb;">
+                                                    <button class="doc-tab active" data-type="all" onclick="filterDocuments('all')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
+                                                    <button class="doc-tab" data-type="cv" onclick="filterDocuments('cv')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Lebensläufe</button>
+                                                    <button class="doc-tab" data-type="portrait" onclick="filterDocuments('portrait')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Portraits</button>
+                                                    <button class="doc-tab" data-type="certificate" onclick="filterDocuments('certificate')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zeugnisse</button>
+                                                    <button class="doc-tab" data-type="certification" onclick="filterDocuments('certification')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zertifikate</button>
+                                                    <button class="doc-tab" data-type="cover-letter" onclick="filterDocuments('cover-letter')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Anschreiben</button>
                                                 </div>
 
+                                                <!-- Dokumentenliste -->
+                                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                                    <div>
+                                                        <h4 style="color: #555; margin-bottom: 1rem;">Dokumente</h4>
+                                                        <div id="documentsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                                                            <!-- Documents will be loaded here -->
+                                                        </div>
+                                                    </div>
+                                    
+                                                    <div>
+                                                        <h4 style="color: #555; margin-bottom: 1rem;">Aktionen</h4>
+                                                        
+                                                        <!-- Upload Area -->
+                                                        <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; background: #f8f9ff;">
+                                                            <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple style="display: none;">
+                                                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                                                            <p style="font-weight: 600; margin-bottom: 0.5rem;">Dokumente hochladen</p>
+                                                            <button onclick="document.getElementById('doc-upload').click()" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                                                Dateien auswählen
+                                                            </button>
+                                                            <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, HTML, JPG, PNG</p>
+                                                        </div>
+                                                        
+                                                        <!-- PDF Editor Button -->
+                                                        <button onclick="openPDFEditor()" style="width: 100%; padding: 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                                            <i class="fas fa-file-pdf"></i> PDF Editor öffnen
+                                                        </button>
+                                                        
+                                                        <!-- Quick Actions -->
+                                                        <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
+                                                            <h5 style="margin-bottom: 0.75rem;">Schnellaktionen</h5>
+                                                            <button onclick="mergeDocuments()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                <i class="fas fa-object-group"></i> Dokumente zusammenführen
+                                                            </button>
+                                                            <button onclick="createTemplate()" style="width: 100%; padding: 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                                <i class="fas fa-save"></i> Als Vorlage speichern
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
+                                                <!-- PDF Editor Modal -->
+                                                <div id="pdfEditorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
+                                                    <div style="background: white; width: 95%; height: 95%; margin: 2.5% auto; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                                                        <div style="background: #1e293b; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+                                                            <h3 style="margin: 0;">PDF Editor</h3>
+                                                            <button onclick="closePDFEditor()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                                        </div>
+                                                        
+                                                        <div style="display: flex; flex: 1;">
+                                                            <!-- Sidebar -->
+                                                            <div style="width: 250px; background: #f8fafc; padding: 1rem; overflow-y: auto;">
+                                                                <h4 style="margin-bottom: 1rem;">Seiten</h4>
+                                                                <div id="pdfPagesList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                                                    <!-- PDF pages will be listed here -->
+                                                                </div>
+                                                                
+                                                                <div style="margin-top: 2rem;">
+                                                                    <button onclick="addPDFPage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                        <i class="fas fa-plus"></i> Seite hinzufügen
+                                                                    </button>
+                                                                    <button onclick="uploadAdditionalPDF()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                                        <i class="fas fa-upload"></i> PDF hinzufügen
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Main Editor Area -->
+                                                            <div style="flex: 1; padding: 2rem; overflow-y: auto;">
+                                                                <div id="pdfPreview" style="min-height: 500px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+                                                                    <p style="color: #666;">Wähle ein PDF zum Bearbeiten</p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Tools Panel -->
+                                                            <div style="width: 200px; background: #f8fafc; padding: 1rem;">
+                                                                <h4 style="margin-bottom: 1rem;">Werkzeuge</h4>
+                                                                <button onclick="deletePage()" style="width: 100%; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                    <i class="fas fa-trash"></i> Seite löschen
+                                                                </button>
+                                                                <button onclick="rotatePage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                    <i class="fas fa-redo"></i> Seite drehen
+                                                                </button>
+                                                                <button onclick="movePage()" style="width: 100%; padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                    <i class="fas fa-arrows-alt"></i> Verschieben
+                                                                </button>
+                                                                
+                                                                <hr style="margin: 1rem 0;">
+                                                                
+                                                                <button onclick="savePDF()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                                                    <i class="fas fa-save"></i> PDF speichern
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
 
