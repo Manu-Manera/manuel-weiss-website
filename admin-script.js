@@ -1059,10 +1059,9 @@ function loadApplications() {
                     <h4 style="margin: 0; color: #333;">${app.company}</h4>
                     <div style="position: relative;">
                         <select onchange="updateApplicationStatus('${app.id}', this.value, this)" style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white; border: none; cursor: pointer; appearance: none; padding-right: 1.5rem;" class="status-dropdown">
-                            <option value="pending" ${app.status === 'pending' ? 'selected' : ''} style="background: #6366f1; color: white;">Ausstehend</option>
-                            <option value="reviewed" ${app.status === 'reviewed' ? 'selected' : ''} style="background: #f59e0b; color: white;">In Bearbeitung</option>
-                            <option value="interview" ${app.status === 'interview' ? 'selected' : ''} style="background: #10b981; color: white;">Interview</option>
-                            <option value="accepted" ${app.status === 'accepted' ? 'selected' : ''} style="background: #10b981; color: white;">Angenommen</option>
+                            <option value="sent" ${app.status === 'sent' ? 'selected' : ''} style="background: #6366f1; color: white;">Gesendet</option>
+                            <option value="in-progress" ${app.status === 'in-progress' ? 'selected' : ''} style="background: #f59e0b; color: white;">In Bearbeitung</option>
+                            <option value="interview" ${app.status === 'interview' ? 'selected' : ''} style="background: #10b981; color: white;">Vorstellungsgespräch</option>
                             <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''} style="background: #ef4444; color: white;">Absage</option>
                         </select>
                         <i class="fas fa-chevron-down" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: white; font-size: 0.7rem;"></i>
@@ -1388,10 +1387,9 @@ function saveAICoverLetter() {
 // Helper functions
 function getStatusColor(status) {
     const colors = {
-        pending: '#6366f1',
-        reviewed: '#f59e0b',
+        sent: '#6366f1',
+        'in-progress': '#f59e0b',
         interview: '#10b981',
-        accepted: '#10b981',
         rejected: '#ef4444'
     };
     return colors[status] || '#6b7280';
@@ -1399,11 +1397,10 @@ function getStatusColor(status) {
 
 function getStatusText(status) {
     const texts = {
-        pending: 'Ausstehend',
-        reviewed: 'In Bearbeitung',
-        interview: 'Interview',
-        accepted: 'Angenommen',
-        rejected: 'Abgelehnt'
+        sent: 'Gesendet',
+        'in-progress': 'In Bearbeitung',
+        interview: 'Vorstellungsgespräch',
+        rejected: 'Absage'
     };
     return texts[status] || status;
 }
