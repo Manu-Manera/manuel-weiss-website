@@ -1597,10 +1597,147 @@ function analyzeJobDescription() {
     }
 }
 
+// Workflow state management
+let workflowData = {
+    company: '',
+    position: '',
+    jobDescription: '',
+    coverLetter: '',
+    cvDate: new Date().toLocaleDateString('de-DE'),
+    design: {
+        primaryColor: '#6366f1',
+        secondaryColor: '#8b5cf6',
+        logo: null,
+        template: 'modern'
+    },
+    documents: []
+};
+
 function nextWorkflowStep(step) {
-    // Implementation for workflow steps
-    if (window.adminPanel && window.adminPanel.showToast) {
-        window.adminPanel.showToast(`Weiter zu Schritt ${step}`, 'info');
+    // Save current step data
+    if (step === 2) {
+        workflowData.company = document.getElementById('workflowCompany').value;
+        workflowData.position = document.getElementById('workflowPosition').value;
+        workflowData.jobDescription = document.getElementById('jobDescription').value;
     }
+    
+    // Hide all steps
+    document.querySelectorAll('.workflow-step').forEach(s => s.style.display = 'none');
+    
+    // Show next step
+    let stepContent = '';
+    
+    switch(step) {
+        case 2:
+            stepContent = generateStep2();
+            break;
+        case 3:
+            stepContent = generateStep3();
+            break;
+        case 4:
+            stepContent = generateStep4();
+            break;
+        case 5:
+            stepContent = generateStep5();
+            break;
+    }
+    
+    const container = document.querySelector('#smartWorkflowModal .workflow-step').parentElement;
+    const newStep = document.createElement('div');
+    newStep.id = `workflowStep${step}`;
+    newStep.className = 'workflow-step';
+    newStep.innerHTML = stepContent;
+    container.appendChild(newStep);
+    
+    // Initialize step-specific functionality
+    if (step === 2) {
+        generateSmartCoverLetter();
+    } else if (step === 3) {
+        updateCVDate();
+    }
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast(`Schritt ${step} von 5`, 'info');
+    }
+}
+
+function generateStep2() {
+    return `
+        <h3 style="margin-bottom: 1.5rem;">Schritt 2: Intelligenter Anschreiben-Generator</h3>
+        
+        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Generiertes Anschreiben:</label>
+            <div id="coverLetterEditor" contenteditable="true" style="width: 100%; min-height: 400px; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; background: white; line-height: 1.6;">
+                <p style="text-align: center; color: #666;"><i class="fas fa-spinner fa-spin"></i> Anschreiben wird generiert...</p>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button onclick="regenerateSelection()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-sync"></i> Markierung neu generieren
+            </button>
+            <button onclick="addParagraph()" style="padding: 0.5rem 1rem; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-plus"></i> Absatz hinzufügen
+            </button>
+            <button onclick="checkGrammar()" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-spell-check"></i> Rechtschreibung prüfen
+            </button>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="previousWorkflowStep(1)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button onclick="saveAndContinue(3)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+}
+
+function generateStep3() {
+    return `
+        <h3 style="margin-bottom: 1.5rem;">Schritt 3: Lebenslauf anpassen</h3>
+        
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 1rem;">Lebenslauf-Details</h4>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Aktuelle Position/Tätigkeit:</label>
+                <input type="text" id="currentPosition" placeholder="z.B. Senior Consultant bei XYZ GmbH" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Datum der Unterschrift:</label>
+                <input type="date" id="cvSignatureDate" value="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Zusätzliche Qualifikationen (relevant für ${workflowData.position}):</label>
+                <textarea id="additionalQualifications" placeholder="Füge relevante Qualifikationen hinzu..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 100px; resize: vertical;"></textarea>
+            </div>
+        </div>
+        
+        <div style="background: white; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 1rem;">Lebenslauf Vorschau</h4>
+            <div id="cvPreview" style="min-height: 200px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem; background: #f8fafc;">
+                <p style="text-align: center; color: #666;">Lebenslauf wird geladen...</p>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="previousWorkflowStep(2)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button onclick="saveAndContinue(4)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
 }
 
