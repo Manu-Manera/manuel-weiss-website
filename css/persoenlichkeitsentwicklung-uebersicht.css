@@ -1,5 +1,53 @@
 /* Persönlichkeitsentwicklung Übersicht - Modern Clean Design */
 
+/* Language Switcher Styles */
+.language-switcher {
+    margin-left: 1rem;
+}
+
+.language-switcher select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-switcher select:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.language-switcher select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.language-switcher select option {
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+}
+
+/* Mobile Language Switcher */
+@media (max-width: 768px) {
+    .language-switcher {
+        margin-left: 0;
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .language-switcher select {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 /* Hero Section - Modern Redesign */
 .personality-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
