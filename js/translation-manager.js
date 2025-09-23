@@ -9,7 +9,8 @@ class TranslationManager {
             'de': 'Deutsch',
             'en': 'English', 
             'fr': 'Français',
-            'es': 'Español'
+            'es': 'Español',
+            'it': 'Italiano'
         };
         
         this.init();
