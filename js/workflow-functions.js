@@ -221,15 +221,42 @@ function publishOnline() {
     
     // Generate unique URL
     const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-    const shareUrl = `https://bewerbung.example.com/${uniqueId}`;
+    const shareUrl = `https://bewerbung.manuelweiss.de/${uniqueId}`;
     
     shareLinkInput.value = shareUrl;
     shareSection.style.display = 'block';
     
-    // Save application data
+    // Create basic page structure
+    const pageData = [
+        {
+            id: 'hero-' + Date.now(),
+            type: 'hero',
+            content: `<div class="page-component hero-component"><h1>${workflowData.company}</h1><p>${workflowData.position}</p></div>`
+        },
+        {
+            id: 'about-' + Date.now(),
+            type: 'about',
+            content: `<div class="page-component about-component"><h2>Über mich</h2><p>Bewerbung für ${workflowData.position}</p></div>`
+        },
+        {
+            id: 'contact-' + Date.now(),
+            type: 'contact',
+            content: `<div class="page-component contact-component"><h2>Kontakt</h2></div>`
+        }
+    ];
+    
+    // Save application data with page
     const applicationData = {
         ...workflowData,
         shareUrl,
+        pageUrl: shareUrl,
+        pageData: pageData,
+        pageSettings: {
+            title: `Bewerbung - ${workflowData.position} bei ${workflowData.company}`,
+            primaryColor: workflowData.design.primaryColor,
+            font: 'Inter',
+            seo: `Bewerbung von Manuel Weiß für die Position ${workflowData.position} bei ${workflowData.company}`
+        },
         createdAt: new Date().toISOString()
     };
     
@@ -284,7 +311,10 @@ function finishWorkflow() {
         status: 'sent',
         coverLetter: workflowData.coverLetter,
         design: workflowData.design,
-        documents: workflowData.documents
+        documents: workflowData.documents,
+        pageUrl: workflowData.pageUrl || null,
+        pageData: workflowData.pageData || null,
+        pageSettings: workflowData.pageSettings || null
     };
     
     applications.push(newApplication);
