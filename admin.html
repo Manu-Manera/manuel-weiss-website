@@ -7636,6 +7636,11 @@ Bitte antworte im folgenden JSON-Format:
         script.src = `admin-script.js?v=3.5&t=${timestamp}`;
         document.head.appendChild(script);
         
+        // Load workflow functions
+        const workflowScript = document.createElement('script');
+        workflowScript.src = `js/workflow-functions.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(workflowScript);
+        
         // AI Coach Admin Script
         const aiCoachAdminScript = document.createElement('script');
         aiCoachAdminScript.src = `js/ai-coach-admin.js?v=1.0&t=${timestamp}`;
