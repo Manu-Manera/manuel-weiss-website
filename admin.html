@@ -1415,7 +1415,7 @@
                                     </div>
                                 </div>
                                 <div class="overview-actions">
-                                    <button class="btn-applications" onclick="openApplicationsPage()">
+                                    <button class="btn-applications" onclick="adminPanel.showSection('applications')">
                                         <i class="fas fa-briefcase"></i>
                                         <span>Bewerbungen verwalten</span>
                                         <i class="fas fa-arrow-right"></i>
@@ -6983,10 +6983,6 @@ Bitte antworte im folgenden JSON-Format:
                 'rejected': 'Abgelehnt'
             };
             return statusMap[status] || status;
-        }
-        
-        function openApplicationsPage() {
-            window.open('bewerbungen.html', '_blank');
         }
         
         // Services laden
