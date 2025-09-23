@@ -228,18 +228,26 @@
     transform: translateY(-2px);
 }
 
-/* Method Cards Grid - Original Design */
+/* Method Cards Grid - Compact Design */
 .methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin: 3rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
     padding: 0 1rem;
     max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1200px) {
+    .methods-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
 }
 
 /* Container für bessere Übersicht */
@@ -253,20 +261,20 @@
 
 .method-card {
     background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e7eb;
     position: relative;
     overflow: hidden;
     height: fit-content;
-    min-height: 280px;
+    min-height: 260px;
 }
 
 .method-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .method-card.hidden {
