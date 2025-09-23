@@ -1061,7 +1061,9 @@ document.addEventListener('DOMContentLoaded', function() {
         closePDFEditor,
         mergeDocuments,
         createTemplate,
-        startSmartWorkflow
+        startSmartWorkflow,
+        analyzeJobDescription,
+        nextWorkflowStep
     };
     
     // Assign all functions to window
@@ -1219,6 +1221,8 @@ window.closePDFEditor = closePDFEditor;
 window.mergeDocuments = mergeDocuments;
 window.createTemplate = createTemplate;
 window.startSmartWorkflow = startSmartWorkflow;
+window.analyzeJobDescription = analyzeJobDescription;
+window.nextWorkflowStep = nextWorkflowStep;
 
 // Force immediate availability
 console.log('🔧 Making functions available globally...', {
@@ -1991,28 +1995,125 @@ function closeSmartWorkflow() {
 }
 
 function analyzeJobDescription() {
-    const description = document.getElementById('jobDescription').value;
+    console.log('🔍 Starting job description analysis...');
+    
+    const description = document.getElementById('jobDescription');
     if (!description) {
+        console.error('❌ Job description textarea not found');
+        alert('Fehler: Stellenbeschreibung-Feld nicht gefunden.');
+        return;
+    }
+    
+    const descriptionText = description.value;
+    if (!descriptionText.trim()) {
+        console.warn('⚠️ No job description provided');
         alert('Bitte füge zuerst eine Stellenbeschreibung ein.');
         return;
     }
     
-    // Simple extraction logic (in real app, this would use AI)
-    const companyMatch = description.match(/(?:bei|at|für)\s+([A-Z][A-Za-z\s&]+)(?:GmbH|AG|SE|Ltd|Inc)?/);
-    const positionMatch = description.match(/(?:als|as|position:|rolle:)\s+([A-Za-z\s]+)(?:\(|,|\n)/i);
+    console.log('📝 Analyzing job description:', descriptionText.substring(0, 100) + '...');
     
-    if (companyMatch || positionMatch) {
-        const extractedCompany = companyMatch ? companyMatch[1].trim() : '';
-        const extractedPosition = positionMatch ? positionMatch[1].trim() : '';
-        
-        if (confirm(`Extrahierte Daten:\nUnternehmen: ${extractedCompany}\nPosition: ${extractedPosition}\n\nDaten übernehmen?`)) {
-            if (extractedCompany) document.getElementById('workflowCompany').value = extractedCompany;
-            if (extractedPosition) document.getElementById('workflowPosition').value = extractedPosition;
-        }
+    // Show loading state
+    const analyzeButton = document.querySelector('[onclick="analyzeJobDescription()"]');
+    const originalText = analyzeButton?.innerHTML;
+    if (analyzeButton) {
+        analyzeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
+        analyzeButton.disabled = true;
     }
     
+    // Simulate analysis delay
+    setTimeout(() => {
+        try {
+            // Enhanced extraction logic
+            const companyPatterns = [
+                /(?:bei|at|für|for)\s+([A-Z][A-Za-z\s&\.]+?)(?:\s+(?:GmbH|AG|SE|Ltd|Inc|Corp|Company|GmbH|AG|SE|Ltd|Inc|Corp|Company))?/i,
+                /(?:company|unternehmen|firma):\s*([A-Z][A-Za-z\s&\.]+)/i,
+                /(?:wir\s+sind|we\s+are)\s+([A-Z][A-Za-z\s&\.]+)/i
+            ];
+            
+            const positionPatterns = [
+                /(?:als|as|position|rolle|role):\s*([A-Za-z\s]+?)(?:\(|,|\n|\.|$)/i,
+                /(?:suchen|looking\s+for|hiring)\s+([A-Za-z\s]+?)(?:\(|,|\n|\.|$)/i,
+                /(?:stellenausschreibung|job\s+posting)\s+für\s+([A-Za-z\s]+?)(?:\(|,|\n|\.|$)/i
+            ];
+            
+            let extractedCompany = '';
+            let extractedPosition = '';
+            
+            // Try to extract company
+            for (const pattern of companyPatterns) {
+                const match = descriptionText.match(pattern);
+                if (match && match[1]) {
+                    extractedCompany = match[1].trim();
+                    break;
+                }
+            }
+            
+            // Try to extract position
+            for (const pattern of positionPatterns) {
+                const match = descriptionText.match(pattern);
+                if (match && match[1]) {
+                    extractedPosition = match[1].trim();
+                    break;
+                }
+            }
+            
+            console.log('🎯 Extracted data:', { company: extractedCompany, position: extractedPosition });
+            
+            // Update form fields
+            const companyField = document.getElementById('workflowCompany');
+            const positionField = document.getElementById('workflowPosition');
+            
+            if (companyField && extractedCompany) {
+                companyField.value = extractedCompany;
+                console.log('✅ Company field updated');
+            }
+            
+            if (positionField && extractedPosition) {
+                positionField.value = extractedPosition;
+                console.log('✅ Position field updated');
+            }
+            
+            // Show confirmation if we found something
+            if (extractedCompany || extractedPosition) {
+                const message = `Extrahierte Daten:\n${extractedCompany ? `Unternehmen: ${extractedCompany}` : ''}\n${extractedPosition ? `Position: ${extractedPosition}` : ''}\n\nDaten übernehmen?`;
+                
+                if (confirm(message)) {
+                    console.log('✅ User confirmed extracted data');
+                    showToast('Stellenbeschreibung erfolgreich analysiert!', 'success');
+                } else {
+                    console.log('❌ User rejected extracted data');
+                    // Clear fields if user rejects
+                    if (companyField) companyField.value = '';
+                    if (positionField) positionField.value = '';
+                }
+            } else {
+                console.log('⚠️ No data could be extracted');
+                showToast('Keine spezifischen Daten gefunden. Bitte manuell eingeben.', 'warning');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error during analysis:', error);
+            showToast('Fehler bei der Analyse. Bitte versuchen Sie es erneut.', 'error');
+        } finally {
+            // Reset button
+            if (analyzeButton) {
+                analyzeButton.innerHTML = originalText || '<i class="fas fa-magic"></i> Automatisch analysieren';
+                analyzeButton.disabled = false;
+            }
+        }
+    }, 1500); // 1.5 second delay to simulate AI processing
+}
+
+// Helper function for toast notifications
+function showToast(message, type = 'info') {
     if (window.adminPanel && window.adminPanel.showToast) {
-        window.adminPanel.showToast('Stellenbeschreibung analysiert', 'success');
+        window.adminPanel.showToast(message, type);
+    } else {
+        console.log(`Toast [${type}]:`, message);
+        if (type === 'error') {
+            alert(message);
+        }
     }
 }
 
@@ -2033,50 +2134,100 @@ let workflowData = {
 };
 
 function nextWorkflowStep(step) {
-    // Save current step data
-    if (step === 2) {
-        workflowData.company = document.getElementById('workflowCompany').value;
-        workflowData.position = document.getElementById('workflowPosition').value;
-        workflowData.jobDescription = document.getElementById('jobDescription').value;
-    }
+    console.log('🔄 Moving to workflow step:', step);
     
-    // Hide all steps
-    document.querySelectorAll('.workflow-step').forEach(s => s.style.display = 'none');
-    
-    // Show next step
-    let stepContent = '';
-    
-    switch(step) {
-        case 2:
-            stepContent = generateStep2();
-            break;
-        case 3:
-            stepContent = generateStep3();
-            break;
-        case 4:
-            stepContent = generateStep4();
-            break;
-        case 5:
-            stepContent = generateStep5();
-            break;
-    }
-    
-    const container = document.querySelector('#smartWorkflowModal .workflow-step').parentElement;
-    const newStep = document.createElement('div');
-    newStep.id = `workflowStep${step}`;
-    newStep.className = 'workflow-step';
-    newStep.innerHTML = stepContent;
-    container.appendChild(newStep);
-    
-    // Initialize step-specific functionality
-    if (step === 2) {
-        generateSmartCoverLetter();
-    } else if (step === 3) {
-        updateCVDate();
-    }
-    
-    if (window.adminPanel && window.adminPanel.showToast) {
-        window.adminPanel.showToast(`Schritt ${step} von 5`, 'info');
+    try {
+        // Save current step data
+        if (step === 2) {
+            const company = document.getElementById('workflowCompany');
+            const position = document.getElementById('workflowPosition');
+            const jobDescription = document.getElementById('jobDescription');
+            
+            if (company) workflowData.company = company.value;
+            if (position) workflowData.position = position.value;
+            if (jobDescription) workflowData.jobDescription = jobDescription.value;
+            
+            console.log('💾 Saved step 1 data:', {
+                company: workflowData.company,
+                position: workflowData.position,
+                jobDescription: workflowData.jobDescription ? 'Present' : 'Empty'
+            });
+        }
+        
+        // Hide all steps
+        const allSteps = document.querySelectorAll('.workflow-step');
+        console.log('📦 Found', allSteps.length, 'workflow steps');
+        allSteps.forEach(s => s.style.display = 'none');
+        
+        // Show next step
+        let stepContent = '';
+        
+        switch(step) {
+            case 2:
+                console.log('📝 Generating step 2 content...');
+                stepContent = generateStep2();
+                break;
+            case 3:
+                console.log('📝 Generating step 3 content...');
+                stepContent = generateStep3();
+                break;
+            case 4:
+                console.log('📝 Generating step 4 content...');
+                stepContent = generateStep4();
+                break;
+            case 5:
+                console.log('📝 Generating step 5 content...');
+                stepContent = generateStep5();
+                break;
+            default:
+                console.error('❌ Unknown workflow step:', step);
+                return;
+        }
+        
+        if (!stepContent) {
+            console.error('❌ No content generated for step:', step);
+            alert('Fehler beim Generieren des nächsten Schritts. Bitte versuchen Sie es erneut.');
+            return;
+        }
+        
+        const container = document.querySelector('#smartWorkflowModal .workflow-step').parentElement;
+        if (!container) {
+            console.error('❌ Workflow container not found');
+            alert('Fehler: Workflow-Container nicht gefunden.');
+            return;
+        }
+        
+        const newStep = document.createElement('div');
+        newStep.id = `workflowStep${step}`;
+        newStep.className = 'workflow-step';
+        newStep.innerHTML = stepContent;
+        container.appendChild(newStep);
+        
+        console.log('✅ Step', step, 'content added to workflow');
+        
+        // Initialize step-specific functionality
+        if (step === 2) {
+            console.log('🔧 Initializing step 2 functionality...');
+            if (typeof generateSmartCoverLetter === 'function') {
+                generateSmartCoverLetter();
+            }
+        } else if (step === 3) {
+            console.log('🔧 Initializing step 3 functionality...');
+            if (typeof updateCVDate === 'function') {
+                updateCVDate();
+            }
+        }
+        
+        // Show success message
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast(`Schritt ${step} von 5 geladen`, 'success');
+        } else {
+            console.log(`✅ Workflow step ${step} loaded successfully`);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error in nextWorkflowStep:', error);
+        alert('Fehler beim Fortfahren zum nächsten Schritt: ' + error.message);
     }
 }
 
