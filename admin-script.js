@@ -1217,6 +1217,8 @@ window.editApplication = editApplication;
 window.deleteApplication = deleteApplication;
 window.updateApplicationStatus = updateApplicationStatus;
 window.openNewApplicationModal = openNewApplicationModal;
+window.createFallbackApplicationModal = createFallbackApplicationModal;
+window.closeFallbackModal = closeFallbackModal;
 window.closeNewApplicationModal = closeNewApplicationModal;
 window.viewApplicationPage = viewApplicationPage;
 window.editApplicationPage = editApplicationPage;
@@ -1227,6 +1229,7 @@ window.closePDFEditor = closePDFEditor;
 window.mergeDocuments = mergeDocuments;
 window.createTemplate = createTemplate;
 window.startSmartWorkflow = startSmartWorkflow;
+window.closeSmartWorkflow = closeSmartWorkflow;
 window.analyzeJobDescription = analyzeJobDescription;
 window.nextWorkflowStep = nextWorkflowStep;
 window.showDocumentTypeModal = showDocumentTypeModal;
@@ -1245,11 +1248,64 @@ console.log('🔧 Making functions available globally...', {
 
 // Open new application modal
 function openNewApplicationModal() {
+    console.log('🔄 Opening new application modal...');
+    
     const modal = document.getElementById('newApplicationModal');
     if (modal) {
+        console.log('✅ Modal found, displaying...');
         modal.style.display = 'flex';
         // Set today's date as default
-        document.getElementById('applicationDate').value = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('applicationDate');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
+    } else {
+        console.error('❌ Modal not found!');
+        // Try to create a simple modal as fallback
+        createFallbackApplicationModal();
+    }
+}
+
+function createFallbackApplicationModal() {
+    console.log('🔄 Creating fallback application modal...');
+    
+    const modal = document.createElement('div');
+    modal.id = 'fallbackApplicationModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+            <h3 style="margin: 0 0 1rem 0;">Neue Bewerbung hinzufügen</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">Das Hauptmodal wurde nicht gefunden. Verwende den Smart Workflow:</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="closeFallbackModal()" style="padding: 0.75rem 1.5rem; background: #f3f4f6; color: #374151; border: none; border-radius: 6px; cursor: pointer;">
+                    Abbrechen
+                </button>
+                <button onclick="startSmartWorkflow(); closeFallbackModal();" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Smart Workflow starten
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeFallbackModal() {
+    const modal = document.getElementById('fallbackApplicationModal');
+    if (modal) {
+        modal.remove();
     }
 }
 
@@ -2176,6 +2232,12 @@ function closePDFEditor() {
 // Smart Workflow Functions
 function startSmartWorkflow() {
     console.log('🚀 Starting Smart Workflow...');
+    
+    // Remove any existing workflow modal first
+    const existingModal = document.getElementById('smartWorkflowModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
     
     // Create workflow modal
     const modal = document.createElement('div');
