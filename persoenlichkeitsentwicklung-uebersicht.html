@@ -97,6 +97,27 @@
                 </div>
             </div>
 
+            <!-- Search and Filter Section -->
+            <div class="search-filter-section">
+                <div class="search-container">
+                    <input type="text" id="methodSearch" class="search-input" placeholder="Methoden durchsuchen..." data-translate="personality.search_placeholder">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                
+                <div class="filter-tags">
+                    <span class="filter-tag active" data-category="all" data-translate="personality.filter_all">Alle</span>
+                    <span class="filter-tag" data-category="self-discovery" data-translate="personality.filter_self_discovery">Selbstfindung</span>
+                    <span class="filter-tag" data-category="goals" data-translate="personality.filter_goals">Ziele & Motivation</span>
+                    <span class="filter-tag" data-category="communication" data-translate="personality.filter_communication">Kommunikation</span>
+                    <span class="filter-tag" data-category="mindfulness" data-translate="personality.filter_mindfulness">Achtsamkeit</span>
+                    <span class="filter-tag" data-category="coaching" data-translate="personality.filter_coaching">Coaching</span>
+                    <span class="filter-tag" data-category="nlp" data-translate="personality.filter_nlp">NLP</span>
+                    <span class="filter-tag" data-category="habits" data-translate="personality.filter_habits">Gewohnheiten</span>
+                    <span class="filter-tag" data-category="analysis" data-translate="personality.filter_analysis">Analyse</span>
+                    <span class="filter-tag" data-category="conflict" data-translate="personality.filter_conflict">Konflikt</span>
+                </div>
+            </div>
+
             <div class="section-header">
                 <h2 class="section-title" data-translate="personality.methods">Persönlichkeitsentwicklung Methoden</h2>
                 <p class="section-subtitle" data-translate="personality.subtitle">
@@ -8432,6 +8453,59 @@
             // link.download = `${methodName}.pdf`;
             // link.click();
         }
+
+        // Search and Filter Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('methodSearch');
+            const filterTags = document.querySelectorAll('.filter-tag');
+            const methodCards = document.querySelectorAll('.method-card');
+            
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    filterMethods(searchTerm);
+                });
+            }
+            
+            // Filter functionality
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // Remove active class from all tags
+                    filterTags.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tag
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    filterByCategory(category);
+                });
+            });
+            
+            function filterMethods(searchTerm) {
+                methodCards.forEach(card => {
+                    const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+                    const tags = Array.from(card.querySelectorAll('.method-tag')).map(tag => tag.textContent.toLowerCase());
+                    
+                    const matches = title.includes(searchTerm) || 
+                                  description.includes(searchTerm) || 
+                                  tags.some(tag => tag.includes(searchTerm));
+                    
+                    card.style.display = matches ? 'flex' : 'none';
+                });
+            }
+            
+            function filterByCategory(category) {
+                methodCards.forEach(card => {
+                    if (category === 'all') {
+                        card.style.display = 'flex';
+                    } else {
+                        const cardCategory = card.dataset.category || '';
+                        card.style.display = cardCategory.includes(category) ? 'flex' : 'none';
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
