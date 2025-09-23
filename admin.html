@@ -7646,6 +7646,16 @@ Bitte antworte im folgenden JSON-Format:
         pageBuilderScript.src = `js/page-builder.js?v=1.0&t=${timestamp}`;
         document.head.appendChild(pageBuilderScript);
         
+        // Load smart cover letter functions
+        const smartCoverLetterScript = document.createElement('script');
+        smartCoverLetterScript.src = `js/smart-cover-letter.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(smartCoverLetterScript);
+        
+        // Load smart CV functions
+        const smartCVScript = document.createElement('script');
+        smartCVScript.src = `js/smart-cv.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(smartCVScript);
+        
         // AI Coach Admin Script
         const aiCoachAdminScript = document.createElement('script');
         aiCoachAdminScript.src = `js/ai-coach-admin.js?v=1.0&t=${timestamp}`;

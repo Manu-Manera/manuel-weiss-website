@@ -1455,6 +1455,9 @@ function loadDocuments() {
             <div style="text-align: center; padding: 2rem; color: #666;">
                 <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
                 <p>Keine Dokumente vorhanden</p>
+                <button onclick="triggerDocumentUpload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Erstes Dokument hochladen
+                </button>
             </div>
         `;
         return;
@@ -1482,6 +1485,76 @@ function loadDocuments() {
             </div>
         </div>
     `).join('');
+}
+
+// Document upload functionality
+function triggerDocumentUpload() {
+    document.getElementById('doc-upload').click();
+}
+
+// Initialize document upload handler
+document.addEventListener('DOMContentLoaded', function() {
+    const docUpload = document.getElementById('doc-upload');
+    if (docUpload) {
+        docUpload.addEventListener('change', handleDocumentUpload);
+    }
+});
+
+function handleDocumentUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const doc = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2),
+                name: file.name,
+                type: determineDocumentType(file.name),
+                size: formatFileSize(file.size),
+                uploadedAt: new Date().toISOString(),
+                dataUrl: e.target.result,
+                mimeType: file.type
+            };
+            
+            documents.push(doc);
+            localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+            loadDocuments();
+            
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`${file.name} hochgeladen`, 'success');
+            }
+        };
+        
+        reader.readAsDataURL(file);
+    });
+    
+    // Clear input
+    event.target.value = '';
+}
+
+function determineDocumentType(filename) {
+    const ext = filename.toLowerCase().split('.').pop();
+    const name = filename.toLowerCase();
+    
+    if (name.includes('lebenslauf') || name.includes('cv')) return 'cv';
+    if (name.includes('portrait') || name.includes('foto') || name.includes('bild')) return 'portrait';
+    if (name.includes('zeugnis') || name.includes('zertifikat')) return 'certificate';
+    if (name.includes('anschreiben') || name.includes('cover')) return 'cover-letter';
+    
+    if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return 'portrait';
+    if (['pdf', 'doc', 'docx'].includes(ext)) return 'cv';
+    
+    return 'cv'; // Default
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function getDocumentIcon(type) {

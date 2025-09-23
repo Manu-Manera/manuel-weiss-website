@@ -179,6 +179,13 @@ function updateCVDate() {
     if (dateInput) {
         workflowData.cvDate = dateInput.value;
     }
+    
+    // Load the smart CV editor
+    setTimeout(() => {
+        if (typeof generateEditableCV === 'function') {
+            generateEditableCV();
+        }
+    }, 100);
 }
 
 function previousWorkflowStep(step) {
@@ -219,6 +226,13 @@ function publishOnline() {
     const shareSection = document.getElementById('shareSection');
     const shareLinkInput = document.getElementById('shareLink');
     
+    if (!shareSection || !shareLinkInput) {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Fehler: Share-Elemente nicht gefunden', 'error');
+        }
+        return;
+    }
+    
     // Generate unique URL
     const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
     const shareUrl = `https://bewerbung.manuelweiss.de/${uniqueId}`;
@@ -226,22 +240,47 @@ function publishOnline() {
     shareLinkInput.value = shareUrl;
     shareSection.style.display = 'block';
     
-    // Create basic page structure
+    // Create basic page structure with actual content
     const pageData = [
         {
             id: 'hero-' + Date.now(),
             type: 'hero',
-            content: `<div class="page-component hero-component"><h1>${workflowData.company}</h1><p>${workflowData.position}</p></div>`
+            content: `
+                <div class="page-component hero-component" style="padding: 4rem 2rem; background: linear-gradient(135deg, ${workflowData.design.primaryColor} 0%, ${workflowData.design.secondaryColor} 100%); color: white; text-align: center;">
+                    <h1 style="font-size: 3rem; margin-bottom: 1rem;">Manuel Weiß</h1>
+                    <p style="font-size: 1.5rem; margin-bottom: 2rem;">Bewerbung als ${workflowData.position}</p>
+                    <p style="font-size: 1.25rem;">bei ${workflowData.company}</p>
+                </div>
+            `
         },
         {
             id: 'about-' + Date.now(),
             type: 'about',
-            content: `<div class="page-component about-component"><h2>Über mich</h2><p>Bewerbung für ${workflowData.position}</p></div>`
+            content: `
+                <div class="page-component about-component" style="padding: 3rem 2rem;">
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem; text-align: center;">Über mich</h2>
+                    <div style="max-width: 800px; margin: 0 auto; line-height: 1.8;">
+                        ${workflowData.coverLetter ? workflowData.coverLetter.replace(/<[^>]*>/g, '') : 'HR-Experte mit langjähriger Erfahrung in der Digitalisierung und Prozessoptimierung.'}
+                    </div>
+                </div>
+            `
         },
         {
             id: 'contact-' + Date.now(),
             type: 'contact',
-            content: `<div class="page-component contact-component"><h2>Kontakt</h2></div>`
+            content: `
+                <div class="page-component contact-component" style="padding: 3rem 2rem; background: #1e293b; color: white;">
+                    <h2 style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">Kontakt</h2>
+                    <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                        <p style="margin-bottom: 2rem;">Lassen Sie uns über Ihre Herausforderungen sprechen!</p>
+                        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                            <span style="color: white;"><i class="fas fa-envelope"></i> manuel@example.com</span>
+                            <span style="color: white;"><i class="fas fa-phone"></i> +49 123 456 789</span>
+                            <span style="color: white;"><i class="fab fa-linkedin"></i> LinkedIn</span>
+                        </div>
+                    </div>
+                </div>
+            `
         }
     ];
     
@@ -260,35 +299,261 @@ function publishOnline() {
         createdAt: new Date().toISOString()
     };
     
+    // Generate complete HTML
+    const pageHTML = generateCompletePageHTML(applicationData);
+    
+    // Save both data and HTML
     localStorage.setItem(`application_${uniqueId}`, JSON.stringify(applicationData));
+    localStorage.setItem(`applicationPage_${uniqueId}`, pageHTML);
+    
+    // Update workflow data
+    workflowData.shareUrl = shareUrl;
+    workflowData.pageUrl = shareUrl;
+    workflowData.pageData = pageData;
+    workflowData.pageSettings = applicationData.pageSettings;
     
     if (window.adminPanel && window.adminPanel.showToast) {
-        window.adminPanel.showToast('Online-Seite erstellt!', 'success');
+        window.adminPanel.showToast('Online-Seite erfolgreich erstellt!', 'success');
     }
+}
+
+function generateCompletePageHTML(applicationData) {
+    const { pageSettings, pageData } = applicationData;
+    
+    return `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${pageSettings.title}</title>
+            <meta name="description" content="${pageSettings.seo}">
+            <link href="https://fonts.googleapis.com/css2?family=${pageSettings.font.replace(' ', '+')}:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: '${pageSettings.font}', sans-serif; 
+                    line-height: 1.6; 
+                    color: #333; 
+                }
+                .container { max-width: 1200px; margin: 0 auto; }
+                :root { --primary-color: ${pageSettings.primaryColor}; }
+                .page-component { position: relative; }
+                
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .page-component { padding: 2rem 1rem !important; }
+                    h1 { font-size: 2rem !important; }
+                    h2 { font-size: 1.5rem !important; }
+                    .hero-component p { font-size: 1.2rem !important; }
+                }
+            </style>
+        </head>
+        <body>
+            ${pageData.map(component => component.content).join('')}
+            
+            <!-- Analytics and Tracking -->
+            <script>
+                console.log('Bewerbungsseite geladen:', '${applicationData.shareUrl}');
+                
+                // Track page views
+                if (localStorage) {
+                    const views = localStorage.getItem('pageViews') || 0;
+                    localStorage.setItem('pageViews', parseInt(views) + 1);
+                }
+            </script>
+        </body>
+        </html>
+    `;
 }
 
 function exportPDF() {
     if (window.adminPanel && window.adminPanel.showToast) {
         window.adminPanel.showToast('PDF wird erstellt...', 'info');
     }
-    // In real implementation, this would generate actual PDF
-    setTimeout(() => {
-        if (window.adminPanel && window.adminPanel.showToast) {
-            window.adminPanel.showToast('PDF erfolgreich erstellt!', 'success');
-        }
-    }, 2000);
+    
+    // Create a complete application package as HTML that can be converted to PDF
+    const applicationHTML = generateApplicationPackageHTML();
+    
+    // Create blob and download
+    const blob = new Blob([applicationHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Bewerbungspaket_${workflowData.company}_${new Date().toISOString().split('T')[0]}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Bewerbungspaket als HTML erstellt! Mit Browser in PDF konvertieren.', 'success');
+    }
 }
 
 function exportWord() {
     if (window.adminPanel && window.adminPanel.showToast) {
         window.adminPanel.showToast('Word-Dokument wird erstellt...', 'info');
     }
-    // In real implementation, this would generate actual Word document
-    setTimeout(() => {
-        if (window.adminPanel && window.adminPanel.showToast) {
-            window.adminPanel.showToast('Word-Dokument erfolgreich erstellt!', 'success');
-        }
-    }, 2000);
+    
+    // Create Word-compatible document
+    const wordContent = generateWordDocument();
+    
+    const blob = new Blob([wordContent], { 
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Bewerbung_${workflowData.company}_${new Date().toISOString().split('T')[0]}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Word-Dokument erfolgreich erstellt!', 'success');
+    }
+}
+
+function generateApplicationPackageHTML() {
+    const coverLetter = workflowData.coverLetter || 'Anschreiben nicht verfügbar';
+    
+    return `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+            <meta charset="UTF-8">
+            <title>Bewerbungspaket - ${workflowData.position} bei ${workflowData.company}</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    line-height: 1.6; 
+                    margin: 0; 
+                    padding: 20mm;
+                    color: #333;
+                }
+                .page-break { page-break-before: always; }
+                .header { text-align: center; margin-bottom: 3rem; }
+                .header h1 { color: ${workflowData.design.primaryColor}; margin-bottom: 0.5rem; }
+                .section { margin-bottom: 2rem; }
+                .section h2 { 
+                    color: ${workflowData.design.primaryColor}; 
+                    border-bottom: 2px solid ${workflowData.design.primaryColor}; 
+                    padding-bottom: 0.5rem; 
+                }
+                @media print {
+                    body { margin: 0; padding: 15mm; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Cover Letter -->
+            <div class="header">
+                <h1>Bewerbung</h1>
+                <h2>${workflowData.position}</h2>
+                <h3>${workflowData.company}</h3>
+                <p>Manuel Weiß • ${new Date().toLocaleDateString('de-DE')}</p>
+            </div>
+            
+            <div class="section">
+                <h2>Anschreiben</h2>
+                <div>${coverLetter.replace(/<[^>]*>/g, '')}</div>
+            </div>
+            
+            <div class="page-break"></div>
+            
+            <!-- CV Placeholder -->
+            <div class="section">
+                <h2>Lebenslauf</h2>
+                <p><strong>Manuel Weiß</strong></p>
+                <p>HR-Experte & Digitalisierungsberater</p>
+                <p>manuel@example.com • +49 123 456 789</p>
+                
+                <h3 style="margin-top: 2rem;">Berufserfahrung</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <strong>Senior HR Consultant</strong> | ABC Consulting GmbH | 2020 - heute<br>
+                    Beratung von Großunternehmen bei der digitalen Transformation ihrer HR-Prozesse
+                </div>
+                
+                <h3>Ausbildung</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <strong>Master of Business Administration</strong> | Universität München | 2012 - 2014<br>
+                    Schwerpunkt: Human Resource Management & Digitalization
+                </div>
+                
+                <h3>Kompetenzen</h3>
+                <p>SAP SuccessFactors • Workday • Agile HR • Change Management • Design Thinking</p>
+            </div>
+            
+            <div class="page-break"></div>
+            
+            <!-- Application Summary -->
+            <div class="section">
+                <h2>Bewerbungsübersicht</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><strong>Unternehmen:</strong></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;">${workflowData.company}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><strong>Position:</strong></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;">${workflowData.position}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><strong>Bewerbungsdatum:</strong></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;">${new Date().toLocaleDateString('de-DE')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;"><strong>Design:</strong></td>
+                        <td style="padding: 0.5rem; border: 1px solid #ddd;">${workflowData.design.template}</td>
+                    </tr>
+                </table>
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+function generateWordDocument() {
+    const coverLetter = workflowData.coverLetter ? workflowData.coverLetter.replace(/<[^>]*>/g, '') : 'Anschreiben nicht verfügbar';
+    
+    return `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <title>Bewerbung - ${workflowData.position}</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                h1 { color: ${workflowData.design.primaryColor}; }
+                h2 { color: ${workflowData.design.primaryColor}; border-bottom: 1px solid #ccc; }
+                .header { text-align: center; margin-bottom: 2rem; }
+                .section { margin-bottom: 2rem; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Bewerbung</h1>
+                <h2>${workflowData.position}</h2>
+                <h3>${workflowData.company}</h3>
+                <p>Manuel Weiß • ${new Date().toLocaleDateString('de-DE')}</p>
+            </div>
+            
+            <div class="section">
+                <h2>Anschreiben</h2>
+                <div style="white-space: pre-line;">${coverLetter}</div>
+            </div>
+            
+            <div class="section">
+                <h2>Kontaktdaten</h2>
+                <p>Manuel Weiß<br>
+                HR-Experte & Digitalisierungsberater<br>
+                E-Mail: manuel@example.com<br>
+                Telefon: +49 123 456 789</p>
+            </div>
+        </body>
+        </html>
+    `;
 }
 
 function copyShareLink() {
