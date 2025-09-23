@@ -1228,6 +1228,12 @@
                                 <span>AI Twin</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="translations">
+                            <a href="#translations">
+                                <i class="fas fa-language"></i>
+                                <span>Translations</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="media">
                             <a href="#media">
                                 <i class="fas fa-photo-video"></i>
@@ -2977,6 +2983,98 @@
 
 
 
+                </section>
+
+                <!-- Translations Section -->
+                <section id="translations" class="admin-section">
+                    <div class="translations-container">
+                        <div class="translations-header">
+                            <h2>Translation Management</h2>
+                            <p>Manage translations for all website content</p>
+                        </div>
+                        
+                        <div class="translations-content">
+                            <div class="language-tabs">
+                                <button class="tab-btn active" data-lang="de">🇩🇪 German</button>
+                                <button class="tab-btn" data-lang="en">🇬🇧 English</button>
+                                <button class="tab-btn" data-lang="fr">🇫🇷 French</button>
+                                <button class="tab-btn" data-lang="es">🇪🇸 Spanish</button>
+                                <button class="tab-btn" data-lang="it">🇮🇹 Italian</button>
+                            </div>
+                            
+                            <div class="translation-editor">
+                                <div class="editor-header">
+                                    <h3>Content Editor</h3>
+                                    <div class="editor-actions">
+                                        <button class="btn btn-primary" onclick="saveTranslations()">
+                                            <i class="fas fa-save"></i> Save Changes
+                                        </button>
+                                        <button class="btn btn-outline" onclick="previewTranslations()">
+                                            <i class="fas fa-eye"></i> Preview
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="translation-categories">
+                                    <div class="category-section">
+                                        <h4>Navigation</h4>
+                                        <div class="translation-item">
+                                            <label>Home</label>
+                                            <input type="text" id="nav.home" value="Home" data-original="Home">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>Services</label>
+                                            <input type="text" id="nav.services" value="Services" data-original="Services">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>About</label>
+                                            <input type="text" id="nav.about" value="About" data-original="Über mich">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>Contact</label>
+                                            <input type="text" id="nav.contact" value="Contact" data-original="Kontakt">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="category-section">
+                                        <h4>Hero Section</h4>
+                                        <div class="translation-item">
+                                            <label>Title</label>
+                                            <input type="text" id="hero.title" value="HR Consultant for AI & Transformation" data-original="HR Berater für AI & Transformation">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>Subtitle</label>
+                                            <textarea id="hero.subtitle" data-original="Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen.">Innovative solutions for modern companies. Digitalization, business processes and human resources.</textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="category-section">
+                                        <h4>Services</h4>
+                                        <div class="translation-item">
+                                            <label>Services Title</label>
+                                            <input type="text" id="services.title" value="My Services" data-original="Meine Services">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>Services Subtitle</label>
+                                            <textarea id="services.subtitle" data-original="Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse">Professional consulting in HR, AI and business processes</textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="category-section">
+                                        <h4>Personality Development</h4>
+                                        <div class="translation-item">
+                                            <label>Title</label>
+                                            <input type="text" id="personality.title" value="Personality Development" data-original="Persönlichkeitsentwicklung">
+                                        </div>
+                                        <div class="translation-item">
+                                            <label>Subtitle</label>
+                                            <textarea id="personality.subtitle" data-original="Entwickle dich kontinuierlich weiter mit bewährten Methoden">Continuously develop yourself with proven methods</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- AI Twin Section -->

@@ -1150,3 +1150,46 @@ a:hover {
 .block { display: block; }
 .flex { display: flex; }
 .grid { display: grid; }
+
+/* Language Switcher */
+.language-switcher {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid #e5e7eb;
+}
+
+.lang-link {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.lang-link:hover {
+    color: #6366f1;
+    background: #f3f4f6;
+}
+
+.lang-link.active {
+    color: #6366f1;
+    background: #eef2ff;
+    border-color: #6366f1;
+}
+
+@media (max-width: 768px) {
+    .language-switcher {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+}
