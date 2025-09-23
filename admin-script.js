@@ -1446,9 +1446,23 @@ function loadDocuments() {
     // Load documents from localStorage
     documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
     
-    const filteredDocs = currentDocumentFilter === 'all' 
-        ? documents 
-        : documents.filter(doc => doc.type === currentDocumentFilter);
+    let filteredDocs;
+    if (currentDocumentFilter === 'complete') {
+        // Show complete applications
+        const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+        filteredDocs = applications.map(app => ({
+            id: app.id,
+            name: `Bewerbung ${app.company} - ${app.position}`,
+            type: 'complete',
+            size: 'Vollständig',
+            uploadedAt: app.date,
+            application: app
+        }));
+    } else {
+        filteredDocs = currentDocumentFilter === 'all' 
+            ? documents 
+            : documents.filter(doc => doc.type === currentDocumentFilter);
+    }
     
     const listContainer = document.getElementById('documentsList');
     if (!listContainer) return;
