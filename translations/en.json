@@ -10,55 +10,43 @@
   
   "service.ai.title": "AI & Digitalization",
   "service.ai.description": "Strategic consulting for AI integration in HR processes and business operations.",
-  "service.ai.features": [
-    "AI strategy development",
-    "Process automation",
-    "Digital Workplace",
-    "HR Transformation"
-  ],
+  "service.ai.features.0": "AI strategy development",
+  "service.ai.features.1": "Process automation",
+  "service.ai.features.2": "Digital Workplace",
+  "service.ai.features.3": "HR Transformation",
   
   "service.hr.title": "HR Transformation",
   "service.hr.description": "Modern HR structures and processes for future-oriented companies.",
-  "service.hr.features": [
-    "HR Strategy",
-    "Organizational Development",
-    "Change Management"
-  ],
+  "service.hr.features.0": "HR Strategy",
+  "service.hr.features.1": "Organizational Development",
+  "service.hr.features.2": "Change Management",
   
   "service.processes.title": "Business Processes",
   "service.processes.description": "Optimization and restructuring of business processes for maximum efficiency.",
-  "service.processes.features": [
-    "Process Analysis",
-    "Workflow Optimization",
-    "Performance Management"
-  ],
+  "service.processes.features.0": "Process Analysis",
+  "service.processes.features.1": "Workflow Optimization",
+  "service.processes.features.2": "Performance Management",
   
   "service.nutrition.title": "Nutrition Consulting",
   "service.nutrition.description": "Professional nutrition consulting for optimal health and fitness with modern digital tools.",
-  "service.nutrition.features": [
-    "Personalized nutrition plans",
-    "AI-powered recipe generation",
-    "Calendar integration",
-    "Shopping list automation"
-  ],
+  "service.nutrition.features.0": "Personalized nutrition plans",
+  "service.nutrition.features.1": "AI-powered recipe generation",
+  "service.nutrition.features.2": "Calendar integration",
+  "service.nutrition.features.3": "Shopping list automation",
   
   "service.personality.title": "Personality Development",
   "service.personality.description": "Discover 29 proven methods for your personal development. From Ikigai to stress management - find your way to more clarity and growth.",
-  "service.personality.features": [
-    "29 different methods",
-    "Interactive workflows",
-    "Progress tracking",
-    "Export functions"
-  ],
+  "service.personality.features.0": "29 different methods",
+  "service.personality.features.1": "Interactive workflows",
+  "service.personality.features.2": "Progress tracking",
+  "service.personality.features.3": "Export functions",
   
   "service.training.title": "Personal Training",
   "service.training.description": "AI-supported training plans for gym or home workout. Personalized plans with calendar integration and progress tracking.",
-  "service.training.features": [
-    "AI training plan generator",
-    "Gym & bodyweight options",
-    "Calendar export (Google/Apple)",
-    "Progress tracking"
-  ],
+  "service.training.features.0": "AI training plan generator",
+  "service.training.features.1": "Gym & bodyweight options",
+  "service.training.features.2": "Calendar export (Google/Apple)",
+  "service.training.features.3": "Progress tracking",
   
   "about.title": "About Me",
   "about.subtitle": "As an experienced HR consultant with focus on AI and transformation, I help companies modernize their HR processes and leverage the benefits of digitalization.",
