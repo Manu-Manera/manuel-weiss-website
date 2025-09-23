@@ -346,8 +346,8 @@
     <section id="ikigai-workflow" class="ikigai-workflow">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Dein Ikigai-Workflow</h2>
-                <p class="section-subtitle">
+                <h2 class="section-title" data-translate="ikigai.workflow_title">Dein Ikigai-Workflow</h2>
+                <p class="section-subtitle" data-translate="ikigai.workflow_subtitle">
                     Ein strukturierter Prozess zur Entdeckung deines persönlichen Ikigai
                 </p>
             </div>
@@ -357,31 +357,31 @@
                 <div class="workflow-progress">
                     <div class="progress-step active" data-step="1">
                         <div class="step-number">1</div>
-                        <div class="step-title">Selbstreflexion</div>
+                        <div class="step-title" data-translate="ikigai.step1">Selbstreflexion</div>
                     </div>
                     <div class="progress-step" data-step="2">
                         <div class="step-number">2</div>
-                        <div class="step-title">Passion</div>
+                        <div class="step-title" data-translate="ikigai.step2">Passion</div>
                     </div>
                     <div class="progress-step" data-step="3">
                         <div class="step-number">3</div>
-                        <div class="step-title">Mission</div>
+                        <div class="step-title" data-translate="ikigai.step3">Mission</div>
                     </div>
                     <div class="progress-step" data-step="4">
                         <div class="step-number">4</div>
-                        <div class="step-title">Profession</div>
+                        <div class="step-title" data-translate="ikigai.step4">Profession</div>
                     </div>
                     <div class="progress-step" data-step="5">
                         <div class="step-number">5</div>
-                        <div class="step-title">Vocation</div>
+                        <div class="step-title" data-translate="ikigai.step5">Vocation</div>
                     </div>
                     <div class="progress-step" data-step="6">
                         <div class="step-number">6</div>
-                        <div class="step-title">Synthese</div>
+                        <div class="step-title" data-translate="ikigai.step6">Synthese</div>
                     </div>
                     <div class="progress-step" data-step="7">
                         <div class="step-number">7</div>
-                        <div class="step-title">Aktionsplan</div>
+                        <div class="step-title" data-translate="ikigai.step7">Aktionsplan</div>
                     </div>
                 </div>
                 
@@ -390,13 +390,13 @@
                     <!-- Step 1: Self-Reflection -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3>Schritt 1: Selbstreflexion & Vorbereitung</h3>
-                            <p>Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
+                            <h3 data-translate="ikigai.step1_title">Schritt 1: Selbstreflexion & Vorbereitung</h3>
+                            <p data-translate="ikigai.step1_desc">Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
                         </div>
                         
                         <div class="reflection-exercises">
                             <div class="exercise-card">
-                                <h4>🎯 Lebensvision & Vermächtnis</h4>
+                                <h4 data-translate="ikigai.life_vision">🎯 Lebensvision & Vermächtnis</h4>
                                 <p>Stell dir vor, du bist 80 Jahre alt und blickst auf dein Leben zurück. Was möchtest du erreicht haben? Wie möchtest du in Erinnerung bleiben?</p>
                                 <div class="exercise-tips">
                                     <div class="tip-item">
@@ -1167,24 +1167,24 @@
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
                     <div class="nav-buttons">
-                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()">Zurück</button>
-                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()">Weiter</button>
+                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()" data-translate="ikigai.back">Zurück</button>
+                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()" data-translate="ikigai.next">Weiter</button>
                         <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
                     </div>
                     
                     <!-- Export & Reminder Buttons -->
                     <div class="export-buttons">
                         <button class="btn btn-outline" onclick="showReminderSettings()" title="Erinnerungen einrichten">
-                            <i class="fas fa-bell"></i> Erinnerungen
+                            <i class="fas fa-bell"></i> <span data-translate="ikigai.remember">Erinnerungen</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToPDF()" title="Als PDF exportieren">
-                            <i class="fas fa-file-pdf"></i> PDF
+                            <i class="fas fa-file-pdf"></i> <span data-translate="ikigai.export_pdf">PDF</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToWord()" title="Als Word-Dokument exportieren">
-                            <i class="fas fa-file-word"></i> Word
+                            <i class="fas fa-file-word"></i> <span data-translate="ikigai.export_word">Word</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToExcel()" title="Als Excel-Tabelle exportieren">
-                            <i class="fas fa-file-excel"></i> Excel
+                            <i class="fas fa-file-excel"></i> <span data-translate="ikigai.export_excel">Excel</span>
                         </button>
                     </div>
                 </div>
