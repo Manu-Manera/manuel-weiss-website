@@ -8,6 +8,13 @@
     overflow: hidden;
 }
 
+/* Mobile Hero Improvements */
+@media (max-width: 768px) {
+    .personality-hero {
+        padding: 2rem 0 4rem 0;
+    }
+}
+
 .personality-hero::before {
     content: '';
     position: absolute;
@@ -33,12 +40,28 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Mobile Hero Title */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+}
+
 .hero-subtitle {
     font-size: 1.25rem;
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 3rem;
     line-height: 1.6;
     max-width: 600px;
+}
+
+/* Mobile Hero Subtitle */
+@media (max-width: 768px) {
+    .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .personality-visual {
@@ -460,8 +483,44 @@
 @media (max-width: 768px) {
     .methods-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 0 0.5rem;
+        gap: 1.5rem;
+        padding: 0 1rem;
+        margin: 2rem 0;
+    }
+    
+    .method-card {
+        margin-bottom: 1rem;
+    }
+    
+    .method-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .method-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    
+    .method-features {
+        margin-bottom: 1.5rem;
+    }
+    
+    .method-features li {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .method-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.8rem 1.5rem;
     }
     
     .method-card {
