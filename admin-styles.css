@@ -50,6 +50,32 @@
         margin-bottom: 0.25rem !important;
     }
 }
+
+/* Status Dropdown Styles */
+.status-dropdown {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.status-dropdown:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.status-dropdown:focus {
+    outline: 2px solid rgba(255,255,255,0.5);
+    outline-offset: 2px;
+}
+
+/* Application Card Hover Effects */
+.application-card {
+    transition: all 0.3s ease;
+}
+
+.application-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
 :root {
     /* Colors */
     --primary: #6366f1;
