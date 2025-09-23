@@ -1627,15 +1627,66 @@ function triggerDocumentUpload() {
 
 // Initialize document upload when DOM is ready
 function initializeDocumentUpload() {
+    console.log('🔧 Initializing document upload...');
+    
     const docUpload = document.getElementById('doc-upload');
     if (docUpload) {
-        console.log('Initializing document upload...');
+        console.log('✅ Document upload input found');
+        
         // Remove existing listeners to avoid duplicates
         docUpload.removeEventListener('change', handleDocumentUpload);
         docUpload.addEventListener('change', handleDocumentUpload);
-        console.log('Document upload initialized successfully');
+        
+        // Add debug event listener
+        docUpload.addEventListener('change', function(e) {
+            console.log('📄 Upload input change event fired with', e.target.files.length, 'files');
+        });
+        
+        console.log('✅ Document upload initialized successfully');
+        
+        // Test if the input is accessible
+        const testClick = () => {
+            try {
+                docUpload.click();
+                console.log('✅ Upload input click test successful');
+            } catch (error) {
+                console.error('❌ Upload input click test failed:', error);
+            }
+        };
+        
+        // Don't actually trigger the click, just test availability
+        console.log('Upload input available:', !!docUpload);
+        
     } else {
-        console.warn('Document upload input not found');
+        console.warn('❌ Document upload input (#doc-upload) not found in DOM');
+        
+        // Try to find it with alternative methods
+        const allInputs = document.querySelectorAll('input[type="file"]');
+        console.log('Found', allInputs.length, 'file inputs:', Array.from(allInputs).map(inp => inp.id || inp.className));
+        
+        // Try to create the input if it doesn't exist
+        setTimeout(() => {
+            const retryUpload = document.getElementById('doc-upload');
+            if (!retryUpload) {
+                console.warn('Creating fallback upload input...');
+                const fallbackInput = document.createElement('input');
+                fallbackInput.type = 'file';
+                fallbackInput.id = 'doc-upload';
+                fallbackInput.accept = '.pdf,.doc,.docx,.html,.jpg,.jpeg,.png';
+                fallbackInput.multiple = true;
+                fallbackInput.style.display = 'none';
+                
+                // Add to document
+                document.body.appendChild(fallbackInput);
+                
+                // Initialize the fallback
+                fallbackInput.addEventListener('change', handleDocumentUpload);
+                console.log('✅ Fallback upload input created and initialized');
+            } else {
+                console.log('✅ Upload input found on retry');
+                initializeDocumentUpload(); // Retry initialization
+            }
+        }, 500);
     }
 }
 
@@ -1653,66 +1704,153 @@ function loadApplicationsSection() {
 
 function handleDocumentUpload(event) {
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+        console.log('No files selected');
+        return;
+    }
     
-    console.log('Uploading files:', files.length);
+    console.log('🔄 Processing', files.length, 'files...');
     
-    Array.from(files).forEach(file => {
-        console.log('Processing file:', file.name, file.size);
+    // Show loading indicator
+    const uploadButton = document.querySelector('[onclick="triggerDocumentUpload()"]');
+    const originalText = uploadButton?.textContent;
+    if (uploadButton) {
+        uploadButton.textContent = 'Uploading...';
+        uploadButton.disabled = true;
+    }
+    
+    let processedFiles = 0;
+    const totalFiles = files.length;
+    
+    Array.from(files).forEach((file, index) => {
+        console.log(`📁 Processing file ${index + 1}/${totalFiles}:`, file.name, 'Size:', formatFileSize(file.size));
         
         // Check file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
-            if (window.adminPanel && window.adminPanel.showToast) {
-                window.adminPanel.showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
-            }
+            console.error('File too large:', file.name);
+            showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
+            processedFiles++;
+            checkUploadComplete();
+            return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().match(/\.(pdf|doc|docx|html|jpg|jpeg|png)$/)) {
+            console.error('Invalid file type:', file.name, file.type);
+            showToast(`Datei ${file.name} hat ein ungültiges Format`, 'error');
+            processedFiles++;
+            checkUploadComplete();
             return;
         }
         
         const reader = new FileReader();
         
         reader.onload = function(e) {
-            const doc = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2),
-                name: file.name,
-                type: determineDocumentType(file.name),
-                size: formatFileSize(file.size),
-                uploadedAt: new Date().toISOString(),
-                dataUrl: e.target.result,
-                mimeType: file.type
-            };
-            
-            // Get existing documents
-            const existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
-            existingDocs.push(doc);
-            
-            // Save to localStorage
-            localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
-            
-            // Update global documents array
-            documents = existingDocs;
-            
-            // Reload documents display
-            loadDocuments();
-            
-            if (window.adminPanel && window.adminPanel.showToast) {
-                window.adminPanel.showToast(`${file.name} erfolgreich hochgeladen`, 'success');
+            try {
+                const doc = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                    name: file.name,
+                    type: determineDocumentType(file.name),
+                    size: formatFileSize(file.size),
+                    uploadedAt: new Date().toISOString(),
+                    dataUrl: e.target.result,
+                    mimeType: file.type,
+                    originalSize: file.size
+                };
+                
+                // Get existing documents
+                let existingDocs = [];
+                try {
+                    existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+                } catch (error) {
+                    console.error('Error parsing existing documents:', error);
+                    existingDocs = [];
+                }
+                
+                // Check for duplicates
+                const isDuplicate = existingDocs.some(existingDoc => 
+                    existingDoc.name === doc.name && existingDoc.originalSize === doc.originalSize
+                );
+                
+                if (isDuplicate) {
+                    console.warn('Duplicate file detected:', file.name);
+                    showToast(`Datei ${file.name} existiert bereits`, 'warning');
+                } else {
+                    // Add new document
+                    existingDocs.push(doc);
+                    
+                    // Save to localStorage with error handling
+                    try {
+                        localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
+                        console.log('✅ Document saved successfully:', doc.name);
+                        showToast(`${file.name} erfolgreich hochgeladen`, 'success');
+                    } catch (error) {
+                        console.error('Error saving to localStorage:', error);
+                        if (error.name === 'QuotaExceededError') {
+                            showToast('Speicher voll. Bitte löschen Sie alte Dokumente.', 'error');
+                        } else {
+                            showToast(`Fehler beim Speichern von ${file.name}`, 'error');
+                        }
+                    }
+                }
+                
+                // Update global documents array
+                documents = existingDocs;
+                
+            } catch (error) {
+                console.error('Error processing file:', file.name, error);
+                showToast(`Fehler beim Verarbeiten von ${file.name}`, 'error');
             }
             
-            console.log('Document saved:', doc.name);
+            processedFiles++;
+            checkUploadComplete();
         };
         
-        reader.onerror = function() {
-            console.error('Error reading file:', file.name);
-            if (window.adminPanel && window.adminPanel.showToast) {
-                window.adminPanel.showToast(`Fehler beim Lesen von ${file.name}`, 'error');
-            }
+        reader.onerror = function(error) {
+            console.error('FileReader error for file:', file.name, error);
+            showToast(`Fehler beim Lesen von ${file.name}`, 'error');
+            processedFiles++;
+            checkUploadComplete();
         };
         
         reader.readAsDataURL(file);
     });
     
-    // Clear input
-    event.target.value = '';
+    function checkUploadComplete() {
+        if (processedFiles === totalFiles) {
+            console.log('🎉 All files processed. Reloading documents...');
+            
+            // Reload documents display
+            setTimeout(() => {
+                loadDocuments();
+            }, 100);
+            
+            // Reset upload button
+            if (uploadButton) {
+                uploadButton.textContent = originalText || 'Dateien auswählen';
+                uploadButton.disabled = false;
+            }
+            
+            // Clear input
+            event.target.value = '';
+            
+            console.log('📊 Upload process completed. Total documents:', documents.length);
+        }
+    }
+    
+    // Helper function for toast notifications
+    function showToast(message, type = 'info') {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast(message, type);
+        } else {
+            console.log(`Toast [${type}]:`, message);
+            // Fallback: show alert for important messages
+            if (type === 'error') {
+                alert(message);
+            }
+        }
+    }
 }
 
 // Test function to verify upload functionality
