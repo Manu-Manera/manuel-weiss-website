@@ -41,6 +41,17 @@
                 <a href="index.html#about" class="nav-link" data-translate="nav.about">Über mich</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" data-translate="nav.personality">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link" data-translate="nav.contact">Kontakt</a>
+                
+                <!-- Language Switcher -->
+                <div class="language-switcher">
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="de">🇩🇪 Deutsch</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="it">🇮🇹 Italiano</option>
+                    </select>
+                </div>
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -1646,3 +1657,87 @@
         </div>
     </div>
 </footer>
+
+<!-- Scripts -->
+<script src="js/translation-manager.js"></script>
+<script src="js/persoenlichkeitsentwicklung-methods.js"></script>
+<script src="js/persoenlichkeitsentwicklung-search.js"></script>
+<script>
+    // Methoden-Funktionen
+    function startMethod(methodName) {
+        console.log('Starting method:', methodName);
+        // Hier würde die jeweilige Methode gestartet werden
+        alert('Methode ' + methodName + ' wird gestartet...');
+    }
+    
+    function downloadPDF(methodName) {
+        console.log('Downloading PDF for method:', methodName);
+        // Hier würde der PDF-Download gestartet werden
+        alert('PDF für ' + methodName + ' wird heruntergeladen...');
+    }
+    
+    // Filter-Funktionen
+    function filterMethods(category) {
+        console.log('Filtering methods by category:', category);
+        const cards = document.querySelectorAll('.method-card');
+        
+        cards.forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update active filter
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${category}"]`).classList.add('active');
+    }
+    
+    // Search function
+    function searchMethods() {
+        const searchTerm = document.getElementById('methodSearch').value.toLowerCase();
+        const cards = document.querySelectorAll('.method-card');
+        
+        cards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Language Switcher Function
+    function changeLanguage(langCode) {
+        if (window.translationManager) {
+            window.translationManager.setLanguage(langCode);
+        } else {
+            // Fallback if translation manager is not loaded
+            localStorage.setItem('selectedLanguage', langCode);
+            location.reload();
+        }
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Personality Development Overview loaded');
+        
+        // Set default filter to 'all'
+        filterMethods('all');
+        
+        // Initialize language switcher
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'de';
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) {
+            languageSelect.value = savedLanguage;
+        }
+    });
+</script>
+</body>
+</html>
