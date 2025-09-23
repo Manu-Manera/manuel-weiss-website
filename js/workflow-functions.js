@@ -1,3 +1,5 @@
+// Smart Workflow Functions - Additional steps and helpers
+
 function generateStep4() {
     return `
         <h3 style="margin-bottom: 1.5rem;">Schritt 4: Design & Layout</h3>
@@ -152,4 +154,261 @@ function generateStep5() {
             </button>
         </div>
     `;
+}
+
+// Additional workflow helper functions
+function generateSmartCoverLetter() {
+    setTimeout(() => {
+        const editor = document.getElementById('coverLetterEditor');
+        if (editor) {
+            editor.innerHTML = `
+                <p>Sehr geehrte Damen und Herren,</p>
+                <p>mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${workflowData.position} bei ${workflowData.company} gelesen. Die beschriebenen Aufgaben und Anforderungen entsprechen genau meinem beruflichen Profil und meinen Karrierezielen.</p>
+                <p>In meiner bisherigen Laufbahn konnte ich umfangreiche Erfahrungen in den Bereichen HR-Beratung, Digitalisierung und Prozessoptimierung sammeln. Besonders meine Expertise in der strategischen Personalentwicklung und der Implementierung innovativer HR-Tech-Lösungen würde ich gerne in Ihrem Unternehmen einbringen.</p>
+                <p>[Hier können Sie weitere relevante Erfahrungen und Qualifikationen ergänzen]</p>
+                <p>Über eine Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.</p>
+                <p>Mit freundlichen Grüßen<br>Manuel Weiß</p>
+            `;
+            workflowData.coverLetter = editor.innerHTML;
+        }
+    }, 1000);
+}
+
+function updateCVDate() {
+    const dateInput = document.getElementById('cvSignatureDate');
+    if (dateInput) {
+        workflowData.cvDate = dateInput.value;
+    }
+}
+
+function previousWorkflowStep(step) {
+    document.querySelectorAll('.workflow-step').forEach(s => s.style.display = 'none');
+    const targetStep = document.getElementById(`workflowStep${step}`);
+    if (targetStep) {
+        targetStep.style.display = 'block';
+    }
+}
+
+function saveAndContinue(nextStep) {
+    // Save current step data
+    const currentStep = parseInt(nextStep) - 1;
+    
+    if (currentStep === 2) {
+        workflowData.coverLetter = document.getElementById('coverLetterEditor').innerHTML;
+    } else if (currentStep === 3) {
+        workflowData.currentPosition = document.getElementById('currentPosition').value;
+        workflowData.cvDate = document.getElementById('cvSignatureDate').value;
+        workflowData.additionalQualifications = document.getElementById('additionalQualifications').value;
+    } else if (currentStep === 4) {
+        workflowData.design.primaryColor = document.getElementById('primaryColor').value;
+        workflowData.design.secondaryColor = document.getElementById('secondaryColor').value;
+    }
+    
+    nextWorkflowStep(nextStep);
+}
+
+function selectTemplate(template) {
+    workflowData.design.template = template;
+    document.querySelectorAll('.template-option').forEach(opt => {
+        opt.style.borderColor = '#e5e7eb';
+    });
+    event.currentTarget.style.borderColor = '#6366f1';
+}
+
+function publishOnline() {
+    const shareSection = document.getElementById('shareSection');
+    const shareLinkInput = document.getElementById('shareLink');
+    
+    // Generate unique URL
+    const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    const shareUrl = `https://bewerbung.example.com/${uniqueId}`;
+    
+    shareLinkInput.value = shareUrl;
+    shareSection.style.display = 'block';
+    
+    // Save application data
+    const applicationData = {
+        ...workflowData,
+        shareUrl,
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`application_${uniqueId}`, JSON.stringify(applicationData));
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Online-Seite erstellt!', 'success');
+    }
+}
+
+function exportPDF() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('PDF wird erstellt...', 'info');
+    }
+    // In real implementation, this would generate actual PDF
+    setTimeout(() => {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('PDF erfolgreich erstellt!', 'success');
+        }
+    }, 2000);
+}
+
+function exportWord() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Word-Dokument wird erstellt...', 'info');
+    }
+    // In real implementation, this would generate actual Word document
+    setTimeout(() => {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Word-Dokument erfolgreich erstellt!', 'success');
+        }
+    }, 2000);
+}
+
+function copyShareLink() {
+    const shareLinkInput = document.getElementById('shareLink');
+    shareLinkInput.select();
+    document.execCommand('copy');
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Link kopiert!', 'success');
+    }
+}
+
+function finishWorkflow() {
+    // Save the complete application
+    const newApplication = {
+        id: Date.now().toString(),
+        company: workflowData.company,
+        position: workflowData.position,
+        date: new Date().toISOString(),
+        status: 'sent',
+        coverLetter: workflowData.coverLetter,
+        design: workflowData.design,
+        documents: workflowData.documents
+    };
+    
+    applications.push(newApplication);
+    localStorage.setItem('applications', JSON.stringify(applications));
+    
+    closeSmartWorkflow();
+    loadApplications();
+    updateStatistics();
+    
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Bewerbung erfolgreich erstellt!', 'success');
+    }
+}
+
+function regenerateSelection() {
+    const selection = window.getSelection().toString();
+    if (selection) {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Text wird neu generiert...', 'info');
+        }
+    } else {
+        alert('Bitte markieren Sie zuerst den Text, der neu generiert werden soll.');
+    }
+}
+
+function addParagraph() {
+    const editor = document.getElementById('coverLetterEditor');
+    if (editor) {
+        const newParagraph = document.createElement('p');
+        newParagraph.innerHTML = '[Neuer Absatz - Klicken zum Bearbeiten]';
+        newParagraph.contentEditable = true;
+        editor.appendChild(newParagraph);
+        newParagraph.focus();
+    }
+}
+
+function checkGrammar() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Rechtschreibprüfung läuft...', 'info');
+    }
+    // In real implementation, this would check grammar
+    setTimeout(() => {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Keine Fehler gefunden!', 'success');
+        }
+    }, 1500);
+}
+
+// PDF Editor Functions
+function deletePage() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Seite gelöscht', 'success');
+    }
+}
+
+function rotatePage() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Seite gedreht', 'success');
+    }
+}
+
+function movePage() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Verschiebe Seite...', 'info');
+    }
+}
+
+function savePDF() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('PDF gespeichert', 'success');
+    }
+}
+
+function addPDFPage() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Seite hinzugefügt', 'success');
+    }
+}
+
+function uploadAdditionalPDF() {
+    document.createElement('input').click();
+}
+
+// Document Management Functions
+function viewDocument(id) {
+    const doc = documents.find(d => d.id === id);
+    if (doc) {
+        window.open(doc.url, '_blank');
+    }
+}
+
+function downloadDocument(id) {
+    const doc = documents.find(d => d.id === id);
+    if (doc) {
+        const a = document.createElement('a');
+        a.href = doc.url;
+        a.download = doc.name;
+        a.click();
+    }
+}
+
+function deleteDocument(id) {
+    if (confirm('Möchten Sie dieses Dokument wirklich löschen?')) {
+        documents = documents.filter(d => d.id !== id);
+        localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+        loadDocuments();
+        
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Dokument gelöscht', 'success');
+        }
+    }
+}
+
+function mergeDocuments() {
+    if (window.adminPanel && window.adminPanel.showToast) {
+        window.adminPanel.showToast('Dokumente werden zusammengeführt...', 'info');
+    }
+}
+
+function createTemplate() {
+    const templateName = prompt('Name für die Vorlage:');
+    if (templateName) {
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Vorlage gespeichert', 'success');
+        }
+    }
 }

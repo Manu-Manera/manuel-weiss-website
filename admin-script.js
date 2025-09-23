@@ -1077,6 +1077,14 @@ function loadApplications() {
                 ${app.statusDate ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Status-Datum: ${new Date(app.statusDate).toLocaleDateString('de-DE')}</p>` : ''}
             </div>
             <div style="display: flex; gap: 0.5rem;">
+                ${app.pageUrl ? `
+                    <button onclick="viewApplicationPage('${app.id}')" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;" title="Bewerbungsseite anzeigen">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                ` : ''}
+                <button onclick="editApplicationPage('${app.id}')" style="padding: 0.5rem 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer;" title="Seite bearbeiten">
+                    <i class="fas fa-palette"></i>
+                </button>
                 <button onclick="editApplication('${app.id}')" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                     <i class="fas fa-edit"></i>
                 </button>
