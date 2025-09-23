@@ -578,10 +578,14 @@ function removeSelectedDocument(docId) {
 
 // Workflow navigation functions
 function nextWorkflowStep(step) {
+    console.log('🔄 Moving to workflow step:', step);
     workflowData.currentStep = step;
     
     const contentDiv = document.getElementById('workflowContent');
-    if (!contentDiv) return;
+    if (!contentDiv) {
+        console.error('❌ Workflow content div not found!');
+        return;
+    }
     
     let content = '';
     
@@ -618,6 +622,7 @@ function nextWorkflowStep(step) {
     }
     
     contentDiv.innerHTML = content;
+    console.log('✅ Workflow step content updated');
 }
 
 function previousWorkflowStep(step) {
@@ -625,14 +630,42 @@ function previousWorkflowStep(step) {
 }
 
 function saveAndContinue(nextStep) {
-    // Save current step data
-    if (workflowData.currentStep === 1) {
-        workflowData.company = document.getElementById('company').value;
-        workflowData.position = document.getElementById('position').value;
-        workflowData.jobDescription = document.getElementById('jobDescription').value;
-    }
+    console.log('💾 Saving workflow step data...');
     
-    nextWorkflowStep(nextStep);
+    try {
+        // Save current step data
+        if (workflowData.currentStep === 1) {
+            const company = document.getElementById('company').value;
+            const position = document.getElementById('position').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+            
+            console.log('Saving data:', { company, position, jobDescription });
+            
+            workflowData.company = company;
+            workflowData.position = position;
+            workflowData.jobDescription = jobDescription;
+            
+            // Validate required fields
+            if (!company.trim() || !position.trim() || !jobDescription.trim()) {
+                alert('Bitte füllen Sie alle Felder aus.');
+                return;
+            }
+        }
+        
+        console.log('✅ Data saved, proceeding to step:', nextStep);
+        
+        // Ensure nextWorkflowStep is available
+        if (typeof nextWorkflowStep === 'function') {
+            nextWorkflowStep(nextStep);
+        } else {
+            console.error('❌ nextWorkflowStep function not available');
+            alert('Fehler beim Fortfahren. Bitte laden Sie die Seite neu.');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error in saveAndContinue:', error);
+        alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+    }
 }
 
 // Generate Step 4: Certificates and Documents
@@ -853,6 +886,130 @@ function generateStep5() {
     `;
 }
 
+// Analyze job description - IMPROVED VERSION
+async function analyzeJobDescription() {
+    const jobDescription = document.getElementById('jobDescription').value;
+    if (!jobDescription.trim()) {
+        alert('Bitte geben Sie eine Stellenbeschreibung ein.');
+        return;
+    }
+    
+    console.log('🔍 Analyzing job description...');
+    
+    // Simulate AI analysis with better extraction
+    const analysis = {
+        company: extractCompanyName(jobDescription),
+        position: extractPosition(jobDescription)
+    };
+    
+    console.log('Analysis result:', analysis);
+    
+    // Show confirmation dialog with better formatting
+    const confirmed = confirm(`Möchten Sie die extrahierten Daten verwenden?\n\nUnternehmen: ${analysis.company}\nPosition: ${analysis.position}`);
+    
+    if (confirmed) {
+        // Auto-fill the form
+        document.getElementById('company').value = analysis.company;
+        document.getElementById('position').value = analysis.position;
+        
+        console.log('✅ Form filled with extracted data');
+        
+        // Enable continue button
+        const continueBtn = document.querySelector('button[onclick*="saveAndContinue"]');
+        if (continueBtn) {
+            continueBtn.style.display = 'inline-block';
+            continueBtn.disabled = false;
+            console.log('✅ Continue button enabled');
+        }
+    }
+}
+
+// Extract company name from job description
+function extractCompanyName(jobDescription) {
+    console.log('🏢 Extracting company name...');
+    
+    // Look for common company indicators
+    const companyPatterns = [
+        /(?:bei|in|der|die)\s+([A-Z][a-zA-Z\s&.-]+(?:GmbH|AG|KG|GmbH & Co\. KG|Ltd\.|Inc\.|Corp\.|Company|Unternehmen))/i,
+        /(?:Company|Unternehmen):\s*([A-Z][a-zA-Z\s&.-]+)/i,
+        /(?:Firma|Firmenname):\s*([A-Z][a-zA-Z\s&.-]+)/i,
+        /(?:Wir sind|Wir suchen|Bei uns)\s+([A-Z][a-zA-Z\s&.-]+)/i
+    ];
+    
+    for (const pattern of companyPatterns) {
+        const match = jobDescription.match(pattern);
+        if (match && match[1]) {
+            const company = match[1].trim();
+            console.log('✅ Company found:', company);
+            return company;
+        }
+    }
+    
+    // Fallback: look for capitalized words that might be company names
+    const words = jobDescription.split(/\s+/);
+    for (let i = 0; i < words.length - 1; i++) {
+        if (words[i].match(/^(bei|in|der|die)$/i) && words[i + 1].match(/^[A-Z]/)) {
+            console.log('✅ Company found (fallback):', words[i + 1]);
+            return words[i + 1];
+        }
+    }
+    
+    console.log('❌ No company found, using default');
+    return 'Unbekanntes Unternehmen';
+}
+
+// Extract position from job description - IMPROVED VERSION
+function extractPosition(jobDescription) {
+    console.log('💼 Extracting position...');
+    
+    // Look for position indicators
+    const positionPatterns = [
+        /(?:Position|Stelle|Job|Rolle):\s*([A-Za-z\s]+?)(?:\n|$|\.|,)/i,
+        /(?:Wir suchen|Wir bieten|Stellenausschreibung für)\s+([A-Za-z\s]+?)(?:\n|$|\.|,)/i,
+        /(?:als|für)\s+([A-Za-z\s]+?)(?:\n|$|\.|,)/i,
+        /(?:Senior|Junior|Lead|Manager|Consultant|Specialist|Expert|Analyst|Developer|Engineer|Designer|Coordinator|Director|Head|Chief)\s+([A-Za-z\s]+?)(?:\n|$|\.|,)/i
+    ];
+    
+    for (const pattern of positionPatterns) {
+        const match = jobDescription.match(pattern);
+        if (match && match[1]) {
+            let position = match[1].trim();
+            
+            // Clean up the position
+            position = position.replace(/\s+/g, ' '); // Remove extra spaces
+            position = position.replace(/[.,;]$/, ''); // Remove trailing punctuation
+            
+            // Limit length to avoid too much text
+            if (position.length > 50) {
+                position = position.substring(0, 50).trim() + '...';
+            }
+            
+            console.log('✅ Position found:', position);
+            return position;
+        }
+    }
+    
+    // Fallback: look for common job titles
+    const commonTitles = [
+        'Manager', 'Consultant', 'Specialist', 'Expert', 'Analyst', 
+        'Developer', 'Engineer', 'Designer', 'Coordinator', 'Director',
+        'Head', 'Chief', 'Senior', 'Junior', 'Lead'
+    ];
+    
+    for (const title of commonTitles) {
+        const regex = new RegExp(`\\b${title}\\s+([A-Za-z\\s]+?)(?:\\n|$|\\.|,)`, 'i');
+        const match = jobDescription.match(regex);
+        if (match && match[1]) {
+            const position = `${title} ${match[1].trim()}`;
+            console.log('✅ Position found (fallback):', position);
+            return position;
+        }
+    }
+    
+    console.log('❌ No position found, using default');
+    return 'Unbekannte Position';
+}
+
 // Make workflow functions globally available
 window.startSmartWorkflow = startSmartWorkflow;
 window.closeSmartWorkflow = closeSmartWorkflow;
@@ -875,6 +1032,9 @@ window.exportPDF = exportPDF;
 window.exportWord = exportWord;
 window.finishWorkflow = finishWorkflow;
 window.copyShareLink = copyShareLink;
+window.analyzeJobDescription = analyzeJobDescription;
+window.extractCompanyName = extractCompanyName;
+window.extractPosition = extractPosition;
 
 // Generate Step 6: Final Review and Export
 function generateStep6() {
