@@ -1516,6 +1516,7 @@ let documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]')
 let currentDocumentFilter = 'all';
 
 function filterDocuments(type) {
+    console.log('🔄 Filtering documents by type:', type);
     currentDocumentFilter = type;
     
     // Update active tab
@@ -1528,6 +1529,11 @@ function filterDocuments(type) {
     
     loadDocuments();
 }
+
+// Make document functions globally available immediately
+window.filterDocuments = filterDocuments;
+window.triggerDocumentUpload = triggerDocumentUpload;
+window.loadDocuments = loadDocuments;
 
 function loadDocuments() {
     // Load documents from localStorage
@@ -1591,17 +1597,28 @@ function loadDocuments() {
     `).join('');
 }
 
-// Document upload functionality
+// Document upload functionality - FIXED VERSION
 function triggerDocumentUpload() {
+    console.log('🔄 triggerDocumentUpload called');
     const uploadInput = document.getElementById('doc-upload');
+    console.log('Upload input found:', !!uploadInput);
+    
     if (uploadInput) {
         console.log('Triggering document upload...');
         uploadInput.click();
     } else {
         console.error('Upload input not found!');
-        if (window.adminPanel && window.adminPanel.showToast) {
-            window.adminPanel.showToast('Upload-Funktion nicht verfügbar', 'error');
-        }
+        // Try to re-initialize
+        setTimeout(() => {
+            console.log('Retrying upload input initialization...');
+            initializeDocumentUpload();
+            const retryInput = document.getElementById('doc-upload');
+            if (retryInput) {
+                retryInput.click();
+            } else if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast('Upload-Funktion nicht verfügbar', 'error');
+            }
+        }, 100);
     }
 }
 
