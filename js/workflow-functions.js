@@ -399,9 +399,307 @@ function previewFullLetter() {
     workflowData.coverLetter = fullLetter;
 }
 
+// Workflow document upload functions
+function triggerWorkflowDocumentUpload() {
+    const uploadInput = document.getElementById('workflow-doc-upload');
+    if (uploadInput) {
+        console.log('Triggering workflow document upload...');
+        uploadInput.click();
+    } else {
+        console.error('Workflow upload input not found!');
+    }
+}
+
+// Initialize workflow document upload
+function initializeWorkflowDocumentUpload() {
+    const uploadInput = document.getElementById('workflow-doc-upload');
+    if (uploadInput) {
+        uploadInput.addEventListener('change', handleWorkflowDocumentUpload);
+        console.log('Workflow document upload initialized');
+    }
+}
+
+// Handle workflow document upload
+function handleWorkflowDocumentUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    console.log('Uploading workflow documents:', files.length);
+    
+    Array.from(files).forEach(file => {
+        console.log('Processing workflow file:', file.name, file.size);
+        
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
+            }
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const doc = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2),
+                name: file.name,
+                type: determineDocumentType(file.name),
+                size: formatFileSize(file.size),
+                uploadedAt: new Date().toISOString(),
+                dataUrl: e.target.result,
+                mimeType: file.type
+            };
+            
+            // Get existing documents
+            const existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+            existingDocs.push(doc);
+            
+            // Save to localStorage
+            localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
+            
+            // Update global documents array
+            if (window.documents) {
+                window.documents = existingDocs;
+            }
+            
+            // Reload documents in workflow
+            loadWorkflowDocuments();
+            
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`${file.name} erfolgreich hochgeladen`, 'success');
+            }
+            
+            console.log('Workflow document saved:', doc.name);
+        };
+        
+        reader.onerror = function() {
+            console.error('Error reading workflow file:', file.name);
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`Fehler beim Lesen von ${file.name}`, 'error');
+            }
+        };
+        
+        reader.readAsDataURL(file);
+    });
+    
+    // Clear input
+    event.target.value = '';
+}
+
+// Load documents for workflow
+function loadWorkflowDocuments() {
+    const documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+    
+    // Filter certificates and certifications
+    const certificates = documents.filter(doc => doc.type === 'certificate');
+    const certifications = documents.filter(doc => doc.type === 'certification');
+    
+    // Load certificates
+    const certificatesList = document.getElementById('certificatesList');
+    if (certificatesList) {
+        if (certificates.length === 0) {
+            certificatesList.innerHTML = '<p style="color: #666; text-align: center;">Keine Zeugnisse verfügbar</p>';
+        } else {
+            certificatesList.innerHTML = certificates.map(doc => `
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" class="workflow-doc-checkbox" data-doc-id="${doc.id}" data-doc-type="certificate">
+                    <span style="font-size: 0.9rem;">${doc.name}</span>
+                </label>
+            `).join('');
+        }
+    }
+    
+    // Load certifications
+    const certificationsList = document.getElementById('certificationsList');
+    if (certificationsList) {
+        if (certifications.length === 0) {
+            certificationsList.innerHTML = '<p style="color: #666; text-align: center;">Keine Zertifikate verfügbar</p>';
+        } else {
+            certificationsList.innerHTML = certifications.map(doc => `
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" class="workflow-doc-checkbox" data-doc-id="${doc.id}" data-doc-type="certification">
+                    <span style="font-size: 0.9rem;">${doc.name}</span>
+                </label>
+            `).join('');
+        }
+    }
+    
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.workflow-doc-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedDocuments);
+    });
+}
+
+// Update selected documents display
+function updateSelectedDocuments() {
+    const selectedDocs = [];
+    const checkboxes = document.querySelectorAll('.workflow-doc-checkbox:checked');
+    
+    checkboxes.forEach(checkbox => {
+        const docId = checkbox.dataset.docId;
+        const docType = checkbox.dataset.docType;
+        const docName = checkbox.nextElementSibling.textContent;
+        
+        selectedDocs.push({
+            id: docId,
+            type: docType,
+            name: docName
+        });
+    });
+    
+    const selectedDiv = document.getElementById('selectedDocuments');
+    if (selectedDiv) {
+        if (selectedDocs.length === 0) {
+            selectedDiv.innerHTML = '<p style="color: #666; text-align: center; margin: 0;">Keine Dokumente ausgewählt</p>';
+        } else {
+            selectedDiv.innerHTML = selectedDocs.map(doc => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border-radius: 4px; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.9rem;">${doc.name}</span>
+                    <button onclick="removeSelectedDocument('${doc.id}')" style="background: #ef4444; color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; font-size: 0.8rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Store in workflow data
+    workflowData.selectedDocuments = selectedDocs;
+}
+
+// Remove selected document
+function removeSelectedDocument(docId) {
+    const checkbox = document.querySelector(`input[data-doc-id="${docId}"]`);
+    if (checkbox) {
+        checkbox.checked = false;
+        updateSelectedDocuments();
+    }
+}
+
+// Workflow navigation functions
+function nextWorkflowStep(step) {
+    workflowData.currentStep = step;
+    
+    const contentDiv = document.getElementById('workflowContent');
+    if (!contentDiv) return;
+    
+    let content = '';
+    
+    switch(step) {
+        case 1:
+            content = generateStep1();
+            break;
+        case 2:
+            content = generateStep2();
+            break;
+        case 3:
+            content = generateStep3();
+            // Initialize greeting and closing options
+            setTimeout(() => {
+                updateGreeting();
+            }, 100);
+            break;
+        case 4:
+            content = generateStep4();
+            // Initialize workflow document upload and load documents
+            setTimeout(() => {
+                initializeWorkflowDocumentUpload();
+                loadWorkflowDocuments();
+            }, 100);
+            break;
+        case 5:
+            content = generateStep5();
+            break;
+        case 6:
+            content = generateStep6();
+            break;
+        default:
+            content = generateStep1();
+    }
+    
+    contentDiv.innerHTML = content;
+}
+
+function previousWorkflowStep(step) {
+    nextWorkflowStep(step);
+}
+
+function saveAndContinue(nextStep) {
+    // Save current step data
+    if (workflowData.currentStep === 1) {
+        workflowData.company = document.getElementById('company').value;
+        workflowData.position = document.getElementById('position').value;
+        workflowData.jobDescription = document.getElementById('jobDescription').value;
+    }
+    
+    nextWorkflowStep(nextStep);
+}
+
+// Generate Step 4: Certificates and Documents
 function generateStep4() {
     return `
-        <h3 style="margin-bottom: 1.5rem;">Schritt 4: Design & Layout</h3>
+        <h3 style="margin-bottom: 1.5rem;">Schritt 4: Zeugnisse & Zertifikate hinzufügen</h3>
+        
+        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">📄 Relevante Dokumente auswählen</h4>
+            
+            <!-- Document Selection -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h5 style="margin-bottom: 1rem;">Verfügbare Zeugnisse:</h5>
+                    <div id="certificatesList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem;">
+                        <!-- Certificates will be loaded here -->
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 style="margin-bottom: 1rem;">Verfügbare Zertifikate:</h5>
+                    <div id="certificationsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem;">
+                        <!-- Certifications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Selected Documents -->
+            <div style="margin-bottom: 2rem;">
+                <h5 style="margin-bottom: 1rem;">Ausgewählte Dokumente für diese Bewerbung:</h5>
+                <div id="selectedDocuments" style="min-height: 100px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem; background: #f8fafc;">
+                    <p style="color: #666; text-align: center; margin: 0;">Keine Dokumente ausgewählt</p>
+                </div>
+            </div>
+            
+            <!-- Upload New Documents -->
+            <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 2rem; background: #f8f9ff;">
+                <input type="file" id="workflow-doc-upload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display: none;">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                <p style="font-weight: 600; margin-bottom: 0.5rem;">Weitere Dokumente hochladen</p>
+                <button onclick="triggerWorkflowDocumentUpload()" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    Dateien auswählen
+                </button>
+                <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, JPG, PNG</p>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="previousWorkflowStep(3)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button onclick="saveAndContinue(5)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Weiter zum Design <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+}
+
+// Generate Step 5: Design & Layout
+function generateStep5() {
+    return `
+        <h3 style="margin-bottom: 1.5rem;">Schritt 5: Design & Layout</h3>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <div>
@@ -548,8 +846,81 @@ function generateStep5() {
             <button onclick="previousWorkflowStep(4)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
+            <button onclick="saveAndContinue(6)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+}
+
+// Generate Step 6: Final Review and Export
+function generateStep6() {
+    return `
+        <h3 style="margin-bottom: 1.5rem;">Schritt 6: Veröffentlichung & Export</h3>
+        
+        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <h4 style="margin-bottom: 1rem;">📄 Bewerbungsunterlagen</h4>
+                <div style="background: white; padding: 1rem; border-radius: 6px; border: 1px solid #e5e7eb;">
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Anschreiben:</strong> ✅ Erstellt</p>
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Lebenslauf:</strong> ✅ Angepasst</p>
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Zeugnisse:</strong> ${workflowData.selectedDocuments ? workflowData.selectedDocuments.filter(d => d.type === 'certificate').length : 0} ausgewählt</p>
+                    <p style="margin: 0;"><strong>Zertifikate:</strong> ${workflowData.selectedDocuments ? workflowData.selectedDocuments.filter(d => d.type === 'certification').length : 0} ausgewählt</p>
+                </div>
+            </div>
+            
+            <div>
+                <h4 style="margin-bottom: 1rem;">🎨 Design</h4>
+                <div style="background: white; padding: 1rem; border-radius: 6px; border: 1px solid #e5e7eb;">
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Primärfarbe:</strong> <span style="display: inline-block; width: 20px; height: 20px; background: ${workflowData.design.primaryColor}; border-radius: 3px; vertical-align: middle; margin-left: 0.5rem;"></span></p>
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Sekundärfarbe:</strong> <span style="display: inline-block; width: 20px; height: 20px; background: ${workflowData.design.secondaryColor}; border-radius: 3px; vertical-align: middle; margin-left: 0.5rem;"></span></p>
+                    <p style="margin: 0;"><strong>Schriftart:</strong> ${workflowData.design.font || 'Inter'}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+            <button onclick="publishOnline()" style="padding: 1.5rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center;">
+                <i class="fas fa-globe" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                Online veröffentlichen
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; opacity: 0.9;">Erstelle eine öffentliche Seite</p>
+            </button>
+            
+            <button onclick="exportPDF()" style="padding: 1.5rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center;">
+                <i class="fas fa-file-pdf" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                Als PDF herunterladen
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; opacity: 0.9;">Komplettes Bewerbungspaket</p>
+            </button>
+            
+            <button onclick="exportWord()" style="padding: 1.5rem; background: linear-gradient(135deg, #0061a8 0%, #004d87 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center;">
+                <i class="fas fa-file-word" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                Als Word herunterladen
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; opacity: 0.9;">Bearbeitbare Dokumente</p>
+            </button>
+        </div>
+        
+        <div id="shareSection" style="display: none; background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">🔗 Bewerbungsseite veröffentlicht!</h4>
+            <p style="margin-bottom: 1rem;">Ihre Bewerbung ist jetzt online verfügbar:</p>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <input type="text" id="shareLink" readonly style="flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                <button onclick="copyShareLink()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-copy"></i> Kopieren
+                </button>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="previousWorkflowStep(5)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
             <button onclick="finishWorkflow()" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                <i class="fas fa-check"></i> Abschließen
+                Bewerbung abschließen <i class="fas fa-check"></i>
             </button>
         </div>
     `;
