@@ -1059,8 +1059,8 @@ function loadApplications() {
                     <h4 style="margin: 0; color: #333;">${app.company}</h4>
                     <div style="position: relative;">
                         <select onchange="updateApplicationStatus('${app.id}', this.value, this)" style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white; border: none; cursor: pointer; appearance: none; padding-right: 1.5rem;" class="status-dropdown">
-                            <option value="sent" ${app.status === 'sent' ? 'selected' : ''} style="background: #6366f1; color: white;">Gesendet</option>
                             <option value="in-progress" ${app.status === 'in-progress' ? 'selected' : ''} style="background: #f59e0b; color: white;">In Bearbeitung</option>
+                            <option value="sent" ${app.status === 'sent' ? 'selected' : ''} style="background: #6366f1; color: white;">Gesendet</option>
                             <option value="interview" ${app.status === 'interview' ? 'selected' : ''} style="background: #10b981; color: white;">Vorstellungsgespräch</option>
                             <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''} style="background: #ef4444; color: white;">Absage</option>
                         </select>
@@ -1242,24 +1242,31 @@ function updateApplicationStatus(id, newStatus, selectElement) {
             selectElement.value = app.status;
             return;
         }
+    } else {
+        // For 'sent' status, clear any existing status date
+        app.statusDate = null;
     }
     
-    // Update the application
+    // Update the application immediately
     app.status = newStatus;
     app.updatedAt = new Date().toISOString();
     
-    // Save to localStorage
+    // Save to localStorage immediately
     localStorage.setItem('applications', JSON.stringify(applications));
     
-    // Update the select element background color
+    // Update the select element background color immediately
     selectElement.style.background = getStatusColor(newStatus);
     
-    // Reload applications to show updated data
-    loadApplications();
+    // Update statistics immediately
+    updateStatistics();
     
+    // Show success message immediately
     if (window.adminPanel && window.adminPanel.showToast) {
         window.adminPanel.showToast(`Status geändert zu: ${getStatusText(newStatus)}`, 'success');
     }
+    
+    // Reload applications to show updated data (this will also update the UI)
+    loadApplications();
 }
 
 // Switch workflow tab
