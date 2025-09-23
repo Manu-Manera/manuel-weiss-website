@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="ikigai.title">Persönlichkeitsentwicklung & Ikigai - Manuel Weiss</title>
+    <title ikigai.title">Persönlichkeitsentwicklung & Ikigai - Manuel Weiss</title>
     
     <!-- Meta Tags -->
-    <meta name="description" data-translate="ikigai.subtitle" content="Entdecke deinen Ikigai - deinen Grund zu leben. Ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung.">
+    <meta name="description" ikigai.subtitle" content="Entdecke deinen Ikigai - deinen Grund zu leben. Ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung.">
     <meta name="keywords" content="Ikigai, Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Sinn des Lebens">
     <meta name="author" content="Manuel Weiss">
     
@@ -35,10 +35,10 @@
             </div>
             
             <div class="nav-menu" id="navMenu">
-                <a href="index.html" class="nav-link" data-translate="nav.home">Home</a>
-                <a href="index.html#services" class="nav-link" data-translate="nav.services">Services</a>
-                <a href="index.html#about" class="nav-link" data-translate="nav.about">Über mich</a>
-                <a href="index.html#contact" class="nav-link" data-translate="nav.contact">Kontakt</a>
+                <a href="index.html" class="nav-link" nav.home">Home</a>
+                <a href="index.html#services" class="nav-link" nav.services">Services</a>
+                <a href="index.html#about" class="nav-link" nav.about">Über mich</a>
+                <a href="index.html#contact" class="nav-link" nav.contact">Kontakt</a>
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -53,16 +53,16 @@
     <section class="hero ikigai-hero">
         <div class="hero-container">
             <div class="hero-content">
-                <h1 class="hero-title" data-translate="ikigai.title">
+                <h1 class="hero-title" ikigai.title">
                     Entdecke deinen <span class="gradient-text">Ikigai</span>
                 </h1>
-                <p class="hero-subtitle" data-translate="ikigai.subtitle">
+                <p class="hero-subtitle" ikigai.subtitle">
                     Dein Grund zu leben. Ein ausführlicher Workflow zur Selbstfindung, 
                     Lebensziel-Entwicklung und Persönlichkeitsentwicklung.
                 </p>
                 <div class="hero-actions">
-                    <a href="#ikigai-workflow" class="btn btn-primary" data-translate="ikigai.start_workflow">Ikigai-Workflow starten</a>
-                    <a href="#what-is-ikigai" class="btn btn-outline" data-translate="ikigai.what_is_ikigai">Was ist Ikigai?</a>
+                    <a href="#ikigai-workflow" class="btn btn-primary" ikigai.start_workflow">Ikigai-Workflow starten</a>
+                    <a href="#what-is-ikigai" class="btn btn-outline" ikigai.what_is_ikigai">Was ist Ikigai?</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -73,19 +73,19 @@
                         </div>
                         <div class="ikigai-quadrant" data-quadrant="passion">
                             <i class="fas fa-heart"></i>
-                            <span data-translate="ikigai.what_you_love">Was du liebst</span>
+                            <span ikigai.what_you_love">Was du liebst</span>
                         </div>
                         <div class="ikigai-quadrant" data-quadrant="mission">
                             <i class="fas fa-bullseye"></i>
-                            <span data-translate="ikigai.what_world_needs">Was die Welt braucht</span>
+                            <span ikigai.what_world_needs">Was die Welt braucht</span>
                         </div>
                         <div class="ikigai-quadrant" data-quadrant="profession">
                             <i class="fas fa-briefcase"></i>
-                            <span data-translate="ikigai.what_you_paid_for">Wofür du bezahlt wirst</span>
+                            <span ikigai.what_you_paid_for">Wofür du bezahlt wirst</span>
                         </div>
                         <div class="ikigai-quadrant" data-quadrant="vocation">
                             <i class="fas fa-star"></i>
-                            <span data-translate="ikigai.what_you_good_at">Worin du gut bist</span>
+                            <span ikigai.what_you_good_at">Worin du gut bist</span>
                         </div>
                     </div>
                 </div>
@@ -93,165 +93,13 @@
         </div>
     </section>
 
-    <!-- Persönlichkeitsentwicklung Übersicht -->
-    <section class="personality-methods-overview">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Persönlichkeitsentwicklung Methoden</h2>
-                <p class="section-subtitle">
-                    Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
-                </p>
-            </div>
-            
-            <div class="methods-grid">
-                <!-- Ikigai - Hauptmethode -->
-                <div class="method-card featured-method" onclick="scrollToSection('ikigai-workflow')">
-                    <div class="method-icon">
-                        <i class="fas fa-compass"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ikigai-Workflow</h3>
-                        <p class="method-description">
-                            Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. 
-                            Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <!-- Weitere Methoden im gleichen Design -->
-                <div class="method-card featured-method" onclick="showMethodModal('values-clarification')">
-                    <div class="method-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Werte-Klärung</h3>
-                        <p class="method-description">
-                            Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('strengths-finder')">
-                    <div class="method-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Stärken-Analyse</h3>
-                        <p class="method-description">
-                            Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('goal-setting')">
-                    <div class="method-icon">
-                        <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Ziel-Setting</h3>
-                        <p class="method-description">
-                            Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('mindfulness')">
-                    <div class="method-icon">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Achtsamkeit & Meditation</h3>
-                        <p class="method-description">
-                            Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('emotional-intelligence')">
-                    <div class="method-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Emotionale Intelligenz</h3>
-                        <p class="method-description">
-                            Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('habit-building')">
-                    <div class="method-icon">
-                        <i class="fas fa-sync-alt"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Gewohnheiten aufbauen</h3>
-                        <p class="method-description">
-                            Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('communication')">
-                    <div class="method-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Kommunikation</h3>
-                        <p class="method-description">
-                            Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-                <div class="method-card featured-method" onclick="showMethodModal('time-management')">
-                    <div class="method-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="method-content">
-                        <h3>Zeitmanagement</h3>
-                        <p class="method-description">
-                            Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten.
-                        </p>
-                    </div>
-                    <div class="method-action">
-                        <button class="btn btn-primary">Jetzt starten</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
 
     <!-- What is Ikigai Section -->
     <section id="what-is-ikigai" class="what-is-ikigai">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title" data-translate="ikigai.what_is_ikigai_title">Was ist Ikigai?</h2>
-                <p class="section-subtitle" data-translate="ikigai.what_is_ikigai_subtitle">
+                <h2 class="section-title" ikigai.what_is_ikigai_title">Was ist Ikigai?</h2>
+                <p class="section-subtitle" ikigai.what_is_ikigai_subtitle">
                     Die japanische Philosophie für ein erfülltes und sinnvolles Leben
                 </p>
             </div>
@@ -268,23 +116,23 @@
                         <div class="ikigai-elements">
                             <div class="element">
                                 <div class="element-icon">💖</div>
-                                <h4 data-translate="ikigai.what_you_love">Was du liebst</h4>
-                                <p data-translate="ikigai.what_you_love_desc">Deine Leidenschaften und Interessen, die dir Freude bereiten</p>
+                                <h4 ikigai.what_you_love">Was du liebst</h4>
+                                <p ikigai.what_you_love_desc">Deine Leidenschaften und Interessen, die dir Freude bereiten</p>
                             </div>
                             <div class="element">
                                 <div class="element-icon">🎯</div>
-                                <h4 data-translate="ikigai.what_world_needs">Was die Welt braucht</h4>
-                                <p data-translate="ikigai.what_world_needs_desc">Bereiche, in denen du einen positiven Beitrag leisten kannst</p>
+                                <h4 ikigai.what_world_needs">Was die Welt braucht</h4>
+                                <p ikigai.what_world_needs_desc">Bereiche, in denen du einen positiven Beitrag leisten kannst</p>
                             </div>
                             <div class="element">
                                 <div class="element-icon">💼</div>
-                                <h4 data-translate="ikigai.what_you_paid_for">Wofür du bezahlt wirst</h4>
-                                <p data-translate="ikigai.what_you_paid_for_desc">Deine beruflichen Fähigkeiten und Talente</p>
+                                <h4 ikigai.what_you_paid_for">Wofür du bezahlt wirst</h4>
+                                <p ikigai.what_you_paid_for_desc">Deine beruflichen Fähigkeiten und Talente</p>
                             </div>
                             <div class="element">
                                 <div class="element-icon">⭐</div>
-                                <h4 data-translate="ikigai.what_you_good_at">Worin du gut bist</h4>
-                                <p data-translate="ikigai.what_you_good_at_desc">Deine natürlichen Stärken und Kompetenzen</p>
+                                <h4 ikigai.what_you_good_at">Worin du gut bist</h4>
+                                <p ikigai.what_you_good_at_desc">Deine natürlichen Stärken und Kompetenzen</p>
                             </div>
                         </div>
                         
@@ -346,8 +194,8 @@
     <section id="ikigai-workflow" class="ikigai-workflow">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title" data-translate="ikigai.workflow_title">Dein Ikigai-Workflow</h2>
-                <p class="section-subtitle" data-translate="ikigai.workflow_subtitle">
+                <h2 class="section-title" ikigai.workflow_title">Dein Ikigai-Workflow</h2>
+                <p class="section-subtitle" ikigai.workflow_subtitle">
                     Ein strukturierter Prozess zur Entdeckung deines persönlichen Ikigai
                 </p>
             </div>
@@ -357,31 +205,31 @@
                 <div class="workflow-progress">
                     <div class="progress-step active" data-step="1">
                         <div class="step-number">1</div>
-                        <div class="step-title" data-translate="ikigai.step1">Selbstreflexion</div>
+                        <div class="step-title" ikigai.step1">Selbstreflexion</div>
                     </div>
                     <div class="progress-step" data-step="2">
                         <div class="step-number">2</div>
-                        <div class="step-title" data-translate="ikigai.step2">Passion</div>
+                        <div class="step-title" ikigai.step2">Passion</div>
                     </div>
                     <div class="progress-step" data-step="3">
                         <div class="step-number">3</div>
-                        <div class="step-title" data-translate="ikigai.step3">Mission</div>
+                        <div class="step-title" ikigai.step3">Mission</div>
                     </div>
                     <div class="progress-step" data-step="4">
                         <div class="step-number">4</div>
-                        <div class="step-title" data-translate="ikigai.step4">Profession</div>
+                        <div class="step-title" ikigai.step4">Profession</div>
                     </div>
                     <div class="progress-step" data-step="5">
                         <div class="step-number">5</div>
-                        <div class="step-title" data-translate="ikigai.step5">Vocation</div>
+                        <div class="step-title" ikigai.step5">Vocation</div>
                     </div>
                     <div class="progress-step" data-step="6">
                         <div class="step-number">6</div>
-                        <div class="step-title" data-translate="ikigai.step6">Synthese</div>
+                        <div class="step-title" ikigai.step6">Synthese</div>
                     </div>
                     <div class="progress-step" data-step="7">
                         <div class="step-number">7</div>
-                        <div class="step-title" data-translate="ikigai.step7">Aktionsplan</div>
+                        <div class="step-title" ikigai.step7">Aktionsplan</div>
                     </div>
                 </div>
                 
@@ -390,13 +238,13 @@
                     <!-- Step 1: Self-Reflection -->
                     <div class="workflow-step active" data-step="1">
                         <div class="step-header">
-                            <h3 data-translate="ikigai.step1_title">Schritt 1: Selbstreflexion & Vorbereitung</h3>
-                            <p data-translate="ikigai.step1_desc">Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
+                            <h3 ikigai.step1_title">Schritt 1: Selbstreflexion & Vorbereitung</h3>
+                            <p ikigai.step1_desc">Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
                         </div>
                         
                         <div class="reflection-exercises">
                             <div class="exercise-card">
-                                <h4 data-translate="ikigai.life_vision">🎯 Lebensvision & Vermächtnis</h4>
+                                <h4 ikigai.life_vision">🎯 Lebensvision & Vermächtnis</h4>
                                 <p>Stell dir vor, du bist 80 Jahre alt und blickst auf dein Leben zurück. Was möchtest du erreicht haben? Wie möchtest du in Erinnerung bleiben?</p>
                                 <div class="exercise-tips">
                                     <div class="tip-item">
@@ -1167,24 +1015,24 @@
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
                     <div class="nav-buttons">
-                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()" data-translate="ikigai.back">Zurück</button>
-                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()" data-translate="ikigai.next">Weiter</button>
+                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()" ikigai.back">Zurück</button>
+                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()" ikigai.next">Weiter</button>
                         <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
                     </div>
                     
                     <!-- Export & Reminder Buttons -->
                     <div class="export-buttons">
                         <button class="btn btn-outline" onclick="showReminderSettings()" title="Erinnerungen einrichten">
-                            <i class="fas fa-bell"></i> <span data-translate="ikigai.remember">Erinnerungen</span>
+                            <i class="fas fa-bell"></i> <span ikigai.remember">Erinnerungen</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToPDF()" title="Als PDF exportieren">
-                            <i class="fas fa-file-pdf"></i> <span data-translate="ikigai.export_pdf">PDF</span>
+                            <i class="fas fa-file-pdf"></i> <span ikigai.export_pdf">PDF</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToWord()" title="Als Word-Dokument exportieren">
-                            <i class="fas fa-file-word"></i> <span data-translate="ikigai.export_word">Word</span>
+                            <i class="fas fa-file-word"></i> <span ikigai.export_word">Word</span>
                         </button>
                         <button class="btn btn-outline" onclick="exportToExcel()" title="Als Excel-Tabelle exportieren">
-                            <i class="fas fa-file-excel"></i> <span data-translate="ikigai.export_excel">Excel</span>
+                            <i class="fas fa-file-excel"></i> <span ikigai.export_excel">Excel</span>
                         </button>
                     </div>
                 </div>
