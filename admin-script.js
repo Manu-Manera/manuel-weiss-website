@@ -2356,7 +2356,7 @@ function showToast(message, type = 'info') {
     }
 }
 
-// Workflow state management
+// Workflow state management - Initialize globally
 let workflowData = {
     company: '',
     position: '',
@@ -2372,24 +2372,45 @@ let workflowData = {
     documents: []
 };
 
+// Make workflowData globally available
+window.workflowData = workflowData;
+
 function nextWorkflowStep(step) {
     console.log('🔄 Moving to workflow step:', step);
     
     try {
+        // Ensure workflowData is initialized
+        if (!window.workflowData) {
+            window.workflowData = {
+                company: '',
+                position: '',
+                jobDescription: '',
+                coverLetter: '',
+                cvDate: new Date().toLocaleDateString('de-DE'),
+                design: {
+                    primaryColor: '#6366f1',
+                    secondaryColor: '#8b5cf6',
+                    logo: null,
+                    template: 'modern'
+                },
+                documents: []
+            };
+        }
+        
         // Save current step data
         if (step === 2) {
             const company = document.getElementById('workflowCompany');
             const position = document.getElementById('workflowPosition');
             const jobDescription = document.getElementById('jobDescription');
             
-            if (company) workflowData.company = company.value;
-            if (position) workflowData.position = position.value;
-            if (jobDescription) workflowData.jobDescription = jobDescription.value;
+            if (company) window.workflowData.company = company.value;
+            if (position) window.workflowData.position = position.value;
+            if (jobDescription) window.workflowData.jobDescription = jobDescription.value;
             
             console.log('💾 Saved step 1 data:', {
-                company: workflowData.company,
-                position: workflowData.position,
-                jobDescription: workflowData.jobDescription ? 'Present' : 'Empty'
+                company: window.workflowData.company,
+                position: window.workflowData.position,
+                jobDescription: window.workflowData.jobDescription ? 'Present' : 'Empty'
             });
         }
         
@@ -2475,8 +2496,8 @@ function generateStep2() {
         <h3 style="margin-bottom: 1.5rem;">Schritt 2: Intelligenter Anschreiben-Generator</h3>
         
         <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
-            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${window.workflowData?.company || 'Nicht angegeben'}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${window.workflowData?.position || 'Nicht angegeben'}</p>
         </div>
         
         <div style="margin-bottom: 1.5rem;">
