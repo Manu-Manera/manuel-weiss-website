@@ -1443,6 +1443,9 @@ function filterDocuments(type) {
 }
 
 function loadDocuments() {
+    // Load documents from localStorage
+    documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+    
     const filteredDocs = currentDocumentFilter === 'all' 
         ? documents 
         : documents.filter(doc => doc.type === currentDocumentFilter);
@@ -1489,22 +1492,66 @@ function loadDocuments() {
 
 // Document upload functionality
 function triggerDocumentUpload() {
-    document.getElementById('doc-upload').click();
+    const uploadInput = document.getElementById('doc-upload');
+    if (uploadInput) {
+        console.log('Triggering document upload...');
+        uploadInput.click();
+    } else {
+        console.error('Upload input not found!');
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Upload-Funktion nicht verfügbar', 'error');
+        }
+    }
 }
 
 // Initialize document upload handler
 document.addEventListener('DOMContentLoaded', function() {
+    initializeDocumentUpload();
+});
+
+// Initialize document upload when DOM is ready
+function initializeDocumentUpload() {
     const docUpload = document.getElementById('doc-upload');
     if (docUpload) {
+        console.log('Initializing document upload...');
+        // Remove existing listeners to avoid duplicates
+        docUpload.removeEventListener('change', handleDocumentUpload);
         docUpload.addEventListener('change', handleDocumentUpload);
+        console.log('Document upload initialized successfully');
+    } else {
+        console.warn('Document upload input not found');
     }
-});
+}
+
+// Re-initialize when applications section is loaded
+function loadApplicationsSection() {
+    // Load applications and update statistics
+    loadApplications();
+    updateStatistics();
+    
+    // Re-initialize document upload
+    setTimeout(() => {
+        initializeDocumentUpload();
+    }, 100);
+}
 
 function handleDocumentUpload(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
+    console.log('Uploading files:', files.length);
+    
     Array.from(files).forEach(file => {
+        console.log('Processing file:', file.name, file.size);
+        
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`Datei ${file.name} ist zu groß (max. 10MB)`, 'error');
+            }
+            return;
+        }
+        
         const reader = new FileReader();
         
         reader.onload = function(e) {
@@ -1518,12 +1565,30 @@ function handleDocumentUpload(event) {
                 mimeType: file.type
             };
             
-            documents.push(doc);
-            localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+            // Get existing documents
+            const existingDocs = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+            existingDocs.push(doc);
+            
+            // Save to localStorage
+            localStorage.setItem('applicationDocuments', JSON.stringify(existingDocs));
+            
+            // Update global documents array
+            documents = existingDocs;
+            
+            // Reload documents display
             loadDocuments();
             
             if (window.adminPanel && window.adminPanel.showToast) {
-                window.adminPanel.showToast(`${file.name} hochgeladen`, 'success');
+                window.adminPanel.showToast(`${file.name} erfolgreich hochgeladen`, 'success');
+            }
+            
+            console.log('Document saved:', doc.name);
+        };
+        
+        reader.onerror = function() {
+            console.error('Error reading file:', file.name);
+            if (window.adminPanel && window.adminPanel.showToast) {
+                window.adminPanel.showToast(`Fehler beim Lesen von ${file.name}`, 'error');
             }
         };
         
@@ -1533,6 +1598,25 @@ function handleDocumentUpload(event) {
     // Clear input
     event.target.value = '';
 }
+
+// Test function to verify upload functionality
+function testDocumentUpload() {
+    console.log('Testing document upload functionality...');
+    console.log('Documents array:', documents);
+    console.log('Upload input exists:', !!document.getElementById('doc-upload'));
+    console.log('Current document filter:', currentDocumentFilter);
+    
+    // Test if we can trigger upload
+    try {
+        triggerDocumentUpload();
+        console.log('Upload trigger successful');
+    } catch (error) {
+        console.error('Upload trigger failed:', error);
+    }
+}
+
+// Make test function globally available
+window.testDocumentUpload = testDocumentUpload;
 
 function determineDocumentType(filename) {
     const ext = filename.toLowerCase().split('.').pop();
