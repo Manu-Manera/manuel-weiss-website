@@ -1029,8 +1029,12 @@ document.addEventListener('DOMContentLoaded', function() {
         allTab.style.borderBottomColor = '#6366f1';
     }
     
-    // Load applications immediately
+    // Set current filter to 'all' and load applications immediately
+    currentFilter = 'all';
     loadApplications();
+    
+    // Also update statistics immediately
+    updateStatistics();
 });
 
 // Load and display applications
