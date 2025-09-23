@@ -1,0 +1,290 @@
+                <!-- Applications Section -->
+                <section id="applications" class="admin-section">
+                    <div class="applications-admin-container">
+                        <div class="applications-admin-header">
+                            <h2>Bewerbungsverwaltung</h2>
+                            <p>Verwalte deine Bewerbungen und verfolge deinen Erfolg</p>
+                        </div>
+                        
+                        <!-- Dashboard Widget -->
+                        <div class="applications-dashboard" style="margin-bottom: 3rem;">
+                            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="total-applications-count">0</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Gesendete Bewerbungen</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="positive-responses-count">0</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Positive Rückmeldungen</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">💼</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="interviews-count">0</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Interviews</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">❌</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="rejections-count">0</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Absagen</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="success-rate-count">0%</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Erfolgsrate</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div class="stat-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">⏳</div>
+                                    <div class="stat-value" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.25rem;" id="pending-applications-count">0</div>
+                                    <div class="stat-label" style="opacity: 0.9;">Ausstehend</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aktuelle Bewerbungen Liste -->
+                        <div class="current-applications" style="margin-bottom: 3rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <h3 style="color: #333; margin: 0;">📋 Aktuelle Bewerbungen</h3>
+                                <button onclick="openNewApplicationModal()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-plus"></i> Neue Bewerbung
+                                </button>
+                            </div>
+                            
+                            <!-- Filter Tabs -->
+                            <div class="filter-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb;">
+                                <button class="filter-tab active" data-filter="all" onclick="filterApplications('all')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
+                                <button class="filter-tab" data-filter="pending" onclick="filterApplications('pending')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Ausstehend</button>
+                                <button class="filter-tab" data-filter="interview" onclick="filterApplications('interview')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Interview</button>
+                                <button class="filter-tab" data-filter="accepted" onclick="filterApplications('accepted')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Angenommen</button>
+                                <button class="filter-tab" data-filter="rejected" onclick="filterApplications('rejected')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Abgelehnt</button>
+                            </div>
+                            
+                            <!-- Applications List -->
+                            <div id="applicationsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Applications will be dynamically loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- KI Anschreiben Generator -->
+                        <div class="ai-cover-letter" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                🤖 KI Anschreiben-Generator
+                            </h3>
+                            
+                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Unternehmen:</label>
+                                        <input type="text" id="ai-company" placeholder="z.B. SAP, Siemens..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Position:</label>
+                                        <input type="text" id="ai-position" placeholder="z.B. Senior Consultant" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Stellenbeschreibung (optional):</label>
+                                    <textarea id="ai-job-description" placeholder="Füge hier die Stellenbeschreibung ein..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 120px; resize: vertical;"></textarea>
+                                </div>
+                                
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Besondere Schwerpunkte:</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                                            <input type="checkbox" value="leadership"> Führungserfahrung
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                                            <input type="checkbox" value="digitalization"> Digitalisierung
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                                            <input type="checkbox" value="hr-tech"> HR-Tech
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                                            <input type="checkbox" value="process-optimization"> Prozessoptimierung
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                                            <input type="checkbox" value="change-management"> Change Management
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="generateAICoverLetter()" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <i class="fas fa-magic"></i> KI Anschreiben generieren
+                                </button>
+                                
+                                <div id="aiGeneratedContent" style="margin-top: 2rem; display: none;">
+                                    <h4 style="color: #555; margin-bottom: 1rem;">Generiertes Anschreiben:</h4>
+                                    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                        <div id="aiCoverLetterContent" style="white-space: pre-wrap; line-height: 1.6;"></div>
+                                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                                            <button onclick="copyAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-copy"></i> Kopieren
+                                            </button>
+                                            <button onclick="editAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-edit"></i> Bearbeiten
+                                            </button>
+                                            <button onclick="saveAICoverLetter()" style="flex: 1; padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-save"></i> Speichern
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lebenslauf-Verwaltung -->
+                        <div class="cv-management" style="margin-bottom: 3rem;">
+                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+                                📄 Lebenslauf-Verwaltung
+                            </h3>
+                            
+                            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                    <div>
+                                        <h4 style="color: #555; margin-bottom: 1rem;">Aktuelle Versionen</h4>
+                                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                <div>
+                                                    <p style="font-weight: 600; margin: 0;">Lebenslauf_Manuel_Weiss.pdf</p>
+                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
+                                                </div>
+                                                <div style="display: flex; gap: 0.5rem;">
+                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        👁️ Ansehen
+                                                    </button>
+                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        📥 Download
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #ddd; border-radius: 6px;">
+                                                <div>
+                                                    <p style="font-weight: 600; margin: 0;">Bewerbungsmappe.html</p>
+                                                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Letzte Änderung: 14.01.2025</p>
+                                                </div>
+                                                <div style="display: flex; gap: 0.5rem;">
+                                                    <button style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        👁️ Ansehen
+                                                    </button>
+                                                    <button style="padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        📥 Download
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 style="color: #555; margin-bottom: 1rem;">Neue Version hochladen</h4>
+                                        <div style="border: 2px dashed #ddd; border-radius: 6px; padding: 2rem; text-align: center;">
+                                            <input type="file" id="cv-upload" accept=".pdf,.doc,.docx,.html" style="display: none;">
+                                            <button onclick="document.getElementById('cv-upload').click()" style="padding: 1rem 2rem; background: #f8fafc; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 1.1rem;">
+                                                📁 Datei auswählen
+                                            </button>
+                                            <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, DOC, DOCX oder HTML</p>
+                                        </div>
+                                        
+                                        <button onclick="uploadCV()" style="width: 100%; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 1rem;">
+                                            📤 Lebenslauf hochladen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Modal für neue Bewerbung -->
+                <div id="newApplicationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;">Neue Bewerbung hinzufügen</h3>
+                            <button onclick="closeNewApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                        </div>
+                        
+                        <form id="newApplicationForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Datum:</label>
+                                    <input type="date" id="applicationDate" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status:</label>
+                                    <select id="applicationStatus" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="pending">Ausstehend</option>
+                                        <option value="reviewed">In Bearbeitung</option>
+                                        <option value="interview">Interview</option>
+                                        <option value="accepted">Angenommen</option>
+                                        <option value="rejected">Abgelehnt</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Unternehmen:</label>
+                                <input type="text" id="applicationCompany" required placeholder="z.B. SAP SE" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Position:</label>
+                                <input type="text" id="applicationPosition" required placeholder="z.B. Senior Consultant" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kontaktperson:</label>
+                                <input type="text" id="applicationContact" placeholder="z.B. Frau Müller, HR" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Notizen:</label>
+                                <textarea id="applicationNotes" placeholder="Zusätzliche Informationen..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 100px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" style="flex: 1; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                    Speichern
+                                </button>
+                                <button type="button" onclick="closeNewApplicationModal()" style="flex: 1; padding: 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                    Abbrechen
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal für Bewerbung bearbeiten -->
+                <div id="editApplicationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;">Bewerbung bearbeiten</h3>
+                            <button onclick="closeEditApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                        </div>
+                        
+                        <!-- Workflow Tabs -->
+                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb;">
+                            <button class="workflow-tab active" data-tab="details" onclick="switchWorkflowTab('details')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Details</button>
+                            <button class="workflow-tab" data-tab="documents" onclick="switchWorkflowTab('documents')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Dokumente</button>
+                            <button class="workflow-tab" data-tab="communication" onclick="switchWorkflowTab('communication')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Kommunikation</button>
+                            <button class="workflow-tab" data-tab="ai-assistant" onclick="switchWorkflowTab('ai-assistant')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">KI-Assistent</button>
+                        </div>
+                        
+                        <!-- Tab Contents -->
+                        <div id="detailsTab" class="workflow-tab-content" style="display: block;">
+                            <!-- Details form similar to new application -->
+                        </div>
+                        
+                        <div id="documentsTab" class="workflow-tab-content" style="display: none;">
+                            <!-- Document management -->
+                        </div>
+                        
+                        <div id="communicationTab" class="workflow-tab-content" style="display: none;">
+                            <!-- Communication timeline -->
+                        </div>
+                        
+                        <div id="ai-assistantTab" class="workflow-tab-content" style="display: none;">
+                            <!-- AI assistant for this specific application -->
+                        </div>
+                    </div>
+                </div>
