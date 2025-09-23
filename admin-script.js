@@ -1089,10 +1089,10 @@ function loadApplications() {
 // Update statistics
 function updateStatistics() {
     const total = applications.length;
-    const positive = applications.filter(app => app.status === 'accepted').length;
+    const positive = applications.filter(app => app.status === 'interview').length;
     const interviews = applications.filter(app => app.status === 'interview').length;
     const rejected = applications.filter(app => app.status === 'rejected').length;
-    const pending = applications.filter(app => app.status === 'pending').length;
+    const sent = applications.filter(app => app.status === 'sent').length;
     const successRate = total > 0 ? Math.round((positive / total) * 100) : 0;
     
     // Update dashboard stats
@@ -1105,12 +1105,12 @@ function updateStatistics() {
     updateStat('positive-responses-count', positive);
     updateStat('interviews-count', interviews);
     updateStat('rejections-count', rejected);
-    updateStat('pending-applications-count', pending);
+    updateStat('pending-applications-count', sent);
     updateStat('success-rate-count', successRate + '%');
     
     // Also update dashboard widget if visible
     updateStat('dashboard-total-apps', total);
-    updateStat('dashboard-pending-apps', pending);
+    updateStat('dashboard-pending-apps', sent);
     updateStat('dashboard-success-rate', successRate + '%');
 }
 
@@ -1220,7 +1220,7 @@ function updateApplicationStatus(id, newStatus, selectElement) {
     if (!app) return;
     
     // Show date picker for certain statuses
-    if (['reviewed', 'interview', 'accepted', 'rejected'].includes(newStatus)) {
+    if (['in-progress', 'interview', 'rejected'].includes(newStatus)) {
         const statusDate = prompt(`Datum für Status "${getStatusText(newStatus)}" eingeben (Format: DD.MM.YYYY):`, 
             app.statusDate ? new Date(app.statusDate).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE'));
         
