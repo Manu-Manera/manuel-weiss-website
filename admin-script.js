@@ -1022,7 +1022,10 @@ let currentFilter = 'all';
 let editingApplicationId = null;
 
 // Initialize applications on page load
+// CONSOLIDATED DOM CONTENT LOADED - ALL INITIALIZATION HERE
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 MASTER DOM INITIALIZATION STARTING...');
+    
     // Set 'all' filter as active by default
     const allTab = document.querySelector('.filter-tab[data-filter="all"]');
     if (allTab) {
@@ -1035,6 +1038,65 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Also update statistics immediately
     updateStatistics();
+    
+    // Initialize document upload
+    initializeDocumentUpload();
+    
+    // Initialize new application form
+    initializeNewApplicationForm();
+    
+    // FORCE ALL FUNCTIONS TO BE GLOBALLY AVAILABLE
+    const functionsToExpose = {
+        filterApplications,
+        editApplication,
+        deleteApplication,
+        updateApplicationStatus,
+        openNewApplicationModal,
+        closeNewApplicationModal,
+        viewApplicationPage,
+        editApplicationPage,
+        filterDocuments,
+        triggerDocumentUpload,
+        openPDFEditor,
+        closePDFEditor,
+        mergeDocuments,
+        createTemplate,
+        startSmartWorkflow
+    };
+    
+    // Assign all functions to window
+    Object.keys(functionsToExpose).forEach(functionName => {
+        window[functionName] = functionsToExpose[functionName];
+        console.log(`✅ ${functionName} assigned to window:`, typeof window[functionName]);
+    });
+    
+    console.log('🔥 MASTER DOM INITIALIZATION COMPLETE');
+    
+    // IMMEDIATE TEST OF BUTTON FUNCTIONALITY
+    setTimeout(() => {
+        console.log('🧪 TESTING BUTTON FUNCTIONALITY...');
+        
+        // Test if filter buttons exist and are clickable
+        const filterButtons = document.querySelectorAll('.filter-tab');
+        console.log('Filter buttons found:', filterButtons.length);
+        
+        filterButtons.forEach((btn, index) => {
+            console.log(`Button ${index}:`, btn.textContent, 'onclick:', btn.getAttribute('onclick'));
+        });
+        
+        // Test if startSmartWorkflow button exists
+        const smartWorkflowBtn = document.querySelector('[onclick="startSmartWorkflow()"]');
+        console.log('Smart Workflow button found:', !!smartWorkflowBtn);
+        
+        // Test global function availability
+        console.log('Global functions test:', {
+            filterApplications: typeof window.filterApplications,
+            startSmartWorkflow: typeof window.startSmartWorkflow,
+            editApplication: typeof window.editApplication
+        });
+        
+        console.log('🧪 BUTTON FUNCTIONALITY TEST COMPLETE');
+    }, 1000);
 });
 
 // Load and display applications
@@ -1141,7 +1203,7 @@ function filterApplications(filter) {
     loadApplications();
 }
 
-// Make all application functions globally available
+// Make all application functions globally available - CRITICAL FOR BUTTONS TO WORK
 window.filterApplications = filterApplications;
 window.editApplication = editApplication;
 window.deleteApplication = deleteApplication;
@@ -1157,6 +1219,13 @@ window.closePDFEditor = closePDFEditor;
 window.mergeDocuments = mergeDocuments;
 window.createTemplate = createTemplate;
 window.startSmartWorkflow = startSmartWorkflow;
+
+// Force immediate availability
+console.log('🔧 Making functions available globally...', {
+    filterApplications: typeof window.filterApplications,
+    editApplication: typeof window.editApplication,
+    startSmartWorkflow: typeof window.startSmartWorkflow
+});
 
 // Open new application modal
 function openNewApplicationModal() {
@@ -1178,7 +1247,8 @@ function closeNewApplicationModal() {
 }
 
 // Add new application form handler
-document.addEventListener('DOMContentLoaded', function() {
+// Form event listener moved to main DOMContentLoaded
+function initializeNewApplicationForm() {
     const form = document.getElementById('newApplicationForm');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -1206,7 +1276,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+}
 
 // Edit application
 function editApplication(id) {
@@ -1536,9 +1606,7 @@ function triggerDocumentUpload() {
 }
 
 // Initialize document upload handler
-document.addEventListener('DOMContentLoaded', function() {
-    initializeDocumentUpload();
-});
+// Document upload initialization moved to main DOMContentLoaded
 
 // Initialize document upload when DOM is ready
 function initializeDocumentUpload() {
