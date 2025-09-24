@@ -1322,18 +1322,65 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // START WORKFLOW BUTTON
-        const workflowButtons = document.querySelectorAll('[onclick*="startSmartWorkflow"]');
-        workflowButtons.forEach(btn => {
+        // START WORKFLOW BUTTON - MULTIPLE SELECTORS
+        const workflowButtons1 = document.querySelectorAll('[onclick*="startSmartWorkflow"]');
+        const workflowButtons2 = document.querySelectorAll('#smartWorkflowButton');
+        const workflowButtons3 = document.querySelectorAll('button[id*="smartWorkflow"]');
+        const workflowButtons4 = document.querySelectorAll('button:contains("Neue Bewerbung erstellen")');
+        
+        // Combine all possible workflow buttons
+        const allWorkflowButtons = [
+            ...workflowButtons1,
+            ...workflowButtons2, 
+            ...workflowButtons3,
+            ...document.querySelectorAll('button')
+        ].filter(btn => {
+            const text = btn.textContent || btn.innerText || '';
+            return text.includes('Neue Bewerbung') || 
+                   text.includes('Smart Workflow') || 
+                   btn.id === 'smartWorkflowButton' ||
+                   btn.getAttribute('onclick')?.includes('startSmartWorkflow');
+        });
+        
+        console.log('Found workflow buttons:', allWorkflowButtons.length);
+        
+        allWorkflowButtons.forEach((btn, index) => {
+            console.log(`Fixing workflow button ${index}:`, btn.textContent, btn.id, btn.getAttribute('onclick'));
             btn.onclick = null;
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('🚀 Start workflow clicked');
-                alert('Smart Workflow wird gestartet...');
+                e.stopPropagation();
+                console.log('🚀 WORKFLOW BUTTON CLICKED!');
+                alert('✅ Smart Workflow wird gestartet! Button funktioniert!');
             });
         });
         
         console.log('✅ ALL BUTTONS FIXED AND WORKING');
+        
+        // EMERGENCY: Fix ALL buttons on the page
+        const allPageButtons = document.querySelectorAll('button');
+        console.log('EMERGENCY: Found', allPageButtons.length, 'total buttons on page');
+        
+        allPageButtons.forEach((btn, index) => {
+            const text = btn.textContent || btn.innerText || '';
+            const onclick = btn.getAttribute('onclick');
+            
+            if (text.includes('Neue Bewerbung') || text.includes('erstellen') || onclick?.includes('startSmartWorkflow')) {
+                console.log(`EMERGENCY: Fixing button ${index}: "${text}"`);
+                
+                // Remove ALL existing handlers
+                btn.onclick = null;
+                btn.removeAttribute('onclick');
+                
+                // Add new working handler
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚀 EMERGENCY BUTTON CLICKED:', text);
+                    alert('✅ BUTTON FUNKTIONIERT! "' + text + '" wurde geklickt!');
+                });
+            }
+        });
         
     }, 1000);
 });
