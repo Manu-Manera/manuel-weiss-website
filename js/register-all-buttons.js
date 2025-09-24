@@ -165,30 +165,54 @@ function registerAllButtons() {
                     } catch (error) {
                         console.error('Live-Test fehlgeschlagen:', error);
                         
-                        resultsContent.innerHTML = `
-                            <div style="padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
-                                <h5 style="margin: 0 0 0.5rem 0; color: #7f1d1d;">
-                                    <i class="fas fa-exclamation-triangle"></i> Test fehlgeschlagen
-                                </h5>
-                                <p style="margin: 0; color: #7f1d1d; font-size: 0.875rem;">
-                                    ${error.message}
-                                </p>
-                                ${error.message.includes('API') ? `
-                                <p style="margin: 0.5rem 0 0 0; color: #7f1d1d; font-size: 0.875rem;">
-                                    <strong>Häufige Ursachen:</strong><br>
-                                    • Ungültiger API Key<br>
-                                    • Unzureichendes Guthaben<br>
-                                    • Netzwerkprobleme
-                                </p>
-                                ` : ''}
-                            </div>
-                        `;
+                        // Prüfe ob es ein Fallback-Ergebnis war
+                        const isFallback = error.message.includes('CORS') || error.message.includes('Netzwerkfehler');
+                        
+                        if (isFallback) {
+                            // Zeige Info über Fallback-Modus
+                            resultsContent.innerHTML = `
+                                <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                    <h5 style="margin: 0 0 0.5rem 0; color: #92400e;">
+                                        <i class="fas fa-info-circle"></i> Fallback-Modus aktiviert
+                                    </h5>
+                                    <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                                        OpenAI API ist vom Browser aus nicht direkt verfügbar (CORS-Einschränkung). 
+                                        Die intelligente lokale Analyse wurde verwendet.
+                                    </p>
+                                    <p style="margin: 0.5rem 0 0 0; color: #92400e; font-size: 0.875rem;">
+                                        <strong>Hinweis:</strong> Für vollständige OpenAI-Integration ist eine Server-Umgebung erforderlich.
+                                    </p>
+                                </div>
+                            `;
+                            
+                            // Button-Status auf Warnung
+                            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fallback verwendet';
+                            button.style.background = '#f59e0b';
+                        } else {
+                            resultsContent.innerHTML = `
+                                <div style="padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
+                                    <h5 style="margin: 0 0 0.5rem 0; color: #7f1d1d;">
+                                        <i class="fas fa-exclamation-triangle"></i> Test fehlgeschlagen
+                                    </h5>
+                                    <p style="margin: 0; color: #7f1d1d; font-size: 0.875rem;">
+                                        ${error.message}
+                                    </p>
+                                    <p style="margin: 0.5rem 0 0 0; color: #7f1d1d; font-size: 0.875rem;">
+                                        <strong>Mögliche Ursachen:</strong><br>
+                                        • Ungültiger API Key<br>
+                                        • Unzureichendes OpenAI Guthaben<br>
+                                        • Netzwerkprobleme<br>
+                                        • Browser CORS-Einschränkungen
+                                    </p>
+                                </div>
+                            `;
+                            
+                            // Button-Status auf Fehler
+                            button.innerHTML = '<i class="fas fa-times"></i> Test fehlgeschlagen';
+                            button.style.background = '#ef4444';
+                        }
                         
                         resultsDiv.style.display = 'block';
-                        
-                        // Button-Status auf Fehler
-                        button.innerHTML = '<i class="fas fa-times"></i> Test fehlgeschlagen';
-                        button.style.background = '#ef4444';
                     }
                     
                     // Button nach 3 Sekunden zurücksetzen
