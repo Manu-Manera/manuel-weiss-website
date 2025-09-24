@@ -1164,36 +1164,61 @@ document.addEventListener('DOMContentLoaded', function() {
             triggerDocumentUpload: typeof window.triggerDocumentUpload
         });
         
-        console.log('🧪 BUTTON FUNCTIONALITY TEST COMPLETE');
+        // Add direct event listeners as backup for all buttons
+        const allButtons = document.querySelectorAll('button[onclick], a[onclick]');
+        console.log('Found', allButtons.length, 'buttons with onclick attributes');
         
-        // Test function for debugging
-        window.testCoverLetterFunctions = function() {
-            console.log('🧪 Testing cover letter functions...');
-            
-            const functions = [
-                'analyzeJobRequirements',
-                'generateSentenceSuggestions', 
-                'generateSmartCoverLetter',
-                'extractKeyRequirements',
-                'generateSmartSentences'
-            ];
-            
-            functions.forEach(funcName => {
-                const func = window[funcName];
-                console.log(`${funcName}: ${typeof func}`);
-                if (typeof func !== 'function') {
-                    console.error(`❌ ${funcName} is not available!`);
-                }
-            });
-            
-            // Test if workflow data is available
-            console.log('Workflow data:', window.workflowData);
-            
-            return {
-                functions: functions.map(name => ({ name, available: typeof window[name] === 'function' })),
-                workflowData: !!window.workflowData
-            };
-        };
+        allButtons.forEach((btn, index) => {
+            const onclick = btn.getAttribute('onclick');
+            if (onclick) {
+                console.log(`Button ${index}: ${onclick}`);
+                
+                // Add direct event listener as backup
+                btn.addEventListener('click', function(e) {
+                    console.log('🔄 Direct click detected on button:', onclick);
+                    
+                    // Prevent default and execute function
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    try {
+                        if (onclick.includes('analyzeJobRequirements')) {
+                            analyzeJobRequirements();
+                        } else if (onclick.includes('generateSentenceSuggestions')) {
+                            generateSentenceSuggestions();
+                        } else if (onclick.includes('generateSmartCoverLetter')) {
+                            generateSmartCoverLetter();
+                        } else if (onclick.includes('useSentenceSuggestion')) {
+                            const match = onclick.match(/useSentenceSuggestion\((\d+)\)/);
+                            if (match) {
+                                useSentenceSuggestion(parseInt(match[1]));
+                            }
+                        } else if (onclick.includes('startSmartWorkflow')) {
+                            startSmartWorkflow();
+                        } else if (onclick.includes('triggerDocumentUpload')) {
+                            triggerDocumentUpload();
+                        } else {
+                            // Execute original onclick
+                            eval(onclick);
+                        }
+                    } catch (error) {
+                        console.error('Error executing button function:', error);
+                    }
+                });
+            }
+        });
+        
+        // Make all functions globally available
+        window.analyzeJobRequirements = analyzeJobRequirements;
+        window.generateSentenceSuggestions = generateSentenceSuggestions;
+        window.generateSmartCoverLetter = generateSmartCoverLetter;
+        window.useSentenceSuggestion = useSentenceSuggestion;
+        window.toggleRequirement = toggleRequirement;
+        window.initializeRequirementsMatching = initializeRequirementsMatching;
+        
+        console.log('✅ All cover letter functions made globally available');
+        
+        console.log('🧪 BUTTON FUNCTIONALITY TEST COMPLETE');
     }, 1000);
 });
 
