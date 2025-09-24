@@ -62,33 +62,79 @@ function registerAllButtons() {
                         
                         // ⚠️ WARNUNG: Client-Side API Calls sind NICHT sicher für Produktion
                         // Best Practice: API Calls sollten über einen Backend-Server laufen
-                        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${apiKey}`
-                            },
-                            body: JSON.stringify({
-                                model: 'gpt-4o-mini',
-                                messages: [{
-                                    role: 'user',
-                                    content: 'Sage nur "Test erfolgreich" zurück.'
-                                }],
-                                max_tokens: 10,
-                                temperature: 0
-                            })
-                        });
+                        
+                        // Retry-Logik für neue API Keys (können Rate Limits haben)
+                        let response;
+                        let retryCount = 0;
+                        const maxRetries = 2;
+                        
+                        while (retryCount <= maxRetries) {
+                            try {
+                                response = await fetch('https://api.openai.com/v1/chat/completions', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${apiKey}`
+                                    },
+                                    body: JSON.stringify({
+                                        model: 'gpt-4o-mini',
+                                        messages: [{
+                                            role: 'user',
+                                            content: 'Sage nur "Test erfolgreich" zurück.'
+                                        }],
+                                        max_tokens: 10,
+                                        temperature: 0
+                                    })
+                                });
+                                
+                                // Erfolg - verlasse die Retry-Schleife
+                                if (response.ok) {
+                                    break;
+                                }
+                                
+                                // Rate Limit (429) - versuche Retry
+                                if (response.status === 429 && retryCount < maxRetries) {
+                                    retryCount++;
+                                    const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff
+                                    
+                                    button.innerHTML = `<i class="fas fa-clock"></i> Rate Limit - Retry ${retryCount}/${maxRetries} in ${waitTime/1000}s...`;
+                                    
+                                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                                    continue;
+                                }
+                                
+                                // Andere Fehler - verlasse die Schleife
+                                break;
+                                
+                            } catch (fetchError) {
+                                if (retryCount < maxRetries) {
+                                    retryCount++;
+                                    const waitTime = 2000; // 2 Sekunden bei Netzwerkfehlern
+                                    
+                                    button.innerHTML = `<i class="fas fa-wifi"></i> Netzwerkfehler - Retry ${retryCount}/${maxRetries}...`;
+                                    
+                                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                                    continue;
+                                }
+                                throw fetchError;
+                            }
+                        }
                         
                         if (!response.ok) {
                             const errorData = await response.json();
                             
-                            // Spezifische Fehlerbehandlung
+                            // Spezifische Fehlerbehandlung für neue API Keys
                             if (response.status === 401) {
-                                throw new Error('Ungültiger API Key. Bitte überprüfen Sie Ihren OpenAI API Key.');
+                                throw new Error('❌ Ungültiger API Key. Bitte überprüfen Sie Ihren OpenAI API Key.');
                             } else if (response.status === 429) {
-                                throw new Error('Rate Limit erreicht. Bitte versuchen Sie es später erneut.');
+                                // Bei neuen Keys kann Rate Limit auftreten
+                                const retryAfter = response.headers.get('retry-after');
+                                const waitTime = retryAfter ? `${retryAfter} Sekunden` : '1-2 Minuten';
+                                throw new Error(`⏱️ Rate Limit erreicht.\n\nBei neuen API Keys normal!\nBitte warten Sie ${waitTime} und versuchen Sie es erneut.\n\nTipp: Versuchen Sie es in 2-3 Minuten nochmal.`);
                             } else if (response.status === 403) {
-                                throw new Error('Unzureichende Berechtigung oder Guthaben. Bitte überprüfen Sie Ihr OpenAI Konto.');
+                                throw new Error('🚫 Unzureichende Berechtigung.\n\nMögliche Ursachen:\n• Kein Guthaben auf dem OpenAI Konto\n• API Key hat keine Chat-Berechtigung\n• Organisationsbeschränkung');
+                            } else if (response.status === 400) {
+                                throw new Error('📝 Ungültige Anfrage. Bitte API Key erneut eingeben.');
                             }
                             
                             throw new Error(`API Fehler (${response.status}): ${errorData.error?.message || response.statusText}`);
