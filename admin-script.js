@@ -1096,11 +1096,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const smartWorkflowBtn = document.querySelector('[onclick="startSmartWorkflow()"]');
         console.log('Smart Workflow button found:', !!smartWorkflowBtn);
         
+        // Add direct event listeners as backup for all buttons
+        const allButtons = document.querySelectorAll('button[onclick], a[onclick]');
+        console.log('Found', allButtons.length, 'buttons with onclick attributes');
+        
+        allButtons.forEach((btn, index) => {
+            const onclick = btn.getAttribute('onclick');
+            if (onclick) {
+                console.log(`Button ${index}: ${onclick}`);
+                
+                // Add direct event listener as backup
+                btn.addEventListener('click', function(e) {
+                    console.log('🔄 Direct click detected on button:', onclick);
+                    
+                    // Prevent default and execute function
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    try {
+                        if (onclick.includes('startSmartWorkflow')) {
+                            startSmartWorkflow();
+                        } else if (onclick.includes('openNewApplicationModal')) {
+                            openNewApplicationModal();
+                        } else if (onclick.includes('triggerDocumentUpload')) {
+                            triggerDocumentUpload();
+                        } else {
+                            // Execute original onclick
+                            eval(onclick);
+                        }
+                    } catch (error) {
+                        console.error('Error executing button function:', error);
+                    }
+                });
+            }
+        });
+        
         // Test global function availability
         console.log('Global functions test:', {
             filterApplications: typeof window.filterApplications,
             startSmartWorkflow: typeof window.startSmartWorkflow,
-            editApplication: typeof window.editApplication
+            editApplication: typeof window.editApplication,
+            triggerDocumentUpload: typeof window.triggerDocumentUpload
         });
         
         console.log('🧪 BUTTON FUNCTIONALITY TEST COMPLETE');
@@ -1673,31 +1709,46 @@ function loadDocuments() {
 function triggerDocumentUpload() {
     console.log('🔄 triggerDocumentUpload called');
     
-    // Remove any existing input first
-    const existingInput = document.getElementById('doc-upload');
-    if (existingInput) {
-        existingInput.remove();
+    try {
+        // Remove any existing input first
+        const existingInput = document.getElementById('doc-upload');
+        if (existingInput) {
+            existingInput.remove();
+        }
+        
+        // Create new file input
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.id = 'doc-upload';
+        fileInput.multiple = true;
+        fileInput.accept = '.pdf,.doc,.docx,.html,.jpg,.jpeg,.png';
+        fileInput.style.display = 'none';
+        
+        // Add event listener with error handling
+        fileInput.addEventListener('change', function(event) {
+            console.log('📁 File input changed, files selected:', event.target.files.length);
+            if (event.target.files && event.target.files.length > 0) {
+                handleDocumentUpload(event);
+            } else {
+                console.log('No files selected');
+            }
+        });
+        
+        // Add to DOM and trigger
+        document.body.appendChild(fileInput);
+        fileInput.click();
+        
+        console.log('✅ File input created and triggered');
+        
+        // Show user feedback
+        if (window.adminPanel && window.adminPanel.showToast) {
+            window.adminPanel.showToast('Datei-Dialog geöffnet', 'info');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error in triggerDocumentUpload:', error);
+        alert('Fehler beim Öffnen des Datei-Dialogs: ' + error.message);
     }
-    
-    // Create new file input
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.id = 'doc-upload';
-    fileInput.multiple = true;
-    fileInput.accept = '.pdf,.doc,.docx,.html,.jpg,.jpeg,.png';
-    fileInput.style.display = 'none';
-    
-    // Add event listener
-    fileInput.addEventListener('change', function(event) {
-        console.log('📁 File input changed, files selected:', event.target.files.length);
-        handleDocumentUpload(event);
-    });
-    
-    // Add to DOM and trigger
-    document.body.appendChild(fileInput);
-    fileInput.click();
-    
-    console.log('✅ File input created and triggered');
 }
 
 // Initialize document upload handler
@@ -2168,6 +2219,53 @@ function testDocumentUpload() {
 
 // Make test function globally available
 window.testDocumentUpload = testDocumentUpload;
+
+// Test function for all buttons
+function testAllButtons() {
+    console.log('🧪 TESTING ALL BUTTONS...');
+    
+    // Test document upload
+    console.log('Testing document upload...');
+    try {
+        triggerDocumentUpload();
+        console.log('✅ Document upload test passed');
+    } catch (error) {
+        console.error('❌ Document upload test failed:', error);
+    }
+    
+    // Test smart workflow
+    console.log('Testing smart workflow...');
+    try {
+        startSmartWorkflow();
+        console.log('✅ Smart workflow test passed');
+        // Close modal immediately
+        setTimeout(() => {
+            const modal = document.getElementById('smartWorkflowModal');
+            if (modal) modal.remove();
+        }, 1000);
+    } catch (error) {
+        console.error('❌ Smart workflow test failed:', error);
+    }
+    
+    // Test new application modal
+    console.log('Testing new application modal...');
+    try {
+        openNewApplicationModal();
+        console.log('✅ New application modal test passed');
+        // Close modal immediately
+        setTimeout(() => {
+            const modal = document.getElementById('newApplicationModal');
+            if (modal) modal.style.display = 'none';
+        }, 1000);
+    } catch (error) {
+        console.error('❌ New application modal test failed:', error);
+    }
+    
+    console.log('🧪 ALL BUTTON TESTS COMPLETE');
+}
+
+// Make test function globally available
+window.testAllButtons = testAllButtons;
 
 function determineDocumentType(filename) {
     const ext = filename.toLowerCase().split('.').pop();
