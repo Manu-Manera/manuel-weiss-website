@@ -51,178 +51,73 @@ function registerAllButtons() {
                         return;
                     }
                     
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Teste...';
+                    button.disabled = true;
+                    
                     try {
-                        // Button-Status aktualisieren
-                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI analysiert...';
-                        button.disabled = true;
+                        const apiKey = document.getElementById('openai-api-key').value;
                         
-                        // Aktuelle Einstellungen temporär speichern
-                        const currentSettings = {
-                            apiKey: document.getElementById('openai-api-key').value,
+                        if (!apiKey) {
+                            throw new Error('API Key erforderlich');
+                        }
+                        
+                        // Speichere Einstellungen
+                        window.openAIAnalyzer.saveSettings({
+                            apiKey: apiKey,
                             model: document.getElementById('openai-model').value,
                             language: document.getElementById('analysis-language').value,
                             maxRequirements: parseInt(document.getElementById('max-requirements').value),
                             temperature: parseFloat(document.getElementById('ai-temperature').value)
-                        };
+                        });
                         
-                        if (!currentSettings.apiKey) {
-                            throw new Error('API Key ist erforderlich für den Test');
-                        }
-                        
-                        // Temporär Einstellungen setzen
-                        window.openAIAnalyzer.saveSettings(currentSettings);
-                        
-                        // Live-Test durchführen
-                        const startTime = Date.now();
+                        // Test
                         const result = await window.openAIAnalyzer.analyzeJobPosting(testText);
-                        const duration = Date.now() - startTime;
                         
-                        // Erfolgreiche Ergebnisse anzeigen
+                        // Erfolg
                         resultsContent.innerHTML = `
-                            <div style="display: grid; gap: 1rem;">
-                                <div style="display: flex; justify-content: between; align-items: center; padding: 0.75rem; background: #dcfce7; border-radius: 8px;">
-                                    <span style="color: #15803d; font-weight: 600;">
-                                        <i class="fas fa-check-circle"></i> Test erfolgreich
-                                    </span>
-                                    <span style="color: #15803d; font-size: 0.875rem;">
-                                        ${duration}ms
-                                    </span>
-                                </div>
-                                
+                            <div style="padding: 1rem; background: #dcfce7; border-radius: 8px; border-left: 4px solid #22c55e;">
+                                <h5 style="margin: 0 0 1rem 0; color: #15803d;">
+                                    <i class="fas fa-check-circle"></i> Test erfolgreich
+                                </h5>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <div style="padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                        <h5 style="margin: 0 0 0.5rem 0; color: #374151;">
-                                            <i class="fas fa-building"></i> Firma
-                                        </h5>
-                                        <p style="margin: 0; font-weight: 600; color: #111827;">${result.company || 'Nicht erkannt'}</p>
-                                    </div>
-                                    
-                                    <div style="padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                        <h5 style="margin: 0 0 0.5rem 0; color: #374151;">
-                                            <i class="fas fa-briefcase"></i> Position
-                                        </h5>
-                                        <p style="margin: 0; font-weight: 600; color: #111827;">${result.position || 'Nicht erkannt'}</p>
-                                    </div>
-                                </div>
-                                
-                                ${result.location ? `
-                                <div style="padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                    <h5 style="margin: 0 0 0.5rem 0; color: #374151;">
-                                        <i class="fas fa-map-marker-alt"></i> Standort
-                                    </h5>
-                                    <p style="margin: 0; color: #6b7280;">${result.location}</p>
-                                </div>
-                                ` : ''}
-                                
-                                ${result.contactPerson ? `
-                                <div style="padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                    <h5 style="margin: 0 0 0.5rem 0; color: #374151;">
-                                        <i class="fas fa-user-tie"></i> Ansprechpartner
-                                    </h5>
-                                    <p style="margin: 0; color: #6b7280;">
-                                        ${result.contactPerson.name || ''}
-                                        ${result.contactPerson.position ? `(${result.contactPerson.position})` : ''}
-                                    </p>
-                                </div>
-                                ` : ''}
-                                
-                                <div style="padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                    <h5 style="margin: 0 0 0.5rem 0; color: #374151;">
-                                        <i class="fas fa-list-check"></i> Anforderungen extrahiert
-                                    </h5>
-                                    <p style="margin: 0; color: #6b7280;">
-                                        ${result.requirements ? result.requirements.length : 0} Anforderungen gefunden
-                                        ${result.requirements && result.requirements.length > 0 ? `
-                                        <details style="margin-top: 0.5rem;">
-                                            <summary style="cursor: pointer; color: #6366f1;">Details anzeigen</summary>
-                                            <ul style="margin: 0.5rem 0 0 1rem; padding: 0;">
-                                                ${result.requirements.slice(0, 5).map(req => `
-                                                    <li style="margin: 0.25rem 0; font-size: 0.875rem;">
-                                                        <span style="background: ${req.priority === 'high' ? '#fecaca' : req.priority === 'medium' ? '#fed7aa' : '#d1fae5'}; 
-                                                                     color: ${req.priority === 'high' ? '#7f1d1d' : req.priority === 'medium' ? '#9a3412' : '#14532d'}; 
-                                                                     padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem; margin-right: 0.5rem;">
-                                                            ${req.priority}
-                                                        </span>
-                                                        ${req.text.length > 80 ? req.text.substring(0, 80) + '...' : req.text}
-                                                    </li>
-                                                `).join('')}
-                                                ${result.requirements.length > 5 ? `<li style="color: #6b7280; font-style: italic;">... und ${result.requirements.length - 5} weitere</li>` : ''}
-                                            </ul>
-                                        </details>
-                                        ` : ''}
-                                    </p>
+                                    <div><strong>Firma:</strong> ${result.company || 'Nicht erkannt'}</div>
+                                    <div><strong>Position:</strong> ${result.position || 'Nicht erkannt'}</div>
+                                    <div><strong>Standort:</strong> ${result.location || 'Nicht erkannt'}</div>
+                                    <div><strong>Anforderungen:</strong> ${result.requirements ? result.requirements.length : 0} gefunden</div>
                                 </div>
                             </div>
                         `;
                         
-                        resultsDiv.style.display = 'block';
-                        resultsDiv.scrollIntoView({ behavior: 'smooth' });
-                        
-                        // Button-Status auf Erfolg
-                        button.innerHTML = '<i class="fas fa-check"></i> Test erfolgreich!';
+                        button.innerHTML = '<i class="fas fa-check"></i> Erfolgreich!';
                         button.style.background = '#059669';
                         
                     } catch (error) {
-                        console.error('Live-Test fehlgeschlagen:', error);
+                        // Fehler
+                        resultsContent.innerHTML = `
+                            <div style="padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
+                                <h5 style="margin: 0 0 0.5rem 0; color: #7f1d1d;">
+                                    <i class="fas fa-times-circle"></i> Test fehlgeschlagen
+                                </h5>
+                                <p style="margin: 0; color: #7f1d1d; font-size: 0.875rem;">
+                                    ${error.message}
+                                </p>
+                            </div>
+                        `;
                         
-                        // Prüfe ob es ein Fallback-Ergebnis war
-                        const isFallback = error.message.includes('CORS') || error.message.includes('Netzwerkfehler');
-                        
-                        if (isFallback) {
-                            // Zeige Info über Fallback-Modus
-                            resultsContent.innerHTML = `
-                                <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                                    <h5 style="margin: 0 0 0.5rem 0; color: #92400e;">
-                                        <i class="fas fa-info-circle"></i> Fallback-Modus aktiviert
-                                    </h5>
-                                    <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
-                                        OpenAI API ist vom Browser aus nicht direkt verfügbar (CORS-Einschränkung). 
-                                        Die intelligente lokale Analyse wurde verwendet.
-                                    </p>
-                                    <p style="margin: 0.5rem 0 0 0; color: #92400e; font-size: 0.875rem;">
-                                        <strong>Hinweis:</strong> Für vollständige OpenAI-Integration ist eine Server-Umgebung erforderlich.
-                                    </p>
-                                </div>
-                            `;
-                            
-                            // Button-Status auf Warnung
-                            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fallback verwendet';
-                            button.style.background = '#f59e0b';
-                        } else {
-                            resultsContent.innerHTML = `
-                                <div style="padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
-                                    <h5 style="margin: 0 0 0.5rem 0; color: #7f1d1d;">
-                                        <i class="fas fa-exclamation-triangle"></i> Test fehlgeschlagen
-                                    </h5>
-                                    <p style="margin: 0; color: #7f1d1d; font-size: 0.875rem;">
-                                        ${error.message}
-                                    </p>
-                                    <p style="margin: 0.5rem 0 0 0; color: #7f1d1d; font-size: 0.875rem;">
-                                        <strong>Mögliche Ursachen:</strong><br>
-                                        • Ungültiger API Key<br>
-                                        • Unzureichendes OpenAI Guthaben<br>
-                                        • Netzwerkprobleme<br>
-                                        • Browser CORS-Einschränkungen
-                                    </p>
-                                </div>
-                            `;
-                            
-                            // Button-Status auf Fehler
-                            button.innerHTML = '<i class="fas fa-times"></i> Test fehlgeschlagen';
-                            button.style.background = '#ef4444';
-                        }
-                        
-                        resultsDiv.style.display = 'block';
+                        button.innerHTML = '<i class="fas fa-times"></i> Fehlgeschlagen';
+                        button.style.background = '#ef4444';
                     }
                     
-                    // Button nach 3 Sekunden zurücksetzen
+                    resultsDiv.style.display = 'block';
+                    
+                    // Reset nach 2 Sekunden
                     setTimeout(() => {
                         button.innerHTML = originalText;
                         button.style.background = '';
                         button.disabled = false;
-                    }, 3000);
+                    }, 2000);
                 },
-                description: 'Test AI analysis with real job posting'
+                description: 'Test OpenAI connection'
             },
             'load-sample-job': {
                 handler: () => {
