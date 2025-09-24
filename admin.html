@@ -2322,9 +2322,23 @@
                                 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
                                     <label for="openai-api-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key</label>
-                                    <input type="password" id="openai-api-key" placeholder="sk-..." 
-                                           style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace;">
-                                    <small style="color: #666; font-size: 0.875rem;">Dein OpenAI API Schlüssel für intelligente Stellenanzeigen-Analyse</small>
+                                    <div style="position: relative;">
+                                        <input type="password" id="openai-api-key" placeholder="sk-..." 
+                                               style="width: 100%; padding: 0.75rem 3rem 0.75rem 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace;">
+                                        <button type="button" data-action="toggle-api-key-visibility" 
+                                                style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div style="background: #fef3c7; padding: 0.75rem; border-radius: 6px; margin-top: 0.5rem; border-left: 4px solid #f59e0b;">
+                                        <small style="color: #92400e;">
+                                            <strong>🔒 Sicherheitshinweise:</strong><br>
+                                            • API Key wird nur lokal in Ihrem Browser gespeichert<br>
+                                            • Nie den Key in Code oder öffentlichen Bereichen verwenden<br>
+                                            • Für Produktion: Backend-Server mit Umgebungsvariablen nutzen<br>
+                                            • Key regelmäßig rotieren und Nutzung überwachen
+                                        </small>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -8677,6 +8691,7 @@ Bitte antworte im folgenden JSON-Format:
     <script src="js/admin-panel-fix.js"></script>
     
     <!-- Button Registration (Load After Other Scripts) -->
+    <script src="js/secure-api-manager.js"></script>
     <script src="js/register-all-buttons.js"></script>
     
     

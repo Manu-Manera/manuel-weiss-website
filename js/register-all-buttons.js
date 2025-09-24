@@ -42,65 +42,109 @@ function registerAllButtons() {
                 handler: async () => {
                     const button = event.target;
                     const originalText = button.innerHTML;
-                    const testText = document.getElementById('test-job-posting').value;
                     const resultsDiv = document.getElementById('test-results');
                     const resultsContent = document.getElementById('test-results-content');
                     
-                    if (!testText.trim()) {
-                        alert('Bitte fügen Sie eine Stellenanzeige für den Test ein.');
-                        return;
-                    }
-                    
-                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Teste...';
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Teste API...';
                     button.disabled = true;
                     
                     try {
-                        const apiKey = document.getElementById('openai-api-key').value;
+                        // SICHERE API Key Verwaltung - nur aus localStorage
+                        const apiKey = document.getElementById('openai-api-key').value || 
+                                      localStorage.getItem('openai-api-key');
                         
-                        if (!apiKey) {
-                            throw new Error('API Key erforderlich');
+                        if (!apiKey || !apiKey.startsWith('sk-')) {
+                            throw new Error('Gültiger OpenAI API Key erforderlich. Bitte API Key eingeben.');
                         }
                         
-                        // Speichere Einstellungen
-                        window.openAIAnalyzer.saveSettings({
-                            apiKey: apiKey,
-                            model: document.getElementById('openai-model').value,
-                            language: document.getElementById('analysis-language').value,
-                            maxRequirements: parseInt(document.getElementById('max-requirements').value),
-                            temperature: parseFloat(document.getElementById('ai-temperature').value)
+                        // Sichere Speicherung des API Keys (nur lokal, nie im Code)
+                        localStorage.setItem('openai-api-key', apiKey);
+                        
+                        // ⚠️ WARNUNG: Client-Side API Calls sind NICHT sicher für Produktion
+                        // Best Practice: API Calls sollten über einen Backend-Server laufen
+                        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiKey}`
+                            },
+                            body: JSON.stringify({
+                                model: 'gpt-4o-mini',
+                                messages: [{
+                                    role: 'user',
+                                    content: 'Sage nur "Test erfolgreich" zurück.'
+                                }],
+                                max_tokens: 10,
+                                temperature: 0
+                            })
                         });
                         
-                        // Test
-                        const result = await window.openAIAnalyzer.analyzeJobPosting(testText);
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            
+                            // Spezifische Fehlerbehandlung
+                            if (response.status === 401) {
+                                throw new Error('Ungültiger API Key. Bitte überprüfen Sie Ihren OpenAI API Key.');
+                            } else if (response.status === 429) {
+                                throw new Error('Rate Limit erreicht. Bitte versuchen Sie es später erneut.');
+                            } else if (response.status === 403) {
+                                throw new Error('Unzureichende Berechtigung oder Guthaben. Bitte überprüfen Sie Ihr OpenAI Konto.');
+                            }
+                            
+                            throw new Error(`API Fehler (${response.status}): ${errorData.error?.message || response.statusText}`);
+                        }
                         
-                        // Erfolg
+                        const data = await response.json();
+                        const testResult = data.choices[0].message.content;
+                        
+                        // Erfolg - zeige Warnung über Client-Side Implementierung
                         resultsContent.innerHTML = `
                             <div style="padding: 1rem; background: #dcfce7; border-radius: 8px; border-left: 4px solid #22c55e;">
                                 <h5 style="margin: 0 0 1rem 0; color: #15803d;">
-                                    <i class="fas fa-check-circle"></i> Test erfolgreich
+                                    <i class="fas fa-check-circle"></i> API Key Test erfolgreich!
                                 </h5>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <div><strong>Firma:</strong> ${result.company || 'Nicht erkannt'}</div>
-                                    <div><strong>Position:</strong> ${result.position || 'Nicht erkannt'}</div>
-                                    <div><strong>Standort:</strong> ${result.location || 'Nicht erkannt'}</div>
-                                    <div><strong>Anforderungen:</strong> ${result.requirements ? result.requirements.length : 0} gefunden</div>
+                                <div style="background: white; padding: 0.75rem; border-radius: 6px; border: 1px solid #d1fae5; margin-bottom: 1rem;">
+                                    <div style="margin-bottom: 0.5rem;"><strong>API Antwort:</strong> "${testResult}"</div>
+                                    <small style="color: #15803d;">
+                                        <strong>✓ API Key gültig</strong><br>
+                                        <strong>✓ Modell gpt-4o-mini verfügbar</strong><br>
+                                        <strong>✓ Verbindung erfolgreich</strong><br>
+                                        <strong>✓ Token verbraucht: ~${data.usage?.total_tokens || 'N/A'}</strong>
+                                    </small>
+                                </div>
+                                <div style="background: #fef3c7; padding: 0.75rem; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                    <small style="color: #92400e;">
+                                        <strong>⚠️ Sicherheitshinweis:</strong><br>
+                                        Diese Client-Side Implementierung ist nur für Tests geeignet.<br>
+                                        Für Produktion sollten API Calls über einen sicheren Backend-Server erfolgen.
+                                    </small>
                                 </div>
                             </div>
                         `;
                         
-                        button.innerHTML = '<i class="fas fa-check"></i> Erfolgreich!';
+                        button.innerHTML = '<i class="fas fa-check"></i> API funktioniert!';
                         button.style.background = '#059669';
                         
                     } catch (error) {
+                        console.error('API Test Fehler:', error);
+                        
                         // Fehler
                         resultsContent.innerHTML = `
                             <div style="padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
                                 <h5 style="margin: 0 0 0.5rem 0; color: #7f1d1d;">
-                                    <i class="fas fa-times-circle"></i> Test fehlgeschlagen
+                                    <i class="fas fa-times-circle"></i> API Test fehlgeschlagen
                                 </h5>
                                 <p style="margin: 0; color: #7f1d1d; font-size: 0.875rem;">
                                     ${error.message}
                                 </p>
+                                <div style="background: #fecaca; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+                                    <small style="color: #7f1d1d;">
+                                        Mögliche Ursachen:<br>
+                                        • CORS-Einschränkung im Browser<br>
+                                        • API Key ungültig oder abgelaufen<br>
+                                        • Netzwerkprobleme
+                                    </small>
+                                </div>
                             </div>
                         `;
                         
@@ -110,14 +154,14 @@ function registerAllButtons() {
                     
                     resultsDiv.style.display = 'block';
                     
-                    // Reset nach 2 Sekunden
+                    // Reset nach 3 Sekunden
                     setTimeout(() => {
                         button.innerHTML = originalText;
                         button.style.background = '';
                         button.disabled = false;
-                    }, 2000);
+                    }, 3000);
                 },
-                description: 'Test OpenAI connection'
+                description: 'Direct OpenAI API test'
             },
             'load-sample-job': {
                 handler: () => {
@@ -182,6 +226,22 @@ Proven track record in scaling automation from pilot to enterprise-level adoptio
                     });
                 },
                 description: 'Load sample job posting for testing'
+            },
+            
+            'toggle-api-key-visibility': {
+                handler: () => {
+                    const input = document.getElementById('openai-api-key');
+                    const icon = event.target.closest('button').querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.className = 'fas fa-eye-slash';
+                    } else {
+                        input.type = 'password';
+                        icon.className = 'fas fa-eye';
+                    }
+                },
+                description: 'Toggle API key visibility'
             },
             'save-ai-settings': {
                 handler: () => {
