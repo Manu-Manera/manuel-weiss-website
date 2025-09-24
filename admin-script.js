@@ -1131,6 +1131,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Special handling for smart workflow button
+        const smartWorkflowBtn = document.getElementById('smartWorkflowButton');
+        if (smartWorkflowBtn) {
+            console.log('✅ Found smart workflow button, adding direct listener');
+            smartWorkflowBtn.addEventListener('click', function(e) {
+                console.log('🔄 Smart workflow button clicked directly');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    startSmartWorkflow();
+                } catch (error) {
+                    console.error('❌ Error starting smart workflow:', error);
+                    alert('Fehler beim Starten des Workflows: ' + error.message);
+                }
+            });
+        } else {
+            console.log('❌ Smart workflow button not found');
+        }
+        
         // Test global function availability
         console.log('Global functions test:', {
             filterApplications: typeof window.filterApplications,
@@ -2331,16 +2351,19 @@ function closePDFEditor() {
 function startSmartWorkflow() {
     console.log('🚀 Starting Smart Workflow...');
     
-    // Remove any existing workflow modal first
-    const existingModal = document.getElementById('smartWorkflowModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-    
-    // Create workflow modal
-    const modal = document.createElement('div');
-    modal.id = 'smartWorkflowModal';
-    modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;';
+    try {
+        // Remove any existing workflow modal first
+        const existingModal = document.getElementById('smartWorkflowModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Create workflow modal
+        const modal = document.createElement('div');
+        modal.id = 'smartWorkflowModal';
+        modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;';
+        
+        console.log('✅ Modal created, adding content...');
     
     modal.innerHTML = `
         <div style="background: white; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
@@ -2383,7 +2406,13 @@ function startSmartWorkflow() {
         </div>
     `;
     
-    document.body.appendChild(modal);
+        document.body.appendChild(modal);
+        console.log('✅ Smart Workflow Modal created and displayed');
+        
+    } catch (error) {
+        console.error('❌ Error creating smart workflow modal:', error);
+        alert('Fehler beim Erstellen des Workflows: ' + error.message);
+    }
 }
 
 function closeSmartWorkflow() {
