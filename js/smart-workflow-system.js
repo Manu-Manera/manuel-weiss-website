@@ -1064,9 +1064,9 @@ class SmartWorkflowSystem {
             console.error('KI-Analyse Fehler:', error);
             
             if (error.message.includes('nicht konfiguriert')) {
-                status.innerHTML = '<i class="fas fa-cog"></i> <a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1;">API Key in KI-Einstellungen hinterlegen</a>';
+                status.innerHTML = '<i class="fas fa-cog"></i> <a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1; text-decoration: underline;">Zuerst KI in den Einstellungen aktivieren</a>';
             } else {
-                status.innerHTML = '<i class="fas fa-times-circle"></i> KI-Analyse fehlgeschlagen - bitte manuell eingeben: ' + error.message;
+                status.innerHTML = '<i class="fas fa-times-circle"></i> KI-Analyse fehlgeschlagen: ' + error.message + '<br><small><a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1;">→ KI-Einstellungen prüfen</a></small>';
             }
             status.classList.add('error');
         }
