@@ -1713,43 +1713,35 @@ class SmartWorkflowSystem {
     }
     
     generateMoreSentences(index) {
-        console.log('Generating more sentences for requirement', index);
         // Implementation
     }
     
     saveComponents() {
-        console.log('Saving components...');
         // Implementation
     }
     
     searchCompanyAddress() {
-        console.log('Searching company address...');
         // Implementation
     }
     
     uploadSignature() {
-        console.log('Uploading signature...');
         // Implementation
     }
     
     uploadLogo() {
-        console.log('Uploading logo...');
         // Implementation
     }
     
     selectLayout(layout) {
-        console.log('Selecting layout:', layout);
         this.applicationData.layoutStyle = layout;
         this.updateUI();
     }
     
     previewDocument(docType) {
-        console.log('Previewing document:', docType);
         // Implementation
     }
     
     copyShareLink() {
-        console.log('Copying share link...');
         // Implementation
     }
 

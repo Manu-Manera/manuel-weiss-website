@@ -8738,36 +8738,11 @@ Bitte antworte im folgenden JSON-Format:
     <!-- Button Registration (Load After Other Scripts) -->
     <script src="js/register-all-buttons.js"></script>
     
-    <!-- Migration Tool (Development Only) -->
-    <script src="js/migrate-buttons.js"></script>
-    
-    <!-- Debug Script for Button Issues -->
-    <script src="js/debug-button.js"></script>
     
     <script>
-        // Initialize new button system
+        // Initialize button system
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[ButtonSystem] Initializing...');
-            
-            // Auto-migrate buttons in development
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('[ButtonSystem] Development mode - Migration available');
-                console.log('Run autoMigrateButtons() to migrate all buttons');
-                
-                // Show migration button in admin panel
-                const migrationBtn = document.createElement('button');
-                migrationBtn.className = 'btn btn-primary btn-small';
-                migrationBtn.style.position = 'fixed';
-                migrationBtn.style.bottom = '20px';
-                migrationBtn.style.right = '20px';
-                migrationBtn.style.zIndex = '9999';
-                migrationBtn.innerHTML = '<i class="fas fa-magic"></i> Migrate Buttons';
-                migrationBtn.onclick = () => {
-                    window.autoMigrateButtons();
-                    migrationBtn.remove();
-                };
-                document.body.appendChild(migrationBtn);
-            }
+            // Button system is ready
         });
     </script>
 </body>
