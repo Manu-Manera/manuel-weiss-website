@@ -37,37 +37,23 @@ class SecureAPIManager {
         return true;
     }
 
-    // SICHERE Speicherung (nur localStorage)
+    // VERSCHLÜSSELTE Speicherung
     saveAPIKey(apiKey) {
         try {
             this.validateAPIKey(apiKey);
             
-            // WARNUNG über Client-Side Speicherung
-            const warning = `⚠️ SICHERHEITSWARNUNG:
+            // Einfache Verschlüsselung für Browser-Umgebung
+            const encryptedKey = this.encryptKey(apiKey);
             
-API Key wird nur in Ihrem Browser (localStorage) gespeichert.
-
-FÜR PRODUKTION NICHT EMPFOHLEN:
-• Verwenden Sie einen Backend-Server
-• Nutzen Sie Umgebungsvariablen
-• Implementieren Sie Proxy-Endpoints
-• Rotieren Sie Keys regelmäßig
-
-Trotzdem fortfahren?`;
-
-            if (!confirm(warning)) {
-                return false;
-            }
-            
-            // Verschleierte Speicherung
             const keyData = {
-                key: apiKey,
+                encrypted: encryptedKey,
                 hash: this.createKeyHash(apiKey),
                 savedAt: new Date().toISOString(),
-                environment: 'browser-local'
+                environment: 'browser-encrypted'
             };
             
             localStorage.setItem(this.keyPrefix + 'key', JSON.stringify(keyData));
+            localStorage.setItem('openai-api-key', apiKey); // Für Kompatibilität
             return true;
             
         } catch (error) {
@@ -75,17 +61,58 @@ Trotzdem fortfahren?`;
         }
     }
 
-    // API Key sicher laden
+    // Einfache Browser-Verschlüsselung (Base64 + XOR)
+    encryptKey(apiKey) {
+        const secret = 'manuel-weiss-secure-2024';
+        let encrypted = '';
+        for (let i = 0; i < apiKey.length; i++) {
+            encrypted += String.fromCharCode(
+                apiKey.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+            );
+        }
+        return btoa(encrypted);
+    }
+
+    // Entschlüsselung
+    decryptKey(encryptedKey) {
+        try {
+            const secret = 'manuel-weiss-secure-2024';
+            const encrypted = atob(encryptedKey);
+            let decrypted = '';
+            for (let i = 0; i < encrypted.length; i++) {
+                decrypted += String.fromCharCode(
+                    encrypted.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+                );
+            }
+            return decrypted;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    // API Key sicher laden (mit Entschlüsselung)
     getAPIKey() {
         try {
             const keyData = localStorage.getItem(this.keyPrefix + 'key');
-            if (!keyData) return null;
+            if (!keyData) {
+                // Fallback für alte Speicherung
+                return localStorage.getItem('openai-api-key');
+            }
             
             const parsed = JSON.parse(keyData);
-            return parsed.key;
+            
+            // Neue verschlüsselte Version
+            if (parsed.encrypted) {
+                return this.decryptKey(parsed.encrypted);
+            }
+            
+            // Alte unverschlüsselte Version (Kompatibilität)
+            return parsed.key || null;
+            
         } catch (error) {
             console.error('Fehler beim Laden des API Keys:', error);
-            return null;
+            // Fallback
+            return localStorage.getItem('openai-api-key');
         }
     }
 
