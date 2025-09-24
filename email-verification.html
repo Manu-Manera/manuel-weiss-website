@@ -190,8 +190,8 @@
                 <input type="text" id="verificationToken" placeholder="Gib deinen Bestätigungscode ein...">
             </div>
             
-            <button class="btn" onclick="verifyEmail()">E-Mail bestätigen</button>
-            <button class="btn btn-secondary" onclick="resendVerification()">Code erneut senden</button>
+            <button class="btn" data-action="verify-email">E-Mail bestätigen</button>
+            <button class="btn btn-secondary" data-action="resend-verification">Code erneut senden</button>
         </div>
         
         <div id="statusMessage" class="status-message" style="display: none;"></div>

@@ -1,0 +1,248 @@
+{
+  "timestamp": "2025-09-24T11:48:27.836Z",
+  "summary": {
+    "totalFiles": 59,
+    "totalButtons": 813,
+    "migratedButtons": 771,
+    "failedButtons": 42,
+    "successRate": 95
+  },
+  "files": [
+    {
+      "path": "admin-data.html",
+      "processed": true
+    },
+    {
+      "path": "admin-persoenlichkeitsentwicklung.html",
+      "processed": true
+    },
+    {
+      "path": "admin.html",
+      "processed": true
+    },
+    {
+      "path": "beraterprofil.html",
+      "processed": true
+    },
+    {
+      "path": "bewerbung.html",
+      "processed": true
+    },
+    {
+      "path": "bewerbungen.html",
+      "processed": true
+    },
+    {
+      "path": "bewerbungsmappe.html",
+      "processed": true
+    },
+    {
+      "path": "button-demo.html",
+      "processed": true
+    },
+    {
+      "path": "ebike.html",
+      "processed": true
+    },
+    {
+      "path": "email-verification.html",
+      "processed": true
+    },
+    {
+      "path": "en/index.html",
+      "processed": true
+    },
+    {
+      "path": "en/persoenlichkeitsentwicklung-uebersicht.html",
+      "processed": true
+    },
+    {
+      "path": "ernaehrungsberatung.html",
+      "processed": true
+    },
+    {
+      "path": "fotobox.html",
+      "processed": true
+    },
+    {
+      "path": "hr-designer.html",
+      "processed": true
+    },
+    {
+      "path": "ikigai.html",
+      "processed": true
+    },
+    {
+      "path": "index.html",
+      "processed": true
+    },
+    {
+      "path": "lebenslauf-admin.html",
+      "processed": true
+    },
+    {
+      "path": "lebenslauf.html",
+      "processed": true
+    },
+    {
+      "path": "methods/aek-communication/aek-communication.html",
+      "processed": true
+    },
+    {
+      "path": "methods/change-stages/change-stages.html",
+      "processed": true
+    },
+    {
+      "path": "methods/circular-interview/circular-interview.html",
+      "processed": true
+    },
+    {
+      "path": "methods/communication/communication.html",
+      "processed": true
+    },
+    {
+      "path": "methods/competence-map/competence-map.html",
+      "processed": true
+    },
+    {
+      "path": "methods/conflict-escalation/conflict-escalation.html",
+      "processed": true
+    },
+    {
+      "path": "methods/emotional-intelligence/emotional-intelligence.html",
+      "processed": true
+    },
+    {
+      "path": "methods/five-pillars/five-pillars.html",
+      "processed": true
+    },
+    {
+      "path": "methods/gallup-strengths/gallup-strengths.html",
+      "processed": true
+    },
+    {
+      "path": "methods/goal-setting/goal-setting.html",
+      "processed": true
+    },
+    {
+      "path": "methods/habit-building/habit-building.html",
+      "processed": true
+    },
+    {
+      "path": "methods/harvard-method/harvard-method.html",
+      "processed": true
+    },
+    {
+      "path": "methods/johari-window/johari-window.html",
+      "processed": true
+    },
+    {
+      "path": "methods/journaling/journaling.html",
+      "processed": true
+    },
+    {
+      "path": "methods/mindfulness/mindfulness.html",
+      "processed": true
+    },
+    {
+      "path": "methods/moment-excellence/moment-excellence.html",
+      "processed": true
+    },
+    {
+      "path": "methods/nlp-dilts/nlp-dilts.html",
+      "processed": true
+    },
+    {
+      "path": "methods/nlp-meta-goal/nlp-meta-goal.html",
+      "processed": true
+    },
+    {
+      "path": "methods/nonviolent-communication/nonviolent-communication.html",
+      "processed": true
+    },
+    {
+      "path": "methods/rafael-method/rafael-method.html",
+      "processed": true
+    },
+    {
+      "path": "methods/resource-analysis/resource-analysis.html",
+      "processed": true
+    },
+    {
+      "path": "methods/rubikon-model/rubikon-model.html",
+      "processed": true
+    },
+    {
+      "path": "methods/self-assessment/self-assessment.html",
+      "processed": true
+    },
+    {
+      "path": "methods/solution-focused/solution-focused.html",
+      "processed": true
+    },
+    {
+      "path": "methods/strengths-finder/strengths-finder.html",
+      "processed": true
+    },
+    {
+      "path": "methods/stress-management/stress-management.html",
+      "processed": true
+    },
+    {
+      "path": "methods/swot-analysis/swot-analysis.html",
+      "processed": true
+    },
+    {
+      "path": "methods/systemic-coaching/systemic-coaching.html",
+      "processed": true
+    },
+    {
+      "path": "methods/target-coaching/target-coaching.html",
+      "processed": true
+    },
+    {
+      "path": "methods/time-management/time-management.html",
+      "processed": true
+    },
+    {
+      "path": "methods/values-clarification/values-clarification.html",
+      "processed": true
+    },
+    {
+      "path": "methods/via-strengths/via-strengths.html",
+      "processed": true
+    },
+    {
+      "path": "methods/vision-board/vision-board.html",
+      "processed": true
+    },
+    {
+      "path": "methods/walt-disney/walt-disney.html",
+      "processed": true
+    },
+    {
+      "path": "methods/wheel-of-life/wheel-of-life.html",
+      "processed": true
+    },
+    {
+      "path": "persoenlichkeitsentwicklung-uebersicht.html",
+      "processed": true
+    },
+    {
+      "path": "persoenlichkeitsentwicklung.html",
+      "processed": true
+    },
+    {
+      "path": "personal-training.html",
+      "processed": true
+    },
+    {
+      "path": "sup.html",
+      "processed": true
+    },
+    {
+      "path": "wohnmobil.html",
+      "processed": true
+    }
+  ]
+}

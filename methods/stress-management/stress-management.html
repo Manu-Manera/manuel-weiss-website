@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="addStressSource('work')">+ Weitere hinzufügen</button>
+                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="work">+ Weitere hinzufügen</button>
                     </div>
                     
                     <div class="source-category">
@@ -77,7 +77,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="addStressSource('relationships')">+ Weitere hinzufügen</button>
+                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="relationships">+ Weitere hinzufügen</button>
                     </div>
                     
                     <div class="source-category">
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="addStressSource('finances')">+ Weitere hinzufügen</button>
+                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="finances">+ Weitere hinzufügen</button>
                     </div>
                     
                     <div class="source-category">
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="addStressSource('daily')">+ Weitere hinzufügen</button>
+                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="daily">+ Weitere hinzufügen</button>
                     </div>
                 </div>
             </div>
@@ -260,17 +260,17 @@
                         <div class="strategy-item">
                             <h6>Gedankenstopp</h6>
                             <p>Stoppe negative Gedankenspiralen durch bewusste Unterbrechung.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('thought-stopping')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="thought-stopping">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Realitätscheck</h6>
                             <p>Überprüfe deine Gedanken auf Realitätsgehalt und Übertreibungen.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('reality-check')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="reality-check">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Positive Umformulierung</h6>
                             <p>Formuliere schwierige Situationen positiv um.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('reframing')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="reframing">Anleitung</button>
                         </div>
                     </div>
                 </div>
@@ -281,17 +281,17 @@
                         <div class="strategy-item">
                             <h6>Problem-Analyse</h6>
                             <p>Analysiere das Problem systematisch und finde Lösungsansätze.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('problem-analysis')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="problem-analysis">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Prioritäten setzen</h6>
                             <p>Setze klare Prioritäten und konzentriere dich auf das Wichtigste.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('priorities')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="priorities">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Zeitmanagement</h6>
                             <p>Organisiere deine Zeit effektiv und vermeide Zeitdruck.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('time-management')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="time-management">Anleitung</button>
                         </div>
                     </div>
                 </div>
@@ -302,17 +302,17 @@
                         <div class="strategy-item">
                             <h6>Soziale Unterstützung</h6>
                             <p>Suche Unterstützung bei Familie, Freunden oder Kollegen.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('social-support')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="social-support">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Kommunikation</h6>
                             <p>Kommuniziere deine Bedürfnisse und Grenzen klar.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('communication')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="communication">Anleitung</button>
                         </div>
                         <div class="strategy-item">
                             <h6>Professionelle Hilfe</h6>
                             <p>Suche bei Bedarf professionelle Unterstützung.</p>
-                            <button class="btn btn-outline btn-sm" onclick="showStrategyGuide('professional-help')">Anleitung</button>
+                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="professional-help">Anleitung</button>
                         </div>
                     </div>
                 </div>
@@ -323,7 +323,7 @@
                 <div class="strategy-builder">
                     <div class="strategy-input">
                         <input type="text" id="strategy-input" placeholder="Neue Bewältigungsstrategie hinzufügen...">
-                        <button class="btn btn-primary" onclick="addPersonalStrategy()">Hinzufügen</button>
+                        <button class="btn btn-primary" data-action="add-personal-strategy">Hinzufügen</button>
                     </div>
                     <div class="strategies-list" id="personal-strategies-list">
                         <p>Füge deine eigenen Bewältigungsstrategien hinzu.</p>
@@ -355,7 +355,7 @@
                         <li>Bauchatmung</li>
                         <li>Box-Atmung</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startBreathingExercise()">Übung starten</button>
+                    <button class="btn btn-primary" data-action="start-breathing-exercise">Übung starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -366,7 +366,7 @@
                         <li>Body-Scan</li>
                         <li>Geführte Meditation</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startMeditation()">Meditation starten</button>
+                    <button class="btn btn-primary" data-action="start-meditation">Meditation starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -377,7 +377,7 @@
                         <li>Körperwahrnehmung</li>
                         <li>Tiefenentspannung</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startMuscleRelaxation()">Übung starten</button>
+                    <button class="btn btn-primary" data-action="start-muscle-relaxation">Übung starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -388,7 +388,7 @@
                         <li>Erfolg visualisieren</li>
                         <li>Natur-Szenen</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startVisualization()">Visualisierung starten</button>
+                    <button class="btn btn-primary" data-action="start-visualization">Visualisierung starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -399,7 +399,7 @@
                         <li>Naturgeräusche</li>
                         <li>Binaurale Beats</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startMusicRelaxation()">Musik starten</button>
+                    <button class="btn btn-primary" data-action="start-music-relaxation">Musik starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -410,7 +410,7 @@
                         <li>Spaziergänge</li>
                         <li>Leichter Sport</li>
                     </ul>
-                    <button class="btn btn-primary" onclick="startMovementRelaxation()">Bewegung starten</button>
+                    <button class="btn btn-primary" data-action="start-movement-relaxation">Bewegung starten</button>
                 </div>
             </div>
             
@@ -444,7 +444,7 @@
                             <option value="visualization">Visualisierung</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" onclick="createRelaxationPlan()">Plan erstellen</button>
+                    <button class="btn btn-primary" data-action="create-relaxation-plan">Plan erstellen</button>
                 </div>
             </div>
         </div>
@@ -558,7 +558,7 @@
                 <div class="plan-builder">
                     <div class="plan-input">
                         <input type="text" id="prevention-input" placeholder="Neue Präventionsmaßnahme hinzufügen...">
-                        <button class="btn btn-primary" onclick="addPreventionMeasure()">Hinzufügen</button>
+                        <button class="btn btn-primary" data-action="add-prevention-measure">Hinzufügen</button>
                     </div>
                     <div class="prevention-list" id="prevention-measures-list">
                         <p>Füge deine eigenen Präventionsmaßnahmen hinzu.</p>
@@ -572,17 +572,17 @@
                     <div class="monitoring-item">
                         <h5>📅 Tägliches Stress-Tracking</h5>
                         <p>Verfolge dein tägliches Stresslevel und identifiziere Muster.</p>
-                        <button class="btn btn-outline" onclick="openStressTracker()">Tracker öffnen</button>
+                        <button class="btn btn-outline" data-action="open-stress-tracker">Tracker öffnen</button>
                     </div>
                     <div class="monitoring-item">
                         <h5>📈 Wöchentliche Bewertung</h5>
                         <p>Bewerte deine Stressbewältigung wöchentlich.</p>
-                        <button class="btn btn-outline" onclick="openWeeklyReview()">Bewertung starten</button>
+                        <button class="btn btn-outline" data-action="open-weekly-review">Bewertung starten</button>
                     </div>
                     <div class="monitoring-item">
                         <h5>🎯 Zielsetzung</h5>
                         <p>Setze dir konkrete Ziele für dein Stressmanagement.</p>
-                        <button class="btn btn-outline" onclick="setStressGoals()">Ziele setzen</button>
+                        <button class="btn btn-outline" data-action="set-stress-goals">Ziele setzen</button>
                     </div>
                 </div>
             </div>
@@ -592,13 +592,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

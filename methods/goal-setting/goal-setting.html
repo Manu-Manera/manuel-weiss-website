@@ -195,8 +195,8 @@
                     </div>
                     
                     <div class="formulation-actions">
-                        <button class="btn btn-primary" onclick="generateSmartGoal()">SMART-Ziel generieren</button>
-                        <button class="btn btn-secondary" onclick="saveGoal()">Ziel speichern</button>
+                        <button class="btn btn-primary" data-action="generate-smart-goal">SMART-Ziel generieren</button>
+                        <button class="btn btn-secondary" data-action="save-goal">Ziel speichern</button>
                     </div>
                 </div>
             </div>
@@ -247,7 +247,7 @@
                         <label>Ressourcen benötigt:</label>
                         <textarea id="step-resources" placeholder="Welche Ressourcen brauchst du? (Zeit, Geld, Material, etc.)"></textarea>
                     </div>
-                    <button class="btn btn-primary" onclick="addActionStep()">Schritt hinzufügen</button>
+                    <button class="btn btn-primary" data-action="add-action-step">Schritt hinzufügen</button>
                 </div>
             </div>
             
@@ -262,7 +262,7 @@
                 <div class="milestone-form">
                     <input type="text" id="milestone-title" placeholder="Meilenstein-Titel">
                     <input type="date" id="milestone-date">
-                    <button class="btn btn-secondary" onclick="addMilestone()">Meilenstein hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-milestone">Meilenstein hinzufügen</button>
                 </div>
             </div>
         </div>
@@ -290,10 +290,10 @@
                 <div class="habits-list" id="existing-habits-list">
                     <div class="habit-item">
                         <input type="text" placeholder="z.B. 'Ich trinke morgens Kaffee'" class="habit-input">
-                        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
+                        <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="addExistingHabit()">+ Gewohnheit hinzufügen</button>
+                <button class="btn btn-secondary" data-action="add-existing-habit">+ Gewohnheit hinzufügen</button>
             </div>
             
             <div class="new-habits">
@@ -302,10 +302,10 @@
                 <div class="habits-list" id="new-habits-list">
                     <div class="habit-item">
                         <input type="text" placeholder="z.B. 'Ich lese 10 Seiten Fachliteratur'" class="habit-input">
-                        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
+                        <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="addNewHabit()">+ Gewohnheit hinzufügen</button>
+                <button class="btn btn-secondary" data-action="add-new-habit">+ Gewohnheit hinzufügen</button>
             </div>
             
             <div class="habit-stacks">
@@ -316,7 +316,7 @@
                         <p>Erstelle deine ersten Habit-Stacks, indem du bestehende und neue Gewohnheiten kombinierst.</p>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="generateHabitStacks()">Habit-Stacks generieren</button>
+                <button class="btn btn-primary" data-action="generate-habit-stacks">Habit-Stacks generieren</button>
             </div>
         </div>
     </div>
@@ -371,7 +371,7 @@
                         <label>Hindernisse oder Herausforderungen:</label>
                         <textarea id="challenges" placeholder="Was hat dich heute behindert?"></textarea>
                     </div>
-                    <button class="btn btn-primary" onclick="saveDailyProgress()">Fortschritt speichern</button>
+                    <button class="btn btn-primary" data-action="save-daily-progress">Fortschritt speichern</button>
                 </div>
             </div>
             
@@ -397,9 +397,9 @@
             <div class="review-period">
                 <h4>📅 Review-Zeitraum</h4>
                 <div class="period-selector">
-                    <button class="btn btn-outline active" onclick="selectReviewPeriod('weekly')">Wöchentlich</button>
-                    <button class="btn btn-outline" onclick="selectReviewPeriod('monthly')">Monatlich</button>
-                    <button class="btn btn-outline" onclick="selectReviewPeriod('quarterly')">Vierteljährlich</button>
+                    <button class="btn btn-outline active" data-action="select-review-period" data-param="weekly">Wöchentlich</button>
+                    <button class="btn btn-outline" data-action="select-review-period" data-param="monthly">Monatlich</button>
+                    <button class="btn btn-outline" data-action="select-review-period" data-param="quarterly">Vierteljährlich</button>
                 </div>
             </div>
             
@@ -452,9 +452,9 @@
             </div>
             
             <div class="review-actions">
-                <button class="btn btn-primary" onclick="saveReview()">Review speichern</button>
-                <button class="btn btn-secondary" onclick="exportGoalSummary()">Ziel-Zusammenfassung exportieren</button>
-                <button class="btn btn-outline" onclick="createNewGoal()">Neues Ziel erstellen</button>
+                <button class="btn btn-primary" data-action="save-review">Review speichern</button>
+                <button class="btn btn-secondary" data-action="export-goal-summary">Ziel-Zusammenfassung exportieren</button>
+                <button class="btn btn-outline" data-action="create-new-goal">Neues Ziel erstellen</button>
             </div>
         </div>
     </div>
@@ -462,13 +462,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">6</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

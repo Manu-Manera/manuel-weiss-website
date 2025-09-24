@@ -4003,27 +4003,27 @@
                 <div class="quick-actions">
                     <h2>⚡ Quick Actions</h2>
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="openAddModal()">
+                        <button class="action-btn" data-action="open-add-modal">
                             <i class="fas fa-plus"></i>
                             <span>Neue Bewerbung</span>
                         </button>
-                        <button class="action-btn" onclick="createNewWithDesigner()">
+                        <button class="action-btn" data-action="create-new-with-designer">
                             <i class="fas fa-palette"></i>
                             <span>Mit Designer erstellen</span>
                         </button>
-                        <button class="action-btn" onclick="exportApplications()">
+                        <button class="action-btn" data-action="export-applications">
                             <i class="fas fa-download"></i>
                             <span>Exportieren</span>
                         </button>
-                        <button class="action-btn" onclick="generateReport()">
+                        <button class="action-btn" data-action="generate-report">
                             <i class="fas fa-chart-bar"></i>
                             <span>Bericht erstellen</span>
                         </button>
-                        <button class="action-btn" onclick="openSettings()">
+                        <button class="action-btn" data-action="open-settings">
                             <i class="fas fa-cog"></i>
                             <span>Einstellungen</span>
                         </button>
-                        <button class="action-btn" onclick="openAILetterGenerator()">
+                        <button class="action-btn" data-action="open-a-i-letter-generator">
                             <i class="fas fa-robot"></i>
                             <span>KI Anschreiben</span>
                         </button>
@@ -4033,23 +4033,23 @@
                     <div class="quick-status-section">
                         <h3>🚀 Schnelle Statusänderungen</h3>
                         <div class="status-quick-buttons">
-                            <button class="status-quick-btn status-sent" onclick="quickStatusChange('sent')" title="Als 'Gesendet' markieren">
+                            <button class="status-quick-btn status-sent" data-action="quick-status-change" data-param="sent" title="Als 'Gesendet' markieren">
                                 <i class="fas fa-paper-plane"></i>
                                 <span>Gesendet</span>
                             </button>
-                            <button class="status-quick-btn status-reviewed" onclick="quickStatusChange('reviewed')" title="Als 'In Bearbeitung' markieren">
+                            <button class="status-quick-btn status-reviewed" data-action="quick-status-change" data-param="reviewed" title="Als 'In Bearbeitung' markieren">
                                 <i class="fas fa-clock"></i>
                                 <span>In Bearbeitung</span>
                             </button>
-                            <button class="status-quick-btn status-interview" onclick="quickStatusChange('interview')" title="Als 'Vorstellungsgespräch' markieren">
+                            <button class="status-quick-btn status-interview" data-action="quick-status-change" data-param="interview" title="Als 'Vorstellungsgespräch' markieren">
                                 <i class="fas fa-handshake"></i>
                                 <span>Interview</span>
                             </button>
-                            <button class="status-quick-btn status-accepted" onclick="quickStatusChange('accepted')" title="Als 'Zusage' markieren">
+                            <button class="status-quick-btn status-accepted" data-action="quick-status-change" data-param="accepted" title="Als 'Zusage' markieren">
                                 <i class="fas fa-check-circle"></i>
                                 <span>Zusage</span>
                             </button>
-                            <button class="status-quick-btn status-rejected" onclick="quickStatusChange('rejected')" title="Als 'Abgelehnt' markieren">
+                            <button class="status-quick-btn status-rejected" data-action="quick-status-change" data-param="rejected" title="Als 'Abgelehnt' markieren">
                                 <i class="fas fa-times-circle"></i>
                                 <span>Abgelehnt</span>
                             </button>
@@ -4090,7 +4090,7 @@
                 <div class="header-actions">
                     <div class="profile-section">
                         <div class="profile-toggle">
-                            <button class="btn btn-secondary" onclick="toggleProfileMode()" id="profileToggleBtn">
+                            <button class="btn btn-secondary" data-action="toggle-profile-mode" id="profileToggleBtn">
                                 <i class="fas fa-camera"></i>
                                 <span>Foto</span>
                             </button>
@@ -4098,21 +4098,21 @@
                         <div class="profile-display" id="profileDisplay">
                             <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image" id="profileImage">
                             <div class="profile-overlay" id="profileOverlay">
-                                <button class="play-btn" onclick="playDigitalTwin()" title="Digital Twin abspielen">
+                                <button class="play-btn" data-action="play-digital-twin" title="Digital Twin abspielen">
                                     <i class="fas fa-play"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="resetDesign()">
+                    <button class="btn btn-secondary" data-action="reset-design">
                         <i class="fas fa-undo"></i>
                         Zurücksetzen
                     </button>
-                    <button class="btn btn-primary" onclick="saveDesign()">
+                    <button class="btn btn-primary" data-action="save-design">
                         <i class="fas fa-save"></i>
                         Speichern
                     </button>
-                    <button class="btn btn-success" onclick="previewDesign()">
+                    <button class="btn btn-success" data-action="preview-design">
                         <i class="fas fa-eye"></i>
                         Vorschau
                     </button>
@@ -4245,19 +4245,19 @@
             <div class="designer-content">
                 <div class="designer-sidebar">
                     <div class="tabs">
-                        <button class="tab active" onclick="switchTab('content')">
+                        <button class="tab active" data-action="switch-tab" data-param="content">
                             <i class="fas fa-edit"></i>
                             Inhalt
                         </button>
-                        <button class="tab" onclick="switchTab('design')">
+                        <button class="tab" data-action="switch-tab" data-param="design">
                             <i class="fas fa-paint-brush"></i>
                             Design
                         </button>
-                        <button class="tab" onclick="switchTab('branding')">
+                        <button class="tab" data-action="switch-tab" data-param="branding">
                             <i class="fas fa-building"></i>
                             Branding
                         </button>
-                        <button class="tab" onclick="switchTab('cover-letter')">
+                        <button class="tab" data-action="switch-tab" data-param="cover-letter">
                             <i class="fas fa-robot"></i>
                             Anschreiben
                         </button>
@@ -4399,7 +4399,7 @@
                                 <input type="text" class="form-input" id="aiPositionTitle" placeholder="Titel der Position">
                             </div>
                             
-                            <button class="btn btn-primary" onclick="generateCoverLetter()" style="width: 100%;">
+                            <button class="btn btn-primary" data-action="generate-cover-letter" style="width: 100%;">
                                 <i class="fas fa-magic"></i>
                                 Anschreiben generieren
                             </button>
@@ -4410,11 +4410,11 @@
                             </div>
                             
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-success" onclick="saveCoverLetter()" style="flex: 1;">
+                                <button class="btn btn-success" data-action="save-cover-letter" style="flex: 1;">
                                     <i class="fas fa-save"></i>
                                     Speichern
                                 </button>
-                                <button class="btn btn-secondary" onclick="copyCoverLetter()" style="flex: 1;">
+                                <button class="btn btn-secondary" data-action="copy-cover-letter" style="flex: 1;">
                                     <i class="fas fa-copy"></i>
                                     Kopieren
                                 </button>
@@ -4431,7 +4431,7 @@
                             Live-Vorschau
                         </div>
                         <div class="preview-actions">
-                            <button class="btn btn-secondary" onclick="openPreview()">
+                            <button class="btn btn-secondary" data-action="open-preview">
                                 <i class="fas fa-external-link-alt"></i>
                                 In neuem Tab öffnen
                             </button>
@@ -4498,15 +4498,15 @@
                 </div>
 
                 <div class="calendar-actions">
-                    <button class="btn btn-primary" onclick="openEventModal()">
+                    <button class="btn btn-primary" data-action="open-event-modal">
                         <i class="fas fa-plus"></i>
                         Neuer Termin
                     </button>
-                    <button class="btn btn-secondary" onclick="openReminderModal()">
+                    <button class="btn btn-secondary" data-action="open-reminder-modal">
                         <i class="fas fa-bell"></i>
                         Erinnerung erstellen
                     </button>
-                    <button class="btn btn-secondary" onclick="exportCalendar()">
+                    <button class="btn btn-secondary" data-action="export-calendar">
                         <i class="fas fa-download"></i>
                         Export
                     </button>
@@ -4538,15 +4538,15 @@
 
                     <div class="quick-actions">
                         <h3>Quick Actions</h3>
-                        <button class="quick-action-btn" onclick="createInterviewReminder()">
+                        <button class="quick-action-btn" data-action="create-interview-reminder">
                             <i class="fas fa-video"></i>
                             Interview-Erinnerung
                         </button>
-                        <button class="quick-action-btn" onclick="createFollowUpReminder()">
+                        <button class="quick-action-btn" data-action="create-follow-up-reminder">
                             <i class="fas fa-reply"></i>
                             Follow-up Erinnerung
                         </button>
-                        <button class="quick-action-btn" onclick="createEmailReminder()">
+                        <button class="quick-action-btn" data-action="create-email-reminder">
                             <i class="fas fa-envelope"></i>
                             E-Mail Erinnerung
                         </button>
@@ -4556,11 +4556,11 @@
                 <div class="calendar-main">
                     <div class="calendar-view">
                         <div class="calendar-header-nav">
-                            <button class="btn btn-secondary" onclick="previousMonth()">
+                            <button class="btn btn-secondary" data-action="previous-month">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
                             <h2 id="currentMonth">Januar 2024</h2>
-                            <button class="btn btn-secondary" onclick="nextMonth()">
+                            <button class="btn btn-secondary" data-action="next-month">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
@@ -4586,7 +4586,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Neue Bewerbung hinzufügen</h3>
-                <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="addModal">&times;</button>
             </div>
             <form id="addApplicationForm">
                 <div class="form-group">
@@ -4612,7 +4612,7 @@
                     <textarea id="notes" name="notes" placeholder="Zusätzliche Informationen..."></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('addModal')">Abbrechen</button>
+                    <button type="button" class="btn-secondary" data-action="close-modal" data-param="addModal">Abbrechen</button>
                     <button type="submit" class="btn-primary">Speichern</button>
                 </div>
             </form>
@@ -4624,7 +4624,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Bewerbung bearbeiten</h3>
-                <button class="close-btn" onclick="closeModal('editModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="editModal">&times;</button>
             </div>
             <form id="editApplicationForm">
                 <input type="hidden" id="editId" name="id">
@@ -4651,7 +4651,7 @@
                     <textarea id="editNotes" name="notes" placeholder="Zusätzliche Informationen..."></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('editModal')">Abbrechen</button>
+                    <button type="button" class="btn-secondary" data-action="close-modal" data-param="editModal">Abbrechen</button>
                     <button type="submit" class="btn-primary">Aktualisieren</button>
                 </div>
             </form>
@@ -4663,7 +4663,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3><i class="fas fa-edit"></i> Status ändern</h3>
-                <button class="close-btn" onclick="closeModal('statusModal')">
+                <button class="close-btn" data-action="close-modal" data-param="statusModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -4679,8 +4679,8 @@
                     </div>
                 </div>
                 <div class="status-actions">
-                    <button class="btn-secondary" onclick="closeModal('statusModal')">Abbrechen</button>
-                    <button class="btn-primary" onclick="confirmStatusChange()" id="confirmStatusBtn" disabled>
+                    <button class="btn-secondary" data-action="close-modal" data-param="statusModal">Abbrechen</button>
+                    <button class="btn-primary" data-action="confirm-status-change" id="confirmStatusBtn" disabled>
                         <i class="fas fa-check"></i>
                         Status ändern
                     </button>
@@ -4694,7 +4694,7 @@
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
                 <h3><i class="fas fa-robot"></i> KI-Anschreiben Generator</h3>
-                <button class="close-btn" onclick="closeModal('aiLetterModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="aiLetterModal">&times;</button>
             </div>
             
             <div class="ai-generator-content">
@@ -4719,7 +4719,7 @@
                             <div class="analysis-status" id="qualStatus">Wird analysiert...</div>
                         </div>
                     </div>
-                    <button class="btn-primary" onclick="analyzeData()" id="analyzeBtn">
+                    <button class="btn-primary" data-action="analyze-data" id="analyzeBtn">
                         <i class="fas fa-play"></i> Analyse starten
                     </button>
                 </div>
@@ -4741,7 +4741,7 @@
                         <label for="positionTitle">Position</label>
                         <input type="text" id="positionTitle" name="positionTitle" placeholder="Titel der Position">
                     </div>
-                    <button class="btn-primary" onclick="proceedToStep3()">
+                    <button class="btn-primary" data-action="proceed-to-step3">
                         <i class="fas fa-arrow-right"></i> Weiter
                     </button>
                 </div>
@@ -4763,7 +4763,7 @@
                         <ul id="requirementsList"></ul>
                     </div>
 
-                    <button class="btn-primary" onclick="generateCoverLetter()" id="generateBtn">
+                    <button class="btn-primary" data-action="generate-cover-letter" id="generateBtn">
                         <i class="fas fa-robot"></i> Anschreiben generieren
                     </button>
                 </div>
@@ -4787,13 +4787,13 @@
                         <div class="tool-section">
                             <h6><i class="fas fa-magic"></i> KI-Bearbeitung</h6>
                             <div class="tool-buttons">
-                                <button class="tool-btn" onclick="enableSentenceEditing()">
+                                <button class="tool-btn" data-action="enable-sentence-editing">
                                     <i class="fas fa-edit"></i> Sätze bearbeiten
                                 </button>
-                                <button class="tool-btn" onclick="enableParagraphEditing()">
+                                <button class="tool-btn" data-action="enable-paragraph-editing">
                                     <i class="fas fa-paragraph"></i> Absätze neu generieren
                                 </button>
-                                <button class="tool-btn" onclick="improveTone()">
+                                <button class="tool-btn" data-action="improve-tone">
                                     <i class="fas fa-palette"></i> Ton verbessern
                                 </button>
                             </div>
@@ -4801,13 +4801,13 @@
                     </div>
 
                     <div class="letter-actions">
-                        <button class="btn-secondary" onclick="regenerateLetter()">
+                        <button class="btn-secondary" data-action="regenerate-letter">
                             <i class="fas fa-redo"></i> Neu generieren
                         </button>
-                        <button class="btn-primary" onclick="saveLetter()">
+                        <button class="btn-primary" data-action="save-letter">
                             <i class="fas fa-save"></i> Speichern
                         </button>
-                        <button class="btn-primary" onclick="copyLetter()">
+                        <button class="btn-primary" data-action="copy-letter">
                             <i class="fas fa-copy"></i> Kopieren
                         </button>
                     </div>
@@ -4821,7 +4821,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-share-alt"></i> HR-Link teilen</h3>
-                <button class="close-btn" onclick="closeModal('shareModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="shareModal">&times;</button>
             </div>
             
             <div class="share-content">
@@ -4835,7 +4835,7 @@
                         <label for="shareUrl">HR-Link:</label>
                         <div class="url-container">
                             <input type="text" id="shareUrl" readonly>
-                            <button class="copy-url-btn" onclick="copyShareUrl()">
+                            <button class="copy-url-btn" data-action="copy-share-url">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -4844,15 +4844,15 @@
                     <div class="share-option">
                         <label for="shareEmail">E-Mail-Vorlage:</label>
                         <textarea id="shareEmail" rows="6" readonly></textarea>
-                        <button class="copy-email-btn" onclick="copyEmailTemplate()">
+                        <button class="copy-email-btn" data-action="copy-email-template">
                             <i class="fas fa-copy"></i> E-Mail kopieren
                         </button>
                     </div>
                 </div>
                 
                 <div class="share-actions">
-                    <button class="btn-secondary" onclick="closeModal('shareModal')">Schließen</button>
-                    <button class="btn-primary" onclick="openEmailClient()">
+                    <button class="btn-secondary" data-action="close-modal" data-param="shareModal">Schließen</button>
+                    <button class="btn-primary" data-action="open-email-client">
                         <i class="fas fa-envelope"></i> E-Mail öffnen
                     </button>
                 </div>
@@ -4865,7 +4865,7 @@
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3><i class="fas fa-edit"></i> Satz-Alternativen</h3>
-                <button class="close-btn" onclick="closeModal('sentenceModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="sentenceModal">&times;</button>
             </div>
             
             <div class="sentence-alternatives">
@@ -4882,8 +4882,8 @@
                 </div>
                 
                 <div class="sentence-actions">
-                    <button class="btn-secondary" onclick="closeModal('sentenceModal')">Abbrechen</button>
-                    <button class="btn-primary" onclick="regenerateAlternatives()">
+                    <button class="btn-secondary" data-action="close-modal" data-param="sentenceModal">Abbrechen</button>
+                    <button class="btn-primary" data-action="regenerate-alternatives">
                         <i class="fas fa-redo"></i> Neue Alternativen
                     </button>
                 </div>
@@ -4896,7 +4896,7 @@
         <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
                 <h3><i class="fas fa-paragraph"></i> Absatz neu generieren</h3>
-                <button class="close-btn" onclick="closeModal('paragraphModal')">&times;</button>
+                <button class="close-btn" data-action="close-modal" data-param="paragraphModal">&times;</button>
             </div>
             
             <div class="paragraph-regeneration">
@@ -4930,8 +4930,8 @@
                 </div>
                 
                 <div class="paragraph-actions">
-                    <button class="btn-secondary" onclick="closeModal('paragraphModal')">Abbrechen</button>
-                    <button class="btn-primary" onclick="regenerateParagraph()">
+                    <button class="btn-secondary" data-action="close-modal" data-param="paragraphModal">Abbrechen</button>
+                    <button class="btn-primary" data-action="regenerate-paragraph">
                         <i class="fas fa-robot"></i> Absatz neu generieren
                     </button>
                 </div>
@@ -5065,13 +5065,13 @@
                         <div class="document-meta">${doc.size} • ${doc.uploadDate}</div>
                     </div>
                     <div class="document-actions">
-                        <button class="document-action" onclick="previewDocument('${doc.id}')" title="Vorschau">
+                        <button class="document-action" data-action="preview-document" data-param="${doc.id}" title="Vorschau">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="document-action" onclick="downloadDocument('${doc.id}')" title="Herunterladen">
+                        <button class="document-action" data-action="download-document" data-param="${doc.id}" title="Herunterladen">
                             <i class="fas fa-download"></i>
                         </button>
-                        <button class="document-action" onclick="deleteDocument('${doc.id}')" title="Löschen">
+                        <button class="document-action" data-action="delete-document" data-param="${doc.id}" title="Löschen">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -5155,7 +5155,7 @@
                 <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
                     <div class="modal-header">
                         <h3><i class="fas fa-file-pdf"></i> ${document.name}</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="pdf-preview-modal">
@@ -5173,11 +5173,11 @@
                             </div>
                             
                             <div class="pdf-actions">
-                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                <button class="btn btn-secondary" data-action="closest">
                                     <i class="fas fa-times"></i>
                                     Schließen
                                 </button>
-                                <button class="btn btn-primary" onclick="selectPagesForPackage('${documentId}')">
+                                <button class="btn btn-primary" data-action="select-pages-for-package" data-param="${documentId}">
                                     <i class="fas fa-check"></i>
                                     Ausgewählte Seiten für Paket verwenden
                                 </button>
@@ -5424,7 +5424,7 @@
                 <div class="modal-content" style="max-width: 700px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-brain"></i> Intelligente Anschreiben-Generierung</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="generation-options">
@@ -5903,7 +5903,7 @@ ${name}`
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>Neuer Termin</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -5932,8 +5932,8 @@ ${name}`
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="saveEvent()">Speichern</button>
+                        <button class="btn btn-secondary" data-action="closest">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-event">Speichern</button>
                     </div>
                 </div>
             `;
@@ -6154,7 +6154,7 @@ ${name}`
                 <div class="modal-content" style="max-width: 700px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-magic"></i> Intelligenter Bewerbungs-Workflow</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="workflow-steps">
@@ -6281,20 +6281,20 @@ ${name}`
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="analyzeJobPosting()" id="analyzeJobBtn">
+                        <button class="btn btn-secondary" data-action="closest">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="analyze-job-posting" id="analyzeJobBtn">
                             <i class="fas fa-search"></i>
                             Stellenanzeige analysieren
                         </button>
-                        <button class="btn btn-primary" onclick="searchJobs()" id="searchJobsBtn" style="display: none;">
+                        <button class="btn btn-primary" data-action="search-jobs" id="searchJobsBtn" style="display: none;">
                             <i class="fas fa-search"></i>
                             Stellen suchen
                         </button>
-                        <button class="btn btn-primary" onclick="startIntelligentWorkflow()" id="startWorkflowBtn" disabled style="display: none;">
+                        <button class="btn btn-primary" data-action="start-intelligent-workflow" id="startWorkflowBtn" disabled style="display: none;">
                             <i class="fas fa-rocket"></i>
                             Workflow starten
                         </button>
-                        <button class="btn btn-success" onclick="startIntelligentWorkflow()" id="continueWorkflowBtn">
+                        <button class="btn btn-success" data-action="start-intelligent-workflow" id="continueWorkflowBtn">
                             <i class="fas fa-arrow-right"></i>
                             Weiter
                         </button>
@@ -6596,7 +6596,7 @@ ${name}`
                         </div>
                         <div class="item-content">
                             <input type="text" id="detectedCompanyName" value="${analysis.companyName || ''}" class="detected-input">
-                            <button class="btn-small" onclick="searchCompanyLogo('${analysis.companyName || ''}')">
+                            <button class="btn-small" data-action="search-company-logo" data-param="${analysis.companyName || ''}">
                                 <i class="fas fa-search"></i> Logo suchen
                             </button>
                         </div>
@@ -6637,14 +6637,14 @@ ${name}`
                                         <div class="branding-item">
                                             <span class="label">Logo gefunden:</span>
                                             <img src="${analysis.branding.logo}" alt="Company Logo" class="detected-logo">
-                                            <button class="btn-small" onclick="useDetectedLogo('${analysis.branding.logo}')">
+                                            <button class="btn-small" data-action="use-detected-logo" data-param="${analysis.branding.logo}">
                                                 <i class="fas fa-check"></i> Verwenden
                                             </button>
                                         </div>
                                     ` : `
                                         <div class="branding-item">
                                             <span class="label">Logo:</span>
-                                            <button class="btn-small" onclick="uploadCompanyLogo()">
+                                            <button class="btn-small" data-action="upload-company-logo">
                                                 <i class="fas fa-upload"></i> Logo hochladen
                                             </button>
                                         </div>
@@ -6652,7 +6652,7 @@ ${name}`
                                 </div>
                             ` : `
                                 <p>Branding konnte nicht automatisch erkannt werden. Sie können es manuell hinzufügen.</p>
-                                <button class="btn-small" onclick="addManualBranding()">
+                                <button class="btn-small" data-action="add-manual-branding">
                                     <i class="fas fa-plus"></i> Manuell hinzufügen
                                 </button>
                             `}
@@ -6710,7 +6710,7 @@ ${name}`
                         brandingItem.innerHTML = `
                             <span class="label">Logo gefunden:</span>
                             <img src="${logo}" alt="Company Logo" class="detected-logo">
-                            <button class="btn-small" onclick="useDetectedLogo('${logo}')">
+                            <button class="btn-small" data-action="use-detected-logo" data-param="${logo}">
                                 <i class="fas fa-check"></i> Verwenden
                             </button>
                         `;
@@ -6753,7 +6753,7 @@ ${name}`
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-palette"></i> Branding manuell hinzufügen</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -6780,8 +6780,8 @@ ${name}`
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="saveManualBranding()">
+                        <button class="btn btn-secondary" data-action="closest">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-manual-branding">
                             <i class="fas fa-save"></i>
                             Speichern
                         </button>
@@ -7201,7 +7201,7 @@ ${name}`
                             <i class="fas fa-file-alt"></i>
                             <h3>Keine Bewerbungen gefunden</h3>
                             <p>Füge deine erste Bewerbung hinzu, um loszulegen.</p>
-                            <button class="btn-primary" onclick="openAddModal()">Bewerbung hinzufügen</button>
+                            <button class="btn-primary" data-action="open-add-modal">Bewerbung hinzufügen</button>
                         </div>
                     `;
                     return;
@@ -8597,7 +8597,7 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 <div class="modal-content" style="max-width: 800px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-magic"></i> Smart Templates & Snippets</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="smart-templates">
@@ -8615,19 +8615,19 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                         <div class="batch-actions">
                             <h3><i class="fas fa-bolt"></i> Batch-Aktionen</h3>
                             <div class="batch-buttons">
-                                <button class="batch-btn" onclick="createMultipleApplications()">
+                                <button class="batch-btn" data-action="create-multiple-applications">
                                     <i class="fas fa-copy"></i>
                                     Mehrere Bewerbungen erstellen
                                 </button>
-                                <button class="batch-btn" onclick="exportAllApplications()">
+                                <button class="batch-btn" data-action="export-all-applications">
                                     <i class="fas fa-download"></i>
                                     Alle Bewerbungen exportieren
                                 </button>
-                                <button class="batch-btn" onclick="scheduleFollowUps()">
+                                <button class="batch-btn" data-action="schedule-follow-ups">
                                     <i class="fas fa-calendar-check"></i>
                                     Follow-ups planen
                                 </button>
-                                <button class="batch-btn" onclick="generateReport()">
+                                <button class="batch-btn" data-action="generate-report">
                                     <i class="fas fa-chart-line"></i>
                                     Erfolgsbericht erstellen
                                 </button>
@@ -8786,7 +8786,7 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 <div class="modal-content" style="max-width: 600px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-copy"></i> Mehrere Bewerbungen erstellen</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -8808,8 +8808,8 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="processBatchApplications()">
+                        <button class="btn btn-secondary" data-action="closest">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="process-batch-applications">
                             <i class="fas fa-rocket"></i>
                             Bewerbungen erstellen
                         </button>
@@ -8955,7 +8955,7 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
                     <div class="modal-header">
                         <h3><i class="fas fa-box"></i> Bewerbungspaket zusammenstellen</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="package-assembly-modal">
@@ -8987,12 +8987,12 @@ Manuel Weiss</textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="downloadPackage()" id="downloadBtn" disabled>
+                        <button class="btn btn-secondary" data-action="closest">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="download-package" id="downloadBtn" disabled>
                             <i class="fas fa-download"></i>
                             Paket herunterladen
                         </button>
-                        <button class="btn btn-success" onclick="sendPackage()" id="sendBtn" disabled>
+                        <button class="btn btn-success" data-action="send-package" id="sendBtn" disabled>
                             <i class="fas fa-paper-plane"></i>
                             Per E-Mail senden
                         </button>
@@ -9765,11 +9765,11 @@ Manuel Weiss</textarea>
                             ${job.tags.map(tag => `<span class="job-tag">${tag}</span>`).join('')}
                         </div>
                         <div class="job-actions">
-                            <button class="btn btn-secondary" onclick="event.stopPropagation(); viewJobPosting(${job.id})">
+                            <button class="btn btn-secondary" data-action="stop-propagation">
                                 <i class="fas fa-eye"></i>
                                 Stellenanzeige ansehen
                             </button>
-                            <button class="btn btn-primary" onclick="event.stopPropagation(); selectJob(${job.id})">
+                            <button class="btn btn-primary" data-action="stop-propagation">
                                 <i class="fas fa-check"></i>
                                 Auswählen
                             </button>
@@ -9811,7 +9811,7 @@ Manuel Weiss</textarea>
                 <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
                     <div class="modal-header">
                         <h3><i class="fas fa-briefcase"></i> Stellenanzeige</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="job-posting-modal">
@@ -9876,15 +9876,15 @@ Manuel Weiss</textarea>
                             ` : ''}
                             
                             <div class="job-actions">
-                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                <button class="btn btn-secondary" data-action="closest">
                                     <i class="fas fa-times"></i>
                                     Schließen
                                 </button>
-                                <button class="btn btn-primary" onclick="useJobPosting(${jobData.id})">
+                                <button class="btn btn-primary" data-action="use-job-posting">
                                     <i class="fas fa-copy"></i>
                                     Stellenanzeige übernehmen
                                 </button>
-                                <button class="btn btn-success" onclick="selectJob(${jobData.id})">
+                                <button class="btn btn-success" data-action="select-job">
                                     <i class="fas fa-check"></i>
                                     Auswählen & Workflow starten
                                 </button>
@@ -9979,7 +9979,7 @@ Manuel Weiss</textarea>
                 <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
                     <div class="modal-header">
                         <h3><i class="fas fa-file-archive"></i> Bewerbungspaket zusammenstellen</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                        <button class="close-btn" data-action="closest">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="package-selection-summary">
@@ -10070,15 +10070,15 @@ Manuel Weiss</textarea>
                         </div>
                         
                         <div class="package-actions">
-                            <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                            <button class="btn btn-secondary" data-action="closest">
                                 <i class="fas fa-times"></i>
                                 Abbrechen
                             </button>
-                            <button class="btn btn-primary" onclick="downloadPackageEnhanced()" id="downloadPackageBtn" disabled>
+                            <button class="btn btn-primary" data-action="download-package-enhanced" id="downloadPackageBtn" disabled>
                                 <i class="fas fa-download"></i>
                                 Als ZIP herunterladen
                             </button>
-                            <button class="btn btn-success" onclick="emailPackageEnhanced()" id="emailPackageBtn" disabled>
+                            <button class="btn btn-success" data-action="email-package-enhanced" id="emailPackageBtn" disabled>
                                 <i class="fas fa-envelope"></i>
                                 Per E-Mail senden
                             </button>
@@ -10115,10 +10115,10 @@ Manuel Weiss</textarea>
                             <div class="document-meta">${doc.size} • ${doc.pages} Seiten</div>
                         </div>
                         <div class="document-actions">
-                            <button class="document-action" onclick="previewDocument('${doc.id}')" title="Vorschau & Seiten auswählen">
+                            <button class="document-action" data-action="preview-document" data-param="${doc.id}" title="Vorschau & Seiten auswählen">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="document-action primary" onclick="selectDocumentForPackage('${doc.id}', '${category}')" title="Für Paket auswählen">
+                            <button class="document-action primary" data-action="select-document-for-package" data-param="${doc.id}', '${category}" title="Für Paket auswählen">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -10185,7 +10185,7 @@ Manuel Weiss</textarea>
                             <div class="selected-document-pages">${doc.pages.length} Seite(n): ${doc.pages.join(', ')}</div>
                         </div>
                     </div>
-                    <button class="remove-document-btn" onclick="removeDocumentFromPackage('${category}')" title="Entfernen">
+                    <button class="remove-document-btn" data-action="remove-document-from-package" data-param="${category}" title="Entfernen">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>

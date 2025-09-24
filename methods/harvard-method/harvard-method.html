@@ -196,7 +196,7 @@
                             <h6>Weitere Interessen</h6>
                             <div class="add-interest-form">
                                 <input type="text" id="custom-interest-input" placeholder="Eigenes Interesse hinzufügen...">
-                                <button type="button" onclick="addCustomInterest()">Hinzufügen</button>
+                                <button type="button" data-action="add-custom-interest" class="btn btn-primary">Hinzufügen</button>
                             </div>
                         </div>
                     </div>
@@ -263,7 +263,7 @@
                             <h6>Weitere vermutete Interessen</h6>
                             <div class="add-interest-form">
                                 <input type="text" id="cp-custom-interest-input" placeholder="Vermutetes Interesse hinzufügen...">
-                                <button type="button" onclick="addCustomCounterpartyInterest()">Hinzufügen</button>
+                                <button type="button" data-action="add-custom-counterparty-interest" class="btn btn-primary">Hinzufügen</button>
                             </div>
                         </div>
                     </div>
@@ -328,7 +328,7 @@
                         <div class="add-option-form">
                             <input type="text" id="option-title-input" placeholder="Titel der Option...">
                             <textarea id="option-description-input" placeholder="Beschreibung der Option..."></textarea>
-                            <button type="button" onclick="addCustomOption()">Option hinzufügen</button>
+                            <button type="button" data-action="add-custom-option" class="btn btn-primary">Option hinzufügen</button>
                         </div>
                     </div>
                 </div>
@@ -502,7 +502,7 @@
                         <div class="add-criterion-form">
                             <input type="text" id="criterion-name-input" placeholder="Name des Kriteriums...">
                             <textarea id="criterion-description-input" placeholder="Beschreibung des Kriteriums..."></textarea>
-                            <button type="button" onclick="addCustomCriterion()">Kriterium hinzufügen</button>
+                            <button type="button" data-action="add-custom-criterion" class="btn btn-primary">Kriterium hinzufügen</button>
                         </div>
                     </div>
                 </div>
@@ -842,13 +842,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">6</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

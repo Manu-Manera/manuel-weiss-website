@@ -18,16 +18,16 @@
                     <h1>Admin Panel - Persönlichkeitsentwicklung</h1>
                 </div>
                 <div class="admin-actions">
-                    <button class="btn btn-primary" onclick="saveAllChanges()">
+                    <button class="btn btn-primary" data-action="save-all-changes">
                         <i class="fas fa-save"></i> Alle Änderungen speichern
                     </button>
-                    <button class="btn btn-outline" onclick="exportConfiguration()">
+                    <button class="btn btn-outline" data-action="export-configuration">
                         <i class="fas fa-download"></i> Konfiguration exportieren
                     </button>
-                    <button class="btn btn-outline" onclick="importConfiguration()">
+                    <button class="btn btn-outline" data-action="import-configuration">
                         <i class="fas fa-upload"></i> Konfiguration importieren
                     </button>
-                    <button class="btn btn-secondary" onclick="resetToDefaults()">
+                    <button class="btn btn-secondary" data-action="reset-to-defaults">
                         <i class="fas fa-undo"></i> Zurücksetzen
                     </button>
                 </div>
@@ -40,106 +40,106 @@
                 <div class="nav-tabs">
                     <!-- Persönlichkeitsentwicklung Dropdown -->
                     <div class="nav-dropdown">
-                        <button class="nav-tab dropdown-toggle active" data-tab="personality" onclick="toggleDropdown('personality')">
+                        <button class="nav-tab dropdown-toggle active" data-tab="personality" data-action="toggle-dropdown" data-param="personality">
                             <i class="fas fa-user-graduate"></i> Persönlichkeitsentwicklung
                             <i class="fas fa-chevron-down dropdown-arrow"></i>
                         </button>
                         <div class="dropdown-menu" id="personality-dropdown">
-                            <button class="dropdown-item" data-tab="ikigai" onclick="switchTab('ikigai')">
+                            <button class="dropdown-item" data-tab="ikigai" data-action="switch-tab" data-param="ikigai">
                                 <i class="fas fa-compass"></i> Ikigai-Workflow
                             </button>
-                            <button class="dropdown-item" data-tab="values" onclick="switchTab('values')">
+                            <button class="dropdown-item" data-tab="values" data-action="switch-tab" data-param="values">
                                 <i class="fas fa-heart"></i> Werte-Klärung
                             </button>
-                            <button class="dropdown-item" data-tab="strengths" onclick="switchTab('strengths')">
+                            <button class="dropdown-item" data-tab="strengths" data-action="switch-tab" data-param="strengths">
                                 <i class="fas fa-star"></i> Stärken-Analyse
                             </button>
-                            <button class="dropdown-item" data-tab="goals" onclick="switchTab('goals')">
+                            <button class="dropdown-item" data-tab="goals" data-action="switch-tab" data-param="goals">
                                 <i class="fas fa-bullseye"></i> Ziel-Setting
                             </button>
-                            <button class="dropdown-item" data-tab="mindfulness" onclick="switchTab('mindfulness')">
+                            <button class="dropdown-item" data-tab="mindfulness" data-action="switch-tab" data-param="mindfulness">
                                 <i class="fas fa-leaf"></i> Achtsamkeit & Meditation
                             </button>
-                            <button class="dropdown-item" data-tab="emotional-intelligence" onclick="switchTab('emotional-intelligence')">
+                            <button class="dropdown-item" data-tab="emotional-intelligence" data-action="switch-tab" data-param="emotional-intelligence">
                                 <i class="fas fa-brain"></i> Emotionale Intelligenz
                             </button>
-                            <button class="dropdown-item" data-tab="habits" onclick="switchTab('habits')">
+                            <button class="dropdown-item" data-tab="habits" data-action="switch-tab" data-param="habits">
                                 <i class="fas fa-sync-alt"></i> Gewohnheiten aufbauen
                             </button>
-                            <button class="dropdown-item" data-tab="communication" onclick="switchTab('communication')">
+                            <button class="dropdown-item" data-tab="communication" data-action="switch-tab" data-param="communication">
                                 <i class="fas fa-comments"></i> Kommunikation
                             </button>
-                            <button class="dropdown-item" data-tab="time-management" onclick="switchTab('time-management')">
+                            <button class="dropdown-item" data-tab="time-management" data-action="switch-tab" data-param="time-management">
                                 <i class="fas fa-clock"></i> Zeitmanagement
                             </button>
-                            <button class="dropdown-item" data-tab="nlp-dilts" onclick="switchTab('nlp-dilts')">
+                            <button class="dropdown-item" data-tab="nlp-dilts" data-action="switch-tab" data-param="nlp-dilts">
                                 <i class="fas fa-layer-group"></i> NLP Dilts - Logische Ebenen
                             </button>
-                            <button class="dropdown-item" data-tab="johari-window" onclick="switchTab('johari-window')">
+                            <button class="dropdown-item" data-tab="johari-window" data-action="switch-tab" data-param="johari-window">
                                 <i class="fas fa-window-restore"></i> Johari-Fenster
                             </button>
-                            <button class="dropdown-item" data-tab="walt-disney" onclick="switchTab('walt-disney')">
+                            <button class="dropdown-item" data-tab="walt-disney" data-action="switch-tab" data-param="walt-disney">
                                 <i class="fas fa-magic"></i> Walt-Disney-Strategie
                             </button>
-                            <button class="dropdown-item" data-tab="nonviolent-communication" onclick="switchTab('nonviolent-communication')">
+                            <button class="dropdown-item" data-tab="nonviolent-communication" data-action="switch-tab" data-param="nonviolent-communication">
                                 <i class="fas fa-dove"></i> Gewaltfreie Kommunikation
                             </button>
-                            <button class="dropdown-item" data-tab="five-pillars" onclick="switchTab('five-pillars')">
+                            <button class="dropdown-item" data-tab="five-pillars" data-action="switch-tab" data-param="five-pillars">
                                 <i class="fas fa-columns"></i> Fünf Säulen der Identität
                             </button>
-                            <button class="dropdown-item" data-tab="nlp-meta-goal" onclick="switchTab('nlp-meta-goal')">
+                            <button class="dropdown-item" data-tab="nlp-meta-goal" data-action="switch-tab" data-param="nlp-meta-goal">
                                 <i class="fas fa-crosshairs"></i> NLP Meta-Ziel
                             </button>
-                            <button class="dropdown-item" data-tab="aek-communication" onclick="switchTab('aek-communication')">
+                            <button class="dropdown-item" data-tab="aek-communication" data-action="switch-tab" data-param="aek-communication">
                                 <i class="fas fa-comment-dots"></i> AEK - Aspektbezogene Kommunikation
                             </button>
-                            <button class="dropdown-item" data-tab="rubikon-model" onclick="switchTab('rubikon-model')">
+                            <button class="dropdown-item" data-tab="rubikon-model" data-action="switch-tab" data-param="rubikon-model">
                                 <i class="fas fa-river"></i> Rubikon-Modell
                             </button>
-                            <button class="dropdown-item" data-tab="systemic-coaching" onclick="switchTab('systemic-coaching')">
+                            <button class="dropdown-item" data-tab="systemic-coaching" data-action="switch-tab" data-param="systemic-coaching">
                                 <i class="fas fa-project-diagram"></i> Systemisches Coaching
                             </button>
-                            <button class="dropdown-item" data-tab="rafael-method" onclick="switchTab('rafael-method')">
+                            <button class="dropdown-item" data-tab="rafael-method" data-action="switch-tab" data-param="rafael-method">
                                 <i class="fas fa-angel"></i> RAFAEL-Methode
                             </button>
-                            <button class="dropdown-item" data-tab="conflict-escalation" onclick="switchTab('conflict-escalation')">
+                            <button class="dropdown-item" data-tab="conflict-escalation" data-action="switch-tab" data-param="conflict-escalation">
                                 <i class="fas fa-exclamation-triangle"></i> Neun Stufen der Konflikteskalation
                             </button>
-                            <button class="dropdown-item" data-tab="harvard-method" onclick="switchTab('harvard-method')">
+                            <button class="dropdown-item" data-tab="harvard-method" data-action="switch-tab" data-param="harvard-method">
                                 <i class="fas fa-university"></i> Harvard-Methode
                             </button>
-                            <button class="dropdown-item" data-tab="circular-interview" onclick="switchTab('circular-interview')">
+                            <button class="dropdown-item" data-tab="circular-interview" data-action="switch-tab" data-param="circular-interview">
                                 <i class="fas fa-sync"></i> Zirkuläres Interview
                             </button>
-                            <button class="dropdown-item" data-tab="target-coaching" onclick="switchTab('target-coaching')">
+                            <button class="dropdown-item" data-tab="target-coaching" data-action="switch-tab" data-param="target-coaching">
                                 <i class="fas fa-bullseye"></i> Target Coaching
                             </button>
-                            <button class="dropdown-item" data-tab="solution-focused" onclick="switchTab('solution-focused')">
+                            <button class="dropdown-item" data-tab="solution-focused" data-action="switch-tab" data-param="solution-focused">
                                 <i class="fas fa-lightbulb"></i> Lösungsorientierte Kurzzeitberatung
                             </button>
-                            <button class="dropdown-item" data-tab="change-stages" onclick="switchTab('change-stages')">
+                            <button class="dropdown-item" data-tab="change-stages" data-action="switch-tab" data-param="change-stages">
                                 <i class="fas fa-route"></i> Sechs Stufen der Veränderung
                             </button>
-                            <button class="dropdown-item" data-tab="competence-map" onclick="switchTab('competence-map')">
+                            <button class="dropdown-item" data-tab="competence-map" data-action="switch-tab" data-param="competence-map">
                                 <i class="fas fa-map"></i> Kompetenzkarte
                             </button>
-                            <button class="dropdown-item" data-tab="moment-excellence" onclick="switchTab('moment-excellence')">
+                            <button class="dropdown-item" data-tab="moment-excellence" data-action="switch-tab" data-param="moment-excellence">
                                 <i class="fas fa-crown"></i> Moment of Excellence
                             </button>
-                            <button class="dropdown-item" data-tab="resource-analysis" onclick="switchTab('resource-analysis')">
+                            <button class="dropdown-item" data-tab="resource-analysis" data-action="switch-tab" data-param="resource-analysis">
                                 <i class="fas fa-tools"></i> Ressourcenanalyse
                             </button>
                         </div>
                     </div>
                     
                     <!-- Allgemeine Admin-Funktionen -->
-                    <button class="nav-tab" data-tab="users" onclick="switchTab('users')">
+                    <button class="nav-tab" data-tab="users" data-action="switch-tab" data-param="users">
                         <i class="fas fa-users"></i> Benutzer verwalten
                     </button>
-                    <button class="nav-tab" data-tab="analytics" onclick="switchTab('analytics')">
+                    <button class="nav-tab" data-tab="analytics" data-action="switch-tab" data-param="analytics">
                         <i class="fas fa-chart-bar"></i> Analytics
                     </button>
-                    <button class="nav-tab" data-tab="settings" onclick="switchTab('settings')">
+                    <button class="nav-tab" data-tab="settings" data-action="switch-tab" data-param="settings">
                         <i class="fas fa-cog"></i> Einstellungen
                     </button>
                 </div>
@@ -167,10 +167,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -182,10 +182,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -197,10 +197,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -212,10 +212,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -227,10 +227,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -242,10 +242,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -257,10 +257,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                         </div>
@@ -311,28 +311,28 @@
                         <h3>📚 Werte-Bibliothek</h3>
                         <div class="values-library-admin">
                             <div class="library-controls">
-                                <button class="btn btn-primary" onclick="addValueCategory()">+ Neue Kategorie</button>
-                                <button class="btn btn-outline" onclick="importValues()">Werte importieren</button>
-                                <button class="btn btn-outline" onclick="exportValues()">Werte exportieren</button>
+                                <button class="btn btn-primary" data-action="add-value-category">+ Neue Kategorie</button>
+                                <button class="btn btn-outline" data-action="import-values">Werte importieren</button>
+                                <button class="btn btn-outline" data-action="export-values">Werte exportieren</button>
                             </div>
                             
                             <div class="values-categories-admin">
                                 <div class="category-admin">
                                     <h4>💕 Beziehungen & Familie</h4>
                                     <div class="category-controls">
-                                        <button class="btn btn-sm btn-outline" onclick="addValueToCategory('relationships')">+ Wert hinzufügen</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory('relationships')">Kategorie löschen</button>
+                                        <button class="btn btn-sm btn-outline" data-action="add-value-to-category" data-param="relationships">+ Wert hinzufügen</button>
+                                        <button class="btn btn-sm btn-danger" data-action="delete-category" data-param="relationships">Kategorie löschen</button>
                                     </div>
                                     <div class="values-list-admin">
                                         <div class="value-item-admin">
                                             <input type="text" value="Liebe" class="admin-input">
                                             <input type="text" value="liebe" class="admin-input" placeholder="ID">
-                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                            <button class="btn btn-sm btn-danger" data-action="remove-value">Entfernen</button>
                                         </div>
                                         <div class="value-item-admin">
                                             <input type="text" value="Familie" class="admin-input">
                                             <input type="text" value="familie" class="admin-input" placeholder="ID">
-                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                            <button class="btn btn-sm btn-danger" data-action="remove-value">Entfernen</button>
                                         </div>
                                     </div>
                                 </div>
@@ -340,14 +340,14 @@
                                 <div class="category-admin">
                                     <h4>💼 Beruf & Karriere</h4>
                                     <div class="category-controls">
-                                        <button class="btn btn-sm btn-outline" onclick="addValueToCategory('career')">+ Wert hinzufügen</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory('career')">Kategorie löschen</button>
+                                        <button class="btn btn-sm btn-outline" data-action="add-value-to-category" data-param="career">+ Wert hinzufügen</button>
+                                        <button class="btn btn-sm btn-danger" data-action="delete-category" data-param="career">Kategorie löschen</button>
                                     </div>
                                     <div class="values-list-admin">
                                         <div class="value-item-admin">
                                             <input type="text" value="Erfolg" class="admin-input">
                                             <input type="text" value="erfolg" class="admin-input" placeholder="ID">
-                                            <button class="btn btn-sm btn-danger" onclick="removeValue(this)">Entfernen</button>
+                                            <button class="btn btn-sm btn-danger" data-action="remove-value">Entfernen</button>
                                         </div>
                                     </div>
                                 </div>
@@ -360,8 +360,8 @@
                         <h3>🎯 Werte-Quiz</h3>
                         <div class="quiz-admin">
                             <div class="quiz-controls">
-                                <button class="btn btn-primary" onclick="addQuizQuestion()">+ Neue Frage</button>
-                                <button class="btn btn-outline" onclick="previewQuiz()">Quiz-Vorschau</button>
+                                <button class="btn btn-primary" data-action="add-quiz-question">+ Neue Frage</button>
+                                <button class="btn btn-outline" data-action="preview-quiz">Quiz-Vorschau</button>
                             </div>
                             
                             <div class="quiz-questions-admin">
@@ -378,8 +378,8 @@
                                             <input type="text" value="authentizität" class="admin-input" placeholder="Wert-ID">
                                         </div>
                                     </div>
-                                    <button class="btn btn-sm btn-outline" onclick="addQuizOption(this)">+ Option hinzufügen</button>
-                                    <button class="btn btn-sm btn-danger" onclick="removeQuizQuestion(this)">Frage entfernen</button>
+                                    <button class="btn btn-sm btn-outline" data-action="add-quiz-option">+ Option hinzufügen</button>
+                                    <button class="btn btn-sm btn-danger" data-action="remove-quiz-question">Frage entfernen</button>
                                 </div>
                             </div>
                         </div>
@@ -390,7 +390,7 @@
                         <h3>🔍 Konflikt-Detektor</h3>
                         <div class="conflict-detector-admin">
                             <div class="conflict-controls">
-                                <button class="btn btn-primary" onclick="addConflictPair()">+ Konflikt-Paar hinzufügen</button>
+                                <button class="btn btn-primary" data-action="add-conflict-pair">+ Konflikt-Paar hinzufügen</button>
                             </div>
                             
                             <div class="conflict-pairs-admin">
@@ -407,7 +407,7 @@
                                         </select>
                                     </div>
                                     <textarea class="admin-textarea" placeholder="Konflikt-Beschreibung...">Potentieller Konflikt zwischen Karriere und Familie</textarea>
-                                    <button class="btn btn-sm btn-danger" onclick="removeConflictPair(this)">Entfernen</button>
+                                    <button class="btn btn-sm btn-danger" data-action="remove-conflict-pair">Entfernen</button>
                                 </div>
                             </div>
                         </div>
@@ -418,7 +418,7 @@
                         <h3>🏠 Lebensbereiche</h3>
                         <div class="life-areas-admin">
                             <div class="areas-controls">
-                                <button class="btn btn-primary" onclick="addLifeArea()">+ Lebensbereich hinzufügen</button>
+                                <button class="btn btn-primary" data-action="add-life-area">+ Lebensbereich hinzufügen</button>
                             </div>
                             
                             <div class="life-areas-list-admin">
@@ -426,13 +426,13 @@
                                     <input type="text" value="💼 Beruf & Karriere" class="admin-input">
                                     <input type="text" value="career" class="admin-input" placeholder="ID">
                                     <textarea class="admin-textarea" placeholder="Beschreibung...">Deine berufliche Entwicklung und Karriereziele</textarea>
-                                    <button class="btn btn-sm btn-danger" onclick="removeLifeArea(this)">Entfernen</button>
+                                    <button class="btn btn-sm btn-danger" data-action="remove-life-area">Entfernen</button>
                                 </div>
                                 <div class="life-area-admin">
                                     <input type="text" value="💕 Beziehungen & Familie" class="admin-input">
                                     <input type="text" value="relationships" class="admin-input" placeholder="ID">
                                     <textarea class="admin-textarea" placeholder="Beschreibung...">Deine persönlichen Beziehungen und Familie</textarea>
-                                    <button class="btn btn-sm btn-danger" onclick="removeLifeArea(this)">Entfernen</button>
+                                    <button class="btn btn-sm btn-danger" data-action="remove-life-area">Entfernen</button>
                                 </div>
                             </div>
                         </div>
@@ -463,7 +463,7 @@
                             <div class="challenges-admin">
                                 <h4>🎯 Werte-Challenges</h4>
                                 <div class="challenges-controls">
-                                    <button class="btn btn-primary" onclick="addValueChallenge()">+ Challenge hinzufügen</button>
+                                    <button class="btn btn-primary" data-action="add-value-challenge">+ Challenge hinzufügen</button>
                                 </div>
                                 
                                 <div class="challenges-list-admin">
@@ -471,7 +471,7 @@
                                         <input type="text" value="30 Tage Liebe leben" class="admin-input">
                                         <textarea class="admin-textarea" placeholder="Challenge-Beschreibung...">Jeden Tag eine bewusste Handlung der Liebe</textarea>
                                         <input type="number" value="30" class="admin-input" placeholder="Tage">
-                                        <button class="btn btn-sm btn-danger" onclick="removeChallenge(this)">Entfernen</button>
+                                        <button class="btn btn-sm btn-danger" data-action="remove-challenge">Entfernen</button>
                                     </div>
                                 </div>
                             </div>
@@ -489,10 +489,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -504,10 +504,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -519,10 +519,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -534,10 +534,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                         </div>
@@ -594,10 +594,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -609,10 +609,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -624,10 +624,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -639,10 +639,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                         </div>
@@ -699,10 +699,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -714,10 +714,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -729,10 +729,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                         </div>
@@ -789,10 +789,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -804,10 +804,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -819,10 +819,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -834,10 +834,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -849,10 +849,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                             
@@ -864,10 +864,10 @@
                                     <div class="question-list">
                                         <div class="question-item">
                                             <input type="text" class="admin-input" placeholder="Frage hinzufügen...">
-                                            <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">Entfernen</button>
+                                            <button class="btn btn-danger btn-sm" data-action="remove-question">Entfernen</button>
                                         </div>
                                     </div>
-                                    <button class="btn btn-primary btn-sm" onclick="addQuestion(this)">Frage hinzufügen</button>
+                                    <button class="btn btn-primary btn-sm" data-action="add-question">Frage hinzufügen</button>
                                 </div>
                             </div>
                         </div>
@@ -916,7 +916,7 @@
                     <div class="methods-list">
                         <div class="methods-header">
                             <h3>Verfügbare Methoden</h3>
-                            <button class="btn btn-primary" onclick="addNewMethod()">
+                            <button class="btn btn-primary" data-action="add-new-method">
                                 <i class="fas fa-plus"></i> Neue Methode hinzufügen
                             </button>
                         </div>
@@ -929,7 +929,7 @@
                     <div class="method-editor" id="method-editor" style="display: none;">
                         <div class="editor-header">
                             <h3>Methode bearbeiten</h3>
-                            <button class="btn btn-secondary" onclick="closeMethodEditor()">
+                            <button class="btn btn-secondary" data-action="close-method-editor">
                                 <i class="fas fa-times"></i> Schließen
                             </button>
                         </div>
@@ -1000,10 +1000,10 @@
                             </div>
 
                             <div class="editor-actions">
-                                <button class="btn btn-primary" onclick="saveMethod()">
+                                <button class="btn btn-primary" data-action="save-method">
                                     <i class="fas fa-save"></i> Methode speichern
                                 </button>
-                                <button class="btn btn-danger" onclick="deleteMethod()">
+                                <button class="btn btn-danger" data-action="delete-method">
                                     <i class="fas fa-trash"></i> Methode löschen
                                 </button>
                             </div>
@@ -1052,7 +1052,7 @@
                                 <div id="workflow-steps-editor">
                                     <!-- Workflow steps will be dynamically loaded here -->
                                 </div>
-                                <button class="btn btn-outline" onclick="addWorkflowStep()">
+                                <button class="btn btn-outline" data-action="add-workflow-step">
                                     <i class="fas fa-plus"></i> Schritt hinzufügen
                                 </button>
                             </div>
@@ -1062,16 +1062,16 @@
                                 <div id="reflection-questions-editor">
                                     <!-- Reflection questions will be dynamically loaded here -->
                                 </div>
-                                <button class="btn btn-outline" onclick="addReflectionQuestion()">
+                                <button class="btn btn-outline" data-action="add-reflection-question">
                                     <i class="fas fa-plus"></i> Frage hinzufügen
                                 </button>
                             </div>
 
                             <div class="content-actions">
-                                <button class="btn btn-primary" onclick="saveMethodContent()">
+                                <button class="btn btn-primary" data-action="save-method-content">
                                     <i class="fas fa-save"></i> Inhalte speichern
                                 </button>
-                                <button class="btn btn-outline" onclick="previewMethod()">
+                                <button class="btn btn-outline" data-action="preview-method">
                                     <i class="fas fa-eye"></i> Vorschau
                                 </button>
                             </div>
@@ -1091,7 +1091,7 @@
                     <div class="questions-categories">
                         <div class="category-header">
                             <h3>Fragen-Kategorien</h3>
-                            <button class="btn btn-primary" onclick="addQuestionCategory()">
+                            <button class="btn btn-primary" data-action="add-question-category">
                                 <i class="fas fa-plus"></i> Kategorie hinzufügen
                             </button>
                         </div>
@@ -1104,7 +1104,7 @@
                     <div class="questions-editor" id="questions-editor" style="display: none;">
                         <div class="editor-header">
                             <h3>Fragen bearbeiten</h3>
-                            <button class="btn btn-secondary" onclick="closeQuestionsEditor()">
+                            <button class="btn btn-secondary" data-action="close-questions-editor">
                                 <i class="fas fa-times"></i> Schließen
                             </button>
                         </div>
@@ -1119,12 +1119,12 @@
                                 <!-- Questions will be dynamically loaded here -->
                             </div>
 
-                            <button class="btn btn-outline" onclick="addQuestion()">
+                            <button class="btn btn-outline" data-action="add-question">
                                 <i class="fas fa-plus"></i> Frage hinzufügen
                             </button>
 
                             <div class="editor-actions">
-                                <button class="btn btn-primary" onclick="saveQuestions()">
+                                <button class="btn btn-primary" data-action="save-questions">
                                     <i class="fas fa-save"></i> Fragen speichern
                                 </button>
                             </div>
@@ -1187,7 +1187,7 @@
                         </div>
 
                         <div class="workflow-actions">
-                            <button class="btn btn-primary" onclick="saveWorkflowConfig()">
+                            <button class="btn btn-primary" data-action="save-workflow-config">
                                 <i class="fas fa-save"></i> Workflow-Konfiguration speichern
                             </button>
                         </div>
@@ -1206,7 +1206,7 @@
                     <div class="users-list">
                         <div class="users-header">
                             <h3>Benutzer</h3>
-                            <button class="btn btn-primary" onclick="addUser()">
+                            <button class="btn btn-primary" data-action="add-user">
                                 <i class="fas fa-plus"></i> Benutzer hinzufügen
                             </button>
                         </div>
@@ -1233,7 +1233,7 @@
                     <div class="user-editor" id="user-editor" style="display: none;">
                         <div class="editor-header">
                             <h3>Benutzer bearbeiten</h3>
-                            <button class="btn btn-secondary" onclick="closeUserEditor()">
+                            <button class="btn btn-secondary" data-action="close-user-editor">
                                 <i class="fas fa-times"></i> Schließen
                             </button>
                         </div>
@@ -1263,10 +1263,10 @@
                             </div>
 
                             <div class="editor-actions">
-                                <button class="btn btn-primary" onclick="saveUser()">
+                                <button class="btn btn-primary" data-action="save-user">
                                     <i class="fas fa-save"></i> Benutzer speichern
                                 </button>
-                                <button class="btn btn-danger" onclick="deleteUser()">
+                                <button class="btn btn-danger" data-action="delete-user">
                                     <i class="fas fa-trash"></i> Benutzer löschen
                                 </button>
                             </div>
@@ -1340,13 +1340,13 @@
                     <div class="analytics-export">
                         <h4>Daten exportieren</h4>
                         <div class="export-options">
-                            <button class="btn btn-outline" onclick="exportAnalytics('csv')">
+                            <button class="btn btn-outline" data-action="export-analytics" data-param="csv">
                                 <i class="fas fa-file-csv"></i> CSV Export
                             </button>
-                            <button class="btn btn-outline" onclick="exportAnalytics('json')">
+                            <button class="btn btn-outline" data-action="export-analytics" data-param="json">
                                 <i class="fas fa-file-code"></i> JSON Export
                             </button>
-                            <button class="btn btn-outline" onclick="exportAnalytics('pdf')">
+                            <button class="btn btn-outline" data-action="export-analytics" data-param="pdf">
                                 <i class="fas fa-file-pdf"></i> PDF Report
                             </button>
                         </div>
@@ -1360,10 +1360,10 @@
             <div class="admin-footer-content">
                 <p>&copy; 2024 Persönlichkeitsentwicklung Admin Panel. Alle Rechte vorbehalten.</p>
                 <div class="footer-actions">
-                    <button class="btn btn-outline" onclick="backupData()">
+                    <button class="btn btn-outline" data-action="backup-data">
                         <i class="fas fa-database"></i> Backup erstellen
                     </button>
-                    <button class="btn btn-outline" onclick="restoreData()">
+                    <button class="btn btn-outline" data-action="restore-data">
                         <i class="fas fa-upload"></i> Backup wiederherstellen
                     </button>
                 </div>

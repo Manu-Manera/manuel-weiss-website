@@ -49,7 +49,7 @@
             <div class="values-quiz-section">
                 <h4>🎯 Werte-Quiz</h4>
                 <p>Beantworte 10 situative Fragen, um deine wichtigsten Werte zu identifizieren.</p>
-                <button class="btn btn-primary" onclick="startValuesQuiz()">Werte-Quiz starten</button>
+                <button class="btn btn-primary" data-action="start-values-quiz">Werte-Quiz starten</button>
             </div>
             
             <div class="values-search-section">
@@ -294,7 +294,7 @@
                 <h4>➕ Eigene Werte hinzufügen</h4>
                 <div class="custom-values-input">
                     <input type="text" id="custom-value" placeholder="Eigenen Wert eingeben...">
-                    <button class="btn btn-outline" onclick="addCustomValue()">Hinzufügen</button>
+                    <button class="btn btn-outline" data-action="add-custom-value">Hinzufügen</button>
                 </div>
                 <div class="custom-values-list" id="custom-values-list"></div>
             </div>
@@ -319,9 +319,9 @@
             <div class="ranking-method-selector">
                 <h4>🎯 Ranking-Methode wählen</h4>
                 <div class="method-options">
-                    <button class="btn btn-outline active" onclick="selectRankingMethod('drag-drop')">Drag & Drop</button>
-                    <button class="btn btn-outline" onclick="selectRankingMethod('pairwise')">Paarvergleich</button>
-                    <button class="btn btn-outline" onclick="selectRankingMethod('slider')">Slider-Ranking</button>
+                    <button class="btn btn-outline active" data-action="select-ranking-method" data-param="drag-drop">Drag & Drop</button>
+                    <button class="btn btn-outline" data-action="select-ranking-method" data-param="pairwise">Paarvergleich</button>
+                    <button class="btn btn-outline" data-action="select-ranking-method" data-param="slider">Slider-Ranking</button>
                 </div>
             </div>
             
@@ -354,7 +354,7 @@
         <div class="conflict-analysis-tools">
             <div class="conflict-detector">
                 <h4>🔍 Automatischer Konflikt-Detektor</h4>
-                <button class="btn btn-primary" onclick="detectValueConflicts()">Konflikte analysieren</button>
+                <button class="btn btn-primary" data-action="detect-value-conflicts">Konflikte analysieren</button>
                 <div class="conflict-results" id="conflict-results"></div>
             </div>
             
@@ -535,7 +535,7 @@
                 <p>Finde einen Partner, der dich bei der Umsetzung deiner Werte unterstützt.</p>
                 <div class="buddy-setup">
                     <input type="email" placeholder="E-Mail deines Werte-Buddys..." id="buddy-email">
-                    <button class="btn btn-primary" onclick="inviteBuddy()">Einladen</button>
+                    <button class="btn btn-primary" data-action="invite-buddy">Einladen</button>
                 </div>
             </div>
             
@@ -552,8 +552,8 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-secondary" id="prev-step" disabled onclick="previousStep()">Zurück</button>
-            <button class="btn btn-primary" id="next-step" onclick="nextStep()">Weiter</button>
+            <button class="btn btn-secondary" id="prev-step" disabled data-action="previous-step">Zurück</button>
+            <button class="btn btn-primary" id="next-step" data-action="next-step">Weiter</button>
         </div>
         <div class="progress-info">
             <span id="progress-text">Schritt 1 von 5</span>

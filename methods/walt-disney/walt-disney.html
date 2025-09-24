@@ -473,13 +473,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

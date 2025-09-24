@@ -187,13 +187,13 @@
                 </div>
                 
                 <div class="timer-buttons">
-                    <button class="btn btn-primary" id="start-timer" onclick="startMeditation()">
+                    <button class="btn btn-primary" id="start-timer" data-action="start-meditation">
                         <i class="fas fa-play"></i> Starten
                     </button>
-                    <button class="btn btn-secondary" id="pause-timer" onclick="pauseMeditation()" disabled>
+                    <button class="btn btn-secondary" id="pause-timer" data-action="pause-meditation" disabled>
                         <i class="fas fa-pause"></i> Pausieren
                     </button>
-                    <button class="btn btn-outline" id="stop-timer" onclick="stopMeditation()" disabled>
+                    <button class="btn btn-outline" id="stop-timer" data-action="stop-meditation" disabled>
                         <i class="fas fa-stop"></i> Stoppen
                     </button>
                 </div>
@@ -275,8 +275,8 @@
                             </div>
                             <p>Eine einfache Atem-Meditation für den Einstieg in die Achtsamkeitspraxis.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('breathing')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('breathing')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="breathing">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="breathing">Details</button>
                             </div>
                         </div>
                         
@@ -287,8 +287,8 @@
                             </div>
                             <p>Eine sanfte Reise durch deinen Körper, um Spannungen zu lösen.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('body-scan')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('body-scan')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="body-scan">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="body-scan">Details</button>
                             </div>
                         </div>
                         
@@ -299,8 +299,8 @@
                             </div>
                             <p>Meditation in Bewegung - achtsames Gehen für mehr Präsenz.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('mindful-walking')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('mindful-walking')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="mindful-walking">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="mindful-walking">Details</button>
                             </div>
                         </div>
                     </div>
@@ -316,8 +316,8 @@
                             </div>
                             <p>Systematische Entspannung aller Muskelgruppen für tiefe Ruhe.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('progressive-relaxation')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('progressive-relaxation')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="progressive-relaxation">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="progressive-relaxation">Details</button>
                             </div>
                         </div>
                         
@@ -328,8 +328,8 @@
                             </div>
                             <p>Eine bewährte Atemtechnik für sofortige Entspannung.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('breathing-technique')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('breathing-technique')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="breathing-technique">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="breathing-technique">Details</button>
                             </div>
                         </div>
                     </div>
@@ -345,8 +345,8 @@
                             </div>
                             <p>Eine sanfte Meditation, die dir beim Einschlafen hilft.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('sleep-meditation')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('sleep-meditation')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="sleep-meditation">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="sleep-meditation">Details</button>
                             </div>
                         </div>
                     </div>
@@ -362,8 +362,8 @@
                             </div>
                             <p>Verbessere deine Konzentration und Aufmerksamkeit.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('concentration')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('concentration')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="concentration">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="concentration">Details</button>
                             </div>
                         </div>
                     </div>
@@ -379,8 +379,8 @@
                             </div>
                             <p>Entwickle Mitgefühl und Liebe für dich und andere.</p>
                             <div class="exercise-actions">
-                                <button class="btn btn-primary" onclick="startGuidedExercise('loving-kindness')">Starten</button>
-                                <button class="btn btn-outline" onclick="showExerciseDetails('loving-kindness')">Details</button>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="loving-kindness">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="loving-kindness">Details</button>
                             </div>
                         </div>
                     </div>
@@ -390,7 +390,7 @@
             <div class="exercise-player" id="exercise-player" style="display: none;">
                 <div class="player-header">
                     <h4 id="current-exercise-title">Übung läuft...</h4>
-                    <button class="btn btn-outline" onclick="stopGuidedExercise()">Beenden</button>
+                    <button class="btn btn-outline" data-action="stop-guided-exercise">Beenden</button>
                 </div>
                 <div class="player-content">
                     <div class="exercise-instructions" id="exercise-instructions">
@@ -528,8 +528,8 @@
                     </div>
                     
                     <div class="journal-actions">
-                        <button class="btn btn-primary" onclick="saveJournalEntry()">Eintrag speichern</button>
-                        <button class="btn btn-secondary" onclick="viewJournalHistory()">Tagebuch anzeigen</button>
+                        <button class="btn btn-primary" data-action="save-journal-entry">Eintrag speichern</button>
+                        <button class="btn btn-secondary" data-action="view-journal-history">Tagebuch anzeigen</button>
                     </div>
                 </div>
             </div>
@@ -561,13 +561,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

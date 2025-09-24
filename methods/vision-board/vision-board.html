@@ -224,7 +224,7 @@
                             <li>Schere</li>
                             <li>Deine gesammelten Bilder</li>
                         </ul>
-                        <button class="btn btn-outline" onclick="showPhysicalBoardGuide()">Anleitung anzeigen</button>
+                        <button class="btn btn-outline" data-action="show-physical-board-guide">Anleitung anzeigen</button>
                     </div>
                     
                     <div class="option-card">
@@ -236,7 +236,7 @@
                             <li>PowerPoint</li>
                             <li>Photoshop</li>
                         </ul>
-                        <button class="btn btn-outline" onclick="showDigitalBoardGuide()">Anleitung anzeigen</button>
+                        <button class="btn btn-outline" data-action="show-digital-board-guide">Anleitung anzeigen</button>
                     </div>
                 </div>
             </div>
@@ -338,7 +338,7 @@
                 <div class="plan-builder">
                     <div class="plan-input">
                         <input type="text" id="action-input" placeholder="Neue Aktion hinzufügen...">
-                        <button class="btn btn-primary" onclick="addAction()">Hinzufügen</button>
+                        <button class="btn btn-primary" data-action="add-action">Hinzufügen</button>
                     </div>
                     <div class="actions-list" id="actions-list">
                         <p>Füge Aktionen hinzu, um deine Vision zu verwirklichen.</p>
@@ -369,13 +369,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

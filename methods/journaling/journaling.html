@@ -158,7 +158,7 @@
                         <li>Was war herausfordernd?</li>
                         <li>Was habe ich gelernt?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startQuickReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-quick-reflection">Jetzt starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -169,7 +169,7 @@
                         <li>Was habe ich heute dafür getan?</li>
                         <li>Was kann ich morgen besser machen?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startGoalReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-goal-reflection">Jetzt starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -180,7 +180,7 @@
                         <li>Was hat dieses Gefühl ausgelöst?</li>
                         <li>Wie kann ich damit umgehen?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startEmotionReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-emotion-reflection">Jetzt starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -191,7 +191,7 @@
                         <li>Welche Lösungsansätze gibt es?</li>
                         <li>Was ist der nächste Schritt?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startProblemReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-problem-reflection">Jetzt starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -202,7 +202,7 @@
                         <li>Was hat mich heute zum Lächeln gebracht?</li>
                         <li>Welche kleinen Freuden gab es?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startGratitudeReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-gratitude-reflection">Jetzt starten</button>
                 </div>
                 
                 <div class="technique-card">
@@ -213,7 +213,7 @@
                         <li>Was muss ich dafür tun?</li>
                         <li>Welche Hindernisse gibt es?</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="startVisionReflection()">Jetzt starten</button>
+                    <button class="btn btn-outline" data-action="start-vision-reflection">Jetzt starten</button>
                 </div>
             </div>
         </div>
@@ -332,13 +332,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>
