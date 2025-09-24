@@ -1801,7 +1801,7 @@ function loadApplications() {
                 </div>
                 <p style="margin: 0; color: #666; font-weight: 500;">${app.position}</p>
                 <p style="margin: 0; color: #999; font-size: 0.875rem;">Datum: ${new Date(app.date).toLocaleDateString('de-DE')}</p>
-                ${app.contact ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Kontakt: ${app.contact}</p>` : ''}
+                ${app.contactPerson ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Ansprechpartner: ${app.contactPerson.name}${app.contactPerson.position ? ` (${app.contactPerson.position})` : ''}</p>` : ''}
                 ${app.statusDate ? `<p style="margin: 0; color: #999; font-size: 0.875rem;">Status-Datum: ${new Date(app.statusDate).toLocaleDateString('de-DE')}</p>` : ''}
             </div>
             <div style="display: flex; gap: 0.5rem;">
