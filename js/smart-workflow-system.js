@@ -983,95 +983,13 @@ class SmartWorkflowSystem {
         `;
     }
 
-    // Event Handlers
-    async analyzeJobDescription() {
+    // Event Handlers  
+    analyzeJobDescription() {
+        // Manuelle Eingabe - keine KI-Analyse im Workflow
         const jobDesc = document.getElementById('jobDescription').value;
         if (!jobDesc) return;
-
-        const status = document.getElementById('analysisStatus');
-        status.classList.remove('hidden');
-        status.innerHTML = '<i class="fas fa-brain fa-spin"></i> KI analysiert Stellenanzeige...';
         
-        try {
-            // Prüfe ob OpenAI verfügbar ist
-            if (!window.openAIAnalyzer || !window.openAIAnalyzer.settings.apiKey) {
-                throw new Error('OpenAI nicht konfiguriert. Bitte API Key in den KI-Einstellungen hinterlegen.');
-            }
-            
-            // Verwende OpenAI für intelligente Analyse
-            const analysisResult = await window.openAIAnalyzer.analyzeJobPosting(jobDesc);
-            
-            // Update UI mit extrahierten Daten
-            if (analysisResult.company) {
-                document.getElementById('companyName').value = analysisResult.company;
-                this.applicationData.companyName = analysisResult.company;
-                this.applicationData.company = analysisResult.company;
-            }
-            
-            if (analysisResult.position) {
-                const positionField = document.getElementById('jobTitle') || document.getElementById('position');
-                if (positionField) {
-                    positionField.value = analysisResult.position;
-                }
-                this.applicationData.position = analysisResult.position;
-            }
-            
-            // Speichere alle Analysedaten
-            this.applicationData.contactPerson = analysisResult.contactPerson;
-            this.applicationData.location = analysisResult.location;
-            this.applicationData.responsibilities = analysisResult.responsibilities;
-            this.applicationData.benefits = analysisResult.benefits;
-            this.applicationData.employmentType = analysisResult.employmentType;
-            this.applicationData.workModel = analysisResult.workModel;
-            this.applicationData.salaryRange = analysisResult.salaryRange;
-            
-            // Update Ansprechpartner-Felder wenn vorhanden
-            if (analysisResult.contactPerson) {
-                this.updateContactPersonFields(analysisResult.contactPerson);
-            }
-            
-            // Zeige Extraktionsergebnisse
-            const confirmBox = document.querySelector('.extraction-confirm');
-            if (confirmBox) {
-                confirmBox.style.display = 'block';
-                const extractedData = confirmBox.querySelector('.extracted-data');
-                if (extractedData) {
-                    let dataHtml = `
-                        <div><strong>Firma:</strong> ${analysisResult.company || 'Nicht erkannt'}</div>
-                        <div><strong>Position:</strong> ${analysisResult.position || 'Nicht erkannt'}</div>
-                    `;
-                    
-                    if (analysisResult.location) {
-                        dataHtml += `<div><strong>Standort:</strong> ${analysisResult.location}</div>`;
-                    }
-                    
-                    if (analysisResult.contactPerson && analysisResult.contactPerson.name) {
-                        dataHtml += `<div><strong>Ansprechpartner:</strong> ${analysisResult.contactPerson.name} ${analysisResult.contactPerson.position ? `(${analysisResult.contactPerson.position})` : ''}</div>`;
-                    }
-                    
-                    if (analysisResult.requirements && analysisResult.requirements.length > 0) {
-                        dataHtml += `<div><strong>Anforderungen:</strong> ${analysisResult.requirements.length} gefunden</div>`;
-                    }
-                    
-                    extractedData.innerHTML = dataHtml;
-                }
-            }
-            
-            status.innerHTML = '<i class="fas fa-check-circle"></i> KI-Analyse abgeschlossen';
-            status.classList.add('success');
-            
-        } catch (error) {
-            console.error('KI-Analyse Fehler:', error);
-            
-            if (error.message.includes('nicht konfiguriert')) {
-                status.innerHTML = '<i class="fas fa-cog"></i> <a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1; text-decoration: underline;">Zuerst KI in den Einstellungen aktivieren</a>';
-            } else {
-                status.innerHTML = '<i class="fas fa-times-circle"></i> KI-Analyse fehlgeschlagen: ' + error.message + '<br><small><a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1;">→ KI-Einstellungen prüfen</a></small>';
-            }
-            status.classList.add('error');
-        }
-        
-        // Speichere Daten
+        // Speichere nur die Stellenbeschreibung
         this.applicationData.jobDescription = jobDesc;
         this.saveData();
     }
@@ -1305,24 +1223,37 @@ class SmartWorkflowSystem {
                         }
                     ];
                 } else {
-                    // Bei normaler Bewerbung: Verwende bereits von KI extrahierte Anforderungen
-                    if (!this.applicationData.requirements || this.applicationData.requirements.length === 0) {
-                        // Falls noch keine KI-Analyse gemacht wurde, mache sie jetzt
-                        try {
-                            if (window.openAIAnalyzer && this.applicationData.jobDescription) {
-                                const analysisResult = await window.openAIAnalyzer.analyzeJobPosting(this.applicationData.jobDescription);
-                                this.applicationData.requirements = analysisResult.requirements || [];
-                            }
-                        } catch (error) {
-                            console.warn('KI-Analyse für Anforderungen fehlgeschlagen:', error);
+                    // Bei normaler Bewerbung: Erstelle Standard-Anforderungen
+                    this.applicationData.requirements = [
+                        {
+                            text: 'Fachliche Qualifikation und Berufserfahrung',
+                            priority: 'high',
+                            category: 'experience',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Ausbildung oder Studium im relevanten Bereich',
+                            priority: 'high',
+                            category: 'education',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Teamfähigkeit und Kommunikationsstärke',
+                            priority: 'medium',
+                            category: 'soft_skills',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Analytisches Denken und Problemlösungskompetenz',
+                            priority: 'medium',
+                            category: 'soft_skills',
+                            matchScore: 0,
+                            sentences: []
                         }
-                        
-                        // Falls immer noch keine Anforderungen, zeige Warnung
-                        if (!this.applicationData.requirements || this.applicationData.requirements.length === 0) {
-                            alert('Keine Anforderungen gefunden. Sie können im nächsten Schritt manuell Anforderungen hinzufügen.');
-                            this.applicationData.requirements = [];
-                        }
-                    }
+                    ];
                 }
             }
             
