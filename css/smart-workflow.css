@@ -178,6 +178,11 @@
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.form-input.confirmed {
+    background-color: #f5f5f5;
+    border-color: #4caf50;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -586,6 +591,12 @@
 
 .sentence-option input[type="radio"] {
     display: none;
+}
+
+.analysis-status.success {
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    border-color: #4caf50;
 }
 
 .sentence-option label {
