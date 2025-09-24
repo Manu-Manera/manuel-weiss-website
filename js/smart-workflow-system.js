@@ -960,27 +960,108 @@ class SmartWorkflowSystem {
     extractRequirements(text) {
         // Extrahiere Anforderungen aus der Stellenbeschreibung
         const requirements = [];
-        const patterns = [
-            /(?:Sie bringen mit|Ihr Profil|Anforderungen|Requirements|Wir erwarten|Sie haben)[\s\S]+?(?=\n\n|\n[A-Z])/gi,
-            /(?:•|\-|\*)\s*([^\n]+)/g,
-            /\d+\.\s*([^\n]+)/g
+        
+        // Verschiedene Muster für Anforderungen
+        const sectionPatterns = [
+            /(?:Ihr Profil|Ihre Aufgaben|Was Sie mitbringen|Anforderungen|Requirements|Wir erwarten|Sie haben|Sie bringen mit):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi,
+            /(?:Qualifikationen?|Kompetenzen|Skills?):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi
         ];
         
-        // Simulierte Anforderungen für Demo
-        const demoRequirements = [
-            'Erfahrung mit RPA und UiPath',
-            'Beratungskompetenz im Bereich Automation',
-            'Kenntnisse in Prozessanalyse und -optimierung',
-            'Projektmanagement-Erfahrung',
-            'Sehr gute Deutsch- und Englischkenntnisse'
+        let requirementsText = '';
+        
+        // Versuche Anforderungs-Sektionen zu finden
+        for (const pattern of sectionPatterns) {
+            const matches = text.matchAll(pattern);
+            for (const match of matches) {
+                requirementsText += match[1] + '\n';
+            }
+        }
+        
+        // Falls keine Sektionen gefunden, suche nach Aufzählungen
+        if (!requirementsText) {
+            const bulletPatterns = [
+                /(?:^|\n)\s*[•\-\*]\s*([^\n]+)/gm,
+                /(?:^|\n)\s*\d+\.\s*([^\n]+)/gm
+            ];
+            
+            for (const pattern of bulletPatterns) {
+                const matches = text.matchAll(pattern);
+                for (const match of matches) {
+                    requirementsText += match[1] + '\n';
+                }
+            }
+        }
+        
+        // Extrahiere einzelne Anforderungen
+        const lines = requirementsText.split('\n').filter(line => line.trim());
+        
+        // Schlüsselwörter für wichtige Anforderungen
+        const highPriorityKeywords = [
+            'zwingend', 'erforderlich', 'vorausgesetzt', 'must have', 'required',
+            'abgeschlossen', 'studium', 'ausbildung', 'erfahrung', 'kenntnisse',
+            'mehrjährig', 'fundiert', 'nachweislich', 'expertise'
         ];
         
-        return demoRequirements.map((req, index) => ({
-            text: req,
-            priority: index < 3 ? 'high' : 'medium',
-            matchScore: Math.floor(Math.random() * 30) + 70,
-            sentences: []
-        }));
+        // Verarbeite jede Zeile als potenzielle Anforderung
+        lines.forEach((line, index) => {
+            const cleanLine = line.trim();
+            if (cleanLine.length > 10 && cleanLine.length < 300) {
+                // Bestimme Priorität
+                const isHighPriority = highPriorityKeywords.some(keyword => 
+                    cleanLine.toLowerCase().includes(keyword)
+                ) || index < 3;
+                
+                requirements.push({
+                    text: cleanLine,
+                    priority: isHighPriority ? 'high' : 'medium',
+                    matchScore: 0, // Wird später berechnet
+                    sentences: []
+                });
+            }
+        });
+        
+        // Falls keine Anforderungen gefunden, extrahiere aus dem gesamten Text
+        if (requirements.length === 0) {
+            // Suche nach Schlüsselwörtern im gesamten Text
+            const keyPhrases = [
+                /Sie verfügen über.+?(?=\.|$)/gi,
+                /Sie haben.+?(?=\.|$)/gi,
+                /Sie bringen.+?(?=\.|$)/gi,
+                /Erfahrung in.+?(?=\.|$)/gi,
+                /Kenntnisse in.+?(?=\.|$)/gi,
+                /[A-Z]\w+(?:kenntnisse|erfahrung|kompetenz)/gi
+            ];
+            
+            const foundPhrases = new Set();
+            
+            for (const pattern of keyPhrases) {
+                const matches = text.matchAll(pattern);
+                for (const match of matches) {
+                    const phrase = match[0].trim();
+                    if (phrase.length > 10 && phrase.length < 200) {
+                        foundPhrases.add(phrase);
+                    }
+                }
+            }
+            
+            Array.from(foundPhrases).slice(0, 10).forEach((phrase, index) => {
+                requirements.push({
+                    text: phrase,
+                    priority: index < 3 ? 'high' : 'medium',
+                    matchScore: 0,
+                    sentences: []
+                });
+            });
+        }
+        
+        // Begrenze auf maximal 8 Anforderungen und sortiere nach Priorität
+        return requirements
+            .slice(0, 8)
+            .sort((a, b) => {
+                if (a.priority === 'high' && b.priority !== 'high') return -1;
+                if (a.priority !== 'high' && b.priority === 'high') return 1;
+                return 0;
+            });
     }
 
     confirmExtraction() {
@@ -1066,6 +1147,18 @@ class SmartWorkflowSystem {
     // Navigation
     nextStep() {
         if (this.currentStep < this.totalSteps) {
+            // Vor dem Wechsel zu Schritt 2: Extrahiere Anforderungen
+            if (this.currentStep === 1) {
+                const jobDesc = this.applicationData.jobDescription || '';
+                this.applicationData.requirements = this.extractRequirements(jobDesc);
+                
+                // Falls keine Anforderungen gefunden, zeige Warnung
+                if (this.applicationData.requirements.length === 0) {
+                    alert('Keine Anforderungen in der Stellenanzeige gefunden. Bitte überprüfen Sie die Stellenbeschreibung.');
+                    return;
+                }
+            }
+            
             this.currentStep++;
             this.updateUI();
         } else {
@@ -1115,6 +1208,11 @@ class SmartWorkflowSystem {
                     // Re-bind manual input listeners if on step 1
                     if (this.currentStep === 1 && !this.applicationData.extractionConfirmed) {
                         this.addManualInputListeners();
+                    }
+                    
+                    // Initialize drag and drop for step 2
+                    if (this.currentStep === 2) {
+                        this.initDragAndDrop();
                     }
                 }, 100);
             }
@@ -1245,8 +1343,116 @@ class SmartWorkflowSystem {
     
     // Placeholder methods for functionality
     addRequirement() {
-        console.log('Adding requirement...');
-        // Implementation
+        const newRequirement = prompt('Neue Anforderung hinzufügen:');
+        if (newRequirement && newRequirement.trim()) {
+            if (!this.applicationData.requirements) {
+                this.applicationData.requirements = [];
+            }
+            this.applicationData.requirements.push({
+                text: newRequirement.trim(),
+                priority: 'medium',
+                matchScore: 0,
+                sentences: []
+            });
+            this.updateUI();
+        }
+    }
+    
+    updateRequirement(index, newText) {
+        if (this.applicationData.requirements && this.applicationData.requirements[index]) {
+            this.applicationData.requirements[index].text = newText;
+            this.saveData();
+        }
+    }
+    
+    setPriority(index, priority) {
+        if (this.applicationData.requirements && this.applicationData.requirements[index]) {
+            this.applicationData.requirements[index].priority = priority;
+            this.updateUI();
+        }
+    }
+    
+    togglePriority(index) {
+        if (this.applicationData.requirements && this.applicationData.requirements[index]) {
+            const current = this.applicationData.requirements[index].priority;
+            this.applicationData.requirements[index].priority = current === 'high' ? 'medium' : 'high';
+            this.updateUI();
+        }
+    }
+    
+    removeRequirement(index) {
+        if (confirm('Diese Anforderung wirklich entfernen?')) {
+            this.applicationData.requirements.splice(index, 1);
+            this.updateUI();
+        }
+    }
+    
+    // Drag and Drop für Anforderungen
+    initDragAndDrop() {
+        const container = document.getElementById('requirementsList');
+        if (!container) return;
+        
+        let draggedElement = null;
+        let draggedIndex = null;
+        
+        container.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('requirement-item')) {
+                draggedElement = e.target;
+                draggedIndex = parseInt(e.target.dataset.index);
+                e.target.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            }
+        });
+        
+        container.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('requirement-item')) {
+                e.target.classList.remove('dragging');
+            }
+        });
+        
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = this.getDragAfterElement(container, e.clientY);
+            const dragging = container.querySelector('.dragging');
+            
+            if (afterElement == null) {
+                container.appendChild(dragging);
+            } else {
+                container.insertBefore(dragging, afterElement);
+            }
+        });
+        
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            
+            // Update the order in the data model
+            const newOrder = [];
+            const items = container.querySelectorAll('.requirement-item');
+            items.forEach((item, index) => {
+                const oldIndex = parseInt(item.dataset.index);
+                newOrder.push(this.applicationData.requirements[oldIndex]);
+                item.dataset.index = index;
+            });
+            
+            this.applicationData.requirements = newOrder;
+            this.saveData();
+            this.updateUI();
+        });
+    }
+    
+    getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.requirement-item:not(.dragging)')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
     
     generateMoreSentences(index) {
@@ -1303,3 +1509,9 @@ window.smartWorkflow = new SmartWorkflowSystem();
 
 // Initialize event handlers when instantiated
 window.smartWorkflow.initializeEventHandlers();
+
+// Stelle sicher, dass die Funktionen global verfügbar sind
+window.smartWorkflow.updateRequirement = window.smartWorkflow.updateRequirement.bind(window.smartWorkflow);
+window.smartWorkflow.setPriority = window.smartWorkflow.setPriority.bind(window.smartWorkflow);
+window.smartWorkflow.removeRequirement = window.smartWorkflow.removeRequirement.bind(window.smartWorkflow);
+window.smartWorkflow.togglePriority = window.smartWorkflow.togglePriority.bind(window.smartWorkflow);
