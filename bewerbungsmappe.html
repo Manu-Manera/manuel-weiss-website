@@ -466,7 +466,7 @@
         </div>
 
         <div class="floating-action">
-            <button class="floating-btn" onclick="downloadPDF()" title="PDF herunterladen">
+            <button class="floating-btn" data-action="download-p-d-f" title="PDF herunterladen">
                 <i class="fas fa-download"></i>
             </button>
         </div>
@@ -502,7 +502,7 @@
                         </div>
 
                         <div class="cta-buttons">
-                            <button class="cta-btn primary" onclick="nextPage()">
+                            <button class="cta-btn primary" data-action="next-page">
                                 <i class="fas fa-arrow-right"></i>
                                 Bewerbung starten
                             </button>
@@ -739,10 +739,10 @@
         </div>
 
         <div class="navigation">
-            <button class="nav-btn" id="prev-btn" onclick="prevPage()" disabled>
+            <button class="nav-btn" id="prev-btn" data-action="prev-page" disabled>
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <button class="nav-btn" id="next-btn" onclick="nextPage()">
+            <button class="nav-btn" id="next-btn" data-action="next-page">
                 <i class="fas fa-chevron-right"></i>
             </button>
         </div>

@@ -851,19 +851,19 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="scheduleInterview()">
+                    <button class="btn btn-primary" data-action="schedule-interview">
                         <i class="fas fa-calendar-plus"></i>
                         Interview terminieren
                     </button>
-                    <button class="btn btn-success" onclick="acceptApplication()">
+                    <button class="btn btn-success" data-action="accept-application">
                         <i class="fas fa-check"></i>
                         Bewerbung annehmen
                     </button>
-                    <button class="btn btn-secondary" onclick="downloadCV()">
+                    <button class="btn btn-secondary" data-action="download-c-v">
                         <i class="fas fa-download"></i>
                         Lebenslauf herunterladen
                     </button>
-                    <button class="btn btn-secondary" onclick="sendMessage()">
+                    <button class="btn btn-secondary" data-action="send-message">
                         <i class="fas fa-envelope"></i>
                         Nachricht senden
                     </button>
@@ -950,7 +950,7 @@
                 div.innerHTML = `
                     <div class="certificate-header">
                         <div class="certificate-title">${cert.title}</div>
-                        <button class="certificate-download" onclick="downloadCertificate('${cert.id}')" title="Download">
+                        <button class="certificate-download" data-action="download-certificate" data-param="${cert.id}" title="Download">
                             <i class="fas fa-download"></i>
                         </button>
                     </div>
@@ -969,7 +969,7 @@
                         ${cert.file ? 
                             `<img src="${cert.file}" alt="${cert.title}">
                              <div class="overlay">
-                                 <button onclick="downloadCertificate('${cert.id}')">
+                                 <button data-action="download-certificate" data-param="${cert.id}" class="btn btn-primary">
                                      <i class="fas fa-download"></i> Download
                                  </button>
                              </div>` : 

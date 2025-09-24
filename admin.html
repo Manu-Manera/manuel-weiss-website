@@ -1285,7 +1285,7 @@
                     <i class="fas fa-external-link-alt"></i>
                     <span>Website ansehen</span>
                 </a>
-                <button class="btn-sidebar btn-logout" onclick="adminPanel.logout()">
+                <button class="btn-sidebar btn-logout" data-action="logout">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Abmelden</span>
                 </button>
@@ -1305,10 +1305,10 @@
                     </nav>
                 </div>
                 <div class="topbar-right">
-                    <button class="topbar-btn" onclick="adminPanel.toggleDarkMode()">
+                    <button class="topbar-btn" data-action="toggle-dark-mode">
                         <i class="fas fa-moon" id="darkModeIcon"></i>
                     </button>
-                    <button class="topbar-btn" onclick="adminPanel.showNotifications()">
+                    <button class="topbar-btn" data-action="show-notifications">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </button>
@@ -1421,7 +1421,7 @@
                                     </div>
                                 </div>
                                 <div class="overview-actions">
-                                    <button class="btn-applications" onclick="adminPanel.showSection('applications')">
+                                    <button class="btn-applications" data-action="show-section" data-param="applications">
                                         <i class="fas fa-briefcase"></i>
                                         <span>Bewerbungen verwalten</span>
                                         <i class="fas fa-arrow-right"></i>
@@ -1474,19 +1474,19 @@
                 <section id="content" class="admin-section">
                     <div class="section-toolbar">
                         <div class="toolbar-left">
-                            <button class="btn btn-primary" onclick="addNewService()">
+                            <button class="btn btn-primary" data-action="add-service">
                                 <i class="fas fa-plus"></i>
                                 Neuen Service hinzufügen
                             </button>
-                            <button class="btn btn-outline" onclick="refreshServices()">
+                            <button class="btn btn-outline" data-action="refresh-services">
                                 <i class="fas fa-sync"></i>
                                 Aktualisieren
                             </button>
-                            <button class="btn btn-success" onclick="syncServicesWithWebsite()">
+                            <button class="btn btn-success" data-action="sync-services">
                                 <i class="fas fa-link"></i>
                                 Mit Website synchronisieren
                             </button>
-                            <button class="btn btn-info" onclick="loadServicesFromWebsite()">
+                            <button class="btn btn-info" data-action="load-services">
                                 <i class="fas fa-download"></i>
                                 Von Website laden
                             </button>
@@ -1558,7 +1558,7 @@
                                 <input type="file" id="newServiceImage" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
                             </div>
                             
-                            <button onclick="createNewService()" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                            <button data-action="create-service" class="btn btn-primary" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
                                 🚀 Service erstellen
                             </button>
                         </div>
@@ -1585,16 +1585,16 @@
                             
                             <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 1rem;">
                                 <input type="password" id="openai-api-key" placeholder="OpenAI API Key eingeben..." style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-                                <button onclick="saveOpenAIKey()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <button data-action="save-openai-key" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                     💾 Speichern
                                 </button>
                             </div>
                             
                             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                                <button onclick="testOpenAIConnection()" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <button data-action="test-openai-connection" class="btn btn-primary" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                     🔗 Verbindung testen
                                 </button>
-                                <button onclick="toggleAPIKeyVisibility()" style="padding: 0.5rem 1rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <button data-action="toggle-api-key" class="btn btn-primary" style="padding: 0.5rem 1rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                     👁️ Anzeigen/Verstecken
                                 </button>
                             </div>
@@ -1669,7 +1669,7 @@
                                         </div>
                                     </div>
                                     
-                                    <button onclick="generateAIRecipe()" style="width: 100%; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                                    <button data-action="generate-recipe" class="btn btn-primary" style="width: 100%; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
                                         🤖 Rezept mit AI generieren
                                     </button>
                                     
@@ -1739,10 +1739,10 @@
                                         </div>
                                         
                                         <div style="display: flex; gap: 1rem;">
-                                            <button onclick="saveGeneratedRecipe()" style="flex: 1; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                            <button data-action="save-recipe" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                                                 💾 Rezept speichern
                                             </button>
-                                            <button onclick="regenerateRecipe()" style="flex: 1; padding: 1rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                            <button data-action="regenerate-recipe" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                                                 🔄 Neu generieren
                                             </button>
                                         </div>
@@ -2115,7 +2115,7 @@
                                 <div class="plan-template-card">
                                     <div class="plan-header">
                                         <h4>Muskelaufbau - Anfänger</h4>
-                                        <button class="edit-plan-btn" onclick="openPlanEditor('muscle-beginner')">
+                                        <button class="edit-plan-btn" data-action="open-plan-editor" data-param="muscle-beginner">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -2131,7 +2131,7 @@
                                 <div class="plan-template-card">
                                     <div class="plan-header">
                                         <h4>Gewichtsreduktion - Fortgeschritten</h4>
-                                        <button class="edit-plan-btn" onclick="openPlanEditor('weight-loss-advanced')">
+                                        <button class="edit-plan-btn" data-action="open-plan-editor" data-param="weight-loss-advanced">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -2147,7 +2147,7 @@
                                 <div class="plan-template-card">
                                     <div class="plan-header">
                                         <h4>Bodyweight - Anfänger</h4>
-                                        <button class="edit-plan-btn" onclick="openPlanEditor('bodyweight-beginner')">
+                                        <button class="edit-plan-btn" data-action="open-plan-editor" data-param="bodyweight-beginner">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -2163,7 +2163,7 @@
                                 <div class="plan-template-card">
                                     <div class="plan-header">
                                         <h4>Ausdauer - Alle Level</h4>
-                                        <button class="edit-plan-btn" onclick="openPlanEditor('endurance-all')">
+                                        <button class="edit-plan-btn" data-action="open-plan-editor" data-param="endurance-all">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -2190,19 +2190,19 @@
                                     <div class="category-exercises">
                                         <div class="exercise-item">
                                             <span>Bankdrücken</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('bench-press')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="bench-press">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Liegestütze</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('push-ups')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="push-ups">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Schrägbankdrücken</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('incline-bench')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="incline-bench">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
@@ -2217,19 +2217,19 @@
                                     <div class="category-exercises">
                                         <div class="exercise-item">
                                             <span>Klimmzüge</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('pull-ups')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="pull-ups">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Rudern</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('rowing')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="rowing">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Latziehen</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('lat-pulldown')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="lat-pulldown">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
@@ -2244,19 +2244,19 @@
                                     <div class="category-exercises">
                                         <div class="exercise-item">
                                             <span>Kniebeugen</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('squats')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="squats">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Ausfallschritte</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('lunges')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="lunges">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
                                         <div class="exercise-item">
                                             <span>Rumänisches Kreuzheben</span>
-                                            <button class="edit-exercise-btn" onclick="openExerciseEditor('romanian-deadlift')">
+                                            <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="romanian-deadlift">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </div>
@@ -2510,7 +2510,7 @@
                                                 <h3 style="color: #333; margin: 0;">📋 Aktuelle Bewerbungen</h3>
 
 
-                                                <button onclick="openNewApplicationModal()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                                <button data-action="new-application" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
 
 
                                                     <i class="fas fa-plus"></i> Neue Bewerbung
@@ -2529,19 +2529,19 @@
                                             <div class="filter-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb;">
 
 
-                                                <button class="filter-tab active" data-filter="all" onclick="filterApplications('all')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
+                                                <button class="filter-tab active" data-filter="all" data-action="filter-applications" data-param="all" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
 
 
-                                                <button class="filter-tab" data-filter="in-progress" onclick="filterApplications('in-progress')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">In Bearbeitung</button>
+                                                <button class="filter-tab" data-filter="in-progress" data-action="filter-applications" data-param="in-progress" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">In Bearbeitung</button>
 
 
-                                                <button class="filter-tab" data-filter="sent" onclick="filterApplications('sent')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Gesendet</button>
+                                                <button class="filter-tab" data-filter="sent" data-action="filter-applications" data-param="sent" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Gesendet</button>
 
 
-                                                <button class="filter-tab" data-filter="interview" onclick="filterApplications('interview')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Vorstellungsgespräch</button>
+                                                <button class="filter-tab" data-filter="interview" data-action="filter-applications" data-param="interview" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Vorstellungsgespräch</button>
 
 
-                                                <button class="filter-tab" data-filter="rejected" onclick="filterApplications('rejected')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Absage</button>
+                                                <button class="filter-tab" data-filter="rejected" data-action="filter-applications" data-param="rejected" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Absage</button>
 
 
                                 </div>
@@ -2615,13 +2615,13 @@
                             <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                                                 <!-- Tabs für verschiedene Dokumenttypen -->
                                                 <div class="document-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb; flex-wrap: wrap;">
-                                                    <button class="doc-tab active" data-type="all" onclick="filterDocuments('all')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
-                                                    <button class="doc-tab" data-type="cv" onclick="filterDocuments('cv')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Lebensläufe</button>
-                                                    <button class="doc-tab" data-type="portrait" onclick="filterDocuments('portrait')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Portraits</button>
-                                                    <button class="doc-tab" data-type="certificate" onclick="filterDocuments('certificate')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zeugnisse</button>
-                                                    <button class="doc-tab" data-type="certification" onclick="filterDocuments('certification')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zertifikate</button>
-                                                    <button class="doc-tab" data-type="cover-letter" onclick="filterDocuments('cover-letter')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Anschreiben</button>
-                                                    <button class="doc-tab" data-type="complete" onclick="filterDocuments('complete')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Vollständige Bewerbungen</button>
+                                                    <button class="doc-tab active" data-type="all" data-action="filter-documents" data-param="all" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Alle</button>
+                                                    <button class="doc-tab" data-type="cv" data-action="filter-documents" data-param="cv" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Lebensläufe</button>
+                                                    <button class="doc-tab" data-type="portrait" data-action="filter-documents" data-param="portrait" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Portraits</button>
+                                                    <button class="doc-tab" data-type="certificate" data-action="filter-documents" data-param="certificate" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zeugnisse</button>
+                                                    <button class="doc-tab" data-type="certification" data-action="filter-documents" data-param="certification" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Zertifikate</button>
+                                                    <button class="doc-tab" data-type="cover-letter" data-action="filter-documents" data-param="cover-letter" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Anschreiben</button>
+                                                    <button class="doc-tab" data-type="complete" data-action="filter-documents" data-param="complete" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Vollständige Bewerbungen</button>
                                                 </div>
 
                                                 <!-- Dokumentenliste -->
@@ -2641,24 +2641,24 @@
                                                             <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple style="display: none;">
                                                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
                                                             <p style="font-weight: 600; margin-bottom: 0.5rem;">Dokumente hochladen</p>
-                                                            <button onclick="triggerDocumentUpload()" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                                            <button data-action="upload-document" class="btn btn-primary" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                                                                 Dateien auswählen
                                                             </button>
                                                             <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, HTML, JPG, PNG</p>
                                                 </div>
                                                         
                                                         <!-- PDF Editor Button -->
-                                                        <button onclick="openPDFEditor()" style="width: 100%; padding: 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                                        <button data-action="open-p-d-f-editor" class="btn btn-primary" style="width: 100%; padding: 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                                                             <i class="fas fa-file-pdf"></i> PDF Editor öffnen
                                                     </button>
                                                         
                                                         <!-- Quick Actions -->
                                                         <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
                                                             <h5 style="margin-bottom: 0.75rem;">Schnellaktionen</h5>
-                                                            <button onclick="mergeDocuments()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                            <button data-action="merge-documents" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
                                                                 <i class="fas fa-object-group"></i> Dokumente zusammenführen
                                                             </button>
-                                                            <button onclick="createTemplate()" style="width: 100%; padding: 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                            <button data-action="create-template" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                                                 <i class="fas fa-save"></i> Als Vorlage speichern
                                                     </button>
                                                 </div>
@@ -2670,7 +2670,7 @@
                                                     <div style="background: white; width: 95%; height: 95%; margin: 2.5% auto; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
                                                         <div style="background: #1e293b; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
                                                             <h3 style="margin: 0;">PDF Editor</h3>
-                                                            <button onclick="closePDFEditor()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                                            <button data-action="close-p-d-f-editor" class="btn btn-primary" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
                                                         </div>
                                                         
                                                         <div style="display: flex; flex: 1;">
@@ -2682,10 +2682,10 @@
                                                                 </div>
                                                                 
                                                                 <div style="margin-top: 2rem;">
-                                                                    <button onclick="addPDFPage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                    <button data-action="add-p-d-f-page" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
                                                                         <i class="fas fa-plus"></i> Seite hinzufügen
                                                     </button>
-                                                                    <button onclick="uploadAdditionalPDF()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                                    <button data-action="upload-additional-p-d-f" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                                                         <i class="fas fa-upload"></i> PDF hinzufügen
                                                     </button>
                                                 </div>
@@ -2701,19 +2701,19 @@
                                                             <!-- Tools Panel -->
                                                             <div style="width: 200px; background: #f8fafc; padding: 1rem;">
                                                                 <h4 style="margin-bottom: 1rem;">Werkzeuge</h4>
-                                                                <button onclick="deletePage()" style="width: 100%; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                <button data-action="delete-page" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
                                                                     <i class="fas fa-trash"></i> Seite löschen
                                             </button>
-                                                                <button onclick="rotatePage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                <button data-action="rotate-page" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
                                                                     <i class="fas fa-redo"></i> Seite drehen
                                                                 </button>
-                                                                <button onclick="movePage()" style="width: 100%; padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                                                                <button data-action="move-page" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
                                                                     <i class="fas fa-arrows-alt"></i> Verschieben
                                                                 </button>
                                                                 
                                                                 <hr style="margin: 1rem 0;">
                                                                 
-                                                                <button onclick="savePDF()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                                                <button data-action="save-p-d-f" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
                                                                     <i class="fas fa-save"></i> PDF speichern
                                                                 </button>
                                                             </div>
@@ -2748,7 +2748,7 @@
                                             <h3 style="margin: 0;">Neue Bewerbung hinzufügen</h3>
 
 
-                                            <button onclick="closeNewApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                            <button data-action="close-new-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
 
 
                                         </div>
@@ -2868,7 +2868,7 @@
                                         </button>
 
 
-                                                <button type="button" onclick="closeNewApplicationModal()" style="flex: 1; padding: 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                                <button type="button" data-action="close-new-application-modal" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
 
 
                                                     Abbrechen
@@ -2905,7 +2905,7 @@
                                             <h3 style="margin: 0;">Bewerbung bearbeiten</h3>
 
 
-                                            <button onclick="closeEditApplicationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                            <button data-action="close-edit-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
 
 
                         </div>
@@ -2918,16 +2918,16 @@
                                         <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb;">
 
 
-                                            <button class="workflow-tab active" data-tab="details" onclick="switchWorkflowTab('details')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Details</button>
+                                            <button class="workflow-tab active" data-tab="details" data-action="switch-workflow-tab" data-param="details" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid #6366f1;">Details</button>
 
 
-                                            <button class="workflow-tab" data-tab="documents" onclick="switchWorkflowTab('documents')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Dokumente</button>
+                                            <button class="workflow-tab" data-tab="documents" data-action="switch-workflow-tab" data-param="documents" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Dokumente</button>
 
 
-                                            <button class="workflow-tab" data-tab="communication" onclick="switchWorkflowTab('communication')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Kommunikation</button>
+                                            <button class="workflow-tab" data-tab="communication" data-action="switch-workflow-tab" data-param="communication" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">Kommunikation</button>
 
 
-                                            <button class="workflow-tab" data-tab="ai-assistant" onclick="switchWorkflowTab('ai-assistant')" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">KI-Assistent</button>
+                                            <button class="workflow-tab" data-tab="ai-assistant" data-action="switch-workflow-tab" data-param="ai-assistant" style="padding: 0.75rem 1.5rem; background: none; border: none; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent;">KI-Assistent</button>
 
 
                     </div>
@@ -3006,10 +3006,10 @@
                                 <div class="editor-header">
                                     <h3>Content Editor</h3>
                                     <div class="editor-actions">
-                                        <button class="btn btn-primary" onclick="saveTranslations()">
+                                        <button class="btn btn-primary" data-action="save-translations">
                                             <i class="fas fa-save"></i> Save Changes
                                         </button>
-                                        <button class="btn btn-outline" onclick="previewTranslations()">
+                                        <button class="btn btn-outline" data-action="preview-translations">
                                             <i class="fas fa-eye"></i> Preview
                                         </button>
                                     </div>
@@ -3099,7 +3099,7 @@
                                         <img id="profileImage" src="manuel-weiss-photo.svg" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #6366f1;">
                                     </div>
                                     <input type="file" id="profileImageInput" accept="image/*" style="width: 100%; margin-bottom: 1rem;">
-                                    <button onclick="updateProfileImage()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    <button data-action="update-profile-image" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         🔄 Profilbild aktualisieren
                                     </button>
                                 </div>
@@ -3139,7 +3139,7 @@
                                         </select>
                                     </div>
                                     
-                                    <button onclick="updateHeroContent()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    <button data-action="update-hero-content" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         💾 Hero-Bereich speichern
                                     </button>
                                 </div>
@@ -3154,7 +3154,7 @@
                                         </video>
                                     </div>
                                     <input type="file" id="profileVideoInput" accept="video/*" style="width: 100%; margin-bottom: 1rem;">
-                                    <button onclick="updateProfileVideo()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    <button data-action="update-profile-video" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         🎥 Video aktualisieren
                                     </button>
                                 </div>
@@ -3175,10 +3175,10 @@
                                         <label for="openai-api-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key:</label>
                                         <input type="password" id="openai-api-key" placeholder="sk-..." style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
                                     </div>
-                                    <button onclick="saveOpenAIKey()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1rem;">
+                                    <button data-action="save-openai-key" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1rem;">
                                         🔑 API Key speichern
                                     </button>
-                                    <button onclick="testOpenAIConnection()" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    <button data-action="test-openai-connection" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         🧪 Verbindung testen
                                     </button>
                                     <div id="openai-status" style="margin-top: 1rem; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem;"></div>
@@ -3230,7 +3230,7 @@
                                     <input type="number" id="recipe-carbs" placeholder="Kohlenhydrate (g)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
                                     <input type="number" id="recipe-fats" placeholder="Fette (g)" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
                                 </div>
-                                <button onclick="addRecipe()" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <button data-action="add-recipe" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                     ➕ Rezept hinzufügen
                                 </button>
                             </div>
@@ -3291,11 +3291,11 @@
                                     </video>
                                 </div>
                                 <div class="twin-controls">
-                                    <button class="btn btn-primary" onclick="adminPanel.createNewPresentation()">
+                                    <button class="btn btn-primary" data-action="create-new-presentation">
                                         <i class="fas fa-plus"></i>
                                         Neue Präsentation
                                     </button>
-                                    <button class="btn btn-secondary" onclick="adminPanel.downloadTwin()">
+                                    <button class="btn btn-secondary" data-action="download-twin">
                                         <i class="fas fa-download"></i>
                                         Twin herunterladen
                                     </button>
@@ -3339,11 +3339,11 @@
                     
                     <div class="section-toolbar">
                         <div class="toolbar-left">
-                            <button class="btn btn-primary" onclick="adminPanel.openMediaUpload()">
+                            <button class="btn btn-primary" data-action="open-media-upload">
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 Dateien hochladen
                             </button>
-                            <button class="btn btn-outline" onclick="adminPanel.createFolder()">
+                            <button class="btn btn-outline" data-action="create-folder">
                                 <i class="fas fa-folder-plus"></i>
                                 Ordner erstellen
                             </button>
@@ -3373,7 +3373,7 @@
                                     <img id="navLogoPreview" src="manuel-weiss-photo.svg" alt="Navigation Logo">
                                 </div>
                                 <input type="file" id="navLogoUpload" accept="image/*" onchange="uploadProfileImage('nav-logo', this)">
-                                <button onclick="document.getElementById('navLogoUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Logo hochladen
                                 </button>
                             </div>
@@ -3383,7 +3383,7 @@
                                     <img id="heroImagePreview" src="manuel-weiss-photo.svg" alt="Hero Bild">
                                 </div>
                                 <input type="file" id="heroImageUpload" accept="image/*" onchange="uploadProfileImage('hero-image', this)">
-                                <button onclick="document.getElementById('heroImageUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Hero-Bild hochladen
                                 </button>
                             </div>
@@ -3393,7 +3393,7 @@
                                     <img id="footerLogoPreview" src="manuel-weiss-photo.svg" alt="Footer Logo">
                                 </div>
                                 <input type="file" id="footerLogoUpload" accept="image/*" onchange="uploadProfileImage('footer-logo', this)">
-                                <button onclick="document.getElementById('footerLogoUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Footer-Logo hochladen
                                 </button>
                             </div>
@@ -3413,7 +3413,7 @@
                                     <img id="applicationPhotoPreview" src="manuel-weiss-photo.svg" alt="Bewerbungsbild">
                                 </div>
                                 <input type="file" id="applicationPhotoUpload" accept="image/*" onchange="uploadApplicationDocument('application-photo', this)">
-                                <button onclick="document.getElementById('applicationPhotoUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Bewerbungsbild hochladen
                                 </button>
                             </div>
@@ -3424,7 +3424,7 @@
                                     <p id="cvFileName">Manuel_Weiss_CV.pdf</p>
                                 </div>
                                 <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('cv', this)">
-                                <button onclick="document.getElementById('cvUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Lebenslauf hochladen
                                 </button>
                             </div>
@@ -3435,7 +3435,7 @@
                                     <p id="certificatesFileName">Zugnisse.pdf</p>
                                 </div>
                                 <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('certificates', this)">
-                                <button onclick="document.getElementById('certificatesUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Zeugnisse hochladen
                                 </button>
                             </div>
@@ -3458,7 +3458,7 @@
                                     </div>
                                 </div>
                                 <input type="file" id="portfolioImagesUpload" accept="image/*" multiple onchange="uploadPortfolioImages(this)">
-                                <button onclick="document.getElementById('portfolioImagesUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Projektbilder hochladen
                                 </button>
                             </div>
@@ -3479,7 +3479,7 @@
                                     <p id="personalityFileName">Persönlichkeitsentwicklung.pdf</p>
                                 </div>
                                 <input type="file" id="personalityUpload" accept=".pdf" onchange="uploadDocument('personality-development', this)">
-                                <button onclick="document.getElementById('personalityUpload').click()" class="btn btn-outline">
+                                <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> PDF hochladen
                                 </button>
                             </div>
@@ -4136,8 +4136,8 @@
                                             <p>Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('ikigai')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('ikigai')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="ikigai">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="ikigai">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4146,8 +4146,8 @@
                                             <p>Identifiziere deine wichtigsten Werte und lebe authentisch</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('values-clarification')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('values-clarification')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="values-clarification">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="values-clarification">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4156,8 +4156,8 @@
                                             <p>Entdecke und entwickle deine natürlichen Stärken</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('strengths-analysis')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('strengths-analysis')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="strengths-analysis">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="strengths-analysis">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4166,8 +4166,8 @@
                                             <p>Setze und erreiche deine Ziele systematisch</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('goal-setting')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('goal-setting')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="goal-setting">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="goal-setting">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4176,8 +4176,8 @@
                                             <p>Entwickle Achtsamkeit und innere Ruhe</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('mindfulness')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('mindfulness')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="mindfulness">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="mindfulness">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4186,8 +4186,8 @@
                                             <p>Entwickle deine emotionale Kompetenz</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('emotional-intelligence')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('emotional-intelligence')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="emotional-intelligence">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="emotional-intelligence">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4196,8 +4196,8 @@
                                             <p>Baue positive Gewohnheiten auf und breche schlechte ab</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('habit-building')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('habit-building')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="habit-building">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="habit-building">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4206,8 +4206,8 @@
                                             <p>Entdecke deine Top 5 Stärken</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('gallup-strengths')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('gallup-strengths')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="gallup-strengths">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="gallup-strengths">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4216,8 +4216,8 @@
                                             <p>Entdecke deine Charakterstärken</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('via-strengths')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('via-strengths')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="via-strengths">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="via-strengths">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4226,8 +4226,8 @@
                                             <p>Bewerte dich selbst in verschiedenen Bereichen</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('self-assessment')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('self-assessment')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="self-assessment">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="self-assessment">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4236,8 +4236,8 @@
                                             <p>Analysiere Selbst- und Fremdbild</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('johari-window')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('johari-window')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="johari-window">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="johari-window">Vorschau</button>
                                         </div>
                                     </div>
                                     <div class="method-item">
@@ -4246,8 +4246,8 @@
                                             <p>Die 6 Ebenen der Veränderung</p>
                                         </div>
                                         <div class="method-actions">
-                                            <button class="btn btn-primary" onclick="editMethod('nlp-dilts')">Bearbeiten</button>
-                                            <button class="btn btn-outline" onclick="previewMethod('nlp-dilts')">Vorschau</button>
+                                            <button class="btn btn-primary" data-action="edit-method" data-param="nlp-dilts">Bearbeiten</button>
+                                            <button class="btn btn-outline" data-action="preview-method" data-param="nlp-dilts">Vorschau</button>
                                         </div>
                                     </div>
                                 </div>
@@ -4302,7 +4302,7 @@
                                                 <label for="openaiApiKey">OpenAI API Key</label>
                                                 <div class="input-with-toggle">
                                                     <input type="password" id="openaiApiKey" placeholder="sk-..." class="form-input">
-                                                    <button type="button" class="toggle-visibility" onclick="toggleApiKeyVisibility()">
+                                                    <button type="button" class="toggle-visibility" data-action="toggle-api-key-visibility">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                 </div>
@@ -4329,10 +4329,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-actions">
-                                                <button class="btn btn-primary" onclick="testApiConnection()">
+                                                <button class="btn btn-primary" data-action="test-api-connection">
                                                     <i class="fas fa-plug"></i> Verbindung testen
                                                 </button>
-                                                <button class="btn btn-success" onclick="saveApiSettings()">
+                                                <button class="btn btn-success" data-action="save-api-settings">
                                                     <i class="fas fa-save"></i> Einstellungen speichern
                                                 </button>
                                             </div>
@@ -4441,7 +4441,7 @@
                                 <div class="assessments-management">
                                     <div class="assessments-header">
                                         <h3>Assessment Verwaltung</h3>
-                                        <button class="btn btn-primary" onclick="createNewAssessment()">
+                                        <button class="btn btn-primary" data-action="create-new-assessment">
                                             <i class="fas fa-plus"></i> Neues Assessment
                                         </button>
                                     </div>
@@ -4460,9 +4460,9 @@
                                                 </div>
                                             </div>
                                             <div class="assessment-actions">
-                                                <button class="btn btn-outline" onclick="editAssessment('strengths')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewAssessment('strengths')">Vorschau</button>
-                                                <button class="btn btn-danger" onclick="deleteAssessment('strengths')">Löschen</button>
+                                                <button class="btn btn-outline" data-action="edit-assessment" data-param="strengths">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-assessment" data-param="strengths">Vorschau</button>
+                                                <button class="btn btn-danger" data-action="delete-assessment" data-param="strengths">Löschen</button>
                                             </div>
                                         </div>
 
@@ -4479,9 +4479,9 @@
                                                 </div>
                                             </div>
                                             <div class="assessment-actions">
-                                                <button class="btn btn-outline" onclick="editAssessment('values')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewAssessment('values')">Vorschau</button>
-                                                <button class="btn btn-danger" onclick="deleteAssessment('values')">Löschen</button>
+                                                <button class="btn btn-outline" data-action="edit-assessment" data-param="values">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-assessment" data-param="values">Vorschau</button>
+                                                <button class="btn btn-danger" data-action="delete-assessment" data-param="values">Löschen</button>
                                             </div>
                                         </div>
 
@@ -4498,9 +4498,9 @@
                                                 </div>
                                             </div>
                                             <div class="assessment-actions">
-                                                <button class="btn btn-outline" onclick="editAssessment('goals')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewAssessment('goals')">Vorschau</button>
-                                                <button class="btn btn-danger" onclick="deleteAssessment('goals')">Löschen</button>
+                                                <button class="btn btn-outline" data-action="edit-assessment" data-param="goals">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-assessment" data-param="goals">Vorschau</button>
+                                                <button class="btn btn-danger" data-action="delete-assessment" data-param="goals">Löschen</button>
                                             </div>
                                         </div>
 
@@ -4517,9 +4517,9 @@
                                                 </div>
                                             </div>
                                             <div class="assessment-actions">
-                                                <button class="btn btn-outline" onclick="editAssessment('personality')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewAssessment('personality')">Vorschau</button>
-                                                <button class="btn btn-danger" onclick="deleteAssessment('personality')">Löschen</button>
+                                                <button class="btn btn-outline" data-action="edit-assessment" data-param="personality">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-assessment" data-param="personality">Vorschau</button>
+                                                <button class="btn btn-danger" data-action="delete-assessment" data-param="personality">Löschen</button>
                                             </div>
                                         </div>
                                     </div>
@@ -4531,7 +4531,7 @@
                                 <div class="workflows-management">
                                     <div class="workflows-header">
                                         <h3>Workflow Template Verwaltung</h3>
-                                        <button class="btn btn-primary" onclick="createNewWorkflow()">
+                                        <button class="btn btn-primary" data-action="create-new-workflow">
                                             <i class="fas fa-plus"></i> Neues Template
                                         </button>
                                     </div>
@@ -4555,9 +4555,9 @@
                                                 </div>
                                             </div>
                                             <div class="workflow-actions">
-                                                <button class="btn btn-outline" onclick="editWorkflow('ikigai')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewWorkflow('ikigai')">Vorschau</button>
-                                                <button class="btn btn-success" onclick="duplicateWorkflow('ikigai')">Duplizieren</button>
+                                                <button class="btn btn-outline" data-action="edit-workflow" data-param="ikigai">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-workflow" data-param="ikigai">Vorschau</button>
+                                                <button class="btn btn-success" data-action="duplicate-workflow" data-param="ikigai">Duplizieren</button>
                                             </div>
                                         </div>
 
@@ -4575,9 +4575,9 @@
                                                 </div>
                                             </div>
                                             <div class="workflow-actions">
-                                                <button class="btn btn-outline" onclick="editWorkflow('personalized')">Bearbeiten</button>
-                                                <button class="btn btn-outline" onclick="previewWorkflow('personalized')">Vorschau</button>
-                                                <button class="btn btn-success" onclick="duplicateWorkflow('personalized')">Duplizieren</button>
+                                                <button class="btn btn-outline" data-action="edit-workflow" data-param="personalized">Bearbeiten</button>
+                                                <button class="btn btn-outline" data-action="preview-workflow" data-param="personalized">Vorschau</button>
+                                                <button class="btn btn-success" data-action="duplicate-workflow" data-param="personalized">Duplizieren</button>
                                             </div>
                                         </div>
                                     </div>
@@ -4716,9 +4716,9 @@
                                                 <p>Nutzer: "Ich möchte meine Stärken besser verstehen..."</p>
                                             </div>
                                             <div class="conversation-actions">
-                                                <button class="btn btn-outline" onclick="viewConversation('conv1')">Ansehen</button>
-                                                <button class="btn btn-outline" onclick="exportConversation('conv1')">Exportieren</button>
-                                                <button class="btn btn-danger" onclick="deleteConversation('conv1')">Löschen</button>
+                                                <button class="btn btn-outline" data-action="view-conversation" data-param="conv1">Ansehen</button>
+                                                <button class="btn btn-outline" data-action="export-conversation" data-param="conv1">Exportieren</button>
+                                                <button class="btn btn-danger" data-action="delete-conversation" data-param="conv1">Löschen</button>
                                             </div>
                                         </div>
                                     </div>
@@ -4782,7 +4782,7 @@
                                         <textarea id="communication-style" placeholder="Wie kommunizierst du? Direkt, empathisch, strukturiert..."></textarea>
                                     </div>
                                     
-                                    <button class="btn btn-primary" onclick="savePersonalityTraining()">
+                                    <button class="btn btn-primary" data-action="save-personality-training">
                                         <i class="fas fa-save"></i> Persönlichkeit speichern
                                     </button>
                                 </div>
@@ -4816,7 +4816,7 @@
                                         <textarea id="client-stories" placeholder="Erzähle von erfolgreichen Kundenprojekten (anonymisiert)..."></textarea>
                                     </div>
                                     
-                                    <button class="btn btn-primary" onclick="saveExperienceTraining()">
+                                    <button class="btn btn-primary" data-action="save-experience-training">
                                         <i class="fas fa-save"></i> Erfahrungen speichern
                                     </button>
                                 </div>
@@ -4850,7 +4850,7 @@
                                         <textarea id="coaching-questions" placeholder="Welche Fragen stellst du häufig in Gesprächen?"></textarea>
                                     </div>
                                     
-                                    <button class="btn btn-primary" onclick="saveCommunicationTraining()">
+                                    <button class="btn btn-primary" data-action="save-communication-training">
                                         <i class="fas fa-save"></i> Kommunikation speichern
                                     </button>
                                 </div>
@@ -4897,20 +4897,20 @@
                                     <div class="analytics-card">
                                         <h4>Letzte Aktivität</h4>
                                         <p id="lastTraining">Noch keine Aktivität</p>
-                                        <button class="btn btn-secondary" onclick="refreshAnalytics()">
+                                        <button class="btn btn-secondary" data-action="refresh-analytics">
                                             <i class="fas fa-refresh"></i> Aktualisieren
                                         </button>
                                     </div>
                                 </div>
                                 
                                 <div class="training-actions">
-                                    <button class="btn btn-success" onclick="applyTrainingToChatbot()">
+                                    <button class="btn btn-success" data-action="apply-training-to-chatbot">
                                         <i class="fas fa-sync"></i> Training auf Manu anwenden
                                     </button>
-                                    <button class="btn btn-warning" onclick="exportTrainingData()">
+                                    <button class="btn btn-warning" data-action="export-training-data">
                                         <i class="fas fa-download"></i> Training exportieren
                                     </button>
-                                    <button class="btn btn-danger" onclick="resetTrainingData()">
+                                    <button class="btn btn-danger" data-action="reset-training-data">
                                         <i class="fas fa-trash"></i> Training zurücksetzen
                                     </button>
                                 </div>
@@ -5003,7 +5003,7 @@
                                 </div>
                             </div>
                             
-                            <button onclick="createNewRentalItem()" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                            <button data-action="create-new-rental-item" class="btn btn-primary" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
                                 🏠 Vermietungsgegenstand erstellen
                             </button>
                         </div>
@@ -5084,7 +5084,7 @@
                             <textarea id="bookingNotes" placeholder="Besondere Wünsche oder Anmerkungen..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
                         </div>
                         
-                        <button onclick="createNewBooking()" style="padding: 1rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                        <button data-action="create-new-booking" class="btn btn-primary" style="padding: 1rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
                             📅 Buchung erstellen
                         </button>
                     </div>
@@ -5138,7 +5138,7 @@
                             <option>Letzte 3 Monate</option>
                             <option>Letztes Jahr</option>
                         </select>
-                        <button class="btn btn-outline" onclick="adminPanel.exportAnalytics()">
+                        <button class="btn btn-outline" data-action="export-analytics">
                             <i class="fas fa-download"></i>
                             Export
                         </button>
@@ -5218,7 +5218,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalTitle">Inhalt bearbeiten</h2>
-                <button class="modal-close" onclick="adminPanel.closeModal('contentModal')">
+                <button class="modal-close" data-action="close-modal" data-param="contentModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -5226,8 +5226,8 @@
                 <!-- Dynamic content -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="adminPanel.closeModal('contentModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="adminPanel.saveContent()">Speichern</button>
+                <button class="btn btn-outline" data-action="close-modal" data-param="contentModal">Abbrechen</button>
+                <button class="btn btn-primary" data-action="save-content">Speichern</button>
             </div>
         </div>
     </div>
@@ -6233,10 +6233,10 @@ Bitte antworte im folgenden JSON-Format:
                         </p>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="editRecipe(${recipe.id})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        <button data-action="edit-recipe" class="btn btn-primary" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
                             ✏️ Bearbeiten
                         </button>
-                        <button onclick="deleteRecipe(${recipe.id})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        <button data-action="delete-recipe" class="btn btn-primary" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
                             🗑️ Löschen
                         </button>
                     </div>
@@ -6376,8 +6376,8 @@ Bitte antworte im folgenden JSON-Format:
                         </div>
                     </div>
                     <div class="ikigai-modal-footer">
-                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="saveStepChanges(${stepNumber})">Speichern</button>
+                        <button class="btn btn-secondary" data-action="close-ikigai-modal">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-step-changes">Speichern</button>
                     </div>
                 </div>
             `;
@@ -6512,8 +6512,8 @@ Bitte antworte im folgenden JSON-Format:
                         </div>
                     </div>
                     <div class="ikigai-modal-footer">
-                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="saveVideoChanges('${videoType}')">Speichern</button>
+                        <button class="btn btn-secondary" data-action="close-ikigai-modal">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-video-changes" data-param="${videoType}">Speichern</button>
                     </div>
                 </div>
             `;
@@ -6560,8 +6560,8 @@ Bitte antworte im folgenden JSON-Format:
                         </div>
                     </div>
                     <div class="ikigai-modal-footer">
-                        <button class="btn btn-secondary" onclick="closeIkigaiModal()">Abbrechen</button>
-                        <button class="btn btn-primary" onclick="saveTemplateChanges()">Speichern</button>
+                        <button class="btn btn-secondary" data-action="close-ikigai-modal">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-template-changes">Speichern</button>
                     </div>
                 </div>
             `;
@@ -6610,7 +6610,7 @@ Bitte antworte im folgenden JSON-Format:
             exerciseDiv.innerHTML = `
                 <div class="exercise-header">
                     <input type="text" value="${exercise.title || ''}" placeholder="Übungstitel" class="exercise-title">
-                    <button class="remove-exercise-btn" onclick="removeExercise(this)">
+                    <button class="remove-exercise-btn" data-action="remove-exercise">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -6968,10 +6968,10 @@ Bitte antworte im folgenden JSON-Format:
                             <h4 style="margin: 0; color: #333;">${service.name}</h4>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="editService(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="edit-service" class="btn btn-primary" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 ✏️
                             </button>
-                            <button onclick="deleteService(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="delete-service" class="btn btn-primary" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 🗑️
                             </button>
                         </div>
@@ -7281,10 +7281,10 @@ Bitte antworte im folgenden JSON-Format:
                             <h4 style="margin: 0; color: #333;">${item.name}</h4>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="editRentalItem(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="edit-rental-item" class="btn btn-primary" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 ✏️
                             </button>
-                            <button onclick="deleteRentalItem(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="delete-rental-item" class="btn btn-primary" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 🗑️
                             </button>
                         </div>
@@ -7308,7 +7308,7 @@ Bitte antworte im folgenden JSON-Format:
                         <span style="background: ${getRentalTypeColor(item.type)}20; color: ${getRentalTypeColor(item.type)}; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
                             ${getRentalTypeText(item.type)}
                         </span>
-                        <button onclick="viewRentalBookings(${index})" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                        <button data-action="view-rental-bookings" class="btn btn-primary" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
                             📅 Buchungen anzeigen
                         </button>
                     </div>
@@ -7467,10 +7467,10 @@ Bitte antworte im folgenden JSON-Format:
                             <p style="margin: 0; color: #666; font-size: 0.875rem;">${booking.customerEmail}</p>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="editBooking(${index})" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="edit-booking" class="btn btn-primary" style="padding: 0.5rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 ✏️
                             </button>
-                            <button onclick="deleteBooking(${index})" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <button data-action="delete-booking" class="btn btn-primary" style="padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                 🗑️
                             </button>
                         </div>
@@ -8553,7 +8553,7 @@ Bitte antworte im folgenden JSON-Format:
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>${title}</h3>
-                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                        <button class="modal-close" data-action="close-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         ${content}
@@ -8615,8 +8615,49 @@ Bitte antworte im folgenden JSON-Format:
         }
     </script>
     
+    <!-- Button System CSS -->
+    <link rel="stylesheet" href="css/button-system.css">
+    
+    <!-- Core Button System Scripts (Load First) -->
+    <script src="js/event-registry.js"></script>
+    <script src="js/button-components.js"></script>
+    
+    <!-- Existing Scripts -->
     <script src="js/ai-integration.js"></script>
     <script src="js/ai-twin-workflow.js"></script>
     <script src="js/admin-panel-fix.js"></script>
+    
+    <!-- Button Registration (Load After Other Scripts) -->
+    <script src="js/register-all-buttons.js"></script>
+    
+    <!-- Migration Tool (Development Only) -->
+    <script src="js/migrate-buttons.js"></script>
+    
+    <script>
+        // Initialize new button system
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[ButtonSystem] Initializing...');
+            
+            // Auto-migrate buttons in development
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.log('[ButtonSystem] Development mode - Migration available');
+                console.log('Run autoMigrateButtons() to migrate all buttons');
+                
+                // Show migration button in admin panel
+                const migrationBtn = document.createElement('button');
+                migrationBtn.className = 'btn btn-primary btn-small';
+                migrationBtn.style.position = 'fixed';
+                migrationBtn.style.bottom = '20px';
+                migrationBtn.style.right = '20px';
+                migrationBtn.style.zIndex = '9999';
+                migrationBtn.innerHTML = '<i class="fas fa-magic"></i> Migrate Buttons';
+                migrationBtn.onclick = () => {
+                    window.autoMigrateButtons();
+                    migrationBtn.remove();
+                };
+                document.body.appendChild(migrationBtn);
+            }
+        });
+    </script>
 </body>
 </html>

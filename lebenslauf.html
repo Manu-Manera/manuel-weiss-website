@@ -408,7 +408,7 @@
                     <h1>Manuel Weiss</h1>
                     <p>Interaktiver Lebenslauf</p>
                 </div>
-                <button class="open-portfolio" onclick="openPortfolio()">
+                <button class="open-portfolio" data-action="open-portfolio">
                     <i class="fas fa-folder-open"></i> Mappe öffnen
                 </button>
             </div>
@@ -641,10 +641,10 @@
 
                 <!-- Navigation -->
                 <div class="page-navigation">
-                    <button class="nav-btn" id="prev-btn" onclick="prevPage()" disabled>
+                    <button class="nav-btn" id="prev-btn" data-action="prev-page" disabled>
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="nav-btn" id="next-btn" onclick="nextPage()">
+                    <button class="nav-btn" id="next-btn" data-action="next-page">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
@@ -655,7 +655,7 @@
                 </div>
 
                 <!-- Schließen-Button -->
-                <button class="close-portfolio" onclick="closePortfolio()">
+                <button class="close-portfolio" data-action="close-portfolio">
                     <i class="fas fa-times"></i>
                 </button>
             </div>

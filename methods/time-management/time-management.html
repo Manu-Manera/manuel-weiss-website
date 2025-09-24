@@ -111,7 +111,7 @@
                         <span>Stunden pro Tag</span>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="addTimeWaster()">+ Zeitfresser hinzufügen</button>
+                <button class="btn btn-secondary" data-action="add-time-waster">+ Zeitfresser hinzufügen</button>
             </div>
         </div>
     </div>
@@ -135,17 +135,17 @@
                     <div class="method-card">
                         <h5>Eisenhower-Matrix</h5>
                         <p>Teile Aufgaben nach Wichtigkeit und Dringlichkeit ein.</p>
-                        <button class="btn btn-outline" onclick="showEisenhowerMatrix()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-eisenhower-matrix">Anwenden</button>
                     </div>
                     <div class="method-card">
                         <h5>ABC-Analyse</h5>
                         <p>Kategorisiere Aufgaben nach ihrer Bedeutung.</p>
-                        <button class="btn btn-outline" onclick="showABCAnalysis()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-a-b-c-analysis">Anwenden</button>
                     </div>
                     <div class="method-card">
                         <h5>MoSCoW-Methode</h5>
                         <p>Must have, Should have, Could have, Won't have.</p>
-                        <button class="btn btn-outline" onclick="showMoSCoW()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-mo-s-co-w">Anwenden</button>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,7 @@
                 <h4>✅ Aufgaben priorisieren</h4>
                 <div class="task-input">
                     <input type="text" id="new-task" placeholder="Neue Aufgabe hinzufügen...">
-                    <button class="btn btn-primary" onclick="addTask()">Hinzufügen</button>
+                    <button class="btn btn-primary" data-action="add-task">Hinzufügen</button>
                 </div>
                 <div class="tasks-list" id="tasks-list">
                     <p>Füge Aufgaben hinzu, um sie zu priorisieren.</p>
@@ -184,10 +184,10 @@
                             <input type="time" class="start-time" value="06:00">
                             <input type="time" class="end-time" value="07:00">
                             <input type="text" class="activity" placeholder="Aktivität">
-                            <button class="btn btn-sm btn-danger" onclick="removeTimeBlock(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-time-block">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addTimeBlock()">+ Zeitblock hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-time-block">+ Zeitblock hinzufügen</button>
                 </div>
             </div>
             
@@ -234,22 +234,22 @@
                     <div class="technique-card">
                         <h5>Pomodoro-Technik</h5>
                         <p>25 Minuten fokussiert arbeiten, 5 Minuten Pause.</p>
-                        <button class="btn btn-outline" onclick="startPomodoro()">Starten</button>
+                        <button class="btn btn-outline" data-action="start-pomodoro">Starten</button>
                     </div>
                     <div class="technique-card">
                         <h5>2-Minuten-Regel</h5>
                         <p>Wenn etwas weniger als 2 Minuten dauert, mache es sofort.</p>
-                        <button class="btn btn-outline" onclick="showTwoMinuteRule()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-two-minute-rule">Anwenden</button>
                     </div>
                     <div class="technique-card">
                         <h5>Eat the Frog</h5>
                         <p>Beginne mit der schwierigsten Aufgabe des Tages.</p>
-                        <button class="btn btn-outline" onclick="showEatTheFrog()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-eat-the-frog">Anwenden</button>
                     </div>
                     <div class="technique-card">
                         <h5>Time Boxing</h5>
                         <p>Setze feste Zeitlimits für Aufgaben.</p>
-                        <button class="btn btn-outline" onclick="showTimeBoxing()">Anwenden</button>
+                        <button class="btn btn-outline" data-action="show-time-boxing">Anwenden</button>
                     </div>
                 </div>
             </div>
@@ -263,9 +263,9 @@
                         </div>
                     </div>
                     <div class="timer-controls">
-                        <button class="btn btn-primary" id="timer-start" onclick="startTimer()">Start</button>
-                        <button class="btn btn-secondary" id="timer-pause" onclick="pauseTimer()" disabled>Pause</button>
-                        <button class="btn btn-outline" id="timer-reset" onclick="resetTimer()">Reset</button>
+                        <button class="btn btn-primary" id="timer-start" data-action="start-timer">Start</button>
+                        <button class="btn btn-secondary" id="timer-pause" data-action="pause-timer" disabled>Pause</button>
+                        <button class="btn btn-outline" id="timer-reset" data-action="reset-timer">Reset</button>
                     </div>
                     <div class="timer-settings">
                         <label>Arbeitszeit (Minuten):</label>
@@ -323,7 +323,7 @@
                     <div class="plan-items" id="optimization-plan-items">
                         <p>Erstelle einen Plan basierend auf deinen Optimierungen.</p>
                     </div>
-                    <button class="btn btn-primary" onclick="generateOptimizationPlan()">Plan generieren</button>
+                    <button class="btn btn-primary" data-action="generate-optimization-plan">Plan generieren</button>
                 </div>
             </div>
         </div>
@@ -332,13 +332,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

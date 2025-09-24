@@ -1329,7 +1329,7 @@
             <div class="header-actions">
                 <div class="profile-section">
                     <div class="profile-toggle">
-                        <button class="btn btn-secondary" onclick="toggleProfileMode()" id="profileToggleBtn">
+                        <button class="btn btn-secondary" data-action="toggle-profile-mode" id="profileToggleBtn">
                             <i class="fas fa-camera"></i>
                             <span>Foto</span>
                         </button>
@@ -1337,21 +1337,21 @@
                     <div class="profile-display" id="profileDisplay">
                         <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image" id="profileImage">
                         <div class="profile-overlay" id="profileOverlay">
-                            <button class="play-btn" onclick="playDigitalTwin()" title="Digital Twin abspielen">
+                            <button class="play-btn" data-action="play-digital-twin" title="Digital Twin abspielen">
                                 <i class="fas fa-play"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="resetDesign()">
+                <button class="btn btn-secondary" data-action="reset-design">
                     <i class="fas fa-undo"></i>
                     Zurücksetzen
                 </button>
-                <button class="btn btn-primary" onclick="saveDesign()">
+                <button class="btn btn-primary" data-action="save-design">
                     <i class="fas fa-save"></i>
                     Speichern
                 </button>
-                <button class="btn btn-success" onclick="previewDesign()">
+                <button class="btn btn-success" data-action="preview-design">
                     <i class="fas fa-eye"></i>
                     Vorschau
                 </button>
@@ -1365,31 +1365,31 @@
         <div class="designer-sidebar">
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('content')">
+                <button class="tab active" data-action="switch-tab" data-param="content">
                     <i class="fas fa-edit"></i>
                     Inhalt
                 </button>
-                <button class="tab" onclick="switchTab('design')">
+                <button class="tab" data-action="switch-tab" data-param="design">
                     <i class="fas fa-palette"></i>
                     Design
                 </button>
-                <button class="tab" onclick="switchTab('branding')">
+                <button class="tab" data-action="switch-tab" data-param="branding">
                     <i class="fas fa-building"></i>
                     Branding
                 </button>
-                <button class="tab" onclick="switchTab('cover-letter')">
+                <button class="tab" data-action="switch-tab" data-param="cover-letter">
                     <i class="fas fa-robot"></i>
                     Anschreiben
                 </button>
-                <button class="tab" onclick="switchTab('analytics')">
+                <button class="tab" data-action="switch-tab" data-param="analytics">
                     <i class="fas fa-chart-line"></i>
                     Analytics
                 </button>
-                <button class="tab" onclick="switchTab('templates')">
+                <button class="tab" data-action="switch-tab" data-param="templates">
                     <i class="fas fa-file-alt"></i>
                     Templates
                 </button>
-                <button class="tab" onclick="switchTab('settings')">
+                <button class="tab" data-action="switch-tab" data-param="settings">
                     <i class="fas fa-cog"></i>
                     Einstellungen
                 </button>
@@ -1478,7 +1478,7 @@ Stakeholder Management</textarea>
                         <div class="certificates-container" id="certificatesContainer">
                             <!-- Wird dynamisch gefüllt -->
                         </div>
-                        <button class="btn btn-secondary" onclick="addCertificate()" style="width: 100%; margin-top: 1rem;">
+                        <button class="btn btn-secondary" data-action="add-certificate" style="width: 100%; margin-top: 1rem;">
                             <i class="fas fa-plus"></i>
                             Zeugnis hinzufügen
                         </button>
@@ -1579,7 +1579,7 @@ Stakeholder Management</textarea>
                     
                     <div class="form-group">
                         <label class="form-label">Automatische Erkennung</label>
-                        <button class="btn btn-primary" onclick="detectCompanyBranding()">
+                        <button class="btn btn-primary" data-action="detect-company-branding">
                             <i class="fas fa-robot"></i>
                             Firmen-Branding erkennen
                         </button>
@@ -1743,7 +1743,7 @@ Stakeholder Management</textarea>
                                     </div>
                                 </div>
                                 
-                                <button class="btn btn-primary" onclick="startIntelligentGeneration()" style="width: 100%;">
+                                <button class="btn btn-primary" data-action="start-intelligent-generation" style="width: 100%;">
                                     <i class="fas fa-brain"></i>
                                     Intelligentes Anschreiben generieren
                                 </button>
@@ -1764,22 +1764,22 @@ Stakeholder Management</textarea>
                     </div>
                     
                     <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary" onclick="improveTone()" style="flex: 1;">
+                        <button class="btn btn-secondary" data-action="improve-tone" style="flex: 1;">
                             <i class="fas fa-magic"></i>
                             Ton verbessern
                         </button>
-                        <button class="btn btn-secondary" onclick="regenerateParagraph()" style="flex: 1;">
+                        <button class="btn btn-secondary" data-action="regenerate-paragraph" style="flex: 1;">
                             <i class="fas fa-redo"></i>
                             Absatz neu
                         </button>
                     </div>
                     
                     <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                        <button class="btn btn-success" onclick="saveCoverLetter()" style="flex: 1;">
+                        <button class="btn btn-success" data-action="save-cover-letter" style="flex: 1;">
                             <i class="fas fa-save"></i>
                             Speichern
                         </button>
-                        <button class="btn btn-secondary" onclick="copyCoverLetter()" style="flex: 1;">
+                        <button class="btn btn-secondary" data-action="copy-cover-letter" style="flex: 1;">
                             <i class="fas fa-copy"></i>
                             Kopieren
                         </button>
@@ -1896,19 +1896,19 @@ Stakeholder Management</textarea>
                     </div>
                     
                     <div class="quick-actions">
-                        <button class="btn btn-secondary" onclick="generateEmailVersion()">
+                        <button class="btn btn-secondary" data-action="generate-email-version">
                             <i class="fas fa-envelope"></i>
                             E-Mail Version
                         </button>
-                        <button class="btn btn-secondary" onclick="generateLinkedInMessage()">
+                        <button class="btn btn-secondary" data-action="generate-linked-in-message">
                             <i class="fab fa-linkedin"></i>
                             LinkedIn Message
                         </button>
-                        <button class="btn btn-secondary" onclick="generateVideoScript()">
+                        <button class="btn btn-secondary" data-action="generate-video-script">
                             <i class="fas fa-video"></i>
                             Video Script
                         </button>
-                        <button class="btn btn-secondary" onclick="generateFollowUp()">
+                        <button class="btn btn-secondary" data-action="generate-follow-up">
                             <i class="fas fa-reply"></i>
                             Follow-up
                         </button>
@@ -1996,11 +1996,11 @@ Stakeholder Management</textarea>
                     Live-Vorschau
                 </div>
                 <div class="preview-actions">
-                    <button class="btn btn-secondary" onclick="refreshPreview()">
+                    <button class="btn btn-secondary" data-action="refresh-preview">
                         <i class="fas fa-refresh"></i>
                         Aktualisieren
                     </button>
-                    <button class="btn btn-primary" onclick="openPreview()">
+                    <button class="btn btn-primary" data-action="open-preview">
                         <i class="fas fa-external-link-alt"></i>
                         In neuem Tab
                     </button>
@@ -2015,7 +2015,7 @@ Stakeholder Management</textarea>
         <div class="certificate-modal-content">
             <div class="certificate-modal-header">
                 <h3 class="certificate-modal-title" id="certificateModalTitle">Zeugnis hinzufügen</h3>
-                <button class="certificate-modal-close" onclick="closeCertificateModal()">
+                <button class="certificate-modal-close" data-action="close-certificate-modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -2051,8 +2051,8 @@ Stakeholder Management</textarea>
             </div>
             
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                <button class="btn btn-secondary" onclick="closeCertificateModal()">Abbrechen</button>
-                <button class="btn btn-primary" onclick="saveCertificate()">Speichern</button>
+                <button class="btn btn-secondary" data-action="close-certificate-modal">Abbrechen</button>
+                <button class="btn btn-primary" data-action="save-certificate">Speichern</button>
             </div>
         </div>
     </div>
@@ -2065,19 +2065,19 @@ Stakeholder Management</textarea>
         </div>
         <p id="recordingStatus">Bereit für Aufnahme</p>
         <div class="recording-controls">
-            <button class="recording-btn record" onclick="startRecording()" id="recordBtn">
+            <button class="recording-btn record" data-action="start-recording" id="recordBtn">
                 <i class="fas fa-microphone"></i>
             </button>
-            <button class="recording-btn stop" onclick="stopRecording()" id="stopBtn" style="display: none;">
+            <button class="recording-btn stop" data-action="stop-recording" id="stopBtn" style="display: none;">
                 <i class="fas fa-stop"></i>
             </button>
-            <button class="recording-btn play" onclick="playRecording()" id="playBtn" style="display: none;">
+            <button class="recording-btn play" data-action="play-recording" id="playBtn" style="display: none;">
                 <i class="fas fa-play"></i>
             </button>
         </div>
         <div style="margin-top: 1rem;">
-            <button class="btn btn-secondary" onclick="closeVoiceModal()">Schließen</button>
-            <button class="btn btn-primary" onclick="saveVoiceRecording()" id="saveVoiceBtn" style="display: none;">Speichern</button>
+            <button class="btn btn-secondary" data-action="close-voice-modal">Schließen</button>
+            <button class="btn btn-primary" data-action="save-voice-recording" id="saveVoiceBtn" style="display: none;">Speichern</button>
         </div>
     </div>
 
@@ -2415,13 +2415,13 @@ Stakeholder Management</textarea>
                     <div class="certificate-header">
                         <div class="certificate-title">${cert.title}</div>
                         <div class="certificate-actions">
-                            <button class="certificate-btn download" onclick="downloadCertificate('${cert.id}')" title="Download">
+                            <button class="certificate-btn download" data-action="download-certificate" data-param="${cert.id}" title="Download">
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="certificate-btn edit" onclick="editCertificate('${cert.id}')" title="Bearbeiten">
+                            <button class="certificate-btn edit" data-action="edit-certificate" data-param="${cert.id}" title="Bearbeiten">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="certificate-btn delete" onclick="deleteCertificate('${cert.id}')" title="Löschen">
+                            <button class="certificate-btn delete" data-action="delete-certificate" data-param="${cert.id}" title="Löschen">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

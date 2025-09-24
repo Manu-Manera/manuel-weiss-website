@@ -414,7 +414,7 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Allgemeine Einstellungen</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-primary" onclick="saveGeneralSettings()">
+                        <button class="btn btn-primary" data-action="save-general-settings">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -453,10 +453,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Farben & Design</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="resetColors()">
+                        <button class="btn btn-secondary" data-action="reset-colors">
                             <i class="fas fa-undo"></i> Zurücksetzen
                         </button>
-                        <button class="btn btn-primary" onclick="saveColors()">
+                        <button class="btn btn-primary" data-action="save-colors">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -508,7 +508,7 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Module aktivieren</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-primary" onclick="saveModules()">
+                        <button class="btn btn-primary" data-action="save-modules">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -551,7 +551,7 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Persönliche Daten</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-primary" onclick="savePersonalData()">
+                        <button class="btn btn-primary" data-action="save-personal-data">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -590,10 +590,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Ausbildung</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="addEducation()">
+                        <button class="btn btn-secondary" data-action="add-education">
                             <i class="fas fa-plus"></i> Hinzufügen
                         </button>
-                        <button class="btn btn-primary" onclick="saveEducation()">
+                        <button class="btn btn-primary" data-action="save-education">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -609,10 +609,10 @@
                             <div class="cv-experience-date">2018 - 2021</div>
                         </div>
                         <div class="cv-experience-actions">
-                            <button class="btn btn-small" onclick="editEducation(this)">
+                            <button class="btn btn-small" data-action="edit-education">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-small btn-danger" onclick="deleteEducation(this)">
+                            <button class="btn btn-small btn-danger" data-action="delete-education">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -630,10 +630,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Berufserfahrung</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="addExperience()">
+                        <button class="btn btn-secondary" data-action="add-experience">
                             <i class="fas fa-plus"></i> Hinzufügen
                         </button>
-                        <button class="btn btn-primary" onclick="saveExperience()">
+                        <button class="btn btn-primary" data-action="save-experience">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -649,10 +649,10 @@
                             <div class="cv-experience-date">2021 - 2024</div>
                         </div>
                         <div class="cv-experience-actions">
-                            <button class="btn btn-small" onclick="editExperience(this)">
+                            <button class="btn btn-small" data-action="edit-experience">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-small btn-danger" onclick="deleteExperience(this)">
+                            <button class="btn btn-small btn-danger" data-action="delete-experience">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -670,10 +670,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Projekte</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="addProject()">
+                        <button class="btn btn-secondary" data-action="add-project">
                             <i class="fas fa-plus"></i> Hinzufügen
                         </button>
-                        <button class="btn btn-primary" onclick="saveProjects()">
+                        <button class="btn btn-primary" data-action="save-projects">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -689,10 +689,10 @@
                             <div class="cv-experience-date">2023</div>
                         </div>
                         <div class="cv-experience-actions">
-                            <button class="btn btn-small" onclick="editProject(this)">
+                            <button class="btn btn-small" data-action="edit-project">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-small btn-danger" onclick="deleteProject(this)">
+                            <button class="btn btn-small btn-danger" data-action="delete-project">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -710,10 +710,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Zertifikate</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="addCertificate()">
+                        <button class="btn btn-secondary" data-action="add-certificate">
                             <i class="fas fa-plus"></i> Hinzufügen
                         </button>
-                        <button class="btn btn-primary" onclick="saveCertificates()">
+                        <button class="btn btn-primary" data-action="save-certificates">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -729,10 +729,10 @@
                             <div class="cv-experience-date">2023</div>
                         </div>
                         <div class="cv-experience-actions">
-                            <button class="btn btn-small" onclick="editCertificate(this)">
+                            <button class="btn btn-small" data-action="edit-certificate">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-small btn-danger" onclick="deleteCertificate(this)">
+                            <button class="btn btn-small btn-danger" data-action="delete-certificate">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -750,10 +750,10 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Skills</h2>
                     <div class="cv-section-actions">
-                        <button class="btn btn-secondary" onclick="addSkillCategory()">
+                        <button class="btn btn-secondary" data-action="add-skill-category">
                             <i class="fas fa-plus"></i> Kategorie hinzufügen
                         </button>
-                        <button class="btn btn-primary" onclick="saveSkills()">
+                        <button class="btn btn-primary" data-action="save-skills">
                             <i class="fas fa-save"></i> Speichern
                         </button>
                     </div>
@@ -767,10 +767,10 @@
                             </div>
                         </div>
                         <div class="cv-experience-actions">
-                            <button class="btn btn-small" onclick="editSkillCategory(this)">
+                            <button class="btn btn-small" data-action="edit-skill-category">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-small btn-danger" onclick="deleteSkillCategory(this)">
+                            <button class="btn btn-small btn-danger" data-action="delete-skill-category">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -789,7 +789,7 @@
                 <div class="cv-section-header">
                     <h2 class="cv-section-title">Vorschau</h2>
                     <div class="cv-section-actions">
-                        <button class="cv-preview-btn" onclick="openPreview()">
+                        <button class="cv-preview-btn" data-action="open-preview">
                             <i class="fas fa-external-link-alt"></i> Vorschau öffnen
                         </button>
                     </div>
@@ -830,7 +830,7 @@
                 </div>
 
                 <div class="cv-preview">
-                    <button class="cv-preview-btn" onclick="exportCV()">
+                    <button class="cv-preview-btn" data-action="export-c-v">
                         <i class="fas fa-download"></i> Lebenslauf exportieren
                     </button>
                 </div>

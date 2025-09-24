@@ -58,10 +58,10 @@
                     <div class="habit-list" id="positive-habits">
                         <div class="habit-item">
                             <input type="text" placeholder="z.B. 'Ich trinke morgens ein Glas Wasser'" class="habit-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addPositiveHabit()">+ Gewohnheit hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-positive-habit">+ Gewohnheit hinzufügen</button>
                 </div>
                 
                 <div class="category-section">
@@ -70,10 +70,10 @@
                     <div class="habit-list" id="negative-habits">
                         <div class="habit-item">
                             <input type="text" placeholder="z.B. 'Ich schaue abends zu lange aufs Handy'" class="habit-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addNegativeHabit()">+ Gewohnheit hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-negative-habit">+ Gewohnheit hinzufügen</button>
                 </div>
                 
                 <div class="category-section">
@@ -82,10 +82,10 @@
                     <div class="habit-list" id="new-habits">
                         <div class="habit-item">
                             <input type="text" placeholder="z.B. 'Ich lese täglich 20 Minuten'" class="habit-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addNewHabit()">+ Gewohnheit hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-new-habit">+ Gewohnheit hinzufügen</button>
                 </div>
             </div>
             
@@ -168,7 +168,7 @@
                         <textarea id="stack-details" placeholder="Füge spezifische Details hinzu (Zeit, Ort, etc.)..."></textarea>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="createHabitStack()">Habit-Stack erstellen</button>
+                    <button class="btn btn-primary" data-action="create-habit-stack">Habit-Stack erstellen</button>
                 </div>
             </div>
             
@@ -252,7 +252,7 @@
                         </select>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="startChallenge()">Challenge starten</button>
+                    <button class="btn btn-primary" data-action="start-challenge">Challenge starten</button>
                 </div>
             </div>
             
@@ -269,9 +269,9 @@
                 <h4>📅 Challenge-Kalender</h4>
                 <div class="calendar-container" id="challenge-calendar">
                     <div class="calendar-header">
-                        <button class="btn btn-sm btn-outline" onclick="previousMonth()">‹</button>
+                        <button class="btn btn-sm btn-outline" data-action="previous-month">‹</button>
                         <h5 id="calendar-month">Monat</h5>
-                        <button class="btn btn-sm btn-outline" onclick="nextMonth()">›</button>
+                        <button class="btn btn-sm btn-outline" data-action="next-month">›</button>
                     </div>
                     <div class="calendar-grid" id="calendar-grid">
                         <!-- Calendar will be generated here -->
@@ -331,16 +331,16 @@
                         <textarea id="daily-notes" placeholder="Wie war dein Tag? Was war schwierig? Was hat gut funktioniert?"></textarea>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="saveDailyProgress()">Fortschritt speichern</button>
+                    <button class="btn btn-primary" data-action="save-daily-progress">Fortschritt speichern</button>
                 </div>
             </div>
             
             <div class="progress-analytics">
                 <h4>📈 Fortschritts-Analyse</h4>
                 <div class="analytics-tabs">
-                    <button class="tab-btn active" onclick="showAnalyticsTab('streaks')">Streaks</button>
-                    <button class="tab-btn" onclick="showAnalyticsTab('patterns')">Muster</button>
-                    <button class="tab-btn" onclick="showAnalyticsTab('insights')">Erkenntnisse</button>
+                    <button class="tab-btn active" data-action="show-analytics-tab" data-param="streaks">Streaks</button>
+                    <button class="tab-btn" data-action="show-analytics-tab" data-param="patterns">Muster</button>
+                    <button class="tab-btn" data-action="show-analytics-tab" data-param="insights">Erkenntnisse</button>
                 </div>
                 
                 <div class="analytics-content">
@@ -389,7 +389,7 @@
                     <div class="weak-habits" id="weak-habits">
                         <p>Analysiere deine Daten, um schwache Gewohnheiten zu identifizieren.</p>
                     </div>
-                    <button class="btn btn-outline" onclick="optimizeWeakHabits()">Optimieren</button>
+                    <button class="btn btn-outline" data-action="optimize-weak-habits">Optimieren</button>
                 </div>
                 
                 <div class="area-card">
@@ -398,7 +398,7 @@
                     <div class="adjustment-suggestions" id="adjustment-suggestions">
                         <p>Erhalte Vorschläge basierend auf deinen Mustern.</p>
                     </div>
-                    <button class="btn btn-outline" onclick="showAdjustmentSuggestions()">Vorschläge anzeigen</button>
+                    <button class="btn btn-outline" data-action="show-adjustment-suggestions">Vorschläge anzeigen</button>
                 </div>
                 
                 <div class="area-card">
@@ -407,7 +407,7 @@
                     <div class="new-habit-suggestions" id="new-habit-suggestions">
                         <p>Basierend auf deinen bestehenden Gewohnheiten.</p>
                     </div>
-                    <button class="btn btn-outline" onclick="showNewHabitSuggestions()">Vorschläge anzeigen</button>
+                    <button class="btn btn-outline" data-action="show-new-habit-suggestions">Vorschläge anzeigen</button>
                 </div>
             </div>
             
@@ -417,25 +417,25 @@
                     <div class="tool-card">
                         <h6>📱 Umgebungs-Design</h6>
                         <p>Gestalte deine Umgebung für bessere Gewohnheiten.</p>
-                        <button class="btn btn-sm btn-primary" onclick="showEnvironmentDesign()">Tool öffnen</button>
+                        <button class="btn btn-sm btn-primary" data-action="show-environment-design">Tool öffnen</button>
                     </div>
                     
                     <div class="tool-card">
                         <h6>⏰ Timing-Optimierung</h6>
                         <p>Finde die beste Zeit für deine Gewohnheiten.</p>
-                        <button class="btn btn-sm btn-primary" onclick="showTimingOptimization()">Tool öffnen</button>
+                        <button class="btn btn-sm btn-primary" data-action="show-timing-optimization">Tool öffnen</button>
                     </div>
                     
                     <div class="tool-card">
                         <h6>🎁 Belohnungs-System</h6>
                         <p>Entwickle ein effektives Belohnungssystem.</p>
-                        <button class="btn btn-sm btn-primary" onclick="showRewardSystem()">Tool öffnen</button>
+                        <button class="btn btn-sm btn-primary" data-action="show-reward-system">Tool öffnen</button>
                     </div>
                     
                     <div class="tool-card">
                         <h6>👥 Accountability-Partner</h6>
                         <p>Finde Unterstützung für deine Gewohnheiten.</p>
-                        <button class="btn btn-sm btn-primary" onclick="showAccountabilityPartner()">Tool öffnen</button>
+                        <button class="btn btn-sm btn-primary" data-action="show-accountability-partner">Tool öffnen</button>
                     </div>
                 </div>
             </div>
@@ -445,7 +445,7 @@
                 <div class="optimization-plan" id="optimization-plan">
                     <p>Erstelle einen Plan basierend auf deinen Optimierungen.</p>
                 </div>
-                <button class="btn btn-primary" onclick="generateOptimizationPlan()">Plan generieren</button>
+                <button class="btn btn-primary" data-action="generate-optimization-plan">Plan generieren</button>
             </div>
         </div>
     </div>
@@ -453,13 +453,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

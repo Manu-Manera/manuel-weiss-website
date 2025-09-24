@@ -54,10 +54,10 @@
                     <div class="strength-list">
                         <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Kommunikationsfähigkeit'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeStrength(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addStrength('personal')">+ Stärke hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-strength" data-param="personal">+ Stärke hinzufügen</button>
                 </div>
                 
                 <div class="strength-category">
@@ -66,10 +66,10 @@
                     <div class="strength-list">
                         <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Projektmanagement'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeStrength(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addStrength('professional')">+ Stärke hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-strength" data-param="professional">+ Stärke hinzufügen</button>
                 </div>
                 
                 <div class="strength-category">
@@ -78,10 +78,10 @@
                     <div class="strength-list">
                         <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Master-Abschluss in Wirtschaft'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeStrength(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addStrength('education')">+ Stärke hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-strength" data-param="education">+ Stärke hinzufügen</button>
                 </div>
                 
                 <div class="strength-category">
@@ -90,10 +90,10 @@
                     <div class="strength-list">
                         <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Großes berufliches Netzwerk'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeStrength(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addStrength('network')">+ Stärke hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-strength" data-param="network">+ Stärke hinzufügen</button>
                 </div>
             </div>
             
@@ -133,10 +133,10 @@
                     <div class="weakness-list">
                         <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Prokrastination'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeWeakness(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addWeakness('personal')">+ Schwäche hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-weakness" data-param="personal">+ Schwäche hinzufügen</button>
                 </div>
                 
                 <div class="weakness-category">
@@ -145,10 +145,10 @@
                     <div class="weakness-list">
                         <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Programmierung'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeWeakness(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addWeakness('professional')">+ Schwäche hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-weakness" data-param="professional">+ Schwäche hinzufügen</button>
                 </div>
                 
                 <div class="weakness-category">
@@ -157,10 +157,10 @@
                     <div class="weakness-list">
                         <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Fremdsprachen'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeWeakness(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addWeakness('education')">+ Schwäche hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-weakness" data-param="education">+ Schwäche hinzufügen</button>
                 </div>
                 
                 <div class="weakness-category">
@@ -169,10 +169,10 @@
                     <div class="weakness-list">
                         <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Wenig Branchenkontakte'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeWeakness(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addWeakness('network')">+ Schwäche hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-weakness" data-param="network">+ Schwäche hinzufügen</button>
                 </div>
             </div>
             
@@ -212,10 +212,10 @@
                     <div class="opportunity-list">
                         <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Neue Technologien in der Branche'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeOpportunity(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addOpportunity('professional')">+ Chance hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="professional">+ Chance hinzufügen</button>
                 </div>
                 
                 <div class="opportunity-category">
@@ -224,10 +224,10 @@
                     <div class="opportunity-list">
                         <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Wachsender Markt für Nachhaltigkeit'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeOpportunity(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addOpportunity('market')">+ Chance hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="market">+ Chance hinzufügen</button>
                 </div>
                 
                 <div class="opportunity-category">
@@ -236,10 +236,10 @@
                     <div class="opportunity-list">
                         <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Online-Kurse für neue Skills'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeOpportunity(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addOpportunity('education')">+ Chance hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="education">+ Chance hinzufügen</button>
                 </div>
                 
                 <div class="opportunity-category">
@@ -248,10 +248,10 @@
                     <div class="opportunity-list">
                         <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Neue Networking-Events'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" onclick="removeOpportunity(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addOpportunity('network')">+ Chance hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="network">+ Chance hinzufügen</button>
                 </div>
             </div>
             
@@ -296,10 +296,10 @@
                                 <option value="medium">Mittel</option>
                                 <option value="high">Hoch</option>
                             </select>
-                            <button class="btn btn-sm btn-danger" onclick="removeRisk(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addRisk('professional')">+ Risiko hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-risk" data-param="professional">+ Risiko hinzufügen</button>
                 </div>
                 
                 <div class="risk-category">
@@ -313,10 +313,10 @@
                                 <option value="medium">Mittel</option>
                                 <option value="high">Hoch</option>
                             </select>
-                            <button class="btn btn-sm btn-danger" onclick="removeRisk(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addRisk('market')">+ Risiko hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-risk" data-param="market">+ Risiko hinzufügen</button>
                 </div>
                 
                 <div class="risk-category">
@@ -330,10 +330,10 @@
                                 <option value="medium">Mittel</option>
                                 <option value="high">Hoch</option>
                             </select>
-                            <button class="btn btn-sm btn-danger" onclick="removeRisk(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addRisk('education')">+ Risiko hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-risk" data-param="education">+ Risiko hinzufügen</button>
                 </div>
                 
                 <div class="risk-category">
@@ -347,10 +347,10 @@
                                 <option value="medium">Mittel</option>
                                 <option value="high">Hoch</option>
                             </select>
-                            <button class="btn btn-sm btn-danger" onclick="removeRisk(this)">×</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="addRisk('network')">+ Risiko hinzufügen</button>
+                    <button class="btn btn-secondary" data-action="add-risk" data-param="network">+ Risiko hinzufügen</button>
                 </div>
             </div>
             
@@ -437,13 +437,13 @@
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
                 <i class="fas fa-arrow-left"></i> Zurück
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
             </div>
-            <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>

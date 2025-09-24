@@ -1015,23 +1015,23 @@
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
                     <div class="nav-buttons">
-                        <button class="btn btn-secondary" id="prev-step" disabled onclick="ikigaiPreviousStep()" ikigai.back">Zurück</button>
-                        <button class="btn btn-primary" id="next-step" onclick="ikigaiNextStep()" ikigai.next">Weiter</button>
-                        <button class="btn btn-success" id="save-progress" style="display: none;" onclick="ikigaiSaveProgress()">Fortschritt speichern</button>
+                        <button class="btn btn-secondary" id="prev-step" disabled data-action="ikigai-previous-step" ikigai.back">Zurück</button>
+                        <button class="btn btn-primary" id="next-step" data-action="ikigai-next-step" ikigai.next">Weiter</button>
+                        <button class="btn btn-success" id="save-progress" style="display: none;" data-action="ikigai-save-progress">Fortschritt speichern</button>
                     </div>
                     
                     <!-- Export & Reminder Buttons -->
                     <div class="export-buttons">
-                        <button class="btn btn-outline" onclick="showReminderSettings()" title="Erinnerungen einrichten">
+                        <button class="btn btn-outline" data-action="show-reminder-settings" title="Erinnerungen einrichten">
                             <i class="fas fa-bell"></i> <span ikigai.remember">Erinnerungen</span>
                         </button>
-                        <button class="btn btn-outline" onclick="exportToPDF()" title="Als PDF exportieren">
+                        <button class="btn btn-outline" data-action="export-to-p-d-f" title="Als PDF exportieren">
                             <i class="fas fa-file-pdf"></i> <span ikigai.export_pdf">PDF</span>
                         </button>
-                        <button class="btn btn-outline" onclick="exportToWord()" title="Als Word-Dokument exportieren">
+                        <button class="btn btn-outline" data-action="export-to-word" title="Als Word-Dokument exportieren">
                             <i class="fas fa-file-word"></i> <span ikigai.export_word">Word</span>
                         </button>
-                        <button class="btn btn-outline" onclick="exportToExcel()" title="Als Excel-Tabelle exportieren">
+                        <button class="btn btn-outline" data-action="export-to-excel" title="Als Excel-Tabelle exportieren">
                             <i class="fas fa-file-excel"></i> <span ikigai.export_excel">Excel</span>
                         </button>
                     </div>
@@ -1584,7 +1584,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>🔔 Erinnerungen einrichten</h3>
-                        <button class="close-btn" onclick="closeReminderModal()">&times;</button>
+                        <button class="close-btn" data-action="close-reminder-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="reminder-option">
@@ -1612,8 +1612,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" onclick="saveReminderSettings()">Speichern</button>
-                        <button class="btn btn-secondary" onclick="closeReminderModal()">Abbrechen</button>
+                        <button class="btn btn-primary" data-action="save-reminder-settings">Speichern</button>
+                        <button class="btn btn-secondary" data-action="close-reminder-modal">Abbrechen</button>
                     </div>
                 </div>
             `;
@@ -1750,7 +1750,7 @@
                             <i class="${methodData.icon}"></i>
                         </div>
                         <h3>${methodData.title}</h3>
-                        <button class="close-btn" onclick="closeMethodModal()">&times;</button>
+                        <button class="close-btn" data-action="close-method-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p class="method-description">${methodData.description}</p>
@@ -1781,8 +1781,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" onclick="startMethod('${methodId}')">Jetzt starten</button>
-                        <button class="btn btn-secondary" onclick="closeMethodModal()">Schließen</button>
+                        <button class="btn btn-primary" data-action="start-method" data-param="${methodId}">Jetzt starten</button>
+                        <button class="btn btn-secondary" data-action="close-method-modal">Schließen</button>
                     </div>
                 </div>
             `;
