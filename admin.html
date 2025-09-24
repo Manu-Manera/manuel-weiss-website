@@ -1583,26 +1583,14 @@
                             <p>Verwalte den intelligenten Ernährungsplan-Generator</p>
                         </div>
                         
-                        <!-- OpenAI API Konfiguration -->
+                        <!-- OpenAI API Verweis -->
                         <div class="openai-config" style="margin-bottom: 3rem;">
-                            <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
-                                🤖 OpenAI API Konfiguration
-                            </h3>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 1rem;">
-                                <input type="password" id="openai-api-key" placeholder="OpenAI API Key eingeben..." style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-                                <button data-action="save-openai-key" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                    💾 Speichern
-                                </button>
-                            </div>
-                            
-                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                                <button data-action="test-openai-connection" class="btn btn-primary" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                    🔗 Verbindung testen
-                                </button>
-                                <button data-action="toggle-api-key" class="btn btn-primary" style="padding: 0.5rem 1rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                    👁️ Anzeigen/Verstecken
-                                </button>
+                            <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                                <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">🤖 OpenAI API Konfiguration</h3>
+                                <p style="margin: 0; color: #0c4a6e;">
+                                    Alle OpenAI Einstellungen wurden in die <strong>KI-Einstellungen</strong> verschoben.
+                                    <br><small>Klicken Sie auf "KI-Einstellungen" in der Sidebar für die vollständige Konfiguration.</small>
+                                </p>
                             </div>
                             
                             <div id="api-status" style="padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; display: none;">
@@ -3235,20 +3223,12 @@
                             </h3>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                                <!-- OpenAI API Konfiguration -->
-                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                                    <h4 style="color: #555; margin-bottom: 1rem;">🤖 OpenAI API Konfiguration</h4>
-                                    <div style="margin-bottom: 1rem;">
-                                        <label for="openai-api-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key:</label>
-                                        <input type="password" id="openai-api-key" placeholder="sk-..." style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px;">
-                                    </div>
-                                    <button data-action="save-openai-key" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1rem;">
-                                        🔑 API Key speichern
-                                    </button>
-                                    <button data-action="test-openai-connection" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                        🧪 Verbindung testen
-                                    </button>
-                                    <div id="openai-status" style="margin-top: 1rem; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem;"></div>
+                                <!-- OpenAI API Verweis -->
+                                <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                                    <h4 style="color: #0c4a6e; margin-bottom: 0.5rem;">🤖 OpenAI API</h4>
+                                    <p style="margin: 0; color: #0c4a6e; font-size: 0.9rem;">
+                                        → Siehe <strong>KI-Einstellungen</strong> in der Sidebar
+                                    </p>
                                 </div>
                                 
                                 <!-- Ernährungsplan-Statistiken -->
@@ -4365,15 +4345,11 @@
                                             </div>
                                         </div>
                                         <div class="card-content">
-                                            <div class="form-group">
-                                                <label for="openaiApiKey">OpenAI API Key</label>
-                                                <div class="input-with-toggle">
-                                                    <input type="password" id="openaiApiKey" placeholder="sk-..." class="form-input">
-                                                    <button type="button" class="toggle-visibility" data-action="toggle-api-key-visibility">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </div>
-                                                <small class="form-help">Dein OpenAI API Key für GPT-4 Zugriff</small>
+                                            <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                                                <p style="margin: 0; color: #0c4a6e; font-size: 0.9rem;">
+                                                    <strong>OpenAI API Konfiguration</strong><br>
+                                                    → Siehe <strong>KI-Einstellungen</strong> in der Sidebar
+                                                </p>
                                             </div>
                                             <div class="form-group">
                                                 <label for="apiModel">AI Modell</label>
@@ -7892,7 +7868,7 @@ Bitte antworte im folgenden JSON-Format:
         
         // API Key Management
         function toggleApiKeyVisibility() {
-            const input = document.getElementById('openaiApiKey');
+            const input = document.getElementById('openai-api-key');
             const button = document.querySelector('.toggle-visibility i');
             
             if (input.type === 'password') {
@@ -7905,7 +7881,7 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         async function testApiConnection() {
-            const apiKey = document.getElementById('openaiApiKey').value;
+            const apiKey = document.getElementById('openai-api-key').value;
             const statusElement = document.getElementById('apiStatus');
             const statusIndicator = statusElement.querySelector('.status-indicator');
             const statusText = statusElement.querySelector('.status-text');
@@ -7961,7 +7937,7 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         function saveApiSettings() {
-            const apiKey = document.getElementById('openaiApiKey').value;
+            const apiKey = document.getElementById('openai-api-key').value;
             const model = document.getElementById('apiModel').value;
             const maxTokens = parseInt(document.getElementById('maxTokens').value);
             const temperature = parseFloat(document.getElementById('temperature').value);
@@ -7987,7 +7963,7 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         function updateChatbotApiSettings() {
-            const apiKey = document.getElementById('openaiApiKey').value;
+            const apiKey = document.getElementById('openai-api-key').value;
             aiCoachSettings.apiKey = apiKey;
             localStorage.setItem('aiCoachSettings', JSON.stringify(aiCoachSettings));
             
@@ -8011,7 +7987,7 @@ Bitte antworte im folgenden JSON-Format:
                 aiCoachSettings = JSON.parse(saved);
                 
                 // Update form fields
-                document.getElementById('openaiApiKey').value = aiCoachSettings.apiKey || '';
+                document.getElementById('openai-api-key').value = aiCoachSettings.apiKey || '';
                 document.getElementById('apiModel').value = aiCoachSettings.model || 'gpt-4';
                 document.getElementById('maxTokens').value = aiCoachSettings.maxTokens || 500;
                 document.getElementById('temperature').value = aiCoachSettings.temperature || 0.7;
