@@ -925,29 +925,56 @@ class SmartWorkflowSystem {
         const jobDesc = document.getElementById('jobDescription').value;
         if (!jobDesc) return;
 
-        // Zeige Analyse-Status
-        document.getElementById('analysisStatus').classList.remove('hidden');
+        const status = document.getElementById('analysisStatus');
+        status.classList.remove('hidden');
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere Stellenanzeige...';
         
         // Simuliere Analyse (in Produktion würde hier die echte KI-Analyse stattfinden)
         setTimeout(() => {
-            // Extrahiere Firma und Position
+            // Extrahiere Firma, Position und Ansprechpartner
             const extracted = this.extractJobInfo(jobDesc);
+            const contactPerson = this.extractContactPerson(jobDesc);
             
             // Update UI
-            document.getElementById('companyName').value = extracted.company;
-            document.getElementById('jobTitle').value = extracted.position;
+            if (extracted.company) {
+                document.getElementById('companyName').value = extracted.company;
+                this.applicationData.companyName = extracted.company;
+            }
             
-            // Extrahiere Anforderungen
-            this.applicationData.requirements = this.extractRequirements(jobDesc);
+            if (extracted.position) {
+                document.getElementById('position').value = extracted.position;
+                this.applicationData.position = extracted.position;
+            }
             
-            // Verstecke Status, zeige Ergebnisse
-            document.getElementById('analysisStatus').classList.add('hidden');
-            document.getElementById('extractedInfo').classList.remove('hidden');
+            // Zeige Extraktionsergebnisse
+            if (extracted.company || extracted.position) {
+                const confirmBox = document.querySelector('.extraction-confirm');
+                if (confirmBox) {
+                    confirmBox.style.display = 'block';
+                    const extractedData = confirmBox.querySelector('.extracted-data');
+                    if (extractedData) {
+                        let dataHtml = `
+                            <div><strong>Firma:</strong> ${extracted.company || 'Nicht erkannt'}</div>
+                            <div><strong>Position:</strong> ${extracted.position || 'Nicht erkannt'}</div>
+                        `;
+                        
+                        if (contactPerson) {
+                            dataHtml += `<div><strong>Ansprechpartner:</strong> ${contactPerson.name} ${contactPerson.position ? `(${contactPerson.position})` : ''}</div>`;
+                        }
+                        
+                        extractedData.innerHTML = dataHtml;
+                    }
+                }
+                
+                status.innerHTML = '<i class="fas fa-check-circle"></i> Analyse abgeschlossen';
+                status.classList.add('success');
+            } else {
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Keine Daten erkannt - bitte manuell eingeben';
+                status.classList.add('warning');
+            }
             
             // Speichere Daten
             this.applicationData.jobDescription = jobDesc;
-            this.applicationData.company = extracted.company;
-            this.applicationData.position = extracted.position;
             this.saveData();
         }, 1500);
     }
@@ -1020,18 +1047,20 @@ class SmartWorkflowSystem {
     }
 
     extractRequirements(text) {
-        // Extrahiere Anforderungen aus der Stellenbeschreibung
         const requirements = [];
+        const processedLines = new Set(); // Vermeidet Duplikate
         
-        // Verschiedene Muster für Anforderungen
+        // Erweiterte Sektionsmuster für verschiedene Formate
         const sectionPatterns = [
-            /(?:Ihr Profil|Ihre Aufgaben|Was Sie mitbringen|Anforderungen|Requirements|Wir erwarten|Sie haben|Sie bringen mit):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi,
-            /(?:Qualifikationen?|Kompetenzen|Skills?):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi
+            // Standard Sektionen
+            /(?:Das zeichnet dich aus|Das erwartet dich|Das bringst du mit|Dein Profil|Ihr Profil|Ihre Aufgaben|Was Sie mitbringen|Anforderungen|Requirements|Wir erwarten|Sie haben|Sie bringen mit|Qualifikationen?|Kompetenzen|Skills?):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|Das|$)/gi,
+            // Sektionen mit besonderen Zeichen
+            /(?:Was du.*?mitbringst|Was wir.*?erwarten|Deine.*?Qualifikationen):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi
         ];
         
         let requirementsText = '';
         
-        // Versuche Anforderungs-Sektionen zu finden
+        // Sammle alle Anforderungstexte
         for (const pattern of sectionPatterns) {
             const matches = text.matchAll(pattern);
             for (const match of matches) {
@@ -1039,91 +1068,149 @@ class SmartWorkflowSystem {
             }
         }
         
-        // Falls keine Sektionen gefunden, suche nach Aufzählungen
-        if (!requirementsText) {
-            const bulletPatterns = [
-                /(?:^|\n)\s*[•\-\*]\s*([^\n]+)/gm,
-                /(?:^|\n)\s*\d+\.\s*([^\n]+)/gm
+        // Intelligente Satzextraktion wenn keine klaren Sektionen
+        if (!requirementsText || requirementsText.trim().length < 50) {
+            // Suche nach Sätzen mit Anforderungs-Indikatoren
+            const sentencePatterns = [
+                // Direkte Anforderungen
+                /(?:Du|Sie)\s+(?:hast|haben|bringst|bringen|verfügst|verfügen|besitzt|besitzen)[^.!?]+[.!?]/gi,
+                // Erfahrung/Kenntnisse Sätze
+                /(?:Erfahrung|Kenntnisse|Wissen|Expertise|Kompetenz|Verständnis)\s+(?:in|mit|von|im Bereich|der|des)[^.!?]+[.!?]/gi,
+                // Jahre Erfahrung
+                /\d+\+?\s*Jahre?[^.!?]+[.!?]/gi,
+                // Ausbildung/Studium
+                /(?:Ausbildung|Studium|Abschluss|Bachelor|Master|Diplom)[^.!?]+[.!?]/gi,
+                // Sprachkenntnisse
+                /(?:Deutsch|Englisch|Sprach)kenntnisse[^.!?]+[.!?]/gi,
+                // Soft Skills
+                /(?:Teamfähigkeit|Kommunikation|analytisch|selbstständig|eigenverantwortlich|flexibel|motiviert)[^.!?]+[.!?]/gi
             ];
             
-            for (const pattern of bulletPatterns) {
+            for (const pattern of sentencePatterns) {
                 const matches = text.matchAll(pattern);
                 for (const match of matches) {
-                    requirementsText += match[1] + '\n';
+                    requirementsText += match[0] + '\n';
                 }
             }
         }
         
-        // Extrahiere einzelne Anforderungen
-        const lines = requirementsText.split('\n').filter(line => line.trim());
+        // Verarbeite Zeilen und Sätze
+        const lines = requirementsText.split(/[.\n]/).filter(line => line.trim());
         
-        // Schlüsselwörter für wichtige Anforderungen
+        // Prioritäts-Keywords (erweitert)
         const highPriorityKeywords = [
-            'zwingend', 'erforderlich', 'vorausgesetzt', 'must have', 'required',
-            'abgeschlossen', 'studium', 'ausbildung', 'erfahrung', 'kenntnisse',
-            'mehrjährig', 'fundiert', 'nachweislich', 'expertise'
+            'zwingend', 'erforderlich', 'vorausgesetzt', 'must have', 'required', 'notwendig',
+            'abgeschlossen', 'studium', 'ausbildung', 'mehrjährig', 'fundiert', 'nachweislich',
+            'expertise', 'mindestens', 'jahre', 'berufserfahrung', 'führerschein'
         ];
         
-        // Verarbeite jede Zeile als potenzielle Anforderung
-        lines.forEach((line, index) => {
-            const cleanLine = line.trim();
-            if (cleanLine.length > 10 && cleanLine.length < 300) {
-                // Bestimme Priorität
-                const isHighPriority = highPriorityKeywords.some(keyword => 
-                    cleanLine.toLowerCase().includes(keyword)
-                ) || index < 3;
-                
-                requirements.push({
-                    text: cleanLine,
-                    priority: isHighPriority ? 'high' : 'medium',
-                    matchScore: 0, // Wird später berechnet
-                    sentences: []
-                });
+        const mediumPriorityKeywords = [
+            'wünschenswert', 'vorteil', 'plus', 'idealerweise', 'gerne', 'bevorzugt',
+            'kenntnisse', 'erfahrung', 'verständnis', 'affinität'
+        ];
+        
+        // Verarbeite und bewerte jede Zeile
+        lines.forEach((line) => {
+            let cleanLine = line.trim();
+            
+            // Entferne führende Zeichen
+            cleanLine = cleanLine.replace(/^[\s•\-\*\d\.]+/, '').trim();
+            
+            // Ignoriere zu kurze oder zu lange Zeilen
+            if (cleanLine.length < 15 || cleanLine.length > 300) return;
+            
+            // Vermeide Duplikate
+            const normalized = cleanLine.toLowerCase().replace(/\s+/g, ' ');
+            if (processedLines.has(normalized)) return;
+            processedLines.add(normalized);
+            
+            // Bestimme Priorität
+            let priority = 'medium';
+            const lowerLine = cleanLine.toLowerCase();
+            
+            if (highPriorityKeywords.some(keyword => lowerLine.includes(keyword))) {
+                priority = 'high';
+            } else if (!mediumPriorityKeywords.some(keyword => lowerLine.includes(keyword))) {
+                priority = 'low';
             }
+            
+            // Spezielle Behandlung für bestimmte Muster
+            if (/\d+\+?\s*Jahre/.test(cleanLine)) priority = 'high';
+            if (/SAP|SuccessFactors|HCM/i.test(cleanLine)) priority = 'high';
+            
+            requirements.push({
+                text: cleanLine,
+                priority: priority,
+                matchScore: 0,
+                sentences: []
+            });
         });
         
-        // Falls keine Anforderungen gefunden, extrahiere aus dem gesamten Text
-        if (requirements.length === 0) {
-            // Suche nach Schlüsselwörtern im gesamten Text
-            const keyPhrases = [
-                /Sie verfügen über.+?(?=\.|$)/gi,
-                /Sie haben.+?(?=\.|$)/gi,
-                /Sie bringen.+?(?=\.|$)/gi,
-                /Erfahrung in.+?(?=\.|$)/gi,
-                /Kenntnisse in.+?(?=\.|$)/gi,
-                /[A-Z]\w+(?:kenntnisse|erfahrung|kompetenz)/gi
-            ];
-            
-            const foundPhrases = new Set();
-            
-            for (const pattern of keyPhrases) {
-                const matches = text.matchAll(pattern);
-                for (const match of matches) {
-                    const phrase = match[0].trim();
-                    if (phrase.length > 10 && phrase.length < 200) {
-                        foundPhrases.add(phrase);
+        // Sortiere nach Priorität und gebe max. 10 zurück
+        return requirements
+            .sort((a, b) => {
+                const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            })
+            .slice(0, 10);
+    }
+    
+    extractContactPerson(text) {
+        let contactPerson = null;
+        
+        // Muster für Ansprechpartner
+        const contactPatterns = [
+            // "Dein Ansprechpartner" Format
+            /(?:Dein|Ihr|Ihre?)\s*Ansprechpartner(?:in)?[^:]*:?\s*\n?\s*([A-ZÄÖÜa-zäöüß\s\-\.]+?)(?:\s+([A-ZÄÖÜa-zäöüß\s\-\.]+?))?\s*(?:\n|$)/gi,
+            // Name mit Titel/Position
+            /([A-ZÄÖÜa-zäöüß]+\s+[A-ZÄÖÜa-zäöüß]+)\s+(?:Senior\s+)?(?:Expert|Manager|Consultant|Specialist|HR|Recruiter|Talent\s+Acquisition)[^\n]*/gi,
+            // Email-basierte Erkennung
+            /([A-ZÄÖÜa-zäöüß]+\s+[A-ZÄÖÜa-zäöüß]+)[^@\n]*@[^@\s]+\.[a-z]+/gi,
+            // Kontakt-Sektion
+            /(?:Kontakt|Contact|Ansprechpartner):\s*([A-ZÄÖÜa-zäöüß]+\s+[A-ZÄÖÜa-zäöüß]+)/gi
+        ];
+        
+        for (const pattern of contactPatterns) {
+            const matches = text.matchAll(pattern);
+            for (const match of matches) {
+                const name = match[1].trim();
+                // Validiere den Namen
+                if (name && name.split(' ').length >= 2 && name.length < 50) {
+                    // Suche nach Position/Titel in der Nähe
+                    const contextStart = Math.max(0, match.index - 50);
+                    const contextEnd = Math.min(text.length, match.index + match[0].length + 100);
+                    const context = text.substring(contextStart, contextEnd);
+                    
+                    let position = '';
+                    const positionMatch = context.match(/(?:Senior\s+)?(?:Expert|Manager|Consultant|Specialist|HR|Recruiter|Talent\s+Acquisition)[^\n]*/i);
+                    if (positionMatch) {
+                        position = positionMatch[0].trim();
                     }
+                    
+                    contactPerson = {
+                        name: name,
+                        position: position || 'Ansprechpartner',
+                        email: ''
+                    };
+                    
+                    // Versuche Email zu finden
+                    const emailMatch = context.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+                    if (emailMatch) {
+                        contactPerson.email = emailMatch[0];
+                    }
+                    
+                    break;
                 }
             }
-            
-            Array.from(foundPhrases).slice(0, 10).forEach((phrase, index) => {
-                requirements.push({
-                    text: phrase,
-                    priority: index < 3 ? 'high' : 'medium',
-                    matchScore: 0,
-                    sentences: []
-                });
-            });
+            if (contactPerson) break;
         }
         
-        // Begrenze auf maximal 8 Anforderungen und sortiere nach Priorität
-        return requirements
-            .slice(0, 8)
-            .sort((a, b) => {
-                if (a.priority === 'high' && b.priority !== 'high') return -1;
-                if (a.priority !== 'high' && b.priority === 'high') return 1;
-                return 0;
-            });
+        // Speichere Ansprechpartner in applicationData
+        if (contactPerson) {
+            this.applicationData.contactPerson = contactPerson;
+        }
+        
+        return contactPerson;
     }
 
     confirmExtraction() {
@@ -1667,7 +1754,32 @@ class SmartWorkflowSystem {
     finishWorkflow() {
         // Finalisiere und speichere die Bewerbung
         this.saveData();
+        
+        // Speichere in der Bewerbungsliste
+        const newApplication = {
+            id: Date.now().toString(),
+            company: this.applicationData.companyName,
+            position: this.applicationData.position,
+            date: new Date().toISOString(),
+            status: 'in-progress',
+            contactPerson: this.applicationData.contactPerson || null,
+            coverLetter: this.applicationData.coverLetter || '',
+            requirements: this.applicationData.requirements || [],
+            documents: this.applicationData.documents || []
+        };
+        
+        // Hole existierende Bewerbungen
+        const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+        applications.push(newApplication);
+        localStorage.setItem('applications', JSON.stringify(applications));
+        
         alert('Bewerbung erfolgreich erstellt!');
+        
+        // Lade die Bewerbungsliste neu
+        if (typeof loadApplications === 'function') {
+            loadApplications();
+        }
+        
         this.close();
     }
 }
