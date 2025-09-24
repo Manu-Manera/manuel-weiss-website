@@ -124,6 +124,36 @@ function registerAllButtons() {
                         // Add to DOM
                         document.body.appendChild(modal);
                         
+                        // Initialize event handlers for the workflow
+                        window.smartWorkflow.initializeEventHandlers();
+                        
+                        // Bind actions after DOM is ready
+                        setTimeout(() => {
+                            // Bind all workflow actions
+                            const workflowActions = [
+                                'workflow-close', 'workflow-next-step', 'workflow-prev-step',
+                                'workflow-analyze-job', 'workflow-confirm-extraction', 'workflow-edit-extraction',
+                                'workflow-add-requirement', 'workflow-generate-sentences', 'workflow-save-components',
+                                'workflow-search-address', 'workflow-upload-signature', 'workflow-upload-logo',
+                                'workflow-select-layout', 'workflow-preview-document', 'workflow-copy-link',
+                                'workflow-finish'
+                            ];
+                            
+                            workflowActions.forEach(action => {
+                                if (window.eventRegistry) {
+                                    window.eventRegistry.bindAction(action);
+                                }
+                            });
+                            
+                            // Special handling for textarea input event
+                            const jobDescTextarea = document.getElementById('jobDescription');
+                            if (jobDescTextarea) {
+                                jobDescTextarea.addEventListener('input', () => {
+                                    window.smartWorkflow.analyzeJobDescription();
+                                });
+                            }
+                        }, 100);
+                        
                         console.log('✅ Smart Workflow loaded and displayed');
                     }
                     
