@@ -23,14 +23,24 @@ class SmartWorkflowSystem {
     }
 
     loadSavedData() {
-        const saved = localStorage.getItem('smartWorkflowData');
-        if (saved) {
-            this.applicationData = { ...this.applicationData, ...JSON.parse(saved) };
+        try {
+            const saved = localStorage.getItem('smartWorkflowData');
+            if (saved) {
+                this.applicationData = { ...this.applicationData, ...JSON.parse(saved) };
+            }
+        } catch (error) {
+            console.warn('Fehler beim Laden der Daten:', error);
+            // Fehlerbehandlung - mit leeren Daten starten
         }
     }
 
     saveData() {
-        localStorage.setItem('smartWorkflowData', JSON.stringify(this.applicationData));
+        try {
+            localStorage.setItem('smartWorkflowData', JSON.stringify(this.applicationData));
+        } catch (error) {
+            console.warn('Fehler beim Speichern der Daten:', error);
+            // Ignoriere Fehler beim Speichern (z.B. bei vollem Storage)
+        }
     }
 
     // Schritt 1: Stelleninformationen mit automatischer Analyse
@@ -41,8 +51,29 @@ class SmartWorkflowSystem {
                     <h2>Schritt 1: Stelleninformationen</h2>
                     <p class="step-description">Fügen Sie die Stellenanzeige ein - wir analysieren sie automatisch für Sie</p>
                 </div>
+                
+                <div class="application-type-selector">
+                    <label class="radio-option">
+                        <input type="radio" name="applicationType" value="job-posting" 
+                               ${this.applicationData.applicationType !== 'initiative' ? 'checked' : ''}
+                               onchange="window.smartWorkflow.setApplicationType('job-posting')">
+                        <span class="radio-label">
+                            <i class="fas fa-clipboard-list"></i>
+                            Mit Stellenanzeige
+                        </span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="applicationType" value="initiative" 
+                               ${this.applicationData.applicationType === 'initiative' ? 'checked' : ''}
+                               onchange="window.smartWorkflow.setApplicationType('initiative')">
+                        <span class="radio-label">
+                            <i class="fas fa-lightbulb"></i>
+                            Initiativbewerbung
+                        </span>
+                    </label>
+                </div>
 
-                <div class="form-section">
+                <div class="form-section ${this.applicationData.applicationType === 'initiative' ? 'hidden' : ''}" id="jobDescriptionSection">
                     <label class="form-label required">
                         <i class="fas fa-paste"></i> Stellenbeschreibung
                         <span class="label-hint">Kopieren Sie die komplette Stellenanzeige hier hinein</span>
@@ -926,31 +957,62 @@ class SmartWorkflowSystem {
         let company = '';
         let position = '';
         
-        // Firmenname-Muster
+        // Firma-Muster - erweitert für verschiedene Formate
         const companyPatterns = [
-            /^([^·\n]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp))\s*$/im,
-            /bei\s+([^·\n]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp))/i
+            // Suche nach Firmennamen mit rechtlicher Form
+            /([A-Za-zÄÖÜäöüß\s&\-\.]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp|mbH|KG|OHG|e\.V\.|GmbH\s*&\s*Co\.\s*KG))/gi,
+            // Nach "bei" oder "at" 
+            /(?:bei|at|@)\s+([A-Za-zÄÖÜäöüß\s&\-\.]+)/gi,
+            // Am Anfang einer Zeile (oft der Firmenname)
+            /^([A-Za-zÄÖÜäöüß\s&\-\.]+)(?:\s+·|\s+\||$)/m,
+            // In Kombination mit "sucht" oder "seeks"
+            /([A-Za-zÄÖÜäöüß\s&\-\.]+)\s+(?:sucht|seeks|is looking for)/gi
         ];
         
+        // Durchsuche alle Muster und nimm das erste gefundene
         for (const pattern of companyPatterns) {
-            const match = text.match(pattern);
-            if (match) {
-                company = match[1].trim();
-                break;
+            const matches = text.matchAll(pattern);
+            for (const match of matches) {
+                const found = match[1].trim();
+                // Validiere den Firmennamen (min. 3 Zeichen, keine reinen Zahlen)
+                if (found.length >= 3 && !/^\d+$/.test(found)) {
+                    company = found;
+                    break;
+                }
             }
+            if (company) break;
         }
         
         // Position-Muster
         const positionPatterns = [
-            /^([^·\n]+?)\s*\((?:all genders|m\/w\/d)\)/im,
-            /^((?:Consultant|Manager|Developer|Engineer|Analyst)[^·\n]+)/im
+            // Mit Gender-Zusatz
+            /([^·\n\|]+?)\s*\((?:all\s*genders?|m\/w\/d|w\/m\/d|f\/m\/d|m\/f\/d)\)/gi,
+            // Typische Job-Titel
+            /((?:Senior\s+|Junior\s+|Lead\s+)?(?:Consultant|Manager|Developer|Engineer|Analyst|Specialist|Expert|Administrator|Architect|Designer|Coordinator|Director|Head\s+of|Team\s+Lead|Product\s+Owner|Scrum\s+Master|Data\s+Scientist|DevOps|Full[\s\-]?Stack|Front[\s\-]?end|Back[\s\-]?end|Software|Hardware|IT|HR|Sales|Marketing|Finance|Business|Project|Program|Account|Customer|Client|Technical|Solution|System|Network|Database|Cloud|Security|Quality|Test|UX|UI|Web|Mobile|Application)[^·\n\|]*)/gi,
+            // Nach typischen Phrasen
+            /(?:Position|Stelle|Job|Role|Vacancy):\s*([^·\n\|]+)/gi,
+            // Zwischen Firma und Location
+            /(?:AG|GmbH|Corp|Inc)\s+[·\|]\s+([^·\n\|]+)\s+[·\|]/gi
         ];
         
         for (const pattern of positionPatterns) {
-            const match = text.match(pattern);
-            if (match) {
-                position = match[1].trim();
-                break;
+            const matches = text.matchAll(pattern);
+            for (const match of matches) {
+                const found = match[1].trim();
+                // Validiere die Position
+                if (found.length >= 5 && found.length < 100 && !/^\d+$/.test(found)) {
+                    position = found;
+                    break;
+                }
+            }
+            if (position) break;
+        }
+        
+        // Spezialfall für LinkedIn-Format
+        if (!company && text.includes('bei ')) {
+            const linkedinMatch = text.match(/bei\s+([^·\n]+?)(?:\s+·|\s+speichern|\s*$)/i);
+            if (linkedinMatch) {
+                company = linkedinMatch[1].trim();
             }
         }
         
@@ -1124,24 +1186,40 @@ class SmartWorkflowSystem {
         const jobDescTextarea = document.getElementById('jobDescription');
         
         const checkInputs = () => {
-            if (companyInput.value && positionInput.value && jobDescTextarea.value) {
-                this.applicationData.companyName = companyInput.value;
-                this.applicationData.position = positionInput.value;
-                this.applicationData.jobDescription = jobDescTextarea.value;
-                this.applicationData.extractionConfirmed = true;
-                
-                // Aktiviere den Weiter-Button
-                const nextButton = document.querySelector('[data-action="workflow-next-step"]');
-                if (nextButton) {
-                    nextButton.disabled = false;
-                    nextButton.classList.remove('disabled');
+            if (this.applicationData.applicationType === 'initiative') {
+                // Bei Initiativbewerbung nur Firma und Position prüfen
+                if (companyInput.value && positionInput.value) {
+                    this.applicationData.companyName = companyInput.value;
+                    this.applicationData.position = positionInput.value;
+                    
+                    // Aktiviere den Weiter-Button
+                    const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+                    if (nextButton) {
+                        nextButton.disabled = false;
+                        nextButton.classList.remove('disabled');
+                    }
+                }
+            } else {
+                // Bei normaler Bewerbung alle Felder prüfen
+                if (companyInput.value && positionInput.value && jobDescTextarea.value) {
+                    this.applicationData.companyName = companyInput.value;
+                    this.applicationData.position = positionInput.value;
+                    this.applicationData.jobDescription = jobDescTextarea.value;
+                    this.applicationData.extractionConfirmed = true;
+                    
+                    // Aktiviere den Weiter-Button
+                    const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+                    if (nextButton) {
+                        nextButton.disabled = false;
+                        nextButton.classList.remove('disabled');
+                    }
                 }
             }
         };
         
-        companyInput.addEventListener('input', checkInputs);
-        positionInput.addEventListener('input', checkInputs);
-        jobDescTextarea.addEventListener('input', checkInputs);
+        if (companyInput) companyInput.addEventListener('input', checkInputs);
+        if (positionInput) positionInput.addEventListener('input', checkInputs);
+        if (jobDescTextarea) jobDescTextarea.addEventListener('input', checkInputs);
     }
 
     // Navigation
@@ -1149,13 +1227,44 @@ class SmartWorkflowSystem {
         if (this.currentStep < this.totalSteps) {
             // Vor dem Wechsel zu Schritt 2: Extrahiere Anforderungen
             if (this.currentStep === 1) {
-                const jobDesc = this.applicationData.jobDescription || '';
-                this.applicationData.requirements = this.extractRequirements(jobDesc);
-                
-                // Falls keine Anforderungen gefunden, zeige Warnung
-                if (this.applicationData.requirements.length === 0) {
-                    alert('Keine Anforderungen in der Stellenanzeige gefunden. Bitte überprüfen Sie die Stellenbeschreibung.');
-                    return;
+                if (this.applicationData.applicationType === 'initiative') {
+                    // Bei Initiativbewerbung: Erstelle Standard-Anforderungen
+                    this.applicationData.requirements = [
+                        {
+                            text: 'Motivation und Interesse am Unternehmen',
+                            priority: 'high',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Relevante Fähigkeiten und Erfahrungen',
+                            priority: 'high',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Mehrwert für das Unternehmen',
+                            priority: 'high',
+                            matchScore: 0,
+                            sentences: []
+                        },
+                        {
+                            text: 'Passung zur Unternehmenskultur',
+                            priority: 'medium',
+                            matchScore: 0,
+                            sentences: []
+                        }
+                    ];
+                } else {
+                    // Bei normaler Bewerbung: Extrahiere aus Stellenanzeige
+                    const jobDesc = this.applicationData.jobDescription || '';
+                    this.applicationData.requirements = this.extractRequirements(jobDesc);
+                    
+                    // Falls keine Anforderungen gefunden, zeige Warnung
+                    if (this.applicationData.requirements.length === 0) {
+                        alert('Keine Anforderungen in der Stellenanzeige gefunden. Bitte überprüfen Sie die Stellenbeschreibung.');
+                        return;
+                    }
                 }
             }
             
@@ -1225,10 +1334,17 @@ class SmartWorkflowSystem {
         switch(this.currentStep) {
             case 1:
                 // Schritt 1: Prüfe ob alle Felder ausgefüllt und bestätigt sind
-                return this.applicationData.companyName && 
-                       this.applicationData.position && 
-                       this.applicationData.jobDescription &&
-                       this.applicationData.extractionConfirmed;
+                if (this.applicationData.applicationType === 'initiative') {
+                    // Bei Initiativbewerbung nur Firma und Position prüfen
+                    return this.applicationData.companyName && 
+                           this.applicationData.position;
+                } else {
+                    // Bei normaler Bewerbung alles prüfen
+                    return this.applicationData.companyName && 
+                           this.applicationData.position && 
+                           this.applicationData.jobDescription &&
+                           this.applicationData.extractionConfirmed;
+                }
             case 2:
                 // Schritt 2: Prüfe ob Anforderungen vorhanden sind
                 return this.applicationData.requirements && 
@@ -1380,6 +1496,58 @@ class SmartWorkflowSystem {
         }
     }
     
+    setApplicationType(type) {
+        this.applicationData.applicationType = type;
+        
+        const jobDescSection = document.getElementById('jobDescriptionSection');
+        const jobDescTextarea = document.getElementById('jobDescription');
+        const confirmBox = document.querySelector('.extraction-confirm');
+        
+        if (type === 'initiative') {
+            // Bei Initiativbewerbung
+            if (jobDescSection) jobDescSection.classList.add('hidden');
+            
+            // Leere Stellenbeschreibung und setze Extraction als bestätigt
+            this.applicationData.jobDescription = 'Initiativbewerbung';
+            this.applicationData.extractionConfirmed = true;
+            
+            // Aktiviere Weiter-Button wenn Firma und Position ausgefüllt
+            this.checkInitiativeReadiness();
+        } else {
+            // Bei normaler Bewerbung
+            if (jobDescSection) jobDescSection.classList.remove('hidden');
+            
+            // Reset extraction confirmation
+            this.applicationData.extractionConfirmed = false;
+            
+            // Deaktiviere Weiter-Button
+            const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+            if (nextButton) {
+                nextButton.disabled = true;
+                nextButton.classList.add('disabled');
+            }
+        }
+        
+        this.saveData();
+    }
+    
+    checkInitiativeReadiness() {
+        const companyInput = document.getElementById('companyName');
+        const positionInput = document.getElementById('position');
+        
+        if (this.applicationData.applicationType === 'initiative' && 
+            companyInput && companyInput.value && 
+            positionInput && positionInput.value) {
+            
+            // Aktiviere Weiter-Button
+            const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+            if (nextButton) {
+                nextButton.disabled = false;
+                nextButton.classList.remove('disabled');
+            }
+        }
+    }
+    
     removeRequirement(index) {
         if (confirm('Diese Anforderung wirklich entfernen?')) {
             this.applicationData.requirements.splice(index, 1);
@@ -1515,3 +1683,4 @@ window.smartWorkflow.updateRequirement = window.smartWorkflow.updateRequirement.
 window.smartWorkflow.setPriority = window.smartWorkflow.setPriority.bind(window.smartWorkflow);
 window.smartWorkflow.removeRequirement = window.smartWorkflow.removeRequirement.bind(window.smartWorkflow);
 window.smartWorkflow.togglePriority = window.smartWorkflow.togglePriority.bind(window.smartWorkflow);
+window.smartWorkflow.setApplicationType = window.smartWorkflow.setApplicationType.bind(window.smartWorkflow);
