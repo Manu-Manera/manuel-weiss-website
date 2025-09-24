@@ -840,8 +840,9 @@ class SmartWorkflowSystem {
                 </div>
                 
                 <button 
-                    class="btn btn-primary" 
+                    class="btn btn-primary ${this.canProceed() ? '' : 'disabled'}" 
                     data-action="${this.currentStep === this.totalSteps ? 'workflow-finish' : 'workflow-next-step'}"
+                    ${this.canProceed() ? '' : 'disabled'}
                 >
                     ${this.currentStep === this.totalSteps ? 
                         '<i class="fas fa-check"></i> Fertigstellen' : 
@@ -985,13 +986,81 @@ class SmartWorkflowSystem {
     confirmExtraction() {
         this.applicationData.extractionConfirmed = true;
         this.saveData();
-        // UI Update
-        document.querySelector('.extraction-confirm').classList.add('confirmed');
+        
+        // UI Updates
+        const confirmBox = document.querySelector('.extraction-confirm');
+        if (confirmBox) {
+            confirmBox.style.display = 'none';
+        }
+        
+        // Zeige Erfolgsmeldung
+        const status = document.getElementById('analysisStatus');
+        if (status) {
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Daten erfolgreich übernommen';
+            status.classList.remove('hidden');
+            status.classList.add('success');
+        }
+        
+        // Aktiviere den Weiter-Button
+        const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+        if (nextButton) {
+            nextButton.disabled = false;
+            nextButton.classList.remove('disabled');
+        }
+        
+        // Mache Eingabefelder read-only
+        const inputs = document.querySelectorAll('#companyName, #position');
+        inputs.forEach(input => {
+            input.readOnly = true;
+            input.classList.add('confirmed');
+        });
     }
 
     editExtraction() {
+        // Verstecke die Bestätigungsbox
+        const confirmBox = document.querySelector('.extraction-confirm');
+        if (confirmBox) {
+            confirmBox.style.display = 'none';
+        }
+        
+        // Mache Eingabefelder wieder editierbar
+        const inputs = document.querySelectorAll('#companyName, #position');
+        inputs.forEach(input => {
+            input.readOnly = false;
+            input.classList.remove('confirmed');
+        });
+        
         // Fokus auf erstes Eingabefeld
         document.getElementById('companyName').focus();
+        
+        // Füge Event Listener für manuelle Eingabe hinzu
+        this.addManualInputListeners();
+    }
+    
+    addManualInputListeners() {
+        const companyInput = document.getElementById('companyName');
+        const positionInput = document.getElementById('position');
+        const jobDescTextarea = document.getElementById('jobDescription');
+        
+        const checkInputs = () => {
+            if (companyInput.value && positionInput.value && jobDescTextarea.value) {
+                this.applicationData.companyName = companyInput.value;
+                this.applicationData.position = positionInput.value;
+                this.applicationData.jobDescription = jobDescTextarea.value;
+                this.applicationData.extractionConfirmed = true;
+                
+                // Aktiviere den Weiter-Button
+                const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+                if (nextButton) {
+                    nextButton.disabled = false;
+                    nextButton.classList.remove('disabled');
+                }
+            }
+        };
+        
+        companyInput.addEventListener('input', checkInputs);
+        positionInput.addEventListener('input', checkInputs);
+        jobDescTextarea.addEventListener('input', checkInputs);
     }
 
     // Navigation
@@ -1012,9 +1081,76 @@ class SmartWorkflowSystem {
     }
 
     updateUI() {
-        const container = document.querySelector('.smart-workflow-container');
-        if (container) {
+        const container = document.querySelector('.workflow-wrapper');
+        if (!container) {
+            // Falls Container nicht existiert, neu rendern
+            const modal = document.getElementById('smartWorkflowModal');
+            if (modal) {
+                modal.innerHTML = this.render();
+                // Re-bind events after re-render
+                setTimeout(() => {
+                    const workflowActions = [
+                        'workflow-close', 'workflow-next-step', 'workflow-prev-step',
+                        'workflow-analyze-job', 'workflow-confirm-extraction', 'workflow-edit-extraction',
+                        'workflow-add-requirement', 'workflow-generate-sentences', 'workflow-save-components',
+                        'workflow-search-address', 'workflow-upload-signature', 'workflow-upload-logo',
+                        'workflow-select-layout', 'workflow-preview-document', 'workflow-copy-link',
+                        'workflow-finish'
+                    ];
+                    
+                    workflowActions.forEach(action => {
+                        if (window.eventRegistry) {
+                            window.eventRegistry.bindAction(action);
+                        }
+                    });
+                    
+                    // Re-bind textarea event
+                    const jobDescTextarea = document.getElementById('jobDescription');
+                    if (jobDescTextarea) {
+                        jobDescTextarea.addEventListener('input', () => {
+                            window.smartWorkflow.analyzeJobDescription();
+                        });
+                    }
+                    
+                    // Re-bind manual input listeners if on step 1
+                    if (this.currentStep === 1 && !this.applicationData.extractionConfirmed) {
+                        this.addManualInputListeners();
+                    }
+                }, 100);
+            }
+        } else {
             container.innerHTML = this.render();
+        }
+    }
+    
+    canProceed() {
+        switch(this.currentStep) {
+            case 1:
+                // Schritt 1: Prüfe ob alle Felder ausgefüllt und bestätigt sind
+                return this.applicationData.companyName && 
+                       this.applicationData.position && 
+                       this.applicationData.jobDescription &&
+                       this.applicationData.extractionConfirmed;
+            case 2:
+                // Schritt 2: Prüfe ob Anforderungen vorhanden sind
+                return this.applicationData.requirements && 
+                       this.applicationData.requirements.length > 0;
+            case 3:
+                // Schritt 3: Prüfe ob Anschreiben vorhanden ist
+                return this.applicationData.coverLetter && 
+                       this.applicationData.coverLetter.length > 100;
+            case 4:
+                // Schritt 4: Layout gewählt
+                return this.applicationData.layoutStyle;
+            case 5:
+                // Schritt 5: Export-Optionen gewählt
+                return this.applicationData.exportOptions && 
+                       Object.values(this.applicationData.exportOptions).some(v => v);
+            case 6:
+                // Schritt 6: Immer true für Zusammenfassung
+                return true;
+            default:
+                return false;
         }
     }
 
