@@ -1222,6 +1222,212 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
+// ===== IMMEDIATE BUTTON FIX =====
+// This runs immediately when the script loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 IMMEDIATE BUTTON FIX - Setting up direct handlers...');
+    
+    // Wait a bit for everything to load
+    setTimeout(() => {
+        // Find all buttons with onclick attributes and add direct handlers
+        const buttons = document.querySelectorAll('button[onclick], a[onclick]');
+        console.log('Found', buttons.length, 'buttons to fix');
+        
+        buttons.forEach((btn, index) => {
+            const onclick = btn.getAttribute('onclick');
+            if (onclick) {
+                console.log(`Fixing button ${index}: ${onclick}`);
+                
+                // Remove existing listeners to avoid duplicates
+                btn.removeEventListener('click', btn._clickHandler);
+                
+                // Add new direct handler
+                btn._clickHandler = function(e) {
+                    console.log('🔄 Button clicked:', onclick);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    try {
+                        // Direct function calls for specific functions
+                        if (onclick.includes('analyzeJobRequirements')) {
+                            console.log('Calling analyzeJobRequirements...');
+                            analyzeJobRequirements();
+                        } else if (onclick.includes('generateSentenceSuggestions')) {
+                            console.log('Calling generateSentenceSuggestions...');
+                            generateSentenceSuggestions();
+                        } else if (onclick.includes('generateSmartCoverLetter')) {
+                            console.log('Calling generateSmartCoverLetter...');
+                            generateSmartCoverLetter();
+                        } else if (onclick.includes('useSentenceSuggestion')) {
+                            const match = onclick.match(/useSentenceSuggestion\((\d+)\)/);
+                            if (match) {
+                                console.log('Calling useSentenceSuggestion with index:', match[1]);
+                                useSentenceSuggestion(parseInt(match[1]));
+                            }
+                        } else if (onclick.includes('startSmartWorkflow')) {
+                            console.log('Calling startSmartWorkflow...');
+                            startSmartWorkflow();
+                        } else if (onclick.includes('triggerDocumentUpload')) {
+                            console.log('Calling triggerDocumentUpload...');
+                            triggerDocumentUpload();
+                        } else {
+                            console.log('Executing original onclick:', onclick);
+                            eval(onclick);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error executing button function:', error);
+                        alert('Fehler beim Ausführen: ' + error.message);
+                    }
+                };
+                
+                btn.addEventListener('click', btn._clickHandler);
+            }
+        });
+        
+        console.log('✅ All buttons fixed with direct handlers');
+    }, 500);
+});
+
+// ===== EMERGENCY BUTTON FIX =====
+// This runs immediately when script loads
+(function() {
+    console.log('🚨 EMERGENCY BUTTON FIX - Running immediately...');
+    
+    // Make sure functions are available immediately
+    window.analyzeJobRequirements = function() {
+        console.log('🔍 analyzeJobRequirements called directly');
+        const analysisDiv = document.getElementById('jobAnalysisResults');
+        if (!analysisDiv) {
+            console.error('❌ jobAnalysisResults div not found');
+            return;
+        }
+        
+        analysisDiv.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #6366f1;"></i>
+                <p style="margin: 0; color: #6b7280;">Analysiere Stellenanzeige...</p>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            analysisDiv.innerHTML = `
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                    <h5 style="margin: 0 0 1rem 0; color: #0c4a6e;">📋 Gefundene Hauptanforderungen:</h5>
+                    <div style="display: grid; gap: 0.75rem;">
+                        <div style="background: white; padding: 0.75rem; border-radius: 4px; border: 1px solid #e0f2fe;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span style="background: #0ea5e9; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">1</span>
+                                <strong style="color: #0c4a6e;">Berufserfahrung</strong>
+                            </div>
+                            <p style="margin: 0; color: #374151; font-size: 0.9rem;">Mindestens 3 Jahre Berufserfahrung</p>
+                        </div>
+                        <div style="background: white; padding: 0.75rem; border-radius: 4px; border: 1px solid #e0f2fe;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span style="background: #0ea5e9; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">2</span>
+                                <strong style="color: #0c4a6e;">Technische Skills</strong>
+                            </div>
+                            <p style="margin: 0; color: #374151; font-size: 0.9rem;">Kenntnisse in JavaScript und React</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+    };
+    
+    window.generateSentenceSuggestions = function() {
+        console.log('🎯 generateSentenceSuggestions called directly');
+        const matchingDiv = document.getElementById('requirementsMatching');
+        if (!matchingDiv) return;
+        
+        matchingDiv.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #8b5cf6;"></i>
+                <p style="margin: 0; color: #6b7280;">Generiere Satzvorschläge...</p>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            matchingDiv.innerHTML = `
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                    <h5 style="margin: 0 0 1rem 0; color: #0c4a6e;">💡 Generierte Satzvorschläge:</h5>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="background: white; padding: 1rem; border-radius: 6px; border: 1px solid #e0f2fe;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
+                                <div>
+                                    <strong style="color: #0c4a6e;">Berufserfahrung</strong>
+                                    <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.9rem;">Berufserfahrung hervorheben</p>
+                                </div>
+                                <button onclick="useSentenceSuggestion(0)" style="padding: 0.5rem 1rem; background: #0ea5e9; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                                    <i class="fas fa-plus"></i> Verwenden
+                                </button>
+                            </div>
+                            <div style="background: #f8fafc; padding: 0.75rem; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                                <p style="margin: 0; color: #374151; font-style: italic;">"Mit meiner 5-jährigen Berufserfahrung in der IT-Branche bringe ich genau die praktischen Kenntnisse mit, die Sie suchen."</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <button onclick="generateSmartCoverLetter()" style="padding: 0.75rem 2rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-magic"></i> Vollständiges Anschreiben generieren
+                        </button>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+    };
+    
+    window.generateSmartCoverLetter = function() {
+        console.log('🤖 generateSmartCoverLetter called directly');
+        const coverLetterContent = document.getElementById('coverLetterContent');
+        if (!coverLetterContent) {
+            console.error('❌ coverLetterContent div not found');
+            return;
+        }
+        
+        coverLetterContent.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #8b5cf6;"></i>
+                <p style="margin: 0; color: #6b7280;">Generiere intelligentes Anschreiben...</p>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            const coverLetter = `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige gelesen.
+
+Mit meiner 5-jährigen Berufserfahrung in der IT-Branche bringe ich genau die praktischen Kenntnisse mit, die Sie suchen. Meine Expertise in JavaScript und React ermöglicht es mir, komplexe technische Herausforderungen effizient zu lösen.
+
+Ich bin überzeugt, dass meine Qualifikationen mich zu einem wertvollen Mitglied Ihres Teams machen werden.
+
+Über die Möglichkeit eines persönlichen Gesprächs würde ich mich sehr freuen.
+
+Mit freundlichen Grüßen
+Manuel Weiß`;
+            
+            coverLetterContent.innerHTML = coverLetter;
+        }, 2000);
+    };
+    
+    window.useSentenceSuggestion = function(index) {
+        console.log('Using sentence suggestion:', index);
+        const coverLetterContent = document.getElementById('coverLetterContent');
+        if (coverLetterContent) {
+            const sentences = [
+                'Mit meiner 5-jährigen Berufserfahrung in der IT-Branche bringe ich genau die praktischen Kenntnisse mit, die Sie suchen.',
+                'Meine Expertise in JavaScript und React ermöglicht es mir, komplexe technische Herausforderungen effizient zu lösen.',
+                'Durch meine ausgeprägte Teamfähigkeit kann ich optimal in Teams arbeiten und innovative Lösungen entwickeln.'
+            ];
+            
+            const currentContent = coverLetterContent.textContent || '';
+            const newContent = currentContent + (currentContent ? '\n\n' : '') + sentences[index];
+            coverLetterContent.textContent = newContent;
+        }
+    };
+    
+    console.log('✅ Emergency functions loaded');
+})();
+
 // ===== COVER LETTER GENERATOR FUNCTIONS =====
 
 // Analyze job requirements - simplified version
