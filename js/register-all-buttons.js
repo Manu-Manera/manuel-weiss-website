@@ -80,9 +80,9 @@ function registerAllButtons() {
                                         model: 'gpt-4o-mini',
                                         messages: [{
                                             role: 'user',
-                                            content: 'Sage nur "Test erfolgreich" zurück.'
+                                            content: 'Antworte nur mit: OK'
                                         }],
-                                        max_tokens: 10,
+                                        max_tokens: 5,
                                         temperature: 0
                                     })
                                 });

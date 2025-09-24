@@ -985,13 +985,147 @@ class SmartWorkflowSystem {
 
     // Event Handlers  
     analyzeJobDescription() {
-        // Manuelle Eingabe - keine KI-Analyse im Workflow
         const jobDesc = document.getElementById('jobDescription').value;
-        if (!jobDesc) return;
+        if (!jobDesc || jobDesc.trim().length < 50) return;
         
-        // Speichere nur die Stellenbeschreibung
+        // Speichere Stellenbeschreibung
         this.applicationData.jobDescription = jobDesc;
+        
+        // Show analysis status
+        const statusDiv = document.querySelector('.analysis-status');
+        if (statusDiv) {
+            statusDiv.innerHTML = `
+                <div style="color: #3b82f6; padding: 0.5rem;">
+                    <i class="fas fa-spinner fa-spin"></i> Analysiere automatisch...
+                </div>
+            `;
+        }
+        
+        // KI-Analyse wenn verfügbar
+        if (window.globalAI && window.globalAI.isAPIReady()) {
+            window.globalAI.analyzeJobPosting(jobDesc)
+                .then(result => {
+                    this.displayExtractionResults(result);
+                })
+                .catch(error => {
+                    console.warn('KI-Analyse fehlgeschlagen, verwende lokale Extraktion:', error);
+                    this.performLocalExtraction(jobDesc);
+                });
+        } else {
+            // Lokale Extraktion als Fallback
+            this.performLocalExtraction(jobDesc);
+        }
+        
         this.saveData();
+    }
+
+    displayExtractionResults(result) {
+        // Fülle die Eingabefelder mit den extrahierten Daten
+        const companyField = document.getElementById('companyName');
+        const positionField = document.getElementById('jobTitle');
+        
+        if (companyField && result.company) {
+            companyField.value = result.company;
+            this.applicationData.companyName = result.company;
+        }
+        
+        if (positionField && result.position) {
+            positionField.value = result.position;
+            this.applicationData.position = result.position;
+        }
+        
+        // Kontaktperson wenn verfügbar
+        if (result.contactPerson) {
+            this.updateContactPersonFields(result.contactPerson);
+        }
+        
+        // Zeige Bestätigungsbox
+        const statusDiv = document.querySelector('.analysis-status');
+        if (statusDiv) {
+            statusDiv.innerHTML = `
+                <div style="color: #059669; padding: 0.5rem;">
+                    <i class="fas fa-check-circle"></i> Automatisch extrahiert: ${result.company} - ${result.position}
+                    <button data-action="workflow-confirm-extraction" style="margin-left: 1rem; padding: 0.25rem 0.75rem; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Übernehmen
+                    </button>
+                    <button data-action="workflow-edit-extraction" style="margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Bearbeiten
+                    </button>
+                </div>
+            `;
+        }
+        
+        this.saveData();
+    }
+
+    performLocalExtraction(jobDesc) {
+        // Lokale Extraktion mit verbesserter Regex
+        const company = this.extractCompanyLocal(jobDesc);
+        const position = this.extractPositionLocal(jobDesc);
+        
+        const result = {
+            company: company,
+            position: position,
+            location: this.extractLocationLocal(jobDesc),
+            contactPerson: this.extractContactPersonLocal(jobDesc)
+        };
+        
+        this.displayExtractionResults(result);
+    }
+
+    extractCompanyLocal(text) {
+        // Verbesserte Firmen-Extraktion
+        const patterns = [
+            /^([A-Z][A-Za-z\s&\-\.]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp))/im,
+            /(?:bei|at)\s+([A-Za-z0-9\s&\-\.]+?)(?:\s+·|\s+speichern|\s+$)/i,
+            /^([A-Z]{2,}(?:\s+[A-Z][a-z]+)*)/m
+        ];
+        
+        for (const pattern of patterns) {
+            const match = text.match(pattern);
+            if (match && match[1].length >= 2 && match[1].length <= 50) {
+                return match[1].trim();
+            }
+        }
+        return '';
+    }
+
+    extractPositionLocal(text) {
+        // Verbesserte Position-Extraktion
+        const patterns = [
+            /([^·\n\|]+?)\s*\((?:f\/m\/x|m\/w\/d|all\s*genders?)\)/i,
+            /(Consultant|Manager|Developer|Engineer|Analyst|Specialist|Expert|SME|Lead|Architect)[^·\n\|]*/i
+        ];
+        
+        for (const pattern of patterns) {
+            const match = text.match(pattern);
+            if (match && match[1].length < 100) {
+                return match[1].trim();
+            }
+        }
+        return '';
+    }
+
+    extractLocationLocal(text) {
+        const locationPattern = /([A-Za-z\s]+),\s*([A-Za-z\s]+),\s*(Schweiz|Deutschland|Austria|Österreich)/i;
+        const match = text.match(locationPattern);
+        return match ? match[0] : '';
+    }
+
+    extractContactPersonLocal(text) {
+        const namePattern = /(?:Ansprechpartner|Contact|Kontakt)[\s:]*([A-Z][a-z]+\s+[A-Z][a-z]+)/i;
+        const emailPattern = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
+        
+        const nameMatch = text.match(namePattern);
+        const emailMatch = text.match(emailPattern);
+        
+        if (nameMatch || emailMatch) {
+            return {
+                name: nameMatch ? nameMatch[1] : null,
+                email: emailMatch ? emailMatch[1] : null
+            };
+        }
+        return null;
     }
     
     updateContactPersonFields(contactPerson) {
@@ -1297,11 +1431,15 @@ class SmartWorkflowSystem {
                     
                     // Re-bind textarea event
                     const jobDescTextarea = document.getElementById('jobDescription');
-                    if (jobDescTextarea) {
-                        jobDescTextarea.addEventListener('input', () => {
-                            window.smartWorkflow.analyzeJobDescription();
-                        });
-                    }
+                            if (jobDescTextarea) {
+                                jobDescTextarea.addEventListener('input', () => {
+                                    // Automatische Analyse nur wenn Text vorhanden
+                                    const text = jobDescTextarea.value.trim();
+                                    if (text.length > 50) {
+                                        window.smartWorkflow.analyzeJobDescription();
+                                    }
+                                });
+                            }
                     
                     // Re-bind manual input listeners if on step 1
                     if (this.currentStep === 1 && !this.applicationData.extractionConfirmed) {
