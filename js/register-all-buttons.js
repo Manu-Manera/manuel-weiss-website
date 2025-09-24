@@ -37,9 +37,57 @@ function registerAllButtons() {
                 if (icon) icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             },
             description: 'Toggle dark mode'
-        },
-        'show-notifications': {
-            handler: () => {
+            },
+            
+            // KI-Einstellungen Actions
+            'save-ai-settings': {
+                handler: () => {
+                    try {
+                        const apiKey = document.getElementById('openai-api-key').value;
+                        
+                        if (!apiKey) {
+                            alert('API Key ist erforderlich!');
+                            return;
+                        }
+                        
+                        const settings = {
+                            apiKey: apiKey,
+                            model: document.getElementById('openai-model').value,
+                            language: document.getElementById('analysis-language').value,
+                            maxRequirements: parseInt(document.getElementById('max-requirements').value),
+                            temperature: parseFloat(document.getElementById('ai-temperature').value)
+                        };
+                        
+                        // Speichere und aktiviere sofort
+                        window.openAIAnalyzer.saveSettings(settings);
+                        
+                        // Erfolgsmeldung
+                        const button = event.target;
+                        const originalText = button.innerHTML;
+                        
+                        button.innerHTML = '<i class="fas fa-check"></i> Aktiviert und bereit!';
+                        button.style.background = '#059669';
+                        
+                        // Automatisch nach 2 Sekunden zur Bewerbungen Sektion wechseln
+                        setTimeout(() => {
+                            button.innerHTML = originalText;
+                            button.style.background = '';
+                            
+                            // Wechsle zur Bewerbungen Sektion
+                            showSection('applications');
+                            
+                            alert('✅ KI-Integration aktiviert! Sie können jetzt Stellenanzeigen intelligent analysieren lassen.');
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('Save settings failed:', error);
+                        alert('Fehler beim Speichern: ' + error.message);
+                    }
+                },
+                description: 'Save and activate AI settings'
+            },
+            'show-notifications': {
+                handler: () => {
                 alert('Benachrichtigungen werden noch implementiert');
             },
             description: 'Show notifications panel'
