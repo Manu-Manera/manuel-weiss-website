@@ -6,11 +6,9 @@
 // Wait for EventRegistry to be available
 function registerAllButtons() {
     if (!window.eventRegistry) {
-        console.error('[RegisterButtons] EventRegistry not available');
         return;
     }
 
-    console.log('[RegisterButtons] Starting button registration...');
 
     // Admin Panel Actions
     window.eventRegistry.registerBulk({
@@ -483,7 +481,6 @@ function registerAllButtons() {
     // Register dynamic button handlers
     registerDynamicHandlers();
 
-    console.log('[RegisterButtons] Registration complete!');
 }
 
 // Handle dynamically created buttons

@@ -30,7 +30,6 @@ class EventRegistry {
         });
 
         if (this.debug) {
-            console.log(`[EventRegistry] Registered: ${action} - ${description}`);
         }
 
         // If DOM is ready, bind immediately
@@ -74,12 +73,6 @@ class EventRegistry {
             element._eventRegistryHandler = (event) => {
                 event.preventDefault();
                 
-                if (this.debug) {
-                    console.log(`[EventRegistry] Click: ${action}`, {
-                        element: element,
-                        event: event
-                    });
-                }
 
                 config.callCount++;
                 config.lastCalled = new Date();
@@ -96,7 +89,6 @@ class EventRegistry {
         });
 
         if (this.debug && elements.length > 0) {
-            console.log(`[EventRegistry] Bound ${elements.length} elements to action: ${action}`);
         }
     }
 
@@ -118,7 +110,6 @@ class EventRegistry {
         this.observeDOM();
 
         this.initialized = true;
-        console.log('[EventRegistry] Initialized with', this.registry.size, 'actions');
     }
 
     /**
@@ -206,7 +197,6 @@ class EventRegistry {
             return;
         }
 
-        console.log(`[EventRegistry] Testing action: ${action}`);
         config.handler({ preventDefault: () => {} }, null);
     }
 
@@ -228,11 +218,9 @@ class EventRegistry {
                 element.removeAttribute('onclick');
                 migrated++;
                 
-                console.log(`[EventRegistry] Migrated: ${functionName}`);
             }
         });
 
-        console.log(`[EventRegistry] Migrated ${migrated} onclick attributes`);
     }
 }
 

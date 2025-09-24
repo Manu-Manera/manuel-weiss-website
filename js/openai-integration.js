@@ -235,17 +235,19 @@ window.openAIAnalyzer = new OpenAIJobAnalyzer();
 
 // Event Handlers für KI-Einstellungen
 document.addEventListener('DOMContentLoaded', function() {
-    // Lade gespeicherte Einstellungen
-    const settings = window.openAIAnalyzer.settings;
-    
-    if (document.getElementById('openai-api-key')) {
-        document.getElementById('openai-api-key').value = settings.apiKey || '';
-        document.getElementById('openai-model').value = settings.model || 'gpt-4o-mini';
-        document.getElementById('analysis-language').value = settings.language || 'auto';
-        document.getElementById('max-requirements').value = settings.maxRequirements || 12;
-        document.getElementById('ai-temperature').value = settings.temperature || 0.1;
+    // Lade gespeicherte Einstellungen wenn verfügbar
+    if (window.openAIAnalyzer) {
+        const settings = window.openAIAnalyzer.settings;
+        
+        if (document.getElementById('openai-api-key')) {
+            document.getElementById('openai-api-key').value = settings.apiKey || '';
+            document.getElementById('openai-model').value = settings.model || 'gpt-4o-mini';
+            document.getElementById('analysis-language').value = settings.language || 'auto';
+            document.getElementById('max-requirements').value = settings.maxRequirements || 12;
+            document.getElementById('ai-temperature').value = settings.temperature || 0.1;
+        }
+        
+        // Update UI
+        window.openAIAnalyzer.updateUsageStats();
     }
-    
-    // Update UI
-    window.openAIAnalyzer.updateUsageStats();
 });
