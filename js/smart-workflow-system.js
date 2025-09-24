@@ -984,238 +984,129 @@ class SmartWorkflowSystem {
     }
 
     // Event Handlers
-    analyzeJobDescription() {
+    async analyzeJobDescription() {
         const jobDesc = document.getElementById('jobDescription').value;
         if (!jobDesc) return;
 
         const status = document.getElementById('analysisStatus');
         status.classList.remove('hidden');
-        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere Stellenanzeige...';
+        status.innerHTML = '<i class="fas fa-brain fa-spin"></i> KI analysiert Stellenanzeige...';
         
-        // Simuliere Analyse (in Produktion würde hier die echte KI-Analyse stattfinden)
-        setTimeout(() => {
-            // Extrahiere Firma, Position und Ansprechpartner
-            const extracted = this.extractJobInfo(jobDesc);
-            const contactPerson = this.extractContactPerson(jobDesc);
-            
-            // Update UI
-            if (extracted.company) {
-                document.getElementById('companyName').value = extracted.company;
-                this.applicationData.companyName = extracted.company;
+        try {
+            // Prüfe ob OpenAI verfügbar ist
+            if (!window.openAIAnalyzer || !window.openAIAnalyzer.settings.apiKey) {
+                throw new Error('OpenAI nicht konfiguriert. Bitte API Key in den KI-Einstellungen hinterlegen.');
             }
             
-            if (extracted.position) {
-                document.getElementById('position').value = extracted.position;
-                this.applicationData.position = extracted.position;
+            // Verwende OpenAI für intelligente Analyse
+            const analysisResult = await window.openAIAnalyzer.analyzeJobPosting(jobDesc);
+            
+            // Update UI mit extrahierten Daten
+            if (analysisResult.company) {
+                document.getElementById('companyName').value = analysisResult.company;
+                this.applicationData.companyName = analysisResult.company;
+                this.applicationData.company = analysisResult.company;
+            }
+            
+            if (analysisResult.position) {
+                const positionField = document.getElementById('jobTitle') || document.getElementById('position');
+                if (positionField) {
+                    positionField.value = analysisResult.position;
+                }
+                this.applicationData.position = analysisResult.position;
+            }
+            
+            // Speichere alle Analysedaten
+            this.applicationData.contactPerson = analysisResult.contactPerson;
+            this.applicationData.location = analysisResult.location;
+            this.applicationData.responsibilities = analysisResult.responsibilities;
+            this.applicationData.benefits = analysisResult.benefits;
+            this.applicationData.employmentType = analysisResult.employmentType;
+            this.applicationData.workModel = analysisResult.workModel;
+            this.applicationData.salaryRange = analysisResult.salaryRange;
+            
+            // Update Ansprechpartner-Felder wenn vorhanden
+            if (analysisResult.contactPerson) {
+                this.updateContactPersonFields(analysisResult.contactPerson);
             }
             
             // Zeige Extraktionsergebnisse
-            if (extracted.company || extracted.position) {
-                const confirmBox = document.querySelector('.extraction-confirm');
-                if (confirmBox) {
-                    confirmBox.style.display = 'block';
-                    const extractedData = confirmBox.querySelector('.extracted-data');
-                    if (extractedData) {
-                        let dataHtml = `
-                            <div><strong>Firma:</strong> ${extracted.company || 'Nicht erkannt'}</div>
-                            <div><strong>Position:</strong> ${extracted.position || 'Nicht erkannt'}</div>
-                        `;
-                        
-                        if (contactPerson) {
-                            dataHtml += `<div><strong>Ansprechpartner:</strong> ${contactPerson.name} ${contactPerson.position ? `(${contactPerson.position})` : ''}</div>`;
-                        }
-                        
-                        extractedData.innerHTML = dataHtml;
+            const confirmBox = document.querySelector('.extraction-confirm');
+            if (confirmBox) {
+                confirmBox.style.display = 'block';
+                const extractedData = confirmBox.querySelector('.extracted-data');
+                if (extractedData) {
+                    let dataHtml = `
+                        <div><strong>Firma:</strong> ${analysisResult.company || 'Nicht erkannt'}</div>
+                        <div><strong>Position:</strong> ${analysisResult.position || 'Nicht erkannt'}</div>
+                    `;
+                    
+                    if (analysisResult.location) {
+                        dataHtml += `<div><strong>Standort:</strong> ${analysisResult.location}</div>`;
                     }
+                    
+                    if (analysisResult.contactPerson && analysisResult.contactPerson.name) {
+                        dataHtml += `<div><strong>Ansprechpartner:</strong> ${analysisResult.contactPerson.name} ${analysisResult.contactPerson.position ? `(${analysisResult.contactPerson.position})` : ''}</div>`;
+                    }
+                    
+                    if (analysisResult.requirements && analysisResult.requirements.length > 0) {
+                        dataHtml += `<div><strong>Anforderungen:</strong> ${analysisResult.requirements.length} gefunden</div>`;
+                    }
+                    
+                    extractedData.innerHTML = dataHtml;
                 }
-                
-                status.innerHTML = '<i class="fas fa-check-circle"></i> Analyse abgeschlossen';
-                status.classList.add('success');
+            }
+            
+            status.innerHTML = '<i class="fas fa-check-circle"></i> KI-Analyse abgeschlossen';
+            status.classList.add('success');
+            
+        } catch (error) {
+            console.error('KI-Analyse Fehler:', error);
+            
+            if (error.message.includes('nicht konfiguriert')) {
+                status.innerHTML = '<i class="fas fa-cog"></i> <a href="#" onclick="showSection(\'ai-settings\')" style="color: #6366f1;">API Key in KI-Einstellungen hinterlegen</a>';
             } else {
-                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Keine Daten erkannt - bitte manuell eingeben';
-                status.classList.add('warning');
+                status.innerHTML = '<i class="fas fa-times-circle"></i> KI-Analyse fehlgeschlagen - bitte manuell eingeben: ' + error.message;
             }
+            status.classList.add('error');
+        }
+        
+        // Speichere Daten
+        this.applicationData.jobDescription = jobDesc;
+        this.saveData();
+    }
+    
+    updateContactPersonFields(contactPerson) {
+        if (contactPerson) {
+            const nameField = document.getElementById('contactName');
+            const positionField = document.getElementById('contactPosition');
+            const emailField = document.getElementById('contactEmail');
+            const phoneField = document.getElementById('contactPhone');
             
-            // Speichere Daten
-            this.applicationData.jobDescription = jobDesc;
-            this.saveData();
-        }, 1500);
+            if (nameField && contactPerson.name) nameField.value = contactPerson.name;
+            if (positionField && contactPerson.position) positionField.value = contactPerson.position;
+            if (emailField && contactPerson.email) emailField.value = contactPerson.email;
+            if (phoneField && contactPerson.phone) phoneField.value = contactPerson.phone;
+        }
     }
 
+    // DEPRECATED: Ersetzt durch OpenAI Integration
+    // Die alten Extraktionsmethoden sind durch window.openAIAnalyzer ersetzt
     extractJobInfo(text) {
-        // Verbesserte Extraktion wie bereits implementiert
-        let company = '';
-        let position = '';
-        
-        // Firma-Muster - erweitert für verschiedene Formate
-        const companyPatterns = [
-            // Suche nach Firmennamen mit rechtlicher Form
-            /([A-Za-zÄÖÜäöüß\s&\-\.]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp|mbH|KG|OHG|e\.V\.|GmbH\s*&\s*Co\.\s*KG))/gi,
-            // Nach "bei" oder "at" 
-            /(?:bei|at|@)\s+([A-Za-zÄÖÜäöüß\s&\-\.]+)/gi,
-            // Am Anfang einer Zeile (oft der Firmenname)
-            /^([A-Za-zÄÖÜäöüß\s&\-\.]+)(?:\s+·|\s+\||$)/m,
-            // In Kombination mit "sucht" oder "seeks"
-            /([A-Za-zÄÖÜäöüß\s&\-\.]+)\s+(?:sucht|seeks|is looking for)/gi
-        ];
-        
-        // Durchsuche alle Muster und nimm das erste gefundene
-        for (const pattern of companyPatterns) {
-            const matches = text.matchAll(pattern);
-            for (const match of matches) {
-                const found = match[1].trim();
-                // Validiere den Firmennamen (min. 3 Zeichen, keine reinen Zahlen)
-                if (found.length >= 3 && !/^\d+$/.test(found)) {
-                    company = found;
-                    break;
-                }
-            }
-            if (company) break;
-        }
-        
-        // Position-Muster
-        const positionPatterns = [
-            // Mit Gender-Zusatz
-            /([^·\n\|]+?)\s*\((?:all\s*genders?|m\/w\/d|w\/m\/d|f\/m\/d|m\/f\/d)\)/gi,
-            // Typische Job-Titel
-            /((?:Senior\s+|Junior\s+|Lead\s+)?(?:Consultant|Manager|Developer|Engineer|Analyst|Specialist|Expert|Administrator|Architect|Designer|Coordinator|Director|Head\s+of|Team\s+Lead|Product\s+Owner|Scrum\s+Master|Data\s+Scientist|DevOps|Full[\s\-]?Stack|Front[\s\-]?end|Back[\s\-]?end|Software|Hardware|IT|HR|Sales|Marketing|Finance|Business|Project|Program|Account|Customer|Client|Technical|Solution|System|Network|Database|Cloud|Security|Quality|Test|UX|UI|Web|Mobile|Application)[^·\n\|]*)/gi,
-            // Nach typischen Phrasen
-            /(?:Position|Stelle|Job|Role|Vacancy):\s*([^·\n\|]+)/gi,
-            // Zwischen Firma und Location
-            /(?:AG|GmbH|Corp|Inc)\s+[·\|]\s+([^·\n\|]+)\s+[·\|]/gi
-        ];
-        
-        for (const pattern of positionPatterns) {
-            const matches = text.matchAll(pattern);
-            for (const match of matches) {
-                const found = match[1].trim();
-                // Validiere die Position
-                if (found.length >= 5 && found.length < 100 && !/^\d+$/.test(found)) {
-                    position = found;
-                    break;
-                }
-            }
-            if (position) break;
-        }
-        
-        // Spezialfall für LinkedIn-Format
-        if (!company && text.includes('bei ')) {
-            const linkedinMatch = text.match(/bei\s+([^·\n]+?)(?:\s+·|\s+speichern|\s*$)/i);
-            if (linkedinMatch) {
-                company = linkedinMatch[1].trim();
-            }
-        }
-        
-        return { company, position };
+        console.warn('extractJobInfo ist deprecated. Verwende window.openAIAnalyzer.analyzeJobPosting()');
+        return { company: '', position: '' };
     }
 
+    // DEPRECATED: Ersetzt durch OpenAI Integration
     extractRequirements(text) {
-        const requirements = [];
-        const processedLines = new Set(); // Vermeidet Duplikate
-        
-        // Erweiterte Sektionsmuster für verschiedene Formate
-        const sectionPatterns = [
-            // Standard Sektionen
-            /(?:Das zeichnet dich aus|Das erwartet dich|Das bringst du mit|Dein Profil|Ihr Profil|Ihre Aufgaben|Was Sie mitbringen|Anforderungen|Requirements|Wir erwarten|Sie haben|Sie bringen mit|Qualifikationen?|Kompetenzen|Skills?):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|Das|$)/gi,
-            // Sektionen mit besonderen Zeichen
-            /(?:Was du.*?mitbringst|Was wir.*?erwarten|Deine.*?Qualifikationen):?\s*\n([\s\S]+?)(?=\n\n[A-Z]|\n\n|$)/gi
-        ];
-        
-        let requirementsText = '';
-        
-        // Sammle alle Anforderungstexte
-        for (const pattern of sectionPatterns) {
-            const matches = text.matchAll(pattern);
-            for (const match of matches) {
-                requirementsText += match[1] + '\n';
-            }
-        }
-        
-        // Intelligente Satzextraktion wenn keine klaren Sektionen
-        if (!requirementsText || requirementsText.trim().length < 50) {
-            // Suche nach Sätzen mit Anforderungs-Indikatoren
-            const sentencePatterns = [
-                // Direkte Anforderungen
-                /(?:Du|Sie)\s+(?:hast|haben|bringst|bringen|verfügst|verfügen|besitzt|besitzen)[^.!?]+[.!?]/gi,
-                // Erfahrung/Kenntnisse Sätze
-                /(?:Erfahrung|Kenntnisse|Wissen|Expertise|Kompetenz|Verständnis)\s+(?:in|mit|von|im Bereich|der|des)[^.!?]+[.!?]/gi,
-                // Jahre Erfahrung
-                /\d+\+?\s*Jahre?[^.!?]+[.!?]/gi,
-                // Ausbildung/Studium
-                /(?:Ausbildung|Studium|Abschluss|Bachelor|Master|Diplom)[^.!?]+[.!?]/gi,
-                // Sprachkenntnisse
-                /(?:Deutsch|Englisch|Sprach)kenntnisse[^.!?]+[.!?]/gi,
-                // Soft Skills
-                /(?:Teamfähigkeit|Kommunikation|analytisch|selbstständig|eigenverantwortlich|flexibel|motiviert)[^.!?]+[.!?]/gi
-            ];
-            
-            for (const pattern of sentencePatterns) {
-                const matches = text.matchAll(pattern);
-                for (const match of matches) {
-                    requirementsText += match[0] + '\n';
-                }
-            }
-        }
-        
-        // Verarbeite Zeilen und Sätze
-        const lines = requirementsText.split(/[.\n]/).filter(line => line.trim());
-        
-        // Prioritäts-Keywords (erweitert)
-        const highPriorityKeywords = [
-            'zwingend', 'erforderlich', 'vorausgesetzt', 'must have', 'required', 'notwendig',
-            'abgeschlossen', 'studium', 'ausbildung', 'mehrjährig', 'fundiert', 'nachweislich',
-            'expertise', 'mindestens', 'jahre', 'berufserfahrung', 'führerschein'
-        ];
-        
-        const mediumPriorityKeywords = [
-            'wünschenswert', 'vorteil', 'plus', 'idealerweise', 'gerne', 'bevorzugt',
-            'kenntnisse', 'erfahrung', 'verständnis', 'affinität'
-        ];
-        
-        // Verarbeite und bewerte jede Zeile
-        lines.forEach((line) => {
-            let cleanLine = line.trim();
-            
-            // Entferne führende Zeichen
-            cleanLine = cleanLine.replace(/^[\s•\-\*\d\.]+/, '').trim();
-            
-            // Ignoriere zu kurze oder zu lange Zeilen
-            if (cleanLine.length < 15 || cleanLine.length > 300) return;
-            
-            // Vermeide Duplikate
-            const normalized = cleanLine.toLowerCase().replace(/\s+/g, ' ');
-            if (processedLines.has(normalized)) return;
-            processedLines.add(normalized);
-            
-            // Bestimme Priorität
-            let priority = 'medium';
-            const lowerLine = cleanLine.toLowerCase();
-            
-            if (highPriorityKeywords.some(keyword => lowerLine.includes(keyword))) {
-                priority = 'high';
-            } else if (!mediumPriorityKeywords.some(keyword => lowerLine.includes(keyword))) {
-                priority = 'low';
-            }
-            
-            // Spezielle Behandlung für bestimmte Muster
-            if (/\d+\+?\s*Jahre/.test(cleanLine)) priority = 'high';
-            if (/SAP|SuccessFactors|HCM/i.test(cleanLine)) priority = 'high';
-            
-            requirements.push({
-                text: cleanLine,
-                priority: priority,
-                matchScore: 0,
-                sentences: []
-            });
-        });
-        
-        // Sortiere nach Priorität und gebe max. 10 zurück
-        return requirements
-            .sort((a, b) => {
-                const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
-                return priorityOrder[a.priority] - priorityOrder[b.priority];
-            })
-            .slice(0, 10);
+        console.warn('extractRequirements ist deprecated. Verwende window.openAIAnalyzer.analyzeJobPosting()');
+        return [];
+    }
+    
+    // DEPRECATED: Ersetzt durch OpenAI Integration
+    determinePriority(requirement, sectionTitle) {
+        console.warn('determinePriority ist deprecated. Verwende window.openAIAnalyzer.analyzeJobPosting()');
+        return 'medium';
     }
     
     extractContactPerson(text) {
@@ -1377,9 +1268,9 @@ class SmartWorkflowSystem {
     }
 
     // Navigation
-    nextStep() {
+    async nextStep() {
         if (this.currentStep < this.totalSteps) {
-            // Vor dem Wechsel zu Schritt 2: Extrahiere Anforderungen
+            // Vor dem Wechsel zu Schritt 2: Anforderungen bereitstellen
             if (this.currentStep === 1) {
                 if (this.applicationData.applicationType === 'initiative') {
                     // Bei Initiativbewerbung: Erstelle Standard-Anforderungen
@@ -1387,37 +1278,50 @@ class SmartWorkflowSystem {
                         {
                             text: 'Motivation und Interesse am Unternehmen',
                             priority: 'high',
+                            category: 'soft_skills',
                             matchScore: 0,
                             sentences: []
                         },
                         {
                             text: 'Relevante Fähigkeiten und Erfahrungen',
                             priority: 'high',
+                            category: 'experience',
                             matchScore: 0,
                             sentences: []
                         },
                         {
                             text: 'Mehrwert für das Unternehmen',
                             priority: 'high',
+                            category: 'soft_skills',
                             matchScore: 0,
                             sentences: []
                         },
                         {
                             text: 'Passung zur Unternehmenskultur',
                             priority: 'medium',
+                            category: 'soft_skills',
                             matchScore: 0,
                             sentences: []
                         }
                     ];
                 } else {
-                    // Bei normaler Bewerbung: Extrahiere aus Stellenanzeige
-                    const jobDesc = this.applicationData.jobDescription || '';
-                    this.applicationData.requirements = this.extractRequirements(jobDesc);
-                    
-                    // Falls keine Anforderungen gefunden, zeige Warnung
-                    if (this.applicationData.requirements.length === 0) {
-                        alert('Keine Anforderungen in der Stellenanzeige gefunden. Bitte überprüfen Sie die Stellenbeschreibung.');
-                        return;
+                    // Bei normaler Bewerbung: Verwende bereits von KI extrahierte Anforderungen
+                    if (!this.applicationData.requirements || this.applicationData.requirements.length === 0) {
+                        // Falls noch keine KI-Analyse gemacht wurde, mache sie jetzt
+                        try {
+                            if (window.openAIAnalyzer && this.applicationData.jobDescription) {
+                                const analysisResult = await window.openAIAnalyzer.analyzeJobPosting(this.applicationData.jobDescription);
+                                this.applicationData.requirements = analysisResult.requirements || [];
+                            }
+                        } catch (error) {
+                            console.warn('KI-Analyse für Anforderungen fehlgeschlagen:', error);
+                        }
+                        
+                        // Falls immer noch keine Anforderungen, zeige Warnung
+                        if (!this.applicationData.requirements || this.applicationData.requirements.length === 0) {
+                            alert('Keine Anforderungen gefunden. Sie können im nächsten Schritt manuell Anforderungen hinzufügen.');
+                            this.applicationData.requirements = [];
+                        }
                     }
                 }
             }

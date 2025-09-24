@@ -1222,6 +1222,12 @@
                                 <span>Bewerbungen</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="ai-settings">
+                            <a href="#ai-settings">
+                                <i class="fas fa-cog"></i>
+                                <span>KI-Einstellungen</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="ai-twin">
                             <a href="#ai-twin">
                                 <i class="fas fa-robot"></i>
@@ -2370,6 +2376,105 @@
                     </div>
                 </section>
 
+                <!-- AI Settings Section -->
+                <section id="ai-settings" class="admin-section" style="display: none;">
+                    <div class="ai-settings-container">
+                        <div class="ai-settings-header">
+                            <h2>🤖 KI-Einstellungen</h2>
+                            <p>Konfiguriere die KI-Services für automatische Stellenanzeigen-Analyse</p>
+                        </div>
+                        
+                        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                            <!-- OpenAI Settings -->
+                            <div class="settings-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <h3 style="margin-bottom: 1rem; color: #333;">
+                                    <i class="fas fa-brain" style="color: #10a37f;"></i> OpenAI API
+                                </h3>
+                                
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="openai-api-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key</label>
+                                    <input type="password" id="openai-api-key" placeholder="sk-..." 
+                                           style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace;">
+                                    <small style="color: #666; font-size: 0.875rem;">Dein OpenAI API Schlüssel für intelligente Stellenanzeigen-Analyse</small>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="openai-model" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Model</label>
+                                    <select id="openai-model" style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                        <option value="gpt-4o-mini">GPT-4o Mini (Empfohlen)</option>
+                                        <option value="gpt-4o">GPT-4o</option>
+                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                    </select>
+                                </div>
+                                
+                            </div>
+                            
+                            <!-- Quick Info -->
+                            <div class="settings-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <h3 style="margin-bottom: 1rem; color: #333;">
+                                    <i class="fas fa-rocket" style="color: #10a37f;"></i> Sofort loslegen
+                                </h3>
+                                
+                                <div style="padding: 1.5rem; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e; margin-bottom: 1rem;">
+                                    <h4 style="margin: 0 0 0.5rem 0; color: #15803d;">
+                                        <i class="fas fa-lightbulb"></i> Intelligente Stellenanzeigen-Analyse
+                                    </h4>
+                                    <p style="margin: 0; color: #15803d; font-size: 0.875rem;">
+                                        Fügen Sie Ihren OpenAI API Key ein und analysieren Sie sofort jede Stellenanzeige weltweit - automatische Extraktion von Firma, Position, Anforderungen und Ansprechpartner.
+                                    </p>
+                                </div>
+                                
+                                <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                    <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                                        <strong>Kosten:</strong> ~$0.01-0.05 pro Stellenanzeige
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Advanced Settings -->
+                        <div class="advanced-settings" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h3 style="margin-bottom: 1rem; color: #333;">
+                                <i class="fas fa-cogs"></i> Erweiterte Einstellungen
+                            </h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Analyse-Sprache</label>
+                                    <select id="analysis-language" style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                        <option value="auto">Automatisch erkennen</option>
+                                        <option value="de">Deutsch</option>
+                                        <option value="en">English</option>
+                                        <option value="fr">Français</option>
+                                        <option value="it">Italiano</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Max. Anforderungen</label>
+                                    <input type="number" id="max-requirements" value="12" min="5" max="20" 
+                                           style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Temperature</label>
+                                    <input type="range" id="ai-temperature" min="0" max="1" step="0.1" value="0.1" 
+                                           style="width: 100%;">
+                                    <small style="color: #666;">Kreativität: Niedrig (präzise) - Hoch (kreativ)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Activate Button -->
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button data-action="save-ai-settings" class="btn btn-primary" 
+                                    style="padding: 1rem 3rem; background: #10a37f; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.1rem;">
+                                <i class="fas fa-rocket"></i> KI-Integration aktivieren
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Applications Section -->
 
 
@@ -2760,8 +2865,8 @@
 
                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
 
-
-                                                <div>
+                                    
+                                    <div>
 
 
                                                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Datum:</label>
@@ -2865,7 +2970,7 @@
                                                     Speichern
 
 
-                                        </button>
+                                            </button>
 
 
                                                 <button type="button" data-action="close-new-application-modal" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
@@ -2877,8 +2982,8 @@
                                                 </button>
 
 
-                                    </div>
-
+                                        </div>
+                                        
 
                                         </form>
 
@@ -3021,7 +3126,7 @@
                                         <div class="translation-item">
                                             <label>Home</label>
                                             <input type="text" id="nav.home" value="Home" data-original="Home">
-                                        </div>
+                            </div>
                                         <div class="translation-item">
                                             <label>Services</label>
                                             <input type="text" id="nav.services" value="Services" data-original="Services">
@@ -8621,6 +8726,9 @@ Bitte antworte im folgenden JSON-Format:
     <!-- Core Button System Scripts (Load First) -->
     <script src="js/event-registry.js"></script>
     <script src="js/button-components.js"></script>
+    
+    <!-- OpenAI Integration (Load Early) -->
+    <script src="js/openai-integration.js"></script>
     
     <!-- Existing Scripts -->
     <script src="js/ai-integration.js"></script>
