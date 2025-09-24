@@ -2583,7 +2583,7 @@
                                                 </p>
 
 
-                                    <button id="smartWorkflowButton" style="padding: 1.5rem 3rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.2rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                                    <button id="smartWorkflowButton" data-action="start-workflow" style="padding: 1.5rem 3rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.2rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
                                         <i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
                                         Neue Bewerbung erstellen
                                     </button>
@@ -8632,6 +8632,9 @@ Bitte antworte im folgenden JSON-Format:
     
     <!-- Migration Tool (Development Only) -->
     <script src="js/migrate-buttons.js"></script>
+    
+    <!-- Debug Script for Button Issues -->
+    <script src="js/debug-button.js"></script>
     
     <script>
         // Initialize new button system
