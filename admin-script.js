@@ -1151,15 +1151,165 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('❌ Smart workflow button not found');
         }
         
+        // Add direct event listeners for cover letter generator buttons
+        setTimeout(() => {
+            console.log('🔧 Adding direct event listeners for cover letter buttons...');
+            
+            // Analyze job requirements button
+            const analyzeBtn = document.querySelector('[onclick="analyzeJobRequirements()"]');
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener('click', function(e) {
+                    console.log('🔄 Analyze job requirements button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                        if (typeof window.analyzeJobRequirements === 'function') {
+                            window.analyzeJobRequirements();
+                        } else {
+                            console.error('❌ analyzeJobRequirements function not found');
+                            alert('Funktion nicht verfügbar. Bitte Seite neu laden.');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error analyzing job requirements:', error);
+                        alert('Fehler bei der Analyse: ' + error.message);
+                    }
+                });
+            }
+            
+            // Generate sentence suggestions button
+            const generateSuggestionsBtn = document.querySelector('[onclick="generateSentenceSuggestions()"]');
+            if (generateSuggestionsBtn) {
+                generateSuggestionsBtn.addEventListener('click', function(e) {
+                    console.log('🔄 Generate sentence suggestions button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                        if (typeof window.generateSentenceSuggestions === 'function') {
+                            window.generateSentenceSuggestions();
+                        } else {
+                            console.error('❌ generateSentenceSuggestions function not found');
+                            alert('Funktion nicht verfügbar. Bitte Seite neu laden.');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error generating sentence suggestions:', error);
+                        alert('Fehler bei der Generierung: ' + error.message);
+                    }
+                });
+            }
+            
+            // Generate smart cover letter button
+            const generateCoverLetterBtn = document.querySelector('[onclick="generateSmartCoverLetter()"]');
+            if (generateCoverLetterBtn) {
+                generateCoverLetterBtn.addEventListener('click', function(e) {
+                    console.log('🔄 Generate smart cover letter button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                        if (typeof window.generateSmartCoverLetter === 'function') {
+                            window.generateSmartCoverLetter();
+                        } else {
+                            console.error('❌ generateSmartCoverLetter function not found');
+                            alert('Funktion nicht verfügbar. Bitte Seite neu laden.');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error generating cover letter:', error);
+                        alert('Fehler bei der Generierung: ' + error.message);
+                    }
+                });
+            }
+            
+            console.log('✅ Direct event listeners added for cover letter buttons');
+        }, 2000);
+        
+        // Fallback: Monitor all buttons with onclick attributes
+        setInterval(() => {
+            const allButtons = document.querySelectorAll('button[onclick], a[onclick]');
+            allButtons.forEach(btn => {
+                const onclick = btn.getAttribute('onclick');
+                if (onclick && !btn.hasAttribute('data-listener-added')) {
+                    btn.setAttribute('data-listener-added', 'true');
+                    btn.addEventListener('click', function(e) {
+                        console.log('🔄 Fallback click detected:', onclick);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        try {
+                            if (onclick.includes('analyzeJobRequirements')) {
+                                if (typeof window.analyzeJobRequirements === 'function') {
+                                    window.analyzeJobRequirements();
+                                } else {
+                                    alert('Analyse-Funktion nicht verfügbar. Bitte Seite neu laden.');
+                                }
+                            } else if (onclick.includes('generateSentenceSuggestions')) {
+                                if (typeof window.generateSentenceSuggestions === 'function') {
+                                    window.generateSentenceSuggestions();
+                                } else {
+                                    alert('Satzvorschläge-Funktion nicht verfügbar. Bitte Seite neu laden.');
+                                }
+                            } else if (onclick.includes('generateSmartCoverLetter')) {
+                                if (typeof window.generateSmartCoverLetter === 'function') {
+                                    window.generateSmartCoverLetter();
+                                } else {
+                                    alert('Anschreiben-Funktion nicht verfügbar. Bitte Seite neu laden.');
+                                }
+                            } else if (onclick.includes('startSmartWorkflow')) {
+                                startSmartWorkflow();
+                            } else if (onclick.includes('triggerDocumentUpload')) {
+                                triggerDocumentUpload();
+                            } else {
+                                // Execute original onclick
+                                eval(onclick);
+                            }
+                        } catch (error) {
+                            console.error('❌ Error executing button function:', error);
+                            alert('Fehler beim Ausführen: ' + error.message);
+                        }
+                    });
+                }
+            });
+        }, 1000);
+        
         // Test global function availability
         console.log('Global functions test:', {
             filterApplications: typeof window.filterApplications,
             startSmartWorkflow: typeof window.startSmartWorkflow,
+            analyzeJobRequirements: typeof window.analyzeJobRequirements,
+            generateSentenceSuggestions: typeof window.generateSentenceSuggestions,
+            generateSmartCoverLetter: typeof window.generateSmartCoverLetter,
             editApplication: typeof window.editApplication,
             triggerDocumentUpload: typeof window.triggerDocumentUpload
         });
         
         console.log('🧪 BUTTON FUNCTIONALITY TEST COMPLETE');
+        
+        // Test function for debugging
+        window.testCoverLetterFunctions = function() {
+            console.log('🧪 Testing cover letter functions...');
+            
+            const functions = [
+                'analyzeJobRequirements',
+                'generateSentenceSuggestions', 
+                'generateSmartCoverLetter',
+                'extractKeyRequirements',
+                'generateSmartSentences'
+            ];
+            
+            functions.forEach(funcName => {
+                const func = window[funcName];
+                console.log(`${funcName}: ${typeof func}`);
+                if (typeof func !== 'function') {
+                    console.error(`❌ ${funcName} is not available!`);
+                }
+            });
+            
+            // Test if workflow data is available
+            console.log('Workflow data:', window.workflowData);
+            
+            return {
+                functions: functions.map(name => ({ name, available: typeof window[name] === 'function' })),
+                workflowData: !!window.workflowData
+            };
+        };
     }, 1000);
 });
 
