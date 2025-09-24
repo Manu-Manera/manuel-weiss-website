@@ -105,8 +105,9 @@ class SmartWorkflowSystem {
                                 type="text" 
                                 id="companyName" 
                                 class="form-input" 
-                                value="${this.applicationData.company || ''}"
+                                value="${this.applicationData.company || this.applicationData.companyName || ''}"
                                 placeholder="Firmenname eingeben..."
+                                ${this.applicationData.applicationType === 'initiative' ? 'oninput="window.smartWorkflow.checkInitiativeReadiness()"' : ''}
                             />
                             <div id="companySuggestions" class="suggestions-box"></div>
                         </div>
@@ -121,8 +122,70 @@ class SmartWorkflowSystem {
                                 class="form-input" 
                                 value="${this.applicationData.position || ''}"
                                 placeholder="Positionsbezeichnung eingeben..."
+                                ${this.applicationData.applicationType === 'initiative' ? 'oninput="window.smartWorkflow.checkInitiativeReadiness()"' : ''}
                             />
                             <div id="positionSuggestions" class="suggestions-box"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ansprechpartner Sektion -->
+                    <div class="form-section" style="margin-top: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem;">
+                            <i class="fas fa-user-tie"></i> Ansprechpartner (Optional)
+                        </h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="contactName" class="form-label">
+                                    <i class="fas fa-user"></i> Name
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="contactName" 
+                                    class="form-input" 
+                                    placeholder="Vor- und Nachname"
+                                    value="${this.applicationData.contactPerson?.name || ''}"
+                                    oninput="window.smartWorkflow.updateContactPerson()"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPosition" class="form-label">
+                                    <i class="fas fa-id-badge"></i> Position
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="contactPosition" 
+                                    class="form-input" 
+                                    placeholder="z.B. HR Manager"
+                                    value="${this.applicationData.contactPerson?.position || ''}"
+                                    oninput="window.smartWorkflow.updateContactPerson()"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail" class="form-label">
+                                    <i class="fas fa-envelope"></i> E-Mail
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="contactEmail" 
+                                    class="form-input" 
+                                    placeholder="email@unternehmen.de"
+                                    value="${this.applicationData.contactPerson?.email || ''}"
+                                    oninput="window.smartWorkflow.updateContactPerson()"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPhone" class="form-label">
+                                    <i class="fas fa-phone"></i> Telefon
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    id="contactPhone" 
+                                    class="form-input" 
+                                    placeholder="+49 123 456789"
+                                    value="${this.applicationData.contactPerson?.phone || ''}"
+                                    oninput="window.smartWorkflow.updateContactPerson()"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -1269,14 +1332,15 @@ class SmartWorkflowSystem {
     
     addManualInputListeners() {
         const companyInput = document.getElementById('companyName');
-        const positionInput = document.getElementById('position');
+        const positionInput = document.getElementById('jobTitle') || document.getElementById('position');
         const jobDescTextarea = document.getElementById('jobDescription');
         
         const checkInputs = () => {
             if (this.applicationData.applicationType === 'initiative') {
                 // Bei Initiativbewerbung nur Firma und Position prüfen
-                if (companyInput.value && positionInput.value) {
+                if (companyInput && companyInput.value && positionInput && positionInput.value) {
                     this.applicationData.companyName = companyInput.value;
+                    this.applicationData.company = companyInput.value;
                     this.applicationData.position = positionInput.value;
                     
                     // Aktiviere den Weiter-Button
@@ -1288,8 +1352,11 @@ class SmartWorkflowSystem {
                 }
             } else {
                 // Bei normaler Bewerbung alle Felder prüfen
-                if (companyInput.value && positionInput.value && jobDescTextarea.value) {
+                if (companyInput && companyInput.value && 
+                    positionInput && positionInput.value && 
+                    jobDescTextarea && jobDescTextarea.value) {
                     this.applicationData.companyName = companyInput.value;
+                    this.applicationData.company = companyInput.value;
                     this.applicationData.position = positionInput.value;
                     this.applicationData.jobDescription = jobDescTextarea.value;
                     this.applicationData.extractionConfirmed = true;
@@ -1594,12 +1661,18 @@ class SmartWorkflowSystem {
             // Bei Initiativbewerbung
             if (jobDescSection) jobDescSection.classList.add('hidden');
             
+            // Verstecke die Extraktions-Bestätigungsbox
+            if (confirmBox) confirmBox.style.display = 'none';
+            
             // Leere Stellenbeschreibung und setze Extraction als bestätigt
             this.applicationData.jobDescription = 'Initiativbewerbung';
             this.applicationData.extractionConfirmed = true;
             
-            // Aktiviere Weiter-Button wenn Firma und Position ausgefüllt
-            this.checkInitiativeReadiness();
+            // Füge Event Listener für manuelle Eingabe hinzu
+            setTimeout(() => {
+                this.addManualInputListeners();
+                this.checkInitiativeReadiness();
+            }, 100);
         } else {
             // Bei normaler Bewerbung
             if (jobDescSection) jobDescSection.classList.remove('hidden');
@@ -1620,11 +1693,16 @@ class SmartWorkflowSystem {
     
     checkInitiativeReadiness() {
         const companyInput = document.getElementById('companyName');
-        const positionInput = document.getElementById('position');
+        const positionInput = document.getElementById('jobTitle') || document.getElementById('position');
         
         if (this.applicationData.applicationType === 'initiative' && 
             companyInput && companyInput.value && 
             positionInput && positionInput.value) {
+            
+            // Speichere die Daten
+            this.applicationData.companyName = companyInput.value;
+            this.applicationData.company = companyInput.value;
+            this.applicationData.position = positionInput.value;
             
             // Aktiviere Weiter-Button
             const nextButton = document.querySelector('[data-action="workflow-next-step"]');
@@ -1633,6 +1711,26 @@ class SmartWorkflowSystem {
                 nextButton.classList.remove('disabled');
             }
         }
+    }
+    
+    updateContactPerson() {
+        const name = document.getElementById('contactName')?.value || '';
+        const position = document.getElementById('contactPosition')?.value || '';
+        const email = document.getElementById('contactEmail')?.value || '';
+        const phone = document.getElementById('contactPhone')?.value || '';
+        
+        if (name || position || email || phone) {
+            this.applicationData.contactPerson = {
+                name: name,
+                position: position,
+                email: email,
+                phone: phone
+            };
+        } else {
+            this.applicationData.contactPerson = null;
+        }
+        
+        this.saveData();
     }
     
     removeRequirement(index) {
@@ -1796,3 +1894,5 @@ window.smartWorkflow.setPriority = window.smartWorkflow.setPriority.bind(window.
 window.smartWorkflow.removeRequirement = window.smartWorkflow.removeRequirement.bind(window.smartWorkflow);
 window.smartWorkflow.togglePriority = window.smartWorkflow.togglePriority.bind(window.smartWorkflow);
 window.smartWorkflow.setApplicationType = window.smartWorkflow.setApplicationType.bind(window.smartWorkflow);
+window.smartWorkflow.checkInitiativeReadiness = window.smartWorkflow.checkInitiativeReadiness.bind(window.smartWorkflow);
+window.smartWorkflow.updateContactPerson = window.smartWorkflow.updateContactPerson.bind(window.smartWorkflow);
