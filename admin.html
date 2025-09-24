@@ -2271,65 +2271,6 @@
                             </div>
                         </div>
 
-                        <!-- AI Configuration -->
-                        <div class="ai-configuration">
-                            <h3>🤖 AI-Konfiguration</h3>
-                            <div class="ai-settings-grid">
-                                <div class="ai-setting-card">
-                                    <h4>Trainingsplan-Generierung</h4>
-                                    <div class="setting-options">
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Progressive Überladung</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Periodisierung</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox">
-                                            <span>Erholungstage berücksichtigen</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="ai-setting-card">
-                                    <h4>Übungsauswahl</h4>
-                                    <div class="setting-options">
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Equipment-basiert</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Level-angepasst</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox">
-                                            <span>Einschränkungen berücksichtigen</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="ai-setting-card">
-                                    <h4>Kalender-Integration</h4>
-                                    <div class="setting-options">
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Google Calendar</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox" checked>
-                                            <span>Apple Calendar</span>
-                                        </label>
-                                        <label class="setting-option">
-                                            <input type="checkbox">
-                                            <span>Outlook Integration</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Training Statistics -->
                         <div class="training-statistics">
@@ -8743,6 +8684,9 @@ Bitte antworte im folgenden JSON-Format:
     <!-- Core Button System Scripts (Load First) -->
     <script src="js/event-registry.js"></script>
     <script src="js/button-components.js"></script>
+    
+    <!-- Global Navigation (Load Early) -->
+    <script src="js/global-navigation.js"></script>
     
     <!-- OpenAI Integration (Load Early) -->
     <script src="js/openai-integration.js"></script>
