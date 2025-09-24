@@ -51,7 +51,7 @@ class SmartWorkflowSystem {
                         id="jobDescription" 
                         class="form-textarea large" 
                         placeholder="Fügen Sie hier die Stellenanzeige ein..."
-                        oninput="window.smartWorkflow.analyzeJobDescription()"
+                        data-action="workflow-analyze-job"
                     >${this.applicationData.jobDescription || ''}</textarea>
                     
                     <div id="analysisStatus" class="analysis-status hidden">
@@ -101,10 +101,10 @@ class SmartWorkflowSystem {
                             Möchten Sie die extrahierten Daten übernehmen?
                         </div>
                         <div class="confirm-actions">
-                            <button class="btn btn-success" onclick="window.smartWorkflow.confirmExtraction()">
+                            <button class="btn btn-success" data-action="workflow-confirm-extraction">
                                 <i class="fas fa-check"></i> Übernehmen
                             </button>
-                            <button class="btn btn-secondary" onclick="window.smartWorkflow.editExtraction()">
+                            <button class="btn btn-secondary" data-action="workflow-edit-extraction">
                                 <i class="fas fa-edit"></i> Anpassen
                             </button>
                         </div>
@@ -829,7 +829,7 @@ class SmartWorkflowSystem {
             <div class="workflow-navigation">
                 <button 
                     class="btn btn-secondary ${this.currentStep === 1 ? 'disabled' : ''}" 
-                    onclick="window.smartWorkflow.previousStep()"
+                    data-action="workflow-prev-step"
                     ${this.currentStep === 1 ? 'disabled' : ''}
                 >
                     <i class="fas fa-arrow-left"></i> Zurück
@@ -841,7 +841,7 @@ class SmartWorkflowSystem {
                 
                 <button 
                     class="btn btn-primary" 
-                    onclick="window.smartWorkflow.nextStep()"
+                    data-action="${this.currentStep === this.totalSteps ? 'workflow-finish' : 'workflow-next-step'}"
                 >
                     ${this.currentStep === this.totalSteps ? 
                         '<i class="fas fa-check"></i> Fertigstellen' : 
@@ -871,10 +871,10 @@ class SmartWorkflowSystem {
         const stepContent = this[`renderStep${this.currentStep}`]();
         
         return `
-            <div class="smart-workflow-container">
+            <div class="workflow-wrapper">
                 <div class="workflow-header">
                     <h1><i class="fas fa-magic"></i> Smart Bewerbungs-Workflow</h1>
-                    <button class="btn-close" onclick="window.smartWorkflow.close()">
+                    <button class="btn-close" data-action="workflow-close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -1024,6 +1024,135 @@ class SmartWorkflowSystem {
             modal.remove();
         }
     }
+    
+    // Initialize all event handlers
+    initializeEventHandlers() {
+        // Register all workflow-specific actions with the event registry
+        if (window.eventRegistry) {
+            window.eventRegistry.registerBulk({
+                'workflow-analyze-job': {
+                    handler: () => this.analyzeJobDescription(),
+                    description: 'Analyze job description'
+                },
+                'workflow-confirm-extraction': {
+                    handler: () => this.confirmExtraction(),
+                    description: 'Confirm extracted data'
+                },
+                'workflow-edit-extraction': {
+                    handler: () => this.editExtraction(),
+                    description: 'Edit extracted data'
+                },
+                'workflow-next-step': {
+                    handler: () => this.nextStep(),
+                    description: 'Go to next step'
+                },
+                'workflow-prev-step': {
+                    handler: () => this.previousStep(),
+                    description: 'Go to previous step'
+                },
+                'workflow-close': {
+                    handler: () => this.close(),
+                    description: 'Close workflow'
+                },
+                'workflow-add-requirement': {
+                    handler: () => this.addRequirement(),
+                    description: 'Add new requirement'
+                },
+                'workflow-generate-sentences': {
+                    handler: (e) => {
+                        const index = e.target.closest('[data-index]')?.dataset.index;
+                        if (index) this.generateMoreSentences(parseInt(index));
+                    },
+                    description: 'Generate more sentence suggestions'
+                },
+                'workflow-save-components': {
+                    handler: () => this.saveComponents(),
+                    description: 'Save letter components'
+                },
+                'workflow-search-address': {
+                    handler: () => this.searchCompanyAddress(),
+                    description: 'Search company address'
+                },
+                'workflow-upload-signature': {
+                    handler: () => this.uploadSignature(),
+                    description: 'Upload signature'
+                },
+                'workflow-upload-logo': {
+                    handler: () => this.uploadLogo(),
+                    description: 'Upload company logo'
+                },
+                'workflow-select-layout': {
+                    handler: (e) => {
+                        const layout = e.target.closest('[data-layout]')?.dataset.layout;
+                        if (layout) this.selectLayout(layout);
+                    },
+                    description: 'Select layout style'
+                },
+                'workflow-preview-document': {
+                    handler: (e) => {
+                        const docType = e.target.closest('[data-doc-type]')?.dataset.docType;
+                        if (docType) this.previewDocument(docType);
+                    },
+                    description: 'Preview document'
+                },
+                'workflow-copy-link': {
+                    handler: () => this.copyShareLink(),
+                    description: 'Copy share link'
+                },
+                'workflow-finish': {
+                    handler: () => this.finishWorkflow(),
+                    description: 'Finish workflow'
+                }
+            });
+        }
+    }
+    
+    // Placeholder methods for functionality
+    addRequirement() {
+        console.log('Adding requirement...');
+        // Implementation
+    }
+    
+    generateMoreSentences(index) {
+        console.log('Generating more sentences for requirement', index);
+        // Implementation
+    }
+    
+    saveComponents() {
+        console.log('Saving components...');
+        // Implementation
+    }
+    
+    searchCompanyAddress() {
+        console.log('Searching company address...');
+        // Implementation
+    }
+    
+    uploadSignature() {
+        console.log('Uploading signature...');
+        // Implementation
+    }
+    
+    uploadLogo() {
+        console.log('Uploading logo...');
+        // Implementation
+    }
+    
+    selectLayout(layout) {
+        console.log('Selecting layout:', layout);
+        this.applicationData.layoutStyle = layout;
+        this.updateUI();
+    }
+    
+    previewDocument(docType) {
+        console.log('Previewing document:', docType);
+        // Implementation
+    }
+    
+    copyShareLink() {
+        console.log('Copying share link...');
+        // Implementation
+    }
 
     finishWorkflow() {
         // Finalisiere und speichere die Bewerbung
@@ -1035,3 +1164,6 @@ class SmartWorkflowSystem {
 
 // Globale Instanz
 window.smartWorkflow = new SmartWorkflowSystem();
+
+// Initialize event handlers when instantiated
+window.smartWorkflow.initializeEventHandlers();
