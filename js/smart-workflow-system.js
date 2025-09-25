@@ -2001,7 +2001,79 @@ class SmartWorkflowSystem {
             localStorage.setItem('applicationDocuments', JSON.stringify(documents));
             
             console.log(`${include ? '✅' : '❌'} Dokument ${doc.name} ${include ? 'einbezogen' : 'ausgeschlossen'} in Analyse`);
+            
+            // Update UI to reflect changes
+            this.updateUI();
         }
+    }
+    
+    selectAllDocuments(type, include) {
+        const documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+        let updatedCount = 0;
+        
+        documents.forEach(doc => {
+            if (doc.type === type) {
+                doc.includeInAnalysis = include;
+                updatedCount++;
+            }
+        });
+        
+        localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+        
+        console.log(`${include ? '✅' : '❌'} ${updatedCount} Dokumente des Typs ${type} ${include ? 'einbezogen' : 'ausgeschlossen'}`);
+        
+        // Update UI
+        this.updateUI();
+        
+        // Show feedback
+        const typeNames = {
+            'cv': 'Lebensläufe',
+            'coverLetters': 'Anschreiben', 
+            'certificates': 'Zeugnisse & Zertifikate'
+        };
+        
+        const message = include 
+            ? `Alle ${typeNames[type]} für Analyse ausgewählt`
+            : `Alle ${typeNames[type]} von Analyse ausgeschlossen`;
+            
+        this.showSelectionFeedback(message);
+    }
+    
+    showSelectionFeedback(message) {
+        const toast = document.createElement('div');
+        toast.className = 'selection-toast';
+        toast.innerHTML = `
+            <i class="fas fa-info-circle"></i>
+            ${message}
+        `;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(50px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
     }
     
     showUploadSuccess(filename) {
