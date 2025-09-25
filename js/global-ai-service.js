@@ -67,33 +67,205 @@ class GlobalAIService {
         }
     }
 
-    // STELLENANZEIGEN ANALYSE
+    // ERWEITERTE STELLENANZEIGEN ANALYSE
     async analyzeJobPosting(jobText) {
+        console.log('🤖 === KI-BASIERTE STELLENANZEIGEN-ANALYSE GESTARTET ===');
+        console.log('📄 Text-Länge:', jobText.length);
+        console.log('📄 Text-Vorschau:', jobText.substring(0, 200) + '...');
+
         const messages = [{
+            role: 'system',
+            content: `Du bist ein Experte für HR und Stellenanzeigen-Analyse. Du extrahierst präzise und strukturiert alle relevanten Informationen aus Stellenanzeigen und kategorisierst Anforderungen intelligent nach Wichtigkeit und Art.`
+        }, {
             role: 'user',
-            content: `Analysiere diese Stellenanzeige und extrahiere Informationen als JSON:
+            content: `Analysiere diese Stellenanzeige und extrahiere ALLE Informationen strukturiert als JSON. Achte besonders auf eine intelligente Kategorisierung der Anforderungen:
 
 ${jobText}
 
-Antwort NUR als JSON:
+Antwort NUR als valides JSON in diesem exakten Format:
 {
-  "company": "Firmenname",
-  "position": "Stellenbezeichnung",
-  "location": "Standort",
-  "requirements": ["Anforderung 1", "Anforderung 2", "Anforderung 3"],
-  "contactPerson": {"name": "Name", "email": "email@domain.com"},
-  "employmentType": "Vollzeit/Teilzeit",
-  "workModel": "Remote/Hybrid/Vor Ort"
-}`
+  "company": "Exakter Firmenname",
+  "position": "Genaue Stellenbezeichnung",
+  "location": "Standort/Stadt",
+  "contactPerson": {
+    "name": "Vollständiger Name oder null",
+    "email": "E-Mail oder null",
+    "phone": "Telefon oder null",
+    "department": "Abteilung oder null"
+  },
+  "employmentType": "Vollzeit/Teilzeit/Werkstudent/Praktikum/Freelance",
+  "workModel": "Remote/Hybrid/Vor Ort",
+  "salaryRange": "Gehaltsangabe oder null",
+  "requirements": {
+    "must_have": [
+      {
+        "text": "Vollständige Beschreibung der Anforderung",
+        "category": "education/experience/technical/language/certification/soft_skills",
+        "importance": "hoch/mittel/niedrig",
+        "years": "Anzahl Jahre falls angegeben oder null"
+      }
+    ],
+    "nice_to_have": [
+      {
+        "text": "Vollständige Beschreibung der Anforderung",
+        "category": "education/experience/technical/language/certification/soft_skills",
+        "importance": "hoch/mittel/niedrig"
+      }
+    ]
+  },
+  "responsibilities": [
+    "Detaillierte Aufgabenbeschreibung 1",
+    "Detaillierte Aufgabenbeschreibung 2"
+  ],
+  "benefits": [
+    "Vorteil 1",
+    "Vorteil 2"
+  ],
+  "technologies": [
+    "Liste aller erwähnten Technologien, Tools, Software"
+  ],
+  "keywordsSummary": [
+    "Die 10 wichtigsten Schlüsselwörter der Stellenanzeige"
+  ]
+}
+
+WICHTIGE REGELN:
+1. Extrahiere ALLE Anforderungen, auch implizite
+2. Unterscheide klar zwischen "MUSS" (must_have) und "KANN" (nice_to_have) Anforderungen
+3. Kategorisiere jede Anforderung präzise
+4. Extrahiere alle Jahreszahlen für Berufserfahrung
+5. Finde alle Technologien und Tools
+6. Null-Werte für nicht gefundene Informationen
+7. Deutsche Umlaute korrekt verwenden`
         }];
 
         try {
-            const result = await this.callOpenAI(messages, { maxTokens: 800 });
-            return JSON.parse(result.content);
+            console.log('🤖 Sende Anfrage an OpenAI...');
+            const result = await this.callOpenAI(messages, { 
+                maxTokens: 2000,
+                temperature: 0.1 // Niedrige Temperatur für konsistente Ergebnisse
+            });
+            
+            console.log('🤖 OpenAI Antwort erhalten:', result.content.substring(0, 300) + '...');
+            
+            // Parse JSON response
+            let parsedResult;
+            try {
+                parsedResult = JSON.parse(result.content);
+                console.log('✅ JSON erfolgreich geparst:', parsedResult);
+                
+                // Validate structure
+                if (!parsedResult.requirements || !parsedResult.requirements.must_have) {
+                    throw new Error('Unvollständige JSON-Struktur: requirements.must_have fehlt');
+                }
+                
+                // Transform to old format for compatibility
+                const compatibleResult = this.transformToCompatibleFormat(parsedResult);
+                console.log('🔄 Kompatibles Format erstellt:', compatibleResult);
+                
+                return compatibleResult;
+                
+            } catch (parseError) {
+                console.error('❌ JSON Parse Fehler:', parseError);
+                console.log('📄 Rohe Antwort:', result.content);
+                
+                // Fallback: Versuche JSON aus der Antwort zu extrahieren
+                const jsonMatch = result.content.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    try {
+                        parsedResult = JSON.parse(jsonMatch[0]);
+                        return this.transformToCompatibleFormat(parsedResult);
+                    } catch (secondParseError) {
+                        console.error('❌ Zweiter Parse-Versuch fehlgeschlagen:', secondParseError);
+                    }
+                }
+                
+                throw new Error(`JSON Parse Fehler: ${parseError.message}`);
+            }
+            
         } catch (error) {
-            console.error('Job analysis failed:', error);
+            console.error('❌ KI-Analyse fehlgeschlagen:', error);
             throw new Error(`Stellenanzeigen-Analyse fehlgeschlagen: ${error.message}`);
         }
+    }
+
+    // Transformiert das neue detaillierte Format in das kompatible Format
+    transformToCompatibleFormat(detailedResult) {
+        console.log('🔄 Transformiere KI-Ergebnis in kompatibles Format...');
+        
+        // Kombiniere must_have und nice_to_have requirements
+        const allRequirements = [
+            ...(detailedResult.requirements.must_have || []).map(req => ({
+                id: `req-must-${Math.random().toString(36).substr(2, 9)}`,
+                text: req.text,
+                importance: req.importance === 'hoch' ? 0.9 : req.importance === 'mittel' ? 0.7 : 0.5,
+                type: req.category,
+                keywords: this.extractKeywordsFromText(req.text),
+                isRequired: true,
+                category: req.category,
+                years: req.years,
+                priority: req.importance,
+                matchingSuggestions: []
+            })),
+            ...(detailedResult.requirements.nice_to_have || []).map(req => ({
+                id: `req-nice-${Math.random().toString(36).substr(2, 9)}`,
+                text: req.text,
+                importance: req.importance === 'hoch' ? 0.6 : req.importance === 'mittel' ? 0.4 : 0.3,
+                type: req.category,
+                keywords: this.extractKeywordsFromText(req.text),
+                isRequired: false,
+                category: req.category,
+                priority: req.importance,
+                matchingSuggestions: []
+            }))
+        ];
+
+        // Sortiere nach Wichtigkeit
+        allRequirements.sort((a, b) => b.importance - a.importance);
+
+        const compatibleResult = {
+            // Kompatible Felder für alte Systeme
+            company: detailedResult.company,
+            position: detailedResult.position,
+            location: detailedResult.location,
+            requirements: allRequirements,
+            contactPerson: detailedResult.contactPerson,
+            employmentType: detailedResult.employmentType,
+            workModel: detailedResult.workModel,
+            
+            // Zusätzliche detaillierte Informationen
+            salaryRange: detailedResult.salaryRange,
+            responsibilities: detailedResult.responsibilities || [],
+            benefits: detailedResult.benefits || [],
+            technologies: detailedResult.technologies || [],
+            keywordsSummary: detailedResult.keywordsSummary || [],
+            
+            // Meta-Informationen
+            aiAnalysis: {
+                totalRequirements: allRequirements.length,
+                mustHaveCount: detailedResult.requirements.must_have?.length || 0,
+                niceToHaveCount: detailedResult.requirements.nice_to_have?.length || 0,
+                analyzedAt: new Date().toISOString()
+            }
+        };
+
+        console.log('✅ Transformation abgeschlossen:', {
+            totalRequirements: compatibleResult.requirements.length,
+            mustHave: compatibleResult.aiAnalysis.mustHaveCount,
+            niceToHave: compatibleResult.aiAnalysis.niceToHaveCount
+        });
+
+        return compatibleResult;
+    }
+
+    // Hilfsfunktion: Extrahiert Keywords aus Text
+    extractKeywordsFromText(text) {
+        const stopWords = ['der', 'die', 'das', 'und', 'oder', 'aber', 'in', 'mit', 'von', 'zu', 'für', 'auf', 'an', 'bei'];
+        return text.toLowerCase()
+            .replace(/[.,!?;:]/g, '')
+            .split(/\s+/)
+            .filter(word => word.length > 3 && !stopWords.includes(word))
+            .slice(0, 5); // Limitiere auf 5 Keywords pro Anforderung
     }
 
     // ANSCHREIBEN GENERIERUNG
