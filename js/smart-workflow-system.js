@@ -2800,3 +2800,6 @@ window.smartWorkflow.forceReloadServices = window.smartWorkflow.forceReloadServi
 window.smartWorkflow.debugAPIKeyStatus = window.smartWorkflow.debugAPIKeyStatus.bind(window.smartWorkflow);
 window.smartWorkflow.testAPIDirectly = window.smartWorkflow.testAPIDirectly.bind(window.smartWorkflow);
 window.smartWorkflow.diagnoseNewAPIKey = window.smartWorkflow.diagnoseNewAPIKey.bind(window.smartWorkflow);
+window.smartWorkflow.handleDocumentUpload = window.smartWorkflow.handleDocumentUpload.bind(window.smartWorkflow);
+window.smartWorkflow.removeDocument = window.smartWorkflow.removeDocument.bind(window.smartWorkflow);
+window.smartWorkflow.toggleDocumentAnalysis = window.smartWorkflow.toggleDocumentAnalysis.bind(window.smartWorkflow);
