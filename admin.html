@@ -3548,8 +3548,8 @@
                                 KI-Persönlichkeits- und Schreibstilanalyse
                             </h4>
                             <p style="margin: 0 0 1rem; color: #6b7280;">Analysieren Sie Ihre hochgeladenen Dokumente, um Ihren persönlichen Schreibstil zu verstehen und optimierte Anschreiben zu generieren.</p>
-                            <button onclick="analyzeStoredDocuments()" class="btn btn-primary" style="margin-right: 1rem;">
-                                <i class="fas fa-search"></i> Dokumente analysieren
+                            <button onclick="window.analyzeStoredDocumentsEnhanced ? window.analyzeStoredDocumentsEnhanced() : analyzeStoredDocuments()" class="btn btn-primary" style="margin-right: 1rem;">
+                                <i class="fas fa-brain"></i> KI-Analyse starten
                             </button>
                             <button onclick="refreshAllDocumentDisplays()" class="btn btn-outline">
                                 <i class="fas fa-refresh"></i> Ansicht aktualisieren
@@ -8742,6 +8742,7 @@ Bitte antworte im folgenden JSON-Format:
     <script src="js/emergency-button-fix.js"></script>
     <script src="js/workflow-upload-fix.js"></script>
     <script src="js/document-management-integration.js"></script>
+    <script src="js/smart-ai-analysis.js"></script>
     
     <!-- OpenAI Integration (Load Early) -->
     <script src="js/openai-integration.js"></script>
