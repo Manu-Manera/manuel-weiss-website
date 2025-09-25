@@ -61,11 +61,11 @@
                             <span id="selectedCount">${documents.filter(d => d.includeInAnalysis).length}</span> von ${documents.length} Dokumenten ausgewählt
                         </div>
                         <div style="display: flex; gap: 1rem;">
-                            <button onclick="selectAllDocuments(true)" style="
+                            <button onclick="window.selectAllDocuments(true)" style="
                                 background: #6366f1; color: white; border: none; border-radius: 6px;
                                 padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem;
                             ">Alle auswählen</button>
-                            <button onclick="selectAllDocuments(false)" style="
+                            <button onclick="window.selectAllDocuments(false)" style="
                                 background: #6b7280; color: white; border: none; border-radius: 6px;
                                 padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem;
                             ">Alle abwählen</button>
@@ -122,12 +122,12 @@
                                 padding: 1rem; display: flex; align-items: center; gap: 1rem;
                                 transition: all 0.2s ease; cursor: pointer;
                                 ${doc.includeInAnalysis ? 'border-color: #6366f1; background: #f0f9ff;' : ''}
-                            " onclick="toggleDocumentSelection('${doc.id}')">
+                            " onclick="window.toggleDocumentSelection('${doc.id}')">
                                 
                                 <div style="flex-shrink: 0;">
                                     <input type="checkbox" ${doc.includeInAnalysis ? 'checked' : ''} 
                                            style="width: 18px; height: 18px; cursor: pointer;"
-                                           onchange="toggleDocumentSelection('${doc.id}')">
+                                           onchange="event.stopPropagation(); window.toggleDocumentSelection('${doc.id}')">
                                 </div>
                                 
                                 <div style="
@@ -209,13 +209,13 @@
                 buttonContainer.style.cssText = 'display: flex; gap: 1rem;';
                 
                 buttonContainer.innerHTML = `
-                    <button id="skipAnalysisBtn" onclick="skipProfileAnalysis()" style="
+                    <button id="skipAnalysisBtn" onclick="window.skipProfileAnalysis()" style="
                         padding: 0.75rem 1.5rem; background: #f59e0b; color: white; border: none; 
                         border-radius: 6px; cursor: pointer; font-weight: 600;
                     ">
                         <i class="fas fa-forward"></i> Überspringen
                     </button>
-                    <button onclick="proceedWithAnalysis()" style="
+                    <button onclick="window.proceedWithAnalysis()" style="
                         padding: 0.75rem 2rem; background: #10b981; color: white; border: none; 
                         border-radius: 6px; cursor: pointer; font-weight: 600;
                     ">
