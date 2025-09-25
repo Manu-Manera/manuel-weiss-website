@@ -557,8 +557,17 @@
 
 .file-info i {
     color: #6366f1;
-    width: 16px;
+    width: 20px;
     text-align: center;
+    font-size: 1.25rem;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .file-name {
@@ -567,7 +576,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
+    font-size: 0.875rem;
+}
+
+.file-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
 }
 
 .file-size {
@@ -619,6 +633,13 @@
     color: white;
     font-size: 12px;
     font-weight: bold;
+}
+
+.checkbox-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin-left: 0.25rem;
 }
 
 .btn-remove {
