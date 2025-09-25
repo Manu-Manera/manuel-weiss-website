@@ -16,55 +16,156 @@
     const CACHE_VERSION = Date.now();
     console.log(`🔄 Cache Version: ${CACHE_VERSION}`);
     
-    // Globale Upload-Funktion
-    function universalUpload(files, category = 'general') {
-        console.log(`🚀 UNIVERSAL UPLOAD: ${files.length} files, category: ${category}`);
+    // Upload mit manueller Kategorie-Auswahl
+    function universalUpload(files, presetCategory = null) {
+        console.log(`📤 Upload: ${files.length} files, preset: ${presetCategory}`);
         
         if (!files || files.length === 0) {
             showMessage('Keine Dateien ausgewählt', 'error');
             return;
         }
         
-        showMessage(`Lade ${files.length} Datei(en) hoch...`, 'info');
+        // Wenn keine Kategorie vorgegeben, zeige Auswahl-Dialog
+        if (!presetCategory) {
+            showCategorySelectionDialog(files);
+            return;
+        }
+        
+        showMessage(`${files.length} Datei(en) werden hochgeladen...`, 'info');
         
         let completed = 0;
+        let successCount = 0;
         
         Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                const doc = {
-                    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                    name: file.name,
-                    category: category === 'general' ? detectCategory(file.name) : category,
-                    size: file.size,
-                    type: file.type,
-                    content: e.target.result,
-                    uploadDate: new Date().toISOString(),
-                    includeInAnalysis: true
-                };
-                
-                // Speichern
-                const docs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                docs.push(doc);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+                try {
+                    const doc = {
+                        id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        name: file.name,
+                        category: presetCategory,
+                        size: file.size,
+                        type: file.type,
+                        content: e.target.result,
+                        uploadDate: new Date().toISOString(),
+                        includeInAnalysis: true
+                    };
+                    
+                    // Speichern
+                    const docs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    docs.push(doc);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+                    
+                    successCount++;
+                    console.log(`✅ Uploaded: ${doc.name} (${doc.category})`);
+                    
+                } catch (error) {
+                    console.error(`❌ Error uploading ${file.name}:`, error);
+                }
                 
                 completed++;
-                console.log(`✅ Uploaded ${completed}/${files.length}: ${doc.name}`);
                 
                 if (completed === files.length) {
-                    showMessage(`✅ ${files.length} Datei(en) erfolgreich hochgeladen!`, 'success');
-                    updateAllDisplays();
+                    if (successCount > 0) {
+                        showMessage(`${successCount} Datei(en) hochgeladen`, 'success');
+                        updateAllDisplays();
+                    }
+                    if (successCount < files.length) {
+                        showMessage(`${files.length - successCount} Upload(s) fehlgeschlagen`, 'error');
+                    }
                 }
             };
             
             reader.onerror = () => {
                 completed++;
-                showMessage(`❌ Fehler beim Lesen von ${file.name}`, 'error');
-                if (completed === files.length) updateAllDisplays();
+                console.error(`❌ Read error: ${file.name}`);
+                if (completed === files.length) {
+                    showMessage(`Upload-Fehler bei ${file.name}`, 'error');
+                    updateAllDisplays();
+                }
             };
             
             reader.readAsDataURL(file);
+        });
+    }
+    
+    // Kategorie-Auswahl Dialog
+    function showCategorySelectionDialog(files) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 10000; display: flex;
+            align-items: center; justify-content: center; padding: 2rem;
+        `;
+        
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            background: white; border-radius: 12px; padding: 2rem; max-width: 500px;
+            width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        `;
+        
+        const categories = [
+            { id: 'cv', name: 'Lebenslauf', icon: 'fa-user', color: '#3b82f6' },
+            { id: 'certificates', name: 'Zeugnis', icon: 'fa-certificate', color: '#10b981' },
+            { id: 'certifications', name: 'Zertifikat', icon: 'fa-award', color: '#f59e0b' },
+            { id: 'coverLetters', name: 'Anschreiben', icon: 'fa-envelope', color: '#8b5cf6' },
+            { id: 'portrait', name: 'Portrait', icon: 'fa-image', color: '#ec4899' },
+            { id: 'fullApplications', name: 'Vollständige Bewerbung', icon: 'fa-folder', color: '#6b7280' }
+        ];
+        
+        dialog.innerHTML = `
+            <h3 style="margin: 0 0 1rem; color: #374151; font-size: 1.25rem;">
+                📁 Dokument-Typ auswählen
+            </h3>
+            <p style="margin: 0 0 1.5rem; color: #6b7280; font-size: 0.875rem;">
+                ${files.length} Datei(en): ${Array.from(files).map(f => f.name).join(', ')}
+            </p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                ${categories.map(cat => `
+                    <button class="category-btn" data-category="${cat.id}" style="
+                        background: white; border: 2px solid ${cat.color}; border-radius: 8px;
+                        padding: 1rem; cursor: pointer; transition: all 0.2s; text-align: left;
+                        display: flex; align-items: center; gap: 0.75rem;
+                    " onmouseover="this.style.background='${cat.color}'; this.style.color='white';" 
+                       onmouseout="this.style.background='white'; this.style.color='#374151';">
+                        <i class="fas ${cat.icon}" style="font-size: 1.25rem; color: ${cat.color};"></i>
+                        <span style="font-weight: 500;">${cat.name}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button id="cancelUpload" style="
+                    background: #6b7280; color: white; border: none; border-radius: 6px;
+                    padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500;
+                ">Abbrechen</button>
+            </div>
+        `;
+        
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+        
+        // Event-Handler
+        dialog.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                modal.remove();
+                universalUpload(files, category);
+            });
+        });
+        
+        dialog.querySelector('#cancelUpload').addEventListener('click', function() {
+            modal.remove();
+        });
+        
+        // ESC-Key Handler
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', escHandler);
+            }
         });
     }
     
@@ -377,32 +478,33 @@
     }
     
     function showMessage(message, type = 'info') {
-        const colors = { success: '#10b981', error: '#ef4444', info: '#3b82f6' };
+        const colors = { success: '#10b981', error: '#ef4444', info: '#3b82f6', warning: '#f59e0b' };
+        const icons = { success: 'fa-check', error: 'fa-exclamation-triangle', info: 'fa-info-circle', warning: 'fa-exclamation' };
         
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed; top: 20px; right: 20px; z-index: 10000;
             background: ${colors[type]}; color: white; 
-            padding: 1rem 1.5rem; border-radius: 8px; font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); max-width: 350px;
-            animation: slideIn 0.3s ease-out;
+            padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); max-width: 300px;
+            font-size: 0.875rem; animation: slideIn 0.3s ease-out;
         `;
         notification.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fas fa-rocket" style="opacity: 0.9;"></i>
-                <span>ULTIMATE: ${message}</span>
+                <i class="fas ${icons[type]}" style="font-size: 0.875rem;"></i>
+                <span>${message}</span>
             </div>
         `;
         document.body.appendChild(notification);
         
-        if (!document.getElementById('ultimate-styles')) {
+        if (!document.getElementById('notification-styles')) {
             const style = document.createElement('style');
-            style.id = 'ultimate-styles';
+            style.id = 'notification-styles';
             style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
             document.head.appendChild(style);
         }
         
-        setTimeout(() => notification.remove(), 4000);
+        setTimeout(() => notification.remove(), 3000);
     }
     
     // Cache-Busting
@@ -449,14 +551,13 @@
     
     // Initialisierung
     function initialize() {
-        console.log(`🚀 ULTIMATE UPLOAD SOLUTION - Initializing... (Cache: ${CACHE_VERSION})`);
+        console.log('📤 Upload-System wird initialisiert...');
         
         attachAllUploadHandlers();
         fixTabNavigation();
         updateAllDisplays();
         
-        console.log('✅ ULTIMATE UPLOAD SOLUTION - Ready!');
-        showMessage('Upload-System initialisiert!', 'success');
+        console.log('✅ Upload-System bereit');
     }
     
     // Starten
@@ -472,6 +573,6 @@
         fixTabNavigation();
     }, 3000);
     
-    console.log('✅ ULTIMATE UPLOAD SOLUTION - Loaded');
+    console.log('✅ Upload-System geladen');
     
 })();
