@@ -1881,13 +1881,16 @@ function downloadDocument(id) {
 
 // Intelligent Job Requirements Analysis
 async function analyzeJobRequirements() {
-    console.log('🔍 Starting intelligent job requirements analysis...');
+    console.log('🚀 === INTELLIGENTE STELLENANFORDERUNGS-ANALYSE ===');
     
     const analysisDiv = document.getElementById('jobAnalysisResults');
     if (!analysisDiv) {
-        console.error('❌ Job analysis results div not found');
+        console.error('❌ Job analysis results div nicht gefunden!');
+        console.log('💡 Prüfe, ob das Element "jobAnalysisResults" in der HTML vorhanden ist');
         return;
     }
+    
+    console.log('✅ Analysis-Div gefunden, zeige Loading-Status...');
     
     // Show loading state
     analysisDiv.innerHTML = `
@@ -1898,9 +1901,20 @@ async function analyzeJobRequirements() {
     `;
     
     try {
+        console.log('📋 Prüfe Workflow-Daten...');
+        console.log('🔍 workflowData verfügbar:', {
+            hasWorkflowData: !!workflowData,
+            hasJobDescription: !!(workflowData && workflowData.jobDescription),
+            jobDescriptionLength: workflowData?.jobDescription?.length || 0
+        });
+        
         // Get job description from step 1
         const jobDescription = workflowData.jobDescription || '';
+        
         if (!jobDescription.trim()) {
+            console.warn('⚠️ Keine Stellenbeschreibung gefunden in workflowData!');
+            console.log('📋 workflowData Inhalt:', workflowData);
+            
             analysisDiv.innerHTML = `
                 <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b;">
                     <p style="margin: 0; color: #92400e;"><strong>⚠️ Keine Stellenanzeige gefunden</strong><br>
@@ -1910,11 +1924,41 @@ async function analyzeJobRequirements() {
             return;
         }
         
+        console.log('📄 Stellenbeschreibung gefunden:', {
+            length: jobDescription.length,
+            preview: jobDescription.substring(0, 200) + '...'
+        });
+        
         // Simulate AI analysis with realistic requirements extraction
+        console.log('⏳ Simuliere AI-Analyse (2 Sekunden Wartezeit)...');
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Extract key requirements using pattern matching
+        console.log('🔍 Extrahiere Schlüsselanforderungen...');
         const requirements = extractKeyRequirements(jobDescription);
+        
+        console.log('📊 Analyse-Ergebnisse:', {
+            requirementsFound: requirements.length,
+            requirements: requirements.map(req => ({
+                category: req.category,
+                priority: req.priority,
+                matched: req.matched,
+                description: req.description.substring(0, 50) + '...'
+            }))
+        });
+        
+        if (requirements.length === 0) {
+            console.warn('⚠️ Keine Anforderungen gefunden - zeige Warnung');
+            analysisDiv.innerHTML = `
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0; color: #92400e;"><strong>⚠️ Keine Anforderungen erkannt</strong><br>
+                    Die automatische Analyse konnte keine spezifischen Anforderungen identifizieren. Versuchen Sie eine andere Stellenbeschreibung.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        console.log('🎨 Erstelle HTML für Anforderungsanzeige...');
         
         // Display analysis results
         analysisDiv.innerHTML = `
@@ -1926,6 +1970,7 @@ async function analyzeJobRequirements() {
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span style="background: #0ea5e9; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${index + 1}</span>
                                 <strong style="color: #0c4a6e;">${req.category}</strong>
+                                <span style="background: ${req.priority === 'high' ? '#ef4444' : req.priority === 'medium' ? '#f59e0b' : '#10b981'}; color: white; padding: 0.125rem 0.375rem; border-radius: 8px; font-size: 0.625rem;">${req.priority.toUpperCase()}</span>
                             </div>
                             <p style="margin: 0; color: #374151; font-size: 0.9rem;">${req.description}</p>
                         </div>
@@ -1934,20 +1979,32 @@ async function analyzeJobRequirements() {
             </div>
         `;
         
+        console.log('💾 Speichere Anforderungen in workflowData...');
         // Store requirements for later use
         workflowData.extractedRequirements = requirements;
         
+        console.log('🔧 Initialisiere Requirements-Matching Interface...');
         // Initialize requirements matching interface
         initializeRequirementsMatching(requirements);
         
-        console.log('✅ Job requirements analysis completed');
+        console.log('✅ Job requirements analysis completed successfully');
         
     } catch (error) {
-        console.error('❌ Error analyzing job requirements:', error);
+        console.error('❌ Fehler bei der Stellenanforderungs-Analyse:', error);
+        console.error('📋 Error details:', {
+            message: error.message,
+            stack: error.stack,
+            workflowDataAvailable: !!workflowData
+        });
+        
         analysisDiv.innerHTML = `
             <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
                 <p style="margin: 0; color: #dc2626;"><strong>❌ Fehler bei der Analyse</strong><br>
                 ${error.message}</p>
+                <details style="margin-top: 0.5rem;">
+                    <summary style="cursor: pointer; color: #6b7280;">Technische Details anzeigen</summary>
+                    <pre style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">${error.stack}</pre>
+                </details>
             </div>
         `;
     }
@@ -1955,6 +2012,10 @@ async function analyzeJobRequirements() {
 
 // Extract key requirements from job description
 function extractKeyRequirements(jobDescription) {
+    console.log('🔍 === PATTERN-BASIERTE ANFORDERUNGSEXTRAKTION ===');
+    console.log('📄 Input-Text Länge:', jobDescription.length);
+    console.log('📄 Text-Vorschau:', jobDescription.substring(0, 300) + '...');
+    
     const requirements = [];
     
     // Define patterns for different requirement categories
@@ -1993,44 +2054,94 @@ function extractKeyRequirements(jobDescription) {
         ]
     };
     
+    console.log('🔍 Prüfe Pattern-Kategorien...');
+    
     // Extract requirements based on patterns
     Object.entries(patterns).forEach(([category, patternList]) => {
-        patternList.forEach(pattern => {
+        console.log(`\n--- KATEGORIE: ${category} ---`);
+        console.log(`📋 Patterns zu prüfen: ${patternList.length}`);
+        
+        let categoryMatches = [];
+        
+        patternList.forEach((pattern, patternIndex) => {
+            console.log(`  🔍 Pattern ${patternIndex + 1}: ${pattern}`);
             const matches = jobDescription.match(pattern);
+            
             if (matches && matches.length > 0) {
-                const description = matches[0];
-                if (!requirements.some(req => req.category === category)) {
-                    requirements.push({
-                        category: category,
-                        description: description,
-                        priority: getRequirementPriority(category),
-                        matched: true
-                    });
-                }
+                console.log(`    ✅ ${matches.length} Treffer gefunden:`, matches);
+                categoryMatches.push(...matches);
+            } else {
+                console.log(`    ❌ Keine Treffer`);
             }
         });
+        
+        if (categoryMatches.length > 0) {
+            const description = categoryMatches[0]; // Nehme ersten Match
+            const priority = getRequirementPriority(category);
+            
+            if (!requirements.some(req => req.category === category)) {
+                const requirement = {
+                    category: category,
+                    description: description,
+                    priority: priority,
+                    matched: true,
+                    allMatches: categoryMatches
+                };
+                
+                requirements.push(requirement);
+                console.log(`  ✅ Anforderung hinzugefügt:`, requirement);
+            } else {
+                console.log(`  ⚠️ Kategorie bereits vorhanden, überspringe`);
+            }
+        } else {
+            console.log(`  ❌ Keine Treffer für Kategorie ${category}`);
+        }
     });
+    
+    console.log(`\n📊 Pattern-Analyse Zwischenergebnis: ${requirements.length} Anforderungen gefunden`);
     
     // If no specific requirements found, extract general sentences
     if (requirements.length === 0) {
+        console.log('⚠️ Keine Pattern-Treffer - extrahiere allgemeine Sätze...');
+        
         const sentences = jobDescription.split(/[.!?]+/).filter(s => s.trim().length > 20);
+        console.log(`📝 Gefundene Sätze (>20 Zeichen): ${sentences.length}`);
+        
         sentences.slice(0, 5).forEach((sentence, index) => {
-            if (sentence.trim().length > 0) {
-                requirements.push({
+            const trimmed = sentence.trim();
+            if (trimmed.length > 0) {
+                const requirement = {
                     category: `Anforderung ${index + 1}`,
-                    description: sentence.trim(),
+                    description: trimmed,
                     priority: 'medium',
                     matched: false
-                });
+                };
+                
+                requirements.push(requirement);
+                console.log(`  📋 Allgemeine Anforderung ${index + 1}: "${trimmed.substring(0, 60)}..."`);
             }
         });
     }
     
+    console.log(`\n📊 Vor Sortierung: ${requirements.length} Anforderungen`);
+    requirements.forEach((req, index) => {
+        console.log(`${index + 1}. [${req.priority}] ${req.category}: "${req.description.substring(0, 60)}..."`);
+    });
+    
     // Sort by priority
-    return requirements.sort((a, b) => {
+    const sorted = requirements.sort((a, b) => {
         const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
+    
+    console.log(`\n✅ Nach Sortierung: ${sorted.length} Anforderungen`);
+    sorted.forEach((req, index) => {
+        console.log(`${index + 1}. [${req.priority}] ${req.category}: "${req.description.substring(0, 60)}..."`);
+    });
+    
+    console.log('🔍 === PATTERN-EXTRAKTION BEENDET ===\n');
+    
+    return sorted;
 }
 
 // Get requirement priority based on category

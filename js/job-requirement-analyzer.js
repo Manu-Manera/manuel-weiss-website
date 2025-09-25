@@ -16,43 +16,103 @@ let userProfile = {
 
 // Analyze job description sentence by sentence
 function analyzeJobDescription(jobDescription) {
-    if (!jobDescription) return [];
+    console.log('🔍 === ANFORDERUNGSANALYSE GESTARTET ===');
+    console.log('📄 Eingangsdaten:', {
+        hasJobDescription: !!jobDescription,
+        textLength: jobDescription ? jobDescription.length : 0,
+        textPreview: jobDescription ? jobDescription.substring(0, 200) + '...' : 'KEIN TEXT'
+    });
+    
+    if (!jobDescription) {
+        console.error('❌ FEHLER: Keine Stellenbeschreibung übergeben!');
+        return [];
+    }
     
     // Split into sentences
+    console.log('🔪 Teile Text in Sätze auf...');
     const sentences = jobDescription.match(/[^.!?]+[.!?]+/g) || [];
+    console.log(`📝 Gefundene Sätze: ${sentences.length}`);
+    sentences.forEach((sentence, index) => {
+        console.log(`   ${index + 1}. "${sentence.trim().substring(0, 100)}${sentence.length > 100 ? '...' : ''}"`);
+    });
+    
     const requirements = [];
     
+    console.log('\n🔍 Analysiere jeden Satz auf Anforderungen...');
     sentences.forEach((sentence, index) => {
         const trimmed = sentence.trim();
+        console.log(`\n--- SATZ ${index + 1} ---`);
+        console.log(`📝 Text: "${trimmed}"`);
+        console.log(`📏 Länge: ${trimmed.length} Zeichen`);
         
         // Skip very short sentences or boilerplate
-        if (trimmed.length < 20) return;
+        if (trimmed.length < 20) {
+            console.log(`⏭️  ÜBERSPRUNGEN: Zu kurz (< 20 Zeichen)`);
+            return;
+        }
         
         // Analyze sentence importance
+        console.log('🎯 Berechne Wichtigkeit...');
         const importance = calculateImportance(trimmed);
+        console.log(`📊 Wichtigkeitswert: ${importance.toFixed(3)}`);
         
         // Extract requirements
         if (importance > 0.3) {
-            requirements.push({
+            console.log('✅ Satz qualifiziert sich als Anforderung (Wichtigkeit > 0.3)');
+            
+            const type = categorizeRequirement(trimmed);
+            const keywords = extractKeywords(trimmed);
+            const isRequired = isHardRequirement(trimmed);
+            
+            console.log(`🏷️  Kategorie: ${type}`);
+            console.log(`🔑 Schlüsselwörter: [${keywords.join(', ')}]`);
+            console.log(`⚡ Harte Anforderung: ${isRequired ? 'JA' : 'NEIN'}`);
+            
+            const requirement = {
                 id: `req-${index}`,
                 text: trimmed,
                 importance: importance,
-                type: categorizeRequirement(trimmed),
-                keywords: extractKeywords(trimmed),
-                isRequired: isHardRequirement(trimmed),
+                type: type,
+                keywords: keywords,
+                isRequired: isRequired,
                 matchingSuggestions: []
-            });
+            };
+            
+            requirements.push(requirement);
+            console.log('📋 Anforderung hinzugefügt:', requirement);
+        } else {
+            console.log(`❌ NICHT QUALIFIZIERT: Wichtigkeit zu niedrig (${importance.toFixed(3)} <= 0.3)`);
         }
     });
     
+    console.log(`\n📊 === ZWISCHENERGEBNIS ===`);
+    console.log(`Gefundene Anforderungen: ${requirements.length}`);
+    requirements.forEach((req, index) => {
+        console.log(`${index + 1}. [${req.importance.toFixed(3)}] ${req.type}: "${req.text.substring(0, 80)}..."`);
+    });
+    
     // Sort by importance
+    console.log('\n🔄 Sortiere nach Wichtigkeit...');
     requirements.sort((a, b) => b.importance - a.importance);
+    
+    console.log('\n✅ === FINALE ERGEBNISSE ===');
+    console.log(`Insgesamt ${requirements.length} Anforderungen erkannt:`);
+    requirements.forEach((req, index) => {
+        console.log(`${index + 1}. [Prio: ${(req.importance * 100).toFixed(1)}%] ${req.type}:`);
+        console.log(`    "${req.text}"`);
+        console.log(`    Keywords: [${req.keywords.join(', ')}]`);
+        console.log(`    Hard requirement: ${req.isRequired}`);
+    });
+    
+    console.log('🔍 === ANFORDERUNGSANALYSE BEENDET ===\n');
     
     return requirements;
 }
 
 function calculateImportance(sentence) {
+    console.log(`    🔍 Analysiere Wichtigkeit für: "${sentence.substring(0, 60)}..."`);
     let score = 0.5; // Base score
+    console.log(`    📊 Basis-Score: ${score}`);
     
     // High priority indicators
     const highPriorityWords = [
@@ -75,63 +135,175 @@ function calculateImportance(sentence) {
     const lowerSentence = sentence.toLowerCase();
     
     // Check for priority indicators
+    console.log(`    🔍 Prüfe High-Priority-Wörter...`);
+    const foundHighPriority = [];
     highPriorityWords.forEach(word => {
-        if (lowerSentence.includes(word)) score += 0.3;
+        if (lowerSentence.includes(word)) {
+            score += 0.3;
+            foundHighPriority.push(word);
+            console.log(`      ✅ Gefunden: "${word}" (+0.3)`);
+        }
     });
+    if (foundHighPriority.length === 0) {
+        console.log(`      ❌ Keine High-Priority-Wörter gefunden`);
+    }
     
+    console.log(`    🔍 Prüfe Medium-Priority-Wörter...`);
+    const foundMediumPriority = [];
     mediumPriorityWords.forEach(word => {
-        if (lowerSentence.includes(word)) score += 0.2;
+        if (lowerSentence.includes(word)) {
+            score += 0.2;
+            foundMediumPriority.push(word);
+            console.log(`      ✅ Gefunden: "${word}" (+0.2)`);
+        }
     });
+    if (foundMediumPriority.length === 0) {
+        console.log(`      ❌ Keine Medium-Priority-Wörter gefunden`);
+    }
     
+    console.log(`    🔍 Prüfe Task-Wörter...`);
+    const foundTaskWords = [];
     taskWords.forEach(word => {
-        if (lowerSentence.includes(word)) score += 0.15;
+        if (lowerSentence.includes(word)) {
+            score += 0.15;
+            foundTaskWords.push(word);
+            console.log(`      ✅ Gefunden: "${word}" (+0.15)`);
+        }
     });
+    if (foundTaskWords.length === 0) {
+        console.log(`      ❌ Keine Task-Wörter gefunden`);
+    }
     
     // Check for specific requirements (years, degree, etc.)
-    if (/\d+\s*jahr/i.test(sentence)) score += 0.2;
-    if (/bachelor|master|diplom|studium/i.test(sentence)) score += 0.25;
-    if (/zertifik|qualifikation/i.test(sentence)) score += 0.2;
+    console.log(`    🔍 Prüfe spezielle Anforderungen...`);
+    let specialRequirements = [];
+    
+    if (/\d+\s*jahr/i.test(sentence)) {
+        score += 0.2;
+        specialRequirements.push('Jahre Erfahrung');
+        console.log(`      ✅ Jahreszahl gefunden (+0.2)`);
+    }
+    if (/bachelor|master|diplom|studium/i.test(sentence)) {
+        score += 0.25;
+        specialRequirements.push('Bildungsabschluss');
+        console.log(`      ✅ Bildungsabschluss gefunden (+0.25)`);
+    }
+    if (/zertifik|qualifikation/i.test(sentence)) {
+        score += 0.2;
+        specialRequirements.push('Zertifikation');
+        console.log(`      ✅ Zertifikation gefunden (+0.2)`);
+    }
+    
+    if (specialRequirements.length === 0) {
+        console.log(`      ❌ Keine speziellen Anforderungen gefunden`);
+    }
     
     // Cap at 1.0
-    return Math.min(score, 1.0);
+    const finalScore = Math.min(score, 1.0);
+    console.log(`    📊 Finaler Score: ${finalScore.toFixed(3)} (vor Cap: ${score.toFixed(3)})`);
+    console.log(`    📋 Gefundene Elemente:`);
+    console.log(`      High Priority: [${foundHighPriority.join(', ')}]`);
+    console.log(`      Medium Priority: [${foundMediumPriority.join(', ')}]`);
+    console.log(`      Task Words: [${foundTaskWords.join(', ')}]`);
+    console.log(`      Special: [${specialRequirements.join(', ')}]`);
+    
+    return finalScore;
 }
 
 function categorizeRequirement(sentence) {
+    console.log(`    🏷️  Kategorisiere: "${sentence.substring(0, 50)}..."`);
     const lower = sentence.toLowerCase();
     
-    if (/erfahrung|praxis|kenntnis/i.test(lower)) return 'experience';
-    if (/studium|abschluss|bachelor|master/i.test(lower)) return 'education';
-    if (/sprach|englisch|deutsch/i.test(lower)) return 'language';
-    if (/software|tool|system|programm/i.test(lower)) return 'technical';
-    if (/führung|team|management/i.test(lower)) return 'leadership';
-    if (/kommunikation|präsentation/i.test(lower)) return 'softskill';
+    console.log(`    🔍 Prüfe Kategorien...`);
     
+    if (/erfahrung|praxis|kenntnis/i.test(lower)) {
+        console.log(`    ✅ Kategorie: EXPERIENCE (erfahrung|praxis|kenntnis)`);
+        return 'experience';
+    }
+    if (/studium|abschluss|bachelor|master/i.test(lower)) {
+        console.log(`    ✅ Kategorie: EDUCATION (studium|abschluss|bachelor|master)`);
+        return 'education';
+    }
+    if (/sprach|englisch|deutsch/i.test(lower)) {
+        console.log(`    ✅ Kategorie: LANGUAGE (sprach|englisch|deutsch)`);
+        return 'language';
+    }
+    if (/software|tool|system|programm/i.test(lower)) {
+        console.log(`    ✅ Kategorie: TECHNICAL (software|tool|system|programm)`);
+        return 'technical';
+    }
+    if (/führung|team|management/i.test(lower)) {
+        console.log(`    ✅ Kategorie: LEADERSHIP (führung|team|management)`);
+        return 'leadership';
+    }
+    if (/kommunikation|präsentation/i.test(lower)) {
+        console.log(`    ✅ Kategorie: SOFTSKILL (kommunikation|präsentation)`);
+        return 'softskill';
+    }
+    
+    console.log(`    ⚪ Kategorie: GENERAL (keine spezifische Kategorie gefunden)`);
     return 'general';
 }
 
 function isHardRequirement(sentence) {
+    console.log(`    ⚡ Prüfe harte Anforderung: "${sentence.substring(0, 50)}..."`);
+    
     const hardIndicators = [
         'zwingend', 'müssen', 'erforderlich', 'voraussetzung', 
         'unbedingt', 'notwendig', 'mindestens'
     ];
     
     const lower = sentence.toLowerCase();
-    return hardIndicators.some(indicator => lower.includes(indicator));
+    const foundIndicators = [];
+    
+    const isHard = hardIndicators.some(indicator => {
+        if (lower.includes(indicator)) {
+            foundIndicators.push(indicator);
+            return true;
+        }
+        return false;
+    });
+    
+    if (isHard) {
+        console.log(`    ✅ HARTE ANFORDERUNG - Gefundene Indikatoren: [${foundIndicators.join(', ')}]`);
+    } else {
+        console.log(`    ❌ Weiche Anforderung - Keine harten Indikatoren gefunden`);
+    }
+    
+    return isHard;
 }
 
 function extractKeywords(text) {
+    console.log(`    🔑 Extrahiere Schlüsselwörter aus: "${text.substring(0, 50)}..."`);
+    
     // Remove common words and extract important terms
     const stopWords = [
         'der', 'die', 'das', 'und', 'oder', 'aber', 'in', 'mit', 'von', 'zu',
-        'für', 'auf', 'an', 'bei', 'nach', 'aus', 'um', 'über', 'vor', 'seit'
+        'für', 'auf', 'an', 'bei', 'nach', 'aus', 'um', 'über', 'vor', 'seit',
+        'sie', 'wir', 'haben', 'sind', 'werden', 'kann', 'soll', 'wird', 'dass',
+        'eine', 'einer', 'einem', 'eines', 'einen', 'ihre', 'ihrer', 'ihren'
     ];
     
-    const words = text.toLowerCase()
-        .replace(/[.,!?;:]/g, '')
-        .split(/\s+/)
-        .filter(word => word.length > 3 && !stopWords.includes(word));
+    console.log(`    🧹 Bereinige Text...`);
+    const cleanedText = text.toLowerCase().replace(/[.,!?;:]/g, '');
+    console.log(`    📝 Bereinigter Text: "${cleanedText}"`);
     
-    return [...new Set(words)];
+    const allWords = cleanedText.split(/\s+/);
+    console.log(`    🔤 Alle Wörter: [${allWords.join(', ')}]`);
+    
+    const filteredWords = allWords.filter(word => {
+        const isValid = word.length > 3 && !stopWords.includes(word);
+        if (!isValid) {
+            console.log(`      ❌ Filtere aus: "${word}" (${word.length <= 3 ? 'zu kurz' : 'Stopp-Wort'})`);
+        }
+        return isValid;
+    });
+    
+    const keywords = [...new Set(filteredWords)];
+    console.log(`    ✅ Gefilterte Schlüsselwörter: [${keywords.join(', ')}]`);
+    console.log(`    📊 ${keywords.length} einzigartige Schlüsselwörter gefunden`);
+    
+    return keywords;
 }
 
 // Analyze user's documents to build profile
