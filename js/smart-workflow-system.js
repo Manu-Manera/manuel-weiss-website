@@ -367,33 +367,45 @@ class SmartWorkflowSystem {
                             <i class="fas fa-file-alt fa-3x"></i>
                             <h4>Lebensläufe</h4>
                             <p>PDF oder Word Dokumente</p>
-                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" multiple hidden>
+                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" multiple hidden 
+                                   onchange="window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')">
                             <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
-                            <div class="uploaded-count">${this.applicationData.uploadedCVs || 0} Dateien</div>
+                            <div class="uploaded-count">${this.getUploadedDocuments('cv').length} Dateien</div>
+                            <div class="uploaded-files" id="uploadedCVs">
+                                ${this.renderUploadedFiles('cv')}
+                            </div>
                         </div>
 
                         <div class="upload-box" data-type="coverLetters">
                             <i class="fas fa-envelope fa-3x"></i>
                             <h4>Anschreiben</h4>
                             <p>Frühere Bewerbungen</p>
-                            <input type="file" id="coverLetterUpload" accept=".pdf,.doc,.docx" multiple hidden>
+                            <input type="file" id="coverLetterUpload" accept=".pdf,.doc,.docx" multiple hidden 
+                                   onchange="window.smartWorkflow.handleDocumentUpload('coverLetterUpload', 'coverLetters')">
                             <button class="btn btn-primary" onclick="document.getElementById('coverLetterUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
-                            <div class="uploaded-count">${this.applicationData.uploadedCoverLetters || 0} Dateien</div>
+                            <div class="uploaded-count">${this.getUploadedDocuments('coverLetters').length} Dateien</div>
+                            <div class="uploaded-files" id="uploadedCoverLetters">
+                                ${this.renderUploadedFiles('coverLetters')}
+                            </div>
                         </div>
 
                         <div class="upload-box" data-type="certificates">
                             <i class="fas fa-certificate fa-3x"></i>
                             <h4>Zeugnisse & Zertifikate</h4>
                             <p>Nachweise Ihrer Qualifikationen</p>
-                            <input type="file" id="certificateUpload" accept=".pdf,.jpg,.png" multiple hidden>
+                            <input type="file" id="certificateUpload" accept=".pdf,.jpg,.png" multiple hidden 
+                                   onchange="window.smartWorkflow.handleDocumentUpload('certificateUpload', 'certificates')">
                             <button class="btn btn-primary" onclick="document.getElementById('certificateUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
-                            <div class="uploaded-count">${this.applicationData.uploadedCertificates || 0} Dateien</div>
+                            <div class="uploaded-count">${this.getUploadedDocuments('certificates').length} Dateien</div>
+                            <div class="uploaded-files" id="uploadedCertificates">
+                                ${this.renderUploadedFiles('certificates')}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1693,6 +1705,166 @@ class SmartWorkflowSystem {
             
             console.log(`✅ ${textareas.length} Textareas automatisch angepasst`);
         }, 100);
+    }
+    
+    // Document Upload System
+    getUploadedDocuments(type) {
+        const documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+        return documents.filter(doc => doc.type === type);
+    }
+    
+    renderUploadedFiles(type) {
+        const documents = this.getUploadedDocuments(type);
+        if (documents.length === 0) {
+            return '<div class="no-files">Noch keine Dateien hochgeladen</div>';
+        }
+        
+        return documents.map(doc => `
+            <div class="uploaded-file" data-id="${doc.id}">
+                <div class="file-info">
+                    <i class="fas ${this.getFileIcon(doc.name)}"></i>
+                    <span class="file-name" title="${doc.name}">${doc.name.length > 20 ? doc.name.substring(0, 20) + '...' : doc.name}</span>
+                    <span class="file-size">${this.formatFileSize(doc.size)}</span>
+                </div>
+                <div class="file-actions">
+                    <label class="file-checkbox">
+                        <input type="checkbox" ${doc.includeInAnalysis !== false ? 'checked' : ''} 
+                               onchange="window.smartWorkflow.toggleDocumentAnalysis('${doc.id}', this.checked)">
+                        <span class="checkmark"></span>
+                    </label>
+                    <button class="btn-remove" onclick="window.smartWorkflow.removeDocument('${doc.id}')" title="Entfernen">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const iconMap = {
+            'pdf': 'fa-file-pdf',
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'jpg': 'fa-file-image',
+            'jpeg': 'fa-file-image',
+            'png': 'fa-file-image'
+        };
+        return iconMap[ext] || 'fa-file';
+    }
+    
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    handleDocumentUpload(inputId, type) {
+        const input = document.getElementById(inputId);
+        const files = input.files;
+        
+        if (files.length === 0) return;
+        
+        console.log(`📁 Upload ${files.length} Dateien für ${type}`);
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const document = {
+                    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    name: file.name,
+                    type: type,
+                    size: file.size,
+                    content: e.target.result,
+                    uploadDate: new Date().toISOString(),
+                    includeInAnalysis: true
+                };
+                
+                this.saveDocument(document);
+                this.updateUI(); // Refresh the UI to show new documents
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Clear input
+        input.value = '';
+    }
+    
+    saveDocument(document) {
+        const documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+        documents.push(document);
+        localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+        
+        console.log(`✅ Dokument gespeichert: ${document.name}`);
+        
+        // Show success message
+        this.showUploadSuccess(document.name);
+    }
+    
+    removeDocument(documentId) {
+        let documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+        const doc = documents.find(d => d.id === documentId);
+        
+        if (doc && confirm(`Möchten Sie "${doc.name}" wirklich entfernen?`)) {
+            documents = documents.filter(d => d.id !== documentId);
+            localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+            
+            console.log(`🗑️ Dokument entfernt: ${doc.name}`);
+            this.updateUI(); // Refresh UI
+        }
+    }
+    
+    toggleDocumentAnalysis(documentId, include) {
+        const documents = JSON.parse(localStorage.getItem('applicationDocuments') || '[]');
+        const doc = documents.find(d => d.id === documentId);
+        
+        if (doc) {
+            doc.includeInAnalysis = include;
+            localStorage.setItem('applicationDocuments', JSON.stringify(documents));
+            
+            console.log(`${include ? '✅' : '❌'} Dokument ${doc.name} ${include ? 'einbezogen' : 'ausgeschlossen'} in Analyse`);
+        }
+    }
+    
+    showUploadSuccess(filename) {
+        // Simple toast notification
+        const toast = document.createElement('div');
+        toast.className = 'upload-toast';
+        toast.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            "${filename}" erfolgreich hochgeladen!
+        `;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     updateContactPersonFields(contactPerson) {
