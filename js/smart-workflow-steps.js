@@ -20,7 +20,7 @@ async function initializeJobAnalyzer() {
     if (!window.jobAnalyzer.userProfile.skills.length) {
         console.log('📚 User-Profile ist leer, analysiere Benutzerdokumente...');
         try {
-            await window.jobAnalyzer.analyzeUserDocuments();
+        await window.jobAnalyzer.analyzeUserDocuments();
             console.log('✅ Benutzerdokumente analysiert');
             console.log('👤 User-Profile nach Analyse:', {
                 skillsCount: window.jobAnalyzer.userProfile.skills.length,
@@ -153,7 +153,7 @@ window.generateStep6 = window.generateStep5; // Old Step 5 becomes Step 6
 
 // Analyze requirements function
 async function analyzeRequirements() {
-    console.log('🚀 === SMART WORKFLOW SCHRITT 2: ANFORDERUNGSANALYSE ===');
+    console.log('🚀 === SMART WORKFLOW SCHRITT 2: KI-ANFORDERUNGSANALYSE ===');
     
     const analysisDiv = document.getElementById('requirementsAnalysis');
     if (!analysisDiv) {
@@ -163,11 +163,7 @@ async function analyzeRequirements() {
     
     console.log('✅ UI-Element gefunden, zeige Loading-Status...');
     analysisDiv.style.display = 'block';
-    analysisDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Analysiere Stellenbeschreibung...</p>';
-    
-    console.log('🔧 Initialisiere Job-Analyzer...');
-    // Initialize job analyzer
-    await initializeJobAnalyzer();
+    analysisDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> KI analysiert Stellenbeschreibung...</p>';
     
     console.log('📋 Workflow-Daten verfügbar:', {
         hasWorkflowData: !!workflowData,
@@ -184,66 +180,227 @@ async function analyzeRequirements() {
         return;
     }
     
-    console.log('🔍 Starte Analyse der Stellenbeschreibung...');
-    console.log('📄 Stellenbeschreibung Vorschau:', workflowData.jobDescription.substring(0, 200) + '...');
-    
-    // Analyze job description
-    const requirements = window.jobAnalyzer.analyzeJobDescription(workflowData.jobDescription);
-    
-    console.log('📊 Analyse abgeschlossen:', {
-        requirementsFound: requirements.length,
-        requirements: requirements.map(req => ({ 
-            id: req.id, 
-            importance: req.importance, 
-            type: req.type, 
-            text: req.text.substring(0, 50) + '...' 
-        }))
-    });
-    
-    if (requirements.length === 0) {
-        console.warn('⚠️ Keine Anforderungen gefunden!');
-        analysisDiv.innerHTML = '<p style="color: #ef4444;">Keine spezifischen Anforderungen gefunden. Bitte überprüfen Sie die Stellenbeschreibung.</p>';
-        return;
-    }
-    
-    console.log('✅ Speichere Anforderungen in Workflow-Daten...');
+    console.log('🤖 Prüfe KI-Service Verfügbarkeit...');
+    if (window.globalAI && window.globalAI.isAPIReady()) {
+        console.log('✅ GlobalAI Service verfügbar, starte KI-Analyse...');
+        
+        try {
+            // KI-basierte Analyse verwenden
+            console.log('🔍 Starte KI-Analyse der Stellenbeschreibung...');
+            console.log('📄 Stellenbeschreibung Vorschau:', workflowData.jobDescription.substring(0, 200) + '...');
+            
+            const aiResult = await window.globalAI.analyzeJobPosting(workflowData.jobDescription);
+            console.log('🤖 KI-Analyse erfolgreich abgeschlossen:', aiResult);
+            
+            // Verwende die KI-analysierten Anforderungen
+            const requirements = aiResult.requirements || [];
+            
+            console.log('📊 KI-Analyse-Ergebnisse:', {
+                requirementsFound: requirements.length,
+                mustHave: aiResult.aiAnalysis?.mustHaveCount || 0,
+                niceToHave: aiResult.aiAnalysis?.niceToHaveCount || 0,
+                technologies: aiResult.technologies?.length || 0,
+                benefits: aiResult.benefits?.length || 0
+            });
+            
+            if (requirements.length === 0) {
+                console.warn('⚠️ KI konnte keine Anforderungen extrahieren!');
+                analysisDiv.innerHTML = `
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                        <p style="margin: 0; color: #92400e;"><strong>⚠️ Keine Anforderungen erkannt</strong><br>
+                        Die KI-Analyse konnte keine spezifischen Anforderungen identifizieren. Bitte überprüfen Sie die Stellenbeschreibung.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log('✅ Speichere KI-Anforderungen in Workflow-Daten...');
     // Store requirements in workflow data
     workflowData.requirements = requirements;
+            workflowData.aiAnalysisResult = aiResult; // Speichere vollständiges KI-Ergebnis
+            
+            // Zeige KI-Anforderungen in der UI an
+            await displayAIRequirements(aiResult, requirements);
+            
+        } catch (error) {
+            console.error('❌ KI-Analyse fehlgeschlagen:', error);
+            console.log('🔄 Fallback: Verwende lokale Pattern-Analyse...');
+            
+            // Fallback auf lokale Analyse
+            analysisDiv.innerHTML = `
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+                    <p style="margin: 0; color: #92400e;"><strong>⚠️ KI-Analyse nicht verfügbar</strong><br>
+                    ${error.message}<br>Verwende lokale Analyse als Fallback...</p>
+                </div>
+                <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Lokale Analyse läuft...</p>
+            `;
+            
+            await useLocalFallbackAnalysis();
+            return;
+        }
+        
+    } else {
+        console.warn('⚠️ GlobalAI Service nicht verfügbar oder API Key fehlt');
+        console.log('🔧 GlobalAI Status:', {
+            serviceExists: !!window.globalAI,
+            isReady: window.globalAI?.isAPIReady?.(),
+            status: window.globalAI?.getAPIStatus?.()
+        });
+        
+        analysisDiv.innerHTML = `
+            <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+                <p style="margin: 0; color: #92400e;"><strong>⚠️ KI-Service nicht verfügbar</strong><br>
+                OpenAI API Key nicht konfiguriert. Verwende lokale Analyse als Fallback...</p>
+            </div>
+            <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Lokale Analyse läuft...</p>
+        `;
+        
+        await useLocalFallbackAnalysis();
+        return;
+    }
+
+    // Hilfsfunktion für lokale Fallback-Analyse
+    async function useLocalFallbackAnalysis() {
+        console.log('🔧 Initialisiere lokalen Job-Analyzer...');
+        await initializeJobAnalyzer();
+        
+        const requirements = window.jobAnalyzer.analyzeJobDescription(workflowData.jobDescription);
+        
+        console.log('📊 Lokale Analyse abgeschlossen:', {
+            requirementsFound: requirements.length,
+            requirements: requirements.map(req => ({ 
+                id: req.id, 
+                importance: req.importance, 
+                type: req.type, 
+                text: req.text.substring(0, 50) + '...' 
+            }))
+        });
+        
+        if (requirements.length === 0) {
+            console.warn('⚠️ Auch lokale Analyse fand keine Anforderungen!');
+            analysisDiv.innerHTML = '<p style="color: #ef4444;">Keine spezifischen Anforderungen gefunden. Bitte überprüfen Sie die Stellenbeschreibung.</p>';
+            return;
+        }
+        
+        console.log('✅ Speichere lokale Anforderungen in Workflow-Daten...');
+        workflowData.requirements = requirements;
+        
+        // Zeige lokale Anforderungen an
+        await displayLocalRequirements(requirements);
+    }
+}
+
+// Funktion zur Anzeige der KI-analysierten Anforderungen
+async function displayAIRequirements(aiResult, requirements) {
+    console.log('🎨 Erstelle UI für KI-Anforderungen...');
     
-    // Display requirements with matching suggestions
+    const analysisDiv = document.getElementById('requirementsAnalysis');
+    
     let html = '<div style="margin-top: 1rem;">';
-    html += '<h5 style="margin-bottom: 1rem;">Gefundene Anforderungen (nach Wichtigkeit sortiert):</h5>';
     
+    // KI-Analyse Header mit Metadaten
+    html += `
+        <div style="background: #f0fdf4; padding: 1rem; border-radius: 6px; border-left: 4px solid #10b981; margin-bottom: 1.5rem;">
+            <h5 style="margin: 0 0 0.5rem 0; color: #065f46;">🤖 KI-Analyse erfolgreich abgeschlossen</h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">${aiResult.aiAnalysis.totalRequirements}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Gesamt Anforderungen</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">${aiResult.aiAnalysis.mustHaveCount}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Muss-Anforderungen</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #f59e0b;">${aiResult.aiAnalysis.niceToHaveCount}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Kann-Anforderungen</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #6366f1;">${aiResult.technologies?.length || 0}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Technologien</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Zusätzliche Informationen falls verfügbar
+    if (aiResult.technologies && aiResult.technologies.length > 0) {
+        html += `
+            <div style="background: #faf5ff; padding: 1rem; border-radius: 6px; border-left: 4px solid #8b5cf6; margin-bottom: 1rem;">
+                <h6 style="margin: 0 0 0.5rem 0; color: #6b21a8;">🔧 Erkannte Technologien:</h6>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    ${aiResult.technologies.map(tech => `
+                        <span style="background: #8b5cf6; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem;">
+                            ${tech}
+                        </span>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    html += '<h5 style="margin-bottom: 1rem;">🎯 Intelligente Anforderungsanalyse (nach Wichtigkeit sortiert):</h5>';
+    
+    // Zeige jede Anforderung mit verbesserter Darstellung
     for (const req of requirements) {
-        const suggestions = await window.jobAnalyzer.generateMatchingSuggestions(req);
+        // Lade Vorschläge wenn Job-Analyzer verfügbar ist
+        let suggestions = [];
+        if (window.jobAnalyzer && window.jobAnalyzer.generateMatchingSuggestions) {
+            try {
+                suggestions = await window.jobAnalyzer.generateMatchingSuggestions(req);
+            } catch (error) {
+                console.warn('Vorschläge-Generierung fehlgeschlagen für:', req.id, error);
+                suggestions = ['Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.'];
+            }
+        } else {
+            // Standard-Vorschläge falls Job-Analyzer nicht verfügbar
+            suggestions = [
+                'Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.',
+                'Durch meine bisherige Tätigkeit konnte ich diese Kompetenzen erfolgreich entwickeln.'
+            ];
+        }
         req.matchingSuggestions = suggestions;
         
-        const importanceColor = req.importance > 0.7 ? '#ef4444' : req.importance > 0.5 ? '#f59e0b' : '#10b981';
+        const importanceColor = req.importance > 0.8 ? '#ef4444' : req.importance > 0.6 ? '#f59e0b' : req.importance > 0.4 ? '#10b981' : '#6b7280';
+        const priorityText = req.isRequired ? 'MUSS' : 'KANN';
+        const priorityColor = req.isRequired ? '#ef4444' : '#10b981';
         
         html += `
-            <div class="requirement-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
+            <div class="requirement-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                     <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            ${req.isRequired ? '<span style="color: #ef4444; font-weight: 600;">MUSS</span>' : '<span style="color: #10b981;">KANN</span>'}
-                            <span style="background: ${importanceColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem;">
-                                Priorität: ${Math.round(req.importance * 100)}%
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                            <span style="background: ${priorityColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">
+                                ${priorityText}
                             </span>
+                            <span style="background: ${importanceColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                Wichtigkeit: ${Math.round(req.importance * 100)}%
+                            </span>
+                            <span style="background: #6b7280; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                ${req.category || req.type}
+                            </span>
+                            ${req.years ? `<span style="background: #8b5cf6; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">${req.years} Jahre</span>` : ''}
                         </div>
-                        <p style="margin: 0; font-weight: 500;">${req.text}</p>
+                        <p style="margin: 0; font-weight: 500; color: #1f2937; line-height: 1.5;">${req.text}</p>
+                        ${req.keywords && req.keywords.length > 0 ? `
+                            <div style="margin-top: 0.5rem;">
+                                <span style="font-size: 0.75rem; color: #6b7280;">Keywords: </span>
+                                ${req.keywords.map(keyword => `<span style="background: #f3f4f6; color: #374151; padding: 0.125rem 0.375rem; border-radius: 8px; font-size: 0.625rem; margin-right: 0.25rem;">${keyword}</span>`).join('')}
+                            </div>
+                        ` : ''}
                     </div>
-                    <input type="checkbox" id="req-${req.id}" checked style="width: 20px; height: 20px; cursor: pointer;">
+                    <input type="checkbox" id="req-${req.id}" checked style="width: 20px; height: 20px; cursor: pointer; margin-left: 1rem;">
                 </div>
                 
                 <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
-                    <p style="margin: 0 0 0.75rem 0; font-weight: 500; color: #666;">Passende Formulierungen:</p>
+                    <p style="margin: 0 0 0.75rem 0; font-weight: 500; color: #666;">💡 Passende Formulierungen:</p>
                     <div id="suggestions-${req.id}">
                         ${suggestions.map((sug, idx) => `
                             <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
                                 <input type="radio" name="suggestion-${req.id}" value="${idx}" ${idx === 0 ? 'checked' : ''} 
                                        style="margin-right: 0.5rem;">
                                 <span contenteditable="true" style="outline: none; display: inline-block; padding: 0.5rem; background: white; border-radius: 4px; width: calc(100% - 30px);">
-                                    ${sug.content}
+                                    ${sug.content || sug}
                                 </span>
                             </label>
                         `).join('')}
@@ -265,6 +422,93 @@ async function analyzeRequirements() {
     
     analysisDiv.innerHTML = html;
     document.getElementById('proceedButton').style.display = 'block';
+    
+    console.log('✅ KI-Anforderungen UI erstellt');
+}
+
+// Funktion zur Anzeige der lokalen (Fallback) Anforderungen  
+async function displayLocalRequirements(requirements) {
+    console.log('🎨 Erstelle UI für lokale Anforderungen...');
+    
+    const analysisDiv = document.getElementById('requirementsAnalysis');
+    
+    let html = '<div style="margin-top: 1rem;">';
+    html += `
+        <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+            <h5 style="margin: 0 0 0.5rem 0; color: #92400e;">⚠️ Lokale Pattern-Analyse verwendet</h5>
+            <p style="margin: 0; font-size: 0.875rem; color: #92400e;">
+                KI-Service nicht verfügbar. Ergebnisse basieren auf lokaler Pattern-Erkennung und sind möglicherweise weniger präzise.
+            </p>
+        </div>
+    `;
+    html += '<h5 style="margin-bottom: 1rem;">📋 Gefundene Anforderungen (lokale Analyse):</h5>';
+    
+    for (const req of requirements) {
+        let suggestions = [];
+        if (window.jobAnalyzer && window.jobAnalyzer.generateMatchingSuggestions) {
+            try {
+                suggestions = await window.jobAnalyzer.generateMatchingSuggestions(req);
+            } catch (error) {
+                console.warn('Vorschläge-Generierung fehlgeschlagen für:', req.id, error);
+                suggestions = ['Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.'];
+            }
+        } else {
+            suggestions = ['Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.'];
+        }
+        req.matchingSuggestions = suggestions;
+        
+        const importanceColor = req.importance > 0.7 ? '#ef4444' : req.importance > 0.5 ? '#f59e0b' : '#10b981';
+        
+        html += `
+            <div class="requirement-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            ${req.isRequired ? '<span style="color: #ef4444; font-weight: 600;">MUSS</span>' : '<span style="color: #10b981;">KANN</span>'}
+                            <span style="background: ${importanceColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem;">
+                                Priorität: ${Math.round(req.importance * 100)}%
+                            </span>
+                            <span style="background: #6b7280; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                ${req.type || 'general'}
+                            </span>
+                        </div>
+                        <p style="margin: 0; font-weight: 500;">${req.text}</p>
+                    </div>
+                    <input type="checkbox" id="req-${req.id}" checked style="width: 20px; height: 20px; cursor: pointer;">
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
+                    <p style="margin: 0 0 0.75rem 0; font-weight: 500; color: #666;">Passende Formulierungen:</p>
+                    <div id="suggestions-${req.id}">
+                        ${suggestions.map((sug, idx) => `
+                            <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="suggestion-${req.id}" value="${idx}" ${idx === 0 ? 'checked' : ''} 
+                                       style="margin-right: 0.5rem;">
+                                <span contenteditable="true" style="outline: none; display: inline-block; padding: 0.5rem; background: white; border-radius: 4px; width: calc(100% - 30px);">
+                                    ${sug.content || sug}
+                                </span>
+                            </label>
+                        `).join('')}
+                        <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="suggestion-${req.id}" value="custom" style="margin-right: 0.5rem;">
+                            <span contenteditable="true" style="outline: none; display: inline-block; padding: 0.5rem; background: white; border-radius: 4px; width: calc(100% - 30px);" 
+                                  placeholder="Eigene Formulierung..."></span>
+                        </label>
+                    </div>
+                    <button onclick="regenerateSuggestions('${req.id}')" style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                        <i class="fas fa-sync"></i> Neue Vorschläge
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    
+    analysisDiv.innerHTML = html;
+    document.getElementById('proceedButton').style.display = 'block';
+    
+    console.log('✅ Lokale Anforderungen UI erstellt');
 }
 
 // Regenerate suggestions for a requirement
