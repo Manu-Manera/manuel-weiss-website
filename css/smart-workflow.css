@@ -386,21 +386,54 @@
 
 .requirement-content {
     flex: 1;
+    min-width: 0; /* Verhindert overflow */
 }
 
 .requirement-text {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid transparent;
     background: transparent;
     font-size: 1rem;
     transition: all 0.2s;
+    /* Mehrzeiliger Text */
+    min-height: 2.5rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    resize: vertical;
 }
 
 .requirement-text:focus {
     background: white;
     border-color: #667eea;
     outline: none;
+}
+
+/* KI-Anforderungen spezifische Styles */
+.requirement-item {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.requirement-item div {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Auto-resize Textarea */
+.requirement-text {
+    overflow: hidden;
+    resize: vertical;
+}
+
+/* Responsive Text in KI-Anforderungen */
+.requirement-item div[style*="white-space: pre-wrap"] {
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .requirement-meta {

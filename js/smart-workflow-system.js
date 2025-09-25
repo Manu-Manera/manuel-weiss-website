@@ -320,12 +320,12 @@ class SmartWorkflowSystem {
                 </div>
                 <div class="requirement-number">${index + 1}</div>
                 <div class="requirement-content">
-                    <input 
-                        type="text" 
-                        value="${req.text}" 
+                    <textarea 
                         class="requirement-text"
                         onchange="window.smartWorkflow.updateRequirement(${index}, this.value)"
-                    />
+                        oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"
+                        placeholder="Anforderung bearbeiten..."
+                    >${req.text}</textarea>
                     <div class="requirement-meta">
                         <span class="priority-badge priority-${req.priority || 'medium'}">
                             ${req.priority || 'medium'}
@@ -1679,6 +1679,22 @@ class SmartWorkflowSystem {
         `;
     }
     
+    autoResizeTextareas() {
+        console.log('🔧 Auto-resize Textareas...');
+        
+        setTimeout(() => {
+            const textareas = document.querySelectorAll('.requirement-text');
+            textareas.forEach(textarea => {
+                // Reset height to calculate new height
+                textarea.style.height = 'auto';
+                // Set height to scroll height (content height)
+                textarea.style.height = Math.max(textarea.scrollHeight, 40) + 'px';
+            });
+            
+            console.log(`✅ ${textareas.length} Textareas automatisch angepasst`);
+        }, 100);
+    }
+
     updateContactPersonFields(contactPerson) {
         if (contactPerson) {
             const nameField = document.getElementById('contactName');
@@ -1975,6 +1991,7 @@ class SmartWorkflowSystem {
                     // Initialize drag and drop for step 2
                     if (this.currentStep === 2) {
                         this.initDragAndDrop();
+                        this.autoResizeTextareas();
                     }
                     
                     // Re-setup auto validation
