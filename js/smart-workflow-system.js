@@ -1252,33 +1252,62 @@ class SmartWorkflowSystem {
         }
         
         try {
-            // 1. GlobalAI Service neu initialisieren
-            if (window.globalAI) {
-                console.log('🔄 Lade GlobalAI Service neu...');
-                await window.globalAI.loadAPIKey(); // API Key neu laden
-                
-                // Kurz warten damit der Service sich stabilisiert
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                // 2. API Status prüfen
-                const isReady = window.globalAI.isAPIReady();
-                console.log('🔍 API Status nach Reload:', {
-                    isReady: isReady,
-                    hasKey: !!window.globalAI.apiKey,
-                    status: window.globalAI.getAPIStatus()
-                });
-                
-                if (!isReady) {
-                    throw new Error('API Key ist immer noch nicht gültig - bitte prüfen Sie die Konfiguration im Admin-Panel');
-                }
-                
-                // 3. Erneute KI-Analyse starten
-                console.log('✅ API bereit - starte KI-Analyse erneut...');
-                await this.triggerAIAnalysisInStep2();
-                
-            } else {
-                throw new Error('GlobalAI Service nicht verfügbar');
+            // 1. KOMPLETTE NEUINITIALISIERUNG DER SERVICES
+            console.log('🔄 === STARTE KOMPLETTE SERVICE NEUINITIALISIERUNG ===');
+            
+            // 1a. SecureAPIManager neu initialisieren
+            if (window.SecureAPIManager) {
+                console.log('🔄 Erstelle neuen SecureAPIManager...');
+                window.secureAPIManager = new window.SecureAPIManager();
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
+            
+            // 1b. Prüfe API Key direkt aus localStorage
+            const rawKey = localStorage.getItem('openai_api_key');
+            const decryptedKey = window.secureAPIManager?.getAPIKey();
+            
+            console.log('🔍 Key Status Check:', {
+                rawKeyExists: !!rawKey,
+                rawKeyLength: rawKey?.length,
+                decryptedKeyExists: !!decryptedKey,
+                decryptedKeyValid: decryptedKey?.startsWith('sk-'),
+                decryptedKeyLength: decryptedKey?.length
+            });
+            
+            if (!decryptedKey || !decryptedKey.startsWith('sk-')) {
+                throw new Error(`API Key Problem: Raw=${!!rawKey}, Decrypted=${!!decryptedKey}, Valid=${decryptedKey?.startsWith('sk-')}`);
+            }
+            
+            // 1c. GlobalAI Service komplett neu mit validiertem Key
+            if (window.GlobalAIService) {
+                console.log('🔄 Erstelle neuen GlobalAI Service...');
+                window.globalAI = new window.GlobalAIService();
+                
+                // Setze Key direkt (Bypass der normalen Initialisierung)
+                window.globalAI.apiKey = decryptedKey;
+                window.globalAI.isReady = true;
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // 2. FINALE VALIDIERUNG
+            const finalCheck = {
+                secureAPIExists: !!window.secureAPIManager,
+                globalAIExists: !!window.globalAI,
+                apiKeyDirect: window.globalAI?.apiKey?.substring(0, 10) + '...',
+                isReady: window.globalAI?.isReady,
+                isAPIReady: window.globalAI?.isAPIReady()
+            };
+            
+            console.log('🔍 === FINALE VALIDIERUNG ===', finalCheck);
+            
+            if (!window.globalAI?.isAPIReady()) {
+                throw new Error(`Service Init Failed: ${JSON.stringify(finalCheck)}`);
+            }
+            
+            // 3. Erneute KI-Analyse starten
+            console.log('✅ API bereit - starte KI-Analyse erneut...');
+            await this.triggerAIAnalysisInStep2();
             
         } catch (error) {
             console.error('❌ API Reload fehlgeschlagen:', error);
@@ -1854,6 +1883,71 @@ class SmartWorkflowSystem {
         }
     }
 
+    // DEBUG: API Key Status Check
+    debugAPIKeyStatus() {
+        console.log('🔍 === DEBUG API KEY STATUS ===');
+        
+        const status = {
+            localStorage: {
+                raw: localStorage.getItem('openai_api_key'),
+                exists: !!localStorage.getItem('openai_api_key'),
+                length: localStorage.getItem('openai_api_key')?.length
+            },
+            secureAPIManager: {
+                exists: !!window.secureAPIManager,
+                hasGetMethod: typeof window.secureAPIManager?.getAPIKey === 'function',
+                key: window.secureAPIManager?.getAPIKey(),
+                keyValid: window.secureAPIManager?.getAPIKey()?.startsWith('sk-')
+            },
+            globalAI: {
+                exists: !!window.globalAI,
+                isReady: window.globalAI?.isReady,
+                apiKey: window.globalAI?.apiKey,
+                isAPIReady: window.globalAI?.isAPIReady?.()
+            }
+        };
+        
+        console.table(status);
+        return status;
+    }
+
+    // DEBUG: Direkter API Test
+    async testAPIDirectly(apiKey) {
+        console.log('🧪 === DIREKTER API TEST ===');
+        
+        if (!apiKey) {
+            console.error('❌ Kein API Key übergeben');
+            return false;
+        }
+        
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [{ role: 'user', content: 'Test' }],
+                    max_tokens: 5
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ API Key funktioniert!');
+                return true;
+            } else {
+                const error = await response.json();
+                console.error('❌ API Fehler:', error);
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Netzwerk-Fehler:', error);
+            return false;
+        }
+    }
+
     // DEBUG: Force enable navigation button
     forceEnableButton() {
         const nextButton = document.querySelector('[data-action="workflow-next-step"]');
@@ -2255,3 +2349,5 @@ window.smartWorkflow.updateContactPerson = window.smartWorkflow.updateContactPer
 window.smartWorkflow.triggerAIAnalysisInStep2 = window.smartWorkflow.triggerAIAnalysisInStep2.bind(window.smartWorkflow);
 window.smartWorkflow.reloadAPIAndRetry = window.smartWorkflow.reloadAPIAndRetry.bind(window.smartWorkflow);
 window.smartWorkflow.forceReloadServices = window.smartWorkflow.forceReloadServices.bind(window.smartWorkflow);
+window.smartWorkflow.debugAPIKeyStatus = window.smartWorkflow.debugAPIKeyStatus.bind(window.smartWorkflow);
+window.smartWorkflow.testAPIDirectly = window.smartWorkflow.testAPIDirectly.bind(window.smartWorkflow);
