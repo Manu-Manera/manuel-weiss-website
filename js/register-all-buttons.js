@@ -209,70 +209,7 @@ function registerAllButtons() {
                 },
                 description: 'Direct OpenAI API test'
             },
-            'load-sample-job': {
-                handler: () => {
-                    const sampleJob = `IBM
-Teilen
-Weitere Optionen anzeigen
-HR AI & Automation SME (f/m/x) 
-Zürich, Zürich, Schweiz · Vor 5 Tagen · 51 Kandidat:innen haben auf „Bewerben" geklickt
-Gesponsert von Personaler:in · Außerhalb von LinkedIn verwaltete Antworten
-
-Hybrid
-Vollzeit
-
-Bewerben
-
-HR AI & Automation SME (f/m/x)
-IBM · Zürich, Zürich, Schweiz (Hybrid)
-
-Details zum Jobangebot
-Introduction
-
-A career in IBM embraces long-term relationships and close collaboration with clients across the globe. You'll work with visionaries across multiple industries to improve the hybrid and AI journey for the most innovative and valuable companies in the world. Your ability to accelerate impact and make meaningful change for your clients is enabled by our strategic partner ecosystem and our robust technology platforms across the IBM portfolio; including IBM Software and Red Hat. Curiosity and a constant quest for knowledge serve as the foundation to success in IBM. In your role, you'll be encouraged to challenge the norm, investigate ideas outside of your role, and come up with creative solutions resulting in ground breaking impact for a wide network of clients. Our culture of evolution and empathy centers on long-term career growth and development opportunities in an environment that embraces your unique skills and experience.
-
-Your Role And Responsibilities
-
-As an HR AI Automation SME, you will be responsible for designing, implementing, and scaling AI-driven automation solutions that optimize HR service delivery and create a seamless employee experience.
-
-Your work will bridge HR process expertise with advanced automation technologies, enabling intelligent workflows, predictive insights, and streamlined HR operations. You will partner with the HR BA/Process Expert to ensure AI solutions are process-aligned, ethically implemented, and adopted at scale.
-
-Primary Roles And Responsibilities
-
-Identify and prioritize high-impact AI and automation opportunities within HR processes.
-Define functional requirements and solution architecture for AI-enabled HR use cases.
-Collaborate with technical teams to implement and integrate AI/automation solutions.
-Drive adoption of AI capabilities through training, communication, and change management.
-Establish AI governance practices to ensure compliance, fairness, and transparency.
-Track performance of AI solutions and continuously refine use cases for greater value.
-
-Required Technical And Professional Expertise
-
-Strong understanding of HR processes combined with AI/automation expertise.
-Experience with RPA tools (UiPath, Blue Prism) and AI services (Azure AI, AWS AI, Google AI).
-Business analysis and requirements translation skills for AI-driven solutions.
-Strong stakeholder engagement and cross-functional collaboration skills.
-Deep expertise in AI and end-to-end automation within the HR domain, with strong knowledge of both business and technical architecture and the role of AI in transforming HR services.
-Expertise in AI ethics, governance, and compliance in HR.
-Fluency in English and German. 
-Swiss/EU passport or valid permit required.
-
-Preferred Technical And Professional Experience
-
-Familiarity with HR platforms such as Workday, SuccessFactors, or ServiceNow HRSD.
-Proven track record in scaling automation from pilot to enterprise-level adoption.`;
-
-                    document.getElementById('test-job-posting').value = sampleJob;
-                    document.getElementById('test-job-posting').focus();
-                    
-                    // Smooth scroll to textarea
-                    document.getElementById('test-job-posting').scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                },
-                description: 'Load sample job posting for testing'
-            },
+            // ENTFERNT: load-sample-job - Keine Demo-Daten mehr erlaubt
             
             'toggle-api-key-visibility': {
                 handler: () => {

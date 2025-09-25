@@ -387,25 +387,25 @@ async function analyzeUserDocuments() {
 
 // Extract text from various document formats
 async function extractTextFromDocument(doc) {
-    // For demo purposes, return sample text
-    // In production, this would use PDF.js or similar libraries
-    if (doc.name && doc.name.toLowerCase().includes('lebenslauf')) {
-        return `Manuel Weiß
-HR-Berater und Digitalisierungsexperte
-
-Berufserfahrung:
-Senior HR Consultant bei ABC Consulting GmbH (2020-heute)
-- Beratung von DAX-Unternehmen bei HR-Transformation
-- Implementierung von SAP SuccessFactors und Workday
-- Führung von Teams bis zu 15 Mitarbeitern
-- 40% Effizienzsteigerung durch Prozessoptimierung
-
-HR Manager bei XYZ AG (2015-2020)
-- Verantwortlich für 500+ Mitarbeiter
-- Einführung agiler Arbeitsmethoden
-- Digitalisierung der HR-Prozesse`;
+    // Real document extraction - no demo data
+    // TODO: Implement PDF.js or similar libraries for real document parsing
+    if (doc.content) {
+        return doc.content;
     }
-    return doc.content || '';
+    
+    // If no content available, try to read file
+    if (doc.dataUrl) {
+        try {
+            // For now, return empty - real PDF extraction would go here
+            console.warn('PDF extraction not implemented - returning empty content');
+            return '';
+        } catch (error) {
+            console.error('Error extracting document content:', error);
+            return '';
+        }
+    }
+    
+    return '';
 }
 
 // Analyze document content based on type
