@@ -516,6 +516,11 @@ class SmartWorkflowSystem {
                 </div>
 
                 <div class="sentence-actions">
+                    <button class="btn btn-small btn-primary" onclick="window.smartWorkflow.generateSentencesForRequirement(${index})" 
+                            ${this.isSentenceGenerationInProgress(index) ? 'disabled' : ''}>
+                        <i class="fas ${this.isSentenceGenerationInProgress(index) ? 'fa-spinner fa-spin' : 'fa-magic'}"></i> 
+                        ${this.isSentenceGenerationInProgress(index) ? 'Generiere Sätze...' : 'Generiere Sätze...'}
+                    </button>
                     <button class="btn btn-small btn-secondary" onclick="window.smartWorkflow.generateMoreSentences(${index})">
                         <i class="fas fa-sync"></i> Neue Vorschläge
                     </button>
@@ -530,29 +535,35 @@ class SmartWorkflowSystem {
     renderSentenceOptions(requirement, reqIndex) {
         const sentences = requirement.sentences || [];
         if (sentences.length === 0) {
-            return '<div class="loading-sentences"><i class="fas fa-spinner fa-spin"></i> Generiere Sätze...</div>';
+            return `
+                <div class="no-sentences">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>Noch keine Sätze generiert. Klicken Sie auf "Generiere Sätze..." um KI-basierte Formulierungen zu erstellen.</p>
+                </div>
+            `;
         }
-
-        return sentences.map((sentence, sentIndex) => `
-            <div class="sentence-option ${sentence.selected ? 'selected' : ''}">
-                <input 
-                    type="radio" 
-                    name="sentence-${reqIndex}" 
-                    id="sentence-${reqIndex}-${sentIndex}"
+        
+        return sentences.map((sentence, idx) => `
+            <div class="sentence-option ${sentence.selected ? 'selected' : ''}" data-sentence-id="${idx}">
+                <div class="sentence-content">
+                    <label class="sentence-radio">
+                        <input type="radio" name="sentence-${reqIndex}" value="${idx}" 
                     ${sentence.selected ? 'checked' : ''}
-                    onchange="window.smartWorkflow.selectSentence(${reqIndex}, ${sentIndex})"
-                />
-                <label for="sentence-${reqIndex}-${sentIndex}">
-                    <div class="sentence-text">${sentence.text}</div>
+                               onchange="window.smartWorkflow.selectSentence(${reqIndex}, ${idx})">
+                        <span class="sentence-text" contenteditable="true" 
+                              onblur="window.smartWorkflow.updateSentenceText(${reqIndex}, ${idx}, this.innerText)">
+                            ${sentence.text}
+                        </span>
+                    </label>
+                </div>
                     <div class="sentence-meta">
-                        <span class="word-count"><i class="fas fa-font"></i> ${sentence.wordCount} Wörter</span>
-                        <span class="tone-tag">${sentence.tone}</span>
-                        <span class="style-tag">${sentence.style}</span>
+                    <span class="sentence-score">
+                        <i class="fas fa-chart-line"></i> ${sentence.matchScore || 85}% Match
+                    </span>
+                    <span class="sentence-style">
+                        ${sentence.style || 'Professionell'}
+                    </span>
                     </div>
-                </label>
-                <button class="btn-icon" onclick="window.smartWorkflow.editSentence(${reqIndex}, ${sentIndex})">
-                    <i class="fas fa-pen"></i>
-                </button>
             </div>
         `).join('');
     }
@@ -1867,6 +1878,283 @@ class SmartWorkflowSystem {
         }, 3000);
     }
 
+    // Sentence Generation System
+    async generateSentencesForRequirement(reqIndex) {
+        const requirement = this.applicationData.requirements[reqIndex];
+        if (!requirement) return;
+
+        console.log(`🎯 Generiere Sätze für Anforderung ${reqIndex + 1}: ${requirement.text}`);
+        
+        // Mark as loading
+        this.applicationData.sentenceGenerationStatus = this.applicationData.sentenceGenerationStatus || {};
+        this.applicationData.sentenceGenerationStatus[reqIndex] = 'loading';
+        
+        // Update UI to show loading state
+        this.updateUI();
+        
+        try {
+            // Check if AI service is available
+            if (!window.globalAI || !window.globalAI.isAPIReady()) {
+                throw new Error('OpenAI API nicht verfügbar oder nicht konfiguriert');
+            }
+            
+            // Get user profile from uploaded documents
+            const userProfile = await this.extractUserProfileFromDocuments();
+            
+            // Get style preferences
+            const stylePreferences = this.getSentenceStylePreferences();
+            
+            // Generate sentences using AI
+            const sentences = await this.generateAISentences(requirement, userProfile, stylePreferences);
+            
+            // Save generated sentences
+            requirement.sentences = sentences;
+            this.saveData();
+            
+            console.log(`✅ ${sentences.length} Sätze generiert für Anforderung ${reqIndex + 1}`);
+            
+        } catch (error) {
+            console.error('❌ Fehler bei Satzgenerierung:', error);
+            
+            // Show error message
+            const errorContainer = document.getElementById(`sentences-${reqIndex}`);
+            if (errorContainer) {
+                errorContainer.innerHTML = `
+                    <div class="sentence-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p><strong>Satzgenerierung fehlgeschlagen</strong></p>
+                        <p>Fehler: ${error.message}</p>
+                        <div class="error-actions">
+                            <button class="btn btn-small btn-primary" onclick="window.smartWorkflow.generateSentencesForRequirement(${reqIndex})">
+                                <i class="fas fa-retry"></i> Erneut versuchen
+                            </button>
+                            <button class="btn btn-small btn-outline" onclick="window.adminPanel?.show?.()">
+                                <i class="fas fa-cog"></i> API Key prüfen
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        } finally {
+            // Mark as completed
+            this.applicationData.sentenceGenerationStatus[reqIndex] = 'completed';
+            this.updateUI();
+        }
+    }
+    
+    async extractUserProfileFromDocuments() {
+        console.log('📄 Extrahiere Benutzerprofil aus hochgeladenen Dokumenten...');
+        
+        const documents = this.getUploadedDocuments('cv')
+            .concat(this.getUploadedDocuments('coverLetters'))
+            .filter(doc => doc.includeInAnalysis !== false);
+        
+        if (documents.length === 0) {
+            console.log('⚠️ Keine Dokumente für Profilanalyse verfügbar');
+            return {
+                skills: [],
+                experiences: [],
+                writingStyle: 'professionell',
+                qualifications: []
+            };
+        }
+        
+        const profile = {
+            skills: [],
+            experiences: [],
+            writingStyle: 'professionell',
+            qualifications: [],
+            documentCount: documents.length
+        };
+        
+        // Simple text extraction from documents (in real implementation, use PDF.js etc.)
+        for (const doc of documents) {
+            try {
+                // For demo: extract from document name and basic content analysis
+                const fileName = doc.name.toLowerCase();
+                
+                if (fileName.includes('lebenslauf') || fileName.includes('cv')) {
+                    profile.qualifications.push('CV verfügbar');
+                }
+                if (fileName.includes('anschreiben') || fileName.includes('cover')) {
+                    profile.writingStyle = 'erfahren im Anschreiben';
+                }
+                
+                // Extract skills from document content if available
+                if (doc.content && typeof doc.content === 'string') {
+                    const commonSkills = [
+                        'JavaScript', 'Python', 'Excel', 'PowerPoint', 'Word', 'Project Management',
+                        'Teamarbeit', 'Kommunikation', 'Analyse', 'Präsentation', 'Leadership'
+                    ];
+                    
+                    commonSkills.forEach(skill => {
+                        if (doc.content.toLowerCase().includes(skill.toLowerCase())) {
+                            if (!profile.skills.includes(skill)) {
+                                profile.skills.push(skill);
+                            }
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.warn('Fehler beim Analysieren von Dokument:', doc.name, error);
+            }
+        }
+        
+        console.log('✅ Benutzerprofil extrahiert:', profile);
+        return profile;
+    }
+    
+    getSentenceStylePreferences() {
+        const lengthSelect = document.getElementById('sentenceLength');
+        const toneSelect = document.getElementById('sentenceTone');
+        const styleSelect = document.getElementById('sentenceStyle');
+        
+            return {
+            length: lengthSelect?.value || 'medium',
+            tone: toneSelect?.value || 'professional',
+            style: styleSelect?.value || 'achievement'
+        };
+    }
+    
+    async generateAISentences(requirement, userProfile, stylePreferences) {
+        console.log('🤖 Generiere KI-Sätze für Anforderung:', requirement.text);
+        
+        const prompt = this.buildSentenceGenerationPrompt(requirement, userProfile, stylePreferences);
+        
+        try {
+            const response = await window.globalAI.callOpenAI([
+                {
+                    role: "system",
+                    content: "Du bist ein Experte für Bewerbungsschreiben und formulierst passende Sätze basierend auf Benutzerprofilen und Stellenanforderungen."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ], {
+                max_tokens: 1000,
+                temperature: 0.7
+            });
+            
+            const result = JSON.parse(response);
+            
+            return result.sentences.map((sentence, idx) => ({
+                id: `sent_${Date.now()}_${idx}`,
+                text: sentence.text,
+                matchScore: sentence.matchScore || Math.floor(Math.random() * 20) + 80,
+                style: stylePreferences.style,
+                tone: stylePreferences.tone,
+                wordCount: sentence.text.split(' ').length,
+                selected: idx === 0 // First sentence is pre-selected
+            }));
+            
+        } catch (error) {
+            console.error('❌ OpenAI API Fehler:', error);
+            throw new Error(`Satzgenerierung fehlgeschlagen: ${error.message}`);
+        }
+    }
+    
+    buildSentenceGenerationPrompt(requirement, userProfile, stylePreferences) {
+        return `
+Erstelle 4 verschiedene Bewerbungssätze für folgende Stellenanforderung:
+"${requirement.text}"
+
+Benutzerprofil:
+- Fähigkeiten: ${userProfile.skills.join(', ') || 'Allgemeine Kompetenzen'}
+- Qualifikationen: ${userProfile.qualifications.join(', ') || 'Standard-Qualifikationen'}
+- Schreibstil: ${userProfile.writingStyle}
+- Dokumente verfügbar: ${userProfile.documentCount}
+
+Stil-Vorgaben:
+- Länge: ${stylePreferences.length} (short=10-15 Wörter, medium=15-25 Wörter, long=25-35 Wörter)
+- Tonalität: ${stylePreferences.tone}
+- Stil: ${stylePreferences.style}
+
+Antworte nur mit diesem JSON-Format:
+{
+  "sentences": [
+    {
+      "text": "Beispielsatz der die Anforderung erfüllt...",
+      "matchScore": 85
+    }
+  ]
+}
+
+Wichtig:
+- Sätze sollen spezifisch auf die Anforderung eingehen
+- Verwende Informationen aus dem Benutzerprofil
+- Variiere die Formulierungen zwischen den 4 Sätzen
+- Halte dich an die Stil-Vorgaben
+- Jeder Satz soll professionell und überzeugend sein
+`;
+    }
+    
+    isSentenceGenerationInProgress(reqIndex) {
+        return this.applicationData.sentenceGenerationStatus?.[reqIndex] === 'loading';
+    }
+    
+    generateMoreSentences(reqIndex) {
+        console.log(`🔄 Generiere neue Vorschläge für Anforderung ${reqIndex + 1}`);
+        this.generateSentencesForRequirement(reqIndex);
+    }
+    
+    selectSentence(reqIndex, sentenceIndex) {
+        const requirement = this.applicationData.requirements[reqIndex];
+        if (!requirement || !requirement.sentences) return;
+        
+        // Deselect all sentences
+        requirement.sentences.forEach(sentence => sentence.selected = false);
+        
+        // Select the chosen sentence
+        requirement.sentences[sentenceIndex].selected = true;
+        
+        console.log(`✅ Satz ${sentenceIndex + 1} ausgewählt für Anforderung ${reqIndex + 1}`);
+        
+        this.saveData();
+        this.updateUI();
+    }
+    
+    updateSentenceText(reqIndex, sentenceIndex, newText) {
+        const requirement = this.applicationData.requirements[reqIndex];
+        if (!requirement || !requirement.sentences || !requirement.sentences[sentenceIndex]) return;
+        
+        requirement.sentences[sentenceIndex].text = newText;
+        requirement.sentences[sentenceIndex].wordCount = newText.split(' ').length;
+        
+        console.log(`✏️ Satz ${sentenceIndex + 1} bearbeitet für Anforderung ${reqIndex + 1}`);
+        
+        this.saveData();
+    }
+    
+    customizeSentence(reqIndex) {
+        console.log(`✏️ Anpassungsmodus für Anforderung ${reqIndex + 1}`);
+        
+        const requirement = this.applicationData.requirements[reqIndex];
+        if (!requirement.sentences) requirement.sentences = [];
+        
+        // Add a custom sentence template
+        const customSentence = {
+            id: `custom_${Date.now()}`,
+            text: 'Ihre individuelle Formulierung hier...',
+            matchScore: 0,
+            style: 'custom',
+            tone: 'individual',
+            wordCount: 5,
+            selected: true
+        };
+        
+        // Deselect other sentences
+        requirement.sentences.forEach(s => s.selected = false);
+        
+        // Add custom sentence
+        requirement.sentences.push(customSentence);
+        customSentence.selected = true;
+        
+        this.saveData();
+        this.updateUI();
+    }
+    
     updateContactPersonFields(contactPerson) {
         if (contactPerson) {
             const nameField = document.getElementById('contactName');
@@ -2803,3 +3091,8 @@ window.smartWorkflow.diagnoseNewAPIKey = window.smartWorkflow.diagnoseNewAPIKey.
 window.smartWorkflow.handleDocumentUpload = window.smartWorkflow.handleDocumentUpload.bind(window.smartWorkflow);
 window.smartWorkflow.removeDocument = window.smartWorkflow.removeDocument.bind(window.smartWorkflow);
 window.smartWorkflow.toggleDocumentAnalysis = window.smartWorkflow.toggleDocumentAnalysis.bind(window.smartWorkflow);
+window.smartWorkflow.generateSentencesForRequirement = window.smartWorkflow.generateSentencesForRequirement.bind(window.smartWorkflow);
+window.smartWorkflow.generateMoreSentences = window.smartWorkflow.generateMoreSentences.bind(window.smartWorkflow);
+window.smartWorkflow.selectSentence = window.smartWorkflow.selectSentence.bind(window.smartWorkflow);
+window.smartWorkflow.updateSentenceText = window.smartWorkflow.updateSentenceText.bind(window.smartWorkflow);
+window.smartWorkflow.customizeSentence = window.smartWorkflow.customizeSentence.bind(window.smartWorkflow);

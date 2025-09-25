@@ -609,6 +609,306 @@
     font-size: 1.25rem;
 }
 
+/* Step 4: Sentence Generation Styles */
+.sentence-generator {
+    margin: 2rem 0;
+}
+
+.generator-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.control-group select {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.requirements-sentences {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.requirement-sentence-block {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.requirement-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.req-number {
+    background: #6366f1;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.req-text {
+    flex: 1;
+    font-weight: 500;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.priority-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-hoch {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.priority-mittel {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.priority-niedrig {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.sentence-options {
+    margin-bottom: 1.5rem;
+}
+
+.no-sentences {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 2px dashed #d1d5db;
+}
+
+.no-sentences i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #9ca3af;
+}
+
+.no-sentences p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.sentence-option {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.sentence-option:hover {
+    border-color: #6366f1;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.sentence-option.selected {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.sentence-content {
+    margin-bottom: 0.75rem;
+}
+
+.sentence-radio {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.sentence-radio input[type="radio"] {
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.sentence-text {
+    flex: 1;
+    color: #1f2937;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.sentence-text:hover {
+    background: #f3f4f6;
+}
+
+.sentence-text[contenteditable="true"]:focus {
+    outline: 2px solid #6366f1;
+    background: white;
+}
+
+.sentence-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.sentence-score {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+}
+
+.sentence-score i {
+    color: #10b981;
+}
+
+.sentence-style {
+    background: #f3f4f6;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.sentence-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: #6366f1;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #5b56ec;
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #6366f1;
+    border: 1px solid #6366f1;
+}
+
+.btn-outline:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.sentence-error {
+    text-align: center;
+    padding: 2rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+}
+
+.sentence-error i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.sentence-error p {
+    margin: 0 0 1rem 0;
+}
+
+.error-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .requirement-meta {
     display: flex;
     align-items: center;
