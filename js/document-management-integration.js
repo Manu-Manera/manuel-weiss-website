@@ -717,13 +717,31 @@
     
     // Override existing upload functions
     window.uploadApplicationDocument = uploadDocument;
+    // Enhanced workflow upload handler
     window.fixedHandleDocumentUpload = function(inputId, category) {
+        console.log(`🔧 Enhanced workflow upload: ${inputId}, category: ${category}`);
+        
         const input = document.getElementById(inputId);
-        if (input && input.files && input.files.length > 0) {
-            Array.from(input.files).forEach(file => {
-                uploadDocument(category, file);
-            });
+        if (!input) {
+            console.error(`❌ Input not found: ${inputId}`);
+            return;
         }
+        
+        const files = input.files;
+        if (!files || files.length === 0) {
+            console.log('ℹ️ No files selected for upload');
+            return;
+        }
+        
+        console.log(`📄 Processing ${files.length} files for ${category}`);
+        
+        // Process each file using the enhanced upload system
+        Array.from(files).forEach(file => {
+            uploadDocument(category, file);
+        });
+        
+        // Clear input to allow re-uploading same files
+        input.value = '';
     };
     
     // Initialize

@@ -416,10 +416,10 @@ class SmartWorkflowSystem {
                     <p class="section-description">Erstelle ein detailliertes Persönlichkeits- und Kompetenzprofil aus Ihren Dokumenten</p>
                     
                     <div class="analysis-controls">
-                        <button class="btn btn-primary btn-large" onclick="window.smartWorkflow.startProfileAnalysis()" 
+                        <button class="btn btn-primary btn-large" onclick="window.analyzeStoredDocumentsEnhanced ? window.analyzeStoredDocumentsEnhanced() : window.smartWorkflow.startProfileAnalysis()" 
                                 ${this.isProfileAnalysisInProgress() ? 'disabled' : ''}>
                             <i class="fas ${this.isProfileAnalysisInProgress() ? 'fa-spinner fa-spin' : 'fa-brain'}"></i>
-                            ${this.isProfileAnalysisInProgress() ? 'Analysiere Dokumente...' : 'Profil analysieren'}
+                            ${this.isProfileAnalysisInProgress() ? 'Analysiere Dokumente...' : 'KI-Analyse starten'}
                         </button>
                         
                         ${this.applicationData.aiProfile ? `
