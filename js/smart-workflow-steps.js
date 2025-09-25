@@ -377,7 +377,9 @@ async function displayAIRequirements(aiResult, requirements) {
                             </span>
                             ${req.years ? `<span style="background: #8b5cf6; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">${req.years} Jahre</span>` : ''}
                         </div>
-                        <p style="margin: 0; font-weight: 500; color: #1f2937; line-height: 1.5;">${req.text}</p>
+                        <div style="margin: 0; font-weight: 500; color: #1f2937; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; max-width: 100%;">
+                            ${req.text}
+                        </div>
                         ${req.keywords && req.keywords.length > 0 ? `
                             <div style="margin-top: 0.5rem;">
                                 <span style="font-size: 0.75rem; color: #6b7280;">Keywords: </span>
