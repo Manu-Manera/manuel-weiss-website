@@ -1400,12 +1400,26 @@ class SmartWorkflowSystem {
                     
                     // Re-setup auto validation
                     this.setupAutoValidation();
+                    
+                    // SOFORTIGE Aktivierung bei Initiativbewerbung
+                    if (this.applicationData.applicationType === 'initiative') {
+                        setTimeout(() => {
+                            this.forceEnableButton();
+                        }, 200);
+                    }
                 }, 100);
             }
         } else {
             container.innerHTML = this.render();
             // Setup auto validation for non-modal rendering too
             this.setupAutoValidation();
+            
+            // SOFORTIGE Aktivierung bei Initiativbewerbung
+            if (this.applicationData.applicationType === 'initiative') {
+                setTimeout(() => {
+                    this.forceEnableButton();
+                }, 200);
+            }
         }
     }
     
@@ -1417,11 +1431,14 @@ class SmartWorkflowSystem {
             case 1:
                 // Schritt 1: Prüfe ob alle Felder ausgefüllt sind
                 if (this.applicationData.applicationType === 'initiative') {
-                    // Bei Initiativbewerbung nur Firma und Position prüfen
-                    const canProceedInitiative = this.applicationData.companyName && 
-                                                 this.applicationData.position;
-                    console.log('✅ Initiativbewerbung - Kann fortfahren:', canProceedInitiative);
-                    return canProceedInitiative;
+                    // Bei Initiativbewerbung - SEHR LIBERAL: Sofort möglich
+                    console.log('🚀 Initiativbewerbung gewählt - Immer möglich!');
+                    console.log('📋 Daten:', {
+                        companyName: this.applicationData.companyName,
+                        position: this.applicationData.position
+                    });
+                    // Immer erlaubt bei Initiativbewerbung
+                    return true;
                 } else {
                     // Bei normaler Bewerbung - GELOCKERTE VALIDIERUNG
                     const hasBasicData = this.applicationData.companyName && 
@@ -1717,6 +1734,8 @@ class SmartWorkflowSystem {
             setTimeout(() => {
                 this.addManualInputListeners();
                 this.checkInitiativeReadiness();
+                // SOFORTIGE Navigation-Update für Initiativbewerbung
+                this.updateNavigationState();
             }, 100);
         } else {
             // Bei normaler Bewerbung
@@ -1740,21 +1759,30 @@ class SmartWorkflowSystem {
         const companyInput = document.getElementById('companyName');
         const positionInput = document.getElementById('jobTitle') || document.getElementById('position');
         
-        if (this.applicationData.applicationType === 'initiative' && 
-            companyInput && companyInput.value && 
-            positionInput && positionInput.value) {
+        if (this.applicationData.applicationType === 'initiative') {
+            console.log('🔍 Initiative-Readiness Check...');
             
-            // Speichere die Daten
-            this.applicationData.companyName = companyInput.value;
-            this.applicationData.company = companyInput.value;
-            this.applicationData.position = positionInput.value;
+            // Speichere verfügbare Daten (auch wenn leer)
+            if (companyInput) {
+                this.applicationData.companyName = companyInput.value;
+                this.applicationData.company = companyInput.value;
+            }
+            if (positionInput) {
+                this.applicationData.position = positionInput.value;
+            }
             
-            // Aktiviere Weiter-Button
+            // Bei Initiativbewerbung IMMER Button aktivieren
             const nextButton = document.querySelector('[data-action="workflow-next-step"]');
             if (nextButton) {
                 nextButton.disabled = false;
                 nextButton.classList.remove('disabled');
+                nextButton.style.cursor = 'pointer';
+                nextButton.style.opacity = '1';
+                console.log('✅ Initiative: Button aktiviert (unabhängig von Feldern)');
             }
+            
+            // Update navigation state
+            this.updateNavigationState();
         }
     }
     
