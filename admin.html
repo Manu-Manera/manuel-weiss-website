@@ -3469,37 +3469,92 @@
                         </div>
                         <div class="application-documents-grid">
                             <div class="document-item">
-                                <h4>Bewerbungsbild</h4>
+                                <h4><i class="fas fa-image"></i> Portrait</h4>
                                 <div class="image-preview">
                                     <img id="applicationPhotoPreview" src="manuel-weiss-photo.svg" alt="Bewerbungsbild">
                                 </div>
-                                <input type="file" id="applicationPhotoUpload" accept="image/*" onchange="uploadApplicationDocument('application-photo', this)">
-                                <button data-action="get-element-by-id" class="btn btn-outline">
-                                    <i class="fas fa-upload"></i> Bewerbungsbild hochladen
+                                <input type="file" id="portraitUpload" accept="image/*" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('portrait', file))">
+                                <button onclick="document.getElementById('portraitUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Portrait hochladen
                                 </button>
+                                <div id="portrait-documents-list" class="documents-list"></div>
                             </div>
                             <div class="document-item">
-                                <h4>Lebenslauf (PDF)</h4>
+                                <h4><i class="fas fa-user"></i> Lebenslauf</h4>
                                 <div class="document-preview">
                                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
                                     <p id="cvFileName">Manuel_Weiss_CV.pdf</p>
                                 </div>
-                                <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('cv', this)">
-                                <button data-action="get-element-by-id" class="btn btn-outline">
+                                <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('cv', file))">
+                                <button onclick="document.getElementById('cvUpload').click()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Lebenslauf hochladen
                                 </button>
+                                <div id="cv-documents-list" class="documents-list"></div>
                             </div>
                             <div class="document-item">
-                                <h4>Zeugnisse (PDF)</h4>
+                                <h4><i class="fas fa-graduation-cap"></i> Zeugnisse</h4>
                                 <div class="document-preview">
                                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
                                     <p id="certificatesFileName">Zugnisse.pdf</p>
                                 </div>
-                                <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx" onchange="uploadApplicationDocument('certificates', this)">
-                                <button data-action="get-element-by-id" class="btn btn-outline">
+                                <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('certificates', file))">
+                                <button onclick="document.getElementById('certificatesUpload').click()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Zeugnisse hochladen
                                 </button>
+                                <div id="certificates-documents-list" class="documents-list"></div>
                             </div>
+                            <div class="document-item">
+                                <h4><i class="fas fa-award"></i> Zertifikate</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #f59e0b;"></i>
+                                    <p>Weiterbildungszertifikate</p>
+                                </div>
+                                <input type="file" id="certificationsUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('certifications', file))">
+                                <button onclick="document.getElementById('certificationsUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Zertifikate hochladen
+                                </button>
+                                <div id="certifications-documents-list" class="documents-list"></div>
+                            </div>
+                            <div class="document-item">
+                                <h4><i class="fas fa-envelope"></i> Anschreiben</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-alt" style="font-size: 3rem; color: #6366f1;"></i>
+                                    <p>Frühere Anschreiben</p>
+                                </div>
+                                <input type="file" id="coverLettersUpload" accept=".pdf,.doc,.docx,.txt" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('coverLetters', file))">
+                                <button onclick="document.getElementById('coverLettersUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Anschreiben hochladen
+                                </button>
+                                <div id="coverLetters-documents-list" class="documents-list"></div>
+                            </div>
+                            <div class="document-item">
+                                <h4><i class="fas fa-file-archive"></i> Vollständige Bewerbung</h4>
+                                <div class="document-preview">
+                                    <i class="fas fa-file-archive" style="font-size: 3rem; color: #8b5cf6;"></i>
+                                    <p>Komplette Bewerbungsmappen</p>
+                                </div>
+                                <input type="file" id="fullApplicationsUpload" accept=".pdf,.zip,.rar" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('fullApplications', file))">
+                                <button onclick="document.getElementById('fullApplicationsUpload').click()" class="btn btn-outline">
+                                    <i class="fas fa-upload"></i> Bewerbungsmappe hochladen
+                                </button>
+                                <div id="fullApplications-documents-list" class="documents-list"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Section -->
+                        <div class="analysis-section" style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e5e7eb;">
+                            <h4 style="margin: 0 0 1rem; color: #374151; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-brain" style="color: #6366f1;"></i>
+                                KI-Persönlichkeits- und Schreibstilanalyse
+                            </h4>
+                            <p style="margin: 0 0 1rem; color: #6b7280;">Analysieren Sie Ihre hochgeladenen Dokumente, um Ihren persönlichen Schreibstil zu verstehen und optimierte Anschreiben zu generieren.</p>
+                            <button onclick="analyzeStoredDocuments()" class="btn btn-primary" style="margin-right: 1rem;">
+                                <i class="fas fa-search"></i> Dokumente analysieren
+                            </button>
+                            <button onclick="refreshAllDocumentDisplays()" class="btn btn-outline">
+                                <i class="fas fa-refresh"></i> Ansicht aktualisieren
+                            </button>
+                            <div id="profileAnalysisResults" style="margin-top: 1rem;"></div>
                         </div>
                     </div>
                     
@@ -8686,6 +8741,7 @@ Bitte antworte im folgenden JSON-Format:
     <script src="js/button-cache-buster.js"></script>
     <script src="js/emergency-button-fix.js"></script>
     <script src="js/workflow-upload-fix.js"></script>
+    <script src="js/document-management-integration.js"></script>
     
     <!-- OpenAI Integration (Load Early) -->
     <script src="js/openai-integration.js"></script>
