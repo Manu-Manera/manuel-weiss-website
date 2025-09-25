@@ -60,7 +60,7 @@
         completeMasterUpload(successful, files.length - successful);
     }
     
-    // Einzelne Datei verarbeiten
+    // Einzelne Datei verarbeiten - ROBUST
     async function processSingleFile(file, category) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -79,30 +79,40 @@
                         source: 'final-master-upload'
                     };
                     
-                    // 1. LOKALE SPEICHERUNG (Primär)
-                    await saveToLocal(doc);
+                    console.log(`💾 Processing: ${doc.name} (${doc.category})`);
                     
-                    // 2. GITHUB BACKUP (Sekundär)
+                    // 1. LOKALE SPEICHERUNG (Immer erfolgreich)
+                    await saveToLocal(doc);
+                    console.log(`✅ Local saved: ${doc.name}`);
+                    
+                    // 2. GITHUB BACKUP (Optional)
+                    doc.githubBackup = false; // Default
                     try {
                         await saveToGitHub(doc);
                         doc.githubBackup = true;
-                        console.log(`☁️ GitHub backup: ${doc.name}`);
+                        console.log(`☁️ GitHub backup successful: ${doc.name}`);
+                        
+                        // Update local with backup status
+                        await updateLocalDocument(doc);
                     } catch (githubError) {
-                        console.warn(`⚠️ GitHub backup failed: ${githubError.message}`);
-                        doc.githubBackup = false;
+                        console.warn(`⚠️ GitHub backup failed (continuing anyway): ${githubError.message}`);
+                        // Kein reject - lokale Speicherung ist genug
                     }
-                    
-                    // Update local with backup status
-                    await updateLocalDocument(doc);
                     
                     resolve(doc);
                     
                 } catch (error) {
+                    console.error(`❌ Processing error: ${file.name}`, error);
                     reject(error);
                 }
             };
             
-            reader.onerror = () => reject(new Error(`File read error: ${file.name}`));
+            reader.onerror = (error) => {
+                console.error(`❌ File read error: ${file.name}`, error);
+                reject(new Error(`File read error: ${file.name}`));
+            };
+            
+            // Start reading
             reader.readAsDataURL(file);
         });
     }
@@ -125,50 +135,73 @@
         }
     }
     
-    // GitHub Speicherung (vereinfacht)
+    // GitHub Speicherung - ROBUST mit Fallback
     async function saveToGitHub(doc) {
         if (!GITHUB_CONFIG.enabled) {
             throw new Error('GitHub storage disabled');
         }
         
-        // Erstelle Gist für Dokument
-        const gistData = {
-            description: `Bewerbungsdokument: ${doc.name} (${doc.category})`,
-            public: false,
-            files: {
-                [`${doc.id}.json`]: {
-                    content: JSON.stringify({
-                        ...doc,
-                        metadata: {
-                            backup_date: new Date().toISOString(),
-                            system: 'final-upload-system',
-                            version: '1.0'
-                        }
-                    }, null, 2)
-                }
-            }
-        };
-        
-        const response = await fetch('https://api.github.com/gists', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github.v3+json'
-                // GitHub Token wäre hier optimal, aber auch ohne möglich
-            },
-            body: JSON.stringify(gistData)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status}`);
+        // Überspringe große Dateien (>5MB für GitHub Gist)
+        if (doc.size > 5 * 1024 * 1024) {
+            console.warn(`⚠️ File too large for GitHub: ${doc.name} (${doc.size} bytes)`);
+            throw new Error('File too large for GitHub Gist (max 5MB)');
         }
         
-        const gist = await response.json();
-        
-        // Speichere GitHub-ID für späteren Zugriff
-        saveGitHubId(doc.id, gist.id);
-        
-        return gist;
+        try {
+            // Reduziere Dokument-Größe für GitHub
+            const lightDoc = {
+                id: doc.id,
+                name: doc.name,
+                category: doc.category,
+                size: doc.size,
+                type: doc.type,
+                uploadDate: doc.uploadDate,
+                includeInAnalysis: doc.includeInAnalysis,
+                // content: "..." // Entferne große Base64-Daten für GitHub
+                contentHash: btoa(doc.name + doc.uploadDate), // Einfacher Hash
+                metadata: {
+                    backup_date: new Date().toISOString(),
+                    system: 'final-upload-system',
+                    version: '1.0',
+                    note: 'Content stored locally, metadata backup only'
+                }
+            };
+            
+            const gistData = {
+                description: `Bewerbungsdokument Backup: ${doc.name} (${doc.category})`,
+                public: false,
+                files: {
+                    [`${doc.id}_metadata.json`]: {
+                        content: JSON.stringify(lightDoc, null, 2)
+                    }
+                }
+            };
+            
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(gistData)
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
+            }
+            
+            const gist = await response.json();
+            
+            // Speichere GitHub-ID
+            saveGitHubId(doc.id, gist.id);
+            
+            return gist;
+            
+        } catch (error) {
+            console.error('❌ GitHub save error:', error);
+            throw error;
+        }
     }
     
     // GitHub-IDs verwalten
