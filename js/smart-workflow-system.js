@@ -1008,12 +1008,27 @@ class SmartWorkflowSystem {
                     this.displayExtractionResults(result);
                 })
                 .catch(error => {
-                    console.warn('KI-Analyse fehlgeschlagen, verwende lokale Extraktion:', error);
-                    this.performLocalExtraction(jobDesc);
+                    console.error('❌ KI-Analyse fehlgeschlagen:', error);
+                    const statusDiv = document.querySelector('.analysis-status');
+                    if (statusDiv) {
+                        statusDiv.innerHTML = `
+                            <div style="color: #dc2626; padding: 0.5rem;">
+                                <i class="fas fa-exclamation-triangle"></i> KI-Analyse fehlgeschlagen: ${error.message}
+                            </div>
+                        `;
+                    }
                 });
         } else {
-            // Lokale Extraktion als Fallback
-            this.performLocalExtraction(jobDesc);
+            // KEINE LOKALE EXTRAKTION - Nur KI-Analyse
+            console.warn('❌ KI-Analyse nicht verfügbar - keine Fallback-Extraktion');
+            const statusDiv = document.querySelector('.analysis-status');
+            if (statusDiv) {
+                statusDiv.innerHTML = `
+                    <div style="color: #dc2626; padding: 0.5rem;">
+                        <i class="fas fa-exclamation-triangle"></i> KI-Analyse erforderlich - keine lokale Extraktion verfügbar
+                    </div>
+                `;
+            }
         }
         
         this.saveData();
@@ -1058,75 +1073,7 @@ class SmartWorkflowSystem {
         this.saveData();
     }
 
-    performLocalExtraction(jobDesc) {
-        // Lokale Extraktion mit verbesserter Regex
-        const company = this.extractCompanyLocal(jobDesc);
-        const position = this.extractPositionLocal(jobDesc);
-        
-        const result = {
-            company: company,
-            position: position,
-            location: this.extractLocationLocal(jobDesc),
-            contactPerson: this.extractContactPersonLocal(jobDesc)
-        };
-        
-        this.displayExtractionResults(result);
-    }
-
-    extractCompanyLocal(text) {
-        // Verbesserte Firmen-Extraktion
-        const patterns = [
-            /^([A-Z][A-Za-z\s&\-\.]+(?:AG|GmbH|SE|SA|Ltd|Inc|Corporation|Corp))/im,
-            /(?:bei|at)\s+([A-Za-z0-9\s&\-\.]+?)(?:\s+·|\s+speichern|\s+$)/i,
-            /^([A-Z]{2,}(?:\s+[A-Z][a-z]+)*)/m
-        ];
-        
-        for (const pattern of patterns) {
-            const match = text.match(pattern);
-            if (match && match[1].length >= 2 && match[1].length <= 50) {
-                return match[1].trim();
-            }
-        }
-        return '';
-    }
-
-    extractPositionLocal(text) {
-        // Verbesserte Position-Extraktion
-        const patterns = [
-            /([^·\n\|]+?)\s*\((?:f\/m\/x|m\/w\/d|all\s*genders?)\)/i,
-            /(Consultant|Manager|Developer|Engineer|Analyst|Specialist|Expert|SME|Lead|Architect)[^·\n\|]*/i
-        ];
-        
-        for (const pattern of patterns) {
-            const match = text.match(pattern);
-            if (match && match[1].length < 100) {
-                return match[1].trim();
-            }
-        }
-        return '';
-    }
-
-    extractLocationLocal(text) {
-        const locationPattern = /([A-Za-z\s]+),\s*([A-Za-z\s]+),\s*(Schweiz|Deutschland|Austria|Österreich)/i;
-        const match = text.match(locationPattern);
-        return match ? match[0] : '';
-    }
-
-    extractContactPersonLocal(text) {
-        const namePattern = /(?:Ansprechpartner|Contact|Kontakt)[\s:]*([A-Z][a-z]+\s+[A-Z][a-z]+)/i;
-        const emailPattern = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
-        
-        const nameMatch = text.match(namePattern);
-        const emailMatch = text.match(emailPattern);
-        
-        if (nameMatch || emailMatch) {
-            return {
-                name: nameMatch ? nameMatch[1] : null,
-                email: emailMatch ? emailMatch[1] : null
-            };
-        }
-        return null;
-    }
+    // ENTFERNT: Alle lokalen Extraktionsmethoden - Nur noch KI-Analyse
     
     updateContactPersonFields(contactPerson) {
         if (contactPerson) {
