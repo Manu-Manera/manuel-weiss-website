@@ -1428,8 +1428,8 @@ class SmartWorkflowSystem {
                                         this.applicationData.position && 
                                         this.applicationData.jobDescription;
                     
-                    // Automatisch bestätigen wenn Grunddaten vorhanden
-                    if (hasBasicData && !this.applicationData.extractionConfirmed) {
+                    // Automatisch bestätigen wenn Grunddaten vorhanden - VERSTÄRKT
+                    if (hasBasicData) {
                         console.log('🔧 Auto-confirm extraction da Grunddaten vorhanden');
                         this.applicationData.extractionConfirmed = true;
                         this.saveData();
@@ -1516,19 +1516,50 @@ class SmartWorkflowSystem {
         const canProceed = this.canProceed();
         const nextButton = document.querySelector('[data-action="workflow-next-step"]');
         
+        console.log('🔄 Navigation Update:', {
+            canProceed,
+            buttonExists: !!nextButton,
+            currentStep: this.currentStep,
+            applicationData: this.applicationData
+        });
+        
         if (nextButton) {
-            if (canProceed) {
+            // FORCE ENABLE für bessere UX - wenn Grunddaten vorhanden
+            const hasMinimalData = this.applicationData.companyName || this.applicationData.position || this.applicationData.jobDescription;
+            const shouldEnable = canProceed || hasMinimalData;
+            
+            if (shouldEnable) {
                 nextButton.disabled = false;
                 nextButton.classList.remove('disabled');
                 nextButton.style.cursor = 'pointer';
-                console.log('✅ Navigation: Button aktiviert');
+                nextButton.style.opacity = '1';
+                console.log('✅ Navigation: Button aktiviert (canProceed:', canProceed, ', hasMinimalData:', hasMinimalData, ')');
             } else {
                 nextButton.disabled = true;
                 nextButton.classList.add('disabled');
                 nextButton.style.cursor = 'not-allowed';
+                nextButton.style.opacity = '0.5';
                 console.log('❌ Navigation: Button deaktiviert');
             }
+        } else {
+            console.warn('⚠️ Navigation: Weiter-Button nicht gefunden!');
         }
+    }
+
+    // DEBUG: Force enable navigation button
+    forceEnableButton() {
+        const nextButton = document.querySelector('[data-action="workflow-next-step"]');
+        if (nextButton) {
+            nextButton.disabled = false;
+            nextButton.classList.remove('disabled');
+            nextButton.style.cursor = 'pointer';
+            nextButton.style.opacity = '1';
+            nextButton.style.pointerEvents = 'auto';
+            console.log('🔧 Button forciert aktiviert');
+            return true;
+        }
+        console.warn('❌ Button nicht gefunden');
+        return false;
     }
 
     close() {
