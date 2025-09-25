@@ -3333,3 +3333,4 @@ window.smartWorkflow.generateMoreSentences = window.smartWorkflow.generateMoreSe
 window.smartWorkflow.selectSentence = window.smartWorkflow.selectSentence.bind(window.smartWorkflow);
 window.smartWorkflow.updateSentenceText = window.smartWorkflow.updateSentenceText.bind(window.smartWorkflow);
 window.smartWorkflow.customizeSentence = window.smartWorkflow.customizeSentence.bind(window.smartWorkflow);
+window.smartWorkflow.selectAllDocuments = window.smartWorkflow.selectAllDocuments.bind(window.smartWorkflow);
