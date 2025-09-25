@@ -487,12 +487,35 @@
     text-align: left;
 }
 
+.files-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.files-count {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.files-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .no-files {
-    padding: 0.5rem;
+    padding: 1rem;
     text-align: center;
     color: #9ca3af;
     font-size: 0.875rem;
     font-style: italic;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
 }
 
 .uploaded-file {
@@ -505,6 +528,23 @@
     border-radius: 6px;
     margin-bottom: 0.5rem;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.uploaded-file.included {
+    border-left: 3px solid #10b981;
+    background: #f0fdf4;
+}
+
+.uploaded-file.excluded {
+    border-left: 3px solid #ef4444;
+    background: #fef2f2;
+    opacity: 0.7;
+}
+
+.uploaded-file:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
 }
 
 .file-info {
