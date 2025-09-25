@@ -368,7 +368,7 @@ class SmartWorkflowSystem {
                             <h4>Lebensläufe</h4>
                             <p>PDF oder Word Dokumente</p>
                             <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple hidden 
-                                   onchange="window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')"
+                                   onchange="window.fixedHandleDocumentUpload ? window.fixedHandleDocumentUpload('cvUpload', 'cv') : window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')"
                                    onclick="console.log('📄 CV Upload clicked')">
                             <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
@@ -384,7 +384,7 @@ class SmartWorkflowSystem {
                             <h4>Anschreiben</h4>
                             <p>Frühere Bewerbungen</p>
                             <input type="file" id="coverLetterUpload" accept=".pdf,.doc,.docx" multiple hidden 
-                                   onchange="window.smartWorkflow.handleDocumentUpload('coverLetterUpload', 'coverLetters')">
+                                   onchange="window.fixedHandleDocumentUpload ? window.fixedHandleDocumentUpload('coverLetterUpload', 'coverLetters') : window.smartWorkflow.handleDocumentUpload('coverLetterUpload', 'coverLetters')">
                             <button class="btn btn-primary" onclick="document.getElementById('coverLetterUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
@@ -2575,7 +2575,7 @@ WICHTIGE ANWEISUNGEN:
             const response = await window.globalAI.callOpenAI([
                 {
                     role: "system",
-                    content: "Du bist ein Experte für Personalwesen und Bewerbungsanalyse. Du analysierst Bewerbungsunterlagen und erstellst detaillierte Persönlichkeits- und Kompetenzprofile."
+                    content: "Du bist ein Experte für Personalwesen und Bewerbungsanalyse. Du analysierst Bewerbungsunterlagen und erstellst detaillierte Persönlichkeits- und Kompetenzprofile. Antworte IMMER mit einem gültigen JSON-Objekt ohne zusätzlichen Text."
                 },
                 {
                     role: "user",
@@ -2586,7 +2586,42 @@ WICHTIGE ANWEISUNGEN:
                 temperature: 0.7
             });
             
-            const profile = JSON.parse(response);
+            // Enhanced JSON parsing with better error handling
+            let profile;
+            try {
+                // First try to parse the response directly
+                if (typeof response === 'string') {
+                    // Try to extract JSON from response if it contains extra text
+                    const jsonMatch = response.match(/\{[\s\S]*\}/);
+                    const jsonStr = jsonMatch ? jsonMatch[0] : response;
+                    profile = JSON.parse(jsonStr);
+                } else if (response && response.content) {
+                    // If response is an object with content property
+                    const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+                    const jsonStr = jsonMatch ? jsonMatch[0] : response.content;
+                    profile = JSON.parse(jsonStr);
+                } else {
+                    // Response is already an object
+                    profile = response;
+                }
+            } catch (parseError) {
+                console.error('❌ JSON Parse Error:', parseError);
+                console.error('❌ Raw response:', response);
+                
+                // Create fallback profile
+                profile = {
+                    summary: "Profilanalyse konnte aufgrund eines technischen Fehlers nicht vollständig durchgeführt werden.",
+                    strengths: ["Berufserfahrung", "Fachkompetenz", "Weiterbildungsbereitschaft"],
+                    skills: [{category: "Allgemein", items: ["Problemlösung", "Teamarbeit", "Kommunikation"]}],
+                    writingStyle: {
+                        tone: "Professionell",
+                        vocabulary: "Fachlich kompetent",
+                        structure: "Strukturiert"
+                    },
+                    recommendations: ["Profil vervollständigen", "Spezifische Beispiele hinzufügen"],
+                    error: "JSON Parse Error: " + parseError.message
+                };
+            }
             
             // Enhance profile with metadata
             profile.analysisDate = new Date().toISOString();

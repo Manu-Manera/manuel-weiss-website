@@ -68,6 +68,25 @@ class ButtonComponent {
             button.addEventListener('click', this.onClick);
         }
         
+        // EMERGENCY: Always add direct event listener for critical buttons
+        if (this.action === 'start-workflow' || this.text.includes('Neue Bewerbung')) {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🚀 Direct button click handler triggered:', this.text);
+                
+                // Force start workflow function
+                if (typeof this.onClick === 'function') {
+                    this.onClick(e);
+                } else if (typeof window.startSmartWorkflow === 'function') {
+                    window.startSmartWorkflow();
+                } else {
+                    console.error('❌ No workflow function available');
+                    alert('Workflow-Funktion ist nicht verfügbar. Bitte laden Sie die Seite neu.');
+                }
+            });
+        }
+        
         return button;
     }
 }
