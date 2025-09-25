@@ -224,18 +224,29 @@ async function analyzeRequirements() {
             
         } catch (error) {
             console.error('❌ KI-Analyse fehlgeschlagen:', error);
-            console.log('🔄 Fallback: Verwende lokale Pattern-Analyse...');
             
-            // Fallback auf lokale Analyse
+            // KEINE FALLBACK-ANALYSE - KI ist erforderlich
             analysisDiv.innerHTML = `
-                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
-                    <p style="margin: 0; color: #92400e;"><strong>⚠️ KI-Analyse nicht verfügbar</strong><br>
-                    ${error.message}<br>Verwende lokale Analyse als Fallback...</p>
+                <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                    <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ KI-Analyse fehlgeschlagen</h5>
+                    <p style="margin: 0; color: #dc2626;">
+                        <strong>Fehler:</strong> ${error.message}<br><br>
+                        <strong>Mögliche Ursachen:</strong><br>
+                        • OpenAI API Key nicht konfiguriert<br>
+                        • Keine Internet-Verbindung<br>
+                        • API-Quota aufgebraucht<br><br>
+                        <strong>Lösung:</strong> Bitte konfigurieren Sie Ihren OpenAI API Key im Admin-Panel.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-cog"></i> Admin-Panel öffnen
+                        </button>
+                        <button onclick="analyzeRequirements()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                    </div>
                 </div>
-                <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Lokale Analyse läuft...</p>
             `;
-            
-            await useLocalFallbackAnalysis();
             return;
         }
         
@@ -247,46 +258,31 @@ async function analyzeRequirements() {
             status: window.globalAI?.getAPIStatus?.()
         });
         
+        // KEINE FALLBACK-ANALYSE - KI ist zwingend erforderlich
         analysisDiv.innerHTML = `
-            <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
-                <p style="margin: 0; color: #92400e;"><strong>⚠️ KI-Service nicht verfügbar</strong><br>
-                OpenAI API Key nicht konfiguriert. Verwende lokale Analyse als Fallback...</p>
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ KI-Service nicht verfügbar</h5>
+                <p style="margin: 0; color: #dc2626;">
+                    <strong>Problem:</strong> OpenAI API Key nicht konfiguriert oder ungültig<br><br>
+                    
+                    <strong>Status:</strong><br>
+                    • Service existiert: ${!!window.globalAI ? '✅' : '❌'}<br>
+                    • API Ready: ${window.globalAI?.isAPIReady?.() ? '✅' : '❌'}<br><br>
+                    
+                    <strong>Erforderlich:</strong> Die Stellenanforderungen können nur mit KI-Analyse extrahiert werden.<br>
+                    Lokale Pattern-Erkennung ist nicht mehr verfügbar.
+                </p>
+                <div style="margin-top: 1rem;">
+                    <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-cog"></i> API Key konfigurieren
+                    </button>
+                    <button onclick="analyzeRequirements()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-sync"></i> Erneut versuchen
+                    </button>
+                </div>
             </div>
-            <p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Lokale Analyse läuft...</p>
         `;
-        
-        await useLocalFallbackAnalysis();
         return;
-    }
-
-    // Hilfsfunktion für lokale Fallback-Analyse
-    async function useLocalFallbackAnalysis() {
-        console.log('🔧 Initialisiere lokalen Job-Analyzer...');
-        await initializeJobAnalyzer();
-        
-        const requirements = window.jobAnalyzer.analyzeJobDescription(workflowData.jobDescription);
-        
-        console.log('📊 Lokale Analyse abgeschlossen:', {
-            requirementsFound: requirements.length,
-            requirements: requirements.map(req => ({ 
-                id: req.id, 
-                importance: req.importance, 
-                type: req.type, 
-                text: req.text.substring(0, 50) + '...' 
-            }))
-        });
-        
-        if (requirements.length === 0) {
-            console.warn('⚠️ Auch lokale Analyse fand keine Anforderungen!');
-            analysisDiv.innerHTML = '<p style="color: #ef4444;">Keine spezifischen Anforderungen gefunden. Bitte überprüfen Sie die Stellenbeschreibung.</p>';
-            return;
-        }
-        
-        console.log('✅ Speichere lokale Anforderungen in Workflow-Daten...');
-        workflowData.requirements = requirements;
-        
-        // Zeige lokale Anforderungen an
-        await displayLocalRequirements(requirements);
     }
 }
 
@@ -426,90 +422,7 @@ async function displayAIRequirements(aiResult, requirements) {
     console.log('✅ KI-Anforderungen UI erstellt');
 }
 
-// Funktion zur Anzeige der lokalen (Fallback) Anforderungen  
-async function displayLocalRequirements(requirements) {
-    console.log('🎨 Erstelle UI für lokale Anforderungen...');
-    
-    const analysisDiv = document.getElementById('requirementsAnalysis');
-    
-    let html = '<div style="margin-top: 1rem;">';
-    html += `
-        <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
-            <h5 style="margin: 0 0 0.5rem 0; color: #92400e;">⚠️ Lokale Pattern-Analyse verwendet</h5>
-            <p style="margin: 0; font-size: 0.875rem; color: #92400e;">
-                KI-Service nicht verfügbar. Ergebnisse basieren auf lokaler Pattern-Erkennung und sind möglicherweise weniger präzise.
-            </p>
-        </div>
-    `;
-    html += '<h5 style="margin-bottom: 1rem;">📋 Gefundene Anforderungen (lokale Analyse):</h5>';
-    
-    for (const req of requirements) {
-        let suggestions = [];
-        if (window.jobAnalyzer && window.jobAnalyzer.generateMatchingSuggestions) {
-            try {
-                suggestions = await window.jobAnalyzer.generateMatchingSuggestions(req);
-            } catch (error) {
-                console.warn('Vorschläge-Generierung fehlgeschlagen für:', req.id, error);
-                suggestions = ['Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.'];
-            }
-        } else {
-            suggestions = ['Meine Erfahrung in diesem Bereich ermöglicht es mir, diese Anforderung zu erfüllen.'];
-        }
-        req.matchingSuggestions = suggestions;
-        
-        const importanceColor = req.importance > 0.7 ? '#ef4444' : req.importance > 0.5 ? '#f59e0b' : '#10b981';
-        
-        html += `
-            <div class="requirement-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            ${req.isRequired ? '<span style="color: #ef4444; font-weight: 600;">MUSS</span>' : '<span style="color: #10b981;">KANN</span>'}
-                            <span style="background: ${importanceColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem;">
-                                Priorität: ${Math.round(req.importance * 100)}%
-                            </span>
-                            <span style="background: #6b7280; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
-                                ${req.type || 'general'}
-                            </span>
-                        </div>
-                        <p style="margin: 0; font-weight: 500;">${req.text}</p>
-                    </div>
-                    <input type="checkbox" id="req-${req.id}" checked style="width: 20px; height: 20px; cursor: pointer;">
-                </div>
-                
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
-                    <p style="margin: 0 0 0.75rem 0; font-weight: 500; color: #666;">Passende Formulierungen:</p>
-                    <div id="suggestions-${req.id}">
-                        ${suggestions.map((sug, idx) => `
-                            <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
-                                <input type="radio" name="suggestion-${req.id}" value="${idx}" ${idx === 0 ? 'checked' : ''} 
-                                       style="margin-right: 0.5rem;">
-                                <span contenteditable="true" style="outline: none; display: inline-block; padding: 0.5rem; background: white; border-radius: 4px; width: calc(100% - 30px);">
-                                    ${sug.content || sug}
-                                </span>
-                            </label>
-                        `).join('')}
-                        <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
-                            <input type="radio" name="suggestion-${req.id}" value="custom" style="margin-right: 0.5rem;">
-                            <span contenteditable="true" style="outline: none; display: inline-block; padding: 0.5rem; background: white; border-radius: 4px; width: calc(100% - 30px);" 
-                                  placeholder="Eigene Formulierung..."></span>
-                        </label>
-                    </div>
-                    <button onclick="regenerateSuggestions('${req.id}')" style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
-                        <i class="fas fa-sync"></i> Neue Vorschläge
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-    
-    html += '</div>';
-    
-    analysisDiv.innerHTML = html;
-    document.getElementById('proceedButton').style.display = 'block';
-    
-    console.log('✅ Lokale Anforderungen UI erstellt');
-}
+// ENTFERNT: displayLocalRequirements - Nur noch KI-Analyse erlaubt
 
 // Regenerate suggestions for a requirement
 async function regenerateSuggestions(reqId) {
