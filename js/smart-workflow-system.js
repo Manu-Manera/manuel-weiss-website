@@ -231,9 +231,24 @@ class SmartWorkflowSystem {
             
             console.log('🤖 Schritt 2: KI-Analyse wird benötigt - starte automatisch');
             
-            // Starte KI-Analyse automatisch
-            setTimeout(() => {
-                this.triggerAIAnalysisInStep2();
+            // Starte KI-Analyse automatisch - mit Service-Check
+            setTimeout(async () => {
+                // Stelle sicher, dass alle Services geladen sind
+                if (!window.globalAI && window.GlobalAIService) {
+                    console.log('🔄 Initialisiere GlobalAI Service...');
+                    window.globalAI = new window.GlobalAIService();
+                    await window.globalAI.initialize();
+                }
+                
+                if (!window.secureAPIManager && window.SecureAPIManager) {
+                    console.log('🔄 Initialisiere SecureAPIManager...');
+                    window.secureAPIManager = new window.SecureAPIManager();
+                }
+                
+                // Kurze Wartezeit für Service-Initialisierung
+                setTimeout(() => {
+                    this.triggerAIAnalysisInStep2();
+                }, 200);
             }, 100);
             
             return `
@@ -1122,8 +1137,36 @@ class SmartWorkflowSystem {
         }
         
         try {
+            // ERWEITERTE DIAGNOSE
+            console.log('🔍 === PRE-ANALYSIS DIAGNOSE ===');
+            console.log('GlobalAI exists:', !!window.globalAI);
+            console.log('SecureAPIManager exists:', !!window.secureAPIManager);
+            
+            if (window.globalAI) {
+                console.log('GlobalAI isReady:', window.globalAI.isReady);
+                console.log('GlobalAI apiKey exists:', !!window.globalAI.apiKey);
+                console.log('GlobalAI isAPIReady():', window.globalAI.isAPIReady());
+            }
+            
+            if (window.secureAPIManager) {
+                const storedKey = window.secureAPIManager.getAPIKey();
+                console.log('SecureAPIManager has key:', !!storedKey);
+                console.log('Key starts with sk-:', storedKey?.startsWith('sk-'));
+                console.log('Key length:', storedKey?.length);
+            }
+            
+            // Versuche API Key neu zu laden vor der Analyse
+            if (window.globalAI && !window.globalAI.isAPIReady()) {
+                console.log('🔄 API nicht bereit - versuche Key neu zu laden...');
+                await window.globalAI.loadAPIKey();
+                console.log('🔍 Nach Reload - isAPIReady():', window.globalAI.isAPIReady());
+            }
+            
             if (!window.globalAI || !window.globalAI.isAPIReady()) {
-                throw new Error('OpenAI API nicht verfügbar oder nicht konfiguriert');
+                const errorMsg = !window.globalAI ? 
+                    'GlobalAI Service nicht geladen' : 
+                    'API Key nicht verfügbar oder ungültig';
+                throw new Error(`OpenAI API nicht verfügbar: ${errorMsg}`);
             }
             
             console.log('🤖 Starte KI-Analyse mit:', {
@@ -1152,16 +1195,31 @@ class SmartWorkflowSystem {
         } catch (error) {
             console.error('❌ KI-Analyse in Schritt 2 fehlgeschlagen:', error);
             
+            // Sammle Debug-Informationen für bessere Diagnose
+            const debugInfo = {
+                globalAIExists: !!window.globalAI,
+                secureAPIExists: !!window.secureAPIManager,
+                globalAIReady: window.globalAI?.isReady,
+                apiKeyExists: !!window.secureAPIManager?.getAPIKey(),
+                errorMessage: error.message
+            };
+            
+            console.log('🔍 === FEHLER-DIAGNOSE ===', debugInfo);
+            
             analysisContainer.innerHTML = `
                 <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
                     <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ KI-Analyse fehlgeschlagen</h5>
                     <p style="margin: 0; color: #dc2626;">
                         <strong>Fehler:</strong> ${error.message}<br><br>
-                        <strong>Mögliche Ursachen:</strong><br>
-                        • OpenAI API Key nicht konfiguriert<br>
-                        • Keine Internet-Verbindung<br>
-                        • API-Quota aufgebraucht<br><br>
-                        <strong>Lösung:</strong> Bitte konfigurieren Sie Ihren OpenAI API Key im Admin-Panel.
+                        <strong>System-Status:</strong><br>
+                        • GlobalAI Service: ${debugInfo.globalAIExists ? '✅' : '❌'}<br>
+                        • API Manager: ${debugInfo.secureAPIExists ? '✅' : '❌'}<br>
+                        • Service Ready: ${debugInfo.globalAIReady ? '✅' : '❌'}<br>
+                        • API Key vorhanden: ${debugInfo.apiKeyExists ? '✅' : '❌'}<br><br>
+                        <strong>Lösungsschritte:</strong><br>
+                        1. API Key im Admin-Panel prüfen/neu eingeben<br>
+                        2. Admin-Panel: "API Key testen" verwenden<br>
+                        3. Bei Erfolg: "Erneut versuchen" klicken<br>
                     </p>
                     <div style="margin-top: 1rem;">
                         <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -1169,6 +1227,9 @@ class SmartWorkflowSystem {
                         </button>
                         <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
                             <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                        <button onclick="window.smartWorkflow.forceReloadServices()" style="padding: 0.5rem 1rem; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                            <i class="fas fa-redo"></i> Services neu laden
                         </button>
                     </div>
                 </div>
@@ -1239,6 +1300,89 @@ class SmartWorkflowSystem {
                             </button>
                             <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
                                 <i class="fas fa-sync"></i> Nochmal versuchen
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    async forceReloadServices() {
+        console.log('🔄 === FORCE RELOAD ALLER SERVICES ===');
+        
+        const analysisContainer = document.getElementById('requirementsAnalysis');
+        if (analysisContainer) {
+            analysisContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-cogs fa-spin fa-2x" style="color: #059669; margin-bottom: 1rem;"></i>
+                    <h3>Services werden neu geladen...</h3>
+                    <p>Alle KI-Services werden komplett neu initialisiert.</p>
+                </div>
+            `;
+        }
+        
+        try {
+            // 1. Services komplett neu laden
+            console.log('🔄 Initialisiere SecureAPIManager neu...');
+            if (window.SecureAPIManager) {
+                window.secureAPIManager = new window.SecureAPIManager();
+                await new Promise(resolve => setTimeout(resolve, 200)); // Warten auf Initialisierung
+            }
+            
+            console.log('🔄 Initialisiere GlobalAI Service neu...');
+            if (window.GlobalAIService) {
+                window.globalAI = new window.GlobalAIService();
+                await window.globalAI.initialize();
+                await new Promise(resolve => setTimeout(resolve, 300)); // Warten auf Initialisierung
+            }
+            
+            // 2. Ausführliche Status-Prüfung
+            const fullStatus = {
+                secureAPIManager: {
+                    exists: !!window.secureAPIManager,
+                    hasGetAPIKey: typeof window.secureAPIManager?.getAPIKey === 'function',
+                    apiKey: window.secureAPIManager?.getAPIKey()?.substring(0, 10) + '...',
+                    keyValid: window.secureAPIManager?.getAPIKey()?.startsWith('sk-')
+                },
+                globalAI: {
+                    exists: !!window.globalAI,
+                    isReady: window.globalAI?.isReady,
+                    hasApiKey: !!window.globalAI?.apiKey,
+                    isAPIReady: window.globalAI?.isAPIReady?.(),
+                }
+            };
+            
+            console.log('🔍 === SERVICES STATUS NACH RELOAD ===', fullStatus);
+            
+            // 3. Prüfe ob alles bereit ist
+            if (window.globalAI?.isAPIReady()) {
+                console.log('✅ Services erfolgreich geladen - starte KI-Analyse...');
+                await this.triggerAIAnalysisInStep2();
+            } else {
+                throw new Error('Services konnten nicht korrekt geladen werden. Bitte prüfen Sie den API Key im Admin-Panel.');
+            }
+            
+        } catch (error) {
+            console.error('❌ Service Reload fehlgeschlagen:', error);
+            
+            if (analysisContainer) {
+                analysisContainer.innerHTML = `
+                    <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ Service Reload fehlgeschlagen</h5>
+                        <p style="margin: 0; color: #dc2626;">
+                            <strong>Fehler:</strong> ${error.message}<br><br>
+                            <strong>Nächste Schritte:</strong><br>
+                            1. Seite komplett neu laden (F5)<br>
+                            2. API Key im Admin-Panel neu eingeben<br>
+                            3. Im Admin-Panel: "API Key testen" verwenden<br>
+                        </p>
+                        <div style="margin-top: 1rem;">
+                            <button onclick="location.reload()" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-refresh"></i> Seite neu laden
+                            </button>
+                            <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                                <i class="fas fa-cog"></i> Admin-Panel
                             </button>
                         </div>
                     </div>
@@ -1589,7 +1733,7 @@ class SmartWorkflowSystem {
                 } else {
                     // Bei normaler Bewerbung - GELOCKERTE VALIDIERUNG
                     const hasBasicData = this.applicationData.companyName && 
-                                        this.applicationData.position && 
+                           this.applicationData.position && 
                                         this.applicationData.jobDescription;
                     
                     // Automatisch bestätigen wenn Grunddaten vorhanden - VERSTÄRKT
@@ -1606,7 +1750,7 @@ class SmartWorkflowSystem {
             case 2:
                 // Schritt 2: Prüfe ob Anforderungen vorhanden sind - GELOCKERT
                 const hasRequirements = this.applicationData.requirements && 
-                                       this.applicationData.requirements.length > 0;
+                       this.applicationData.requirements.length > 0;
                 console.log('✅ Schritt 2 - Hat Anforderungen:', hasRequirements);
                 // Fallback: Immer erlauben wenn keine Anforderungen gefunden wurden
                 return hasRequirements || true;
@@ -1624,7 +1768,7 @@ class SmartWorkflowSystem {
             case 5:
                 // Schritt 5: Export-Optionen gewählt - GELOCKERT
                 const hasExportOptions = this.applicationData.exportOptions && 
-                                        Object.values(this.applicationData.exportOptions).some(v => v);
+                       Object.values(this.applicationData.exportOptions).some(v => v);
                 console.log('✅ Schritt 5 - Hat Export-Optionen:', hasExportOptions);
                 return hasExportOptions || true; // Fallback erlaubt
             case 6:
@@ -1911,11 +2055,11 @@ class SmartWorkflowSystem {
             
             // Speichere verfügbare Daten (auch wenn leer)
             if (companyInput) {
-                this.applicationData.companyName = companyInput.value;
-                this.applicationData.company = companyInput.value;
+            this.applicationData.companyName = companyInput.value;
+            this.applicationData.company = companyInput.value;
             }
             if (positionInput) {
-                this.applicationData.position = positionInput.value;
+            this.applicationData.position = positionInput.value;
             }
             
             // Bei Initiativbewerbung IMMER Button aktivieren
@@ -2110,3 +2254,4 @@ window.smartWorkflow.checkInitiativeReadiness = window.smartWorkflow.checkInitia
 window.smartWorkflow.updateContactPerson = window.smartWorkflow.updateContactPerson.bind(window.smartWorkflow);
 window.smartWorkflow.triggerAIAnalysisInStep2 = window.smartWorkflow.triggerAIAnalysisInStep2.bind(window.smartWorkflow);
 window.smartWorkflow.reloadAPIAndRetry = window.smartWorkflow.reloadAPIAndRetry.bind(window.smartWorkflow);
+window.smartWorkflow.forceReloadServices = window.smartWorkflow.forceReloadServices.bind(window.smartWorkflow);
