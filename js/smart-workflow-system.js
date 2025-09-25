@@ -223,6 +223,43 @@ class SmartWorkflowSystem {
 
     // Schritt 2: Anforderungen priorisieren
     renderStep2() {
+        // Prüfe ob KI-Analyse benötigt wird
+        if (this.applicationData.needsAIAnalysis && 
+            this.applicationData.applicationType !== 'initiative' &&
+            this.applicationData.jobDescription &&
+            this.applicationData.jobDescription !== 'Initiativbewerbung') {
+            
+            console.log('🤖 Schritt 2: KI-Analyse wird benötigt - starte automatisch');
+            
+            // Starte KI-Analyse automatisch
+            setTimeout(() => {
+                this.triggerAIAnalysisInStep2();
+            }, 100);
+            
+            return `
+                <div class="workflow-step" data-step="2">
+                    <div class="step-header">
+                        <h2>Schritt 2: Anforderungen analysieren</h2>
+                        <p class="step-description">KI analysiert die Stellenanzeige und extrahiert die wichtigsten Anforderungen</p>
+                    </div>
+
+                    <div class="requirements-container">
+                        <div id="requirementsAnalysis" class="analysis-container">
+                            <div style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-robot fa-3x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                                <h3>KI-Analyse läuft...</h3>
+                                <p>Die Stellenanzeige wird analysiert und die wichtigsten Anforderungen werden extrahiert.</p>
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Standard-Rendering wenn Anforderungen bereits vorhanden
         return `
             <div class="workflow-step" data-step="2">
                 <div class="step-header">
@@ -1075,6 +1112,70 @@ class SmartWorkflowSystem {
 
     // ENTFERNT: Alle lokalen Extraktionsmethoden - Nur noch KI-Analyse
     
+    async triggerAIAnalysisInStep2() {
+        console.log('🚀 === AUTOMATISCHE KI-ANALYSE IN SCHRITT 2 GESTARTET ===');
+        
+        const analysisContainer = document.getElementById('requirementsAnalysis');
+        if (!analysisContainer) {
+            console.warn('❌ Analysis container nicht gefunden');
+            return;
+        }
+        
+        try {
+            if (!window.globalAI || !window.globalAI.isAPIReady()) {
+                throw new Error('OpenAI API nicht verfügbar oder nicht konfiguriert');
+            }
+            
+            console.log('🤖 Starte KI-Analyse mit:', {
+                jobDescription: this.applicationData.jobDescription?.substring(0, 100) + '...',
+                length: this.applicationData.jobDescription?.length
+            });
+            
+            // KI-Analyse starten
+            const aiResult = await window.globalAI.analyzeJobPosting(this.applicationData.jobDescription);
+            
+            console.log('✅ KI-Analyse erfolgreich:', {
+                requirementsFound: aiResult.requirements?.length,
+                analysisCompleted: !!aiResult
+            });
+            
+            // Speichere KI-Ergebnisse
+            this.applicationData.requirements = aiResult.requirements || [];
+            this.applicationData.aiAnalysisResult = aiResult;
+            this.applicationData.needsAIAnalysis = false; // Markiere als abgeschlossen
+            
+            this.saveData();
+            
+            // Aktualisiere UI zu Schritt 2 mit Anforderungen
+            this.updateUI();
+            
+        } catch (error) {
+            console.error('❌ KI-Analyse in Schritt 2 fehlgeschlagen:', error);
+            
+            analysisContainer.innerHTML = `
+                <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                    <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ KI-Analyse fehlgeschlagen</h5>
+                    <p style="margin: 0; color: #dc2626;">
+                        <strong>Fehler:</strong> ${error.message}<br><br>
+                        <strong>Mögliche Ursachen:</strong><br>
+                        • OpenAI API Key nicht konfiguriert<br>
+                        • Keine Internet-Verbindung<br>
+                        • API-Quota aufgebraucht<br><br>
+                        <strong>Lösung:</strong> Bitte konfigurieren Sie Ihren OpenAI API Key im Admin-Panel.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-cog"></i> Admin-Panel öffnen
+                        </button>
+                        <button onclick="window.smartWorkflow.triggerAIAnalysisInStep2()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
     updateContactPersonFields(contactPerson) {
         if (contactPerson) {
             const nameField = document.getElementById('contactName');
@@ -1269,10 +1370,13 @@ class SmartWorkflowSystem {
     // Navigation
     async nextStep() {
         if (this.currentStep < this.totalSteps) {
-            // Vor dem Wechsel zu Schritt 2: Anforderungen bereitstellen
+            // Vor dem Wechsel zu Schritt 2: KI-ANALYSE AUSLÖSEN
             if (this.currentStep === 1) {
+                console.log('🚀 === WECHSEL ZU SCHRITT 2: TRIGGERE KI-ANALYSE ===');
+                
                 if (this.applicationData.applicationType === 'initiative') {
-                    // Bei Initiativbewerbung: Erstelle Standard-Anforderungen
+                    console.log('📝 Initiativbewerbung: Erstelle generische Anforderungen');
+                    // Bei Initiativbewerbung: Generische KI-basierte Anforderungen
                     this.applicationData.requirements = [
                         {
                             text: 'Motivation und Interesse am Unternehmen',
@@ -1294,47 +1398,19 @@ class SmartWorkflowSystem {
                             category: 'soft_skills',
                             matchScore: 0,
                             sentences: []
-                        },
-                        {
-                            text: 'Passung zur Unternehmenskultur',
-                            priority: 'medium',
-                            category: 'soft_skills',
-                            matchScore: 0,
-                            sentences: []
                         }
                     ];
                 } else {
-                    // Bei normaler Bewerbung: Erstelle Standard-Anforderungen
-                    this.applicationData.requirements = [
-                        {
-                            text: 'Fachliche Qualifikation und Berufserfahrung',
-                            priority: 'high',
-                            category: 'experience',
-                            matchScore: 0,
-                            sentences: []
-                        },
-                        {
-                            text: 'Ausbildung oder Studium im relevanten Bereich',
-                            priority: 'high',
-                            category: 'education',
-                            matchScore: 0,
-                            sentences: []
-                        },
-                        {
-                            text: 'Teamfähigkeit und Kommunikationsstärke',
-                            priority: 'medium',
-                            category: 'soft_skills',
-                            matchScore: 0,
-                            sentences: []
-                        },
-                        {
-                            text: 'Analytisches Denken und Problemlösungskompetenz',
-                            priority: 'medium',
-                            category: 'soft_skills',
-                            matchScore: 0,
-                            sentences: []
-                        }
-                    ];
+                    console.log('🤖 Normale Bewerbung: STARTE KI-ANALYSE jetzt!');
+                    
+                    // KEINE Standard-Anforderungen - warte auf KI-Analyse in Schritt 2
+                    if (!this.applicationData.requirements || this.applicationData.requirements.length === 0) {
+                        console.log('⚠️ Noch keine Anforderungen - werden in Schritt 2 analysiert');
+                        this.applicationData.requirements = []; // Leer lassen für KI-Analyse
+                    }
+                    
+                    // Markiere, dass KI-Analyse benötigt wird
+                    this.applicationData.needsAIAnalysis = true;
                 }
             }
             
@@ -1961,3 +2037,4 @@ window.smartWorkflow.togglePriority = window.smartWorkflow.togglePriority.bind(w
 window.smartWorkflow.setApplicationType = window.smartWorkflow.setApplicationType.bind(window.smartWorkflow);
 window.smartWorkflow.checkInitiativeReadiness = window.smartWorkflow.checkInitiativeReadiness.bind(window.smartWorkflow);
 window.smartWorkflow.updateContactPerson = window.smartWorkflow.updateContactPerson.bind(window.smartWorkflow);
+window.smartWorkflow.triggerAIAnalysisInStep2 = window.smartWorkflow.triggerAIAnalysisInStep2.bind(window.smartWorkflow);
