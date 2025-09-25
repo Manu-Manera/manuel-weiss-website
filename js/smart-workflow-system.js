@@ -1206,31 +1206,106 @@ class SmartWorkflowSystem {
             
             console.log('🔍 === FEHLER-DIAGNOSE ===', debugInfo);
             
+            // Erkenne spezifische API Key Probleme
+            const isAPIKeyError = error.message.includes('Incorrect API key') || 
+                                 error.message.includes('invalid_api_key') ||
+                                 error.message.includes('API key provided');
+            
+            const isQuotaError = error.message.includes('quota') || 
+                               error.message.includes('insufficient_quota');
+            
+            let errorTitle = '❌ KI-Analyse fehlgeschlagen';
+            let errorExplanation = '';
+            let actionButtons = '';
+            
+            if (isAPIKeyError) {
+                errorTitle = '🔑 API Key Problem';
+                
+                // Erweiterte Diagnose für neue Keys
+                const currentKey = window.secureAPIManager?.getAPIKey() || '';
+                const keyFormat = currentKey.startsWith('sk-proj-') ? 'Neues Format (sk-proj-)' : 
+                                currentKey.startsWith('sk-') ? 'Standard Format (sk-)' : 'Unbekanntes Format';
+                
+                errorExplanation = `
+                    <strong>Problem:</strong> Der API Key wird von OpenAI abgelehnt.<br><br>
+                    <strong>Key-Diagnose:</strong><br>
+                    • Format: ${keyFormat}<br>
+                    • Länge: ${currentKey.length} Zeichen<br>
+                    • Beginnt korrekt: ${currentKey.startsWith('sk-') ? '✅' : '❌'}<br><br>
+                    
+                    <strong>Häufige Probleme bei NEUEN Keys:</strong><br>
+                    🕐 <strong>Aktivierungszeit:</strong> Neue Keys brauchen manchmal 5-10 Minuten<br>
+                    📋 <strong>Copy-Paste Fehler:</strong> Leerzeichen oder unvollständiger Key<br>
+                    💳 <strong>Billing nicht eingerichtet:</strong> Account benötigt Zahlungsmethode<br>
+                    🔒 <strong>Usage Limits:</strong> Neue Accounts haben niedrige Limits<br><br>
+                    
+                    <strong>Sofort-Tests:</strong><br>
+                    1. Im Admin-Panel: "API Key testen" klicken<br>
+                    2. Browser-Konsole: <code>window.smartWorkflow.testAPIDirectly('${currentKey.substring(0, 20)}...')</code><br>
+                    3. OpenAI Dashboard auf Billing/Usage prüfen
+                `;
+                actionButtons = `
+                    <button onclick="window.smartWorkflow.diagnoseNewAPIKey()" style="padding: 0.5rem 1rem; background: #7c3aed; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-stethoscope"></i> Key-Diagnose
+                    </button>
+                    <button onclick="window.open('https://platform.openai.com/account/billing', '_blank')" style="padding: 0.5rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-credit-card"></i> Billing prüfen
+                    </button>
+                    <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-cog"></i> Admin-Panel
+                    </button>
+                `;
+            } else if (isQuotaError) {
+                errorTitle = '💳 Quota Problem';
+                errorExplanation = `
+                    <strong>Problem:</strong> OpenAI Account Guthaben aufgebraucht.<br><br>
+                    <strong>Lösung:</strong><br>
+                    1. Gehen Sie zu: <a href="https://platform.openai.com/account/billing" target="_blank" style="color: #2563eb;">platform.openai.com/account/billing</a><br>
+                    2. Laden Sie Ihr Guthaben auf<br>
+                    3. Versuchen Sie es erneut
+                `;
+                actionButtons = `
+                    <button onclick="window.open('https://platform.openai.com/account/billing', '_blank')" style="padding: 0.5rem 1rem; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-credit-card"></i> Guthaben aufladen
+                    </button>
+                    <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-sync"></i> Erneut versuchen
+                    </button>
+                `;
+            } else {
+                errorExplanation = `
+                    <strong>Fehler:</strong> ${error.message}<br><br>
+                    <strong>System-Status:</strong><br>
+                    • GlobalAI Service: ${debugInfo.globalAIExists ? '✅' : '❌'}<br>
+                    • API Manager: ${debugInfo.secureAPIExists ? '✅' : '❌'}<br>
+                    • Service Ready: ${debugInfo.globalAIReady ? '✅' : '❌'}<br>
+                    • API Key vorhanden: ${debugInfo.apiKeyExists ? '✅' : '❌'}<br><br>
+                    <strong>Lösungsschritte:</strong><br>
+                    1. API Key im Admin-Panel prüfen/neu eingeben<br>
+                    2. Admin-Panel: "API Key testen" verwenden<br>
+                    3. Bei Erfolg: "Erneut versuchen" klicken<br>
+                `;
+                actionButtons = `
+                    <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-cog"></i> Admin-Panel öffnen
+                    </button>
+                    <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-sync"></i> Erneut versuchen
+                    </button>
+                    <button onclick="window.smartWorkflow.forceReloadServices()" style="padding: 0.5rem 1rem; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-redo"></i> Services neu laden
+                    </button>
+                `;
+            }
+            
             analysisContainer.innerHTML = `
                 <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
-                    <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ KI-Analyse fehlgeschlagen</h5>
+                    <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">${errorTitle}</h5>
                     <p style="margin: 0; color: #dc2626;">
-                        <strong>Fehler:</strong> ${error.message}<br><br>
-                        <strong>System-Status:</strong><br>
-                        • GlobalAI Service: ${debugInfo.globalAIExists ? '✅' : '❌'}<br>
-                        • API Manager: ${debugInfo.secureAPIExists ? '✅' : '❌'}<br>
-                        • Service Ready: ${debugInfo.globalAIReady ? '✅' : '❌'}<br>
-                        • API Key vorhanden: ${debugInfo.apiKeyExists ? '✅' : '❌'}<br><br>
-                        <strong>Lösungsschritte:</strong><br>
-                        1. API Key im Admin-Panel prüfen/neu eingeben<br>
-                        2. Admin-Panel: "API Key testen" verwenden<br>
-                        3. Bei Erfolg: "Erneut versuchen" klicken<br>
+                        ${errorExplanation}
                     </p>
                     <div style="margin-top: 1rem;">
-                        <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-cog"></i> Admin-Panel öffnen
-                        </button>
-                        <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
-                            <i class="fas fa-sync"></i> Erneut versuchen
-                        </button>
-                        <button onclick="window.smartWorkflow.forceReloadServices()" style="padding: 0.5rem 1rem; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
-                            <i class="fas fa-redo"></i> Services neu laden
-                        </button>
+                        ${actionButtons}
                     </div>
                 </div>
             `;
@@ -1418,6 +1493,190 @@ class SmartWorkflowSystem {
                 `;
             }
         }
+    }
+    
+    async diagnoseNewAPIKey() {
+        console.log('🔍 === DIAGNOSE NEUER API KEY ===');
+        
+        const analysisContainer = document.getElementById('requirementsAnalysis');
+        if (analysisContainer) {
+            analysisContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-stethoscope fa-2x" style="color: #7c3aed; margin-bottom: 1rem;"></i>
+                    <h3>API Key Diagnose läuft...</h3>
+                    <p>Führe umfassende Tests durch...</p>
+                </div>
+            `;
+        }
+        
+        try {
+            const currentKey = window.secureAPIManager?.getAPIKey() || '';
+            
+            // 1. Format-Checks
+            const formatChecks = {
+                hasKey: !!currentKey,
+                startsWithSk: currentKey.startsWith('sk-'),
+                isProjectKey: currentKey.startsWith('sk-proj-'),
+                correctLength: currentKey.length > 50,
+                hasNoSpaces: !currentKey.includes(' '),
+                isComplete: currentKey.includes('-') && currentKey.length > 20
+            };
+            
+            console.log('🔍 Format Checks:', formatChecks);
+            
+            // 2. Direkte OpenAI API Tests
+            let apiTests = {
+                basicCall: false,
+                errorMessage: '',
+                responseTime: 0
+            };
+            
+            if (formatChecks.hasKey && formatChecks.startsWithSk) {
+                console.log('🧪 Teste API Key direkt...');
+                const startTime = Date.now();
+                
+                try {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${currentKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-4o-mini',
+                            messages: [{ role: 'user', content: 'Test' }],
+                            max_tokens: 5
+                        })
+                    });
+                    
+                    apiTests.responseTime = Date.now() - startTime;
+                    
+                    if (response.ok) {
+                        apiTests.basicCall = true;
+                        console.log('✅ API Key funktioniert!');
+                    } else {
+                        const errorData = await response.json();
+                        apiTests.errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+                        console.log('❌ API Fehler:', errorData);
+                    }
+                } catch (error) {
+                    apiTests.errorMessage = `Network Error: ${error.message}`;
+                    console.log('❌ Network Error:', error);
+                }
+            }
+            
+            // 3. Diagnose-Ergebnis anzeigen
+            const diagnosis = this.generateKeyDiagnosis(formatChecks, apiTests, currentKey);
+            
+            if (analysisContainer) {
+                analysisContainer.innerHTML = diagnosis;
+            }
+            
+        } catch (error) {
+            console.error('❌ Diagnose fehlgeschlagen:', error);
+            
+            if (analysisContainer) {
+                analysisContainer.innerHTML = `
+                    <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ Diagnose fehlgeschlagen</h5>
+                        <p style="margin: 0; color: #dc2626;">
+                            <strong>Fehler:</strong> ${error.message}<br><br>
+                            Führen Sie die Tests manuell durch:
+                        </p>
+                        <div style="margin-top: 1rem;">
+                            <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-cog"></i> Admin-Panel Test
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    generateKeyDiagnosis(formatChecks, apiTests, currentKey) {
+        const keyPreview = currentKey.substring(0, 20) + '...';
+        
+        // Bewertung der Ergebnisse
+        const formatScore = Object.values(formatChecks).filter(Boolean).length;
+        const formatTotal = Object.keys(formatChecks).length;
+        
+        let statusColor = '#ef4444'; // Rot
+        let statusIcon = '❌';
+        let statusText = 'Kritische Probleme';
+        let recommendations = [];
+        
+        if (apiTests.basicCall) {
+            statusColor = '#10b981'; // Grün
+            statusIcon = '✅';
+            statusText = 'API Key funktioniert!';
+            recommendations.push('🎉 API Key ist voll funktionsfähig - versuchen Sie die KI-Analyse erneut');
+        } else if (formatScore === formatTotal && apiTests.errorMessage) {
+            statusColor = '#f59e0b'; // Orange
+            statusIcon = '⚠️';
+            statusText = 'Format OK, API Problem';
+            
+            if (apiTests.errorMessage.includes('quota') || apiTests.errorMessage.includes('insufficient')) {
+                recommendations.push('💳 Billing/Guthaben Problem - laden Sie Ihr OpenAI Guthaben auf');
+                recommendations.push('🔗 Gehen Sie zu: platform.openai.com/account/billing');
+            } else if (apiTests.errorMessage.includes('invalid') || apiTests.errorMessage.includes('incorrect')) {
+                recommendations.push('🔑 Key ist ungültig - erstellen Sie einen neuen bei OpenAI');
+                recommendations.push('🔗 Gehen Sie zu: platform.openai.com/account/api-keys');
+            } else {
+                recommendations.push('🕐 Neuer Key? Warten Sie 5-10 Minuten und versuchen Sie erneut');
+                recommendations.push('📞 Kontaktieren Sie OpenAI Support bei anhaltenden Problemen');
+            }
+        } else {
+            recommendations.push('📋 Copy-Paste Fehler - Key vollständig kopieren');
+            recommendations.push('🔑 Neuen API Key bei OpenAI erstellen');
+            recommendations.push('💾 Sicherstellen dass Key korrekt gespeichert wird');
+        }
+        
+        return `
+            <div style="background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                    <span style="font-size: 1.5rem;">${statusIcon}</span>
+                    <h4 style="margin: 0; color: ${statusColor};">${statusText}</h4>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                    <h5 style="margin: 0 0 0.75rem 0;">🔍 Format-Analyse:</h5>
+                    <div style="font-family: monospace; font-size: 0.875rem;">
+                        Key: <code>${keyPreview}</code><br>
+                        Format: ${formatChecks.isProjectKey ? 'sk-proj- (Neu)' : formatChecks.startsWithSk ? 'sk- (Standard)' : 'Unbekannt'}<br>
+                        Länge: ${currentKey.length} Zeichen ${formatChecks.correctLength ? '✅' : '❌'}<br>
+                        Leerzeichen: ${formatChecks.hasNoSpaces ? 'Keine ✅' : 'Vorhanden ❌'}<br>
+                        Vollständig: ${formatChecks.isComplete ? 'Ja ✅' : 'Nein ❌'}
+                    </div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                    <h5 style="margin: 0 0 0.75rem 0;">🧪 API-Test:</h5>
+                    <div style="font-size: 0.875rem;">
+                        Direkter Test: ${apiTests.basicCall ? '✅ Erfolgreich' : '❌ Fehlgeschlagen'}<br>
+                        ${apiTests.responseTime > 0 ? `Response Zeit: ${apiTests.responseTime}ms<br>` : ''}
+                        ${apiTests.errorMessage ? `Fehler: <code style="color: #dc2626;">${apiTests.errorMessage}</code>` : ''}
+                    </div>
+                </div>
+                
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                    <h5 style="margin: 0 0 0.75rem 0; color: #92400e;">💡 Empfehlungen:</h5>
+                    ${recommendations.map(rec => `<div style="margin-bottom: 0.5rem; color: #92400e;">• ${rec}</div>`).join('')}
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-sync"></i> Erneut versuchen
+                    </button>
+                    <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-cog"></i> Admin-Panel
+                    </button>
+                    <button onclick="window.open('https://platform.openai.com/account/api-keys', '_blank')" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-key"></i> Neuer Key
+                    </button>
+                </div>
+            </div>
+        `;
     }
     
     updateContactPersonFields(contactPerson) {
@@ -2351,3 +2610,4 @@ window.smartWorkflow.reloadAPIAndRetry = window.smartWorkflow.reloadAPIAndRetry.
 window.smartWorkflow.forceReloadServices = window.smartWorkflow.forceReloadServices.bind(window.smartWorkflow);
 window.smartWorkflow.debugAPIKeyStatus = window.smartWorkflow.debugAPIKeyStatus.bind(window.smartWorkflow);
 window.smartWorkflow.testAPIDirectly = window.smartWorkflow.testAPIDirectly.bind(window.smartWorkflow);
+window.smartWorkflow.diagnoseNewAPIKey = window.smartWorkflow.diagnoseNewAPIKey.bind(window.smartWorkflow);
