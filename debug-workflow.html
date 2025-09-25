@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Workflow Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-box { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; }
+        .warning { background: #fff3cd; }
+        .error { background: #f8d7da; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Smart Workflow Debug Tool</h1>
+    
+    <div class="debug-box">
+        <h3>Problem: Weiter-Button nicht klickbar</h3>
+        <p>Der Button ist disabled wegen fehlender Validierung in der canProceed() Funktion.</p>
+    </div>
+
+    <h2>🔍 Debug-Schritte:</h2>
+    
+    <button onclick="checkWorkflowData()">1. Workflow-Daten prüfen</button>
+    <button onclick="checkValidation()">2. Validierung prüfen</button>
+    <button onclick="forceEnable()">3. Button zwangsweise aktivieren</button>
+    <button onclick="fixValidation()">4. Validierung reparieren</button>
+    
+    <div id="debugOutput" class="debug-box"></div>
+
+    <h2>🛠️ Schnelle Lösungen:</h2>
+    
+    <div class="debug-box warning">
+        <h4>Lösung 1: Bestätigung erzwingen</h4>
+        <p>Führen Sie in der Browser-Konsole aus:</p>
+        <code>
+            // Für normale Bewerbung:<br>
+            workflowData.extractionConfirmed = true;<br>
+            // Für Initiativbewerbung:<br>
+            if (window.smartWorkflow) {<br>
+            &nbsp;&nbsp;window.smartWorkflow.applicationData.extractionConfirmed = true;<br>
+            }
+        </code>
+    </div>
+
+    <div class="debug-box warning">
+        <h4>Lösung 2: Button manuell aktivieren</h4>
+        <p>Führen Sie in der Browser-Konsole aus:</p>
+        <code>
+            const btn = document.querySelector('[data-action="workflow-next-step"]');<br>
+            if (btn) {<br>
+            &nbsp;&nbsp;btn.disabled = false;<br>
+            &nbsp;&nbsp;btn.classList.remove('disabled');<br>
+            }
+        </code>
+    </div>
+
+    <script>
+        function checkWorkflowData() {
+            const output = document.getElementById('debugOutput');
+            let html = '<h3>📊 Workflow-Daten Status:</h3>';
+            
+            // Check global workflowData
+            if (typeof workflowData !== 'undefined') {
+                html += '<div class="success">✅ workflowData gefunden</div>';
+                html += '<pre>' + JSON.stringify(workflowData, null, 2) + '</pre>';
+            } else {
+                html += '<div class="error">❌ workflowData nicht gefunden</div>';
+            }
+            
+            // Check smartWorkflow instance
+            if (typeof window.smartWorkflow !== 'undefined') {
+                html += '<div class="success">✅ smartWorkflow Instance gefunden</div>';
+                html += '<pre>' + JSON.stringify(window.smartWorkflow.applicationData, null, 2) + '</pre>';
+            } else {
+                html += '<div class="error">❌ smartWorkflow Instance nicht gefunden</div>';
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        function checkValidation() {
+            const output = document.getElementById('debugOutput');
+            let html = '<h3>🔍 Validierungs-Check:</h3>';
+            
+            if (typeof window.smartWorkflow !== 'undefined') {
+                const canProceed = window.smartWorkflow.canProceed();
+                const currentStep = window.smartWorkflow.currentStep;
+                const appData = window.smartWorkflow.applicationData;
+                
+                html += `<div>Aktueller Schritt: ${currentStep}</div>`;
+                html += `<div>Kann fortfahren: ${canProceed ? '✅' : '❌'}</div>`;
+                
+                if (currentStep === 1) {
+                    html += '<h4>Schritt 1 Validierung:</h4>';
+                    html += `<div>Firma: ${appData.companyName ? '✅' : '❌'} (${appData.companyName || 'leer'})</div>`;
+                    html += `<div>Position: ${appData.position ? '✅' : '❌'} (${appData.position || 'leer'})</div>`;
+                    
+                    if (appData.applicationType !== 'initiative') {
+                        html += `<div>Stellenbeschreibung: ${appData.jobDescription ? '✅' : '❌'} (${appData.jobDescription ? 'vorhanden' : 'leer'})</div>`;
+                        html += `<div>Bestätigung: ${appData.extractionConfirmed ? '✅' : '❌'}</div>`;
+                    }
+                }
+            } else {
+                html += '<div class="error">❌ smartWorkflow nicht verfügbar</div>';
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        function forceEnable() {
+            const output = document.getElementById('debugOutput');
+            let html = '<h3>🔧 Button zwangsweise aktivieren:</h3>';
+            
+            const btn = document.querySelector('[data-action="workflow-next-step"]');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+                html += '<div class="success">✅ Button aktiviert</div>';
+            } else {
+                html += '<div class="error">❌ Button nicht gefunden</div>';
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        function fixValidation() {
+            const output = document.getElementById('debugOutput');
+            let html = '<h3>🛠️ Validierung reparieren:</h3>';
+            
+            if (typeof window.smartWorkflow !== 'undefined') {
+                // Force validation to pass
+                window.smartWorkflow.applicationData.extractionConfirmed = true;
+                
+                // Ensure data is present
+                const companyField = document.getElementById('companyName');
+                const positionField = document.getElementById('jobTitle') || document.getElementById('position');
+                
+                if (companyField && companyField.value) {
+                    window.smartWorkflow.applicationData.companyName = companyField.value;
+                }
+                if (positionField && positionField.value) {
+                    window.smartWorkflow.applicationData.position = positionField.value;
+                }
+                
+                // Update UI
+                window.smartWorkflow.updateUI();
+                
+                html += '<div class="success">✅ Validierung repariert</div>';
+                html += '<div>extractionConfirmed auf true gesetzt</div>';
+                html += '<div>UI aktualisiert</div>';
+            } else {
+                // Fallback for older workflow system
+                if (typeof workflowData !== 'undefined') {
+                    workflowData.extractionConfirmed = true;
+                    html += '<div class="success">✅ workflowData.extractionConfirmed = true</div>';
+                }
+            }
+            
+            output.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
