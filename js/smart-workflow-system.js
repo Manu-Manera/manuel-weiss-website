@@ -1167,12 +1167,83 @@ class SmartWorkflowSystem {
                         <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
                             <i class="fas fa-cog"></i> Admin-Panel öffnen
                         </button>
-                        <button onclick="window.smartWorkflow.triggerAIAnalysisInStep2()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                        <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
                             <i class="fas fa-sync"></i> Erneut versuchen
                         </button>
                     </div>
                 </div>
             `;
+        }
+    }
+    
+    async reloadAPIAndRetry() {
+        console.log('🔄 === API KEY RELOAD UND ERNEUTER VERSUCH ===');
+        
+        const analysisContainer = document.getElementById('requirementsAnalysis');
+        if (analysisContainer) {
+            analysisContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-sync fa-spin fa-2x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                    <h3>API Key wird neu geladen...</h3>
+                    <p>Das System lädt den aktualisierten API Key und startet die Analyse erneut.</p>
+                </div>
+            `;
+        }
+        
+        try {
+            // 1. GlobalAI Service neu initialisieren
+            if (window.globalAI) {
+                console.log('🔄 Lade GlobalAI Service neu...');
+                await window.globalAI.loadAPIKey(); // API Key neu laden
+                
+                // Kurz warten damit der Service sich stabilisiert
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 2. API Status prüfen
+                const isReady = window.globalAI.isAPIReady();
+                console.log('🔍 API Status nach Reload:', {
+                    isReady: isReady,
+                    hasKey: !!window.globalAI.apiKey,
+                    status: window.globalAI.getAPIStatus()
+                });
+                
+                if (!isReady) {
+                    throw new Error('API Key ist immer noch nicht gültig - bitte prüfen Sie die Konfiguration im Admin-Panel');
+                }
+                
+                // 3. Erneute KI-Analyse starten
+                console.log('✅ API bereit - starte KI-Analyse erneut...');
+                await this.triggerAIAnalysisInStep2();
+                
+            } else {
+                throw new Error('GlobalAI Service nicht verfügbar');
+            }
+            
+        } catch (error) {
+            console.error('❌ API Reload fehlgeschlagen:', error);
+            
+            if (analysisContainer) {
+                analysisContainer.innerHTML = `
+                    <div style="background: #fef2f2; padding: 1rem; border-radius: 6px; border-left: 4px solid #ef4444;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #dc2626;">❌ API Reload fehlgeschlagen</h5>
+                        <p style="margin: 0; color: #dc2626;">
+                            <strong>Fehler:</strong> ${error.message}<br><br>
+                            <strong>Bitte prüfen Sie:</strong><br>
+                            • API Key korrekt im Admin-Panel eingegeben<br>
+                            • API Key beginnt mit "sk-"<br>
+                            • OpenAI Account hat ausreichend Guthaben<br><br>
+                        </p>
+                        <div style="margin-top: 1rem;">
+                            <button onclick="window.open('admin.html', '_blank')" style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-cog"></i> Admin-Panel öffnen
+                            </button>
+                            <button onclick="window.smartWorkflow.reloadAPIAndRetry()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+                                <i class="fas fa-sync"></i> Nochmal versuchen
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
         }
     }
     
@@ -2038,3 +2109,4 @@ window.smartWorkflow.setApplicationType = window.smartWorkflow.setApplicationTyp
 window.smartWorkflow.checkInitiativeReadiness = window.smartWorkflow.checkInitiativeReadiness.bind(window.smartWorkflow);
 window.smartWorkflow.updateContactPerson = window.smartWorkflow.updateContactPerson.bind(window.smartWorkflow);
 window.smartWorkflow.triggerAIAnalysisInStep2 = window.smartWorkflow.triggerAIAnalysisInStep2.bind(window.smartWorkflow);
+window.smartWorkflow.reloadAPIAndRetry = window.smartWorkflow.reloadAPIAndRetry.bind(window.smartWorkflow);

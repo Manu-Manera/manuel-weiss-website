@@ -11,21 +11,36 @@ class GlobalAIService {
     }
 
     async initialize() {
+        await this.loadAPIKey();
+    }
+    
+    async loadAPIKey() {
         try {
-            // Lade API Key
+            console.log('🔄 GlobalAIService: Loading API Key...');
+            
+            // Lade API Key neu
             const apiKey = this.apiManager?.getAPIKey();
+            this.apiKey = apiKey; // Speichere für direkten Zugriff
+            
             if (apiKey && apiKey.startsWith('sk-')) {
                 this.isReady = true;
-                console.log('🤖 GlobalAIService: Ready with encrypted API key');
+                console.log('✅ GlobalAIService: Ready with encrypted API key');
+                return true;
+            } else {
+                this.isReady = false;
+                console.warn('⚠️ GlobalAIService: No valid API key found');
+                return false;
             }
         } catch (error) {
-            console.warn('🤖 GlobalAIService: No API key available');
+            console.error('❌ GlobalAIService: Error loading API key:', error);
+            this.isReady = false;
+            return false;
         }
     }
 
     // Zentraler API Call für alle KI-Funktionen
     async callOpenAI(messages, options = {}) {
-        const apiKey = this.apiManager?.getAPIKey();
+        const apiKey = this.apiKey || this.apiManager?.getAPIKey();
         
         if (!apiKey) {
             throw new Error('Kein API Key verfügbar. Bitte in den KI-Einstellungen konfigurieren.');
@@ -318,7 +333,8 @@ ${text}`
 
     // STATUS CHECK
     isAPIReady() {
-        return this.isReady && this.apiManager?.getAPIKey();
+        const hasKey = this.apiKey || this.apiManager?.getAPIKey();
+        return this.isReady && hasKey && hasKey.startsWith('sk-');
     }
 
     getAPIStatus() {
