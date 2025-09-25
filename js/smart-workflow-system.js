@@ -367,7 +367,7 @@ class SmartWorkflowSystem {
                             <i class="fas fa-file-alt fa-3x"></i>
                             <h4>Lebensläufe</h4>
                             <p>PDF oder Word Dokumente</p>
-                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" multiple hidden 
+                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple hidden 
                                    onchange="window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')">
                             <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
@@ -397,7 +397,7 @@ class SmartWorkflowSystem {
                             <i class="fas fa-certificate fa-3x"></i>
                             <h4>Zeugnisse & Zertifikate</h4>
                             <p>Nachweise Ihrer Qualifikationen</p>
-                            <input type="file" id="certificateUpload" accept=".pdf,.jpg,.png" multiple hidden 
+                            <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" multiple hidden 
                                    onchange="window.smartWorkflow.handleDocumentUpload('certificateUpload', 'certificates')">
                             <button class="btn btn-primary" onclick="document.getElementById('certificateUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
@@ -1730,25 +1730,43 @@ class SmartWorkflowSystem {
             return '<div class="no-files">Noch keine Dateien hochgeladen</div>';
         }
         
-        return documents.map(doc => `
-            <div class="uploaded-file" data-id="${doc.id}">
-                <div class="file-info">
-                    <i class="fas ${this.getFileIcon(doc.name)}"></i>
-                    <span class="file-name" title="${doc.name}">${doc.name.length > 20 ? doc.name.substring(0, 20) + '...' : doc.name}</span>
-                    <span class="file-size">${this.formatFileSize(doc.size)}</span>
-                </div>
-                <div class="file-actions">
-                    <label class="file-checkbox">
-                        <input type="checkbox" ${doc.includeInAnalysis !== false ? 'checked' : ''} 
-                               onchange="window.smartWorkflow.toggleDocumentAnalysis('${doc.id}', this.checked)">
-                        <span class="checkmark"></span>
-                    </label>
-                    <button class="btn-remove" onclick="window.smartWorkflow.removeDocument('${doc.id}')" title="Entfernen">
-                        <i class="fas fa-trash"></i>
+        return `
+            <div class="files-header">
+                <span class="files-count">${documents.length} Datei${documents.length > 1 ? 'en' : ''}</span>
+                <div class="files-actions">
+                    <button class="btn-small btn-outline" onclick="window.smartWorkflow.selectAllDocuments('${type}', true)" title="Alle auswählen">
+                        <i class="fas fa-check-square"></i>
+                    </button>
+                    <button class="btn-small btn-outline" onclick="window.smartWorkflow.selectAllDocuments('${type}', false)" title="Alle abwählen">
+                        <i class="fas fa-square"></i>
                     </button>
                 </div>
             </div>
-        `).join('');
+            ${documents.map(doc => `
+                <div class="uploaded-file ${doc.includeInAnalysis !== false ? 'included' : 'excluded'}" data-id="${doc.id}">
+                    <div class="file-info">
+                        <i class="fas ${this.getFileIcon(doc.name)}"></i>
+                        <div class="file-details">
+                            <span class="file-name" title="${doc.name}">${doc.name.length > 25 ? doc.name.substring(0, 25) + '...' : doc.name}</span>
+                            <span class="file-meta">
+                                ${this.formatFileSize(doc.size)} • ${new Date(doc.uploadDate).toLocaleDateString('de-DE')}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <label class="file-checkbox" title="${doc.includeInAnalysis !== false ? 'Für Analyse verwenden' : 'Von Analyse ausschließen'}">
+                            <input type="checkbox" ${doc.includeInAnalysis !== false ? 'checked' : ''} 
+                                   onchange="window.smartWorkflow.toggleDocumentAnalysis('${doc.id}', this.checked)">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Analyse</span>
+                        </label>
+                        <button class="btn-remove" onclick="window.smartWorkflow.removeDocument('${doc.id}')" title="Entfernen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        `;
     }
     
     getFileIcon(filename) {
@@ -1774,33 +1792,180 @@ class SmartWorkflowSystem {
     
     handleDocumentUpload(inputId, type) {
         const input = document.getElementById(inputId);
+        if (!input) {
+            console.error(`❌ Input element nicht gefunden: ${inputId}`);
+            return;
+        }
+        
         const files = input.files;
+        if (!files || files.length === 0) {
+            console.log(`⚠️ Keine Dateien ausgewählt für ${inputId}`);
+            return;
+        }
         
-        if (files.length === 0) return;
+        console.log(`📁 Starte Upload von ${files.length} Dateien für ${type}:`, Array.from(files).map(f => f.name));
         
-        console.log(`📁 Upload ${files.length} Dateien für ${type}`);
+        let successCount = 0;
+        let errorCount = 0;
         
-        Array.from(files).forEach(file => {
+        Array.from(files).forEach((file, index) => {
+            console.log(`📄 Verarbeite Datei ${index + 1}/${files.length}: ${file.name} (${this.formatFileSize(file.size)})`);
+            
+            // File validation
+            if (file.size > 50 * 1024 * 1024) { // 50MB limit
+                console.error(`❌ Datei zu groß: ${file.name} (${this.formatFileSize(file.size)})`);
+                this.showUploadError(file.name, 'Datei ist zu groß (max. 50MB)');
+                errorCount++;
+                return;
+            }
+            
+            // File type validation
+            const allowedTypes = this.getAllowedFileTypes(type);
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes.includes(fileExtension)) {
+                console.error(`❌ Dateityp nicht erlaubt: ${file.name} (.${fileExtension})`);
+                this.showUploadError(file.name, `Dateityp .${fileExtension} nicht unterstützt`);
+                errorCount++;
+                return;
+            }
+            
             const reader = new FileReader();
+            
             reader.onload = (e) => {
-                const document = {
-                    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                    name: file.name,
-                    type: type,
-                    size: file.size,
-                    content: e.target.result,
-                    uploadDate: new Date().toISOString(),
-                    includeInAnalysis: true
-                };
-                
-                this.saveDocument(document);
-                this.updateUI(); // Refresh the UI to show new documents
+                try {
+                    const document = {
+                        id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        name: file.name,
+                        type: type,
+                        size: file.size,
+                        content: e.target.result,
+                        uploadDate: new Date().toISOString(),
+                        includeInAnalysis: true,
+                        fileExtension: fileExtension,
+                        mimeType: file.type
+                    };
+                    
+                    this.saveDocument(document);
+                    successCount++;
+                    
+                    console.log(`✅ Dokument gespeichert: ${document.name} (ID: ${document.id})`);
+                    
+                    // Update UI after last file
+                    if (successCount + errorCount === files.length) {
+                        this.updateUI();
+                        this.showUploadSummary(successCount, errorCount, type);
+                    }
+                    
+                } catch (error) {
+                    console.error(`❌ Fehler beim Speichern von ${file.name}:`, error);
+                    this.showUploadError(file.name, 'Fehler beim Speichern');
+                    errorCount++;
+                }
             };
+            
+            reader.onerror = (error) => {
+                console.error(`❌ Lesefehler bei ${file.name}:`, error);
+                this.showUploadError(file.name, 'Fehler beim Lesen der Datei');
+                errorCount++;
+            };
+            
             reader.readAsDataURL(file);
         });
         
         // Clear input
         input.value = '';
+    }
+    
+    getAllowedFileTypes(type) {
+        const typeMap = {
+            'cv': ['pdf', 'doc', 'docx', 'odt', 'rtf'],
+            'coverLetters': ['pdf', 'doc', 'docx', 'odt', 'rtf'],
+            'certificates': ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif']
+        };
+        return typeMap[type] || [];
+    }
+    
+    showUploadError(filename, message) {
+        const toast = document.createElement('div');
+        toast.className = 'upload-toast error';
+        toast.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            "${filename}": ${message}
+        `;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc2626;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+    
+    showUploadSummary(successCount, errorCount, type) {
+        const typeNames = {
+            'cv': 'Lebensläufe',
+            'coverLetters': 'Anschreiben',
+            'certificates': 'Zeugnisse & Zertifikate'
+        };
+        
+        const message = errorCount > 0 
+            ? `${successCount} ${typeNames[type]} erfolgreich, ${errorCount} Fehler`
+            : `${successCount} ${typeNames[type]} erfolgreich hochgeladen`;
+            
+        const toast = document.createElement('div');
+        toast.className = 'upload-toast summary';
+        toast.innerHTML = `
+            <i class="fas ${errorCount > 0 ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+            ${message}
+        `;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${errorCount > 0 ? '#f59e0b' : '#10b981'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
     }
     
     saveDocument(document) {
