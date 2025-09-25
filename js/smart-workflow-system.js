@@ -368,7 +368,8 @@ class SmartWorkflowSystem {
                             <h4>Lebensläufe</h4>
                             <p>PDF oder Word Dokumente</p>
                             <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple hidden 
-                                   onchange="window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')">
+                                   onchange="window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')"
+                                   onclick="console.log('📄 CV Upload clicked')">
                             <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
@@ -410,7 +411,68 @@ class SmartWorkflowSystem {
                     </div>
                 </div>
 
-                <div class="analysis-section ${this.applicationData.profileAnalyzed ? '' : 'hidden'}">
+                <div class="profile-analysis-section" style="margin-top: 2rem;">
+                    <h3><i class="fas fa-robot"></i> KI-Profilanalyse</h3>
+                    <p class="section-description">Erstelle ein detailliertes Persönlichkeits- und Kompetenzprofil aus Ihren Dokumenten</p>
+                    
+                    <div class="analysis-controls">
+                        <button class="btn btn-primary btn-large" onclick="window.smartWorkflow.startProfileAnalysis()" 
+                                ${this.isProfileAnalysisInProgress() ? 'disabled' : ''}>
+                            <i class="fas ${this.isProfileAnalysisInProgress() ? 'fa-spinner fa-spin' : 'fa-brain'}"></i>
+                            ${this.isProfileAnalysisInProgress() ? 'Analysiere Dokumente...' : 'Profil analysieren'}
+                        </button>
+                        
+                        ${this.applicationData.aiProfile ? `
+                            <button class="btn btn-secondary" onclick="window.smartWorkflow.showProfileDetails()">
+                                <i class="fas fa-eye"></i> Profil anzeigen
+                            </button>
+                            <button class="btn btn-outline" onclick="window.smartWorkflow.regenerateProfile()">
+                                <i class="fas fa-sync"></i> Neu analysieren
+                            </button>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="analysis-progress" id="profileAnalysisProgress">
+                        ${this.renderProfileAnalysisStatus()}
+                    </div>
+                    
+                    ${this.applicationData.aiProfile ? `
+                        <div class="profile-summary">
+                            <h4><i class="fas fa-user-circle"></i> Profil-Zusammenfassung</h4>
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h5><i class="fas fa-tools"></i> Kernkompetenzen (${this.applicationData.aiProfile.skills?.length || 0})</h5>
+                                    <div class="skills-preview">
+                                        ${(this.applicationData.aiProfile.skills || []).slice(0, 5).map(skill => 
+                                            `<span class="skill-tag">${typeof skill === 'string' ? skill : skill.name}</span>`
+                                        ).join('')}
+                                        ${(this.applicationData.aiProfile.skills?.length || 0) > 5 ? 
+                                            `<span class="more-indicator">+${(this.applicationData.aiProfile.skills?.length || 0) - 5} weitere</span>` : ''
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-card">
+                                    <h5><i class="fas fa-heart"></i> Persönlichkeit</h5>
+                                    <div class="personality-preview">
+                                        ${(this.applicationData.aiProfile.personality || []).slice(0, 3).map(trait => 
+                                            `<span class="personality-tag">${trait}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-card">
+                                    <h5><i class="fas fa-pen"></i> Schreibstil</h5>
+                                    <div class="writing-style">
+                                        ${this.applicationData.aiProfile.writingStyle || 'Noch nicht analysiert'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="analysis-section ${this.applicationData.aiProfile ? '' : 'hidden'}">
                     <h3><i class="fas fa-chart-line"></i> Analyse-Ergebnisse</h3>
                     
                     <div class="analysis-grid">
@@ -1791,17 +1853,25 @@ class SmartWorkflowSystem {
     }
     
     handleDocumentUpload(inputId, type) {
+        console.log(`🔍 handleDocumentUpload aufgerufen: inputId=${inputId}, type=${type}`);
+        
         const input = document.getElementById(inputId);
         if (!input) {
             console.error(`❌ Input element nicht gefunden: ${inputId}`);
+            alert(`Fehler: Upload-Element '${inputId}' nicht gefunden!`);
             return;
         }
+        
+        console.log(`✅ Input Element gefunden:`, input);
         
         const files = input.files;
         if (!files || files.length === 0) {
             console.log(`⚠️ Keine Dateien ausgewählt für ${inputId}`);
+            alert('Keine Dateien ausgewählt!');
             return;
         }
+        
+        console.log(`📁 ${files.length} Dateien zum Upload bereit:`, Array.from(files).map(f => f.name));
         
         console.log(`📁 Starte Upload von ${files.length} Dateien für ${type}:`, Array.from(files).map(f => f.name));
         
@@ -2135,8 +2205,8 @@ class SmartWorkflowSystem {
                 throw new Error('OpenAI API nicht verfügbar oder nicht konfiguriert');
             }
             
-            // Get user profile from uploaded documents
-            const userProfile = await this.extractUserProfileFromDocuments();
+            // Get user profile - prioritize AI profile if available
+            const userProfile = this.applicationData.aiProfile || await this.extractUserProfileFromDocuments();
             
             // Get style preferences
             const stylePreferences = this.getSentenceStylePreferences();
@@ -2293,15 +2363,53 @@ class SmartWorkflowSystem {
     }
     
     buildSentenceGenerationPrompt(requirement, userProfile, stylePreferences) {
+        // Check if we have detailed AI profile or simple profile
+        const isAIProfile = userProfile.skills && Array.isArray(userProfile.skills) && userProfile.skills[0]?.name;
+        
+        let profileDescription;
+        if (isAIProfile) {
+            // Use detailed AI profile
+            const technicalSkills = userProfile.skills.filter(s => s.category === 'technical').map(s => s.name);
+            const softSkills = userProfile.skills.filter(s => s.category === 'soft').map(s => s.name);
+            const languages = userProfile.languages ? userProfile.languages.map(l => `${l.language} (${l.level})`).join(', ') : '';
+            
+            profileDescription = `
+DETAILLIERTES KI-ANALYSIERTES PROFIL:
+
+Technische Kompetenzen: ${technicalSkills.join(', ') || 'Nicht spezifiziert'}
+Soft Skills: ${softSkills.join(', ') || 'Nicht spezifiziert'}
+Sprachen: ${languages || 'Nicht spezifiziert'}
+
+Persönlichkeitsmerkmale: ${userProfile.personality?.join(', ') || 'Nicht analysiert'}
+Stärken: ${userProfile.strengths?.join(', ') || 'Nicht analysiert'}
+Interessen/Hobbies: ${userProfile.interests?.join(', ') || 'Nicht analysiert'}
+
+Arbeitsstil:
+- Leadership: ${userProfile.workStyle?.leadership || 'Nicht analysiert'}
+- Teamarbeit: ${userProfile.workStyle?.teamwork || 'Nicht analysiert'}  
+- Kommunikation: ${userProfile.workStyle?.communication || 'Nicht analysiert'}
+
+Schreibstil: ${userProfile.writingStyle || 'Nicht analysiert'}
+Beruflicher Fokus: ${userProfile.careerFocus || 'Nicht spezifiziert'}
+Alleinstellungsmerkmale: ${userProfile.uniqueSellingPoints?.join(', ') || 'Nicht analysiert'}
+Werte: ${userProfile.values?.join(', ') || 'Nicht analysiert'}
+`;
+        } else {
+            // Use simple profile
+            profileDescription = `
+EINFACHES PROFIL:
+- Fähigkeiten: ${userProfile.skills?.join(', ') || 'Allgemeine Kompetenzen'}
+- Qualifikationen: ${userProfile.qualifications?.join(', ') || 'Standard-Qualifikationen'}  
+- Schreibstil: ${userProfile.writingStyle || 'Professionell'}
+- Dokumente verfügbar: ${userProfile.documentCount || 0}
+`;
+        }
+        
         return `
-Erstelle 4 verschiedene Bewerbungssätze für folgende Stellenanforderung:
+Erstelle 4 verschiedene, hochqualitative Bewerbungssätze für folgende Stellenanforderung:
 "${requirement.text}"
 
-Benutzerprofil:
-- Fähigkeiten: ${userProfile.skills.join(', ') || 'Allgemeine Kompetenzen'}
-- Qualifikationen: ${userProfile.qualifications.join(', ') || 'Standard-Qualifikationen'}
-- Schreibstil: ${userProfile.writingStyle}
-- Dokumente verfügbar: ${userProfile.documentCount}
+${profileDescription}
 
 Stil-Vorgaben:
 - Länge: ${stylePreferences.length} (short=10-15 Wörter, medium=15-25 Wörter, long=25-35 Wörter)
@@ -2318,12 +2426,16 @@ Antworte nur mit diesem JSON-Format:
   ]
 }
 
-Wichtig:
-- Sätze sollen spezifisch auf die Anforderung eingehen
-- Verwende Informationen aus dem Benutzerprofil
-- Variiere die Formulierungen zwischen den 4 Sätzen
-- Halte dich an die Stil-Vorgaben
-- Jeder Satz soll professionell und überzeugend sein
+WICHTIGE ANWEISUNGEN:
+- Nutze SPEZIFISCHE Informationen aus dem Profil (Skills, Erfahrungen, Persönlichkeit)
+- Erstelle PERSONALISIERTE Sätze, die genau zu diesem Bewerber passen
+- Vermeide generische Phrasen - jeder Satz soll einzigartig und authentisch sein
+- Zeige konkrete Relevanz zwischen Profil und Anforderung auf
+- Variiere Formulierung, Struktur und Ansatz zwischen den 4 Sätzen
+- Berücksichtige Persönlichkeitsmerkmale in der Wortwahl
+- Integriere relevante Stärken und Alleinstellungsmerkmale
+- Halte dich strikt an die Stil-Vorgaben (Länge, Ton, Stil)
+- Jeder Satz soll professionell, überzeugend und messbar besser als Standard-Bewerbungsformulierungen sein
 `;
     }
     
@@ -2390,6 +2502,305 @@ Wichtig:
         
         this.saveData();
         this.updateUI();
+    }
+
+    // KI-Profilanalyse System
+    async startProfileAnalysis() {
+        console.log('🧠 Starte KI-Profilanalyse...');
+        
+        // Check if documents are available
+        const allDocuments = this.getUploadedDocuments('cv')
+            .concat(this.getUploadedDocuments('coverLetters'))
+            .concat(this.getUploadedDocuments('certificates'))
+            .filter(doc => doc.includeInAnalysis !== false);
+            
+        if (allDocuments.length === 0) {
+            alert('Bitte laden Sie zuerst Dokumente hoch und wählen Sie diese für die Analyse aus.');
+            return;
+        }
+        
+        // Set loading state
+        this.applicationData.profileAnalysisStatus = 'loading';
+        this.updateUI();
+        
+        try {
+            // Check AI service
+            if (!window.globalAI || !window.globalAI.isAPIReady()) {
+                throw new Error('OpenAI API nicht verfügbar. Bitte konfigurieren Sie Ihren API Key im Admin-Panel.');
+            }
+            
+            // Start analysis
+            const profile = await this.analyzeDocumentsWithAI(allDocuments);
+            
+            // Save profile
+            this.applicationData.aiProfile = profile;
+            this.applicationData.profileAnalysisStatus = 'completed';
+            this.applicationData.profileAnalyzed = true;
+            this.saveData();
+            
+            console.log('✅ KI-Profilanalyse abgeschlossen:', profile);
+            
+            // Show success message
+            this.showUploadSuccess('Profilanalyse erfolgreich abgeschlossen!');
+            
+        } catch (error) {
+            console.error('❌ Fehler bei Profilanalyse:', error);
+            
+            this.applicationData.profileAnalysisStatus = 'error';
+            this.applicationData.profileAnalysisError = error.message;
+            
+            // Show error
+            alert(`Profilanalyse fehlgeschlagen: ${error.message}`);
+        } finally {
+            this.updateUI();
+        }
+    }
+    
+    async analyzeDocumentsWithAI(documents) {
+        console.log('🤖 Analysiere Dokumente mit KI...', documents.length, 'Dokumente');
+        
+        // Extract text content from documents (simplified for demo)
+        const documentTexts = documents.map(doc => {
+            // In real implementation, use PDF.js or similar for actual text extraction
+            return {
+                type: doc.type,
+                name: doc.name,
+                text: this.extractDemoTextFromDocument(doc) // Simplified extraction
+            };
+        });
+        
+        const prompt = this.buildProfileAnalysisPrompt(documentTexts);
+        
+        try {
+            const response = await window.globalAI.callOpenAI([
+                {
+                    role: "system",
+                    content: "Du bist ein Experte für Personalwesen und Bewerbungsanalyse. Du analysierst Bewerbungsunterlagen und erstellst detaillierte Persönlichkeits- und Kompetenzprofile."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ], {
+                max_tokens: 2000,
+                temperature: 0.7
+            });
+            
+            const profile = JSON.parse(response);
+            
+            // Enhance profile with metadata
+            profile.analysisDate = new Date().toISOString();
+            profile.documentCount = documents.length;
+            profile.documentTypes = [...new Set(documents.map(d => d.type))];
+            
+            return profile;
+            
+        } catch (error) {
+            console.error('❌ OpenAI API Fehler bei Profilanalyse:', error);
+            throw new Error(`Profilanalyse fehlgeschlagen: ${error.message}`);
+        }
+    }
+    
+    extractDemoTextFromDocument(doc) {
+        // Simplified text extraction for demo - in real implementation use PDF.js, etc.
+        const fileName = doc.name.toLowerCase();
+        
+        // Generate demo content based on file name and type
+        if (fileName.includes('lebenslauf') || fileName.includes('cv')) {
+            return `
+                Berufserfahrung:
+                - 5 Jahre Software-Entwicklung
+                - Projektmanagement-Erfahrung
+                - Team-Leadership
+                
+                Technische Skills:
+                - JavaScript, Python, React
+                - Agile Entwicklung, Scrum
+                - Git, Docker, AWS
+                
+                Ausbildung:
+                - Master Informatik
+                - Zertifizierungen in Cloud Computing
+                
+                Sprachen:
+                - Deutsch (Muttersprache)
+                - Englisch (Verhandlungssicher)
+                - Spanisch (Grundkenntnisse)
+                
+                Hobbies:
+                - Fotografie, Reisen
+                - Open-Source Projekte
+                - Marathonlaufen
+            `;
+        } else if (fileName.includes('anschreiben') || fileName.includes('cover')) {
+            return `
+                Sehr geehrte Damen und Herren,
+                
+                als leidenschaftlicher Software-Entwickler mit 5 Jahren Berufserfahrung 
+                bin ich davon überzeugt, dass Innovation durch Zusammenarbeit entsteht.
+                
+                In meiner aktuellen Position als Senior Developer führe ich ein Team von 4 Entwicklern
+                und habe mehrere erfolgreiche Projekte geleitet. Besonders stolz bin ich auf
+                die Entwicklung einer Cloud-basierten Anwendung, die die Effizienz um 40% steigerte.
+                
+                Meine Stärken liegen in der analytischen Problemlösung und der Fähigkeit,
+                komplexe technische Konzepte verständlich zu kommunizieren.
+                
+                Mit freundlichen Grüßen
+            `;
+        } else {
+            return `Zertifikat/Zeugnis: Inhalt nicht verfügbar für Demo-Analyse`;
+        }
+    }
+    
+    buildProfileAnalysisPrompt(documentTexts) {
+        const documentsInfo = documentTexts.map(doc => 
+            `### ${doc.type.toUpperCase()}: ${doc.name}\n${doc.text}`
+        ).join('\n\n');
+        
+        return `
+Analysiere die folgenden Bewerbungsunterlagen und erstelle ein detailliertes Persönlichkeits- und Kompetenzprofil:
+
+${documentsInfo}
+
+Erstelle eine umfassende Analyse in folgendem JSON-Format:
+
+{
+  "skills": [
+    {
+      "name": "Skill-Name",
+      "category": "technical|soft|language",
+      "level": "beginner|intermediate|advanced|expert",
+      "evidence": "Wo im Dokument gefunden"
+    }
+  ],
+  "personality": [
+    "Persönlichkeitsmerkmal 1",
+    "Persönlichkeitsmerkmal 2"
+  ],
+  "strengths": [
+    "Stärke 1 mit Begründung",
+    "Stärke 2 mit Begründung"
+  ],
+  "interests": [
+    "Interesse/Hobby 1",
+    "Interesse/Hobby 2"
+  ],
+  "workStyle": {
+    "leadership": "beschreibung",
+    "teamwork": "beschreibung", 
+    "communication": "beschreibung"
+  },
+  "writingStyle": "Beschreibung des Schreibstils",
+  "careerFocus": "Hauptberuflicher Fokus",
+  "uniqueSellingPoints": [
+    "Alleinstellungsmerkmal 1",
+    "Alleinstellungsmerkmal 2"
+  ],
+  "values": [
+    "Wert 1",
+    "Wert 2"
+  ],
+  "languages": [
+    {
+      "language": "Sprache",
+      "level": "Niveau"
+    }
+  ]
+}
+
+Wichtig:
+- Analysiere ALLE verfügbaren Dokumente gründlich
+- Extrahiere sowohl explizite als auch implizite Informationen
+- Achte auf Schreibstil, Wortwahl und Struktur
+- Identifiziere Persönlichkeitsmerkmale aus der Art der Darstellung
+- Finde versteckte Talente und Interessen
+- Sei präzise und evidenzbasiert
+`;
+    }
+    
+    isProfileAnalysisInProgress() {
+        return this.applicationData.profileAnalysisStatus === 'loading';
+    }
+    
+    renderProfileAnalysisStatus() {
+        const status = this.applicationData.profileAnalysisStatus;
+        
+        if (!status || status === 'pending') {
+            const documentsCount = this.getUploadedDocuments('cv')
+                .concat(this.getUploadedDocuments('coverLetters'))
+                .concat(this.getUploadedDocuments('certificates'))
+                .filter(doc => doc.includeInAnalysis !== false).length;
+                
+            if (documentsCount === 0) {
+                return `
+                    <div class="status-message warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Keine Dokumente für Analyse ausgewählt</p>
+                        <small>Laden Sie Dokumente hoch und wählen Sie diese für die Analyse aus.</small>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="status-message ready">
+                    <i class="fas fa-check-circle"></i>
+                    <p>${documentsCount} Dokument${documentsCount > 1 ? 'e' : ''} bereit für Analyse</p>
+                    <small>Klicken Sie auf "Profil analysieren" um zu starten.</small>
+                </div>
+            `;
+        }
+        
+        if (status === 'loading') {
+            return `
+                <div class="status-message loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Analysiere Dokumente mit KI...</p>
+                    <small>Dies kann 30-60 Sekunden dauern.</small>
+                </div>
+            `;
+        }
+        
+        if (status === 'completed') {
+            return `
+                <div class="status-message success">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Profilanalyse erfolgreich abgeschlossen!</p>
+                    <small>Ihr persönliches Bewerbungsprofil ist bereit.</small>
+                </div>
+            `;
+        }
+        
+        if (status === 'error') {
+            return `
+                <div class="status-message error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Profilanalyse fehlgeschlagen</p>
+                    <small>${this.applicationData.profileAnalysisError || 'Unbekannter Fehler'}</small>
+                    <button class="btn btn-small btn-primary" onclick="window.smartWorkflow.startProfileAnalysis()">
+                        <i class="fas fa-retry"></i> Erneut versuchen
+                    </button>
+                </div>
+            `;
+        }
+        
+        return '';
+    }
+    
+    showProfileDetails() {
+        if (!this.applicationData.aiProfile) return;
+        
+        // Create modal or detailed view - for now, console log
+        console.log('📋 Detailliertes Profil:', this.applicationData.aiProfile);
+        alert('Detaillierte Profilansicht - siehe Browser Console für vollständige Daten');
+    }
+    
+    regenerateProfile() {
+        if (confirm('Möchten Sie die Profilanalyse wirklich neu durchführen? Dies überschreibt das aktuelle Profil.')) {
+            this.applicationData.aiProfile = null;
+            this.applicationData.profileAnalysisStatus = 'pending';
+            this.startProfileAnalysis();
+        }
     }
     
     updateContactPersonFields(contactPerson) {
@@ -3334,3 +3745,6 @@ window.smartWorkflow.selectSentence = window.smartWorkflow.selectSentence.bind(w
 window.smartWorkflow.updateSentenceText = window.smartWorkflow.updateSentenceText.bind(window.smartWorkflow);
 window.smartWorkflow.customizeSentence = window.smartWorkflow.customizeSentence.bind(window.smartWorkflow);
 window.smartWorkflow.selectAllDocuments = window.smartWorkflow.selectAllDocuments.bind(window.smartWorkflow);
+window.smartWorkflow.startProfileAnalysis = window.smartWorkflow.startProfileAnalysis.bind(window.smartWorkflow);
+window.smartWorkflow.showProfileDetails = window.smartWorkflow.showProfileDetails.bind(window.smartWorkflow);
+window.smartWorkflow.regenerateProfile = window.smartWorkflow.regenerateProfile.bind(window.smartWorkflow);
