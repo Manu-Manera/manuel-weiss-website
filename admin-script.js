@@ -1326,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const workflowButtons1 = document.querySelectorAll('[onclick*="startSmartWorkflow"]');
         const workflowButtons2 = document.querySelectorAll('#smartWorkflowButton');
         const workflowButtons3 = document.querySelectorAll('button[id*="smartWorkflow"]');
-        const workflowButtons4 = document.querySelectorAll('button:contains("Neue Bewerbung erstellen")');
+        const workflowButtons4 = Array.from(document.querySelectorAll('button')).filter(btn => btn.textContent.includes('Neue Bewerbung erstellen'));
         
         // Combine all possible workflow buttons
         const allWorkflowButtons = [

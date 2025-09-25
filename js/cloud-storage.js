@@ -310,7 +310,7 @@
     
     // Cloud-UI in Medienverwaltung integrieren
     function integrateCloudUI() {
-        const actionsSection = document.querySelector('.cv-management h4:contains("Aktionen")');
+        const actionsSection = Array.from(document.querySelectorAll('.cv-management h4')).find(h4 => h4.textContent.includes('Aktionen'));
         if (actionsSection) {
             const cloudUI = createCloudUI();
             actionsSection.insertAdjacentHTML('afterend', cloudUI);
