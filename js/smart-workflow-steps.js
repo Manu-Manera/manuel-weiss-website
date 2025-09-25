@@ -2,8 +2,36 @@
 
 // Initialize job analyzer when needed
 async function initializeJobAnalyzer() {
-    if (window.jobAnalyzer && !window.jobAnalyzer.userProfile.skills.length) {
-        await window.jobAnalyzer.analyzeUserDocuments();
+    console.log('🔧 Initialisiere Job-Analyzer...');
+    
+    console.log('🔍 Prüfe window.jobAnalyzer Verfügbarkeit:', {
+        jobAnalyzerExists: !!window.jobAnalyzer,
+        hasUserProfile: !!(window.jobAnalyzer && window.jobAnalyzer.userProfile),
+        hasSkills: !!(window.jobAnalyzer && window.jobAnalyzer.userProfile && window.jobAnalyzer.userProfile.skills),
+        skillsLength: window.jobAnalyzer?.userProfile?.skills?.length || 0
+    });
+    
+    if (!window.jobAnalyzer) {
+        console.error('❌ FEHLER: window.jobAnalyzer ist nicht verfügbar!');
+        console.log('💡 Stelle sicher, dass job-requirement-analyzer.js geladen ist');
+        return;
+    }
+    
+    if (!window.jobAnalyzer.userProfile.skills.length) {
+        console.log('📚 User-Profile ist leer, analysiere Benutzerdokumente...');
+        try {
+            await window.jobAnalyzer.analyzeUserDocuments();
+            console.log('✅ Benutzerdokumente analysiert');
+            console.log('👤 User-Profile nach Analyse:', {
+                skillsCount: window.jobAnalyzer.userProfile.skills.length,
+                experiencesCount: window.jobAnalyzer.userProfile.experiences.length,
+                hasWritingStyle: !!window.jobAnalyzer.userProfile.writingStyle
+            });
+        } catch (error) {
+            console.error('❌ Fehler beim Analysieren der Benutzerdokumente:', error);
+        }
+    } else {
+        console.log('✅ User-Profile bereits verfügbar mit', window.jobAnalyzer.userProfile.skills.length, 'Skills');
     }
 }
 
@@ -125,21 +153,60 @@ window.generateStep6 = window.generateStep5; // Old Step 5 becomes Step 6
 
 // Analyze requirements function
 async function analyzeRequirements() {
+    console.log('🚀 === SMART WORKFLOW SCHRITT 2: ANFORDERUNGSANALYSE ===');
+    
     const analysisDiv = document.getElementById('requirementsAnalysis');
+    if (!analysisDiv) {
+        console.error('❌ Element "requirementsAnalysis" nicht gefunden!');
+        return;
+    }
+    
+    console.log('✅ UI-Element gefunden, zeige Loading-Status...');
     analysisDiv.style.display = 'block';
     analysisDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Analysiere Stellenbeschreibung...</p>';
     
+    console.log('🔧 Initialisiere Job-Analyzer...');
     // Initialize job analyzer
     await initializeJobAnalyzer();
+    
+    console.log('📋 Workflow-Daten verfügbar:', {
+        hasWorkflowData: !!workflowData,
+        hasJobDescription: !!(workflowData && workflowData.jobDescription),
+        jobDescriptionLength: workflowData?.jobDescription?.length || 0,
+        company: workflowData?.company || 'NICHT GESETZT',
+        position: workflowData?.position || 'NICHT GESETZT'
+    });
+    
+    if (!workflowData || !workflowData.jobDescription) {
+        console.error('❌ FEHLER: Keine Stellenbeschreibung in workflowData gefunden!');
+        console.log('🔍 workflowData Inhalt:', workflowData);
+        analysisDiv.innerHTML = '<p style="color: #ef4444;">❌ Fehler: Keine Stellenbeschreibung gefunden. Bitte gehen Sie zurück zu Schritt 1.</p>';
+        return;
+    }
+    
+    console.log('🔍 Starte Analyse der Stellenbeschreibung...');
+    console.log('📄 Stellenbeschreibung Vorschau:', workflowData.jobDescription.substring(0, 200) + '...');
     
     // Analyze job description
     const requirements = window.jobAnalyzer.analyzeJobDescription(workflowData.jobDescription);
     
+    console.log('📊 Analyse abgeschlossen:', {
+        requirementsFound: requirements.length,
+        requirements: requirements.map(req => ({ 
+            id: req.id, 
+            importance: req.importance, 
+            type: req.type, 
+            text: req.text.substring(0, 50) + '...' 
+        }))
+    });
+    
     if (requirements.length === 0) {
+        console.warn('⚠️ Keine Anforderungen gefunden!');
         analysisDiv.innerHTML = '<p style="color: #ef4444;">Keine spezifischen Anforderungen gefunden. Bitte überprüfen Sie die Stellenbeschreibung.</p>';
         return;
     }
     
+    console.log('✅ Speichere Anforderungen in Workflow-Daten...');
     // Store requirements in workflow data
     workflowData.requirements = requirements;
     
