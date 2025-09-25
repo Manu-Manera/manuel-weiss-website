@@ -538,15 +538,52 @@
     window.updateAllDisplays = updateAllDisplays;
     window.clearBrowserCache = clearBrowserCache;
     
-    // Überschreibe ALLE anderen Upload-Funktionen
-    window.uploadDocument = (category, file) => universalUpload([file], category);
-    window.fixedHandleDocumentUpload = (inputId, category) => {
-        const input = document.getElementById(inputId);
-        if (input && input.files) universalUpload(input.files, category);
+    // Überschreibe ALLE anderen Upload-Funktionen AGGRESSIV
+    window.uploadDocument = (category, file) => {
+        console.log('🔥 OVERRIDE: uploadDocument called');
+        universalUpload([file], category);
     };
-    window.handleDocumentUpload = (inputId, category) => {
+    
+    window.fixedHandleDocumentUpload = (inputId, category) => {
+        console.log(`🔥 OVERRIDE: fixedHandleDocumentUpload called: ${inputId} -> ${category}`);
         const input = document.getElementById(inputId);
-        if (input && input.files) universalUpload(input.files, category);
+        if (input && input.files && input.files.length > 0) {
+            universalUpload(Array.from(input.files), category);
+        } else {
+            console.log(`❌ No files found in input: ${inputId}`);
+        }
+    };
+    
+    window.handleDocumentUpload = (inputId, category) => {
+        console.log(`🔥 OVERRIDE: handleDocumentUpload called: ${inputId} -> ${category}`);
+        const input = document.getElementById(inputId);
+        if (input && input.files && input.files.length > 0) {
+            universalUpload(Array.from(input.files), category);
+        } else {
+            console.log(`❌ No files found in input: ${inputId}`);
+        }
+    };
+    
+    // Override SmartWorkflowSystem method if it exists
+    if (window.smartWorkflow && window.smartWorkflow.handleDocumentUpload) {
+        window.smartWorkflow.handleDocumentUpload = (inputId, category) => {
+            console.log(`🔥 OVERRIDE: SmartWorkflow.handleDocumentUpload: ${inputId} -> ${category}`);
+            window.fixedHandleDocumentUpload(inputId, category);
+        };
+    }
+    
+    // Override any other upload functions
+    window.handleWorkflowDocumentUpload = (event) => {
+        console.log('🔥 OVERRIDE: handleWorkflowDocumentUpload');
+        if (event.target.files && event.target.files.length > 0) {
+            universalUpload(Array.from(event.target.files));
+        }
+    };
+    
+    window.triggerWorkflowDocumentUpload = () => {
+        console.log('🔥 OVERRIDE: triggerWorkflowDocumentUpload');
+        const input = document.getElementById('workflow-doc-upload') || document.getElementById('cvUpload');
+        if (input) input.click();
     };
     
     // Initialisierung
