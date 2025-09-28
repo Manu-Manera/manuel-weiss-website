@@ -61,112 +61,56 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
-        /* KOMPLETTER RESET - KEINE SPIELEREIEN MEHR */
+        /* EINFACHES, FUNKTIONIERENDES LAYOUT */
         * {
-            box-sizing: border-box !important;
+            box-sizing: border-box;
         }
         
         html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
         }
         
-        /* EINFACHES FLEXBOX LAYOUT */
         .admin-container {
-            display: flex !important;
-            height: 100vh !important;
-            width: 100vw !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background-color: #f8fafc !important;
-            overflow: hidden !important;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
         }
         
-        /* SIDEBAR FEST LINKS */
         .sidebar {
-            flex-shrink: 0 !important;
-            width: 280px !important;
-            height: 100vh !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            transition: width 0.3s ease !important;
+            width: 280px;
+            height: 100vh;
+            flex-shrink: 0;
+            overflow-y: auto;
+            transition: width 0.3s ease;
         }
         
         .sidebar.collapsed {
-            width: 70px !important;
+            width: 70px;
         }
         
-        /* CONTENT NIMMT RESTLICHEN PLATZ */
         .content-wrapper {
-            flex: 1 !important;
-            height: 100vh !important;
-            overflow: hidden !important;
-            display: flex !important;
-            flex-direction: column !important;
-            background-color: #f8fafc !important;
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         
-        /* ADMIN MAIN SCROLLBAR */
         .admin-main {
-            flex: 1 !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            width: 100%;
+            min-height: 100vh;
         }
         
-        /* SECTIONS OHNE OVERFLOW PROBLEME */
         .admin-section {
-            width: 100% !important;
-            padding: 1rem !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
+            width: 100%;
+            padding: 1rem;
         }
         
-        /* CONTENT AREA RESPONSIVE */
-        .admin-content {
-            width: 100% !important;
-            max-width: 100% !important;
-            padding: 1rem !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* FORMULARE UND CONTAINER BREITEN */
-        .form-group,
-        .form-control,
-        .input-group,
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="number"],
-        textarea,
-        select {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* CONTAINER MAX-WIDTH FÜR BESSERE LESBARKEIT */
-        .container,
-        .content-container,
-        [class*="container"] {
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-            padding: 0 1rem !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* TABLES RESPONSIVE */
         .table-responsive {
-            width: 100% !important;
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-        }
-        
-        table {
-            width: 100% !important;
+            width: 100%;
+            overflow-x: auto;
         }
         
         .sidebar, .sidebar *, 
