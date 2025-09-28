@@ -24,5 +24,9 @@
   },
   "engines": {
     "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-components": "^1.9.40",
+    "aws-amplify": "^6.15.6"
   }
 }
