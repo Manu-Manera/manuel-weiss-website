@@ -10524,6 +10524,11 @@ Bitte antworte im folgenden JSON-Format:
                 
                 // Initialize section-specific functionality
                 initializeSectionContent(sectionId);
+                
+                // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
+                if (sectionId === 'personality-development') {
+                    collapseAllMethods();
+                }
             } else {
                 console.warn('⚠️ Section not found:', sectionId);
             }
@@ -10539,6 +10544,58 @@ Bitte antworte im folgenden JSON-Format:
                     console.log('⚠️ User Management not yet initialized');
                 }
             }
+        }
+        
+        // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
+        function collapseAllMethods() {
+            console.log('🔄 Einklappen aller aufgeklappten Methoden...');
+            
+            // Alle aufgeklappten Ikigai-Schritte einklappen
+            document.querySelectorAll('.ikigai-step-card.expanded, .ikigai-step-card.open').forEach(card => {
+                card.classList.remove('expanded', 'open');
+                console.log('✅ Ikigai-Schritt eingeklappt:', card.dataset.step);
+            });
+            
+            // Alle aufgeklappten Methoden-Karten einklappen
+            document.querySelectorAll('.method-card.expanded, .method-card.open').forEach(card => {
+                card.classList.remove('expanded', 'open');
+                console.log('✅ Methoden-Karte eingeklappt:', card.dataset.method);
+            });
+            
+            // Alle aufgeklappten Workflow-Schritte einklappen
+            document.querySelectorAll('.workflow-step.expanded, .workflow-step.open').forEach(step => {
+                step.classList.remove('expanded', 'open');
+                console.log('✅ Workflow-Schritt eingeklappt:', step.dataset.step);
+            });
+            
+            // Alle aufgeklappten Kategorien einklappen
+            document.querySelectorAll('.category-card.expanded, .category-card.open').forEach(card => {
+                card.classList.remove('expanded', 'open');
+                console.log('✅ Kategorie eingeklappt:', card.dataset.category);
+            });
+            
+            // Alle aufgeklappten Details-Bereiche einklappen
+            document.querySelectorAll('.method-details.expanded, .method-details.open').forEach(details => {
+                details.classList.remove('expanded', 'open');
+                details.style.display = 'none';
+                console.log('✅ Methoden-Details eingeklappt');
+            });
+            
+            // Alle aufgeklappten Akkordeon-Bereiche einklappen
+            document.querySelectorAll('.accordion-content.expanded, .accordion-content.open').forEach(content => {
+                content.classList.remove('expanded', 'open');
+                content.style.display = 'none';
+                console.log('✅ Akkordeon-Bereich eingeklappt');
+            });
+            
+            // Alle aufgeklappten Tabs zurücksetzen
+            document.querySelectorAll('.tab-content.active, .tab-content.open').forEach(content => {
+                content.classList.remove('active', 'open');
+                content.style.display = 'none';
+                console.log('✅ Tab-Inhalt eingeklappt');
+            });
+            
+            console.log('✅ Alle aufgeklappten Methoden erfolgreich eingeklappt!');
         }
         
         // SIMPLE layout setup
