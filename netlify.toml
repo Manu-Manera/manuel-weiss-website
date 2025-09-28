@@ -2,9 +2,14 @@
   publish = "."
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/admin"
+  to = "/admin.html"
   status = 200
+
+[[redirects]]
+  from = "/404"
+  to = "/index.html"
+  status = 404
 
 [[headers]]
   for = "/*"
