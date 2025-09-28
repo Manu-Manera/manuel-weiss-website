@@ -195,16 +195,62 @@
             margin-left: 70px !important;
         }
         
-        /* FINALE LÖSUNG - KEINE ÜBERSCHNEIDUNG */
+        /* RESPONSIVE LAYOUT - ALLE GERÄTE */
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 70px;
+            --mobile-breakpoint: 768px;
+            --tablet-breakpoint: 1024px;
+        }
+        
         body {
             margin: 0 !important;
             padding: 0 !important;
+            padding-left: var(--sidebar-width) !important;
+            transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
-        /* ALLE CONTENT BEREICHE - INKLUSIVE HAUPTMENÜ */
-        .admin-main,
+        body.sidebar-collapsed {
+            padding-left: var(--sidebar-collapsed) !important;
+        }
+        
+        /* Mobile: Sidebar overlay */
+        @media (max-width: 768px) {
+            body {
+                padding-left: 0 !important;
+            }
+            
+            body.sidebar-collapsed {
+                padding-left: 0 !important;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            }
+            
+            .sidebar:not(.collapsed) {
+                transform: translateX(0) !important;
+            }
+        }
+        
+        /* Tablet: Auto-collapse */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            body {
+                padding-left: var(--sidebar-collapsed) !important;
+            }
+            
+            .sidebar {
+                width: var(--sidebar-collapsed) !important;
+            }
+        }
+        
+        /* RESPONSIVE CONTENT BEREICHE */
         .admin-section,
         #user-management-live,
+        #analytics,
+        #system-health,
+        #settings,
         #dashboard,
         #content,
         #nutrition,
@@ -216,41 +262,59 @@
         #translations,
         #media,
         #vermietungen,
-        #buchungen,
-        #analytics,
-        #system-health,
-        #settings {
-            margin-left: 280px !important;
-            width: calc(100vw - 280px) !important;
-            max-width: calc(100vw - 280px) !important;
+        #buchungen {
             min-height: 100vh !important;
-            padding: 20px !important;
+            padding: clamp(10px, 2vw, 20px) !important;
             box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
         
-        .sidebar.collapsed ~ .admin-main,
-        .sidebar.collapsed ~ .admin-section,
-        body.sidebar-collapsed .admin-main,
-        body.sidebar-collapsed .admin-section,
-        body.sidebar-collapsed #user-management-live,
-        body.sidebar-collapsed #dashboard,
-        body.sidebar-collapsed #content,
-        body.sidebar-collapsed #nutrition,
-        body.sidebar-collapsed #personality-development,
-        body.sidebar-collapsed #personal-training,
-        body.sidebar-collapsed #applications,
-        body.sidebar-collapsed #ai-settings,
-        body.sidebar-collapsed #ai-twin,
-        body.sidebar-collapsed #translations,
-        body.sidebar-collapsed #media,
-        body.sidebar-collapsed #vermietungen,
-        body.sidebar-collapsed #buchungen,
-        body.sidebar-collapsed #analytics,
-        body.sidebar-collapsed #system-health,
-        body.sidebar-collapsed #settings {
-            margin-left: 70px !important;
-            width: calc(100vw - 70px) !important;
-            max-width: calc(100vw - 70px) !important;
+        /* System-Seiten: Spezielle Behandlung nur auf Desktop */
+        @media (min-width: 1025px) {
+            #user-management-live,
+            #analytics,
+            #system-health,
+            #settings {
+                margin-left: var(--sidebar-width) !important;
+                width: calc(100vw - var(--sidebar-width)) !important;
+                max-width: calc(100vw - var(--sidebar-width)) !important;
+            }
+            
+            body.sidebar-collapsed #user-management-live,
+            body.sidebar-collapsed #analytics,
+            body.sidebar-collapsed #system-health,
+            body.sidebar-collapsed #settings {
+                margin-left: var(--sidebar-collapsed) !important;
+                width: calc(100vw - var(--sidebar-collapsed)) !important;
+                max-width: calc(100vw - var(--sidebar-collapsed)) !important;
+            }
+        }
+        
+        /* Mobile: Alle Seiten full width */
+        @media (max-width: 768px) {
+            .admin-section,
+            #user-management-live,
+            #analytics,
+            #system-health,
+            #settings,
+            #dashboard,
+            #content,
+            #nutrition,
+            #personality-development,
+            #personal-training,
+            #applications,
+            #ai-settings,
+            #ai-twin,
+            #translations,
+            #media,
+            #vermietungen,
+            #buchungen {
+                margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 15px !important;
+            }
         }
         
         /* Ensure sidebar is always visible and properly positioned */
@@ -258,16 +322,29 @@
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            width: 280px !important;
+            width: var(--sidebar-width) !important;
             height: 100vh !important;
             z-index: 1000 !important;
             overflow-y: auto !important;
             margin: 0 !important;
             padding: 0 !important;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
         .sidebar.collapsed {
-            width: 70px !important;
+            width: var(--sidebar-collapsed) !important;
+        }
+        
+        /* Mobile Overlay */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-width) !important;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.3) !important;
+            }
+            
+            .sidebar.collapsed {
+                width: var(--sidebar-width) !important;
+            }
         }
         
         /* Tooltips for collapsed state */
@@ -9873,43 +9950,28 @@ Bitte antworte im folgenden JSON-Format:
             }
             
             function toggleSidebar() {
+                const isMobile = window.innerWidth <= 768;
                 const isCollapsed = sidebar.classList.contains('collapsed');
                 
-                if (isCollapsed) {
-                    // Expand
-                    sidebar.classList.remove('collapsed');
-                    body.classList.remove('sidebar-collapsed');
-                    const elements = document.querySelectorAll(`
-                        .admin-main, .admin-section, #user-management-live,
-                        #dashboard, #content, #nutrition, #personality-development,
-                        #personal-training, #applications, #ai-settings, #ai-twin,
-                        #translations, #media, #vermietungen, #buchungen,
-                        #analytics, #system-health, #settings
-                    `);
-                    elements.forEach(el => {
-                        el.style.marginLeft = '280px';
-                        el.style.width = 'calc(100vw - 280px)';
-                        el.style.maxWidth = 'calc(100vw - 280px)';
-                    });
+                if (isMobile) {
+                    // Mobile: Toggle overlay
+                    sidebar.classList.toggle('collapsed');
                 } else {
-                    // Collapse
-                    sidebar.classList.add('collapsed');
-                    body.classList.add('sidebar-collapsed');
-                    const elements = document.querySelectorAll(`
-                        .admin-main, .admin-section, #user-management-live,
-                        #dashboard, #content, #nutrition, #personality-development,
-                        #personal-training, #applications, #ai-settings, #ai-twin,
-                        #translations, #media, #vermietungen, #buchungen,
-                        #analytics, #system-health, #settings
-                    `);
-                    elements.forEach(el => {
-                        el.style.marginLeft = '70px';
-                        el.style.width = 'calc(100vw - 70px)';
-                        el.style.maxWidth = 'calc(100vw - 70px)';
-                    });
+                    // Desktop/Tablet: Toggle width
+                    if (isCollapsed) {
+                        // Expand
+                        sidebar.classList.remove('collapsed');
+                        body.classList.remove('sidebar-collapsed');
+                        document.body.style.paddingLeft = '280px';
+                    } else {
+                        // Collapse
+                        sidebar.classList.add('collapsed');
+                        body.classList.add('sidebar-collapsed');
+                        document.body.style.paddingLeft = '70px';
+                    }
                 }
                 
-                console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed');
+                console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed', `(${isMobile ? 'Mobile' : 'Desktop'})`);
             }
             
             // Toggle button functionality with tracking
@@ -9929,21 +9991,28 @@ Bitte antworte im folgenden JSON-Format:
                 sidebarToggle.setAttribute('aria-expanded', 'true');
             }
             
-            // Mobile auto-collapse
+            // Responsive handling
             function handleResize() {
-                if (window.innerWidth <= 768) {
-                    // Mobile: always collapsed
+                const isMobile = window.innerWidth <= 768;
+                const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                const isDesktop = window.innerWidth > 1024;
+                
+                if (isMobile) {
+                    // Mobile: Overlay mode, collapsed by default
+                    document.body.style.paddingLeft = '0';
                     sidebar.classList.add('collapsed');
-                    body.classList.add('sidebar-collapsed');
-                    const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) mainContent.style.marginLeft = '70px';
-                } else if (window.innerWidth > 1024 && !sidebar.dataset.userToggled) {
-                    // Large screens: auto-expand if user hasn't manually toggled
+                } else if (isTablet) {
+                    // Tablet: Auto-collapse
+                    document.body.style.paddingLeft = '70px';
+                    sidebar.classList.add('collapsed');
+                } else if (isDesktop && !sidebar.dataset.userToggled) {
+                    // Desktop: Auto-expand if user hasn't manually toggled
+                    document.body.style.paddingLeft = '280px';
                     sidebar.classList.remove('collapsed');
-                    body.classList.remove('sidebar-collapsed');
-                    const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) mainContent.style.marginLeft = '280px';
                 }
+                
+                // Apply responsive layout
+                fixLayout();
             }
             
             // Track user interaction
@@ -9965,41 +10034,37 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
-        // FINALE LAYOUT FIX - ALLE BEREICHE
+        // RESPONSIVE LAYOUT FIX
         function fixLayout() {
-            // Fix ALLE content bereiche inklusive Hauptmenü
-            const elements = document.querySelectorAll(`
-                .admin-main, .admin-section, #user-management-live,
-                #dashboard, #content, #nutrition, #personality-development,
-                #personal-training, #applications, #ai-settings, #ai-twin,
-                #translations, #media, #vermietungen, #buchungen,
-                #analytics, #system-health, #settings
-            `);
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+            const isDesktop = window.innerWidth > 1024;
             
-            elements.forEach(el => {
-                el.style.marginLeft = '280px';
-                el.style.width = 'calc(100vw - 280px)';
-                el.style.maxWidth = 'calc(100vw - 280px)';
-                el.style.padding = '20px';
-                el.style.boxSizing = 'border-box';
-            });
-            
-            // Fix sidebar toggle
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar && sidebar.classList.contains('collapsed')) {
-                elements.forEach(el => {
-                    el.style.marginLeft = '70px';
-                    el.style.width = 'calc(100vw - 70px)';
-                    el.style.maxWidth = 'calc(100vw - 70px)';
-                });
+            if (isMobile) {
+                // Mobile: Overlay sidebar, no body padding
+                document.body.style.paddingLeft = '0';
+                document.body.classList.add('mobile');
+            } else if (isTablet) {
+                // Tablet: Collapsed sidebar
+                document.body.style.paddingLeft = '70px';
+                document.body.classList.remove('mobile');
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) sidebar.classList.add('collapsed');
+            } else if (isDesktop) {
+                // Desktop: Full sidebar
+                const sidebar = document.querySelector('.sidebar');
+                const isCollapsed = sidebar && sidebar.classList.contains('collapsed');
+                document.body.style.paddingLeft = isCollapsed ? '70px' : '280px';
+                document.body.classList.remove('mobile');
             }
             
-            console.log('✅ Finale Layout fixed - ALLE Bereiche');
+            console.log(`✅ Responsive layout applied: ${isMobile ? 'Mobile' : isTablet ? 'Tablet' : 'Desktop'}`);
         }
         
-        // Apply immediately
+        // Apply immediately and on resize
         fixLayout();
         document.addEventListener('DOMContentLoaded', fixLayout);
+        window.addEventListener('resize', fixLayout);
         
         // Immediate application
         setTimeout(initModernSidebar, 50);
