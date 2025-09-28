@@ -195,21 +195,32 @@
             margin-left: 70px !important;
         }
         
-        /* EINFACHES LAYOUT - KEINE ÜBERSCHNEIDUNG */
+        /* FINALE LÖSUNG - KEINE ÜBERSCHNEIDUNG */
         body {
             margin: 0 !important;
             padding: 0 !important;
         }
         
-        .admin-main {
+        /* ALLE CONTENT BEREICHE */
+        .admin-main,
+        .admin-section,
+        #user-management-live {
             margin-left: 280px !important;
-            width: calc(100% - 280px) !important;
+            width: calc(100vw - 280px) !important;
+            max-width: calc(100vw - 280px) !important;
             min-height: 100vh !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
         }
         
-        .sidebar.collapsed ~ .admin-main {
+        .sidebar.collapsed ~ .admin-main,
+        .sidebar.collapsed ~ .admin-section,
+        body.sidebar-collapsed .admin-main,
+        body.sidebar-collapsed .admin-section,
+        body.sidebar-collapsed #user-management-live {
             margin-left: 70px !important;
-            width: calc(100% - 70px) !important;
+            width: calc(100vw - 70px) !important;
+            max-width: calc(100vw - 70px) !important;
         }
         
         /* Ensure sidebar is always visible and properly positioned */
@@ -9838,22 +9849,22 @@ Bitte antworte im folgenden JSON-Format:
                     // Expand
                     sidebar.classList.remove('collapsed');
                     body.classList.remove('sidebar-collapsed');
-                    const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) {
-                        mainContent.style.marginLeft = '280px';
-                        mainContent.style.width = 'calc(100vw - 280px)';
-                        mainContent.style.maxWidth = 'calc(100vw - 280px)';
-                    }
+                    const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+                    elements.forEach(el => {
+                        el.style.marginLeft = '280px';
+                        el.style.width = 'calc(100vw - 280px)';
+                        el.style.maxWidth = 'calc(100vw - 280px)';
+                    });
                 } else {
                     // Collapse
                     sidebar.classList.add('collapsed');
                     body.classList.add('sidebar-collapsed');
-                    const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) {
-                        mainContent.style.marginLeft = '70px';
-                        mainContent.style.width = 'calc(100vw - 70px)';
-                        mainContent.style.maxWidth = 'calc(100vw - 70px)';
-                    }
+                    const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+                    elements.forEach(el => {
+                        el.style.marginLeft = '70px';
+                        el.style.width = 'calc(100vw - 70px)';
+                        el.style.maxWidth = 'calc(100vw - 70px)';
+                    });
                 }
                 
                 console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed');
@@ -9912,14 +9923,29 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
-        // EINFACHES LAYOUT FIX
+        // FINALE LAYOUT FIX
         function fixLayout() {
-            const mainContent = document.querySelector('.admin-main');
-            if (mainContent) {
-                mainContent.style.marginLeft = '280px';
-                mainContent.style.width = 'calc(100% - 280px)';
+            // Fix alle content bereiche
+            const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+            elements.forEach(el => {
+                el.style.marginLeft = '280px';
+                el.style.width = 'calc(100vw - 280px)';
+                el.style.maxWidth = 'calc(100vw - 280px)';
+                el.style.padding = '20px';
+                el.style.boxSizing = 'border-box';
+            });
+            
+            // Fix sidebar toggle
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                elements.forEach(el => {
+                    el.style.marginLeft = '70px';
+                    el.style.width = 'calc(100vw - 70px)';
+                    el.style.maxWidth = 'calc(100vw - 70px)';
+                });
             }
-            console.log('✅ Layout fixed');
+            
+            console.log('✅ Finale Layout fixed');
         }
         
         // Apply immediately
