@@ -1261,5 +1261,180 @@ Manuel Weiss`;
             new ApplicationViewer();
         });
     </script>
+
+    <!-- Multi-User File Management System -->
+    <script src="./js/base-logger.js"></script>
+
+    <section id="userfiles" style="margin: 3rem auto; max-width: 1200px; padding: 0 1rem;">
+      <div style="background: var(--white); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: 2rem; border: 1px solid var(--neutral-200);">
+        <h3 style="color: var(--neutral-800); font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-cloud-upload-alt" style="color: var(--primary);"></i>
+          Meine Dokumente
+        </h3>
+        
+        <div id="authbar" style="margin-bottom: 2rem; padding: 1rem; background: var(--neutral-50); border-radius: var(--radius-lg); border: 1px solid var(--neutral-200);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <button id="loginBtn" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-sign-in-alt"></i> Anmelden
+              </button>
+              <button id="logoutBtn" style="display:none; background: var(--accent); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Abmelden
+              </button>
+            </div>
+            <span id="whoami" style="color: var(--neutral-600); font-weight: 500;"></span>
+          </div>
+        </div>
+
+        <div id="uploader" style="display:none; margin-bottom: 2rem; padding: 1.5rem; background: var(--neutral-50); border-radius: var(--radius-lg); border: 2px dashed var(--neutral-300);">
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <input type="file" id="docFile" style="flex: 1; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white;" />
+            <button id="btnUpload" style="background: var(--secondary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-upload"></i> Hochladen
+            </button>
+          </div>
+        </div>
+
+        <table id="docTable" style="display:none; width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+          <thead>
+            <tr style="background: var(--neutral-100);">
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Name</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Typ</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Größe</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        
+        <div id="msg" style="margin-top: 1rem; padding: 1rem; border-radius: var(--radius-md); background: var(--neutral-100); color: var(--neutral-700); text-align: center; display: none;"></div>
+      </div>
+    </section>
+
+    <script type="module">
+      import { initAuth, isLoggedIn, getUser } from './js/auth.js';
+      import { uploadDocument, listDocuments, deleteDocument, getDownloadUrl } from './js/docs.js';
+
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const whoami = document.getElementById('whoami');
+      const uploader = document.getElementById('uploader');
+      const docTable = document.getElementById('docTable');
+      const tbody = docTable.querySelector('tbody');
+      const msg = document.getElementById('msg');
+
+      // TODO: Nach Cognito-Setup ersetzen:
+      const LOGIN_URL  = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/login?...';
+      const LOGOUT_URL = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/logout?...';
+
+      initAuth();
+      refreshUI();
+
+      loginBtn.onclick = () => location.href = LOGIN_URL;
+      logoutBtn.onclick = () => location.href = LOGOUT_URL;
+
+      document.getElementById('btnUpload').onclick = async () => {
+        const f = document.getElementById('docFile').files[0];
+        if (!f) return showMessage('Bitte Datei wählen', 'warning');
+        try {
+          showMessage('Lade hoch...', 'info');
+          await uploadDocument(f);
+          showMessage('✅ Hochgeladen', 'success');
+          document.getElementById('docFile').value = '';
+          await loadList();
+        } catch(e){ 
+          console.error(e); 
+          showMessage('❌ ' + e.message, 'error'); 
+        }
+      };
+
+      async function loadList(){
+        try {
+          const rows = await listDocuments();
+          tbody.innerHTML = '';
+          for (const r of rows) {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--neutral-200)';
+            tr.innerHTML = `
+              <td style="padding: 1rem; color: var(--neutral-800);">${r.name}</td>
+              <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${r.type||''}</td>
+              <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${(r.size/1024).toFixed(1)} KB</td>
+              <td style="padding: 1rem;">
+                <button data-act="dl" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; cursor: pointer; margin-right: 0.5rem; font-size: 0.875rem;">
+                  <i class="fas fa-eye"></i> Ansehen
+                </button>
+                <button data-act="del" style="background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem;">
+                  <i class="fas fa-trash"></i> Löschen
+                </button>
+              </td>`;
+            tr.querySelector('[data-act="dl"]').onclick = async () => {
+              try {
+                const { url } = await getDownloadUrl(r.key);
+                window.open(url, '_blank');
+              } catch(e) {
+                showMessage('❌ Download fehlgeschlagen', 'error');
+              }
+            };
+            tr.querySelector('[data-act="del"]').onclick = async () => {
+              if (!confirm('Wirklich löschen?')) return;
+              try {
+                await deleteDocument(r.id);
+                showMessage('✅ Gelöscht', 'success');
+                await loadList();
+              } catch(e) {
+                showMessage('❌ Löschen fehlgeschlagen', 'error');
+              }
+            };
+            tbody.appendChild(tr);
+          }
+          docTable.style.display = rows.length ? '' : 'none';
+        } catch(e){ 
+          console.error(e); 
+          showMessage('❌ Liste konnte nicht geladen werden', 'error'); 
+        }
+      }
+
+      function refreshUI(){
+        const logged = isLoggedIn();
+        loginBtn.style.display = logged ? 'none' : '';
+        logoutBtn.style.display = logged ? '' : 'none';
+        uploader.style.display = logged ? '' : 'none';
+        whoami.textContent = logged ? `Eingeloggt als ${getUser().email || getUser().userId}` : '';
+        if (logged) loadList();
+      }
+
+      function showMessage(text, type = 'info') {
+        msg.textContent = text;
+        msg.style.display = '';
+        
+        // Styling based on type
+        switch(type) {
+          case 'success':
+            msg.style.background = '#dcfce7';
+            msg.style.color = '#166534';
+            msg.style.border = '1px solid #bbf7d0';
+            break;
+          case 'error':
+            msg.style.background = '#fef2f2';
+            msg.style.color = '#dc2626';
+            msg.style.border = '1px solid #fecaca';
+            break;
+          case 'warning':
+            msg.style.background = '#fef3c7';
+            msg.style.color = '#92400e';
+            msg.style.border = '1px solid #fde68a';
+            break;
+          default:
+            msg.style.background = 'var(--neutral-100)';
+            msg.style.color = 'var(--neutral-700)';
+            msg.style.border = '1px solid var(--neutral-200)';
+        }
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 5000);
+      }
+    </script>
 </body>
 </html>
