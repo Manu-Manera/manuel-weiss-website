@@ -42,6 +42,42 @@
             border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
+        /* SCHÖNER AVATAR MIT INITIALEN */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+        
+        .avatar-text {
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Kleiner Avatar für Topbar */
+        .avatar-small {
+            width: 32px !important;
+            height: 32px !important;
+        }
+        
+        .avatar-small .avatar-text {
+            font-size: 14px !important;
+        }
+        
         .sidebar-brand h3 {
             font-size: 1.125rem;
             font-weight: 600;
@@ -917,6 +953,15 @@
         .sidebar.collapsed .sidebar-brand img {
             width: 32px !important;
             height: 32px !important;
+        }
+        
+        .sidebar.collapsed .avatar {
+            width: 32px !important;
+            height: 32px !important;
+        }
+        
+        .sidebar.collapsed .avatar-text {
+            font-size: 14px !important;
         }
         
         .sidebar.collapsed .sidebar-brand h3,
@@ -1921,7 +1966,9 @@
         <aside class="sidebar admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
-                    <img src="manuel-weiss-photo.svg" alt="MW">
+                    <div class="avatar">
+                        <span class="avatar-text">MW</span>
+                    </div>
                     <div>
                         <h3>Admin Panel</h3>
                         <p>Manuel Weiss</p>
@@ -2285,7 +2332,9 @@
                         <span class="notification-badge">3</span>
                     </button>
                     <div class="topbar-user">
-                        <img src="manuel-weiss-photo.svg" alt="User">
+                        <div class="avatar avatar-small">
+                            <span class="avatar-text">MW</span>
+                        </div>
                         <span>Manuel</span>
                     </div>
                 </div>
