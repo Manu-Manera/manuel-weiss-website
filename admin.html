@@ -12,11 +12,16 @@
     
     <!-- Sidebar Fix Styles -->
     <style>
-        /* Force sidebar text to be visible */
-        .sidebar .nav-item a {
-            color: #64748b !important;
-            font-weight: 500 !important;
+        /* Force sidebar text to be visible - STRONGEST override */
+        .sidebar .nav-item a,
+        .admin-sidebar .nav-item a,
+        .sidebar .nav-item a span,
+        .admin-sidebar .nav-item a span {
+            color: #1f2937 !important;
+            font-weight: 600 !important;
             font-size: 14px !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
         }
         
         .sidebar .nav-item a:hover {
@@ -31,19 +36,42 @@
             font-weight: 600 !important;
         }
         
-        .sidebar .nav-section-title {
-            color: #374151 !important;
-            font-weight: 600 !important;
-            font-size: 12px !important;
+        .sidebar .nav-section-title,
+        .admin-sidebar .nav-section-title {
+            color: #111827 !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
             padding: 0 1rem !important;
             margin-bottom: 0.5rem !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
         }
         
-        .sidebar {
+        .sidebar,
+        .admin-sidebar {
             background: white !important;
-            border-right: 1px solid #e5e7eb !important;
+            border-right: 2px solid #e5e7eb !important;
+            color: #1f2937 !important;
+        }
+        
+        /* Override any conflicting styles */
+        .sidebar *,
+        .admin-sidebar *,
+        [class*="sidebar"] *,
+        [class*="nav"] * {
+            color: inherit !important;
+        }
+        
+        /* Extra strong overrides for problematic elements */
+        .sidebar a, .sidebar span, .sidebar div,
+        .admin-sidebar a, .admin-sidebar span, .admin-sidebar div,
+        .nav-item a, .nav-item span, .nav-section span,
+        .nav-section-title {
+            color: #1f2937 !important;
+            opacity: 1 !important;
+            text-decoration: none !important;
         }
         
         .sidebar .nav-item i {
