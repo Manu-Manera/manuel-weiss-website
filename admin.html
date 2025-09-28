@@ -195,13 +195,24 @@
             margin-left: 70px !important;
         }
         
-        /* Body layout fix */
+        /* NUCLEAR BODY FIX - NO MARGIN, NO PADDING */
         body {
-            margin-left: 280px !important;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
         }
         
-        body.sidebar-collapsed {
+        /* MAIN CONTENT CONTAINER */
+        .admin-main {
+            margin-left: 280px !important;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            min-height: 100vh !important;
+            background: #f8fafc !important;
+        }
+        
+        .sidebar.collapsed ~ .admin-main,
+        body.sidebar-collapsed .admin-main {
             margin-left: 70px !important;
         }
         
@@ -214,6 +225,8 @@
             height: 100vh !important;
             z-index: 1000 !important;
             overflow-y: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
         .sidebar.collapsed {
@@ -9782,9 +9795,12 @@ Bitte antworte im folgenden JSON-Format:
             const sidebarToggle = document.getElementById('sidebarToggle');
             const body = document.body;
             
-            // Set initial state
-            body.style.marginLeft = '280px';
-            body.style.transition = 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            // Set initial state - NO BODY MARGIN
+            const mainContent = document.querySelector('.admin-main');
+            if (mainContent) {
+                mainContent.style.marginLeft = '280px';
+                mainContent.style.transition = 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            }
             
             function toggleSidebar() {
                 const isCollapsed = sidebar.classList.contains('collapsed');
