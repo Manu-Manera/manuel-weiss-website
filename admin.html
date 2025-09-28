@@ -505,6 +505,63 @@
             width: calc(100vw - 70px) !important;
         }
         
+        /* GLOBAL SIDEBAR TOGGLE BUTTON */
+        .global-sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 18px;
+        }
+        
+        .global-sidebar-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+        
+        .global-sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        /* Button verstecken wenn Sidebar ausgeklappt ist */
+        .sidebar:not(.collapsed) + .global-sidebar-toggle {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+        
+        /* Button anzeigen wenn Sidebar eingeklappt ist */
+        .sidebar.collapsed + .global-sidebar-toggle {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        
+        /* Alternative: Body-basierte Klassen */
+        body:not(.sidebar-collapsed) .global-sidebar-toggle {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+        
+        body.sidebar-collapsed .global-sidebar-toggle {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        
         /* Mobile wird später implementiert wenn nötig */
         
         /* Tooltips for collapsed state */
@@ -1747,6 +1804,11 @@
     <!-- Main Admin Interface -->
     <div class="admin-container">
         <!-- Sidebar -->
+        <!-- Global Toggle Button - immer sichtbar -->
+        <button class="global-sidebar-toggle" id="globalSidebarToggle" title="Sidebar ein-/ausklappen">
+            <i class="fas fa-bars"></i>
+        </button>
+        
         <aside class="sidebar admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
@@ -10347,6 +10409,13 @@ Bitte antworte im folgenden JSON-Format:
                 } else {
                     // Desktop/Tablet: Toggle width
                     sidebar.classList.toggle('collapsed');
+                    
+                    // Body-Klassen für CSS-Selektoren
+                    if (sidebar.classList.contains('collapsed')) {
+                        body.classList.add('sidebar-collapsed');
+                    } else {
+                        body.classList.remove('sidebar-collapsed');
+                    }
                 }
                 
                 // Layout nach Toggle neu berechnen
@@ -10372,6 +10441,24 @@ Bitte antworte im folgenden JSON-Format:
                 sidebarToggle.setAttribute('aria-expanded', 'true');
             }
             
+            // Global Toggle Button - immer sichtbar
+            const globalSidebarToggle = document.getElementById('globalSidebarToggle');
+            if (globalSidebarToggle && sidebar) {
+                globalSidebarToggle.addEventListener('click', toggleSidebarWithTracking);
+                
+                // Keyboard accessibility
+                globalSidebarToggle.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleSidebarWithTracking();
+                    }
+                });
+                
+                // Improved visual feedback
+                globalSidebarToggle.setAttribute('aria-label', 'Toggle sidebar');
+                globalSidebarToggle.setAttribute('aria-expanded', 'true');
+            }
+            
             // Responsive handling
             function handleResize() {
                 const isMobile = window.innerWidth <= 768;
@@ -10386,14 +10473,17 @@ Bitte antworte im folgenden JSON-Format:
                     // Mobile: Overlay mode, hidden by default
                     sidebar.classList.remove('collapsed');
                     sidebar.classList.remove('mobile-open');
+                    body.classList.remove('sidebar-collapsed');
                 } else if (isTablet) {
                     // Tablet: Auto-collapse
                     sidebar.classList.add('collapsed');
                     sidebar.classList.remove('mobile-open');
+                    body.classList.add('sidebar-collapsed');
                 } else if (isDesktop && !sidebar.dataset.userToggled) {
                     // Desktop: Auto-expand if user hasn't manually toggled
                     sidebar.classList.remove('collapsed');
                     sidebar.classList.remove('mobile-open');
+                    body.classList.remove('sidebar-collapsed');
                 }
                 
                 // Apply responsive layout
@@ -10454,12 +10544,24 @@ Bitte antworte im folgenden JSON-Format:
                     sidebar.style.position = 'fixed';
                     sidebar.style.transform = 'translateX(-100%)';
                     contentWrapper.style.width = '100vw';
+                    contentWrapper.style.marginLeft = '0';
                 } else {
                     sidebar.style.position = 'relative';
                     sidebar.style.transform = 'translateX(0)';
                     sidebar.style.width = isCollapsed ? '70px' : '280px';
                     contentWrapper.style.width = isCollapsed ? 'calc(100vw - 70px)' : 'calc(100vw - 280px)';
+                    contentWrapper.style.marginLeft = '0';
                 }
+                
+                // Alle Admin-Sektionen anpassen
+                const allSections = document.querySelectorAll('.admin-section, #user-management-live, #analytics, #system-health, #settings, #dashboard, #content, #nutrition, #personality-development, #personal-training, #applications, #ai-settings, #ai-twin, #translations, #media, #vermietungen, #buchungen');
+                allSections.forEach(section => {
+                    section.style.width = '100%';
+                    section.style.maxWidth = '100%';
+                    section.style.margin = '0';
+                    section.style.padding = 'clamp(10px, 2vw, 20px)';
+                    section.style.boxSizing = 'border-box';
+                });
                 
                 console.log(`✅ Clean Layout applied - Mobile: ${isMobile}, Collapsed: ${isCollapsed}`);
             }
@@ -10605,5 +10707,4 @@ Bitte antworte im folgenden JSON-Format:
         }, 15000);
     </script>
 </body>
-</html>
 </html>
