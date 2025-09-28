@@ -1803,5 +1803,227 @@
         }
         });
     </script>
+
+    <!-- Multi-User System Integration -->
+    <script src="./js/base-logger.js"></script>
+    <script type="module">
+        import './js/global-auth-system.js';
+        import './js/user-progress-tracker.js';
+        
+        // Wait for systems to initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initMultiUserFeatures, 1000);
+        });
+        
+        function initMultiUserFeatures() {
+            console.log('🚀 Initializing Multi-User Features for Personality Development');
+            
+            // Add progress dashboard to header
+            addProgressDashboard();
+            
+            // Enhance method cards with progress tracking
+            enhanceMethodCards();
+            
+            // Setup auth change listeners
+            if (window.GlobalAuth) {
+                window.GlobalAuth.onAuthChange({
+                    onLogin: (user) => {
+                        console.log('👤 User logged in:', user.email);
+                        refreshUserSpecificContent();
+                    },
+                    onLogout: () => {
+                        console.log('👤 User logged out');
+                        clearUserSpecificContent();
+                    }
+                });
+                
+                // Initial setup if already logged in
+                if (window.GlobalAuth.isAuthenticated()) {
+                    refreshUserSpecificContent();
+                }
+            }
+        }
+        
+        function addProgressDashboard() {
+            const heroSection = document.querySelector('.hero-section');
+            if (!heroSection || !window.ProgressTracker) return;
+            
+            const progressDashboard = document.createElement('div');
+            progressDashboard.id = 'user-progress-dashboard';
+            progressDashboard.innerHTML = window.ProgressTracker.createProgressDashboard();
+            
+            // Insert after hero section
+            heroSection.parentNode.insertBefore(progressDashboard, heroSection.nextSibling);
+        }
+        
+        function enhanceMethodCards() {
+            const methodCards = document.querySelectorAll('.method-card, .icon-card');
+            
+            methodCards.forEach(card => {
+                const button = card.querySelector('button');
+                if (!button) return;
+                
+                // Extract method ID from onclick or data attributes
+                const methodId = extractMethodId(card, button);
+                if (!methodId) return;
+                
+                // Add progress indicator
+                addProgressIndicator(card, methodId);
+                
+                // Enhance button click
+                enhanceMethodButton(button, methodId);
+            });
+        }
+        
+        function extractMethodId(card, button) {
+            // Try to extract from onclick
+            const onclick = button.getAttribute('onclick') || '';
+            
+            // Common patterns
+            if (onclick.includes('johari')) return 'johari-window';
+            if (onclick.includes('swot')) return 'swot-analysis';
+            if (onclick.includes('values')) return 'values-clarification';
+            if (onclick.includes('goal')) return 'goal-setting';
+            if (onclick.includes('wheel')) return 'wheel-of-life';
+            if (onclick.includes('strength')) return 'strengths-finder';
+            if (onclick.includes('emotional')) return 'emotional-intelligence';
+            if (onclick.includes('mindful')) return 'mindfulness';
+            if (onclick.includes('habit')) return 'habit-building';
+            if (onclick.includes('time')) return 'time-management';
+            
+            // Try to extract from href or other attributes
+            const href = button.getAttribute('href') || card.getAttribute('data-method') || '';
+            const match = href.match(/methods\/([^\/]+)/);
+            return match ? match[1] : null;
+        }
+        
+        function addProgressIndicator(card, methodId) {
+            if (!window.ProgressTracker) return;
+            
+            const progress = window.ProgressTracker.getMethodProgress(methodId);
+            
+            // Create progress indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'method-progress-indicator';
+            indicator.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: ${progress ? (progress.status === 'completed' ? '#10b981' : '#f59e0b') : '#e5e7eb'};
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                z-index: 10;
+            `;
+            
+            if (progress) {
+                if (progress.status === 'completed') {
+                    indicator.innerHTML = '✅ Abgeschlossen';
+                } else {
+                    indicator.innerHTML = `📊 ${progress.currentStep}/${progress.totalSteps}`;
+                }
+            } else {
+                indicator.innerHTML = '⭐ Neu';
+                indicator.style.background = '#6366f1';
+            }
+            
+            // Make card relative positioned
+            card.style.position = 'relative';
+            card.appendChild(indicator);
+        }
+        
+        function enhanceMethodButton(button, methodId) {
+            const originalOnClick = button.onclick;
+            
+            button.onclick = function(e) {
+                if (!window.GlobalAuth?.requireAuth()) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Track method start
+                if (window.ProgressTracker && window.GlobalAuth.isAuthenticated()) {
+                    window.ProgressTracker.completeMethodStep(methodId, 'started', {
+                        totalSteps: 3, // Default, will be updated by specific method
+                        startedFrom: 'overview_page'
+                    });
+                }
+                
+                // Call original handler
+                if (originalOnClick) {
+                    return originalOnClick.call(this, e);
+                }
+            };
+        }
+        
+        function refreshUserSpecificContent() {
+            // Refresh progress dashboard
+            const dashboard = document.getElementById('user-progress-dashboard');
+            if (dashboard && window.ProgressTracker) {
+                dashboard.innerHTML = window.ProgressTracker.createProgressDashboard();
+            }
+            
+            // Refresh all progress indicators
+            document.querySelectorAll('.method-progress-indicator').forEach(indicator => {
+                indicator.remove();
+            });
+            enhanceMethodCards();
+            
+            // Show welcome message
+            if (window.GlobalAuth?.getCurrentUser()) {
+                const user = window.GlobalAuth.getCurrentUser();
+                window.GlobalAuth.showNotification(`Willkommen zurück! Ihre Fortschritte wurden geladen.`, 'success');
+            }
+        }
+        
+        function clearUserSpecificContent() {
+            // Hide progress dashboard
+            const dashboard = document.getElementById('user-progress-dashboard');
+            if (dashboard) {
+                dashboard.style.display = 'none';
+            }
+            
+            // Reset progress indicators
+            document.querySelectorAll('.method-progress-indicator').forEach(indicator => {
+                indicator.innerHTML = '🔒 Anmeldung erforderlich';
+                indicator.style.background = '#6b7280';
+            });
+        }
+    </script>
+
+    <!-- Enhanced CSS for Multi-User Features -->
+    <style>
+        .method-progress-indicator {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .method-progress-indicator:hover {
+            transform: scale(1.05);
+        }
+        
+        #user-progress-dashboard {
+            margin: 2rem auto;
+            max-width: 1200px;
+            padding: 0 1rem;
+        }
+        
+        /* Hide progress dashboard initially for non-logged users */
+        #user-progress-dashboard:empty {
+            display: none;
+        }
+        
+        /* Enhance method cards for better progress visibility */
+        .method-card, .icon-card {
+            transition: all 0.3s ease;
+        }
+        
+        .method-card:hover, .icon-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+    </style>
 </body>
 </html>
