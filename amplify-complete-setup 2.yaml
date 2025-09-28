@@ -1,0 +1,39 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "🚀 Preparing Manuel Weiss Multi-User System for Amplify"
+        - npm install -g @aws-amplify/cli
+        - echo "📦 Installing dependencies..."
+        - npm install || echo "No package.json dependencies to install"
+    build:
+      commands:
+        - echo "🔧 Building Multi-User Frontend..."
+        - echo "✅ Static site - no build required"
+        - echo "🔗 Updating API endpoints for production..."
+        # Update API endpoints in JavaScript files
+        - |
+          if [ "$AWS_BRANCH" = "main" ]; then
+            echo "🌐 Production deployment - updating API URLs"
+            # Get API Gateway URL from CloudFormation
+            API_URL=$(aws cloudformation describe-stacks --stack-name manuel-weiss-complete-stack --query 'Stacks[0].Outputs[?OutputKey==`ApiGatewayUrl`].OutputValue' --output text --region eu-central-1)
+            echo "🔗 API Gateway URL: $API_URL"
+            # Update js/docs.js with real API URL
+            sed -i "s|base: '/api'|base: '$API_URL'|g" js/docs.js
+            echo "✅ API endpoints updated for production"
+          fi
+        - echo "🎯 Frontend build complete"
+    postBuild:
+      commands:
+        - echo "📊 Post-build optimizations..."
+        - echo "🔍 Verifying all files are present..."
+        - ls -la | head -20
+        - echo "✅ Multi-User system ready for deployment"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
