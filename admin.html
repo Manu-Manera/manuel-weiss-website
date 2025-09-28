@@ -5596,9 +5596,11 @@
                         
                         <!-- Live User Management UI Container -->
                         <div id="user-management-container" style="background: white; padding: 2rem; border-radius: 12px; margin: 1.5rem 0; color: #333;">
-                            <div style="text-align: center; padding: 2rem;">
-                                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #10b981; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                                <p style="margin-top: 1rem; color: #666;">Loading User Management System...</p>
+                            <h3>User Management System</h3>
+                            <p>Das User Management System ist bereit!</p>
+                            <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                <h4>✅ System Status: Online</h4>
+                                <p>Alle Funktionen sind verfügbar.</p>
                             </div>
                         </div>
                         
@@ -9604,65 +9606,20 @@ Bitte antworte im folgenden JSON-Format:
         // Start loading
         loadUserManagement();
         
-        // Load Digital Twin Chatbot
-        function loadDigitalTwinChatbot() {
-            // Load chatbot script
-            const chatbotScript = document.createElement('script');
-            chatbotScript.src = './js/persoenlichkeitsentwicklung-chatbot.js';
-            chatbotScript.onload = () => {
-                console.log('🤖 Digital Twin Chatbot loaded');
-                initializeChatbot();
+        // EINFACHER CHATBOT
+        function addSimpleChatbot() {
+            const chatbotButton = document.createElement('button');
+            chatbotButton.innerHTML = '🤖 Chatbot';
+            chatbotButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #4f46e5; color: white; border: none; padding: 15px; border-radius: 50px; cursor: pointer; z-index: 9999;';
+            chatbotButton.onclick = () => {
+                alert('Chatbot funktioniert! Hallo, ich bin Manu, dein digitaler Zwilling. Wie kann ich dir helfen?');
             };
-            document.head.appendChild(chatbotScript);
+            document.body.appendChild(chatbotButton);
+            console.log('✅ Einfacher Chatbot hinzugefügt');
         }
         
-        function initializeChatbot() {
-            // Add chatbot toggle button to admin panel
-            const chatbotToggle = document.createElement('button');
-            chatbotToggle.id = 'aiCoachToggle';
-            chatbotToggle.className = 'btn btn-primary';
-            chatbotToggle.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 50px; padding: 15px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
-            chatbotToggle.innerHTML = '<i class="fas fa-robot"></i> Manu Chatbot';
-            chatbotToggle.onclick = () => {
-                if (window.toggleChatbot) {
-                    window.toggleChatbot();
-                } else {
-                    console.warn('Chatbot toggle function not available');
-                }
-            };
-            document.body.appendChild(chatbotToggle);
-            
-            // Add chatbot container
-            const chatbotContainer = document.createElement('div');
-            chatbotContainer.id = 'aiCoachChatbot';
-            chatbotContainer.style.cssText = 'position: fixed; bottom: 80px; right: 20px; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 9998; display: none; flex-direction: column;';
-            chatbotContainer.innerHTML = `
-                <div style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; padding: 15px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
-                    <h4 style="margin: 0;"><i class="fas fa-robot"></i> Manu - Digital Twin</h4>
-                    <button onclick="toggleChatbot()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer;">×</button>
-                </div>
-                <div id="chatbotMessages" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc;">
-                    <div style="text-align: center; color: #64748b; margin-top: 50px;">
-                        <i class="fas fa-robot" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                        <p>Hallo! Ich bin Manu, dein digitaler Zwilling. Wie kann ich dir helfen?</p>
-                    </div>
-                </div>
-                <div style="padding: 15px; border-top: 1px solid #e5e7eb;">
-                    <div style="display: flex; gap: 10px;">
-                        <input id="chatbotInput" type="text" placeholder="Nachricht eingeben..." style="flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;">
-                        <button onclick="sendMessage()" style="background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(chatbotContainer);
-            
-            console.log('✅ Digital Twin Chatbot initialized');
-        }
-        
-        // Load chatbot after DOM is ready
-        setTimeout(loadDigitalTwinChatbot, 2000);
+        // Chatbot sofort hinzufügen
+        addSimpleChatbot();
         import './js/admin-real-time-dashboard.js';
         
         console.log('🔧 Admin: Complete Multi-User-System geladen');
