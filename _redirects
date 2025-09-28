@@ -1,0 +1,5 @@
+# Netlify Redirects - Manuel Weiss Enterprise Platform
+/admin              /admin.html           200
+/admin-panel        /admin.html           200  
+/user-management    /admin.html           200
+/users              /admin.html           200
