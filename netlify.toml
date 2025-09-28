@@ -1,5 +1,6 @@
 [build]
   publish = "."
+  command = "echo 'Netlify build for Manuel Weiss Enterprise Platform' && ls -la admin.html && echo 'User Management included in admin.html'"
 
 [[redirects]]
   from = "/admin"
@@ -7,9 +8,14 @@
   status = 200
 
 [[redirects]]
-  from = "/404"
-  to = "/index.html"
-  status = 404
+  from = "/admin-panel"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/user-management"
+  to = "/admin.html"
+  status = 200
 
 [[headers]]
   for = "/*"
