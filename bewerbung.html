@@ -1461,7 +1461,7 @@ Manuel Weiss`;
           let result;
           try {
             // Try server upload first
-            result = await uploadToServer(f);
+            result = await uploadToServer(f, 'cv');
             showMessage('✅ Lebenslauf erfolgreich auf Server hochgeladen', 'success');
           } catch (serverError) {
             console.warn('Server upload failed, using local storage:', serverError);
@@ -1500,7 +1500,7 @@ Manuel Weiss`;
           const uploadPromises = Array.from(files).map(async (file) => {
             try {
               // Try server upload
-              const result = await uploadToServer(file);
+              const result = await uploadToServer(file, 'certificate');
               return { file, result, success: true };
             } catch (serverError) {
               console.warn('Server upload failed, using local storage:', serverError);
@@ -2716,18 +2716,19 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
       }
 
       // SERVER UPLOAD FUNCTIONALITY
-      async function uploadToServer(file) {
-        console.log('🌐 Uploading to server:', file.name);
+      async function uploadToServer(file, type = 'document') {
+        console.log('🌐 Uploading to server:', file.name, 'Type:', type);
         
         // Create FormData for file upload
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('type', 'certificate');
+        formData.append('type', type);
         formData.append('userId', getUser()?.userId || 'anonymous');
         
         try {
           // Try multiple server endpoints
           const endpoints = [
+            'http://localhost:3001/api/upload',
             'https://api.manuel-weiss.com/upload',
             '/api/upload',
             'https://manuel-weiss.com/api/upload'
@@ -2735,6 +2736,7 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
           
           for (const endpoint of endpoints) {
             try {
+              console.log(`🔄 Trying endpoint: ${endpoint}`);
               const response = await fetch(endpoint, {
                 method: 'POST',
                 body: formData,
@@ -2753,8 +2755,10 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
                   type: file.type,
                   uploadedAt: new Date().toISOString(),
                   storage: 'server',
-                  url: result.url || result.downloadUrl
+                  url: result.url || result.downloadUrl || `${endpoint.replace('/upload', '')}/download/${result.id}`
                 };
+              } else {
+                console.warn(`Endpoint ${endpoint} returned ${response.status}: ${response.statusText}`);
               }
             } catch (endpointError) {
               console.warn(`Endpoint ${endpoint} failed:`, endpointError);
@@ -2762,7 +2766,7 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
             }
           }
           
-          throw new Error('All server endpoints failed');
+          throw new Error('Alle Server-Endpoints sind nicht verfügbar');
           
         } catch (error) {
           console.error('Server upload failed:', error);
