@@ -1214,7 +1214,27 @@ Mit freundlichen Grüßen
             const documents = window.getAnalysisDocuments ? window.getAnalysisDocuments() : [];
             
             if (documents.length === 0) {
-                alert('Keine Dokumente für die Analyse ausgewählt');
+                // Bessere Fehlermeldung mit Anweisungen
+                const container = document.getElementById('profileAnalysisResults') || createAnalysisContainer();
+                container.innerHTML = `
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                        <h4 style="margin: 0 0 1rem; color: #92400e;">⚠️ Keine Dokumente für die Analyse ausgewählt</h4>
+                        <p style="margin: 0 0 1rem; line-height: 1.5;">
+                            Bitte führen Sie folgende Schritte durch:
+                        </p>
+                        <ol style="text-align: left; margin: 0 0 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                            <li>Laden Sie Dokumente hoch (Lebenslauf, Anschreiben, Zeugnisse)</li>
+                            <li>Haken Sie die gewünschten Dokumente an</li>
+                            <li>Starten Sie die Analyse erneut</li>
+                        </ol>
+                        <button onclick="refreshAllDocumentDisplays()" style="
+                            background: #f59e0b; color: white; border: none; border-radius: 8px;
+                            padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500;
+                        ">
+                            <i class="fas fa-refresh"></i> Dokumentenliste aktualisieren
+                        </button>
+                    </div>
+                `;
                 return;
             }
             
