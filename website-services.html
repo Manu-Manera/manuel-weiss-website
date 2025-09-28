@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Services - Manuel Weiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); min-height: 100vh; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 3rem; text-align: center; }
+        .content { padding: 3rem; }
+        .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+        .service-item { background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer; }
+        .service-item:hover { border-color: #3b82f6; transform: translateY(-2px); }
+        .service-item h3 { color: #1f2937; margin-bottom: 0.5rem; }
+        .service-item p { color: #6b7280; font-size: 0.875rem; }
+        .cta { text-align: center; background: #f8fafc; padding: 2rem; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn:hover { background: #2563eb; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-globe"></i> Website Services</h1>
+            <p>67 professionelle HTML-Seiten für Ihr Online-Business</p>
+        </div>
+        
+        <div class="content">
+            <div class="service-grid">
+                <div class="service-item" onclick="window.open('index.html', '_blank')">
+                    <h3><i class="fas fa-home"></i> Homepage</h3>
+                    <p>Professionelle Unternehmensdarstellung</p>
+                </div>
+                
+                <div class="service-item" onclick="window.open('persoenlichkeitsentwicklung.html', '_blank')">
+                    <h3><i class="fas fa-brain"></i> Persönlichkeitsentwicklung</h3>
+                    <p>Interactive Coaching-Tools und Methoden</p>
+                </div>
+                
+                <div class="service-item" onclick="window.open('personal-training.html', '_blank')">
+                    <h3><i class="fas fa-dumbbell"></i> Personal Training</h3>
+                    <p>Individuelle Trainingspläne und Fitness-Coaching</p>
+                </div>
+                
+                <div class="service-item" onclick="window.open('ernaehrungsberatung.html', '_blank')">
+                    <h3><i class="fas fa-apple-alt"></i> Ernährungsberatung</h3>
+                    <p>Personalisierte Ernährungspläne und Rezepte</p>
+                </div>
+                
+                <div class="service-item" onclick="window.open('hr-designer.html', '_blank')">
+                    <h3><i class="fas fa-users"></i> HR Designer</h3>
+                    <p>Professionelle Bewerbungstools</p>
+                </div>
+                
+                <div class="service-item" onclick="window.open('wohnmobil.html', '_blank')">
+                    <h3><i class="fas fa-caravan"></i> Vermietung</h3>
+                    <p>Wohnmobil, E-Bikes, SUP, Fotobox</p>
+                </div>
+            </div>
+            
+            <div class="cta">
+                <h2>Alle Services nutzen?</h2>
+                <p style="margin-bottom: 1.5rem;">Melden Sie sich an für vollständigen Zugriff</p>
+                <a href="bewerbung.html" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Anmelden
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

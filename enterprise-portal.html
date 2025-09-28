@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Portal - Manuel Weiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); min-height: 100vh; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 3rem; text-align: center; }
+        .content { padding: 3rem; }
+        .enterprise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+        .enterprise-service { background: #faf5ff; border: 2px solid #e9d5ff; border-radius: 12px; padding: 2rem; }
+        .enterprise-service h3 { color: #581c87; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .enterprise-service p { color: #7c2d92; margin-bottom: 1.5rem; }
+        .feature-list { list-style: none; margin-bottom: 2rem; }
+        .feature-list li { color: #581c87; padding: 0.25rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .feature-list li::before { content: "⭐"; }
+        .btn { background: #7c3aed; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn:hover { background: #6d28d9; transform: translateY(-2px); }
+        .back-link { position: fixed; top: 2rem; left: 2rem; background: rgba(255,255,255,0.9); color: #7c3aed; padding: 0.75rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <a href="admin.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Zurück
+    </a>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-briefcase"></i> Enterprise Portal</h1>
+            <p>Professionelle Unternehmenslösungen</p>
+        </div>
+        
+        <div class="content">
+            <div class="enterprise-grid">
+                <div class="enterprise-service">
+                    <h3><i class="fas fa-users"></i> HR Management</h3>
+                    <p>Vollständige Lösung für Personalwesen</p>
+                    <ul class="feature-list">
+                        <li>Bewerbungsmanagement</li>
+                        <li>CV-Designer Tools</li>
+                        <li>Interview-Vorbereitung</li>
+                        <li>Skill-Assessment</li>
+                    </ul>
+                    <a href="hr-designer.html" class="btn">HR Portal öffnen</a>
+                </div>
+                
+                <div class="enterprise-service">
+                    <h3><i class="fas fa-chart-line"></i> Business Analytics</h3>
+                    <p>Datengetriebene Geschäftsentscheidungen</p>
+                    <ul class="feature-list">
+                        <li>Performance Dashboards</li>
+                        <li>User Analytics</li>
+                        <li>Growth Metrics</li>
+                        <li>ROI Tracking</li>
+                    </ul>
+                    <a href="bewerbung.html" class="btn">Analytics nutzen</a>
+                </div>
+                
+                <div class="enterprise-service">
+                    <h3><i class="fas fa-cog"></i> Process Automation</h3>
+                    <p>Automatisierung für Effizienzsteigerung</p>
+                    <ul class="feature-list">
+                        <li>Workflow Automation</li>
+                        <li>Document Processing</li>
+                        <li>Email Integration</li>
+                        <li>API Connections</li>
+                    </ul>
+                    <a href="bewerbung.html" class="btn">Automatisierung starten</a>
+                </div>
+                
+                <div class="enterprise-service">
+                    <h3><i class="fas fa-graduation-cap"></i> Training Platform</h3>
+                    <p>Mitarbeiterentwicklung und Schulungen</p>
+                    <ul class="feature-list">
+                        <li>Online Learning Modules</li>
+                        <li>Progress Tracking</li>
+                        <li>Certification System</li>
+                        <li>Custom Curricula</li>
+                    </ul>
+                    <a href="personal-training.html" class="btn">Training Platform</a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; background: #faf5ff; padding: 2rem; border-radius: 12px;">
+                <h2>Enterprise-Lösung für Ihr Unternehmen?</h2>
+                <p style="margin-bottom: 1.5rem;">Kontaktieren Sie uns für maßgeschneiderte Business-Lösungen</p>
+                <a href="bewerbung.html" class="btn">
+                    <i class="fas fa-handshake"></i> Anmelden
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
