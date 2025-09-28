@@ -26,6 +26,20 @@
             border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px !important;
+        }
+        
+        .sidebar.collapsed .nav-section-title,
+        .sidebar.collapsed .nav-item a span {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
         }
         
         .sidebar .nav-item a {
@@ -70,32 +84,58 @@
         body {
             margin: 0 !important;
             padding: 0 !important;
+            overflow-x: hidden !important;
         }
         
         /* Proper layout without breaking existing design */
         .admin-container {
             display: flex;
             min-height: 100vh;
+            width: 100%;
+            position: relative;
         }
         
         .content-wrapper {
+            flex: 1;
             margin-left: 280px;
             padding: 1rem;
             min-height: 100vh;
-            transition: margin-left 0.3s ease;
-            overflow-x: hidden;
-            max-width: calc(100vw - 280px);
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: auto;
+            width: calc(100% - 280px);
+            position: relative;
         }
         
-        .sidebar.collapsed + .content-wrapper {
+        .sidebar.collapsed ~ .content-wrapper {
             margin-left: 70px;
-            max-width: calc(100vw - 70px);
+            width: calc(100% - 70px);
         }
         
         /* Fix admin sections to not overlap with sidebar */
         .admin-section {
+            width: 100% !important;
             max-width: 100% !important;
-            overflow-x: hidden !important;
+            overflow-x: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Responsive table handling */
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        
+        table {
+            min-width: 100% !important;
+        }
+        
+        /* Ensure content fits within viewport */
+        .content-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
         }
         
         .sidebar, .sidebar *, 
@@ -439,6 +479,61 @@
             list-style: none !important;
             padding: 0 !important;
             margin: 0 !important;
+        }
+        
+        /* Additional responsive layout fixes */
+        .admin-container > *:not(.sidebar):not(.content-wrapper) {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* Ensure content always fills available space */
+        .content-wrapper > * {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Fix for nested containers */
+        .content-wrapper .container,
+        .content-wrapper .wrapper,
+        .content-wrapper [class*="container"] {
+            max-width: 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        
+        /* Smooth transitions for all layout changes */
+        .admin-container,
+        .content-wrapper,
+        .sidebar {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        /* Ensure no horizontal scrollbars appear */
+        * {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Fix for specific admin sections */
+        #dashboard-section,
+        #applications-section,
+        #docs-section,
+        #user-management-section,
+        #persoenlichkeit-section {
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Dynamic sidebar icon adjustments */
+        .sidebar.collapsed .nav-item a {
+            justify-content: center !important;
+            padding: 12px 8px !important;
+        }
+        
+        .sidebar.collapsed .nav-item a i {
+            margin-right: 0 !important;
+            font-size: 20px !important;
         }
     </style>
     
