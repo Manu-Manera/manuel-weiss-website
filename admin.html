@@ -9576,62 +9576,77 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // Clean Sidebar Integration
-        function initializeSidebar() {
+        // SIMPLE layout setup
+        function fixLayout() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            // Create wrapper for all non-sidebar content
+            if (!document.querySelector('.admin-page-wrapper')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'admin-page-wrapper';
+                
+                // Move all content except sidebar to wrapper
+                const children = Array.from(document.body.children);
+                children.forEach(child => {
+                    if (child !== sidebar && child.tagName !== 'SCRIPT') {
+                        wrapper.appendChild(child);
+                    }
+                });
+                
+                document.body.appendChild(wrapper);
+            }
+        }
+        
+        // Auto-fix layout
+        setTimeout(fixLayout, 100);
+        
+        // EMERGENCY LAYOUT FIX - Apply immediately
+        function emergencyLayoutFix() {
+            // Set body margin to push content away from sidebar
+            document.body.style.marginLeft = '280px';
+            document.body.style.transition = 'margin-left 0.3s ease';
+            
+            // Handle sidebar toggle
             const sidebar = document.querySelector('.sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             
-            // Create content wrapper if not exists
-            function ensureContentWrapper() {
-                let wrapper = document.querySelector('.content-wrapper');
-                if (!wrapper) {
-                    wrapper = document.createElement('div');
-                    wrapper.className = 'content-wrapper';
-                    
-                    // Move all body content to wrapper
-                    while (document.body.firstChild && document.body.firstChild !== sidebar) {
-                        if (document.body.firstChild.tagName !== 'SCRIPT') {
-                            wrapper.appendChild(document.body.firstChild);
-                        } else {
-                            document.body.firstChild.remove();
-                        }
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.onclick = function() {
+                    sidebar.classList.toggle('collapsed');
+                    if (sidebar.classList.contains('collapsed')) {
+                        document.body.style.marginLeft = '70px';
+                    } else {
+                        document.body.style.marginLeft = '280px';
                     }
-                    
-                    document.body.appendChild(wrapper);
-                }
-                return wrapper;
+                };
             }
             
-            if (sidebar) {
-                const wrapper = ensureContentWrapper();
-                
-                if (sidebarToggle) {
-                    sidebarToggle.addEventListener('click', () => {
-                        sidebar.classList.toggle('collapsed');
-                        console.log('🔄 Sidebar toggled');
-                    });
-                }
-                
-                // Mobile handling
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.add('collapsed');
-                }
+            // Mobile responsive
+            if (window.innerWidth <= 768) {
+                if (sidebar) sidebar.classList.add('collapsed');
+                document.body.style.marginLeft = '70px';
             }
+            
+            console.log('🔧 Emergency layout fix applied');
         }
         
-        // Initialize sidebar after DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeSidebar);
-        } else {
-            initializeSidebar();
-        }
+        // Apply immediately and after DOM ready
+        emergencyLayoutFix();
+        document.addEventListener('DOMContentLoaded', emergencyLayoutFix);
         
-        // Simple responsive handling
+        
+        // Responsive handling
         window.addEventListener('resize', () => {
             const sidebar = document.querySelector('.sidebar');
             
             if (window.innerWidth <= 768) {
                 if (sidebar) sidebar.classList.add('collapsed');
+                document.body.style.marginLeft = '70px';
+            } else {
+                if (sidebar && !sidebar.classList.contains('collapsed')) {
+                    document.body.style.marginLeft = '280px';
+                }
             }
         });
         
