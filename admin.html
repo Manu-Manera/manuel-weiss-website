@@ -51,10 +51,28 @@
             letter-spacing: 1px !important;
         }
         
-        /* Fix content overlap */
+        /* Fix content overlap - REMOVE padding-left */
         body {
             margin: 0 !important;
-            padding-left: 280px !important;
+            padding: 0 !important;
+        }
+        
+        .main-content, 
+        .admin-main,
+        [class*="content"],
+        [class*="main"] {
+            margin-left: 280px !important;
+            width: calc(100% - 280px) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        /* When sidebar is collapsed */
+        .sidebar.collapsed ~ .main-content,
+        .sidebar.collapsed ~ .admin-main,
+        .sidebar.collapsed ~ [class*="content"],
+        .sidebar.collapsed ~ [class*="main"] {
+            margin-left: 70px !important;
+            width: calc(100% - 70px) !important;
         }
         
         .sidebar, .sidebar *, 
@@ -9550,32 +9568,47 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // Enhanced Sidebar Integration
+        // Enhanced Sidebar Integration - FIXED
         function initializeSidebar() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
+            
+            // Get ALL content containers
+            const allContent = document.querySelectorAll('.main-content, .admin-main, [class*="content"], [class*="main"]');
+            
+            function adjustContentMargin(collapsed) {
+                const marginLeft = collapsed ? '70px' : '280px';
+                const width = collapsed ? 'calc(100% - 70px)' : 'calc(100% - 280px)';
+                
+                allContent.forEach(content => {
+                    content.style.marginLeft = marginLeft;
+                    content.style.width = width;
+                });
+                
+                // Also adjust body content if no specific content container
+                if (allContent.length === 0) {
+                    document.body.style.marginLeft = marginLeft;
+                }
+                
+                console.log('📱 Content adjusted, margin:', marginLeft);
+            }
             
             if (sidebarToggle && sidebar) {
                 sidebarToggle.addEventListener('click', () => {
                     sidebar.classList.toggle('collapsed');
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    adjustContentMargin(isCollapsed);
                     
-                    // Adjust main content when sidebar toggles
-                    if (mainContent) {
-                        if (sidebar.classList.contains('collapsed')) {
-                            mainContent.style.marginLeft = '70px';
-                        } else {
-                            mainContent.style.marginLeft = '280px';
-                        }
-                    }
-                    
-                    console.log('🔄 Sidebar toggled, collapsed:', sidebar.classList.contains('collapsed'));
+                    console.log('🔄 Sidebar toggled, collapsed:', isCollapsed);
                 });
                 
                 // Auto-collapse on mobile
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('collapsed');
-                    if (mainContent) mainContent.style.marginLeft = '70px';
+                    adjustContentMargin(true);
+                } else {
+                    // Ensure proper layout on desktop
+                    adjustContentMargin(false);
                 }
             }
         }
@@ -9587,17 +9620,30 @@ Bitte antworte im folgenden JSON-Format:
             initializeSidebar();
         }
         
-        // Handle window resize for responsive behavior
+        // Handle window resize for responsive behavior - FIXED
         window.addEventListener('resize', () => {
             const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
+            const allContent = document.querySelectorAll('.main-content, .admin-main, [class*="content"], [class*="main"]');
+            
+            function setContentMargin(marginLeft, width) {
+                allContent.forEach(content => {
+                    content.style.marginLeft = marginLeft;
+                    content.style.width = width;
+                });
+                
+                if (allContent.length === 0) {
+                    document.body.style.marginLeft = marginLeft;
+                }
+            }
             
             if (window.innerWidth <= 768) {
                 if (sidebar) sidebar.classList.add('collapsed');
-                if (mainContent) mainContent.style.marginLeft = '70px';
+                setContentMargin('70px', 'calc(100% - 70px)');
             } else if (window.innerWidth > 768) {
                 if (sidebar && !sidebar.classList.contains('collapsed')) {
-                    if (mainContent) mainContent.style.marginLeft = '280px';
+                    setContentMargin('280px', 'calc(100% - 280px)');
+                } else if (sidebar && sidebar.classList.contains('collapsed')) {
+                    setContentMargin('70px', 'calc(100% - 70px)');
                 }
             }
         });
