@@ -1336,15 +1336,31 @@ Manuel Weiss`;
       document.getElementById('btnUpload').onclick = async () => {
         const f = document.getElementById('docFile').files[0];
         if (!f) return showMessage('Bitte Datei wählen', 'warning');
+        
+        const btn = document.getElementById('btnUpload');
+        const originalText = btn.textContent;
+        
         try {
-          showMessage('Lade hoch...', 'info');
-          await uploadDocument(f);
-          showMessage('✅ Hochgeladen', 'success');
+          btn.textContent = 'Lade hoch...';
+          btn.disabled = true;
+          showMessage('📤 Dokument wird hochgeladen...', 'info');
+          
+          const result = await uploadDocument(f);
+          
+          if (result.storage === 'local') {
+            showMessage('✅ Dokument lokal gespeichert (Cloud nicht verfügbar)', 'success');
+          } else {
+            showMessage('✅ Dokument erfolgreich hochgeladen', 'success');
+          }
+          
           document.getElementById('docFile').value = '';
           await loadList();
         } catch(e){ 
           console.error(e); 
-          showMessage('❌ ' + e.message, 'error'); 
+          showMessage('❌ Upload fehlgeschlagen: ' + e.message, 'error'); 
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
         }
       };
 
@@ -1355,8 +1371,15 @@ Manuel Weiss`;
           for (const r of rows) {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid var(--neutral-200)';
+            // Determine storage type and display accordingly
+            const storageType = r.storage || 'cloud';
+            const storageIcon = storageType === 'local' ? '💾' : '☁️';
+            const storageText = storageType === 'local' ? ' (Lokal)' : ' (Cloud)';
+            
             tr.innerHTML = `
-              <td style="padding: 1rem; color: var(--neutral-800);">${r.name}</td>
+              <td style="padding: 1rem; color: var(--neutral-800);">
+                ${storageIcon} ${r.name}${storageText}
+              </td>
               <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${r.type||''}</td>
               <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${(r.size/1024).toFixed(1)} KB</td>
               <td style="padding: 1rem;">
@@ -1369,8 +1392,17 @@ Manuel Weiss`;
               </td>`;
             tr.querySelector('[data-act="dl"]').onclick = async () => {
               try {
-                const { url } = await getDownloadUrl(r.key);
-                window.open(url, '_blank');
+                if (r.storage === 'local' && r.data) {
+                  // For local documents, use the data directly
+                  const link = document.createElement('a');
+                  link.href = r.data;
+                  link.download = r.name;
+                  link.click();
+                } else {
+                  // For cloud documents, get download URL
+                  const { url } = await getDownloadUrl(r.key || r.id);
+                  window.open(url, '_blank');
+                }
               } catch(e) {
                 showMessage('❌ Download fehlgeschlagen', 'error');
               }
