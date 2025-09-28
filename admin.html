@@ -8772,5 +8772,46 @@ Bitte antworte im folgenden JSON-Format:
             // Button system is ready
         });
     </script>
+
+    <!-- Multi-User File Management System für Admin -->
+    <script src="./js/base-logger.js"></script>
+    
+    <div style="position: fixed; bottom: 20px; right: 20px; max-width: 300px; padding: 1rem; background: #1e293b; color: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000;">
+        <h4 style="margin: 0 0 0.5rem; font-size: 0.875rem; color: #94a3b8;">
+            <i class="fas fa-cloud" style="color: #6366f1;"></i> Multi-User System
+        </h4>
+        <p style="margin: 0; font-size: 0.75rem; line-height: 1.4;">
+            🚀 <strong>Ready für AWS-Deployment</strong><br>
+            <small>Cognito • S3 • DynamoDB • Lambda</small>
+        </p>
+        <div style="margin-top: 0.5rem;">
+            <a href="./health.html" target="_blank" style="color: #60a5fa; font-size: 0.75rem; text-decoration: none;">
+                🔍 Health Check →
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        // Admin-spezifische Erweiterungen für das Multi-User-System
+        import { initAuth, isLoggedIn, getUser } from './js/auth.js';
+        import { listDocuments } from './js/docs.js';
+        
+        console.log('🔧 Admin: Multi-User-System geladen');
+        console.log('📊 Multi-User-Features verfügbar:', {
+            auth: typeof initAuth === 'function',
+            docs: typeof listDocuments === 'function',
+            health: './health.html',
+            backend: 'Lambda handlers bereit'
+        });
+        
+        // Verstecke das Admin-Info-Panel nach 10 Sekunden
+        setTimeout(() => {
+            const panel = document.querySelector('[style*="position: fixed"]');
+            if (panel) {
+                panel.style.transform = 'translateX(100%)';
+                panel.style.transition = 'transform 0.3s ease';
+            }
+        }, 10000);
+    </script>
 </body>
 </html>
