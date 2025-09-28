@@ -9809,12 +9809,14 @@ Bitte antworte im folgenden JSON-Format:
                     // Expand
                     sidebar.classList.remove('collapsed');
                     body.classList.remove('sidebar-collapsed');
-                    body.style.marginLeft = '280px';
+                    const mainContent = document.querySelector('.admin-main');
+                    if (mainContent) mainContent.style.marginLeft = '280px';
                 } else {
                     // Collapse
                     sidebar.classList.add('collapsed');
                     body.classList.add('sidebar-collapsed');
-                    body.style.marginLeft = '70px';
+                    const mainContent = document.querySelector('.admin-main');
+                    if (mainContent) mainContent.style.marginLeft = '70px';
                 }
                 
                 console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed');
@@ -9843,12 +9845,14 @@ Bitte antworte im folgenden JSON-Format:
                     // Mobile: always collapsed
                     sidebar.classList.add('collapsed');
                     body.classList.add('sidebar-collapsed');
-                    body.style.marginLeft = '70px';
+                    const mainContent = document.querySelector('.admin-main');
+                    if (mainContent) mainContent.style.marginLeft = '70px';
                 } else if (window.innerWidth > 1024 && !sidebar.dataset.userToggled) {
                     // Large screens: auto-expand if user hasn't manually toggled
                     sidebar.classList.remove('collapsed');
                     body.classList.remove('sidebar-collapsed');
-                    body.style.marginLeft = '280px';
+                    const mainContent = document.querySelector('.admin-main');
+                    if (mainContent) mainContent.style.marginLeft = '280px';
                 }
             }
             
