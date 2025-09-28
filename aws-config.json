@@ -1,0 +1,63 @@
+{
+  "projectName": "manuel-weiss-userfiles",
+  "domainName": "manuel-weiss.com",
+  "region": "eu-central-1",
+  "allowedOrigins": [
+    "https://manuel-weiss.com",
+    "https://www.manuel-weiss.com", 
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
+  ],
+  "fileTypes": {
+    "allowed": [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain"
+    ],
+    "maxSizeBytes": 15728640
+  },
+  "cognito": {
+    "passwordPolicy": {
+      "minimumLength": 8,
+      "requireUppercase": true,
+      "requireLowercase": true,
+      "requireNumbers": true,
+      "requireSymbols": false
+    },
+    "signUpAllowed": true,
+    "emailVerificationRequired": true
+  },
+  "s3": {
+    "lifecycleRules": {
+      "deleteIncompleteMultipartUploads": 1,
+      "deleteOldVersionsAfterDays": 90
+    }
+  },
+  "dynamodb": {
+    "billingMode": "PAY_PER_REQUEST",
+    "pointInTimeRecovery": true,
+    "backup": {
+      "enabled": true,
+      "retentionDays": 35
+    }
+  },
+  "lambda": {
+    "runtime": "nodejs18.x",
+    "timeout": 30,
+    "memorySize": 256
+  },
+  "monitoring": {
+    "cloudWatchLogs": {
+      "retentionDays": 14
+    },
+    "alarms": {
+      "enabled": true,
+      "errorThreshold": 10,
+      "latencyThreshold": 5000
+    }
+  }
+}
