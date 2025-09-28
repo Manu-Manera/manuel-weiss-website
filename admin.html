@@ -10544,6 +10544,19 @@ Bitte antworte im folgenden JSON-Format:
                     console.log('⚠️ User Management not yet initialized');
                 }
             }
+            
+            // Initialize Analytics if needed
+            if (sectionId === 'analytics') {
+                initializeAnalytics();
+            }
+            
+            // Initialize Settings if needed
+            if (sectionId === 'settings') {
+                initializeSettings();
+            }
+            
+            // Initialize Pulsing Menu
+            initializePulsingMenu();
         }
         
         // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
@@ -10596,6 +10609,342 @@ Bitte antworte im folgenden JSON-Format:
             });
             
             console.log('✅ Alle aufgeklappten Methoden erfolgreich eingeklappt!');
+        }
+        
+        // ANALYTICS: Initialisierung und Funktionen
+        function initializeAnalytics() {
+            console.log('📊 Initializing Analytics...');
+            
+            // Load analytics data
+            loadAnalyticsData();
+            
+            // Setup analytics filters
+            setupAnalyticsFilters();
+            
+            // Setup analytics charts
+            setupAnalyticsCharts();
+        }
+        
+        function loadAnalyticsData() {
+            // Simulate loading analytics data
+            const analyticsData = {
+                pageViews: 12453,
+                uniqueVisitors: 3241,
+                bounceRate: 42.3,
+                avgSessionTime: '3:24',
+                topPages: [
+                    { name: 'Persönlichkeitsentwicklung', views: 2341 },
+                    { name: 'Bewerbung', views: 1892 },
+                    { name: 'Lebenslauf', views: 1567 }
+                ],
+                userEngagement: {
+                    activeUsers: 1234,
+                    newUsers: 567,
+                    returningUsers: 667
+                }
+            };
+            
+            // Update analytics cards
+            updateAnalyticsCards(analyticsData);
+        }
+        
+        function updateAnalyticsCards(data) {
+            // Update page views
+            const pageViewsEl = document.querySelector('[data-metric="page-views"]');
+            if (pageViewsEl) {
+                pageViewsEl.textContent = data.pageViews.toLocaleString();
+            }
+            
+            // Update unique visitors
+            const visitorsEl = document.querySelector('[data-metric="visitors"]');
+            if (visitorsEl) {
+                visitorsEl.textContent = data.uniqueVisitors.toLocaleString();
+            }
+            
+            // Update bounce rate
+            const bounceRateEl = document.querySelector('[data-metric="bounce-rate"]');
+            if (bounceRateEl) {
+                bounceRateEl.textContent = data.bounceRate + '%';
+            }
+            
+            // Update session time
+            const sessionTimeEl = document.querySelector('[data-metric="session-time"]');
+            if (sessionTimeEl) {
+                sessionTimeEl.textContent = data.avgSessionTime;
+            }
+        }
+        
+        function setupAnalyticsFilters() {
+            const periodSelect = document.querySelector('.period-select');
+            if (periodSelect) {
+                periodSelect.addEventListener('change', (e) => {
+                    console.log('📊 Analytics period changed:', e.target.value);
+                    loadAnalyticsData();
+                });
+            }
+        }
+        
+        function setupAnalyticsCharts() {
+            // Initialize charts if Chart.js is available
+            if (typeof Chart !== 'undefined') {
+                console.log('📊 Setting up analytics charts...');
+                // Chart implementation would go here
+            }
+        }
+        
+        // SETTINGS: Initialisierung und Funktionen
+        function initializeSettings() {
+            console.log('⚙️ Initializing Settings...');
+            
+            // Load current settings
+            loadSettings();
+            
+            // Setup settings tabs
+            setupSettingsTabs();
+            
+            // Setup settings forms
+            setupSettingsForms();
+        }
+        
+        function loadSettings() {
+            // Load settings from localStorage or API
+            const settings = {
+                general: {
+                    siteName: 'Manuel Weiss - Persönlichkeitsentwicklung',
+                    siteDescription: 'Professionelle Beratung für Persönlichkeitsentwicklung',
+                    language: 'de',
+                    timezone: 'Europe/Berlin'
+                },
+                notifications: {
+                    emailNotifications: true,
+                    pushNotifications: false,
+                    weeklyReports: true
+                },
+                security: {
+                    twoFactorAuth: false,
+                    sessionTimeout: 30,
+                    passwordPolicy: 'strong'
+                }
+            };
+            
+            // Update settings forms
+            updateSettingsForms(settings);
+        }
+        
+        function updateSettingsForms(settings) {
+            // Update general settings
+            const siteNameInput = document.querySelector('#site-name');
+            if (siteNameInput) {
+                siteNameInput.value = settings.general.siteName;
+            }
+            
+            const siteDescInput = document.querySelector('#site-description');
+            if (siteDescInput) {
+                siteDescInput.value = settings.general.siteDescription;
+            }
+            
+            // Update notification settings
+            const emailNotifCheckbox = document.querySelector('#email-notifications');
+            if (emailNotifCheckbox) {
+                emailNotifCheckbox.checked = settings.notifications.emailNotifications;
+            }
+            
+            const pushNotifCheckbox = document.querySelector('#push-notifications');
+            if (pushNotifCheckbox) {
+                pushNotifCheckbox.checked = settings.notifications.pushNotifications;
+            }
+        }
+        
+        function setupSettingsTabs() {
+            const settingsTabs = document.querySelectorAll('.settings-tab');
+            const settingsContents = document.querySelectorAll('.settings-content');
+            
+            settingsTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    // Remove active class from all tabs and contents
+                    settingsTabs.forEach(t => t.classList.remove('active'));
+                    settingsContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const targetContent = document.querySelector(`#${targetTab}-settings`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        function setupSettingsForms() {
+            // Setup form submission handlers
+            const saveButtons = document.querySelectorAll('[data-action="save-settings"]');
+            saveButtons.forEach(btn => {
+                btn.addEventListener('click', saveSettings);
+            });
+        }
+        
+        function saveSettings() {
+            console.log('💾 Saving settings...');
+            
+            // Collect form data
+            const settings = {
+                general: {
+                    siteName: document.querySelector('#site-name')?.value || '',
+                    siteDescription: document.querySelector('#site-description')?.value || '',
+                    language: document.querySelector('#language')?.value || 'de',
+                    timezone: document.querySelector('#timezone')?.value || 'Europe/Berlin'
+                },
+                notifications: {
+                    emailNotifications: document.querySelector('#email-notifications')?.checked || false,
+                    pushNotifications: document.querySelector('#push-notifications')?.checked || false,
+                    weeklyReports: document.querySelector('#weekly-reports')?.checked || false
+                },
+                security: {
+                    twoFactorAuth: document.querySelector('#two-factor-auth')?.checked || false,
+                    sessionTimeout: document.querySelector('#session-timeout')?.value || 30,
+                    passwordPolicy: document.querySelector('#password-policy')?.value || 'strong'
+                }
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('admin_settings', JSON.stringify(settings));
+            
+            // Show success message
+            showStatus('✅ Einstellungen erfolgreich gespeichert!', 'success');
+            
+            console.log('✅ Settings saved:', settings);
+        }
+        
+        // PULSIERENDES MENÜ: Implementierung
+        function initializePulsingMenu() {
+            console.log('💫 Initializing Pulsing Menu...');
+            
+            // Add pulsing animation to specific menu items
+            addPulsingAnimation();
+            
+            // Setup pulsing triggers
+            setupPulsingTriggers();
+        }
+        
+        function addPulsingAnimation() {
+            // Add pulsing class to important menu items
+            const importantItems = [
+                '.nav-item[data-section="dashboard"]',
+                '.nav-item[data-section="analytics"]',
+                '.nav-item[data-section="settings"]'
+            ];
+            
+            importantItems.forEach(selector => {
+                const item = document.querySelector(selector);
+                if (item) {
+                    item.classList.add('pulsing-item');
+                }
+            });
+        }
+        
+        function setupPulsingTriggers() {
+            // Add pulsing animation to menu items based on conditions
+            const menuItems = document.querySelectorAll('.nav-item');
+            
+            menuItems.forEach(item => {
+                const section = item.dataset.section;
+                
+                // Add pulsing for specific conditions
+                if (section === 'analytics') {
+                    // Pulse analytics if there are new data
+                    if (hasNewAnalyticsData()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+                
+                if (section === 'settings') {
+                    // Pulse settings if there are pending changes
+                    if (hasPendingSettings()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+                
+                if (section === 'dashboard') {
+                    // Pulse dashboard if there are new notifications
+                    if (hasNewNotifications()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+            });
+        }
+        
+        function hasNewAnalyticsData() {
+            // Check if there are new analytics data
+            const lastUpdate = localStorage.getItem('analytics_last_update');
+            const now = new Date().getTime();
+            const oneHour = 60 * 60 * 1000;
+            
+            return !lastUpdate || (now - parseInt(lastUpdate)) > oneHour;
+        }
+        
+        function hasPendingSettings() {
+            // Check if there are pending settings changes
+            const pendingChanges = localStorage.getItem('settings_pending_changes');
+            return pendingChanges === 'true';
+        }
+        
+        function hasNewNotifications() {
+            // Check if there are new notifications
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            return notifications.some(n => !n.read);
+        }
+        
+        // PULSING ANIMATION CSS
+        function addPulsingStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .pulsing-item {
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .pulsing-item::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, #3b82f6, #1e40af);
+                    border-radius: 8px;
+                    transform: translate(-50%, -50%);
+                    opacity: 0.3;
+                    animation: pulse 2s infinite;
+                    z-index: -1;
+                }
+                
+                .pulsing {
+                    animation: pulse-glow 1.5s ease-in-out infinite alternate;
+                }
+                
+                @keyframes pulse-glow {
+                    0% { 
+                        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+                        transform: scale(1);
+                    }
+                    100% { 
+                        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+                        transform: scale(1.02);
+                    }
+                }
+                
+                .pulsing-item.pulsing {
+                    background: linear-gradient(135deg, #3b82f6, #1e40af);
+                    color: white;
+                }
+                
+                .pulsing-item.pulsing i {
+                    color: white;
+                }
+            `;
+            document.head.appendChild(style);
         }
         
         // SIMPLE layout setup
@@ -10762,6 +11111,9 @@ Bitte antworte im folgenden JSON-Format:
         } else {
             initModernSidebar();
         }
+        
+        // Add pulsing styles immediately
+        addPulsingStyles();
         
         // CLEAN LAYOUT FIX - CSS-basiert
         function fixLayout() {
