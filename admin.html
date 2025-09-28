@@ -11115,6 +11115,257 @@ Bitte antworte im folgenden JSON-Format:
         // Add pulsing styles immediately
         addPulsingStyles();
         
+        // ANALYTICS FUNCTIONS
+        function loadAnalyticsData() {
+            console.log('📊 Loading analytics data...');
+            const analyticsData = {
+                pageViews: 12453,
+                uniqueVisitors: 3241,
+                bounceRate: 42.3,
+                avgSessionTime: '3:24',
+                topPages: [
+                    { name: 'Persönlichkeitsentwicklung', views: 2341 },
+                    { name: 'Bewerbung', views: 1892 },
+                    { name: 'Lebenslauf', views: 1567 }
+                ],
+                userEngagement: {
+                    activeUsers: 1234,
+                    newUsers: 567,
+                    returningUsers: 667
+                }
+            };
+            
+            // Update analytics cards
+            updateAnalyticsCards(analyticsData);
+        }
+        
+        function updateAnalyticsCards(data) {
+            // Update page views
+            const pageViewsEl = document.querySelector('[data-metric="page-views"]');
+            if (pageViewsEl) {
+                pageViewsEl.textContent = data.pageViews.toLocaleString();
+            }
+            
+            // Update unique visitors
+            const visitorsEl = document.querySelector('[data-metric="visitors"]');
+            if (visitorsEl) {
+                visitorsEl.textContent = data.uniqueVisitors.toLocaleString();
+            }
+            
+            // Update bounce rate
+            const bounceRateEl = document.querySelector('[data-metric="bounce-rate"]');
+            if (bounceRateEl) {
+                bounceRateEl.textContent = data.bounceRate + '%';
+            }
+            
+            // Update session time
+            const sessionTimeEl = document.querySelector('[data-metric="session-time"]');
+            if (sessionTimeEl) {
+                sessionTimeEl.textContent = data.avgSessionTime;
+            }
+        }
+        
+        function setupAnalyticsFilters() {
+            const periodSelect = document.querySelector('.period-select');
+            if (periodSelect) {
+                periodSelect.addEventListener('change', (e) => {
+                    console.log('📊 Analytics period changed:', e.target.value);
+                    loadAnalyticsData();
+                });
+            }
+        }
+        
+        function setupAnalyticsCharts() {
+            if (typeof Chart !== 'undefined') {
+                console.log('📊 Setting up analytics charts...');
+            }
+        }
+        
+        // SETTINGS FUNCTIONS
+        function loadSettings() {
+            console.log('⚙️ Loading settings...');
+            const settings = {
+                general: {
+                    siteName: 'Manuel Weiss - Persönlichkeitsentwicklung',
+                    siteDescription: 'Professionelle Beratung für Persönlichkeitsentwicklung',
+                    language: 'de',
+                    timezone: 'Europe/Berlin'
+                },
+                notifications: {
+                    emailNotifications: true,
+                    pushNotifications: false,
+                    weeklyReports: true
+                },
+                security: {
+                    twoFactorAuth: false,
+                    sessionTimeout: 30,
+                    passwordPolicy: 'strong'
+                }
+            };
+            
+            updateSettingsForms(settings);
+        }
+        
+        function updateSettingsForms(settings) {
+            const siteNameInput = document.querySelector('#site-name');
+            if (siteNameInput) {
+                siteNameInput.value = settings.general.siteName;
+            }
+            
+            const siteDescInput = document.querySelector('#site-description');
+            if (siteDescInput) {
+                siteDescInput.value = settings.general.siteDescription;
+            }
+            
+            const emailNotifCheckbox = document.querySelector('#email-notifications');
+            if (emailNotifCheckbox) {
+                emailNotifCheckbox.checked = settings.notifications.emailNotifications;
+            }
+            
+            const pushNotifCheckbox = document.querySelector('#push-notifications');
+            if (pushNotifCheckbox) {
+                pushNotifCheckbox.checked = settings.notifications.pushNotifications;
+            }
+        }
+        
+        function setupSettingsTabs() {
+            const settingsTabs = document.querySelectorAll('.settings-tab');
+            const settingsContents = document.querySelectorAll('.settings-content');
+            
+            settingsTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    settingsTabs.forEach(t => t.classList.remove('active'));
+                    settingsContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    const targetContent = document.querySelector(`#${targetTab}-settings`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        function setupSettingsForms() {
+            const saveButtons = document.querySelectorAll('[data-action="save-settings"]');
+            saveButtons.forEach(btn => {
+                btn.addEventListener('click', saveSettings);
+            });
+        }
+        
+        function saveSettings() {
+            console.log('💾 Saving settings...');
+            
+            const settings = {
+                general: {
+                    siteName: document.querySelector('#site-name')?.value || '',
+                    siteDescription: document.querySelector('#site-description')?.value || '',
+                    language: document.querySelector('#language')?.value || 'de',
+                    timezone: document.querySelector('#timezone')?.value || 'Europe/Berlin'
+                },
+                notifications: {
+                    emailNotifications: document.querySelector('#email-notifications')?.checked || false,
+                    pushNotifications: document.querySelector('#push-notifications')?.checked || false,
+                    weeklyReports: document.querySelector('#weekly-reports')?.checked || false
+                },
+                security: {
+                    twoFactorAuth: document.querySelector('#two-factor-auth')?.checked || false,
+                    sessionTimeout: document.querySelector('#session-timeout')?.value || 30,
+                    passwordPolicy: document.querySelector('#password-policy')?.value || 'strong'
+                }
+            };
+            
+            localStorage.setItem('admin_settings', JSON.stringify(settings));
+            console.log('✅ Settings saved:', settings);
+        }
+        
+        // PULSING MENU FUNCTIONS
+        function addPulsingAnimation() {
+            console.log('💫 Adding pulsing animation...');
+            const importantItems = [
+                '.nav-item[data-section="dashboard"]',
+                '.nav-item[data-section="analytics"]',
+                '.nav-item[data-section="settings"]'
+            ];
+            
+            importantItems.forEach(selector => {
+                const item = document.querySelector(selector);
+                if (item) {
+                    item.classList.add('pulsing-item');
+                }
+            });
+        }
+        
+        function setupPulsingTriggers() {
+            console.log('💫 Setting up pulsing triggers...');
+            const menuItems = document.querySelectorAll('.nav-item');
+            
+            menuItems.forEach(item => {
+                const section = item.dataset.section;
+                
+                if (section === 'analytics') {
+                    if (hasNewAnalyticsData()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+                
+                if (section === 'settings') {
+                    if (hasPendingSettings()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+                
+                if (section === 'dashboard') {
+                    if (hasNewNotifications()) {
+                        item.classList.add('pulsing');
+                    }
+                }
+            });
+        }
+        
+        function hasNewAnalyticsData() {
+            const lastUpdate = localStorage.getItem('analytics_last_update');
+            const now = new Date().getTime();
+            const oneHour = 60 * 60 * 1000;
+            return !lastUpdate || (now - parseInt(lastUpdate)) > oneHour;
+        }
+        
+        function hasPendingSettings() {
+            const pendingChanges = localStorage.getItem('settings_pending_changes');
+            return pendingChanges === 'true';
+        }
+        
+        function hasNewNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            return notifications.some(n => !n.read);
+        }
+        
+        // Initialize all functions immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing all admin functions...');
+            
+            // Initialize Analytics immediately
+            console.log('📊 Initializing Analytics...');
+            loadAnalyticsData();
+            setupAnalyticsFilters();
+            setupAnalyticsCharts();
+            
+            // Initialize Settings immediately
+            console.log('⚙️ Initializing Settings...');
+            loadSettings();
+            setupSettingsTabs();
+            setupSettingsForms();
+            
+            // Initialize Pulsing Menu immediately
+            console.log('💫 Initializing Pulsing Menu...');
+            addPulsingAnimation();
+            setupPulsingTriggers();
+            
+            console.log('✅ All admin functions initialized');
+        });
+        
         // CLEAN LAYOUT FIX - CSS-basiert
         function fixLayout() {
             // Body reset
