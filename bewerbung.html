@@ -1540,6 +1540,8 @@ Manuel Weiss`;
       function addToHRDesignData(type, fileName, uploadResult) {
         const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
         
+        console.log('💾 Adding to HR Design Data:', { type, fileName, uploadResult });
+        
         if (type === 'cv') {
           if (!hrDesignData.documents) hrDesignData.documents = {};
           hrDesignData.documents.cv = {
@@ -1548,9 +1550,10 @@ Manuel Weiss`;
             storage: uploadResult.storage,
             id: uploadResult.id
           };
+          console.log('✅ CV added to HR Design Data:', hrDesignData.documents.cv);
         } else if (type === 'certificate') {
           if (!hrDesignData.certificates) hrDesignData.certificates = [];
-          hrDesignData.certificates.push({
+          const certificateData = {
             id: uploadResult.id,
             title: fileName.replace(/\.[^/.]+$/, ""), // Remove file extension
             fileName: fileName,
@@ -1559,11 +1562,14 @@ Manuel Weiss`;
             institution: 'Hochgeladenes Zeugnis',
             year: new Date().getFullYear(),
             description: 'Hochgeladenes Zeugnis'
-          });
+          };
+          hrDesignData.certificates.push(certificateData);
+          console.log('✅ Certificate added to HR Design Data:', certificateData);
         }
         
+        // Save back to localStorage
         localStorage.setItem('hrDesignData', JSON.stringify(hrDesignData));
-        console.log('✅ Added to HR Design Data:', type, fileName);
+        console.log('💾 HR Design Data saved to localStorage');
       }
 
       // ANALYSIS FUNCTIONALITY
@@ -1732,6 +1738,43 @@ Manuel Weiss`;
           startOcrBtn.addEventListener('click', startEnhancedOCRAnalysis);
         }
         
+        // Add test function to window for debugging
+        window.testDocumentDetection = function() {
+          console.log('🧪 Testing document detection...');
+          const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+          console.log('HR Design Data:', hrDesignData);
+          console.log('Documents:', hrDesignData.documents);
+          console.log('Certificates:', hrDesignData.certificates);
+          
+          // Test document collection
+          const documents = [];
+          
+          if (hrDesignData.documents && hrDesignData.documents.cv) {
+            documents.push({
+              name: hrDesignData.documents.cv.name,
+              type: 'cv',
+              data: hrDesignData.documents.cv
+            });
+            console.log('✅ CV document found:', hrDesignData.documents.cv.name);
+          }
+          
+          if (hrDesignData.certificates && hrDesignData.certificates.length > 0) {
+            hrDesignData.certificates.forEach(cert => {
+              documents.push({
+                name: cert.fileName || cert.title,
+                type: 'certificate',
+                data: cert
+              });
+              console.log('✅ Certificate found:', cert.fileName || cert.title);
+            });
+          }
+          
+          console.log(`📊 Total documents found: ${documents.length}`);
+          return documents;
+        };
+        
+        console.log('🧪 Test function available: window.testDocumentDetection()');
+        
         // Initialize AI Coach for document analysis (simplified)
         console.log('🤖 AI Coach initialized for document analysis');
       }
@@ -1753,6 +1796,14 @@ Manuel Weiss`;
           console.log('📋 Checking for uploaded documents...');
           console.log('HR Design Data:', hrDesignData);
           
+          // Debug: Show structure of hrDesignData
+          console.log('📊 HR Design Data Structure:', {
+            hasDocuments: !!hrDesignData.documents,
+            hasCertificates: !!hrDesignData.certificates,
+            documents: hrDesignData.documents,
+            certificates: hrDesignData.certificates
+          });
+          
           // Debug: Show all localStorage keys
           console.log('🔍 All localStorage keys:', Object.keys(localStorage));
           
@@ -1762,6 +1813,13 @@ Manuel Weiss`;
             if (key && (key.includes('document') || key.includes('cv') || key.includes('certificate') || key.includes('hr'))) {
               console.log(`📄 Found document key: ${key}`, localStorage.getItem(key));
             }
+          }
+          
+          // Debug: Show current localStorage state
+          console.log('🔍 Current localStorage state:');
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            console.log(`  ${key}:`, localStorage.getItem(key));
           }
           
           // Collect CV documents
@@ -1804,6 +1862,24 @@ Manuel Weiss`;
             });
           }
           
+          // Check for documents in the main document list
+          try {
+            const mainDocuments = await listDocuments();
+            console.log('📄 Found documents in main list:', mainDocuments.length);
+            mainDocuments.forEach(doc => {
+              if (doc.name && !documents.find(d => d.name === doc.name)) {
+                documents.push({
+                  name: doc.name,
+                  type: doc.name.toLowerCase().includes('lebenslauf') || doc.name.toLowerCase().includes('cv') ? 'cv' : 'certificate',
+                  data: doc
+                });
+                console.log('✅ Main document found:', doc.name);
+              }
+            });
+          } catch (error) {
+            console.warn('Could not fetch main documents:', error);
+          }
+          
           if (documents.length === 0) {
             // Fallback: Create demo documents for testing
             console.log('🔄 No documents found, creating demo documents for testing...');
@@ -1817,7 +1893,9 @@ Manuel Weiss`;
               type: 'certificate',
               data: { name: 'Demo Zeugnis.pdf', type: 'certificate' }
             });
-            showMessage('⚠️ Keine hochgeladenen Dokumente gefunden. Verwende Demo-Dokumente für die Analyse.', 'warning');
+            showMessage('⚠️ Keine hochgeladenen Dokumente gefunden. Bitte laden Sie zuerst Lebenslauf oder Zeugnisse hoch, oder verwenden Sie Demo-Dokumente für die Analyse.', 'warning');
+          } else {
+            console.log(`✅ Found ${documents.length} document(s) for analysis:`, documents.map(d => d.name));
           }
           
           showMessage(`🤖 AI analysiert ${documents.length} Dokument(e)...`, 'info');
