@@ -9875,6 +9875,40 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
+        // SOFORTIGER LAYOUT FIX
+        function emergencyLayoutFix() {
+            // Remove ALL body margins and padding
+            document.body.style.margin = '0';
+            document.body.style.padding = '0';
+            document.body.style.marginLeft = '0';
+            document.body.style.paddingLeft = '0';
+            
+            // Fix main content
+            const mainContent = document.querySelector('.admin-main');
+            if (mainContent) {
+                mainContent.style.marginLeft = '280px';
+                mainContent.style.marginTop = '0';
+                mainContent.style.marginRight = '0';
+                mainContent.style.marginBottom = '0';
+                mainContent.style.padding = '0';
+            }
+            
+            // Fix sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.style.margin = '0';
+                sidebar.style.padding = '0';
+                sidebar.style.left = '0';
+                sidebar.style.top = '0';
+            }
+            
+            console.log('🚨 EMERGENCY LAYOUT FIX APPLIED');
+        }
+        
+        // Apply immediately
+        emergencyLayoutFix();
+        document.addEventListener('DOMContentLoaded', emergencyLayoutFix);
+        
         // Immediate application
         setTimeout(initModernSidebar, 50);
         
