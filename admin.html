@@ -59,15 +59,25 @@
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
-            padding: 0.5rem;
-            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
         
         .sidebar-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.05);
+        }
+        
+        .sidebar-toggle .toggle-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
         }
         
         /* NAVIGATION STYLES */
@@ -570,31 +580,20 @@
             100% { transform: scale(1); opacity: 0.3; }
         }
         
-        /* Button verstecken wenn Sidebar ausgeklappt ist */
-        .sidebar:not(.collapsed) + .global-sidebar-toggle {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.8);
+        /* BUTTON IMMER SICHTBAR - mit dynamischen Labels */
+        .global-sidebar-toggle {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: scale(1) !important;
         }
         
-        /* Button anzeigen wenn Sidebar eingeklappt ist */
-        .sidebar.collapsed + .global-sidebar-toggle {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
+        /* Dynamische Labels basierend auf Sidebar-Status */
+        .sidebar:not(.collapsed) .global-sidebar-toggle .button-label::after {
+            content: " einklappen";
         }
         
-        /* Alternative: Body-basierte Klassen */
-        body:not(.sidebar-collapsed) .global-sidebar-toggle {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.8);
-        }
-        
-        body.sidebar-collapsed .global-sidebar-toggle {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
+        .sidebar.collapsed .global-sidebar-toggle .button-label::after {
+            content: " ausklappen";
         }
         
         /* ALTERNATIVE: TOP-BAR BUTTON für bessere Sichtbarkeit */
@@ -634,17 +633,20 @@
             white-space: nowrap;
         }
         
-        /* Top-Bar Button nur anzeigen wenn Sidebar eingeklappt */
-        body:not(.sidebar-collapsed) .top-bar-toggle {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateX(-20px);
+        /* Top-Bar Button IMMER SICHTBAR */
+        .top-bar-toggle {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateX(0) !important;
         }
         
-        body.sidebar-collapsed .top-bar-toggle {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateX(0);
+        /* Dynamische Labels für Top-Bar Button */
+        .sidebar:not(.collapsed) .top-bar-toggle .button-label::after {
+            content: " einklappen";
+        }
+        
+        .sidebar.collapsed .top-bar-toggle .button-label::after {
+            content: " ausklappen";
         }
         
         /* OPTION 3: PROMINENT CONTENT-AREA BUTTON */
@@ -687,17 +689,20 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         
-        /* Content-Area Button nur anzeigen wenn Sidebar eingeklappt */
-        body:not(.sidebar-collapsed) .content-area-toggle {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-50%) translateX(-30px);
+        /* Content-Area Button IMMER SICHTBAR */
+        .content-area-toggle {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateY(-50%) translateX(0) !important;
         }
         
-        body.sidebar-collapsed .content-area-toggle {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(-50%) translateX(0);
+        /* Dynamische Labels für Content-Area Button */
+        .sidebar:not(.collapsed) .content-area-toggle .button-label::after {
+            content: " einklappen";
+        }
+        
+        .sidebar.collapsed .content-area-toggle .button-label::after {
+            content: " ausklappen";
         }
         
         /* Mobile wird später implementiert wenn nötig */
@@ -1942,22 +1947,22 @@
     <!-- Main Admin Interface -->
     <div class="admin-container">
         <!-- Sidebar -->
-        <!-- Modern Floating Action Button - besser sichtbar -->
+        <!-- Modern Floating Action Button - IMMER SICHTBAR -->
         <button class="global-sidebar-toggle" id="globalSidebarToggle" title="Sidebar ein-/ausklappen">
             <i class="fas fa-bars"></i>
             <span class="button-label">Menü</span>
         </button>
         
-        <!-- Alternative Top-Bar Button für bessere Sichtbarkeit -->
+        <!-- Alternative Top-Bar Button - IMMER SICHTBAR -->
         <button class="top-bar-toggle" id="topBarToggle" title="Sidebar ein-/ausklappen">
             <i class="fas fa-bars"></i>
-            <span class="button-label">Menü öffnen</span>
+            <span class="button-label">Menü</span>
         </button>
         
-        <!-- Option 3: Prominenter Content-Area Button -->
+        <!-- Option 3: Prominenter Content-Area Button - IMMER SICHTBAR -->
         <button class="content-area-toggle" id="contentAreaToggle" title="Sidebar ein-/ausklappen">
             <i class="fas fa-bars"></i>
-            <span class="button-label">Menü öffnen</span>
+            <span class="button-label">Menü</span>
         </button>
         
         <aside class="sidebar admin-sidebar" id="adminSidebar">
@@ -1969,8 +1974,9 @@
                         <p>Manuel Weiss</p>
                     </div>
                 </div>
-                <button class="sidebar-toggle" id="sidebarToggle">
+                <button class="sidebar-toggle" id="sidebarToggle" title="Sidebar ein-/ausklappen">
                     <i class="fas fa-bars"></i>
+                    <span class="toggle-label">Einklappen</span>
                 </button>
             </div>
             
@@ -10569,10 +10575,23 @@ Bitte antworte im folgenden JSON-Format:
                     }
                 }
                 
+                // Labels dynamisch aktualisieren
+                updateToggleLabels();
+                
                 // Layout nach Toggle neu berechnen
                 setTimeout(fixLayout, 50);
                 
                 console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed', `(${isMobile ? 'Mobile' : 'Desktop'})`);
+            }
+            
+            // Labels dynamisch aktualisieren
+            function updateToggleLabels() {
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const toggleLabel = sidebar.querySelector('.toggle-label');
+                
+                if (toggleLabel) {
+                    toggleLabel.textContent = isCollapsed ? 'Ausklappen' : 'Einklappen';
+                }
             }
             
             // Toggle button functionality with tracking
@@ -10685,6 +10704,9 @@ Bitte antworte im folgenden JSON-Format:
             
             window.addEventListener('resize', handleResize);
             handleResize(); // Initial call
+            
+            // Initiale Labels setzen
+            updateToggleLabels();
             
             console.log('✅ Modern sidebar initialized');
         }
