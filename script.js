@@ -515,9 +515,10 @@ function preloadImages() {
 preloadImages();
 
 // Service Worker Registration (for PWA)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+// SERVICE WORKER DEAKTIVIERT - verursacht Cache-Probleme
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//         navigator.serviceWorker.register('/sw.js')
             .then(registration => console.log('SW registered:', registration))
             .catch(error => console.log('SW registration failed:', error));
     });
