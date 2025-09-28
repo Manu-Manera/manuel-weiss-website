@@ -554,6 +554,57 @@ a:hover {
     }
 }
 
+/* LOGIN SECTION STYLES */
+.login-section {
+    display: flex;
+    align-items: center;
+    margin-left: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    border-left: 1px solid var(--gray-200);
+}
+
+.btn-login {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--white);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+}
+
+.btn-login i {
+    font-size: var(--text-sm);
+}
+
+/* Mobile Login Button */
+@media (max-width: 768px) {
+    .login-section {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--gray-200);
+        padding-top: var(--spacing-sm);
+        margin-top: var(--spacing-sm);
+    }
+    
+    .btn-login {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 360px) {
     .service-card .btn {
         font-size: 0.7rem;
