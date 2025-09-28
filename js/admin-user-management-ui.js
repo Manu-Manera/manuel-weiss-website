@@ -1526,13 +1526,8 @@ class AdminUserManagementUI {
 }
 
 // Initialize when admin page loads and wait for auth
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.location.pathname.includes('admin')) {
-        setTimeout(() => {
-            window.AdminUserUI = new AdminUserManagementUI();
-        }, 3000); // Wait for other systems to load
-    }
-});
+// Make class globally available
+window.AdminUserManagementUI = AdminUserManagementUI;
 
 console.log('👥 Admin User Management UI loaded');
 
