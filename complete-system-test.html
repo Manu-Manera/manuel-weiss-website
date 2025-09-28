@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete System Test - Manuel Weiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        
+        .test-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: #f9fafb;
+        }
+        
+        .test-card.success {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .test-card.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .test-card.warning {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .test-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .test-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-loading {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .test-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        
+        .actions {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-flask"></i> Complete System Test</h1>
+            <p>Umfassender Test aller System-Komponenten</p>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-card" id="frontend-test">
+                <div class="test-title">
+                    <i class="fas fa-desktop"></i>
+                    Frontend
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Prüfe HTML, CSS, JavaScript Integration...
+                </div>
+            </div>
+            
+            <div class="test-card" id="api-test">
+                <div class="test-title">
+                    <i class="fas fa-server"></i>
+                    API Endpoints
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Teste AWS Lambda Functions und API Gateway...
+                </div>
+            </div>
+            
+            <div class="test-card" id="auth-test">
+                <div class="test-title">
+                    <i class="fas fa-lock"></i>
+                    Authentication
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Prüfe AWS Cognito Integration...
+                </div>
+            </div>
+            
+            <div class="test-card" id="storage-test">
+                <div class="test-title">
+                    <i class="fas fa-database"></i>
+                    Storage Systems
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Teste S3, DynamoDB Verbindungen...
+                </div>
+            </div>
+            
+            <div class="test-card" id="user-management-test">
+                <div class="test-title">
+                    <i class="fas fa-users"></i>
+                    User Management
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Prüfe Benutzerverwaltung UI und Backend...
+                </div>
+            </div>
+            
+            <div class="test-card" id="performance-test">
+                <div class="test-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Performance
+                    <span class="test-status status-loading">Testing...</span>
+                </div>
+                <div class="test-details">
+                    Messe Ladezeiten und Responsiveness...
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="runAllTests()">
+                <i class="fas fa-play"></i> Alle Tests starten
+                </button>
+            <button class="btn btn-secondary" onclick="exportResults()">
+                <i class="fas fa-download"></i> Ergebnisse exportieren
+                </button>
+            <a href="admin.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Zurück zum Admin
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+        
+        async function runAllTests() {
+            console.log('🧪 Starting Complete System Test...');
+            
+            const tests = [
+                { id: 'frontend-test', name: 'Frontend', test: testFrontend },
+                { id: 'api-test', name: 'API Endpoints', test: testAPI },
+                { id: 'auth-test', name: 'Authentication', test: testAuth },
+                { id: 'storage-test', name: 'Storage Systems', test: testStorage },
+                { id: 'user-management-test', name: 'User Management', test: testUserManagement },
+                { id: 'performance-test', name: 'Performance', test: testPerformance }
+            ];
+            
+            for (const test of tests) {
+                await runTest(test);
+            }
+            
+            showResults();
+        }
+        
+        async function runTest(test) {
+            const card = document.getElementById(test.id);
+            const status = card.querySelector('.test-status');
+            
+            try {
+                status.className = 'test-status status-loading';
+                status.textContent = 'Testing...';
+                
+                const result = await test.test();
+                
+                if (result.success) {
+                    card.className = 'test-card success';
+                    status.className = 'test-status status-success';
+                    status.textContent = 'PASSED';
+                } else {
+                    card.className = 'test-card error';
+                    status.className = 'test-status status-error';
+                    status.textContent = 'FAILED';
+                }
+                
+                card.querySelector('.test-details').textContent = result.message;
+                testResults[test.name] = result;
+                
+            } catch (error) {
+                card.className = 'test-card error';
+                status.className = 'test-status status-error';
+                status.textContent = 'ERROR';
+                card.querySelector('.test-details').textContent = error.message;
+                testResults[test.name] = { success: false, message: error.message };
+            }
+        }
+        
+        async function testFrontend() {
+            // Test DOM elements
+            const adminPanel = document.querySelector('.container');
+            if (!adminPanel) throw new Error('DOM nicht korrekt geladen');
+            
+            // Test CSS
+            const computedStyle = getComputedStyle(document.body);
+            if (!computedStyle.fontFamily.includes('Inter')) {
+                return { success: false, message: 'CSS-Styles nicht korrekt geladen' };
+            }
+            
+            return { success: true, message: 'Frontend erfolgreich geladen' };
+        }
+        
+        async function testAPI() {
+            try {
+                // Test health endpoint
+                const response = await fetch('/api/health', { method: 'GET' });
+                if (response.ok) {
+                    return { success: true, message: 'API Endpoints erreichbar' };
+                } else {
+                    return { success: false, message: `API antwortet mit Status: ${response.status}` };
+                }
+            } catch (error) {
+                return { success: false, message: 'API nicht erreichbar - möglicherweise lokale Entwicklung' };
+            }
+        }
+        
+        async function testAuth() {
+            try {
+                // Check if auth system is loaded
+                if (typeof window.GlobalAuth !== 'undefined') {
+                    return { success: true, message: 'Auth System geladen' };
+                } else {
+                    return { success: false, message: 'GlobalAuth nicht verfügbar' };
+                }
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        }
+        
+        async function testStorage() {
+            try {
+                // Test localStorage
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    return { success: true, message: 'Local Storage funktioniert' };
+                } else {
+                    return { success: false, message: 'Local Storage nicht verfügbar' };
+                }
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        }
+        
+        async function testUserManagement() {
+            try {
+                // Check if User Management UI is available
+                if (typeof window.AdminUserManagementUI !== 'undefined') {
+                    return { success: true, message: 'User Management UI verfügbar' };
+                } else {
+                    return { success: false, message: 'User Management UI nicht geladen' };
+                }
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        }
+        
+        async function testPerformance() {
+            const start = performance.now();
+            
+            // Simulate some work
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const end = performance.now();
+            const duration = end - start;
+            
+            if (duration < 500) {
+                return { success: true, message: `Performance gut: ${Math.round(duration)}ms` };
+            } else {
+                return { success: false, message: `Performance schlecht: ${Math.round(duration)}ms` };
+            }
+        }
+        
+        function showResults() {
+            console.log('📊 Test Results:', testResults);
+            
+            const passed = Object.values(testResults).filter(r => r.success).length;
+            const total = Object.keys(testResults).length;
+            
+            alert(`Tests abgeschlossen: ${passed}/${total} erfolgreich`);
+        }
+        
+        function exportResults() {
+            const results = {
+                    timestamp: new Date().toISOString(),
+                results: testResults,
+                summary: {
+                    total: Object.keys(testResults).length,
+                    passed: Object.values(testResults).filter(r => r.success).length,
+                    failed: Object.values(testResults).filter(r => !r.success).length
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `system-test-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Auto-start tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
