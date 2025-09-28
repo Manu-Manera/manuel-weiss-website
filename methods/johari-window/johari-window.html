@@ -766,5 +766,255 @@
     </div>
 
     <script src="johari-window.js"></script>
+    
+    <!-- Multi-User Integration for Johari Window -->
+    <script src="../../js/base-logger.js"></script>
+    <script type="module">
+        import '../../js/global-auth-system.js';
+        import '../../js/user-progress-tracker.js';
+        
+        // Wait for systems and method to initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initJohariMultiUser, 1500);
+        });
+        
+        function initJohariMultiUser() {
+            console.log('🔧 Initializing Johari Window Multi-User Features');
+            
+            if (!window.GlobalAuth) {
+                console.warn('Global Auth not available');
+                return;
+            }
+            
+            // Check if user is authenticated
+            if (!window.GlobalAuth.isAuthenticated()) {
+                showAuthRequiredMessage();
+                return;
+            }
+            
+            // Setup progress tracking
+            setupProgressTracking();
+            
+            // Load existing progress
+            loadUserProgress();
+            
+            // Setup auto-save
+            setupAutoSave();
+            
+            console.log('✅ Johari Window Multi-User ready');
+        }
+        
+        function showAuthRequiredMessage() {
+            const container = document.querySelector('.johari-method');
+            if (!container) return;
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: white; padding: 2rem; border-radius: 12px;
+                    text-align: center; max-width: 500px; margin: 2rem;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                ">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+                    <h2 style="margin: 0 0 1rem; color: #1f2937;">Anmeldung erforderlich</h2>
+                    <p style="margin: 0 0 2rem; color: #6b7280; line-height: 1.6;">
+                        Um Ihren Fortschritt beim Johari-Window zu speichern und später fortzusetzen, 
+                        müssen Sie sich anmelden.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="window.GlobalAuth.showNotification('Klicken Sie rechts oben auf Anmelden', 'info')" 
+                                style="background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                            <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                            Ohne Anmeldung fortsetzen
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+        }
+        
+        function setupProgressTracking() {
+            const methodId = 'johari-window';
+            
+            // Track method initialization
+            if (window.ProgressTracker) {
+                window.ProgressTracker.completeMethodStep(methodId, 'initialized', {
+                    totalSteps: 5,
+                    methodName: 'Johari-Window'
+                });
+            }
+            
+            // Monitor workflow steps
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const step = mutation.target.closest('[data-step]');
+                        if (step && step.classList.contains('active')) {
+                            const stepNumber = step.getAttribute('data-step');
+                            trackStepProgress(stepNumber);
+                        }
+                    }
+                });
+            });
+            
+            // Observe progress steps
+            document.querySelectorAll('.progress-step').forEach(step => {
+                observer.observe(step, { attributes: true });
+            });
+        }
+        
+        function trackStepProgress(stepNumber) {
+            if (!window.ProgressTracker) return;
+            
+            const stepNames = {
+                '1': 'selbstbild',
+                '2': 'fremdbild',
+                '3': 'blinder_fleck',
+                '4': 'unbekanntes',
+                '5': 'integration'
+            };
+            
+            const stepId = stepNames[stepNumber];
+            if (stepId) {
+                window.ProgressTracker.completeMethodStep('johari-window', stepId, {
+                    stepNumber: parseInt(stepNumber),
+                    stepName: stepNames[stepNumber],
+                    completedAt: new Date().toISOString()
+                });
+                
+                console.log(`📊 Johari step completed: ${stepId}`);
+            }
+        }
+        
+        function loadUserProgress() {
+            if (!window.ProgressTracker) return;
+            
+            const progress = window.ProgressTracker.getMethodProgress('johari-window');
+            if (!progress || !progress.results) return;
+            
+            console.log('📋 Loading Johari progress:', progress);
+            
+            // Restore form data if available
+            Object.keys(progress.results).forEach(stepId => {
+                const stepData = progress.results[stepId];
+                restoreStepData(stepId, stepData);
+            });
+            
+            // Show progress notification
+            window.GlobalAuth?.showNotification(`Fortschritt geladen: ${progress.currentStep}/5 Schritte`, 'info');
+        }
+        
+        function restoreStepData(stepId, data) {
+            // This would be specific to each step's form elements
+            // For now, just log that we're restoring data
+            console.log(`🔄 Restoring data for step: ${stepId}`, data);
+            
+            // Example: Restore textarea content
+            if (data.content) {
+                const textareas = document.querySelectorAll(`[data-step-id="${stepId}"] textarea`);
+                textareas.forEach(textarea => {
+                    if (!textarea.value) {
+                        textarea.value = data.content;
+                    }
+                });
+            }
+        }
+        
+        function setupAutoSave() {
+            // Auto-save form data every 30 seconds
+            setInterval(saveCurrentProgress, 30000);
+            
+            // Save on form changes
+            document.addEventListener('input', debounce(saveCurrentProgress, 5000));
+            document.addEventListener('change', saveCurrentProgress);
+        }
+        
+        function saveCurrentProgress() {
+            if (!window.ProgressTracker || !window.GlobalAuth?.isAuthenticated()) return;
+            
+            const currentStep = document.querySelector('.progress-step.active');
+            if (!currentStep) return;
+            
+            const stepNumber = currentStep.getAttribute('data-step');
+            const stepContainer = document.querySelector(`[data-step="${stepNumber}"]`);
+            
+            if (stepContainer) {
+                const formData = extractFormData(stepContainer);
+                
+                if (Object.keys(formData).length > 0) {
+                    const stepNames = {
+                        '1': 'selbstbild',
+                        '2': 'fremdbild', 
+                        '3': 'blinder_fleck',
+                        '4': 'unbekanntes',
+                        '5': 'integration'
+                    };
+                    
+                    window.ProgressTracker.completeMethodStep('johari-window', stepNames[stepNumber], {
+                        stepNumber: parseInt(stepNumber),
+                        formData,
+                        autoSaved: true,
+                        savedAt: new Date().toISOString()
+                    });
+                    
+                    console.log('💾 Auto-saved Johari progress');
+                }
+            }
+        }
+        
+        function extractFormData(container) {
+            const data = {};
+            
+            // Extract text inputs
+            container.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                if (input.value.trim()) {
+                    data[input.name || input.id || 'unnamed'] = input.value.trim();
+                }
+            });
+            
+            // Extract checkboxes and radio buttons
+            container.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(input => {
+                if (!data.selections) data.selections = [];
+                data.selections.push(input.value || input.name || input.id);
+            });
+            
+            return data;
+        }
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Export completion function for method-specific use
+        window.completeJohariMethod = function(finalResults) {
+            if (window.ProgressTracker) {
+                window.ProgressTracker.saveMethodResult('johari-window', {
+                    ...finalResults,
+                    completedAt: new Date().toISOString(),
+                    methodName: 'Johari-Window'
+                });
+                
+                window.GlobalAuth?.showNotification('🎉 Johari-Window erfolgreich abgeschlossen!', 'success');
+            }
+        };
+    </script>
 </body>
 </html>

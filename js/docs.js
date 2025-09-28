@@ -1,6 +1,19 @@
-// js/docs.js
+// js/docs.js - Complete API Integration
 import { getUser, isLoggedIn } from './auth.js';
-const API_BASE = '/api';
+
+// API Configuration
+const API_CONFIG = {
+  base: '/api',  // Will be updated for production
+  endpoints: {
+    uploadUrl: '/upload-url',
+    docs: '/docs',
+    downloadUrl: '/download-url',
+    userProfile: '/user-profile',
+    progress: '/user-profile/progress'
+  }
+};
+
+const API_BASE = API_CONFIG.base;
 
 async function api(path, opts={}) {
   const u = getUser();
@@ -34,4 +47,76 @@ export async function deleteDocument(id) {
 }
 export async function getDownloadUrl(key) {
   return api(`/download-url?key=${encodeURIComponent(key)}`);
+}
+
+// User Profile APIs
+export async function getUserProfile() {
+  if (!isLoggedIn()) return null;
+  return api(API_CONFIG.endpoints.userProfile);
+}
+
+export async function saveUserProfile(profileData) {
+  if (!isLoggedIn()) throw new Error('Nicht eingeloggt');
+  return api(API_CONFIG.endpoints.userProfile, {
+    method: 'POST',
+    body: JSON.stringify(profileData)
+  });
+}
+
+// Progress Tracking APIs
+export async function getUserProgress() {
+  if (!isLoggedIn()) return null;
+  return api(API_CONFIG.endpoints.progress);
+}
+
+export async function updateUserProgress(progressData) {
+  if (!isLoggedIn()) throw new Error('Nicht eingeloggt');
+  return api(API_CONFIG.endpoints.progress, {
+    method: 'PUT',
+    body: JSON.stringify(progressData)
+  });
+}
+
+// Method-specific progress tracking
+export async function saveMethodProgress(methodId, stepId, stepData) {
+  if (!isLoggedIn()) return false;
+  
+  try {
+    const currentProgress = await getUserProgress() || { methods: {} };
+    
+    if (!currentProgress.methods[methodId]) {
+      currentProgress.methods[methodId] = {
+        methodId,
+        startedAt: new Date().toISOString(),
+        completedSteps: [],
+        currentStep: 0,
+        status: 'in_progress',
+        results: {}
+      };
+    }
+    
+    const method = currentProgress.methods[methodId];
+    
+    // Update step data
+    if (!method.completedSteps.includes(stepId)) {
+      method.completedSteps.push(stepId);
+      method.currentStep = method.completedSteps.length;
+    }
+    
+    method.results[stepId] = {
+      ...stepData,
+      completedAt: new Date().toISOString()
+    };
+    
+    method.lastActivity = new Date().toISOString();
+    
+    // Save updated progress
+    await updateUserProgress(currentProgress);
+    
+    console.log(`✅ Method progress saved: ${methodId} -> ${stepId}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to save method progress:', error);
+    return false;
+  }
 }

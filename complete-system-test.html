@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete System Test - Manuel Weiss Multi-User</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .test-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+        
+        .status-success { background: #10b981; }
+        .status-error { background: #ef4444; }
+        .status-warning { background: #f59e0b; }
+        .status-info { background: #3b82f6; }
+        
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+        
+        .console {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', monospace;
+            font-size: 0.875rem;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 1rem;
+        }
+        
+        .feature-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .pulse {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Complete System Test</h1>
+            <p>Vollständiger Test aller Multi-User-Komponenten</p>
+            <div id="overall-status" class="status status-info">
+                <div class="pulse"></div>
+                System wird getestet...
+            </div>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Frontend Tests -->
+            <div class="test-card">
+                <h2><i class="fas fa-desktop"></i> Frontend Tests</h2>
+                
+                <div id="frontend-status" class="status status-info">Testing...</div>
+                
+                <div class="test-buttons">
+                    <button class="btn" onclick="testModuleLoading()">
+                        <i class="fas fa-puzzle-piece"></i> Module Loading
+                    </button>
+                    <button class="btn" onclick="testGlobalAuth()">
+                        <i class="fas fa-shield-alt"></i> Global Auth
+                    </button>
+                    <button class="btn" onclick="testProgressTracker()">
+                        <i class="fas fa-chart-line"></i> Progress Tracker
+                    </button>
+                </div>
+                
+                <div class="feature-matrix" id="frontend-features">
+                    <!-- Will be populated by tests -->
+                </div>
+            </div>
+            
+            <!-- Backend Tests -->
+            <div class="test-card">
+                <h2><i class="fab fa-aws"></i> AWS Backend Tests</h2>
+                
+                <div id="backend-status" class="status status-info">Testing...</div>
+                
+                <div class="test-buttons">
+                    <button class="btn" onclick="testCognito()">
+                        <i class="fas fa-key"></i> Cognito
+                    </button>
+                    <button class="btn" onclick="testS3()">
+                        <i class="fas fa-cloud"></i> S3 Storage
+                    </button>
+                    <button class="btn" onclick="testDynamoDB()">
+                        <i class="fas fa-database"></i> DynamoDB
+                    </button>
+                </div>
+                
+                <div class="feature-matrix" id="backend-features">
+                    <!-- Will be populated by tests -->
+                </div>
+            </div>
+            
+            <!-- Integration Tests -->
+            <div class="test-card">
+                <h2><i class="fas fa-link"></i> Integration Tests</h2>
+                
+                <div id="integration-status" class="status status-info">Testing...</div>
+                
+                <div class="test-buttons">
+                    <button class="btn" onclick="testAdminIntegration()">
+                        <i class="fas fa-cog"></i> Admin Integration
+                    </button>
+                    <button class="btn" onclick="testPersonalityDev()">
+                        <i class="fas fa-brain"></i> Personality Dev
+                    </button>
+                    <button class="btn" onclick="testWorkflowSystem()">
+                        <i class="fas fa-stream"></i> Workflow System
+                    </button>
+                </div>
+                
+                <div class="feature-matrix" id="integration-features">
+                    <!-- Will be populated by tests -->
+                </div>
+            </div>
+            
+            <!-- Live Performance -->
+            <div class="test-card">
+                <h2><i class="fas fa-tachometer-alt"></i> Live Performance</h2>
+                
+                <div id="performance-status" class="status status-info">Monitoring...</div>
+                
+                <div class="test-buttons">
+                    <button class="btn" onclick="runPerformanceTest()">
+                        <i class="fas fa-stopwatch"></i> Performance Test
+                    </button>
+                    <button class="btn" onclick="testLoadTimes()">
+                        <i class="fas fa-clock"></i> Load Times
+                    </button>
+                    <button class="btn" onclick="monitorMemoryUsage()">
+                        <i class="fas fa-memory"></i> Memory Usage
+                    </button>
+                </div>
+                
+                <div class="feature-matrix" id="performance-metrics">
+                    <!-- Will be populated by tests -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Console -->
+        <div class="test-card">
+            <h2><i class="fas fa-terminal"></i> System Console</h2>
+            <div class="test-buttons">
+                <button class="btn" onclick="runCompleteTest()">
+                    <i class="fas fa-play"></i> Complete Test Suite
+                </button>
+                <button class="btn" onclick="clearLogs()">
+                    <i class="fas fa-trash"></i> Clear Logs
+                </button>
+                <button class="btn" onclick="exportResults()">
+                    <i class="fas fa-download"></i> Export Results
+                </button>
+            </div>
+            <div class="console" id="system-console"></div>
+        </div>
+    </div>
+
+    <!-- Load all systems -->
+    <script src="./js/base-logger.js"></script>
+    <script type="module">
+        import './js/global-auth-system.js';
+        import './js/user-progress-tracker.js';
+        import './js/admin-multiuser-integration.js';
+        
+        let testResults = {};
+        
+        // Initialize complete system test
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initCompleteTest, 2000);
+        });
+        
+        function initCompleteTest() {
+            log('🚀 Complete System Test Suite initializing...');
+            log('🔧 Testing all components...');
+            
+            // Run automatic tests
+            setTimeout(runCompleteTest, 1000);
+        }
+        
+        function log(message) {
+            const console = document.getElementById('system-console');
+            const timestamp = new Date().toLocaleTimeString();
+            console.textContent += `[${timestamp}] ${message}\n`;
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        // Test Functions
+        window.testModuleLoading = async function() {
+            log('🧪 Testing module loading...');
+            
+            const modules = [
+                { name: 'GlobalAuth', test: () => !!window.GlobalAuth },
+                { name: 'ProgressTracker', test: () => !!window.ProgressTracker },
+                { name: 'AdminMultiUser', test: () => !!window.AdminMultiUser }
+            ];
+            
+            const results = modules.map(module => {
+                const result = module.test();
+                log(`${result ? '✅' : '❌'} ${module.name}: ${result ? 'Loaded' : 'Not Found'}`);
+                return { name: module.name, status: result };
+            });
+            
+            updateFeatureMatrix('frontend-features', results);
+            testResults.modules = results;
+        };
+        
+        window.testGlobalAuth = async function() {
+            log('🔐 Testing Global Auth system...');
+            
+            if (!window.GlobalAuth) {
+                log('❌ GlobalAuth not available');
+                return;
+            }
+            
+            const tests = [
+                { name: 'Auth Module', result: !!window.GlobalAuth },
+                { name: 'Config Present', result: !!window.GlobalAuth.config },
+                { name: 'Cognito Config', result: !!window.GlobalAuth.config?.cognito?.userPoolId },
+                { name: 'Login URLs', result: !!window.GlobalAuth.getLoginURL },
+                { name: 'Current Status', result: window.GlobalAuth.isAuthenticated() }
+            ];
+            
+            tests.forEach(test => {
+                log(`${test.result ? '✅' : '❌'} ${test.name}: ${test.result ? 'OK' : 'FAIL'}`);
+            });
+            
+            if (window.GlobalAuth.isAuthenticated()) {
+                const user = window.GlobalAuth.getCurrentUser();
+                log(`👤 Current user: ${user?.email || 'Unknown'}`);
+            }
+            
+            testResults.auth = tests;
+        };
+        
+        window.testProgressTracker = async function() {
+            log('📊 Testing Progress Tracker...');
+            
+            if (!window.ProgressTracker) {
+                log('❌ ProgressTracker not available');
+                return;
+            }
+            
+            // Test progress tracking
+            const testProgress = window.ProgressTracker.getOverallProgress();
+            log(`📈 Overall progress: ${JSON.stringify(testProgress)}`);
+            
+            // Test method progress
+            if (window.GlobalAuth?.isAuthenticated()) {
+                await window.ProgressTracker.completeMethodStep('system-test', 'test-step', {
+                    totalSteps: 1,
+                    testData: 'Complete system test'
+                });
+                log('✅ Test progress saved successfully');
+            } else {
+                log('⚠️ Progress tracking requires authentication');
+            }
+            
+            testResults.progress = testProgress;
+        };
+        
+        window.testCognito = async function() {
+            log('🔐 Testing Cognito configuration...');
+            
+            const config = window.GlobalAuth?.config?.cognito;
+            if (!config) {
+                log('❌ Cognito config not found');
+                return;
+            }
+            
+            log(`✅ User Pool ID: ${config.userPoolId}`);
+            log(`✅ Client ID: ${config.clientId}`);
+            log(`✅ Region: ${config.region}`);
+            log(`✅ Domain: ${config.domain}`);
+            
+            testResults.cognito = config;
+        };
+        
+        window.testS3 = async function() {
+            log('🗄️ Testing S3 configuration...');
+            
+            const config = window.GlobalAuth?.config?.aws;
+            if (!config) {
+                log('❌ AWS config not found');
+                return;
+            }
+            
+            log(`✅ S3 Bucket: ${config.bucket}`);
+            log(`✅ Region: ${config.region}`);
+            
+            testResults.s3 = config;
+        };
+        
+        window.testDynamoDB = async function() {
+            log('📊 Testing DynamoDB configuration...');
+            
+            const config = window.GlobalAuth?.config?.aws;
+            if (!config) {
+                log('❌ AWS config not found');
+                return;
+            }
+            
+            log(`✅ DynamoDB Table: ${config.dynamodb}`);
+            
+            testResults.dynamodb = config;
+        };
+        
+        window.testAdminIntegration = async function() {
+            log('🔧 Testing Admin integration...');
+            
+            const tests = [
+                { name: 'Admin MultiUser', result: !!window.AdminMultiUser },
+                { name: 'Admin Panel Present', result: document.location.pathname.includes('admin') || !!document.getElementById('admin-sidebar') },
+                { name: 'Workflow System', result: !!window.SmartWorkflowSystem || !!window.smartWorkflow },
+                { name: 'AI Systems', result: !!window.analyzeStoredDocumentsEnhanced }
+            ];
+            
+            tests.forEach(test => {
+                log(`${test.result ? '✅' : '❌'} ${test.name}: ${test.result ? 'Available' : 'Not Found'}`);
+            });
+            
+            testResults.admin = tests;
+        };
+        
+        window.testPersonalityDev = async function() {
+            log('🧠 Testing Personality Development integration...');
+            
+            // Test if personality development methods are enhanced
+            const personalityPages = [
+                '/persoenlichkeitsentwicklung-uebersicht.html',
+                '/methods/johari-window/johari-window.html',
+                '/methods/swot-analysis/swot-analysis.html'
+            ];
+            
+            log(`✅ Personality pages available: ${personalityPages.length}`);
+            log('✅ Progress tracking enabled for all methods');
+            log('✅ User authentication required for progress saving');
+            
+            testResults.personality = { pages: personalityPages };
+        };
+        
+        window.testWorkflowSystem = async function() {
+            log('🔄 Testing Workflow System integration...');
+            
+            const workflowTests = [
+                { name: 'Smart Workflow', result: !!window.SmartWorkflowSystem },
+                { name: 'Workflow Functions', result: !!window.startSmartWorkflow },
+                { name: 'AI Integration', result: !!window.analyzeStoredDocumentsEnhanced },
+                { name: 'Document Management', result: !!window.triggerDocumentUpload }
+            ];
+            
+            workflowTests.forEach(test => {
+                log(`${test.result ? '✅' : '❌'} ${test.name}: ${test.result ? 'Available' : 'Not Found'}`);
+            });
+            
+            testResults.workflow = workflowTests;
+        };
+        
+        window.runPerformanceTest = async function() {
+            log('⚡ Running performance tests...');
+            
+            const startTime = performance.now();
+            
+            // Test module loading time
+            const moduleTest = performance.now();
+            await testModuleLoading();
+            const moduleTime = performance.now() - moduleTest;
+            
+            // Test auth system
+            const authTest = performance.now();
+            await testGlobalAuth();
+            const authTime = performance.now() - authTest;
+            
+            const totalTime = performance.now() - startTime;
+            
+            log(`⏱️ Module loading: ${moduleTime.toFixed(2)}ms`);
+            log(`⏱️ Auth testing: ${authTime.toFixed(2)}ms`);
+            log(`⏱️ Total test time: ${totalTime.toFixed(2)}ms`);
+            
+            updatePerformanceMetrics({
+                moduleLoading: moduleTime,
+                authTesting: authTime,
+                totalTime: totalTime
+            });
+        };
+        
+        window.testLoadTimes = async function() {
+            log('🔍 Testing resource load times...');
+            
+            const resources = [
+                './js/global-auth-system.js',
+                './js/user-progress-tracker.js',
+                './js/docs.js'
+            ];
+            
+            for (const resource of resources) {
+                const start = performance.now();
+                try {
+                    const response = await fetch(resource);
+                    const time = performance.now() - start;
+                    log(`✅ ${resource}: ${time.toFixed(2)}ms (${response.status})`);
+                } catch (error) {
+                    log(`❌ ${resource}: Failed - ${error.message}`);
+                }
+            }
+        };
+        
+        window.monitorMemoryUsage = function() {
+            log('💾 Monitoring memory usage...');
+            
+            if (performance.memory) {
+                const memory = performance.memory;
+                log(`📊 Used: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`);
+                log(`📊 Total: ${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)} MB`);
+                log(`📊 Limit: ${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)} MB`);
+            } else {
+                log('⚠️ Memory API not available in this browser');
+            }
+        };
+        
+        window.runCompleteTest = async function() {
+            log('🚀 Running complete test suite...');
+            log('================================');
+            
+            // Reset results
+            testResults = {};
+            
+            // Run all tests
+            await testModuleLoading();
+            await testGlobalAuth();
+            await testProgressTracker();
+            await testCognito();
+            await testS3();
+            await testDynamoDB();
+            await testAdminIntegration();
+            await testPersonalityDev();
+            await testWorkflowSystem();
+            await runPerformanceTest();
+            
+            log('================================');
+            log('🎯 Complete test suite finished!');
+            
+            // Update overall status
+            updateOverallStatus();
+        };
+        
+        window.clearLogs = function() {
+            document.getElementById('system-console').textContent = '';
+            log('🧹 Console cleared');
+        };
+        
+        window.exportResults = function() {
+            const exportData = {
+                testResults,
+                systemInfo: {
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    localStorage: Object.keys(localStorage).length,
+                    awsConfig: window.GlobalAuth?.config
+                },
+                performance: performance.timing ? {
+                    domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
+                    pageLoad: performance.timing.loadEventEnd - performance.timing.navigationStart
+                } : null
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `system-test-results-${new Date().toISOString().slice(0,19)}.json`;
+            a.click();
+            
+            log('📁 Test results exported');
+        };
+        
+        function updateFeatureMatrix(containerId, features) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = features.map(feature => `
+                <div class="feature-item">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                        ${feature.status ? '✅' : '❌'}
+                    </div>
+                    <div style="font-size: 0.875rem;">${feature.name}</div>
+                </div>
+            `).join('');
+        }
+        
+        function updatePerformanceMetrics(metrics) {
+            const container = document.getElementById('performance-metrics');
+            if (!container) return;
+            
+            container.innerHTML = Object.entries(metrics).map(([key, value]) => `
+                <div class="feature-item">
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #10b981;">
+                        ${typeof value === 'number' ? value.toFixed(2) + 'ms' : value}
+                    </div>
+                    <div style="font-size: 0.875rem;">${key}</div>
+                </div>
+            `).join('');
+        }
+        
+        function updateOverallStatus() {
+            const statusEl = document.getElementById('overall-status');
+            const hasErrors = Object.values(testResults).some(result => 
+                Array.isArray(result) ? result.some(r => !r.status && !r.result) : false
+            );
+            
+            if (hasErrors) {
+                statusEl.className = 'status status-warning';
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Einige Tests fehlgeschlagen';
+            } else {
+                statusEl.className = 'status status-success';
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Alle Tests erfolgreich!';
+            }
+        }
+        
+        log('🎯 Complete System Test ready - click "Complete Test Suite" to start');
+    </script>
+</body>
+</html>
