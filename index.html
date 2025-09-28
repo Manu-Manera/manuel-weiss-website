@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuel Weiss - HR Berater für AI & Transformation</title>
     
-    <!-- Meta Tags -->
-    <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
-    <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
+    <!-- Meta Tags - SEO Optimized -->
+    <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen für moderne Unternehmen.">
+    <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen, HR Consulting, AI Implementation, Business Transformation">
     <meta name="author" content="Manuel Weiss">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     
     <!-- Open Graph -->
     <meta property="og:title" content="Manuel Weiss - Professional Services">
@@ -16,62 +23,116 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app">
     
-    <!-- Styles -->
+    <!-- Styles - Optimized Loading -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     
-    <!-- Favicon -->
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+        /* Critical CSS - Above the fold */
+        body { margin: 0; font-family: 'Inter', sans-serif; }
+        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    </style>
+    
+    <!-- Favicon & Icons -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Manuel Weiss",
+        "jobTitle": "HR Berater",
+        "description": "HR Berater für AI, Transformation und Geschäftsprozesse",
+        "url": "https://mawps.netlify.app",
+        "sameAs": [
+            "https://linkedin.com/in/manuel-weiss"
+        ]
+    }
+    </script>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
+    <!-- Navigation - Modern UX -->
+    <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss Logo" class="nav-logo" width="40" height="40">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
             
-            <div class="nav-menu" id="navMenu">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#services" class="nav-link">Services</a>
-                <a href="#about" class="nav-link">Über mich</a>
-                <a href="#contact" class="nav-link">Kontakt</a>
-                <div class="language-switcher">
-                    <a href="index.html" class="lang-link active">🇩🇪 DE</a>
-                    <a href="en/index.html" class="lang-link">🇬🇧 EN</a>
+            <div class="nav-menu" id="navMenu" role="menubar">
+                <a href="#home" class="nav-link active" role="menuitem" aria-current="page">Home</a>
+                <a href="#services" class="nav-link" role="menuitem">Services</a>
+                <a href="#about" class="nav-link" role="menuitem">Über mich</a>
+                <a href="#contact" class="nav-link" role="menuitem">Kontakt</a>
+                <div class="language-switcher" role="group" aria-label="Sprachauswahl">
+                    <a href="index.html" class="lang-link active" aria-current="true" aria-label="Deutsch">🇩🇪 DE</a>
+                    <a href="en/index.html" class="lang-link" aria-label="English">🇬🇧 EN</a>
                 </div>
             </div>
             
-            <div class="nav-toggle" id="navToggle">
+            <button class="nav-toggle" id="navToggle" aria-label="Navigation öffnen/schließen" aria-expanded="false" aria-controls="navMenu">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
+    <!-- Hero Section - Modern UX -->
+    <section id="home" class="hero" role="banner">
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title">
                     HR Berater für 
-                    <span class="gradient-text">AI & Transformation</span>
+                    <span class="gradient-text" aria-label="AI und Transformation">AI & Transformation</span>
                 </h1>
                 <p class="hero-subtitle">
                     Innovative Lösungen für moderne Unternehmen. 
                     Digitalisierung, Geschäftsprozesse und Personalwesen.
                 </p>
                 <div class="hero-actions">
-                    <a href="#services" class="btn btn-primary">Services entdecken</a>
-                    <a href="#contact" class="btn btn-outline">Kontakt aufnehmen</a>
+                    <a href="#services" class="btn btn-primary" role="button" aria-label="Services entdecken">
+                        <span>Services entdecken</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    <a href="#contact" class="btn btn-outline" role="button" aria-label="Kontakt aufnehmen">
+                        <span>Kontakt aufnehmen</span>
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                    </a>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                        <span>Zertifiziert</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-users" aria-hidden="true"></i>
+                        <span>Erfahrung</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        <span>Vertraulich</span>
+                    </div>
                 </div>
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image" id="profile-photo">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss - HR Berater" class="profile-image" id="profile-photo" width="300" height="300" loading="eager">
+                    <div class="image-overlay">
+                        <div class="status-indicator online">
+                            <span class="status-dot"></span>
+                            <span>Verfügbar</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">

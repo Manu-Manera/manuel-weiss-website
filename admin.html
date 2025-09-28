@@ -195,25 +195,21 @@
             margin-left: 70px !important;
         }
         
-        /* NUCLEAR BODY FIX - NO MARGIN, NO PADDING */
+        /* EINFACHES LAYOUT - KEINE ÜBERSCHNEIDUNG */
         body {
             margin: 0 !important;
             padding: 0 !important;
-            margin-left: 0 !important;
-            padding-left: 0 !important;
         }
         
-        /* MAIN CONTENT CONTAINER */
         .admin-main {
             margin-left: 280px !important;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            width: calc(100% - 280px) !important;
             min-height: 100vh !important;
-            background: #f8fafc !important;
         }
         
-        .sidebar.collapsed ~ .admin-main,
-        body.sidebar-collapsed .admin-main {
+        .sidebar.collapsed ~ .admin-main {
             margin-left: 70px !important;
+            width: calc(100% - 70px) !important;
         }
         
         /* Ensure sidebar is always visible and properly positioned */
@@ -9810,13 +9806,21 @@ Bitte antworte im folgenden JSON-Format:
                     sidebar.classList.remove('collapsed');
                     body.classList.remove('sidebar-collapsed');
                     const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) mainContent.style.marginLeft = '280px';
+                    if (mainContent) {
+                        mainContent.style.marginLeft = '280px';
+                        mainContent.style.width = 'calc(100vw - 280px)';
+                        mainContent.style.maxWidth = 'calc(100vw - 280px)';
+                    }
                 } else {
                     // Collapse
                     sidebar.classList.add('collapsed');
                     body.classList.add('sidebar-collapsed');
                     const mainContent = document.querySelector('.admin-main');
-                    if (mainContent) mainContent.style.marginLeft = '70px';
+                    if (mainContent) {
+                        mainContent.style.marginLeft = '70px';
+                        mainContent.style.width = 'calc(100vw - 70px)';
+                        mainContent.style.maxWidth = 'calc(100vw - 70px)';
+                    }
                 }
                 
                 console.log('🔄 Sidebar', isCollapsed ? 'expanded' : 'collapsed');
@@ -9875,34 +9879,14 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
-        // SOFORTIGER LAYOUT FIX
-        function emergencyLayoutFix() {
-            // Remove ALL body margins and padding
-            document.body.style.margin = '0';
-            document.body.style.padding = '0';
-            document.body.style.marginLeft = '0';
-            document.body.style.paddingLeft = '0';
-            
-            // Fix main content
+        // EINFACHES LAYOUT FIX
+        function fixLayout() {
             const mainContent = document.querySelector('.admin-main');
             if (mainContent) {
                 mainContent.style.marginLeft = '280px';
-                mainContent.style.marginTop = '0';
-                mainContent.style.marginRight = '0';
-                mainContent.style.marginBottom = '0';
-                mainContent.style.padding = '0';
+                mainContent.style.width = 'calc(100% - 280px)';
             }
-            
-            // Fix sidebar
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                sidebar.style.margin = '0';
-                sidebar.style.padding = '0';
-                sidebar.style.left = '0';
-                sidebar.style.top = '0';
-            }
-            
-            console.log('🚨 EMERGENCY LAYOUT FIX APPLIED');
+            console.log('✅ Layout fixed');
         }
         
         // Apply immediately
