@@ -5641,11 +5641,12 @@
                                 ">
                                     <i class="fas fa-external-link-alt"></i> AWS Cognito Console
                                 </button>
-                                <button onclick="alert('Complete AWS Deployment ready!\\n\\nRun: ./deploy-complete-system.sh\\n\\nThis will deploy everything to AWS Amplify with working User Management!')" style="
-                                    background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
+                                <button onclick="showDeployModal()" style="
+                                    background: #10b981; color: white; border: none;
                                     padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500; margin: 0.5rem;
+                                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
                                 ">
-                                    <i class="fas fa-rocket"></i> Deploy to AWS Amplify
+                                    <i class="fas fa-rocket"></i> Deploy Complete System
                                 </button>
                             </div>
                         </div>
@@ -9618,6 +9619,83 @@ Bitte antworte im folgenden JSON-Format:
         
         // Chatbot sofort hinzufügen
         addSimpleChatbot();
+        
+        // Deploy Modal
+        function showDeployModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white; border-radius: 12px; padding: 2rem; max-width: 600px; width: 90%;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative;
+                ">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+                        font-size: 1.5rem; cursor: pointer; color: #666;
+                    ">×</button>
+                    
+                    <h2 style="margin: 0 0 1rem; color: #1f2937;">🚀 Complete System Deployment</h2>
+                    
+                    <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="margin: 0 0 0.5rem; color: #0369a1;">Terminal Command:</h4>
+                        <code style="
+                            background: #1f2937; color: #10b981; padding: 1rem; border-radius: 8px;
+                            display: block; font-family: monospace; font-size: 1.1rem;
+                        ">./deploy-complete-system.sh</code>
+                    </div>
+                    
+                    <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="margin: 0 0 0.5rem; color: #166534;">✅ Was wird deployed:</h4>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: #374151;">
+                            <li>AWS Amplify Complete Setup</li>
+                            <li>User Management System</li>
+                            <li>AWS Cognito Integration</li>
+                            <li>S3 File Storage</li>
+                            <li>DynamoDB Database</li>
+                            <li>API Gateway</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="margin: 0 0 0.5rem; color: #92400e;">⚠️ Voraussetzungen:</h4>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: #374151;">
+                            <li>AWS CLI konfiguriert</li>
+                            <li>Amplify CLI installiert</li>
+                            <li>Terminal geöffnet</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <button onclick="copyToClipboard('./deploy-complete-system.sh')" style="
+                            background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem;
+                            border-radius: 8px; cursor: pointer; font-weight: 500; margin: 0.5rem;
+                        ">
+                            <i class="fas fa-copy"></i> Command kopieren
+                        </button>
+                        <button onclick="window.open('https://console.aws.amazon.com/amplify', '_blank')" style="
+                            background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem;
+                            border-radius: 8px; cursor: pointer; font-weight: 500; margin: 0.5rem;
+                        ">
+                            <i class="fas fa-external-link-alt"></i> AWS Console
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Command kopiert! Füge es in dein Terminal ein.');
+            });
+        }
         import './js/admin-real-time-dashboard.js';
         
         console.log('🔧 Admin: Complete Multi-User-System geladen');
