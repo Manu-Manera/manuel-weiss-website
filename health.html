@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>Health</title>
+<h3>Health</h3>
+<p>Nach Deploy: Console öffnen und prüfen.</p>
+<script type="module">
+  try {
+    const r = await fetch('/api/docs', { headers: { 'Authorization': 'Bearer INVALID' }});
+    console.log('API status (expected 401):', r.status);
+  } catch(e){ console.error('API unreachable', e); }
+</script>

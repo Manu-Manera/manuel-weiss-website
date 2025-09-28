@@ -201,10 +201,25 @@
             padding: 0 !important;
         }
         
-        /* ALLE CONTENT BEREICHE */
+        /* ALLE CONTENT BEREICHE - INKLUSIVE HAUPTMENÜ */
         .admin-main,
         .admin-section,
-        #user-management-live {
+        #user-management-live,
+        #dashboard,
+        #content,
+        #nutrition,
+        #personality-development,
+        #personal-training,
+        #applications,
+        #ai-settings,
+        #ai-twin,
+        #translations,
+        #media,
+        #vermietungen,
+        #buchungen,
+        #analytics,
+        #system-health,
+        #settings {
             margin-left: 280px !important;
             width: calc(100vw - 280px) !important;
             max-width: calc(100vw - 280px) !important;
@@ -217,7 +232,22 @@
         .sidebar.collapsed ~ .admin-section,
         body.sidebar-collapsed .admin-main,
         body.sidebar-collapsed .admin-section,
-        body.sidebar-collapsed #user-management-live {
+        body.sidebar-collapsed #user-management-live,
+        body.sidebar-collapsed #dashboard,
+        body.sidebar-collapsed #content,
+        body.sidebar-collapsed #nutrition,
+        body.sidebar-collapsed #personality-development,
+        body.sidebar-collapsed #personal-training,
+        body.sidebar-collapsed #applications,
+        body.sidebar-collapsed #ai-settings,
+        body.sidebar-collapsed #ai-twin,
+        body.sidebar-collapsed #translations,
+        body.sidebar-collapsed #media,
+        body.sidebar-collapsed #vermietungen,
+        body.sidebar-collapsed #buchungen,
+        body.sidebar-collapsed #analytics,
+        body.sidebar-collapsed #system-health,
+        body.sidebar-collapsed #settings {
             margin-left: 70px !important;
             width: calc(100vw - 70px) !important;
             max-width: calc(100vw - 70px) !important;
@@ -9849,7 +9879,13 @@ Bitte antworte im folgenden JSON-Format:
                     // Expand
                     sidebar.classList.remove('collapsed');
                     body.classList.remove('sidebar-collapsed');
-                    const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+                    const elements = document.querySelectorAll(`
+                        .admin-main, .admin-section, #user-management-live,
+                        #dashboard, #content, #nutrition, #personality-development,
+                        #personal-training, #applications, #ai-settings, #ai-twin,
+                        #translations, #media, #vermietungen, #buchungen,
+                        #analytics, #system-health, #settings
+                    `);
                     elements.forEach(el => {
                         el.style.marginLeft = '280px';
                         el.style.width = 'calc(100vw - 280px)';
@@ -9859,7 +9895,13 @@ Bitte antworte im folgenden JSON-Format:
                     // Collapse
                     sidebar.classList.add('collapsed');
                     body.classList.add('sidebar-collapsed');
-                    const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+                    const elements = document.querySelectorAll(`
+                        .admin-main, .admin-section, #user-management-live,
+                        #dashboard, #content, #nutrition, #personality-development,
+                        #personal-training, #applications, #ai-settings, #ai-twin,
+                        #translations, #media, #vermietungen, #buchungen,
+                        #analytics, #system-health, #settings
+                    `);
                     elements.forEach(el => {
                         el.style.marginLeft = '70px';
                         el.style.width = 'calc(100vw - 70px)';
@@ -9923,10 +9965,17 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
-        // FINALE LAYOUT FIX
+        // FINALE LAYOUT FIX - ALLE BEREICHE
         function fixLayout() {
-            // Fix alle content bereiche
-            const elements = document.querySelectorAll('.admin-main, .admin-section, #user-management-live');
+            // Fix ALLE content bereiche inklusive Hauptmenü
+            const elements = document.querySelectorAll(`
+                .admin-main, .admin-section, #user-management-live,
+                #dashboard, #content, #nutrition, #personality-development,
+                #personal-training, #applications, #ai-settings, #ai-twin,
+                #translations, #media, #vermietungen, #buchungen,
+                #analytics, #system-health, #settings
+            `);
+            
             elements.forEach(el => {
                 el.style.marginLeft = '280px';
                 el.style.width = 'calc(100vw - 280px)';
@@ -9945,7 +9994,7 @@ Bitte antworte im folgenden JSON-Format:
                 });
             }
             
-            console.log('✅ Finale Layout fixed');
+            console.log('✅ Finale Layout fixed - ALLE Bereiche');
         }
         
         // Apply immediately
