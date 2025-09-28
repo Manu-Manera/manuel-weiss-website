@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check - Manuel Weiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+        
+        .health-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .health-card.healthy {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .health-card.warning {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .health-card.unhealthy {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .health-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .healthy .health-icon {
+            color: #10b981;
+        }
+        
+        .warning .health-icon {
+            color: #f59e0b;
+        }
+        
+        .unhealthy .health-icon {
+            color: #ef4444;
+        }
+        
+        .health-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .health-status {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .health-details {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.75rem;
+            font-family: monospace;
+            text-align: left;
+            overflow-x: auto;
+        }
+        
+        .actions {
+            text-align: center;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #f97316;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .overall-status {
+            text-align: center;
+            padding: 1.5rem;
+            margin: 0 2rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .overall-status.healthy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .overall-status.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .overall-status.unhealthy {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> System Health Check</h1>
+            <p>Überwachung aller System-Komponenten</p>
+        </div>
+        
+        <div class="overall-status" id="overall-status">
+            <i class="fas fa-spinner fa-spin"></i> System wird überprüft...
+        </div>
+        
+        <div class="health-grid">
+            <div class="health-card" id="api-health">
+                <div class="health-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="health-title">API Gateway</div>
+                <div class="health-status">Checking...</div>
+                <div class="health-details" id="api-details"></div>
+            </div>
+            
+            <div class="health-card" id="frontend-health">
+                <div class="health-icon">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <div class="health-title">Frontend</div>
+                <div class="health-status">Checking...</div>
+                <div class="health-details" id="frontend-details"></div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="runHealthCheck()">
+                <i class="fas fa-sync"></i> Health Check aktualisieren
+            </button>
+            <a href="admin.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Zurück zum Admin
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function runHealthCheck() {
+            console.log('🏥 Starting Health Check...');
+            
+            const apiTest = await fetch('/api/health').catch(() => ({ok: false}));
+            const frontendOK = document.readyState === 'complete';
+            
+            document.getElementById('overall-status').innerHTML = 
+                apiTest.ok && frontendOK ? 
+                '<i class="fas fa-check-circle"></i> System Online' :
+                '<i class="fas fa-exclamation-triangle"></i> Check Details';
+        }
+        
+        document.addEventListener('DOMContentLoaded', runHealthCheck);
+    </script>
+</body>
+</html>
