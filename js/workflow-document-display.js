@@ -386,12 +386,24 @@
         setTimeout(() => notification.remove(), 3000);
     }
     
+    // Dokumenten für Analyse abrufen
+    function getAnalysisDocuments() {
+        const documents = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const selectedDocs = documents.filter(d => d.includeInAnalysis);
+        
+        console.log(`📋 getAnalysisDocuments: ${selectedDocs.length} von ${documents.length} Dokumenten ausgewählt`);
+        console.log('📋 Ausgewählte Dokumente:', selectedDocs.map(d => d.name));
+        
+        return selectedDocs;
+    }
+    
     // Globale Funktionen verfügbar machen
     window.toggleDocumentSelection = toggleDocumentSelection;
     window.selectAllDocuments = selectAllDocuments;
     window.skipProfileAnalysis = skipProfileAnalysis;
     window.proceedWithAnalysis = proceedWithAnalysis;
     window.updateDocumentSelectionSection = updateDocumentSelectionSection;
+    window.getAnalysisDocuments = getAnalysisDocuments;
     
     // Workflow-Schritt Überwachung
     function monitorWorkflowStep() {

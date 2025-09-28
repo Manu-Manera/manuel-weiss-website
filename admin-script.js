@@ -1255,7 +1255,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 name: file.name,
                                 type: 'document',
                                 uploadDate: new Date().toISOString(),
-                                size: file.size
+                                size: file.size,
+                                includeInAnalysis: true // Standardmäßig für Analyse auswählen
                             };
                             documents.push(newDoc);
                             localStorage.setItem('applicationDocuments', JSON.stringify(documents));
@@ -2708,7 +2709,8 @@ function confirmDocumentType(fileName, fileSize, fileType) {
                 uploadedAt: new Date().toISOString(),
                 dataUrl: e.target.result,
                 mimeType: file.type,
-                originalSize: file.size
+                originalSize: file.size,
+                includeInAnalysis: true // Standardmäßig für Analyse auswählen
             };
             
             // Get existing documents
