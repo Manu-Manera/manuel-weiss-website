@@ -57,22 +57,30 @@
             padding: 0 !important;
         }
         
-        .main-content, 
-        .admin-main,
-        [class*="content"],
-        [class*="main"] {
-            margin-left: 280px !important;
-            width: calc(100% - 280px) !important;
-            transition: all 0.3s ease !important;
+        /* Proper layout without breaking existing design */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
         }
         
-        /* When sidebar is collapsed */
-        .sidebar.collapsed ~ .main-content,
-        .sidebar.collapsed ~ .admin-main,
-        .sidebar.collapsed ~ [class*="content"],
-        .sidebar.collapsed ~ [class*="main"] {
-            margin-left: 70px !important;
-            width: calc(100% - 70px) !important;
+        .content-wrapper {
+            margin-left: 280px;
+            padding: 1rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+            overflow-x: hidden;
+            max-width: calc(100vw - 280px);
+        }
+        
+        .sidebar.collapsed + .content-wrapper {
+            margin-left: 70px;
+            max-width: calc(100vw - 70px);
+        }
+        
+        /* Fix admin sections to not overlap with sidebar */
+        .admin-section {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
         }
         
         .sidebar, .sidebar *, 
@@ -5472,29 +5480,29 @@
                         <h3 style="margin: 0 0 1.5rem;">🚀 Enterprise Multi-User System</h3>
                         
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                            <div onclick="openService('website-pages')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" 
-                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                <div style="font-size: 2rem; font-weight: bold;">67</div>
-                                <div style="font-size: 0.875rem;">Website Pages</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Online Services</div>
+                            <div onclick="openService('website-pages')" style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);" 
+                                 onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <div style="font-size: 2rem; font-weight: bold; color: white;">67</div>
+                                <div style="font-size: 0.875rem; color: white; font-weight: 600;">Website Pages</div>
+                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.9);">Online Services</div>
                             </div>
-                            <div onclick="openService('coaching-methods')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
-                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                <div style="font-size: 2rem; font-weight: bold;">35</div>
-                                <div style="font-size: 0.875rem;">Coaching Methods</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Interactive Tools</div>
+                            <div onclick="openService('coaching-methods')" style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <div style="font-size: 2rem; font-weight: bold; color: white;">35</div>
+                                <div style="font-size: 0.875rem; color: white; font-weight: 600;">Coaching Methods</div>
+                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.9);">Interactive Tools</div>
                             </div>
-                            <div onclick="openService('aws-backend')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
-                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                <div style="font-size: 2rem; font-weight: bold;">✅</div>
-                                <div style="font-size: 0.875rem;">Cloud Services</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">AWS Backend</div>
+                            <div onclick="openService('aws-backend')" style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <div style="font-size: 2rem; font-weight: bold; color: white;">✅</div>
+                                <div style="font-size: 0.875rem; color: white; font-weight: 600;">Cloud Services</div>
+                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.9);">AWS Backend</div>
                             </div>
-                            <div onclick="openService('enterprise-solutions')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
-                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                <div style="font-size: 2rem; font-weight: bold;">🎯</div>
-                                <div style="font-size: 0.875rem;">Enterprise</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Professional</div>
+                            <div onclick="openService('enterprise-solutions')" style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <div style="font-size: 2rem; font-weight: bold; color: white;">🎯</div>
+                                <div style="font-size: 0.875rem; color: white; font-weight: 600;">Enterprise</div>
+                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.9);">Professional</div>
                             </div>
                         </div>
                         
@@ -9568,47 +9576,45 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // Enhanced Sidebar Integration - FIXED
+        // Clean Sidebar Integration
         function initializeSidebar() {
-            const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.querySelector('.sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
             
-            // Get ALL content containers
-            const allContent = document.querySelectorAll('.main-content, .admin-main, [class*="content"], [class*="main"]');
-            
-            function adjustContentMargin(collapsed) {
-                const marginLeft = collapsed ? '70px' : '280px';
-                const width = collapsed ? 'calc(100% - 70px)' : 'calc(100% - 280px)';
-                
-                allContent.forEach(content => {
-                    content.style.marginLeft = marginLeft;
-                    content.style.width = width;
-                });
-                
-                // Also adjust body content if no specific content container
-                if (allContent.length === 0) {
-                    document.body.style.marginLeft = marginLeft;
+            // Create content wrapper if not exists
+            function ensureContentWrapper() {
+                let wrapper = document.querySelector('.content-wrapper');
+                if (!wrapper) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'content-wrapper';
+                    
+                    // Move all body content to wrapper
+                    while (document.body.firstChild && document.body.firstChild !== sidebar) {
+                        if (document.body.firstChild.tagName !== 'SCRIPT') {
+                            wrapper.appendChild(document.body.firstChild);
+                        } else {
+                            document.body.firstChild.remove();
+                        }
+                    }
+                    
+                    document.body.appendChild(wrapper);
                 }
-                
-                console.log('📱 Content adjusted, margin:', marginLeft);
+                return wrapper;
             }
             
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('collapsed');
-                    const isCollapsed = sidebar.classList.contains('collapsed');
-                    adjustContentMargin(isCollapsed);
-                    
-                    console.log('🔄 Sidebar toggled, collapsed:', isCollapsed);
-                });
+            if (sidebar) {
+                const wrapper = ensureContentWrapper();
                 
-                // Auto-collapse on mobile
+                if (sidebarToggle) {
+                    sidebarToggle.addEventListener('click', () => {
+                        sidebar.classList.toggle('collapsed');
+                        console.log('🔄 Sidebar toggled');
+                    });
+                }
+                
+                // Mobile handling
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('collapsed');
-                    adjustContentMargin(true);
-                } else {
-                    // Ensure proper layout on desktop
-                    adjustContentMargin(false);
                 }
             }
         }
@@ -9620,31 +9626,12 @@ Bitte antworte im folgenden JSON-Format:
             initializeSidebar();
         }
         
-        // Handle window resize for responsive behavior - FIXED
+        // Simple responsive handling
         window.addEventListener('resize', () => {
             const sidebar = document.querySelector('.sidebar');
-            const allContent = document.querySelectorAll('.main-content, .admin-main, [class*="content"], [class*="main"]');
-            
-            function setContentMargin(marginLeft, width) {
-                allContent.forEach(content => {
-                    content.style.marginLeft = marginLeft;
-                    content.style.width = width;
-                });
-                
-                if (allContent.length === 0) {
-                    document.body.style.marginLeft = marginLeft;
-                }
-            }
             
             if (window.innerWidth <= 768) {
                 if (sidebar) sidebar.classList.add('collapsed');
-                setContentMargin('70px', 'calc(100% - 70px)');
-            } else if (window.innerWidth > 768) {
-                if (sidebar && !sidebar.classList.contains('collapsed')) {
-                    setContentMargin('280px', 'calc(100% - 280px)');
-                } else if (sidebar && sidebar.classList.contains('collapsed')) {
-                    setContentMargin('70px', 'calc(100% - 70px)');
-                }
             }
         });
         
