@@ -12,9 +12,9 @@
     
     <!-- Sidebar Fix Styles -->
     <style>
-        /* SIMPLE WORKING SIDEBAR */
+        /* MODERN SIDEBAR - OVERRIDE ALL OLD STYLES */
         .sidebar {
-            background: #1f2937 !important;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
             color: white !important;
             width: 280px !important;
             position: fixed !important;
@@ -22,33 +22,48 @@
             left: 0 !important;
             top: 0 !important;
             z-index: 1000 !important;
+            backdrop-filter: blur(20px) !important;
+            border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
         .sidebar .nav-item a {
-            color: #d1d5db !important;
-            padding: 12px 20px !important;
-            display: block !important;
+            color: #cbd5e1 !important;
+            padding: 12px 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
             text-decoration: none !important;
             font-weight: 500 !important;
+            font-size: 14px !important;
+            border-radius: 12px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
         
         .sidebar .nav-item a:hover {
-            background: #374151 !important;
+            background: rgba(148, 163, 184, 0.1) !important;
             color: white !important;
+            transform: translateX(4px) !important;
         }
         
         .sidebar .nav-item.active a {
-            background: #4f46e5 !important;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
             color: white !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
         }
         
         .sidebar .nav-section-title {
-            color: #9ca3af !important;
+            color: #64748b !important;
             font-size: 11px !important;
             font-weight: 600 !important;
             text-transform: uppercase !important;
-            padding: 20px 20px 8px !important;
-            letter-spacing: 1px !important;
+            padding: 24px 24px 8px !important;
+            letter-spacing: 0.05em !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
         /* Fix content overlap - REMOVE padding-left */
@@ -171,12 +186,22 @@
         /* Fix main content layout */
         .main-content {
             margin-left: 280px !important;
-            transition: margin-left 0.3s ease !important;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             min-height: 100vh !important;
             background: #f8fafc !important;
         }
         
         .sidebar.collapsed + .main-content {
+            margin-left: 70px !important;
+        }
+        
+        /* Body layout fix */
+        body {
+            margin-left: 280px !important;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        body.sidebar-collapsed {
             margin-left: 70px !important;
         }
         
@@ -193,6 +218,49 @@
         
         .sidebar.collapsed {
             width: 70px !important;
+        }
+        
+        /* Tooltips for collapsed state */
+        .sidebar.collapsed .nav-item {
+            position: relative !important;
+        }
+        
+        .sidebar.collapsed .nav-item::after {
+            content: attr(data-tooltip) !important;
+            position: absolute !important;
+            left: 70px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            background: #1e293b !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            z-index: 1001 !important;
+        }
+        
+        .sidebar.collapsed .nav-item:hover::after {
+            opacity: 1 !important;
+            transform: translateY(-50%) translateX(8px) !important;
+        }
+        
+        .sidebar.collapsed .nav-item a span {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }
+        
+        .sidebar.collapsed .nav-section-title {
+            opacity: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
         }
         
         /* Improve nav item spacing */
