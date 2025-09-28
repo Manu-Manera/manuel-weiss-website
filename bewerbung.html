@@ -1808,36 +1808,57 @@ Manuel Weiss`;
         }
       }
 
-      async function performOCR(document) {
-        console.log('🔍 Performing OCR on:', document.name);
+      async function performEnhancedOCR(document) {
+        console.log('🤖 Performing Enhanced OCR with AI on:', document.name);
         
         try {
+          // Step 1: Basic OCR extraction
+          let ocrText = '';
+          let ocrSource = '';
+          
           // Try server-side OCR first
-          const serverResult = await performServerOCR(document);
-          if (serverResult.success) {
-            return {
-              name: document.name,
-              type: document.type,
-              text: serverResult.text,
-              source: serverResult.source,
-              success: true,
-              analysis: analyzeExtractedText(serverResult.text, document.type)
-            };
+          try {
+            const serverResult = await performServerOCR(document);
+            if (serverResult.success) {
+              ocrText = serverResult.text;
+              ocrSource = serverResult.source;
+            }
+          } catch (serverError) {
+            console.warn('Server OCR failed, trying client-side:', serverError);
           }
-        } catch (serverError) {
-          console.warn('Server OCR failed, trying client-side:', serverError);
+          
+          // Fallback to client-side OCR simulation
+          if (!ocrText) {
+            const clientResult = await performClientOCR(document);
+            ocrText = clientResult.text;
+            ocrSource = 'client-simulation';
+          }
+          
+          // Step 2: AI-Enhanced Analysis
+          const aiAnalysis = await performAIAnalysis(ocrText, document.type);
+          
+          // Step 3: Smart Document Parsing
+          const smartParsing = await performSmartParsing(ocrText, document.type);
+          
+          // Step 4: AI-Generated Insights
+          const aiInsights = await generateAIInsights(ocrText, document.type, aiAnalysis, smartParsing);
+          
+          return {
+            name: document.name,
+            type: document.type,
+            text: ocrText,
+            source: ocrSource,
+            success: true,
+            analysis: aiAnalysis,
+            smartParsing: smartParsing,
+            aiInsights: aiInsights,
+            enhancedScore: calculateEnhancedScore(aiAnalysis, smartParsing, aiInsights)
+          };
+          
+        } catch (error) {
+          console.error('Enhanced OCR failed:', error);
+          throw error;
         }
-        
-        // Fallback to client-side OCR simulation
-        const clientResult = await performClientOCR(document);
-        return {
-          name: document.name,
-          type: document.type,
-          text: clientResult.text,
-          source: 'client-simulation',
-          success: true,
-          analysis: analyzeExtractedText(clientResult.text, document.type)
-        };
       }
 
       async function performServerOCR(document) {
@@ -2040,41 +2061,92 @@ Akademie für Lebensberatung`;
         return suggestions;
       }
 
-      function displayOCRResults(results) {
+      function displayEnhancedOCRResults(results) {
         const resultsDiv = document.getElementById('ocrResults');
         resultsDiv.style.display = 'block';
         
-        let html = '<h5 style="margin: 0 0 1rem 0; color: white;">📊 OCR-Analyseergebnisse</h5>';
+        let html = '<h5 style="margin: 0 0 1rem 0; color: white;">🤖 AI-Enhanced OCR-Analyseergebnisse</h5>';
         
         results.forEach((result, index) => {
           if (result.success) {
             html += `
-              <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
-                <h6 style="margin: 0 0 0.5rem 0; color: white;">📄 ${result.name}</h6>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
-                  <div style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #4ade80;">${result.analysis.documentScore}%</div>
-                    <div style="font-size: 0.75rem; opacity: 0.8;">Bewertung</div>
+              <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.2);">
+                <h6 style="margin: 0 0 1rem 0; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                  📄 ${result.name}
+                  <span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem;">
+                    AI-Analysiert
+                  </span>
+                </h6>
+                
+                <!-- Enhanced Score Display -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                  <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
+                    <div style="font-size: 2rem; font-weight: bold; color: #4ade80;">${result.enhancedScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">AI-Score</div>
                   </div>
-                  <div style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #60a5fa;">${result.analysis.wordCount}</div>
-                    <div style="font-size: 0.75rem; opacity: 0.8;">Wörter</div>
+                  <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #60a5fa;">${result.analysis.readabilityScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Lesbarkeit</div>
                   </div>
-                  <div style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #f472b6;">${result.analysis.extractedEntities.emails.length}</div>
-                    <div style="font-size: 0.75rem; opacity: 0.8;">E-Mails</div>
+                  <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #f472b6;">${result.analysis.sentimentScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Sentiment</div>
                   </div>
-                  <div style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #a78bfa;">${result.analysis.extractedEntities.skills.length}</div>
+                  <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #a78bfa;">${result.smartParsing.skills.length}</div>
                     <div style="font-size: 0.75rem; opacity: 0.8;">Skills</div>
                   </div>
                 </div>
                 
-                ${result.analysis.suggestions.length > 0 ? `
-                  <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: var(--radius-sm); margin-top: 0.5rem;">
-                    <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #fbbf24;">💡 Verbesserungsvorschläge:</div>
-                    <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem;">
-                      ${result.analysis.suggestions.map(s => `<li style="margin-bottom: 0.25rem;">${s}</li>`).join('')}
+                <!-- AI Insights -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                  <!-- Strengths -->
+                  ${result.aiInsights.strengths.length > 0 ? `
+                    <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #4ade80;">
+                      <h7 style="color: #4ade80; font-weight: 600; margin-bottom: 0.5rem; display: block;">💪 Stärken</h7>
+                      <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                        ${result.aiInsights.strengths.map(s => `<li style="margin-bottom: 0.25rem;">${s}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                  
+                  <!-- Weaknesses -->
+                  ${result.aiInsights.weaknesses.length > 0 ? `
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #f87171;">
+                      <h7 style="color: #f87171; font-weight: 600; margin-bottom: 0.5rem; display: block;">⚠️ Schwächen</h7>
+                      <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                        ${result.aiInsights.weaknesses.map(w => `<li style="margin-bottom: 0.25rem;">${w}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                </div>
+                
+                <!-- Market Fit -->
+                ${result.aiInsights.marketFit.score > 0 ? `
+                  <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border-left: 4px solid #3b82f6;">
+                    <h7 style="color: #3b82f6; font-weight: 600; margin-bottom: 0.5rem; display: block;">🎯 Markt-Fit: ${result.aiInsights.marketFit.score}%</h7>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">
+                      ${result.aiInsights.marketFit.factors.join(', ')}
+                    </div>
+                  </div>
+                ` : ''}
+                
+                <!-- AI Recommendations -->
+                ${result.aiInsights.recommendations.length > 0 ? `
+                  <div style="background: rgba(251, 191, 36, 0.1); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border-left: 4px solid #fbbf24;">
+                    <h7 style="color: #fbbf24; font-weight: 600; margin-bottom: 0.5rem; display: block;">💡 AI-Empfehlungen</h7>
+                    <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                      ${result.aiInsights.recommendations.map(r => `<li style="margin-bottom: 0.25rem;">${r}</li>`).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+                
+                <!-- Next Steps -->
+                ${result.aiInsights.nextSteps.length > 0 ? `
+                  <div style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #a855f7;">
+                    <h7 style="color: #a855f7; font-weight: 600; margin-bottom: 0.5rem; display: block;">🚀 Nächste Schritte</h7>
+                    <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                      ${result.aiInsights.nextSteps.map(s => `<li style="margin-bottom: 0.25rem;">${s}</li>`).join('')}
                     </ul>
                   </div>
                 ` : ''}
@@ -2091,7 +2163,373 @@ Akademie für Lebensberatung`;
         });
         
         resultsDiv.innerHTML = html;
-        showMessage('✅ OCR-Analyse abgeschlossen', 'success');
+        showMessage('✅ AI-Enhanced OCR-Analyse abgeschlossen', 'success');
+      }
+
+      // AI-ENHANCED ANALYSIS FUNCTIONS
+      async function performAIAnalysis(text, documentType) {
+        console.log('🤖 Performing AI analysis on:', documentType);
+        
+        // Simulate AI analysis with enhanced logic
+        const analysis = {
+          wordCount: text.split(/\s+/).length,
+          characterCount: text.length,
+          readabilityScore: calculateReadabilityScore(text),
+          sentimentScore: analyzeSentiment(text),
+          keyPhrases: extractKeyPhrases(text),
+          entities: extractAdvancedEntities(text),
+          documentStructure: analyzeDocumentStructure(text, documentType),
+          qualityMetrics: calculateQualityMetrics(text, documentType)
+        };
+        
+        return analysis;
+      }
+
+      async function performSmartParsing(text, documentType) {
+        console.log('🧠 Performing smart parsing on:', documentType);
+        
+        const parsing = {
+          sections: parseDocumentSections(text, documentType),
+          timeline: extractTimeline(text),
+          skills: extractSkills(text),
+          experience: extractExperience(text, documentType),
+          education: extractEducation(text),
+          achievements: extractAchievements(text),
+          contactInfo: extractContactInfo(text),
+          recommendations: extractRecommendations(text)
+        };
+        
+        return parsing;
+      }
+
+      async function generateAIInsights(text, documentType, analysis, parsing) {
+        console.log('💡 Generating AI insights for:', documentType);
+        
+        const insights = {
+          strengths: identifyStrengths(analysis, parsing),
+          weaknesses: identifyWeaknesses(analysis, parsing),
+          recommendations: generateRecommendations(analysis, parsing, documentType),
+          marketFit: assessMarketFit(analysis, parsing),
+          improvementAreas: identifyImprovementAreas(analysis, parsing),
+          nextSteps: suggestNextSteps(analysis, parsing, documentType)
+        };
+        
+        return insights;
+      }
+
+      function calculateReadabilityScore(text) {
+        // Simplified readability calculation
+        const sentences = text.split(/[.!?]+/).length;
+        const words = text.split(/\s+/).length;
+        const syllables = text.split(/\s+/).reduce((acc, word) => {
+          return acc + (word.match(/[aeiouäöü]/gi) || []).length;
+        }, 0);
+        
+        if (sentences === 0 || words === 0) return 0;
+        
+        const avgWordsPerSentence = words / sentences;
+        const avgSyllablesPerWord = syllables / words;
+        
+        // Simplified Flesch Reading Ease
+        const score = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
+        return Math.max(0, Math.min(100, score));
+      }
+
+      function analyzeSentiment(text) {
+        const positiveWords = ['erfolgreich', 'ausgezeichnet', 'hervorragend', 'exzellent', 'stark', 'kompetent', 'erfahren', 'qualifiziert'];
+        const negativeWords = ['schwach', 'unzureichend', 'problematisch', 'schlecht', 'mangelhaft'];
+        
+        const words = text.toLowerCase().split(/\s+/);
+        const positiveCount = words.filter(word => positiveWords.includes(word)).length;
+        const negativeCount = words.filter(word => negativeWords.includes(word)).length;
+        
+        const total = positiveCount + negativeCount;
+        if (total === 0) return 50; // Neutral
+        
+        return Math.round((positiveCount / total) * 100);
+      }
+
+      function extractKeyPhrases(text) {
+        const phrases = [];
+        const commonPhrases = [
+          'Projektmanagement', 'Teamführung', 'Kundenbetreuung', 'Qualitätssicherung',
+          'Problemlösung', 'Kommunikation', 'Analytisches Denken', 'Kreativität',
+          'Zeitmanagement', 'Flexibilität', 'Lernbereitschaft', 'Verantwortung'
+        ];
+        
+        commonPhrases.forEach(phrase => {
+          if (text.toLowerCase().includes(phrase.toLowerCase())) {
+            phrases.push(phrase);
+          }
+        });
+        
+        return phrases;
+      }
+
+      function extractAdvancedEntities(text) {
+        return {
+          emails: (text.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g) || []),
+          phones: (text.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/g) || []),
+          dates: (text.match(/\b(\d{1,2}\.?\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s?\d{4}|\d{1,2}\.\d{1,2}\.\d{4})\b/g) || []),
+          skills: extractSkills(text),
+          companies: (text.match(/\b[A-Z][a-z]+ (GmbH|AG|Corp|Inc|Ltd|Company|GmbH|AG)\b/g) || []),
+          locations: (text.match(/\b[A-Z][a-z]+(?: [A-Z][a-z]+)*\b/g) || []).filter(loc => 
+            loc.length > 3 && !loc.match(/^(GmbH|AG|Corp|Inc|Ltd|Company)$/)
+          )
+        };
+      }
+
+      function analyzeDocumentStructure(text, documentType) {
+        const structure = {
+          hasHeader: /^(name|cv|lebenslauf|curriculum vitae)/i.test(text),
+          hasSections: /(berufserfahrung|ausbildung|skills|fähigkeiten|erfahrung|bildung)/i.test(text),
+          hasContact: /(email|telefon|adresse|kontakt)/i.test(text),
+          hasSummary: /(zusammenfassung|summary|profil|über mich)/i.test(text),
+          sectionCount: (text.match(/\n\s*[A-ZÄÖÜ][a-zäöüß\s]+:/g) || []).length,
+          paragraphCount: text.split(/\n\s*\n/).length
+        };
+        
+        return structure;
+      }
+
+      function calculateQualityMetrics(text, documentType) {
+        const metrics = {
+          completeness: calculateCompleteness(text, documentType),
+          professionalism: calculateProfessionalism(text),
+          clarity: calculateClarity(text),
+          relevance: calculateRelevance(text, documentType)
+        };
+        
+        return metrics;
+      }
+
+      function parseDocumentSections(text, documentType) {
+        const sections = {};
+        
+        if (documentType === 'cv') {
+          sections.personalInfo = extractPersonalInfo(text);
+          sections.experience = extractExperience(text, documentType);
+          sections.education = extractEducation(text);
+          sections.skills = extractSkills(text);
+          sections.achievements = extractAchievements(text);
+        } else if (documentType === 'certificate') {
+          sections.institution = extractInstitution(text);
+          sections.course = extractCourse(text);
+          sections.grade = extractGrade(text);
+          sections.date = extractDate(text);
+          sections.instructor = extractInstructor(text);
+        }
+        
+        return sections;
+      }
+
+      function extractTimeline(text) {
+        const dates = text.match(/\b(\d{4}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}\s+(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4})\b/g) || [];
+        return dates.sort();
+      }
+
+      function extractSkills(text) {
+        const skillKeywords = [
+          'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'SQL', 'HTML', 'CSS',
+          'Coaching', 'Beratung', 'Projektmanagement', 'Teamführung', 'Kommunikation',
+          'Microsoft Office', 'Excel', 'PowerPoint', 'Word', 'Photoshop', 'Illustrator'
+        ];
+        
+        return skillKeywords.filter(skill => 
+          text.toLowerCase().includes(skill.toLowerCase())
+        );
+      }
+
+      function extractExperience(text, documentType) {
+        if (documentType !== 'cv') return [];
+        
+        const experience = [];
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+          if (line.match(/\d{4}.*\d{4}|seit \d{4}|ab \d{4}/)) {
+            experience.push(line.trim());
+          }
+        });
+        
+        return experience;
+      }
+
+      function extractEducation(text) {
+        const education = [];
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+          if (line.match(/(universität|hochschule|schule|studium|ausbildung|abitur|realschule)/i)) {
+            education.push(line.trim());
+          }
+        });
+        
+        return education;
+      }
+
+      function extractAchievements(text) {
+        const achievements = [];
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+          if (line.match(/(erfolg|auszeichnung|preis|zertifikat|zertifizierung|diplom)/i)) {
+            achievements.push(line.trim());
+          }
+        });
+        
+        return achievements;
+      }
+
+      function extractContactInfo(text) {
+        return {
+          emails: (text.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g) || []),
+          phones: (text.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/g) || []),
+          addresses: (text.match(/\b\d{5}\s+[A-Za-zäöüß\s]+/g) || [])
+        };
+      }
+
+      function extractRecommendations(text) {
+        const recommendations = [];
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+          if (line.match(/(empfehlung|referenz|referenzschreiben)/i)) {
+            recommendations.push(line.trim());
+          }
+        });
+        
+        return recommendations;
+      }
+
+      function identifyStrengths(analysis, parsing) {
+        const strengths = [];
+        
+        if (analysis.readabilityScore > 70) strengths.push('Gute Lesbarkeit');
+        if (analysis.sentimentScore > 70) strengths.push('Positive Formulierung');
+        if (parsing.skills.length > 5) strengths.push('Vielfältige Fähigkeiten');
+        if (parsing.experience.length > 2) strengths.push('Relevante Erfahrung');
+        if (parsing.achievements.length > 0) strengths.push('Nachweisbare Erfolge');
+        
+        return strengths;
+      }
+
+      function identifyWeaknesses(analysis, parsing) {
+        const weaknesses = [];
+        
+        if (analysis.readabilityScore < 50) weaknesses.push('Schwierige Lesbarkeit');
+        if (analysis.sentimentScore < 50) weaknesses.push('Negative Formulierung');
+        if (parsing.skills.length < 3) weaknesses.push('Wenige Fähigkeiten');
+        if (parsing.experience.length < 1) weaknesses.push('Keine Erfahrung');
+        if (parsing.contactInfo.emails.length === 0) weaknesses.push('Keine Kontaktdaten');
+        
+        return weaknesses;
+      }
+
+      function generateRecommendations(analysis, parsing, documentType) {
+        const recommendations = [];
+        
+        if (analysis.readabilityScore < 60) {
+          recommendations.push('Verbessern Sie die Lesbarkeit durch kürzere Sätze');
+        }
+        
+        if (parsing.skills.length < 5) {
+          recommendations.push('Ergänzen Sie weitere relevante Fähigkeiten');
+        }
+        
+        if (documentType === 'cv' && parsing.experience.length < 2) {
+          recommendations.push('Fügen Sie detailliertere Berufserfahrung hinzu');
+        }
+        
+        if (parsing.contactInfo.emails.length === 0) {
+          recommendations.push('Fügen Sie Kontaktinformationen hinzu');
+        }
+        
+        return recommendations;
+      }
+
+      function assessMarketFit(analysis, parsing) {
+        const marketFit = {
+          score: 0,
+          factors: []
+        };
+        
+        // Calculate market fit score
+        if (parsing.skills.length > 5) {
+          marketFit.score += 20;
+          marketFit.factors.push('Vielfältige Fähigkeiten');
+        }
+        
+        if (parsing.experience.length > 2) {
+          marketFit.score += 20;
+          marketFit.factors.push('Relevante Erfahrung');
+        }
+        
+        if (analysis.sentimentScore > 70) {
+          marketFit.score += 15;
+          marketFit.factors.push('Positive Darstellung');
+        }
+        
+        if (parsing.achievements.length > 0) {
+          marketFit.score += 15;
+          marketFit.factors.push('Nachweisbare Erfolge');
+        }
+        
+        if (analysis.readabilityScore > 60) {
+          marketFit.score += 10;
+          marketFit.factors.push('Gute Lesbarkeit');
+        }
+        
+        return marketFit;
+      }
+
+      function identifyImprovementAreas(analysis, parsing) {
+        const areas = [];
+        
+        if (analysis.readabilityScore < 60) areas.push('Lesbarkeit verbessern');
+        if (parsing.skills.length < 5) areas.push('Fähigkeiten erweitern');
+        if (parsing.experience.length < 2) areas.push('Erfahrung detaillieren');
+        if (parsing.contactInfo.emails.length === 0) areas.push('Kontaktdaten hinzufügen');
+        
+        return areas;
+      }
+
+      function suggestNextSteps(analysis, parsing, documentType) {
+        const steps = [];
+        
+        if (documentType === 'cv') {
+          steps.push('Lebenslauf mit aktuellen Projekten ergänzen');
+          steps.push('Skills-Bereich mit spezifischen Technologien erweitern');
+          steps.push('Erfolge mit konkreten Zahlen belegen');
+        } else if (documentType === 'certificate') {
+          steps.push('Zusätzliche Zertifikate sammeln');
+          steps.push('Praktische Anwendung der erlernten Fähigkeiten');
+        }
+        
+        return steps;
+      }
+
+      function calculateEnhancedScore(analysis, parsing, insights) {
+        let score = 0;
+        
+        // Base score from analysis
+        score += Math.round(analysis.readabilityScore * 0.3);
+        score += Math.round(analysis.sentimentScore * 0.2);
+        
+        // Skills score
+        score += Math.min(parsing.skills.length * 2, 20);
+        
+        // Experience score
+        score += Math.min(parsing.experience.length * 5, 15);
+        
+        // Contact info score
+        if (parsing.contactInfo.emails.length > 0) score += 10;
+        if (parsing.contactInfo.phones.length > 0) score += 5;
+        
+        // Achievements score
+        score += Math.min(parsing.achievements.length * 3, 15);
+        
+        return Math.min(score, 100);
       }
 
       // SERVER UPLOAD FUNCTIONALITY
