@@ -1,0 +1,90 @@
+{
+  "auth": {
+    "manuelweissauth": {
+      "service": "Cognito",
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": ["EMAIL"],
+        "signupAttributes": ["EMAIL"],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": ["REQUIRES_LOWERCASE", "REQUIRES_UPPERCASE", "REQUIRES_NUMBERS"]
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": ["SMS"],
+        "verificationMechanisms": ["EMAIL"]
+      }
+    }
+  },
+  "storage": {
+    "s3userfiles": {
+      "service": "S3",
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "dependsOn": []
+    },
+    "dynamodbUserData": {
+      "service": "DynamoDB",
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "dependsOn": []
+    }
+  },
+  "function": {
+    "userProfileAPI": {
+      "service": "Lambda",
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "build": true,
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "dynamodbUserData",
+          "attributes": ["Name", "Arn"]
+        }
+      ]
+    },
+    "documentAPI": {
+      "service": "Lambda", 
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "build": true,
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "s3userfiles",
+          "attributes": ["BucketName"]
+        },
+        {
+          "category": "storage", 
+          "resourceName": "dynamodbUserData",
+          "attributes": ["Name", "Arn"]
+        }
+      ]
+    }
+  },
+  "api": {
+    "manuelweissapi": {
+      "service": "API Gateway",
+      "providerPlugin": "@aws-amplify/amplify-provider-awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "userProfileAPI",
+          "attributes": ["Name", "Arn"]
+        },
+        {
+          "category": "function",
+          "resourceName": "documentAPI", 
+          "attributes": ["Name", "Arn"]
+        }
+      ]
+    }
+  },
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "type": "cicd",
+      "lastPushTimeStamp": "2025-09-28T12:00:00.000Z"
+    }
+  }
+}
