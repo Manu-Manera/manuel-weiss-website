@@ -10,6 +10,96 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Sidebar Fix Styles -->
+    <style>
+        /* Force sidebar text to be visible */
+        .sidebar .nav-item a {
+            color: #64748b !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+        }
+        
+        .sidebar .nav-item a:hover {
+            color: #1f2937 !important;
+            background: #f8fafc !important;
+        }
+        
+        .sidebar .nav-item.active a,
+        .sidebar .nav-item a.active {
+            color: white !important;
+            background: #4f46e5 !important;
+            font-weight: 600 !important;
+        }
+        
+        .sidebar .nav-section-title {
+            color: #374151 !important;
+            font-weight: 600 !important;
+            font-size: 12px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            padding: 0 1rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .sidebar {
+            background: white !important;
+            border-right: 1px solid #e5e7eb !important;
+        }
+        
+        .sidebar .nav-item i {
+            color: inherit !important;
+            font-size: 16px !important;
+        }
+        
+        /* Fix main content layout */
+        .main-content {
+            margin-left: 280px !important;
+            transition: margin-left 0.3s ease !important;
+            min-height: 100vh !important;
+            background: #f8fafc !important;
+        }
+        
+        .sidebar.collapsed + .main-content {
+            margin-left: 70px !important;
+        }
+        
+        /* Ensure sidebar is always visible and properly positioned */
+        .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            z-index: 1000 !important;
+            overflow-y: auto !important;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px !important;
+        }
+        
+        /* Improve nav item spacing */
+        .sidebar .nav-item a {
+            padding: 0.75rem 1rem !important;
+            margin: 0.125rem 0.5rem !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+        }
+        
+        /* Section titles */
+        .sidebar .nav-section {
+            margin-bottom: 1.5rem !important;
+        }
+        
+        .sidebar .nav-section ul {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    </style>
+    
     <style>
         /* AI Progress Animation */
         @keyframes spin {
