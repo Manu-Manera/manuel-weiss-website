@@ -152,11 +152,11 @@ Resources:
                   - s3:PutObject
                   - s3:DeleteObject
                   - s3:GetObjectVersion
-                Resource: !Sub '${UserFilesBucket}/*'
+                Resource: !Sub 'arn:aws:s3:::${UserFilesBucket}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
-                Resource: !Ref UserFilesBucket
+                Resource: !Sub 'arn:aws:s3:::${UserFilesBucket}'
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
@@ -360,7 +360,7 @@ Resources:
       FunctionName: !Ref UploadUrlFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub '${ApiGateway}/*/POST/upload-url'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/POST/upload-url'
 
   DocsLambdaPermission:
     Type: AWS::Lambda::Permission
@@ -368,7 +368,7 @@ Resources:
       FunctionName: !Ref DocsFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub '${ApiGateway}/*/*'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/*'
 
 Outputs:
   ApiGatewayUrl:
