@@ -874,20 +874,9 @@ class AdminPanel {
     // Restore sidebar state from localStorage
     restoreSidebarState() {
         const sidebar = document.querySelector('.sidebar, .admin-sidebar');
-        const contentWrapper = document.querySelector('.content-wrapper');
-        const adminMain = document.querySelector('.admin-main');
         
-        if (this.isSidebarCollapsed) {
-            if (sidebar) {
-                sidebar.classList.add('collapsed');
-            }
-            if (contentWrapper) {
-                contentWrapper.style.marginLeft = '70px';
-                contentWrapper.style.width = 'calc(100% - 70px)';
-            }
-            if (adminMain) {
-                adminMain.classList.add('sidebar-collapsed');
-            }
+        if (this.isSidebarCollapsed && sidebar) {
+            sidebar.classList.add('collapsed');
         }
     }
     
@@ -897,28 +886,12 @@ class AdminPanel {
         localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
         
         const sidebar = document.querySelector('.sidebar, .admin-sidebar');
-        const contentWrapper = document.querySelector('.content-wrapper');
-        const adminMain = document.querySelector('.admin-main');
         
         if (sidebar) {
             sidebar.classList.toggle('collapsed', this.isSidebarCollapsed);
         }
         
-        // Update content wrapper if it exists
-        if (contentWrapper) {
-            if (this.isSidebarCollapsed) {
-                contentWrapper.style.marginLeft = '70px';
-                contentWrapper.style.width = 'calc(100% - 70px)';
-            } else {
-                contentWrapper.style.marginLeft = '280px';
-                contentWrapper.style.width = 'calc(100% - 280px)';
-            }
-        }
-        
-        // Update admin main if it exists
-        if (adminMain) {
-            adminMain.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
-        }
+        // Mit Flexbox Layout brauchen wir keine manuellen margin/width Anpassungen mehr!
     }
 
     toggleDarkMode() {

@@ -12,34 +12,15 @@
     
     <!-- Sidebar Fix Styles -->
     <style>
-        /* MODERN SIDEBAR - OVERRIDE ALL OLD STYLES */
-        .sidebar {
+        /* SIDEBAR STYLES - VEREINFACHT */
+        .sidebar,
+        .admin-sidebar {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
             color: white !important;
-            width: 280px !important;
-            position: fixed !important;
-            height: 100vh !important;
-            left: 0 !important;
-            top: 0 !important;
-            z-index: 1000 !important;
-            backdrop-filter: blur(20px) !important;
             border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-        }
-        
-        .sidebar.collapsed {
-            width: 70px !important;
-        }
-        
-        .sidebar.collapsed .nav-section-title,
-        .sidebar.collapsed .nav-item a span {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
+            position: relative !important;
+            z-index: 10 !important;
         }
         
         .sidebar .nav-item a {
@@ -80,53 +61,104 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
-        /* Fix content overlap - REMOVE padding-left and white border */
+        /* KOMPLETTER RESET - KEINE SPIELEREIEN MEHR */
+        * {
+            box-sizing: border-box !important;
+        }
+        
         html, body {
             margin: 0 !important;
             padding: 0 !important;
-            overflow-x: hidden !important;
             width: 100% !important;
             height: 100% !important;
+            overflow: hidden !important;
         }
         
-        /* Proper layout without breaking existing design */
+        /* EINFACHES FLEXBOX LAYOUT */
         .admin-container {
-            display: flex;
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
+            display: flex !important;
+            height: 100vh !important;
+            width: 100vw !important;
             margin: 0 !important;
             padding: 0 !important;
             background-color: #f8fafc !important;
+            overflow: hidden !important;
         }
         
+        /* SIDEBAR FEST LINKS */
+        .sidebar {
+            flex-shrink: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            transition: width 0.3s ease !important;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px !important;
+        }
+        
+        /* CONTENT NIMMT RESTLICHEN PLATZ */
         .content-wrapper {
-            flex: 1;
-            margin-left: 280px;
-            padding: 0;
-            min-height: 100vh;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-x: auto;
-            width: calc(100% - 280px);
-            position: relative;
+            flex: 1 !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
             background-color: #f8fafc !important;
         }
         
-        .sidebar.collapsed ~ .content-wrapper {
-            margin-left: 70px;
-            width: calc(100% - 70px);
+        /* ADMIN MAIN SCROLLBAR */
+        .admin-main {
+            flex: 1 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
-        /* Fix admin sections to not overlap with sidebar */
+        /* SECTIONS OHNE OVERFLOW PROBLEME */
         .admin-section {
             width: 100% !important;
-            max-width: 100% !important;
-            overflow-x: auto !important;
-            padding: 0 !important;
+            padding: 1rem !important;
             margin: 0 !important;
+            box-sizing: border-box !important;
         }
         
-        /* Responsive table handling */
+        /* CONTENT AREA RESPONSIVE */
+        .admin-content {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 1rem !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* FORMULARE UND CONTAINER BREITEN */
+        .form-group,
+        .form-control,
+        .input-group,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* CONTAINER MAX-WIDTH FÜR BESSERE LESBARKEIT */
+        .container,
+        .content-container,
+        [class*="container"] {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 0 1rem !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* TABLES RESPONSIVE */
         .table-responsive {
             width: 100% !important;
             overflow-x: auto !important;
@@ -134,14 +166,7 @@
         }
         
         table {
-            min-width: 100% !important;
-        }
-        
-        /* Ensure content fits within viewport */
-        .content-container {
             width: 100% !important;
-            max-width: 100% !important;
-            padding: 0 !important;
         }
         
         .sidebar, .sidebar *, 
@@ -259,33 +284,7 @@
             padding-left: 0 !important;
         }
         
-        /* Mobile: Sidebar overlay */
-        @media (max-width: 768px) {
-            body {
-                padding-left: 0 !important;
-            }
-            
-            body.sidebar-collapsed {
-                padding-left: 0 !important;
-            }
-        }
-        
-        /* NUCLEAR OPTION - KEIN PADDING NIRGENDWO */
-        body, body.sidebar-collapsed, body.mobile {
-            padding-left: 0 !important;
-            margin-left: 0 !important;
-        }
-        
-        /* Tablet: Auto-collapse */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            body {
-                padding-left: var(--sidebar-collapsed) !important;
-            }
-            
-            .sidebar {
-                width: var(--sidebar-collapsed) !important;
-            }
-        }
+        /* Keine body padding mehr nötig mit Flexbox Layout */
         
         /* RESPONSIVE CONTENT BEREICHE */
         .admin-section,
@@ -401,17 +400,7 @@
             width: var(--sidebar-collapsed) !important;
         }
         
-        /* Mobile Overlay */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: var(--sidebar-width) !important;
-                box-shadow: 2px 0 10px rgba(0,0,0,0.3) !important;
-            }
-            
-            .sidebar.collapsed {
-                width: var(--sidebar-width) !important;
-            }
-        }
+        /* Mobile wird später implementiert wenn nötig */
         
         /* Tooltips for collapsed state */
         .sidebar.collapsed .nav-item {
@@ -477,51 +466,36 @@
             margin: 0 !important;
         }
         
-        /* Additional responsive layout fixes */
-        .admin-container > *:not(.sidebar):not(.content-wrapper) {
-            flex: 1;
-            min-width: 0;
+        /* TOPBAR FIXED */
+        .admin-topbar {
+            flex-shrink: 0 !important;
+            height: 70px !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 1rem !important;
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e2e8f0 !important;
         }
         
-        /* Ensure content always fills available space */
-        .content-wrapper > * {
+        /* GRIDS UND CARDS RESPONSIVE */
+        .dashboard-grid,
+        .stats-grid,
+        .activities-grid {
+            display: grid !important;
+            gap: 1rem !important;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+            width: 100% !important;
+        }
+        
+        .card,
+        .stat-card,
+        .activity-card,
+        .dashboard-card {
             width: 100% !important;
             box-sizing: border-box !important;
         }
         
-        /* Fix for nested containers */
-        .content-wrapper .container,
-        .content-wrapper .wrapper,
-        .content-wrapper [class*="container"] {
-            max-width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-        
-        /* Smooth transitions for all layout changes */
-        .admin-container,
-        .content-wrapper,
-        .sidebar {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-        
-        /* Ensure no horizontal scrollbars appear */
-        * {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* Fix for specific admin sections */
-        #dashboard-section,
-        #applications-section,
-        #docs-section,
-        #user-management-section,
-        #persoenlichkeit-section {
-            width: 100% !important;
-            overflow-x: hidden !important;
-        }
-        
-        /* Dynamic sidebar icon adjustments */
+        /* SIDEBAR COLLAPSED ANPASSUNGEN */
         .sidebar.collapsed .nav-item a {
             justify-content: center !important;
             padding: 12px 8px !important;
@@ -532,32 +506,9 @@
             font-size: 20px !important;
         }
         
-        /* Fix admin-main to eliminate white borders */
-        .admin-main {
-            margin: 0 !important;
-            padding: 0 !important;
-            background-color: transparent !important;
-            width: 100% !important;
-            flex: 1 !important;
-        }
-        
-        /* Ensure all sections fill the space */
-        .admin-section {
-            background-color: #f8fafc !important;
-            min-height: calc(100vh - 70px) !important;
-            padding: 1rem !important;
-        }
-        
-        /* Fix topbar to eliminate gaps */
-        .admin-topbar {
-            margin: 0 !important;
-            width: 100% !important;
-        }
-        
-        /* Ensure content area has no extra margins */
-        .admin-content {
-            margin: 0 !important;
-            padding: 0 !important;
+        .sidebar.collapsed .nav-section-title,
+        .sidebar.collapsed .nav-item a span {
+            display: none !important;
         }
     </style>
     
