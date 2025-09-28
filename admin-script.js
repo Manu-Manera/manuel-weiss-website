@@ -247,7 +247,7 @@ class AdminPanel {
         this.currentSection = 'dashboard';
         this.currentLanguage = 'de';
         this.isDarkMode = false;
-        this.isSidebarCollapsed = false;
+        this.isSidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
         this.aiTwin = new EnhancedAITwin();
         
         // Unified data structure
@@ -285,6 +285,7 @@ class AdminPanel {
         
         try {
             this.loadData();
+            this.restoreSidebarState();
             this.setupEventListeners();
             this.setupNavigation();
             this.loadCurrentSection();
@@ -870,12 +871,53 @@ class AdminPanel {
         }
     }
 
+    // Restore sidebar state from localStorage
+    restoreSidebarState() {
+        const sidebar = document.querySelector('.sidebar, .admin-sidebar');
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const adminMain = document.querySelector('.admin-main');
+        
+        if (this.isSidebarCollapsed) {
+            if (sidebar) {
+                sidebar.classList.add('collapsed');
+            }
+            if (contentWrapper) {
+                contentWrapper.style.marginLeft = '70px';
+                contentWrapper.style.width = 'calc(100% - 70px)';
+            }
+            if (adminMain) {
+                adminMain.classList.add('sidebar-collapsed');
+            }
+        }
+    }
+    
     // Legacy compatibility functions
     toggleSidebar() {
         this.isSidebarCollapsed = !this.isSidebarCollapsed;
-        const sidebar = document.querySelector('.admin-sidebar');
+        localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
+        
+        const sidebar = document.querySelector('.sidebar, .admin-sidebar');
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const adminMain = document.querySelector('.admin-main');
+        
         if (sidebar) {
             sidebar.classList.toggle('collapsed', this.isSidebarCollapsed);
+        }
+        
+        // Update content wrapper if it exists
+        if (contentWrapper) {
+            if (this.isSidebarCollapsed) {
+                contentWrapper.style.marginLeft = '70px';
+                contentWrapper.style.width = 'calc(100% - 70px)';
+            } else {
+                contentWrapper.style.marginLeft = '280px';
+                contentWrapper.style.width = 'calc(100% - 280px)';
+            }
+        }
+        
+        // Update admin main if it exists
+        if (adminMain) {
+            adminMain.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
         }
     }
 
@@ -1132,10 +1174,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Special handling for smart workflow button
-        const smartWorkflowBtn = document.getElementById('smartWorkflowButton');
-        if (smartWorkflowBtn) {
+        const smartWorkflowBtnById = document.getElementById('smartWorkflowButton');
+        if (smartWorkflowBtnById) {
             console.log('✅ Found smart workflow button, adding direct listener');
-            smartWorkflowBtn.addEventListener('click', function(e) {
+            smartWorkflowBtnById.addEventListener('click', function(e) {
                 console.log('🔄 Smart workflow button clicked directly');
                 e.preventDefault();
                 e.stopPropagation();
@@ -1164,11 +1206,11 @@ document.addEventListener('DOMContentLoaded', function() {
             triggerDocumentUpload: typeof window.triggerDocumentUpload
         });
         
-        // Add direct event listeners as backup for all buttons
-        const allButtons = document.querySelectorAll('button[onclick], a[onclick]');
-        console.log('Found', allButtons.length, 'buttons with onclick attributes');
+        // Add direct event listeners as backup for all buttons (second pass)
+        const allButtonsSecondPass = document.querySelectorAll('button[onclick], a[onclick]');
+        console.log('Found', allButtonsSecondPass.length, 'buttons with onclick attributes');
         
-        allButtons.forEach((btn, index) => {
+        allButtonsSecondPass.forEach((btn, index) => {
             const onclick = btn.getAttribute('onclick');
             if (onclick) {
                 console.log(`Button ${index}: ${onclick}`);
