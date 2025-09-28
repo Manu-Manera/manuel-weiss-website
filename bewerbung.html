@@ -1723,24 +1723,27 @@ Manuel Weiss`;
         showMessage('✅ Analyse abgeschlossen', 'success');
       }
 
-      // OCR FUNCTIONALITY
+      // ENHANCED OCR WITH AI INTEGRATION
       function initializeOCR() {
-        console.log('🔍 Initializing OCR functionality...');
+        console.log('🔍 Initializing Enhanced OCR with AI integration...');
         
         const startOcrBtn = document.getElementById('startOcrAnalysis');
         if (startOcrBtn) {
-          startOcrBtn.addEventListener('click', startOCRAnalysis);
+          startOcrBtn.addEventListener('click', startEnhancedOCRAnalysis);
         }
+        
+        // Initialize AI Coach for document analysis
+        this.aiCoach = new AICoachAdmin();
       }
 
-      async function startOCRAnalysis() {
-        console.log('🚀 Starting OCR analysis...');
+      async function startEnhancedOCRAnalysis() {
+        console.log('🚀 Starting Enhanced OCR with AI analysis...');
         
         const btn = document.getElementById('startOcrAnalysis');
         const originalText = btn.textContent;
         
         try {
-          btn.textContent = 'Analysiere...';
+          btn.textContent = 'AI analysiert...';
           btn.disabled = true;
           
           // Get uploaded documents
@@ -1772,16 +1775,16 @@ Manuel Weiss`;
             return;
           }
           
-          showMessage(`📤 Analysiere ${documents.length} Dokument(e)...`, 'info');
+          showMessage(`🤖 AI analysiert ${documents.length} Dokument(e)...`, 'info');
           
-          // Process each document
+          // Process each document with AI enhancement
           const results = [];
           for (const doc of documents) {
             try {
-              const ocrResult = await performOCR(doc);
+              const ocrResult = await performEnhancedOCR(doc);
               results.push(ocrResult);
             } catch (error) {
-              console.error(`OCR failed for ${doc.name}:`, error);
+              console.error(`Enhanced OCR failed for ${doc.name}:`, error);
               results.push({
                 name: doc.name,
                 type: doc.type,
@@ -1791,15 +1794,15 @@ Manuel Weiss`;
             }
           }
           
-          // Display results
-          displayOCRResults(results);
+          // Display enhanced results
+          displayEnhancedOCRResults(results);
           
           btn.textContent = originalText;
           btn.disabled = false;
           
         } catch (error) {
-          console.error('OCR analysis error:', error);
-          showMessage('❌ OCR-Analyse fehlgeschlagen: ' + error.message, 'error');
+          console.error('Enhanced OCR analysis error:', error);
+          showMessage('❌ AI-OCR-Analyse fehlgeschlagen: ' + error.message, 'error');
           btn.textContent = originalText;
           btn.disabled = false;
         }
