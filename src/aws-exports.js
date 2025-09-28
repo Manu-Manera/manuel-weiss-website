@@ -3,7 +3,7 @@
 
 const awsmobile = {
     "aws_project_region": "eu-central-1",
-    "aws_cognito_identity_pool_id": "eu-central-1:YOUR_IDENTITY_POOL_ID",
+    "aws_cognito_identity_pool_id": "eu-central-1:identity-pool-placeholder",
     "aws_cognito_region": "eu-central-1", 
     "aws_user_pools_id": "eu-central-1_8gP4gLK9r",
     "aws_user_pools_web_client_id": "7kc5tt6a23fgh53d60vkefm812",
@@ -45,13 +45,13 @@ const awsmobile = {
     ],
     "aws_user_files_s3_bucket": "manuel-weiss-userfiles-files-038333965110",
     "aws_user_files_s3_bucket_region": "eu-central-1",
-    "aws_appsync_graphqlEndpoint": "https://YOUR_API_ID.execute-api.eu-central-1.amazonaws.com/prod",
+    "aws_appsync_graphqlEndpoint": "https://api-gateway-placeholder.execute-api.eu-central-1.amazonaws.com/api",
     "aws_appsync_region": "eu-central-1",
     "aws_appsync_authenticationType": "AMAZON_COGNITO_USER_POOLS",
     
     // Custom configuration for Manuel Weiss system
     "custom": {
-        "apiEndpoint": "https://YOUR_API_ID.execute-api.eu-central-1.amazonaws.com/prod",
+        "apiEndpoint": "https://api-gateway-placeholder.execute-api.eu-central-1.amazonaws.com/api",
         "endpoints": {
             "userProfile": "/user-profile",
             "progress": "/user-profile/progress", 

@@ -144,12 +144,25 @@ LOGOUT_URL="${COGNITO_URL}/logout?client_id=${CLIENT_ID}&logout_uri=https%3A//${
 # API Base URL in docs.js aktualisieren
 sed -i.bak "s|const API_BASE = '/api';|const API_BASE = '${API_URL}';|" js/docs.js
 
+# Globale API-Konfiguration aktualisieren
+sed -i.bak "s|baseUrl: '/api'|baseUrl: '${API_URL}'|" js/api-config.js
+
+# AWS Exports aktualisieren - Identity Pool ID und API Endpoint
+sed -i.bak "s|YOUR_IDENTITY_POOL_ID|${IDENTITY_POOL_ID:-PLACEHOLDER}|g" src/aws-exports.js
+sed -i.bak "s|YOUR_API_ID.execute-api.eu-central-1.amazonaws.com/prod|${API_URL#https://}|g" src/aws-exports.js
+
 # Login URLs in bewerbung.html aktualisieren
 sed -i.bak "s|const LOGIN_URL  = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/login?...';|const LOGIN_URL  = '${LOGIN_URL}';|" bewerbung.html
 sed -i.bak "s|const LOGOUT_URL = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/logout?...';|const LOGOUT_URL = '${LOGOUT_URL}';|" bewerbung.html
 
+# Admin Panel HTML aktualisieren - API-Config Script hinzufügen falls nicht vorhanden
+if ! grep -q "api-config.js" admin.html; then
+    echo "📝 Adding API config script to admin.html..."
+    sed -i.bak 's|<script.*admin-script.js.*>|<script src="js/api-config.js"></script>\n        &|' admin.html
+fi
+
 # Backup-Dateien löschen
-rm -f js/docs.js.bak bewerbung.html.bak
+rm -f js/docs.js.bak js/api-config.js.bak src/aws-exports.js.bak bewerbung.html.bak admin.html.bak
 
 echo ""
 echo "🎉 ===== DEPLOYMENT SUCCESSFUL ===== 🎉"

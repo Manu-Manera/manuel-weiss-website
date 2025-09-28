@@ -17,8 +17,24 @@ class AdminUserManagementUI {
             search: ''
         };
         
-        this.apiBase = window.API_BASE || '/api';
-        this.init();
+        // Warten auf API-Konfiguration
+        this.waitForApiConfig().then(() => {
+            this.apiBase = window.API_CONFIG?.baseUrl || window.API_BASE || '/api';
+            console.log('🔧 Admin User Management using API base:', this.apiBase);
+            this.init();
+        });
+    }
+    
+    async waitForApiConfig() {
+        // Warten bis API-Konfiguration geladen ist
+        let attempts = 0;
+        while (!window.API_CONFIG && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        if (!window.API_CONFIG) {
+            console.warn('⚠️ API_CONFIG not loaded, using fallback');
+        }
     }
     
     async init() {
