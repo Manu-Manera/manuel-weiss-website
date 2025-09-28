@@ -608,26 +608,27 @@
         .sidebar.collapsed .nav-item::after {
             content: attr(data-tooltip) !important;
             position: absolute !important;
-            left: 70px !important;
+            left: 75px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            background: #1e293b !important;
+            background: linear-gradient(135deg, #1e293b, #334155) !important;
             color: white !important;
-            padding: 8px 12px !important;
+            padding: 10px 14px !important;
             border-radius: 8px !important;
-            font-size: 12px !important;
+            font-size: 13px !important;
             font-weight: 500 !important;
             white-space: nowrap !important;
             opacity: 0 !important;
             pointer-events: none !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
             z-index: 1001 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
         
         .sidebar.collapsed .nav-item:hover::after {
             opacity: 1 !important;
-            transform: translateY(-50%) translateX(8px) !important;
+            transform: translateY(-50%) translateX(12px) !important;
         }
         
         .sidebar.collapsed .nav-item a span {
@@ -641,6 +642,36 @@
             opacity: 0 !important;
             height: 0 !important;
             padding: 0 !important;
+        }
+        
+        /* Toggle Button Tooltip */
+        .sidebar.collapsed .sidebar-toggle {
+            position: relative !important;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle::after {
+            content: "Sidebar ausklappen" !important;
+            position: absolute !important;
+            left: 75px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+            color: white !important;
+            padding: 10px 14px !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3) !important;
+            z-index: 1001 !important;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle:hover::after {
+            opacity: 1 !important;
+            transform: translateY(-50%) translateX(12px) !important;
         }
         
         /* Improve nav item spacing */
@@ -866,19 +897,59 @@
             color: #dc2626;
         }
         
-        /* SIDEBAR COLLAPSED ANPASSUNGEN */
+        /* SIDEBAR COLLAPSED ANPASSUNGEN - BESSERE LESBARKEIT */
+        .sidebar.collapsed {
+            width: 70px !important;
+            overflow: hidden !important;
+        }
+        
+        .sidebar.collapsed .sidebar-header {
+            padding: 1rem 0.5rem !important;
+            text-align: center !important;
+        }
+        
+        .sidebar.collapsed .sidebar-brand {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+        
+        .sidebar.collapsed .sidebar-brand img {
+            width: 32px !important;
+            height: 32px !important;
+        }
+        
+        .sidebar.collapsed .sidebar-brand h3,
+        .sidebar.collapsed .sidebar-brand p {
+            display: none !important;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle {
+            width: 100% !important;
+            padding: 0.5rem !important;
+            justify-content: center !important;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle .toggle-label {
+            display: none !important;
+        }
+        
         .sidebar.collapsed .nav-item a {
             justify-content: center !important;
             padding: 12px 8px !important;
+            margin: 0.25rem 0.5rem !important;
         }
         
         .sidebar.collapsed .nav-item a i {
             margin-right: 0 !important;
-            font-size: 20px !important;
+            font-size: 18px !important;
         }
         
-        .sidebar.collapsed .nav-section-title,
         .sidebar.collapsed .nav-item a span {
+            display: none !important;
+        }
+        
+        .sidebar.collapsed .nav-section-title {
             display: none !important;
         }
     </style>
