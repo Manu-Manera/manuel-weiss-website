@@ -1,6 +1,7 @@
 {
   "name": "manuel-weiss-professional-services",
   "version": "1.0.0",
+  "type": "module",
   "description": "Professionelle Website für Manuel Weiss - Beratung, Vermietung und IT-Projekte",
   "main": "index.html",
   "scripts": {
