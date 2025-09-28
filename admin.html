@@ -9285,6 +9285,119 @@ Bitte antworte im folgenden JSON-Format:
         // Initialize Admin Navigation System
         initializeAdminNavigation();
         
+        function initializeAdminNavigation() {
+            console.log('🔄 Initializing Admin Navigation...');
+            
+            // Handle all navigation items
+            document.querySelectorAll('.nav-item[data-section]').forEach(navItem => {
+                navItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = navItem.dataset.section;
+                    console.log('🔄 Navigating to section:', sectionId);
+                    showAdminSection(sectionId);
+                    
+                    // Update active nav item
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+                });
+            });
+            
+            // Show dashboard by default
+            showAdminSection('dashboard');
+            
+            console.log('✅ Admin Navigation initialized');
+        }
+        
+        function showAdminSection(sectionId) {
+            console.log('📱 Showing section:', sectionId);
+            
+            // Hide all admin sections
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                
+                // Smooth scroll to section
+                targetSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                
+                // Initialize section-specific functionality
+                initializeSectionContent(sectionId);
+            } else {
+                console.warn('⚠️ Section not found:', sectionId);
+            }
+        }
+        
+        function initializeSectionContent(sectionId) {
+            // Initialize User Management if needed
+            if (sectionId === 'user-management-live') {
+                if (window.adminUserManagementInstance) {
+                    console.log('🔄 Refreshing User Management UI...');
+                    // Trigger refresh if needed
+                } else {
+                    console.log('⚠️ User Management not yet initialized');
+                }
+            }
+        }
+        
+        // Enhanced Sidebar Integration
+        function initializeSidebar() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('collapsed');
+                    
+                    // Adjust main content when sidebar toggles
+                    if (mainContent) {
+                        if (sidebar.classList.contains('collapsed')) {
+                            mainContent.style.marginLeft = '70px';
+                        } else {
+                            mainContent.style.marginLeft = '280px';
+                        }
+                    }
+                    
+                    console.log('🔄 Sidebar toggled, collapsed:', sidebar.classList.contains('collapsed'));
+                });
+                
+                // Auto-collapse on mobile
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.add('collapsed');
+                    if (mainContent) mainContent.style.marginLeft = '70px';
+                }
+            }
+        }
+        
+        // Initialize sidebar after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSidebar);
+        } else {
+            initializeSidebar();
+        }
+        
+        // Handle window resize for responsive behavior
+        window.addEventListener('resize', () => {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (window.innerWidth <= 768) {
+                if (sidebar) sidebar.classList.add('collapsed');
+                if (mainContent) mainContent.style.marginLeft = '70px';
+            } else if (window.innerWidth > 768) {
+                if (sidebar && !sidebar.classList.contains('collapsed')) {
+                    if (mainContent) mainContent.style.marginLeft = '280px';
+                }
+            }
+        });
+        
         // Wait for all systems to initialize
         setTimeout(() => {
             initAdminMultiUser();
