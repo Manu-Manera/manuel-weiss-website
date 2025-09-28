@@ -9890,8 +9890,8 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         // Apply immediately
-        emergencyLayoutFix();
-        document.addEventListener('DOMContentLoaded', emergencyLayoutFix);
+        fixLayout();
+        document.addEventListener('DOMContentLoaded', fixLayout);
         
         // Immediate application
         setTimeout(initModernSidebar, 50);
