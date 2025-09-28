@@ -5454,26 +5454,41 @@
                         <h3 style="margin: 0 0 1.5rem;">🚀 Enterprise Multi-User System</h3>
                         
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div onclick="openService('website-pages')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" 
+                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                                 <div style="font-size: 2rem; font-weight: bold;">67</div>
-                                <div style="font-size: 0.875rem;">HTML Pages</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Multi-User Ready</div>
+                                <div style="font-size: 0.875rem;">Website Pages</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Online Services</div>
                             </div>
-                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div onclick="openService('coaching-methods')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                                 <div style="font-size: 2rem; font-weight: bold;">35</div>
-                                <div style="font-size: 0.875rem;">Methods</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Progress Tracked</div>
+                                <div style="font-size: 0.875rem;">Coaching Methods</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Interactive Tools</div>
                             </div>
-                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div onclick="openService('aws-backend')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                                 <div style="font-size: 2rem; font-weight: bold;">✅</div>
-                                <div style="font-size: 0.875rem;">AWS Backend</div>
-                                <div style="font-size: 0.75rem; opacity: 0.8;">Live & Ready</div>
+                                <div style="font-size: 0.875rem;">Cloud Services</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">AWS Backend</div>
                             </div>
-                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div onclick="openService('enterprise-solutions')" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;"
+                                 onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                                 <div style="font-size: 2rem; font-weight: bold;">🎯</div>
                                 <div style="font-size: 0.875rem;">Enterprise</div>
                                 <div style="font-size: 0.75rem; opacity: 0.8;">Professional</div>
                             </div>
+                        </div>
+                        
+                        <!-- Login Button - only appears when service is clicked -->
+                        <div id="login-button-container" style="display: none; text-align: center; margin-top: 2rem;">
+                            <button onclick="window.open('bewerbung.html', '_blank')" style="
+                                background: rgba(255,255,255,0.9); color: #10b981; border: none;
+                                padding: 1rem 2rem; border-radius: 8px; cursor: pointer;
+                                font-weight: 600; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                            ">
+                                Anmelden
+                            </button>
                         </div>
                         
                         <!-- Live User Management UI Container -->
@@ -9444,6 +9459,35 @@ Bitte antworte im folgenden JSON-Format:
         
         // Initialize Admin Navigation System
         initializeAdminNavigation();
+        
+        // Service Functions
+        function openService(serviceType) {
+            console.log('🚀 Opening service:', serviceType);
+            
+            // Show login button
+            const loginContainer = document.getElementById('login-button-container');
+            if (loginContainer) {
+                loginContainer.style.display = 'block';
+            }
+            
+            // Open appropriate service
+            switch(serviceType) {
+                case 'website-pages':
+                    window.open('index.html', '_blank');
+                    break;
+                case 'coaching-methods':
+                    window.open('persoenlichkeitsentwicklung-uebersicht.html', '_blank');
+                    break;
+                case 'aws-backend':
+                    window.open('bewerbung.html', '_blank');
+                    break;
+                case 'enterprise-solutions':
+                    window.open('hr-designer.html', '_blank');
+                    break;
+                default:
+                    console.log('Unknown service type:', serviceType);
+            }
+        }
         
         function initializeAdminNavigation() {
             console.log('🔄 Initializing Admin Navigation...');
