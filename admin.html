@@ -210,7 +210,7 @@
         }
         
         body.sidebar-collapsed {
-            padding-left: var(--sidebar-collapsed) !important;
+            padding-left: 0 !important;
         }
         
         /* Mobile: Sidebar overlay */
@@ -222,6 +222,13 @@
             body.sidebar-collapsed {
                 padding-left: 0 !important;
             }
+        }
+        
+        /* NUCLEAR OPTION - KEIN PADDING NIRGENDWO */
+        body, body.sidebar-collapsed, body.mobile {
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+        }
             
             .sidebar {
                 transform: translateX(-100%) !important;
@@ -10025,17 +10032,18 @@ Bitte antworte im folgenden JSON-Format:
                 const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
                 const isDesktop = window.innerWidth > 1024;
                 
+                // IMMER body padding auf 0
+                document.body.style.paddingLeft = '0';
+                document.body.style.marginLeft = '0';
+                
                 if (isMobile) {
                     // Mobile: Overlay mode, collapsed by default
-                    document.body.style.paddingLeft = '0';
                     sidebar.classList.add('collapsed');
                 } else if (isTablet) {
                     // Tablet: Auto-collapse
-                    document.body.style.paddingLeft = '70px';
                     sidebar.classList.add('collapsed');
                 } else if (isDesktop && !sidebar.dataset.userToggled) {
                     // Desktop: Auto-expand if user hasn't manually toggled
-                    document.body.style.paddingLeft = '280px';
                     sidebar.classList.remove('collapsed');
                 }
                 
@@ -10062,12 +10070,30 @@ Bitte antworte im folgenden JSON-Format:
             initModernSidebar();
         }
         
-        // EINFACHES LAYOUT FIX - KEIN WEISSER RAND
+        // NUCLEAR LAYOUT FIX - KEIN WEISSER RAND
         function fixLayout() {
-            // Kein body padding - alles über margin-left der Seiten
+            // NUCLEAR OPTION: Alle padding/margin entfernen
             document.body.style.paddingLeft = '0';
+            document.body.style.marginLeft = '0';
+            document.body.style.padding = '0';
+            document.body.style.margin = '0';
             
-            console.log('✅ Layout fixed - Kein weißer Rand');
+            // Alle Container direkt setzen
+            const allSections = document.querySelectorAll('.admin-section, #user-management-live, #analytics, #system-health, #settings, #dashboard, #content, #nutrition, #personality-development, #personal-training, #applications, #ai-settings, #ai-twin, #translations, #media, #vermietungen, #buchungen');
+            
+            const sidebar = document.querySelector('.sidebar');
+            const isCollapsed = sidebar && sidebar.classList.contains('collapsed');
+            const sidebarWidth = isCollapsed ? '70px' : '280px';
+            
+            allSections.forEach(section => {
+                section.style.marginLeft = sidebarWidth;
+                section.style.width = `calc(100vw - ${sidebarWidth})`;
+                section.style.maxWidth = `calc(100vw - ${sidebarWidth})`;
+                section.style.padding = '20px';
+                section.style.boxSizing = 'border-box';
+            });
+            
+            console.log(`✅ NUCLEAR Layout fixed - Sidebar: ${sidebarWidth}`);
         }
         
         // Apply immediately and on resize
