@@ -276,6 +276,23 @@
         }
         
         /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-twin-widget,
+            .stats-grid,
+            .activities-widget,
+            .applications-widget {
+                grid-column: span 1;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             .admin-container {
                 flex-direction: column;
@@ -291,11 +308,17 @@
                 width: 100%;
             }
             
-            .dashboard-grid,
-            .stats-grid,
-            .activities-grid {
-                grid-template-columns: 1fr;
+            .dashboard-grid {
                 padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activities-widget,
+            .applications-widget {
+                margin-top: 1rem;
             }
             
             .admin-topbar {
@@ -304,14 +327,6 @@
             
             .search-box {
                 width: 200px;
-            }
-        }
-        
-        @media (max-width: 1024px) {
-            .dashboard-grid,
-            .stats-grid,
-            .activities-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
         }
         
@@ -711,15 +726,197 @@
             font-size: 0.875rem;
         }
         
-        /* MODERNE CARDS UND GRIDS */
-        .dashboard-grid,
-        .stats-grid,
-        .activities-grid {
+        /* OPTIMIERTES DASHBOARD LAYOUT */
+        .dashboard-grid {
             display: grid;
             gap: 1.5rem;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(12, 1fr);
             width: 100%;
             padding: 1.5rem;
+        }
+        
+        .dashboard-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        
+        .dashboard-widget:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* AI Twin Widget - kleiner */
+        .ai-twin-widget {
+            grid-column: span 4;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .ai-twin-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .ai-twin-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 0.25rem 0;
+        }
+        
+        .ai-twin-content p {
+            color: #64748b;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        
+        /* Stats Grid - 4 Spalten */
+        .stats-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(4, 1fr);
+            grid-column: span 8;
+        }
+        
+        .stat-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .stat-icon.blue { background: #3b82f6; }
+        .stat-icon.green { background: #10b981; }
+        .stat-icon.orange { background: #f59e0b; }
+        .stat-icon.purple { background: #8b5cf6; }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0.25rem 0;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0;
+        }
+        
+        /* Activities und Applications - nebeneinander */
+        .activities-widget {
+            grid-column: span 6;
+            margin-top: 1.5rem;
+        }
+        
+        .applications-widget {
+            grid-column: span 6;
+            margin-top: 1.5rem;
+        }
+        
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .widget-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            color: white;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0 0 0.25rem 0;
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin: 0;
+        }
+        
+        .application-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .application-stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .application-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.25rem 0;
+        }
+        
+        .application-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0;
         }
         
         .card,
