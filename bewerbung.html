@@ -1323,9 +1323,9 @@ Manuel Weiss`;
       const tbody = docTable.querySelector('tbody');
       const msg = document.getElementById('msg');
 
-      // TODO: Nach Cognito-Setup ersetzen:
-      const LOGIN_URL  = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/login?...';
-      const LOGOUT_URL = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/logout?...';
+      // ✅ Echte Cognito URLs - Live System!
+      const LOGIN_URL  = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/login?client_id=7kc5tt6a23fgh53d60vkefm812&response_type=code&scope=email+openid+profile&redirect_uri=https%3A//manuel-weiss.com/bewerbung.html';
+      const LOGOUT_URL = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/logout?client_id=7kc5tt6a23fgh53d60vkefm812&logout_uri=https%3A//manuel-weiss.com';
 
       initAuth();
       refreshUI();
