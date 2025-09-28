@@ -12,16 +12,39 @@
     
     <!-- Sidebar Fix Styles -->
     <style>
-        /* Force sidebar text to be visible - STRONGEST override */
-        .sidebar .nav-item a,
-        .admin-sidebar .nav-item a,
-        .sidebar .nav-item a span,
-        .admin-sidebar .nav-item a span {
-            color: #1f2937 !important;
-            font-weight: 600 !important;
-            font-size: 14px !important;
-            text-shadow: none !important;
+        /* EXTREME SIDEBAR TEXT FIX - NUCLEAR OPTION */
+        * {
+            color: inherit !important;
+        }
+        
+        .sidebar, .sidebar *, 
+        .admin-sidebar, .admin-sidebar *,
+        .nav-item, .nav-item *,
+        .nav-section, .nav-section *,
+        [class*="sidebar"], [class*="sidebar"] *,
+        [class*="nav"], [class*="nav"] * {
+            color: #000000 !important;
             opacity: 1 !important;
+            text-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        .sidebar {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        
+        .nav-item a {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            text-decoration: none !important;
+        }
+        
+        .nav-section-title {
+            color: #000000 !important;
+            font-weight: 800 !important;
+            font-size: 14px !important;
         }
         
         .sidebar .nav-item a:hover {
@@ -5660,13 +5683,6 @@
                             ">
                                 <i class="fas fa-sync"></i> Metriken aktualisieren
                             </button>
-                            <a href="./complete-system-test.html" target="_blank" style="
-                                background: #059669; color: white; text-decoration: none;
-                                padding: 0.75rem 1.5rem; border-radius: 8px;
-                                font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem;
-                            ">
-                                <i class="fas fa-flask"></i> System Test
-                            </a>
                         </div>
                     </div>
                 </section>
@@ -5740,26 +5756,12 @@
                         </div>
                         
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                            <a href="./test-auth.html" target="_blank" style="
-                                background: rgba(255,255,255,0.2); color: white; text-decoration: none;
-                                padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
-                                border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.5rem;
-                            ">
-                                <i class="fas fa-user-lock"></i> Auth System Test
-                            </a>
                             <a href="./multi-user-dashboard.html" target="_blank" style="
                                 background: rgba(255,255,255,0.2); color: white; text-decoration: none;
                                 padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
                                 border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.5rem;
                             ">
                                 <i class="fas fa-chart-bar"></i> User Dashboard
-                            </a>
-                            <a href="./complete-system-test.html" target="_blank" style="
-                                background: rgba(255,255,255,0.2); color: white; text-decoration: none;
-                                padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
-                                border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.5rem;
-                            ">
-                                <i class="fas fa-flask"></i> Complete System Test
                             </a>
                             <a href="./persoenlichkeitsentwicklung-uebersicht.html" target="_blank" style="
                                 background: rgba(255,255,255,0.2); color: white; text-decoration: none;
@@ -9599,27 +9601,6 @@ Bitte antworte im folgenden JSON-Format:
                         ">
                             <i class="fas fa-chart-bar"></i> User Dashboard
                         </a>
-                        <a href="./complete-system-test.html" target="_blank" style="
-                            background: rgba(255,255,255,0.2); color: white; text-decoration: none;
-                            padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
-                            border: 1px solid rgba(255,255,255,0.3);
-                        ">
-                            <i class="fas fa-flask"></i> Complete Test
-                        </a>
-                        <a href="./test-auth.html" target="_blank" style="
-                            background: rgba(255,255,255,0.2); color: white; text-decoration: none;
-                            padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
-                            border: 1px solid rgba(255,255,255,0.3);
-                        ">
-                            <i class="fas fa-user-lock"></i> Auth Test
-                        </a>
-                        <a href="./health.html" target="_blank" style="
-                            background: rgba(255,255,255,0.2); color: white; text-decoration: none;
-                            padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;
-                            border: 1px solid rgba(255,255,255,0.3);
-                        ">
-                            <i class="fas fa-heartbeat"></i> Health Check
-                        </a>
                     </div>
                 </div>
             `;
@@ -9654,9 +9635,7 @@ Bitte antworte im folgenden JSON-Format:
             docs: typeof listDocuments === 'function',
             userProfile: typeof getUserProfile === 'function',
             progressTracking: typeof getUserProgress === 'function',
-            health: './health.html',
-            backend: 'AWS Services Live',
-            testing: './complete-system-test.html'
+            backend: 'AWS Services Live'
         });
         
         // Verstecke das Info-Panel nach 15 Sekunden  
