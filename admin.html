@@ -596,114 +596,7 @@
             content: " ausklappen";
         }
         
-        /* ALTERNATIVE: TOP-BAR BUTTON für bessere Sichtbarkeit */
-        .top-bar-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1002;
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            width: auto;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 16px;
-            font-weight: 600;
-            padding: 0 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
         
-        .top-bar-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
-            background: linear-gradient(135deg, #b91c1c, #dc2626);
-        }
-        
-        .top-bar-toggle .button-label {
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        /* Top-Bar Button IMMER SICHTBAR */
-        .top-bar-toggle {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: translateX(0) !important;
-        }
-        
-        /* Dynamische Labels für Top-Bar Button */
-        .sidebar:not(.collapsed) .top-bar-toggle .button-label::after {
-            content: " einklappen";
-        }
-        
-        .sidebar.collapsed .top-bar-toggle .button-label::after {
-            content: " ausklappen";
-        }
-        
-        /* OPTION 3: PROMINENT CONTENT-AREA BUTTON */
-        .content-area-toggle {
-            position: fixed;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            z-index: 1003;
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            width: auto;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 18px;
-            font-weight: 700;
-            padding: 0 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-        }
-        
-        .content-area-toggle:hover {
-            transform: translateY(-50%) scale(1.05);
-            box-shadow: 0 8px 24px rgba(5, 150, 105, 0.6);
-            background: linear-gradient(135deg, #047857, #059669);
-        }
-        
-        .content-area-toggle .button-label {
-            font-size: 14px;
-            font-weight: 700;
-            white-space: nowrap;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Content-Area Button IMMER SICHTBAR */
-        .content-area-toggle {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: translateY(-50%) translateX(0) !important;
-        }
-        
-        /* Dynamische Labels für Content-Area Button */
-        .sidebar:not(.collapsed) .content-area-toggle .button-label::after {
-            content: " einklappen";
-        }
-        
-        .sidebar.collapsed .content-area-toggle .button-label::after {
-            content: " ausklappen";
-        }
         
         /* Mobile wird später implementiert wenn nötig */
         
@@ -1953,17 +1846,6 @@
             <span class="button-label">Menü</span>
         </button>
         
-        <!-- Alternative Top-Bar Button - IMMER SICHTBAR -->
-        <button class="top-bar-toggle" id="topBarToggle" title="Sidebar ein-/ausklappen">
-            <i class="fas fa-bars"></i>
-            <span class="button-label">Menü</span>
-        </button>
-        
-        <!-- Option 3: Prominenter Content-Area Button - IMMER SICHTBAR -->
-        <button class="content-area-toggle" id="contentAreaToggle" title="Sidebar ein-/ausklappen">
-            <i class="fas fa-bars"></i>
-            <span class="button-label">Menü</span>
-        </button>
         
         <aside class="sidebar admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
@@ -10629,41 +10511,6 @@ Bitte antworte im folgenden JSON-Format:
                 globalSidebarToggle.setAttribute('aria-expanded', 'true');
             }
             
-            // Top-Bar Toggle Button - alternative Lösung
-            const topBarToggle = document.getElementById('topBarToggle');
-            if (topBarToggle && sidebar) {
-                topBarToggle.addEventListener('click', toggleSidebarWithTracking);
-                
-                // Keyboard accessibility
-                topBarToggle.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleSidebarWithTracking();
-                    }
-                });
-                
-                // Improved visual feedback
-                topBarToggle.setAttribute('aria-label', 'Toggle sidebar');
-                topBarToggle.setAttribute('aria-expanded', 'true');
-            }
-            
-            // Content-Area Toggle Button - prominente Lösung
-            const contentAreaToggle = document.getElementById('contentAreaToggle');
-            if (contentAreaToggle && sidebar) {
-                contentAreaToggle.addEventListener('click', toggleSidebarWithTracking);
-                
-                // Keyboard accessibility
-                contentAreaToggle.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleSidebarWithTracking();
-                    }
-                });
-                
-                // Improved visual feedback
-                contentAreaToggle.setAttribute('aria-label', 'Toggle sidebar');
-                contentAreaToggle.setAttribute('aria-expanded', 'true');
-            }
             
             // Responsive handling
             function handleResize() {
@@ -10764,14 +10611,14 @@ Bitte antworte im folgenden JSON-Format:
                 
                 // Alle Admin-Sektionen anpassen
                 const allSections = document.querySelectorAll('.admin-section, #user-management-live, #analytics, #system-health, #settings, #dashboard, #content, #nutrition, #personality-development, #personal-training, #applications, #ai-settings, #ai-twin, #translations, #media, #vermietungen, #buchungen');
-                allSections.forEach(section => {
+            allSections.forEach(section => {
                     section.style.width = '100%';
                     section.style.maxWidth = '100%';
                     section.style.margin = '0';
                     section.style.padding = 'clamp(10px, 2vw, 20px)';
-                    section.style.boxSizing = 'border-box';
-                });
-                
+                section.style.boxSizing = 'border-box';
+            });
+            
                 console.log(`✅ Clean Layout applied - Mobile: ${isMobile}, Collapsed: ${isCollapsed}`);
             }
         }
