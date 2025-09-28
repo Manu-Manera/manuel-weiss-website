@@ -1405,6 +1405,31 @@ Manuel Weiss`;
       initAuth();
       refreshUI();
       
+      // Clean up any existing event listeners to prevent duplicates
+      function cleanupEventListeners() {
+        console.log('🧹 Cleaning up event listeners...');
+        
+        // Remove existing listeners from buttons
+        const buttons = [
+          'btnUpload', 'btnCvUpload', 'btnCertificateUpload', 
+          'startAnalysisBtn', 'startOcrAnalysis'
+        ];
+        
+        buttons.forEach(buttonId => {
+          const button = document.getElementById(buttonId);
+          if (button) {
+            // Clone the button to remove all event listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            console.log(`✅ Cleaned up ${buttonId}`);
+          }
+        });
+        
+        console.log('✅ Event listeners cleaned up');
+      }
+      
+      cleanupEventListeners();
+      
       // Initialize analysis functionality
       initializeAnalysis();
       
@@ -1414,7 +1439,10 @@ Manuel Weiss`;
       loginBtn.onclick = () => location.href = LOGIN_URL;
       logoutBtn.onclick = () => location.href = LOGOUT_URL;
 
-      document.getElementById('btnUpload').onclick = async () => {
+      // Get fresh button references after cleanup
+      const btnUpload = document.getElementById('btnUpload');
+      if (btnUpload) {
+        btnUpload.onclick = async () => {
         const f = document.getElementById('docFile').files[0];
         if (!f) return showMessage('Bitte Datei wählen', 'warning');
         
@@ -1443,10 +1471,13 @@ Manuel Weiss`;
           btn.textContent = originalText;
           btn.disabled = false;
         }
-      };
+        };
+      }
 
       // CV Upload Handler
-      document.getElementById('btnCvUpload').onclick = async () => {
+      const btnCvUpload = document.getElementById('btnCvUpload');
+      if (btnCvUpload) {
+        btnCvUpload.onclick = async () => {
         const f = document.getElementById('cvUpload').files[0];
         if (!f) return showMessage('Bitte Lebenslauf-Datei wählen', 'warning');
         
@@ -1481,10 +1512,13 @@ Manuel Weiss`;
           btn.textContent = originalText;
           btn.disabled = false;
         }
-      };
+        };
+      }
 
       // Certificate Upload Handler
-      document.getElementById('btnCertificateUpload').onclick = async () => {
+      const btnCertificateUpload = document.getElementById('btnCertificateUpload');
+      if (btnCertificateUpload) {
+        btnCertificateUpload.onclick = async () => {
         const files = document.getElementById('certificateUpload').files;
         if (!files || files.length === 0) return showMessage('Bitte Zeugnis-Dateien wählen', 'warning');
         
@@ -1534,7 +1568,8 @@ Manuel Weiss`;
           btn.textContent = originalText;
           btn.disabled = false;
         }
-      };
+        };
+      }
 
       // Add to HR Design Data
       function addToHRDesignData(type, fileName, uploadResult) {
@@ -1577,8 +1612,10 @@ Manuel Weiss`;
         console.log('🔍 Initializing analysis functionality...');
         
         const startAnalysisBtn = document.getElementById('startAnalysisBtn');
-        if (startAnalysisBtn) {
+        if (startAnalysisBtn && !startAnalysisBtn.hasAttribute('data-listener-added')) {
           startAnalysisBtn.addEventListener('click', startAnalysis);
+          startAnalysisBtn.setAttribute('data-listener-added', 'true');
+          console.log('✅ Analysis button listener added');
         }
         
         // Show analysis section if cover letter is loaded
@@ -1734,8 +1771,10 @@ Manuel Weiss`;
         console.log('🔍 Initializing Enhanced OCR with AI integration...');
         
         const startOcrBtn = document.getElementById('startOcrAnalysis');
-        if (startOcrBtn) {
+        if (startOcrBtn && !startOcrBtn.hasAttribute('data-listener-added')) {
           startOcrBtn.addEventListener('click', startEnhancedOCRAnalysis);
+          startOcrBtn.setAttribute('data-listener-added', 'true');
+          console.log('✅ OCR analysis button listener added');
         }
         
         // Add test function to window for debugging
