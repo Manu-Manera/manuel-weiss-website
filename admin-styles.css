@@ -135,7 +135,7 @@
     
     /* Layout */
     --sidebar-width: 280px;
-    --sidebar-collapsed-width: 80px;
+    --sidebar-collapsed-width: 70px;
     --topbar-height: 70px;
     
     /* Transitions */
@@ -409,6 +409,45 @@ body {
 }
 
 .admin-main.sidebar-collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Dynamic Content Layout */
+.content-wrapper {
+    flex: 1;
+    width: 100%;
+    min-height: 100vh;
+    transition: margin-left var(--transition-base);
+}
+
+.admin-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Ensure proper content flow */
+.admin-content {
+    width: 100%;
+    padding: var(--spacing-lg);
+    box-sizing: border-box;
+}
+
+/* Responsive content handling */
+.admin-section {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Prevent content from being cut off */
+.admin-main {
+    width: calc(100% - var(--sidebar-width));
+    margin-left: var(--sidebar-width);
+    transition: all var(--transition-base);
+}
+
+.admin-main.sidebar-collapsed {
+    width: calc(100% - var(--sidebar-collapsed-width));
     margin-left: var(--sidebar-collapsed-width);
 }
 
