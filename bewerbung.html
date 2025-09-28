@@ -464,6 +464,18 @@
             color: var(--white);
         }
 
+        /* Upload Sections Responsive */
+        @media (max-width: 768px) {
+            .upload-sections {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            .upload-section {
+                padding: 1rem !important;
+            }
+        }
+
         /* Skills */
         .skills-section {
             margin-bottom: 2rem;
@@ -845,6 +857,36 @@
 
                 <div class="certificates-section">
                     <h3>📜 Zeugnisse & Dokumente</h3>
+                    
+                    <!-- Upload-Bereiche für verschiedene Dokumenttypen -->
+                    <div class="upload-sections" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Lebenslauf Upload -->
+                        <div class="upload-section" style="background: var(--neutral-50); padding: 1.5rem; border-radius: var(--radius-lg); border: 2px dashed var(--neutral-300);">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-800); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-file-pdf" style="color: var(--primary);"></i>
+                                Lebenslauf hochladen
+                            </h4>
+                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <button id="btnCvUpload" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
+                                <i class="fas fa-upload"></i> Lebenslauf hochladen
+                            </button>
+                            <p style="font-size: 0.875rem; color: var(--neutral-600); margin: 0.5rem 0 0 0;">PDF, DOC, DOCX bis 10MB</p>
+                        </div>
+                        
+                        <!-- Zeugnisse Upload -->
+                        <div class="upload-section" style="background: var(--neutral-50); padding: 1.5rem; border-radius: var(--radius-lg); border: 2px dashed var(--neutral-300);">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-800); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-certificate" style="color: var(--secondary);"></i>
+                                Zeugnisse hochladen
+                            </h4>
+                            <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <button id="btnCertificateUpload" style="background: var(--secondary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
+                                <i class="fas fa-upload"></i> Zeugnisse hochladen
+                            </button>
+                            <p style="font-size: 0.875rem; color: var(--neutral-600); margin: 0.5rem 0 0 0;">PDF, DOC, DOCX, JPG, PNG bis 10MB</p>
+                        </div>
+                    </div>
+                    
                     <div class="certificates-grid" id="certificatesGrid">
                         <!-- Wird dynamisch gefüllt -->
                     </div>
@@ -1363,6 +1405,117 @@ Manuel Weiss`;
           btn.disabled = false;
         }
       };
+
+      // CV Upload Handler
+      document.getElementById('btnCvUpload').onclick = async () => {
+        const f = document.getElementById('cvUpload').files[0];
+        if (!f) return showMessage('Bitte Lebenslauf-Datei wählen', 'warning');
+        
+        const btn = document.getElementById('btnCvUpload');
+        const originalText = btn.textContent;
+        
+        try {
+          btn.textContent = 'Lade hoch...';
+          btn.disabled = true;
+          showMessage('📤 Lebenslauf wird hochgeladen...', 'info');
+          
+          const result = await uploadDocument(f);
+          
+          if (result.storage === 'local') {
+            showMessage('✅ Lebenslauf lokal gespeichert', 'success');
+            // Add to HR Design data
+            addToHRDesignData('cv', f.name, result);
+          } else {
+            showMessage('✅ Lebenslauf erfolgreich hochgeladen', 'success');
+            addToHRDesignData('cv', f.name, result);
+          }
+          
+          document.getElementById('cvUpload').value = '';
+        } catch(e){ 
+          console.error(e); 
+          showMessage('❌ Lebenslauf-Upload fehlgeschlagen: ' + e.message, 'error'); 
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      };
+
+      // Certificate Upload Handler
+      document.getElementById('btnCertificateUpload').onclick = async () => {
+        const files = document.getElementById('certificateUpload').files;
+        if (!files || files.length === 0) return showMessage('Bitte Zeugnis-Dateien wählen', 'warning');
+        
+        const btn = document.getElementById('btnCertificateUpload');
+        const originalText = btn.textContent;
+        
+        try {
+          btn.textContent = 'Lade hoch...';
+          btn.disabled = true;
+          showMessage(`📤 ${files.length} Zeugnis(se) werden hochgeladen...`, 'info');
+          
+          const uploadPromises = Array.from(files).map(async (file) => {
+            const result = await uploadDocument(file);
+            return { file, result };
+          });
+          
+          const results = await Promise.all(uploadPromises);
+          
+          let successCount = 0;
+          results.forEach(({ file, result }) => {
+            if (result.storage === 'local') {
+              addToHRDesignData('certificate', file.name, result);
+              successCount++;
+            } else {
+              addToHRDesignData('certificate', file.name, result);
+              successCount++;
+            }
+          });
+          
+          if (successCount === files.length) {
+            showMessage(`✅ ${successCount} Zeugnis(se) erfolgreich hochgeladen`, 'success');
+          } else {
+            showMessage(`⚠️ ${successCount} von ${files.length} Zeugnisse hochgeladen`, 'warning');
+          }
+          
+          document.getElementById('certificateUpload').value = '';
+        } catch(e){ 
+          console.error(e); 
+          showMessage('❌ Zeugnis-Upload fehlgeschlagen: ' + e.message, 'error'); 
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      };
+
+      // Add to HR Design Data
+      function addToHRDesignData(type, fileName, uploadResult) {
+        const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+        
+        if (type === 'cv') {
+          if (!hrDesignData.documents) hrDesignData.documents = {};
+          hrDesignData.documents.cv = {
+            name: fileName,
+            uploadedAt: new Date().toISOString(),
+            storage: uploadResult.storage,
+            id: uploadResult.id
+          };
+        } else if (type === 'certificate') {
+          if (!hrDesignData.certificates) hrDesignData.certificates = [];
+          hrDesignData.certificates.push({
+            id: uploadResult.id,
+            title: fileName.replace(/\.[^/.]+$/, ""), // Remove file extension
+            fileName: fileName,
+            uploadedAt: new Date().toISOString(),
+            storage: uploadResult.storage,
+            institution: 'Hochgeladenes Zeugnis',
+            year: new Date().getFullYear(),
+            description: 'Hochgeladenes Zeugnis'
+          });
+        }
+        
+        localStorage.setItem('hrDesignData', JSON.stringify(hrDesignData));
+        console.log('✅ Added to HR Design Data:', type, fileName);
+      }
 
       async function loadList(){
         try {
