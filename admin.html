@@ -80,11 +80,13 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
-        /* Fix content overlap - REMOVE padding-left */
-        body {
+        /* Fix content overlap - REMOVE padding-left and white border */
+        html, body {
             margin: 0 !important;
             padding: 0 !important;
             overflow-x: hidden !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         /* Proper layout without breaking existing design */
@@ -93,17 +95,21 @@
             min-height: 100vh;
             width: 100%;
             position: relative;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f8fafc !important;
         }
         
         .content-wrapper {
             flex: 1;
             margin-left: 280px;
-            padding: 1rem;
+            padding: 0;
             min-height: 100vh;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: auto;
             width: calc(100% - 280px);
             position: relative;
+            background-color: #f8fafc !important;
         }
         
         .sidebar.collapsed ~ .content-wrapper {
@@ -524,6 +530,34 @@
         .sidebar.collapsed .nav-item a i {
             margin-right: 0 !important;
             font-size: 20px !important;
+        }
+        
+        /* Fix admin-main to eliminate white borders */
+        .admin-main {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: transparent !important;
+            width: 100% !important;
+            flex: 1 !important;
+        }
+        
+        /* Ensure all sections fill the space */
+        .admin-section {
+            background-color: #f8fafc !important;
+            min-height: calc(100vh - 70px) !important;
+            padding: 1rem !important;
+        }
+        
+        /* Fix topbar to eliminate gaps */
+        .admin-topbar {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+        
+        /* Ensure content area has no extra margins */
+        .admin-content {
+            margin: 0 !important;
+            padding: 0 !important;
         }
     </style>
     
@@ -1482,9 +1516,9 @@
     </div>
 
     <!-- Main Admin Interface -->
-    <div class="admin-wrapper">
+    <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="admin-sidebar" id="adminSidebar">
+        <aside class="sidebar admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
                     <img src="manuel-weiss-photo.svg" alt="MW">
@@ -1827,8 +1861,10 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="admin-main">
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Main Content Area -->
+            <main class="admin-main">
             <!-- Top Bar -->
             <header class="admin-topbar">
                 <div class="topbar-left">
@@ -6331,7 +6367,8 @@
                 </section>
             </div>
         </main>
-    </div>
+        </div> <!-- End content-wrapper -->
+    </div> <!-- End admin-container -->
 
 
     <!-- Toast Notifications -->
@@ -6346,7 +6383,7 @@
             console.log('🆘 EMERGENCY: Activating loading screen fallback...');
             
             const loadingScreen = document.getElementById('loadingScreen');
-            const adminWrapper = document.querySelector('.admin-wrapper');
+            const adminWrapper = document.querySelector('.admin-container');
             
             if (loadingScreen) {
                 loadingScreen.style.display = 'none';
@@ -6379,7 +6416,7 @@
                 el.remove(); // Komplett entfernen
             });
             
-            const adminWrapper = document.querySelector('.admin-wrapper');
+            const adminWrapper = document.querySelector('.admin-container');
             if (adminWrapper) {
                 adminWrapper.style.cssText = 'display: flex !important; opacity: 1 !important; visibility: visible !important;';
             }
