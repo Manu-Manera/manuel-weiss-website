@@ -2532,6 +2532,133 @@ Akademie für Lebensberatung`;
         return Math.min(score, 100);
       }
 
+      // HELPER FUNCTIONS FOR AI ANALYSIS
+      function calculateCompleteness(text, documentType) {
+        let score = 0;
+        
+        if (documentType === 'cv') {
+          if (text.includes('Berufserfahrung') || text.includes('Erfahrung')) score += 25;
+          if (text.includes('Ausbildung') || text.includes('Bildung')) score += 25;
+          if (text.includes('Fähigkeiten') || text.includes('Skills')) score += 25;
+          if (text.includes('@') || text.includes('E-Mail')) score += 25;
+        } else if (documentType === 'certificate') {
+          if (text.includes('Note') || text.includes('Bewertung')) score += 30;
+          if (text.includes('Datum') || text.includes('Jahr')) score += 30;
+          if (text.includes('Institution') || text.includes('Akademie')) score += 40;
+        }
+        
+        return score;
+      }
+
+      function calculateProfessionalism(text) {
+        let score = 0;
+        
+        // Check for professional language
+        const professionalWords = ['erfolgreich', 'kompetent', 'erfahren', 'qualifiziert', 'professionell'];
+        const unprofessionalWords = ['cool', 'mega', 'super', 'krass'];
+        
+        const words = text.toLowerCase().split(/\s+/);
+        const professionalCount = words.filter(word => professionalWords.includes(word)).length;
+        const unprofessionalCount = words.filter(word => unprofessionalWords.includes(word)).length;
+        
+        score += Math.min(professionalCount * 10, 50);
+        score -= Math.min(unprofessionalCount * 20, 30);
+        
+        // Check for proper structure
+        if (text.includes('\n\n')) score += 20;
+        if (text.match(/[A-ZÄÖÜ][a-zäöüß\s]+:/)) score += 30;
+        
+        return Math.max(0, Math.min(100, score));
+      }
+
+      function calculateClarity(text) {
+        const sentences = text.split(/[.!?]+/).length;
+        const words = text.split(/\s+/).length;
+        const avgWordsPerSentence = words / sentences;
+        
+        // Optimal: 15-20 words per sentence
+        if (avgWordsPerSentence >= 15 && avgWordsPerSentence <= 20) return 100;
+        if (avgWordsPerSentence >= 10 && avgWordsPerSentence <= 25) return 80;
+        if (avgWordsPerSentence >= 5 && avgWordsPerSentence <= 30) return 60;
+        return 40;
+      }
+
+      function calculateRelevance(text, documentType) {
+        let score = 0;
+        
+        if (documentType === 'cv') {
+          const relevantKeywords = ['Projekt', 'Management', 'Erfahrung', 'Fähigkeiten', 'Qualifikation'];
+          relevantKeywords.forEach(keyword => {
+            if (text.toLowerCase().includes(keyword.toLowerCase())) score += 20;
+          });
+        } else if (documentType === 'certificate') {
+          const relevantKeywords = ['Zertifikat', 'Qualifikation', 'Kompetenz', 'Fähigkeit'];
+          relevantKeywords.forEach(keyword => {
+            if (text.toLowerCase().includes(keyword.toLowerCase())) score += 25;
+          });
+        }
+        
+        return Math.min(score, 100);
+      }
+
+      function extractPersonalInfo(text) {
+        const lines = text.split('\n');
+        const personalInfo = {};
+        
+        lines.forEach(line => {
+          if (line.includes('@')) {
+            const email = line.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
+            if (email) personalInfo.email = email[0];
+          }
+          if (line.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/)) {
+            const phone = line.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/);
+            if (phone) personalInfo.phone = phone[0];
+          }
+        });
+        
+        return personalInfo;
+      }
+
+      function extractInstitution(text) {
+        const lines = text.split('\n');
+        for (const line of lines) {
+          if (line.match(/(universität|hochschule|akademie|institut|schule)/i)) {
+            return line.trim();
+          }
+        }
+        return '';
+      }
+
+      function extractCourse(text) {
+        const lines = text.split('\n');
+        for (const line of lines) {
+          if (line.match(/(kurs|seminar|workshop|schulung|ausbildung)/i)) {
+            return line.trim();
+          }
+        }
+        return '';
+      }
+
+      function extractGrade(text) {
+        const gradeMatch = text.match(/(note|bewertung|note):\s*([1-6](?:[,.]\d+)?|sehr gut|gut|befriedigend|ausreichend|mangelhaft|ungenügend)/i);
+        return gradeMatch ? gradeMatch[2] : '';
+      }
+
+      function extractDate(text) {
+        const dateMatch = text.match(/(\d{1,2}\.?\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s?\d{4}|\d{1,2}\.\d{1,2}\.\d{4})/);
+        return dateMatch ? dateMatch[0] : '';
+      }
+
+      function extractInstructor(text) {
+        const lines = text.split('\n');
+        for (const line of lines) {
+          if (line.match(/(dozent|lehrer|trainer|ausbilder|professor|dr\.|prof\.)/i)) {
+            return line.trim();
+          }
+        }
+        return '';
+      }
+
       // SERVER UPLOAD FUNCTIONALITY
       async function uploadToServer(file) {
         console.log('🌐 Uploading to server:', file.name);
