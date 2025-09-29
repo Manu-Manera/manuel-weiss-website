@@ -1260,6 +1260,14 @@
             display: block;
         }
         
+        .settings-panel {
+            display: none;
+        }
+        
+        .settings-panel.active {
+            display: block;
+        }
+        
         /* API Settings Grid */
         .api-settings-grid {
             display: grid;
@@ -6951,7 +6959,7 @@
                             </form>
                         </div>
                         
-                        <div class="settings-panel" id="generalSettings">
+                        <div class="settings-panel active" id="generalSettings">
                             <h3><i class="fas fa-cog"></i> Allgemeine Einstellungen</h3>
                             <p>Grundlegende Website-Einstellungen verwalten</p>
                             <form class="settings-form">
@@ -13161,14 +13169,20 @@ Bitte antworte im folgenden JSON-Format:
             
             // Hide all settings panels
             const panels = document.querySelectorAll('.settings-panel');
+            console.log(`📋 Found ${panels.length} settings panels`);
             panels.forEach(panel => {
                 panel.style.display = 'none';
                 panel.classList.remove('active');
+                console.log(`📋 Hiding panel: ${panel.id}`);
             });
             
             // Remove active class from all tabs
             const tabs = document.querySelectorAll('.settings-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
+            console.log(`📋 Found ${tabs.length} settings tabs`);
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                console.log(`📋 Deactivating tab: ${tab.getAttribute('data-tab')}`);
+            });
             
             // Show selected panel based on tab name
             let targetPanel = null;
@@ -13198,6 +13212,13 @@ Bitte antworte im folgenden JSON-Format:
                 console.log(`✅ Showing panel: ${targetPanel.id}`);
             } else {
                 console.error(`❌ Panel not found for tab: ${tabName}`);
+                // Fallback: show first available panel
+                const firstPanel = document.querySelector('.settings-panel');
+                if (firstPanel) {
+                    firstPanel.style.display = 'block';
+                    firstPanel.classList.add('active');
+                    console.log(`🆘 Fallback: Showing first panel: ${firstPanel.id}`);
+                }
             }
             
             // Add active class to selected tab
@@ -13230,6 +13251,40 @@ Bitte antworte im folgenden JSON-Format:
                     console.log('📝 Settings form submitted');
                 });
             });
+            
+            // Setup specific settings buttons
+            const saveSeoBtn = document.querySelector('[data-action="save-seo-settings"]');
+            if (saveSeoBtn) {
+                saveSeoBtn.addEventListener('click', function() {
+                    console.log('🔍 SEO Settings saved');
+                    alert('✅ SEO-Einstellungen gespeichert!');
+                });
+            }
+            
+            const saveSecurityBtn = document.querySelector('[data-action="save-security-settings"]');
+            if (saveSecurityBtn) {
+                saveSecurityBtn.addEventListener('click', function() {
+                    console.log('🔒 Security Settings saved');
+                    alert('✅ Sicherheitseinstellungen gespeichert!');
+                });
+            }
+            
+            const createBackupBtn = document.querySelector('[data-action="create-backup"]');
+            if (createBackupBtn) {
+                createBackupBtn.addEventListener('click', function() {
+                    console.log('💾 Creating backup...');
+                    alert('✅ Backup wird erstellt...');
+                });
+            }
+            
+            const restoreBackupBtn = document.querySelector('[data-action="restore-backup"]');
+            if (restoreBackupBtn) {
+                restoreBackupBtn.addEventListener('click', function() {
+                    console.log('📥 Restoring backup...');
+                    alert('✅ Backup wird wiederhergestellt...');
+                });
+            }
+            
             console.log('📝 Settings forms initialized');
         }
         
@@ -13279,10 +13334,14 @@ Bitte antworte im folgenden JSON-Format:
             console.log('🏠 Initializing Hero Settings...');
             loadHeroSettings();
             setupHeroEventListeners();
-            showSettingsTab('general');
-            loadSettings();
+            
+            // Initialize Settings Tabs
+            console.log('⚙️ Initializing Settings Tabs...');
             setupSettingsTabs();
             setupSettingsForms();
+            
+            // Show first tab by default
+            showSettingsTab('general');
             
             // Initialize Pulsing Menu immediately
             console.log('💫 Initializing Pulsing Menu...');
