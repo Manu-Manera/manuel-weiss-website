@@ -3757,7 +3757,7 @@
                                                                 <i class="fas fa-cloud-upload-alt"></i> Dateien auswählen
                                                             </button>
                                                             <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, HTML, JPG, PNG</p>
-                                                        </div>
+                                                </div>
                                                         
                                                         <!-- PDF Editor Button -->
                                                         <button data-action="open-p-d-f-editor" class="btn btn-primary" style="width: 100%; padding: 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
@@ -6951,8 +6951,9 @@
                             </form>
                         </div>
                         
-                        <div class="settings-panel active" id="generalSettings">
-                            <h3>Allgemeine Einstellungen</h3>
+                        <div class="settings-panel" id="generalSettings">
+                            <h3><i class="fas fa-cog"></i> Allgemeine Einstellungen</h3>
+                            <p>Grundlegende Website-Einstellungen verwalten</p>
                             <form class="settings-form">
                                 <div class="form-group">
                                     <label>Website-Titel</label>
@@ -6970,6 +6971,128 @@
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Speichern</button>
+                            </form>
+                        </div>
+                        
+                        <div class="settings-panel" id="seoSettings">
+                            <h3><i class="fas fa-search"></i> SEO Einstellungen</h3>
+                            <p>Suchmaschinenoptimierung für bessere Sichtbarkeit</p>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="meta-title">Meta Titel</label>
+                                    <input type="text" id="meta-title" name="meta-title" class="form-control" placeholder="Ihr SEO Titel">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meta-description">Meta Beschreibung</label>
+                                    <textarea id="meta-description" name="meta-description" class="form-control" rows="3" placeholder="SEO Beschreibung (max. 160 Zeichen)"></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meta-keywords">Keywords</label>
+                                    <input type="text" id="meta-keywords" name="meta-keywords" class="form-control" placeholder="keyword1, keyword2, keyword3">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="google-analytics">Google Analytics ID</label>
+                                    <input type="text" id="google-analytics" name="google-analytics" class="form-control" placeholder="GA-XXXXXXXXX">
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" data-action="save-seo-settings">
+                                        <i class="fas fa-save"></i> SEO Einstellungen speichern
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="settings-panel" id="securitySettings">
+                            <h3><i class="fas fa-shield-alt"></i> Sicherheitseinstellungen</h3>
+                            <p>Website-Sicherheit und Zugriffskontrolle</p>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="admin-password">Admin Passwort ändern</label>
+                                    <input type="password" id="admin-password" name="admin-password" class="form-control" placeholder="Neues Passwort">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="two-factor">Zwei-Faktor-Authentifizierung</label>
+                                    <select id="two-factor" name="two-factor" class="form-control">
+                                        <option value="disabled">Deaktiviert</option>
+                                        <option value="email">E-Mail</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="app">Authenticator App</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="session-timeout">Session Timeout (Minuten)</label>
+                                    <input type="number" id="session-timeout" name="session-timeout" class="form-control" value="30" min="5" max="480">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="ssl-enforcement" name="ssl-enforcement">
+                                        SSL erzwingen
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" data-action="save-security-settings">
+                                        <i class="fas fa-save"></i> Sicherheitseinstellungen speichern
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="settings-panel" id="backupSettings">
+                            <h3><i class="fas fa-database"></i> Backup & Wiederherstellung</h3>
+                            <p>Website-Daten sichern und wiederherstellen</p>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label>Automatische Backups</label>
+                                    <select id="backup-frequency" name="backup-frequency" class="form-control">
+                                        <option value="disabled">Deaktiviert</option>
+                                        <option value="daily">Täglich</option>
+                                        <option value="weekly">Wöchentlich</option>
+                                        <option value="monthly">Monatlich</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="backup-retention">Backup-Aufbewahrung (Tage)</label>
+                                    <input type="number" id="backup-retention" name="backup-retention" class="form-control" value="30" min="1" max="365">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="cloud-backup" name="cloud-backup">
+                                        Cloud-Backup aktivieren
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Backup-Dateien</label>
+                                    <div class="backup-list">
+                                        <div class="backup-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem;">
+                                            <span>Backup vom 15.12.2024</span>
+                                            <button type="button" class="btn btn-small btn-secondary">Herunterladen</button>
+                                        </div>
+                                        <div class="backup-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem;">
+                                            <span>Backup vom 10.12.2024</span>
+                                            <button type="button" class="btn btn-small btn-secondary">Herunterladen</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" data-action="create-backup">
+                                        <i class="fas fa-download"></i> Backup erstellen
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-action="restore-backup">
+                                        <i class="fas fa-upload"></i> Wiederherstellen
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -13034,27 +13157,57 @@ Bitte antworte im folgenden JSON-Format:
         }
         
         function showSettingsTab(tabName) {
+            console.log(`🔄 Switching to tab: ${tabName}`);
+            
             // Hide all settings panels
             const panels = document.querySelectorAll('.settings-panel');
-            panels.forEach(panel => panel.style.display = 'none');
+            panels.forEach(panel => {
+                panel.style.display = 'none';
+                panel.classList.remove('active');
+            });
             
             // Remove active class from all tabs
             const tabs = document.querySelectorAll('.settings-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
             
-            // Show selected panel
-            const targetPanel = document.getElementById(tabName + 'Settings');
+            // Show selected panel based on tab name
+            let targetPanel = null;
+            switch(tabName) {
+                case 'hero-settings':
+                    targetPanel = document.getElementById('heroSettings');
+                    break;
+                case 'general':
+                    targetPanel = document.getElementById('generalSettings');
+                    break;
+                case 'seo':
+                    targetPanel = document.getElementById('seoSettings');
+                    break;
+                case 'security':
+                    targetPanel = document.getElementById('securitySettings');
+                    break;
+                case 'backup':
+                    targetPanel = document.getElementById('backupSettings');
+                    break;
+                default:
+                    targetPanel = document.getElementById('generalSettings');
+            }
+            
             if (targetPanel) {
                 targetPanel.style.display = 'block';
+                targetPanel.classList.add('active');
+                console.log(`✅ Showing panel: ${targetPanel.id}`);
+            } else {
+                console.error(`❌ Panel not found for tab: ${tabName}`);
             }
             
             // Add active class to selected tab
             const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
             if (activeTab) {
                 activeTab.classList.add('active');
+                console.log(`✅ Tab activated: ${tabName}`);
+            } else {
+                console.error(`❌ Tab not found: ${tabName}`);
             }
-            
-            console.log(`📋 Settings tab switched to: ${tabName}`);
         }
         
         function setupSettingsTabs() {
