@@ -1456,7 +1456,7 @@ Manuel Weiss`;
 
       initAuth();
       refreshUI();
-      
+
       // Clean up any existing event listeners to prevent duplicates
       function cleanupEventListeners() {
         console.log('🧹 Cleaning up event listeners...');
@@ -3257,6 +3257,182 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
         // Load analytics if Smart API is available
         if (window.smartAPI && logged) {
           loadAnalytics();
+          loadCentralMediaLibrary();
+        }
+      }
+      
+      // 📁 CENTRAL MEDIA LIBRARY INTEGRATION
+      async function loadCentralMediaLibrary() {
+        try {
+          console.log('📁 Loading central media library...');
+          
+          // Get user documents from central media management
+          const userDocs = await window.smartAPI.getUserDocuments(getCurrentUserId());
+          console.log('📁 Central media library:', userDocs);
+          
+          // Filter for application-related documents
+          const applicationDocs = userDocs.documents.filter(doc => 
+            doc.category === 'application' || 
+            doc.documentType === 'cv' || 
+            doc.documentType === 'certificate' ||
+            doc.documentType === 'cover-letter'
+          );
+          
+          console.log('📄 Application documents:', applicationDocs);
+          
+          // Update UI with available documents
+          updateApplicationDocumentSelector(applicationDocs);
+          
+        } catch (error) {
+          console.error('❌ Central media library loading failed:', error);
+        }
+      }
+      
+      // 📄 Update Application Document Selector
+      function updateApplicationDocumentSelector(documents) {
+        // Create document selector if it doesn't exist
+        let selectorDiv = document.getElementById('central-media-selector');
+        if (!selectorDiv) {
+          selectorDiv = document.createElement('div');
+          selectorDiv.id = 'central-media-selector';
+          selectorDiv.style.cssText = `
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+          `;
+          selectorDiv.innerHTML = `
+            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-700); display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-folder-open"></i>
+              Zentrale Medienverwaltung
+            </h4>
+            <div id="central-documents-list"></div>
+          `;
+          document.getElementById('msg').parentNode.insertBefore(selectorDiv, document.getElementById('msg'));
+        }
+        
+        const documentsList = document.getElementById('central-documents-list');
+        if (documentsList) {
+          if (documents.length === 0) {
+            documentsList.innerHTML = `
+              <div style="text-align: center; padding: 2rem; color: var(--neutral-500);">
+                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin: 0;">Keine Dokumente in der zentralen Medienverwaltung gefunden</p>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Laden Sie Dokumente über das Admin Panel hoch</p>
+              </div>
+            `;
+          } else {
+            documentsList.innerHTML = `
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                ${documents.map(doc => `
+                  <div class="document-card" style="
+                    padding: 1rem;
+                    background: white;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--neutral-200);
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                  " onclick="selectCentralDocument('${doc.id}', '${doc.originalName}', '${doc.documentType}')">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                      <i class="fas fa-file-${getFileIcon(doc.originalName)}" style="color: var(--primary); font-size: 1.25rem;"></i>
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; color: var(--neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          ${doc.originalName}
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--neutral-500);">
+                          ${formatFileSize(doc.size)} • ${doc.documentType}
+                        </div>
+                      </div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--neutral-400);">
+                      ${formatDate(doc.uploadedAt)}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+        }
+      }
+      
+      // 📄 Select Central Document
+      function selectCentralDocument(docId, docName, docType) {
+        console.log('📄 Selecting central document:', { docId, docName, docType });
+        
+        // Add to HR Design Data
+        addToHRDesignData({
+          id: docId,
+          name: docName,
+          type: docType,
+          source: 'central-media',
+          selectedAt: new Date().toISOString()
+        });
+        
+        // Show success message
+        showMessage(`Dokument "${docName}" aus zentraler Medienverwaltung ausgewählt`, 'success');
+        
+        // Update UI
+        updateSelectedDocuments();
+      }
+      
+      // 📄 Get File Icon
+      function getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const iconMap = {
+          'pdf': 'pdf',
+          'doc': 'word',
+          'docx': 'word',
+          'jpg': 'image',
+          'jpeg': 'image',
+          'png': 'image',
+          'gif': 'image'
+        };
+        return iconMap[ext] || 'file';
+      }
+      
+      // 📄 Format File Size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      // 📄 Format Date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('de-DE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      
+      // 📄 Update Selected Documents
+      function updateSelectedDocuments() {
+        const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+        const selectedDocs = hrDesignData.documents || {};
+        
+        console.log('📄 Selected documents:', selectedDocs);
+        
+        // Update UI to show selected documents
+        const selectorDiv = document.getElementById('central-media-selector');
+        if (selectorDiv) {
+          const selectedCount = Object.keys(selectedDocs).length;
+          const title = selectorDiv.querySelector('h4');
+          if (title) {
+            title.innerHTML = `
+              <i class="fas fa-folder-open"></i>
+              Zentrale Medienverwaltung
+              <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; margin-left: 0.5rem;">
+                ${selectedCount} ausgewählt
+              </span>
+            `;
+          }
         }
       }
       

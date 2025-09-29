@@ -2423,9 +2423,9 @@
                                         <i class="fas fa-users"></i>
                                         <span>User verwalten</span>
                                         <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>
+                                </button>
                             </div>
+                        </div>
                         </div>
                         
                     </div>
@@ -4314,8 +4314,19 @@
                 <!-- Media Management Section -->
                 <section id="media" class="admin-section">
                     <div class="section-header">
-                        <h2>Zentrale Medienverwaltung</h2>
-                        <p>Verwalte alle Bilder, Dokumente und Medien zentral</p>
+                        <h2>🚀 Zentrale Medienverwaltung - Smart API System</h2>
+                        <p>Verwalte alle Bilder, Dokumente und Medien zentral mit AWS-Integration</p>
+                    </div>
+                    
+                    <!-- Smart API Status -->
+                    <div class="smart-api-status" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <i class="fas fa-cloud" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.1rem;">Smart API System aktiv</h4>
+                                <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">30+ Endpunkte • AWS S3 • DynamoDB • Analytics</p>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="media-categories">
@@ -4323,23 +4334,75 @@
                             <button class="category-tab active" data-category="profile">
                                 <i class="fas fa-user"></i>
                                 Profilbilder
+                                <span class="tab-count" id="profile-count">0</span>
                             </button>
                             <button class="category-tab" data-category="application">
                                 <i class="fas fa-file-alt"></i>
                                 Bewerbungsunterlagen
+                                <span class="tab-count" id="application-count">0</span>
                             </button>
                             <button class="category-tab" data-category="portfolio">
                                 <i class="fas fa-briefcase"></i>
                                 Portfolio
+                                <span class="tab-count" id="portfolio-count">0</span>
                             </button>
                             <button class="category-tab" data-category="documents">
                                 <i class="fas fa-file-pdf"></i>
                                 Dokumente
+                                <span class="tab-count" id="documents-count">0</span>
                             </button>
                             <button class="category-tab" data-category="gallery">
                                 <i class="fas fa-images"></i>
                                 Galerie
+                                <span class="tab-count" id="gallery-count">0</span>
                             </button>
+                            <button class="category-tab" data-category="analytics">
+                                <i class="fas fa-chart-bar"></i>
+                                Analytics
+                                <span class="tab-count" id="analytics-count">📊</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Smart Upload Section -->
+                    <div class="smart-upload-section" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                        <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-upload"></i>
+                            Smart Upload System
+                        </h3>
+                        
+                        <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('standard')">
+                                <i class="fas fa-upload" style="font-size: 2rem; color: #6366f1; margin-bottom: 0.5rem;"></i>
+                                <h4 style="margin: 0.5rem 0; color: #333;">Standard Upload</h4>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Normale Datei-Uploads</p>
+                            </div>
+                            
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('bulk')">
+                                <i class="fas fa-layer-group" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
+                                <h4 style="margin: 0.5rem 0; color: #333;">Bulk Upload</h4>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Mehrere Dateien gleichzeitig</p>
+                            </div>
+                            
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('chunked')">
+                                <i class="fas fa-puzzle-piece" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
+                                <h4 style="margin: 0.5rem 0; color: #333;">Chunked Upload</h4>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Große Dateien in Chunks</p>
+                            </div>
+                            
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('direct')">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 0.5rem;"></i>
+                                <h4 style="margin: 0.5rem 0; color: #333;">Direct Upload</h4>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Direkter S3-Upload</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Area -->
+                        <div id="upload-area" style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; text-align: center; background: #f9fafb;">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
+                            <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF (max. 100MB)</p>
+                            <input type="file" id="smart-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="display: none;">
                         </div>
                     </div>
                     
@@ -10502,6 +10565,325 @@ Bitte antworte im folgenden JSON-Format:
             
             // Initialize Pulsing Menu
             initializePulsingMenu();
+            
+            // Initialize Smart Media Management
+            if (sectionId === 'media') {
+                initializeSmartMediaManagement();
+            }
+        }
+        
+        // 🚀 SMART MEDIA MANAGEMENT SYSTEM
+        function initializeSmartMediaManagement() {
+            console.log('🚀 Initializing Smart Media Management System...');
+            
+            // Initialize Smart API if available
+            if (window.smartAPI) {
+                console.log('✅ Smart API System available');
+                loadMediaAnalytics();
+                setupSmartUpload();
+                loadMediaCategories();
+            } else {
+                console.log('⚠️ Smart API System not available, using fallback');
+                setupFallbackMediaManagement();
+            }
+        }
+        
+        // 📊 Load Media Analytics
+        async function loadMediaAnalytics() {
+            try {
+                console.log('📊 Loading media analytics...');
+                
+                // Get upload statistics
+                const uploadStats = await window.smartAPI.getUploadStats({ timeRange: '30d' });
+                console.log('📈 Upload stats:', uploadStats);
+                
+                // Get storage statistics
+                const storageStats = await window.smartAPI.getStorageStats();
+                console.log('💾 Storage stats:', storageStats);
+                
+                // Update analytics display
+                updateMediaAnalyticsDisplay(uploadStats, storageStats);
+                
+            } catch (error) {
+                console.error('❌ Media analytics loading failed:', error);
+            }
+        }
+        
+        // 📊 Update Media Analytics Display
+        function updateMediaAnalyticsDisplay(uploadStats, storageStats) {
+            const analyticsTab = document.getElementById('analytics-count');
+            if (analyticsTab) {
+                analyticsTab.textContent = uploadStats.stats.totalUploads || '0';
+            }
+            
+            // Update category counts
+            updateCategoryCounts(uploadStats.stats.uploadsByType || {});
+        }
+        
+        // 📊 Update Category Counts
+        function updateCategoryCounts(categoryData) {
+            const categories = ['profile', 'application', 'portfolio', 'documents', 'gallery'];
+            
+            categories.forEach(category => {
+                const countElement = document.getElementById(`${category}-count`);
+                if (countElement) {
+                    const count = categoryData[category] || 0;
+                    countElement.textContent = count;
+                }
+            });
+        }
+        
+        // 🚀 Setup Smart Upload
+        function setupSmartUpload() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('smart-file-input');
+            
+            if (uploadArea && fileInput) {
+                // Click to upload
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#6366f1';
+                    uploadArea.style.backgroundColor = '#f0f9ff';
+                });
+                
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = '#f9fafb';
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = '#f9fafb';
+                    
+                    const files = Array.from(e.dataTransfer.files);
+                    handleSmartUpload(files);
+                });
+                
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    handleSmartUpload(files);
+                });
+            }
+        }
+        
+        // 🚀 Handle Smart Upload
+        async function handleSmartUpload(files) {
+            console.log('🚀 Handling smart upload for', files.length, 'files');
+            
+            try {
+                // Show upload progress
+                showUploadProgress(files.length);
+                
+                // Use Smart API for upload
+                const results = [];
+                for (const file of files) {
+                    const result = await window.smartAPI.uploadFile(file, {
+                        type: 'media',
+                        category: 'gallery',
+                        userId: getCurrentUserId()
+                    });
+                    results.push(result);
+                }
+                
+                console.log('✅ Smart upload successful:', results);
+                showUploadSuccess(results);
+                
+                // Refresh media categories
+                loadMediaCategories();
+                
+            } catch (error) {
+                console.error('❌ Smart upload failed:', error);
+                showUploadError(error);
+            }
+        }
+        
+        // 📁 Load Media Categories
+        async function loadMediaCategories() {
+            try {
+                console.log('📁 Loading media categories...');
+                
+                // Get user documents
+                const userDocs = await window.smartAPI.getUserDocuments(getCurrentUserId());
+                console.log('📁 User documents:', userDocs);
+                
+                // Group by category
+                const categories = groupDocumentsByCategory(userDocs.documents || []);
+                
+                // Update category displays
+                updateCategoryDisplays(categories);
+                
+            } catch (error) {
+                console.error('❌ Media categories loading failed:', error);
+            }
+        }
+        
+        // 📁 Group Documents by Category
+        function groupDocumentsByCategory(documents) {
+            const categories = {
+                profile: [],
+                application: [],
+                portfolio: [],
+                documents: [],
+                gallery: []
+            };
+            
+            documents.forEach(doc => {
+                const category = doc.category || 'gallery';
+                if (categories[category]) {
+                    categories[category].push(doc);
+                }
+            });
+            
+            return categories;
+        }
+        
+        // 📁 Update Category Displays
+        function updateCategoryDisplays(categories) {
+            Object.keys(categories).forEach(category => {
+                const countElement = document.getElementById(`${category}-count`);
+                if (countElement) {
+                    countElement.textContent = categories[category].length;
+                }
+            });
+        }
+        
+        // 🚀 Show Upload Method
+        function showUploadMethod(method) {
+            console.log('🚀 Showing upload method:', method);
+            
+            // Update UI based on method
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) {
+                switch (method) {
+                    case 'standard':
+                        uploadArea.innerHTML = `
+                            <i class="fas fa-upload" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Standard Upload</h4>
+                            <p style="margin: 0; color: #6b7280;">Normale Datei-Uploads mit Metadaten</p>
+                        `;
+                        break;
+                    case 'bulk':
+                        uploadArea.innerHTML = `
+                            <i class="fas fa-layer-group" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Bulk Upload</h4>
+                            <p style="margin: 0; color: #6b7280;">Mehrere Dateien gleichzeitig verarbeiten</p>
+                        `;
+                        break;
+                    case 'chunked':
+                        uploadArea.innerHTML = `
+                            <i class="fas fa-puzzle-piece" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Chunked Upload</h4>
+                            <p style="margin: 0; color: #6b7280;">Große Dateien in Chunks aufteilen</p>
+                        `;
+                        break;
+                    case 'direct':
+                        uploadArea.innerHTML = `
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #8b5cf6; margin-bottom: 1rem;"></i>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Direct Upload</h4>
+                            <p style="margin: 0; color: #6b7280;">Direkter S3-Upload mit Presigned URLs</p>
+                        `;
+                        break;
+                }
+            }
+        }
+        
+        // 📊 Show Upload Progress
+        function showUploadProgress(fileCount) {
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Uploading ${fileCount} files...</h4>
+                    <p style="margin: 0; color: #6b7280;">Please wait while files are being processed</p>
+                `;
+            }
+        }
+        
+        // ✅ Show Upload Success
+        function showUploadSuccess(results) {
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Upload successful!</h4>
+                    <p style="margin: 0; color: #6b7280;">${results.length} files uploaded successfully</p>
+                `;
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    uploadArea.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
+                        <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
+                        <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF (max. 100MB)</p>
+                    `;
+                }, 3000);
+            }
+        }
+        
+        // ❌ Show Upload Error
+        function showUploadError(error) {
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Upload failed</h4>
+                    <p style="margin: 0; color: #6b7280;">${error.message}</p>
+                `;
+                
+                // Reset after 5 seconds
+                setTimeout(() => {
+                    uploadArea.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
+                        <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
+                        <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF (max. 100MB)</p>
+                    `;
+                }, 5000);
+            }
+        }
+        
+        // 🔧 Setup Fallback Media Management
+        function setupFallbackMediaManagement() {
+            console.log('🔧 Setting up fallback media management...');
+            
+            // Basic file upload functionality
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('smart-file-input');
+            
+            if (uploadArea && fileInput) {
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                fileInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    console.log('📁 Files selected:', files);
+                    // Basic file handling would go here
+                });
+            }
+        }
+        
+        // 👤 Get Current User ID
+        function getCurrentUserId() {
+            // Try to get user ID from various sources
+            if (typeof getUser === 'function') {
+                const user = getUser();
+                return user?.userId || 'anonymous';
+            }
+            
+            if (typeof simpleAuth !== 'undefined' && simpleAuth.getUser) {
+                const user = simpleAuth.getUser();
+                return user?.userId || 'anonymous';
+            }
+            
+            return 'anonymous';
         }
         
         // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
