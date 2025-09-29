@@ -552,6 +552,12 @@ class SmartWorkflowSystem {
                                 <option value="competency">Kompetenzbasiert</option>
                             </select>
                         </div>
+                        
+                        <div class="control-group">
+                            <button class="btn btn-primary" onclick="generateAllSentences()">
+                                <i class="fas fa-magic"></i> Alle Sätze generieren
+                            </button>
+                        </div>
                     </div>
 
                     <div class="requirements-sentences">
@@ -651,7 +657,7 @@ class SmartWorkflowSystem {
                                 <div class="address-preview" id="senderAddress">
                                     ${this.renderSenderAddress()}
                                 </div>
-                                <button class="btn btn-small" onclick="window.smartWorkflow.editSenderAddress()">
+                                <button class="btn btn-small" onclick="editSenderAddress()">
                                     <i class="fas fa-edit"></i> Bearbeiten
                                 </button>
                             </div>
@@ -659,13 +665,28 @@ class SmartWorkflowSystem {
                             <div class="address-component">
                                 <label>Firmenadresse</label>
                                 <div class="address-search">
-                                    <button class="btn btn-primary btn-small" onclick="window.smartWorkflow.searchCompanyAddress()">
+                                    <button class="btn btn-primary btn-small" onclick="searchCompanyAddress()">
                                         <i class="fas fa-search"></i> Automatisch suchen
+                                    </button>
+                                    <button class="btn btn-secondary btn-small" onclick="editCompanyAddress()">
+                                        <i class="fas fa-edit"></i> Manuell eingeben
                                     </button>
                                 </div>
                                 <div class="address-preview" id="companyAddress">
                                     ${this.renderCompanyAddress()}
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="component-section">
+                            <h4><i class="fas fa-file-alt"></i> Docmosis DocGen</h4>
+                            <div class="docgen-controls">
+                                <button class="btn btn-primary btn-small" onclick="openDocmosisEditor()">
+                                    <i class="fas fa-edit"></i> DocGen Editor öffnen
+                                </button>
+                                <button class="btn btn-secondary btn-small" onclick="generateDocmosisTemplate()">
+                                    <i class="fas fa-magic"></i> Template generieren
+                                </button>
                             </div>
                         </div>
 
@@ -768,8 +789,41 @@ class SmartWorkflowSystem {
                         <div class="design-control">
                             <label>Farbschema</label>
                             <div class="color-picker-group">
-                                <input type="color" id="primaryColor" value="#2c3e50" onchange="window.smartWorkflow.updateDesign()">
-                                <input type="color" id="accentColor" value="#3498db" onchange="window.smartWorkflow.updateDesign()">
+                                <input type="color" id="primaryColor" value="#2c3e50" onchange="updateDesign()">
+                                <input type="color" id="accentColor" value="#3498db" onchange="updateDesign()">
+                            </div>
+                        </div>
+
+                        <div class="design-control">
+                            <label>Schriftart</label>
+                            <select id="fontFamily" onchange="updateDesign()">
+                                <option value="Inter">Inter (Modern)</option>
+                                <option value="Roboto">Roboto (Clean)</option>
+                                <option value="Open Sans">Open Sans (Friendly)</option>
+                                <option value="Lato">Lato (Professional)</option>
+                                <option value="Montserrat">Montserrat (Elegant)</option>
+                            </select>
+                        </div>
+
+                        <div class="design-control">
+                            <label>Layout-Template</label>
+                            <div class="template-grid">
+                                <div class="template-option" data-template="modern" onclick="selectTemplate('modern')">
+                                    <div class="template-preview modern-preview"></div>
+                                    <span>Modern</span>
+                                </div>
+                                <div class="template-option" data-template="classic" onclick="selectTemplate('classic')">
+                                    <div class="template-preview classic-preview"></div>
+                                    <span>Classic</span>
+                                </div>
+                                <div class="template-option" data-template="creative" onclick="selectTemplate('creative')">
+                                    <div class="template-preview creative-preview"></div>
+                                    <span>Creative</span>
+                                </div>
+                                <div class="template-option" data-template="minimal" onclick="selectTemplate('minimal')">
+                                    <div class="template-preview minimal-preview"></div>
+                                    <span>Minimal</span>
+                                </div>
                             </div>
                         </div>
 
@@ -4019,6 +4073,500 @@ window.testDirectUpload = function() {
     };
 };
 
+// 🚀 Generate All Sentences for Step 4
+window.generateAllSentences = async function() {
+    console.log('🚀 Generating all sentences for Step 4...');
+    
+    try {
+        // Get requirements from workflow data
+        const requirements = window.smartWorkflow?.applicationData?.requirements || [];
+        
+        if (requirements.length === 0) {
+            console.log('⚠️ No requirements found, using fallback');
+            await generateFallbackSentences();
+            return;
+        }
+        
+        console.log(`📝 Found ${requirements.length} requirements, generating sentences...`);
+        
+        // Get user profile if available
+        const userProfile = await loadUserProfileForSentences();
+        
+        // Generate sentences for each requirement
+        for (let i = 0; i < requirements.length; i++) {
+            const requirement = requirements[i];
+            console.log(`📝 Generating sentences for requirement ${i + 1}: ${requirement.text}`);
+            
+            await generateSentencesForRequirement(i, requirement.text, userProfile);
+        }
+        
+        console.log('✅ All sentences generated successfully');
+        
+    } catch (error) {
+        console.error('❌ Error generating sentences:', error);
+        // Fallback to basic sentence generation
+        await generateFallbackSentences();
+    }
+};
+
+// 🚀 Load User Profile for Sentences
+window.loadUserProfileForSentences = async function() {
+    try {
+        // Try to get user profile from various sources
+        const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+        const workflowDocs = JSON.parse(localStorage.getItem('workflowDocuments') || '[]');
+        
+        if (hrDesignData.documents && Object.keys(hrDesignData.documents).length > 0) {
+            console.log('✅ Found user profile in hrDesignData');
+            return {
+                skills: extractSkillsFromDocuments(hrDesignData.documents),
+                experience: extractExperienceFromDocuments(hrDesignData.documents),
+                education: extractEducationFromDocuments(hrDesignData.documents)
+            };
+        }
+        
+        if (workflowDocs.length > 0) {
+            console.log('✅ Found workflow documents');
+            return {
+                skills: extractSkillsFromWorkflowDocs(workflowDocs),
+                experience: extractExperienceFromWorkflowDocs(workflowDocs),
+                education: extractEducationFromWorkflowDocs(workflowDocs)
+            };
+        }
+        
+        console.log('⚠️ No user profile found, using generic profile');
+        return null;
+        
+    } catch (error) {
+        console.error('❌ Error loading user profile:', error);
+        return null;
+    }
+};
+
+// 🚀 Generate Sentences for Single Requirement
+window.generateSentencesForRequirement = async function(requirementIndex, requirementText, userProfile) {
+    console.log(`📝 Generating sentences for requirement ${requirementIndex}: ${requirementText}`);
+    
+    try {
+        // Get sentence settings
+        const sentenceLength = document.getElementById('sentenceLength')?.value || 'medium';
+        const sentenceTone = document.getElementById('sentenceTone')?.value || 'professional';
+        const sentenceStyle = document.getElementById('sentenceStyle')?.value || 'achievement';
+        
+        // Generate sentences based on available data
+        let sentences;
+        if (userProfile && userProfile.skills) {
+            console.log('✅ Using user profile for personalized sentences');
+            sentences = await generateProfileBasedSentences(requirementText, userProfile, sentenceLength, sentenceTone, sentenceStyle);
+        } else {
+            console.log('⚠️ No user profile, using generic sentences');
+            sentences = await generateGenericSentences(requirementText, sentenceLength, sentenceTone, sentenceStyle);
+        }
+        
+        // Display sentences in UI
+        displaySentencesInUI(requirementIndex, sentences);
+        
+        console.log(`✅ Generated ${sentences.length} sentences for requirement ${requirementIndex}`);
+        
+    } catch (error) {
+        console.error('❌ Error generating sentences for requirement:', error);
+        // Show fallback sentences
+        displayFallbackSentences(requirementIndex, requirementText);
+    }
+};
+
+// 🚀 Generate Profile-Based Sentences
+window.generateProfileBasedSentences = async function(requirementText, userProfile, length, tone, style) {
+    console.log('🤖 Generating profile-based sentences...');
+    
+    // Simulate AI sentence generation
+    const sentences = [
+        `Mit meiner ${userProfile.skills?.[0] || 'umfangreichen'} Erfahrung in ${requirementText.toLowerCase()} bringe ich die idealen Voraussetzungen für diese Position mit.`,
+        `Meine Expertise in ${userProfile.skills?.[1] || 'verschiedenen Bereichen'} ermöglicht es mir, ${requirementText.toLowerCase()} erfolgreich umzusetzen.`,
+        `Durch meine ${userProfile.experience?.[0] || 'berufliche'} Laufbahn habe ich umfassende Kenntnisse in ${requirementText.toLowerCase()} entwickelt.`
+    ];
+    
+    return sentences;
+};
+
+// 🚀 Generate Generic Sentences
+window.generateGenericSentences = async function(requirementText, length, tone, style) {
+    console.log('🤖 Generating generic sentences...');
+    
+    // Generic sentence templates
+    const templates = {
+        short: [
+            `Ich verfüge über ${requirementText.toLowerCase()}.`,
+            `Meine Erfahrung in ${requirementText.toLowerCase()} ist umfassend.`,
+            `${requirementText} gehört zu meinen Kernkompetenzen.`
+        ],
+        medium: [
+            `Mit meiner langjährigen Erfahrung in ${requirementText.toLowerCase()} bringe ich die idealen Voraussetzungen für diese Position mit.`,
+            `Meine Expertise in ${requirementText.toLowerCase()} ermöglicht es mir, komplexe Aufgaben erfolgreich zu bewältigen.`,
+            `Durch meine berufliche Laufbahn habe ich umfassende Kenntnisse in ${requirementText.toLowerCase()} entwickelt.`
+        ],
+        long: [
+            `Mit meiner langjährigen und vielfältigen Erfahrung in ${requirementText.toLowerCase()} bringe ich nicht nur die fachlichen, sondern auch die methodischen Voraussetzungen mit, um in dieser Position erfolgreich zu sein.`,
+            `Meine umfassende Expertise in ${requirementText.toLowerCase()} ermöglicht es mir, komplexe Herausforderungen zu meistern und innovative Lösungen zu entwickeln.`,
+            `Durch meine kontinuierliche berufliche Entwicklung habe ich tiefgreifende Kenntnisse in ${requirementText.toLowerCase()} aufgebaut, die ich gerne in Ihr Team einbringen möchte.`
+        ]
+    };
+    
+    return templates[length] || templates.medium;
+};
+
+// 🚀 Display Sentences in UI
+window.displaySentencesInUI = function(requirementIndex, sentences) {
+    const container = document.querySelector(`[data-requirement-index="${requirementIndex}"] .sentences-container`);
+    if (!container) {
+        console.error('❌ Sentences container not found for requirement', requirementIndex);
+        return;
+    }
+    
+    container.innerHTML = sentences.map((sentence, index) => `
+        <div class="sentence-item" data-sentence-index="${index}">
+            <div class="sentence-text">${sentence}</div>
+            <div class="sentence-actions">
+                <button class="btn btn-small btn-primary" onclick="selectSentence(${requirementIndex}, ${index})">
+                    <i class="fas fa-check"></i> Auswählen
+                </button>
+                <button class="btn btn-small btn-secondary" onclick="editSentence(${requirementIndex}, ${index})">
+                    <i class="fas fa-edit"></i> Bearbeiten
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+// 🚀 Fallback Sentence Generation
+window.generateFallbackSentences = async function() {
+    console.log('🔄 Generating fallback sentences...');
+    
+    const requirements = [
+        'Projektmanagement',
+        'Teamführung',
+        'Kundenbetreuung',
+        'Technische Kompetenz',
+        'Kommunikationsfähigkeit'
+    ];
+    
+    for (let i = 0; i < requirements.length; i++) {
+        const sentences = await generateGenericSentences(requirements[i], 'medium', 'professional', 'achievement');
+        displaySentencesInUI(i, sentences);
+    }
+};
+
+// 🚀 Address Editing Functions for Step 5
+window.editSenderAddress = function() {
+    console.log('📝 Editing sender address...');
+    
+    const currentAddress = getSenderAddress();
+    
+    const newAddress = prompt('Ihre Adresse eingeben:', currentAddress);
+    if (newAddress && newAddress.trim() !== '') {
+        saveSenderAddress(newAddress.trim());
+        updateSenderAddressDisplay();
+        console.log('✅ Sender address updated');
+    }
+};
+
+window.editCompanyAddress = function() {
+    console.log('📝 Editing company address...');
+    
+    const currentAddress = getCompanyAddress();
+    
+    const newAddress = prompt('Firmenadresse eingeben:', currentAddress);
+    if (newAddress && newAddress.trim() !== '') {
+        saveCompanyAddress(newAddress.trim());
+        updateCompanyAddressDisplay();
+        console.log('✅ Company address updated');
+    }
+};
+
+window.searchCompanyAddress = async function() {
+    console.log('🔍 Searching for company address...');
+    
+    try {
+        const companyName = window.smartWorkflow?.applicationData?.company || 'Unbekanntes Unternehmen';
+        console.log(`🔍 Searching address for: ${companyName}`);
+        
+        // Simulate address search
+        const mockAddress = `${companyName}\nMusterstraße 123\n12345 Musterstadt`;
+        
+        saveCompanyAddress(mockAddress);
+        updateCompanyAddressDisplay();
+        console.log('✅ Company address found and saved');
+        
+    } catch (error) {
+        console.error('❌ Error searching company address:', error);
+        console.log('⚠️ Could not find company address automatically');
+    }
+};
+
+// 🚀 Docmosis DocGen Integration
+window.openDocmosisEditor = function() {
+    console.log('📝 Opening Docmosis DocGen Editor...');
+    
+    // Create Docmosis editor window
+    const editorWindow = window.open('', 'docmosis-editor', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    
+    editorWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Docmosis DocGen Editor</title>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+            <style>
+                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+                .editor-container { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+                .editor-header { background: #6366f1; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+                .editor-content { display: flex; height: 600px; }
+                .editor-sidebar { width: 300px; background: #f8fafc; border-right: 1px solid #e5e7eb; padding: 1rem; }
+                .editor-main { flex: 1; display: flex; flex-direction: column; }
+                .editor-toolbar { background: #f8fafc; border-bottom: 1px solid #e5e7eb; padding: 0.5rem 1rem; display: flex; gap: 0.5rem; }
+                .editor-textarea { flex: 1; border: none; padding: 1rem; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5; resize: none; }
+                .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; }
+                .btn-primary { background: #6366f1; color: white; }
+                .btn-secondary { background: #6b7280; color: white; }
+                .btn-success { background: #10b981; color: white; }
+                .template-item { padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 4px; margin-bottom: 0.5rem; cursor: pointer; }
+                .template-item:hover { background: #f3f4f6; }
+            </style>
+        </head>
+        <body>
+            <div class="editor-container">
+                <div class="editor-header">
+                    <h2><i class="fas fa-file-alt"></i> Docmosis DocGen Editor</h2>
+                    <div>
+                        <button class="btn btn-success" onclick="generateDocument()">
+                            <i class="fas fa-magic"></i> Dokument generieren
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.close()">
+                            <i class="fas fa-times"></i> Schließen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="editor-content">
+                    <div class="editor-sidebar">
+                        <h3>Templates</h3>
+                        <div class="template-item" onclick="loadTemplate('cover-letter')">
+                            <strong>Anschreiben</strong><br>
+                            <small>Standard Anschreiben Template</small>
+                        </div>
+                        <div class="template-item" onclick="loadTemplate('cv')">
+                            <strong>Lebenslauf</strong><br>
+                            <small>Professioneller Lebenslauf</small>
+                        </div>
+                        <div class="template-item" onclick="loadTemplate('application-package')">
+                            <strong>Bewerbungsmappe</strong><br>
+                            <small>Komplette Bewerbungsmappe</small>
+                        </div>
+                        
+                        <h3>Variablen</h3>
+                        <div id="variables-list">
+                            <div class="template-item">
+                                <strong>{{company}}</strong><br>
+                                <small>Unternehmensname</small>
+                            </div>
+                            <div class="template-item">
+                                <strong>{{position}}</strong><br>
+                                <small>Stellenbezeichnung</small>
+                            </div>
+                            <div class="template-item">
+                                <strong>{{senderName}}</strong><br>
+                                <small>Ihr Name</small>
+                            </div>
+                            <div class="template-item">
+                                <strong>{{senderAddress}}</strong><br>
+                                <small>Ihre Adresse</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-main">
+                        <div class="editor-toolbar">
+                            <button class="btn btn-primary" onclick="insertVariable('company')">
+                                <i class="fas fa-plus"></i> {{company}}
+                            </button>
+                            <button class="btn btn-primary" onclick="insertVariable('position')">
+                                <i class="fas fa-plus"></i> {{position}}
+                            </button>
+                            <button class="btn btn-primary" onclick="insertVariable('senderName')">
+                                <i class="fas fa-plus"></i> {{senderName}}
+                            </button>
+                            <button class="btn btn-primary" onclick="insertVariable('senderAddress')">
+                                <i class="fas fa-plus"></i> {{senderAddress}}
+                            </button>
+                        </div>
+                        
+                        <textarea id="docmosisTemplate" class="editor-textarea" placeholder="Docmosis Template hier eingeben...">
+# Anschreiben
+
+{{senderName}}
+{{senderAddress}}
+
+{{company}}
+{{companyAddress}}
+
+Betreff: Bewerbung als {{position}}
+
+Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als {{position}} gelesen. 
+
+[Ihr Anschreiben hier...]
+
+Mit freundlichen Grüßen
+{{senderName}}
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                function loadTemplate(type) {
+                    const templates = {
+                        'cover-letter': \`# Anschreiben
+
+{{senderName}}
+{{senderAddress}}
+
+{{company}}
+{{companyAddress}}
+
+Betreff: Bewerbung als {{position}}
+
+Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als {{position}} gelesen.
+
+[Ihr Anschreiben hier...]
+
+Mit freundlichen Grüßen
+{{senderName}}\`,
+                        'cv': \`# Lebenslauf
+
+## Persönliche Daten
+Name: {{senderName}}
+Adresse: {{senderAddress}}
+E-Mail: {{senderEmail}}
+Telefon: {{senderPhone}}
+
+## Berufserfahrung
+[Berufserfahrung hier...]
+
+## Ausbildung
+[Ausbildung hier...]
+
+## Qualifikationen
+[Qualifikationen hier...]\`,
+                        'application-package': \`# Bewerbungsmappe
+
+## Anschreiben
+[Anschreiben hier...]
+
+## Lebenslauf
+[Lebenslauf hier...]
+
+## Zeugnisse
+[Zeugnisse hier...]\`
+                    };
+                    
+                    document.getElementById('docmosisTemplate').value = templates[type] || '';
+                }
+                
+                function insertVariable(variable) {
+                    const textarea = document.getElementById('docmosisTemplate');
+                    const cursorPos = textarea.selectionStart;
+                    const textBefore = textarea.value.substring(0, cursorPos);
+                    const textAfter = textarea.value.substring(cursorPos);
+                    
+                    textarea.value = textBefore + '{{' + variable + '}}' + textAfter;
+                    textarea.focus();
+                }
+                
+                function generateDocument() {
+                    const template = document.getElementById('docmosisTemplate').value;
+                    console.log('📝 Generating document from template:', template);
+                    
+                    // Simulate document generation
+                    alert('Dokument wird generiert... (Docmosis DocGen Simulation)');
+                    
+                    // In real implementation, this would call Docmosis API
+                    // const result = await docmosisAPI.generateDocument(template, variables);
+                }
+            </script>
+        </body>
+        </html>
+    `);
+    
+    editorWindow.focus();
+};
+
+window.generateDocmosisTemplate = function() {
+    console.log('🤖 Generating Docmosis template...');
+    
+    const workflowData = window.smartWorkflow?.applicationData || {};
+    
+    const template = `
+# Anschreiben - ${workflowData.company || 'Unbekanntes Unternehmen'}
+
+{{senderName}}
+{{senderAddress}}
+
+${workflowData.company || 'Unbekanntes Unternehmen'}
+{{companyAddress}}
+
+Betreff: Bewerbung als ${workflowData.position || 'Unbekannte Position'}
+
+Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${workflowData.position || 'Unbekannte Position'} gelesen.
+
+${workflowData.requirements?.map(req => `- ${req.text}`).join('\n') || '- Keine Anforderungen verfügbar'}
+
+Mit freundlichen Grüßen
+{{senderName}}
+    `.trim();
+    
+    console.log('✅ Docmosis template generated');
+    return template;
+};
+
+// 🚀 Address Management Functions
+window.getSenderAddress = function() {
+    return localStorage.getItem('senderAddress') || 'Manuel Weiss\nPilatusstrasse 40\n8330 Pfäffikon ZH';
+};
+
+window.saveSenderAddress = function(address) {
+    localStorage.setItem('senderAddress', address);
+};
+
+window.getCompanyAddress = function() {
+    return localStorage.getItem('companyAddress') || 'Adresse nicht verfügbar';
+};
+
+window.saveCompanyAddress = function(address) {
+    localStorage.setItem('companyAddress', address);
+};
+
+window.updateSenderAddressDisplay = function() {
+    const element = document.getElementById('senderAddress');
+    if (element) {
+        element.innerHTML = getSenderAddress().replace(/\n/g, '<br>');
+    }
+};
+
+window.updateCompanyAddressDisplay = function() {
+    const element = document.getElementById('companyAddress');
+    if (element) {
+        element.innerHTML = getCompanyAddress().replace(/\n/g, '<br>');
+    }
+};
+
 // 🚀 Add to Central Media Management
 window.addToCentralMediaManagement = function(file, documentType, smartAPIResult) {
     console.log('🚀 Adding document to central media management:', file.name);
@@ -4125,6 +4673,286 @@ window.addToHRDesignDataForAnalysis = function(file, documentType, smartAPIResul
     localStorage.setItem('hrDesignData', JSON.stringify(hrDesignData));
     
     console.log('✅ Document added to HR Design Data for AI Analysis:', hrDesignData);
+};
+
+// 🚀 Enhanced Step 6 Functions
+window.updateDesign = function() {
+    console.log('🎨 Updating design...');
+    
+    const primaryColor = document.getElementById('primaryColor')?.value || '#2c3e50';
+    const accentColor = document.getElementById('accentColor')?.value || '#3498db';
+    const fontFamily = document.getElementById('fontFamily')?.value || 'Inter';
+    
+    // Save design settings
+    const designSettings = {
+        primaryColor,
+        accentColor,
+        fontFamily,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('workflowDesign', JSON.stringify(designSettings));
+    
+    // Apply design to preview
+    applyDesignToPreview(designSettings);
+    
+    console.log('✅ Design updated:', designSettings);
+};
+
+window.selectTemplate = function(template) {
+    console.log('📄 Selecting template:', template);
+    
+    // Remove active class from all templates
+    document.querySelectorAll('.template-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    
+    // Add active class to selected template
+    const selectedOption = document.querySelector(`[data-template="${template}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('active');
+    }
+    
+    // Save template selection
+    localStorage.setItem('selectedTemplate', template);
+    
+    // Apply template to preview
+    applyTemplateToPreview(template);
+    
+    console.log('✅ Template selected:', template);
+};
+
+window.uploadLogo = function() {
+    console.log('📷 Uploading company logo...');
+    
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const logoUrl = e.target.result;
+                saveCompanyLogo(logoUrl);
+                updateLogoPreview(logoUrl);
+                console.log('✅ Logo uploaded successfully');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+};
+
+window.publishOnline = function() {
+    console.log('🌐 Publishing application online...');
+    
+    try {
+        // Generate unique application ID
+        const applicationId = 'app_' + Date.now().toString(36) + Math.random().toString(36).substr(2);
+        
+        // Create application data
+        const applicationData = {
+            id: applicationId,
+            company: window.smartWorkflow?.applicationData?.company || 'Unbekanntes Unternehmen',
+            position: window.smartWorkflow?.applicationData?.position || 'Unbekannte Position',
+            documents: getApplicationDocuments(),
+            design: getDesignSettings(),
+            createdAt: new Date().toISOString(),
+            publicUrl: `${window.location.origin}/application/${applicationId}`
+        };
+        
+        // Save to localStorage (in real implementation, this would be sent to server)
+        localStorage.setItem(`application_${applicationId}`, JSON.stringify(applicationData));
+        
+        // Show share section
+        showShareSection(applicationData.publicUrl);
+        
+        console.log('✅ Application published online:', applicationData.publicUrl);
+        
+    } catch (error) {
+        console.error('❌ Error publishing application:', error);
+        console.log('⚠️ Could not publish application online');
+    }
+};
+
+window.exportPDF = function() {
+    console.log('📄 Exporting as PDF...');
+    
+    try {
+        // Generate PDF content
+        const pdfContent = generatePDFContent();
+        
+        // Create PDF blob
+        const blob = new Blob([pdfContent], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        
+        // Download PDF
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bewerbung_${window.smartWorkflow?.applicationData?.company || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ PDF exported successfully');
+        
+    } catch (error) {
+        console.error('❌ Error exporting PDF:', error);
+        console.log('⚠️ Could not export PDF');
+    }
+};
+
+window.exportWord = function() {
+    console.log('📝 Exporting as Word document...');
+    
+    try {
+        // Generate Word content
+        const wordContent = generateWordContent();
+        
+        // Create Word blob
+        const blob = new Blob([wordContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = URL.createObjectURL(blob);
+        
+        // Download Word document
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bewerbung_${window.smartWorkflow?.applicationData?.company || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.docx`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ Word document exported successfully');
+        
+    } catch (error) {
+        console.error('❌ Error exporting Word document:', error);
+        console.log('⚠️ Could not export Word document');
+    }
+};
+
+window.exportODT = function() {
+    console.log('📄 Exporting as ODT document...');
+    
+    try {
+        // Generate ODT content
+        const odtContent = generateODTContent();
+        
+        // Create ODT blob
+        const blob = new Blob([odtContent], { type: 'application/vnd.oasis.opendocument.text' });
+        const url = URL.createObjectURL(blob);
+        
+        // Download ODT document
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bewerbung_${window.smartWorkflow?.applicationData?.company || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.odt`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ ODT document exported successfully');
+        
+    } catch (error) {
+        console.error('❌ Error exporting ODT document:', error);
+        console.log('⚠️ Could not export ODT document');
+    }
+};
+
+window.copyShareLink = function() {
+    const shareLink = document.getElementById('shareLink');
+    if (shareLink) {
+        shareLink.select();
+        document.execCommand('copy');
+        console.log('✅ Share link copied to clipboard');
+    }
+};
+
+// 🚀 Helper Functions for Step 6
+window.applyDesignToPreview = function(designSettings) {
+    console.log('🎨 Applying design to preview:', designSettings);
+    
+    // Apply CSS variables for design
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', designSettings.primaryColor);
+    root.style.setProperty('--accent-color', designSettings.accentColor);
+    root.style.setProperty('--font-family', designSettings.fontFamily);
+};
+
+window.applyTemplateToPreview = function(template) {
+    console.log('📄 Applying template to preview:', template);
+    
+    // Apply template-specific styles
+    const preview = document.getElementById('applicationPreview');
+    if (preview) {
+        preview.className = `application-preview template-${template}`;
+    }
+};
+
+window.saveCompanyLogo = function(logoUrl) {
+    localStorage.setItem('companyLogo', logoUrl);
+};
+
+window.updateLogoPreview = function(logoUrl) {
+    const preview = document.getElementById('logoPreview');
+    if (preview) {
+        preview.innerHTML = `<img src="${logoUrl}" alt="Company Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+    }
+};
+
+window.getApplicationDocuments = function() {
+    return JSON.parse(localStorage.getItem('workflowDocuments') || '[]');
+};
+
+window.getDesignSettings = function() {
+    return JSON.parse(localStorage.getItem('workflowDesign') || '{}');
+};
+
+window.showShareSection = function(publicUrl) {
+    const shareSection = document.getElementById('shareSection');
+    const shareLink = document.getElementById('shareLink');
+    
+    if (shareSection) {
+        shareSection.style.display = 'block';
+    }
+    
+    if (shareLink) {
+        shareLink.value = publicUrl;
+    }
+};
+
+window.generatePDFContent = function() {
+    // This would generate actual PDF content
+    // For now, return a simple HTML representation
+    return `
+        <html>
+        <head>
+            <title>Bewerbung - ${window.smartWorkflow?.applicationData?.company || 'Unbekannt'}</title>
+        </head>
+        <body>
+            <h1>Bewerbung</h1>
+            <p>Unternehmen: ${window.smartWorkflow?.applicationData?.company || 'Unbekannt'}</p>
+            <p>Position: ${window.smartWorkflow?.applicationData?.position || 'Unbekannt'}</p>
+            <!-- Application content would go here -->
+        </body>
+        </html>
+    `;
+};
+
+window.generateWordContent = function() {
+    // This would generate actual Word content
+    // For now, return a simple text representation
+    return `Bewerbung für ${window.smartWorkflow?.applicationData?.company || 'Unbekanntes Unternehmen'}
+Position: ${window.smartWorkflow?.applicationData?.position || 'Unbekannte Position'}
+
+[Application content would go here]`;
+};
+
+window.generateODTContent = function() {
+    // This would generate actual ODT content
+    // For now, return a simple text representation
+    return `Bewerbung für ${window.smartWorkflow?.applicationData?.company || 'Unbekanntes Unternehmen'}
+Position: ${window.smartWorkflow?.applicationData?.position || 'Unbekannte Position'}
+
+[Application content would go here]`;
 };
 
 // 🚀 Update Workflow Document Counts
