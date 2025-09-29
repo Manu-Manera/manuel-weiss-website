@@ -314,7 +314,38 @@ a:hover {
 /* Hero Section */
 .hero {
     padding: calc(var(--header-height) + var(--spacing-3xl)) 0 var(--spacing-3xl);
-    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    animation: heroBackground 20s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes heroBackground {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
 }
 
 .hero-container {
@@ -332,6 +363,13 @@ a:hover {
     font-weight: 700;
     line-height: 1.1;
     margin-bottom: var(--spacing-lg);
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    animation: heroTitleFade 1s ease-out;
+}
+
+@keyframes heroTitleFade {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .gradient-text {
@@ -350,6 +388,44 @@ a:hover {
 .hero-actions {
     display: flex;
     gap: var(--spacing-md);
+    animation: heroActionsFade 1s ease-out 0.3s both;
+}
+
+@keyframes heroActionsFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero-actions .btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-actions .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.hero-actions .btn:hover::before {
+    left: 100%;
+}
+
+.hero-actions .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
 .hero-visual {
@@ -357,6 +433,12 @@ a:hover {
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-xl);
+    animation: heroVisualFade 1s ease-out 0.6s both;
+}
+
+@keyframes heroVisualFade {
+    0% { opacity: 0; transform: translateX(30px); }
+    100% { opacity: 1; transform: translateX(0); }
 }
 
 .hero-image {
@@ -367,12 +449,24 @@ a:hover {
     width: 300px;
     height: 300px;
     border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.1);
     object-fit: cover !important;
     object-position: center !important;
     aspect-ratio: 1/1;
     max-width: 300px;
     max-height: 300px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 25px 50px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.3);
 }
 
 .hero-stats {
