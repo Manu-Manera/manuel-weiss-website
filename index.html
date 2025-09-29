@@ -516,6 +516,104 @@
         // Check on page show (for back/forward navigation)
         window.addEventListener('pageshow', checkServiceReferrer);
     </script>
+    
+    <!-- Hero-Daten Integration -->
+    <script>
+        console.log('🚀 WEBSITE: Loading hero data integration...');
+        
+        // Hero-Daten aus Admin-Panel laden
+        function loadHeroData() {
+            console.log('📋 WEBSITE: Loading hero data from admin panel...');
+            
+            // Daten aus localStorage laden
+            const websiteData = localStorage.getItem('websiteHeroData');
+            if (websiteData) {
+                try {
+                    const data = JSON.parse(websiteData);
+                    console.log('✅ WEBSITE: Hero data found:', data);
+                    
+                    // Hero-Titel aktualisieren
+                    if (data.hero.title) {
+                        const heroTitle = document.querySelector('.hero-title');
+                        if (heroTitle) {
+                            heroTitle.innerHTML = data.hero.title.replace('AI & Transformation', '<span class="gradient-text">AI & Transformation</span>');
+                        }
+                    }
+                    
+                    // Hero-Untertitel aktualisieren
+                    if (data.hero.subtitle) {
+                        const heroSubtitle = document.querySelector('.hero-subtitle');
+                        if (heroSubtitle) {
+                            heroSubtitle.textContent = data.hero.subtitle;
+                        }
+                    }
+                    
+                    // Profilbild aktualisieren
+                    if (data.profileImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = data.profileImage;
+                            console.log('✅ WEBSITE: Profile image updated');
+                        }
+                    }
+                    
+                    // Button-Text aktualisieren
+                    if (data.hero.buttonText) {
+                        const buttons = document.querySelectorAll('.hero-actions .btn');
+                        if (buttons.length > 1) {
+                            buttons[1].textContent = data.hero.buttonText;
+                        }
+                    }
+                    
+                    // Button-Link aktualisieren
+                    if (data.hero.buttonLink) {
+                        const buttons = document.querySelectorAll('.hero-actions .btn');
+                        if (buttons.length > 1) {
+                            buttons[1].href = data.hero.buttonLink;
+                        }
+                    }
+                    
+                    // Hintergrund-Farben aktualisieren
+                    if (data.hero.bgColor1 && data.hero.bgColor2) {
+                        const heroSection = document.querySelector('.hero');
+                        if (heroSection) {
+                            heroSection.style.background = `linear-gradient(135deg, ${data.hero.bgColor1} 0%, ${data.hero.bgColor2} 100%)`;
+                        }
+                    }
+                    
+                    // Text-Farbe aktualisieren
+                    if (data.hero.textColor) {
+                        const heroContent = document.querySelector('.hero-content');
+                        if (heroContent) {
+                            heroContent.style.color = data.hero.textColor;
+                        }
+                    }
+                    
+                    console.log('✅ WEBSITE: Hero data applied successfully');
+                    
+                } catch (error) {
+                    console.error('❌ WEBSITE: Error loading hero data:', error);
+                }
+            } else {
+                console.log('ℹ️ WEBSITE: No hero data found, using defaults');
+            }
+        }
+        
+        // Beim Laden der Seite Hero-Daten laden
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHeroData();
+        });
+        
+        // Auch bei Storage-Änderungen reagieren (für Live-Updates)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'websiteHeroData') {
+                console.log('🔄 WEBSITE: Hero data updated, reloading...');
+                loadHeroData();
+            }
+        });
+        
+        console.log('✅ WEBSITE: Hero data integration ready');
+    </script>
 
 </body>
 </html>
