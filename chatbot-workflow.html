@@ -1128,53 +1128,85 @@ def chatbot_query():
         }
 
         function downloadChatbot(format) {
-            const chatbotData = {
-                company: document.getElementById('companyName').value || 'Unbekanntes Unternehmen',
-                name: document.getElementById('chatbotName').value || 'Unternehmens-Chatbot',
-                language: document.getElementById('primaryLanguage').value || 'de',
-                functions: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                    .map(cb => cb.value),
-                openaiModel: document.getElementById('openaiModel').value || 'gpt-4',
-                temperature: document.getElementById('temperature').value || 0.7,
-                maxTokens: document.getElementById('maxTokens').value || 1000,
-                personality: document.getElementById('personality').value || 'professional',
-                deployment: document.getElementById('deploymentType').value || 'docker',
-                domain: document.getElementById('domainName').value || '',
-                timestamp: new Date().toISOString()
-            };
-            
-            // Generate chatbot code based on format
-            let content = '';
-            let filename = '';
-            let mimeType = '';
-            
-            if (format === 'zip') {
-                // Create a comprehensive chatbot package
-                content = generateChatbotPackage(chatbotData);
-                filename = `chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.txt`;
-                mimeType = 'text/plain';
-            } else if (format === 'docker') {
-                content = generateDockerFiles(chatbotData);
-                filename = `docker-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.txt`;
-                mimeType = 'text/plain';
-            } else if (format === 'cloud') {
-                content = generateCloudDeployment(chatbotData);
-                filename = `cloud-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.yaml`;
-                mimeType = 'text/yaml';
+            try {
+                console.log('🚀 Starting chatbot download for format:', format);
+                
+                // Collect data with fallbacks
+                const chatbotData = {
+                    company: getElementValue('companyName') || 'Unbekanntes Unternehmen',
+                    name: getElementValue('chatbotName') || 'Unternehmens-Chatbot',
+                    language: getElementValue('primaryLanguage') || 'de',
+                    functions: getCheckedValues(),
+                    openaiModel: getElementValue('openaiModel') || 'gpt-4',
+                    temperature: getElementValue('temperature') || 0.7,
+                    maxTokens: getElementValue('maxTokens') || 1000,
+                    personality: getElementValue('personality') || 'professional',
+                    deployment: getElementValue('deploymentType') || 'docker',
+                    domain: getElementValue('domainName') || '',
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('📊 Chatbot data collected:', chatbotData);
+                
+                // Generate content based on format
+                let content = '';
+                let filename = '';
+                let mimeType = '';
+                
+                if (format === 'zip') {
+                    content = generateChatbotPackage(chatbotData);
+                    filename = `chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.txt`;
+                    mimeType = 'text/plain';
+                } else if (format === 'docker') {
+                    content = generateDockerFiles(chatbotData);
+                    filename = `docker-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.txt`;
+                    mimeType = 'text/plain';
+                } else if (format === 'cloud') {
+                    content = generateCloudDeployment(chatbotData);
+                    filename = `cloud-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.yaml`;
+                    mimeType = 'text/yaml';
+                } else {
+                    throw new Error('Unbekanntes Format: ' + format);
+                }
+                
+                console.log('📄 Generated content length:', content.length);
+                console.log('📁 Filename:', filename);
+                
+                // Create and download file
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                console.log('✅ Download initiated successfully');
+                alert(`✅ ${format.toUpperCase()} Chatbot-Package erfolgreich heruntergeladen!\n\nDatei: ${filename}`);
+                
+            } catch (error) {
+                console.error('❌ Download error:', error);
+                alert(`❌ Fehler beim Download: ${error.message}\n\nBitte versuchen Sie es erneut.`);
             }
-            
-            // Download the file
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            alert(`✅ ${format.toUpperCase()} Chatbot-Package heruntergeladen!`);
+        }
+        
+        function getElementValue(id) {
+            const element = document.getElementById(id);
+            return element ? element.value : '';
+        }
+        
+        function getCheckedValues() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
         }
 
         function generateChatbotPackage(data) {
@@ -1314,38 +1346,117 @@ Entwickelt mit Manuel Weiss HR-Transformation Services`;
         }
 
         function generateDockerFiles(data) {
-            return `FROM python:3.9-slim
+            return `# Docker-Konfiguration für ${data.company} Chatbot
+
+## Dockerfile
+FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# System-Abhängigkeiten installieren
+RUN apt-get update && apt-get install -y \\
+    gcc \\
+    && rm -rf /var/lib/apt/lists/*
 
+# Python-Abhängigkeiten
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Anwendung kopieren
 COPY . .
 
-EXPOSE 8000
+# Port freigeben
+EXPOSE 5000
 
+# Umgebungsvariablen
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+
+# Start-Befehl
 CMD ["python", "app.py"]
 
-# Docker Compose
+## docker-compose.yml
 version: '3.8'
+
 services:
   chatbot:
     build: .
     ports:
-      - "8000:8000"
+      - "5000:5000"
     environment:
       - OPENAI_API_KEY=\${OPENAI_API_KEY}
-      - DATABASE_URL=\${DATABASE_URL}
+      - COMPANY_NAME=${data.company}
+      - CHATBOT_NAME=${data.name}
+      - LANGUAGE=${data.language}
     volumes:
-      - ./data:/app/data`;
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - chatbot
+
+## nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream chatbot {
+        server chatbot:5000;
+    }
+    
+    server {
+        listen 80;
+        server_name ${data.domain || 'localhost'};
+        
+        location / {
+            proxy_pass http://chatbot;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+        }
+    }
+}
+
+## Deployment-Befehle
+# 1. Docker Image bauen
+docker build -t ${data.company.toLowerCase()}-chatbot .
+
+# 2. Mit Docker Compose starten
+docker-compose up -d
+
+# 3. Logs anzeigen
+docker-compose logs -f chatbot
+
+# 4. Container stoppen
+docker-compose down
+
+Erstellt am: ${data.timestamp}`;
         }
 
         function generateCloudDeployment(data) {
-            return `apiVersion: apps/v1
+            return `# Cloud Deployment für ${data.company} Chatbot
+
+## Kubernetes Deployment
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatbot-${data.company.toLowerCase().replace(/\s+/g, '-')}
+  name: ${data.company.toLowerCase()}-chatbot
+  labels:
+    app: chatbot
+    company: ${data.company}
 spec:
   replicas: 3
   selector:
@@ -1358,16 +1469,43 @@ spec:
     spec:
       containers:
       - name: chatbot
-        image: chatbot:latest
+        image: ${data.company.toLowerCase()}-chatbot:latest
         ports:
-        - containerPort: 8000
+        - containerPort: 5000
         env:
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
               name: chatbot-secrets
               key: openai-api-key
+        - name: COMPANY_NAME
+          value: "${data.company}"
+        - name: CHATBOT_NAME
+          value: "${data.name}"
+        - name: LANGUAGE
+          value: "${data.language}"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
 ---
+## Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -1377,8 +1515,120 @@ spec:
     app: chatbot
   ports:
   - port: 80
-    targetPort: 8000
-  type: LoadBalancer`;
+    targetPort: 5000
+  type: LoadBalancer
+
+---
+## Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chatbot-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: ${data.domain || 'chatbot.local'}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: chatbot-service
+            port:
+              number: 80
+
+---
+## Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: chatbot-secrets
+type: Opaque
+data:
+  openai-api-key: <BASE64_ENCODED_API_KEY>
+
+---
+## AWS ECS Task Definition
+{
+  "family": "${data.company.toLowerCase()}-chatbot",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "chatbot",
+      "image": "${data.company.toLowerCase()}-chatbot:latest",
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "COMPANY_NAME",
+          "value": "${data.company}"
+        },
+        {
+          "name": "CHATBOT_NAME", 
+          "value": "${data.name}"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "OPENAI_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:region:account:secret:openai-api-key"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/${data.company.toLowerCase()}-chatbot",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+
+---
+## Azure Container Instances
+apiVersion: 2018-10-01
+location: westeurope
+name: ${data.company.toLowerCase()}-chatbot
+properties:
+  containers:
+  - name: chatbot
+    properties:
+      image: ${data.company.toLowerCase()}-chatbot:latest
+      resources:
+        requests:
+          cpu: 0.25
+          memoryInGb: 0.5
+      ports:
+      - port: 5000
+        protocol: TCP
+      environmentVariables:
+      - name: COMPANY_NAME
+        value: "${data.company}"
+      - name: CHATBOT_NAME
+        value: "${data.name}"
+      - name: OPENAI_API_KEY
+        secureValue: "<OPENAI_API_KEY>"
+  osType: Linux
+  ipAddress:
+    type: Public
+    ports:
+    - protocol: TCP
+      port: 5000
+  restartPolicy: Always
+
+Erstellt am: ${data.timestamp}`;
         }
 
         // Initialize

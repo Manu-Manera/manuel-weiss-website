@@ -771,6 +771,78 @@
                 <label for="feedbackLoops">Feedback-Loops</label>
                 <textarea id="feedbackLoops" rows="3" placeholder="Beschreiben Sie Ihre Feedback-Mechanismen..."></textarea>
             </div>
+            
+            <div class="form-group">
+                <label>Weitere eigene Angaben</label>
+                <div class="custom-inputs">
+                    <div class="custom-input-item">
+                        <input type="text" id="customInput1" placeholder="Eigene Angabe 1">
+                        <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="custom-input-item">
+                        <input type="text" id="customInput2" placeholder="Eigene Angabe 2">
+                        <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="addCustomInput()">
+                        <i class="fas fa-plus"></i> Weitere Angabe hinzufügen
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Bewertung der HR-Strategie</label>
+                <div class="rating-section">
+                    <div class="rating-item">
+                        <label>Strategische Verankerung (1-10):</label>
+                        <div class="star-rating" data-rating="strategic-anchoring">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="6">★</span>
+                            <span class="star" data-value="7">★</span>
+                            <span class="star" data-value="8">★</span>
+                            <span class="star" data-value="9">★</span>
+                            <span class="star" data-value="10">★</span>
+                        </div>
+                    </div>
+                    <div class="rating-item">
+                        <label>Datenqualität (1-10):</label>
+                        <div class="star-rating" data-rating="data-quality">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="6">★</span>
+                            <span class="star" data-value="7">★</span>
+                            <span class="star" data-value="8">★</span>
+                            <span class="star" data-value="9">★</span>
+                            <span class="star" data-value="10">★</span>
+                        </div>
+                    </div>
+                    <div class="rating-item">
+                        <label>Change Readiness (1-10):</label>
+                        <div class="star-rating" data-rating="change-readiness">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="6">★</span>
+                            <span class="star" data-value="7">★</span>
+                            <span class="star" data-value="8">★</span>
+                            <span class="star" data-value="9">★</span>
+                            <span class="star" data-value="10">★</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Export Section -->
@@ -971,6 +1043,69 @@ Entwickelt mit Harvard & MIT Methodologie`;
             URL.revokeObjectURL(url);
             
             alert(`✅ ${filename} erfolgreich heruntergeladen!`);
+        }
+
+        function addCustomInput() {
+            const customInputs = document.querySelector('.custom-inputs');
+            const inputCount = customInputs.querySelectorAll('.custom-input-item').length;
+            const newInputId = `customInput${inputCount + 1}`;
+            
+            const newInputItem = document.createElement('div');
+            newInputItem.className = 'custom-input-item';
+            newInputItem.innerHTML = `
+                <input type="text" id="${newInputId}" placeholder="Eigene Angabe ${inputCount + 1}">
+                <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            const addButton = customInputs.querySelector('button');
+            customInputs.insertBefore(newInputItem, addButton);
+        }
+        
+        function removeCustomInput(button) {
+            button.parentElement.remove();
+        }
+        
+        // Initialize star ratings
+        document.addEventListener('DOMContentLoaded', function() {
+            const starRatings = document.querySelectorAll('.star-rating');
+            starRatings.forEach(rating => {
+                const stars = rating.querySelectorAll('.star');
+                stars.forEach((star, index) => {
+                    star.addEventListener('click', function() {
+                        const value = parseInt(this.dataset.value);
+                        setRating(rating, value);
+                    });
+                    
+                    star.addEventListener('mouseenter', function() {
+                        const value = parseInt(this.dataset.value);
+                        highlightStars(rating, value);
+                    });
+                });
+                
+                rating.addEventListener('mouseleave', function() {
+                    const currentRating = rating.dataset.currentRating || 0;
+                    highlightStars(rating, currentRating);
+                });
+            });
+        });
+        
+        function setRating(rating, value) {
+            rating.dataset.currentRating = value;
+            highlightStars(rating, value);
+            console.log(`Rating set to ${value} for ${rating.dataset.rating}`);
+        }
+        
+        function highlightStars(rating, value) {
+            const stars = rating.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < value) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
         }
 
         // Initialize
