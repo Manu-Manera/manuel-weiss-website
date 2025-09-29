@@ -7207,9 +7207,85 @@
     <script>
         console.log('🆘 EMERGENCY: Loading emergency fallback script...');
         
-        // IMMEDIATE SETTINGS FIX
+        // ULTRA AGGRESSIVE SETTINGS FIX - WORKS IMMEDIATELY
+        (function() {
+            console.log('🔥 ULTRA AGGRESSIVE: Force showing settings content...');
+            
+            // Force show all settings content immediately
+            function forceShowSettings() {
+                const generalPanel = document.getElementById('generalSettings');
+                if (generalPanel) {
+                    generalPanel.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: relative !important;';
+                    generalPanel.classList.add('active');
+                    
+                    // Force show all form elements
+                    const formElements = generalPanel.querySelectorAll('*');
+                    formElements.forEach(el => {
+                        el.style.cssText += 'display: block !important; visibility: visible !important; opacity: 1 !important;';
+                    });
+                    
+                    console.log('✅ ULTRA AGGRESSIVE: General panel forced visible');
+                }
+                
+                // Setup tab switching
+                const tabs = document.querySelectorAll('.settings-tab');
+                tabs.forEach(tab => {
+                    tab.onclick = function() {
+                        const tabName = this.getAttribute('data-tab');
+                        console.log('🔥 ULTRA AGGRESSIVE: Tab clicked:', tabName);
+                        
+                        // Hide all panels
+                        document.querySelectorAll('.settings-panel').forEach(panel => {
+                            panel.style.cssText = 'display: none !important;';
+                            panel.classList.remove('active');
+                        });
+                        
+                        // Show selected panel
+                        let targetPanel = null;
+                        switch(tabName) {
+                            case 'hero-settings': targetPanel = document.getElementById('heroSettings'); break;
+                            case 'general': targetPanel = document.getElementById('generalSettings'); break;
+                            case 'seo': targetPanel = document.getElementById('seoSettings'); break;
+                            case 'security': targetPanel = document.getElementById('securitySettings'); break;
+                            case 'backup': targetPanel = document.getElementById('backupSettings'); break;
+                        }
+                        
+                        if (targetPanel) {
+                            targetPanel.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: relative !important;';
+                            targetPanel.classList.add('active');
+                            
+                            // Force show all content
+                            const allElements = targetPanel.querySelectorAll('*');
+                            allElements.forEach(el => {
+                                el.style.cssText += 'display: block !important; visibility: visible !important; opacity: 1 !important;';
+                            });
+                            
+                            console.log('✅ ULTRA AGGRESSIVE: Panel shown:', targetPanel.id);
+                        }
+                    };
+                });
+            }
+            
+            // Run immediately and on DOM ready
+            forceShowSettings();
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', forceShowSettings);
+            } else {
+                forceShowSettings();
+            }
+            
+            // Also run after a delay to catch any late loading
+            setTimeout(forceShowSettings, 100);
+            setTimeout(forceShowSettings, 500);
+            setTimeout(forceShowSettings, 1000);
+        })();
+        
+        // IMMEDIATE SETTINGS FIX - FORCE DEPLOYMENT
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 IMMEDIATE: Force showing settings panels...');
+            
+            // Force trigger Netlify rebuild
+            console.log('🔄 FORCE DEPLOYMENT: Triggering immediate settings fix...');
             
             // Force show general settings immediately
             const generalPanel = document.getElementById('generalSettings');
