@@ -1399,9 +1399,59 @@ Manuel Weiss`;
       const tbody = docTable.querySelector('tbody');
       const msg = document.getElementById('msg');
 
-      // ✅ Echte Cognito URLs - Live System!
-      const LOGIN_URL  = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/login?client_id=7kc5tt6a23fgh53d60vkefm812&response_type=code&scope=email+openid+profile&redirect_uri=https%3A//manuel-weiss.com/bewerbung.html';
-      const LOGOUT_URL = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/logout?client_id=7kc5tt6a23fgh53d60vkefm812&logout_uri=https%3A//manuel-weiss.com';
+      // 🔧 Flexible Auth URLs - Fallback System
+      const LOGIN_URL  = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/login?client_id=7kc5tt6a23fgh53d60vkefm812&response_type=code&scope=email+openid+profile&redirect_uri=' + encodeURIComponent(window.location.origin + '/bewerbung.html');
+      const LOGOUT_URL = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/logout?client_id=7kc5tt6a23fgh53d60vkefm812&logout_uri=' + encodeURIComponent(window.location.origin);
+      
+      // 🔧 Auth Fallback - Simple Login System
+      function createSimpleAuth() {
+        return {
+          isLoggedIn: () => {
+            const user = localStorage.getItem('simple_user');
+            return user && JSON.parse(user).userId;
+          },
+          getUser: () => {
+            const user = localStorage.getItem('simple_user');
+            return user ? JSON.parse(user) : null;
+          },
+          login: (email, password) => {
+            // Simple mock login for testing
+            const user = {
+              userId: 'user_' + Date.now(),
+              email: email,
+              name: email.split('@')[0],
+              idToken: 'mock_token_' + Date.now()
+            };
+            localStorage.setItem('simple_user', JSON.stringify(user));
+            return user;
+          },
+          logout: () => {
+            localStorage.removeItem('simple_user');
+          }
+        };
+      }
+      
+      // Use simple auth as fallback
+      const simpleAuth = createSimpleAuth();
+      
+      // 🔧 Simple Login Function for Testing
+      function showSimpleLogin() {
+        const email = prompt('E-Mail für Test-Login:');
+        if (email) {
+          const user = simpleAuth.login(email, 'test');
+          console.log('✅ Simple login successful:', user);
+          refreshUI();
+          showMessage('Erfolgreich angemeldet als: ' + user.email, 'success');
+        }
+      }
+      
+      // 🔧 Simple Logout Function
+      function doSimpleLogout() {
+        simpleAuth.logout();
+        console.log('✅ Simple logout successful');
+        refreshUI();
+        showMessage('Erfolgreich abgemeldet', 'info');
+      }
 
       initAuth();
       refreshUI();
@@ -1437,8 +1487,28 @@ Manuel Weiss`;
       // Initialize OCR functionality
       initializeOCR();
 
-      loginBtn.onclick = () => location.href = LOGIN_URL;
-      logoutBtn.onclick = () => location.href = LOGOUT_URL;
+      // 🔧 Smart Login/Logout with Fallback
+      loginBtn.onclick = () => {
+        console.log('🔐 Login button clicked');
+        try {
+          // Try Cognito login first
+          location.href = LOGIN_URL;
+        } catch (error) {
+          console.warn('⚠️ Cognito login failed, using simple login:', error);
+          showSimpleLogin();
+        }
+      };
+      
+      logoutBtn.onclick = () => {
+        console.log('🚪 Logout button clicked');
+        try {
+          // Try Cognito logout first
+          location.href = LOGOUT_URL;
+        } catch (error) {
+          console.warn('⚠️ Cognito logout failed, using simple logout:', error);
+          doSimpleLogout();
+        }
+      };
 
       // Get fresh button references after cleanup
       const btnUpload = document.getElementById('btnUpload');
@@ -2855,19 +2925,48 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
         return formData;
       }
 
-      // AWS UPLOAD SERVICE INTEGRATION
+      // SMART STORAGE SYSTEM - Central vs User-specific
       async function uploadToServer(file, type = 'document') {
-        console.log('🚀 AWS Upload Service: Starting upload for', file.name, 'Type:', type);
+        console.log('🚀 Smart Storage System: Starting upload for', file.name, 'Type:', type);
+        
+        try {
+          // Check if user is logged in (try both auth systems)
+          let user = getUser();
+          let isLoggedIn = user && user.userId;
+          
+          // Fallback to simple auth if main auth fails
+          if (!isLoggedIn) {
+            user = simpleAuth.getUser();
+            isLoggedIn = simpleAuth.isLoggedIn();
+          }
+          
+          if (isLoggedIn) {
+            console.log('👤 User logged in - storing user-specific:', user.userId);
+            return await uploadToUserStorage(file, type, user);
+          } else {
+            console.log('🌐 User not logged in - storing centrally');
+            return await uploadToCentralStorage(file, type);
+          }
+          
+        } catch (error) {
+          console.error('❌ Upload failed:', error);
+          throw error;
+        }
+      }
+      
+      // USER-SPECIFIC STORAGE (for logged-in users)
+      async function uploadToUserStorage(file, type, user) {
+        console.log('👤 Uploading to user storage:', user.userId);
         
         try {
           // Use AWS Upload Service if available
           if (window.awsUploadService) {
-            console.log('🌐 Using AWS Upload Service');
+            console.log('🌐 Using AWS Upload Service for user');
             return await window.awsUploadService.uploadFile(file, type);
           }
           
-          // Fallback to original implementation
-          console.log('🔄 Using fallback upload method');
+          // Fallback to original implementation with user ID
+          console.log('🔄 Using fallback upload method for user');
           
           // Convert file to base64 for AWS Lambda
           const base64Data = await fileToBase64(file);
@@ -2880,7 +2979,83 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
               data: base64Data
             },
             type: type,
-            userId: getUser()?.userId || 'anonymous'
+            userId: user.userId,
+            storageType: 'user-specific'
+          };
+          
+          // Try AWS endpoints first, then fallback to local server
+          const endpoints = [
+            'https://api.manuel-weiss.com/upload',  // AWS API Gateway
+            'https://manuel-weiss.com/api/upload', // AWS API Gateway
+            'https://d1234567890.execute-api.eu-central-1.amazonaws.com/api/upload', // AWS Lambda
+            'http://localhost:3001/api/upload',    // Local fallback
+            '/api/upload'                          // Relative fallback
+          ];
+          
+          for (const endpoint of endpoints) {
+            try {
+              console.log(`🔄 Trying endpoint: ${endpoint}`);
+              
+              // Check if it's AWS endpoint (JSON) or local endpoint (FormData)
+              const isAWSEndpoint = endpoint.includes('api.manuel-weiss.com') || endpoint.includes('manuel-weiss.com') || endpoint.includes('execute-api');
+              
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                body: isAWSEndpoint ? JSON.stringify(uploadData) : createFormData(file, type),
+                headers: {
+                  'Content-Type': isAWSEndpoint ? 'application/json' : 'multipart/form-data',
+                  'Authorization': `Bearer ${user.idToken || ''}`
+                }
+              });
+              
+              if (response.ok) {
+                const result = await response.json();
+                console.log('✅ User upload successful:', result);
+                return {
+                  success: true,
+                  id: result.id,
+                  name: result.name,
+                  size: result.size,
+                  type: result.type,
+                  uploadedAt: result.uploadedAt,
+                  storage: result.storage || 'aws-s3',
+                  url: result.url,
+                  s3Key: result.s3Key,
+                  userId: user.userId,
+                  storageType: 'user-specific'
+                };
+              }
+            } catch (error) {
+              console.warn(`⚠️ Endpoint failed: ${endpoint}`, error);
+              continue;
+            }
+          }
+          
+          throw new Error('All user upload endpoints failed');
+        } catch (error) {
+          console.error('❌ User upload failed:', error);
+          throw error;
+        }
+      }
+      
+      // CENTRAL STORAGE (for non-logged-in users)
+      async function uploadToCentralStorage(file, type) {
+        console.log('🌐 Uploading to central storage');
+        
+        try {
+          // Convert file to base64 for AWS Lambda
+          const base64Data = await fileToBase64(file);
+          
+          const uploadData = {
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: base64Data
+            },
+            type: type,
+            userId: 'anonymous',
+            storageType: 'central'
           };
           
           // Try AWS endpoints first, then fallback to local server
@@ -3000,11 +3175,26 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
       }
 
       function refreshUI(){
-        const logged = isLoggedIn();
+        // Check both auth systems
+        let logged = isLoggedIn();
+        if (!logged) {
+          logged = simpleAuth.isLoggedIn();
+        }
+        
         loginBtn.style.display = logged ? 'none' : '';
         logoutBtn.style.display = logged ? '' : 'none';
         uploader.style.display = logged ? '' : 'none';
-        whoami.textContent = logged ? `Eingeloggt als ${getUser().email || getUser().userId}` : '';
+        
+        // Show user info
+        if (logged) {
+          const user = getUser() || simpleAuth.getUser();
+          if (user) {
+            whoami.textContent = `Angemeldet als: ${user.email || user.name || 'User'}`;
+          }
+        } else {
+          whoami.textContent = 'Nicht angemeldet';
+        }
+        
         if (logged) loadList();
       }
 
