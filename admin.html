@@ -2785,6 +2785,37 @@
                                 </form>
                             </div>
                             
+                            <!-- Kontaktdaten -->
+                            <div class="hero-card">
+                                <h3>📞 Kontaktdaten</h3>
+                                <form class="hero-form">
+                                    <div class="form-group">
+                                        <label for="hero-email">E-Mail</label>
+                                        <input type="email" id="hero-email" name="hero-email" class="form-control" placeholder="z.B. weissmanuel94@gmail.com" value="weissmanuel94@gmail.com">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-phone">Telefon</label>
+                                        <input type="tel" id="hero-phone" name="hero-phone" class="form-control" placeholder="z.B. +41 79 123 45 67" value="+41 79 123 45 67">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-location">Standort</label>
+                                        <input type="text" id="hero-location" name="hero-location" class="form-control" placeholder="z.B. Zürich, Schweiz" value="Zürich, Schweiz">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-linkedin">LinkedIn</label>
+                                        <input type="url" id="hero-linkedin" name="hero-linkedin" class="form-control" placeholder="https://linkedin.com/in/..." value="https://linkedin.com/in/manuel-weiss">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-website">Website</label>
+                                        <input type="url" id="hero-website" name="hero-website" class="form-control" placeholder="https://..." value="https://manuel-weiss.ch">
+                                    </div>
+                                </form>
+                            </div>
+                            
                             <!-- Aktionen -->
                             <div class="hero-card">
                                 <h3>⚡ Aktionen</h3>
@@ -2795,6 +2826,10 @@
                                     
                                     <button type="button" id="preview-hero-btn" class="btn btn-secondary">
                                         <i class="fas fa-eye"></i> Vorschau anzeigen
+                                    </button>
+                                    
+                                    <button type="button" id="sync-website-btn" class="btn btn-success">
+                                        <i class="fas fa-sync"></i> Mit Website synchronisieren
                                     </button>
                                     
                                     <button type="button" id="reset-hero-btn" class="btn btn-danger">
@@ -7670,13 +7705,26 @@
                         bgColor2: document.getElementById('hero-bg-color2').value,
                         textColor: document.getElementById('hero-text-color').value,
                         buttonText: document.getElementById('hero-button-text').value,
-                        buttonLink: document.getElementById('hero-button-link').value
+                        buttonLink: document.getElementById('hero-button-link').value,
+                        email: document.getElementById('hero-email').value,
+                        phone: document.getElementById('hero-phone').value,
+                        location: document.getElementById('hero-location').value,
+                        linkedin: document.getElementById('hero-linkedin').value,
+                        website: document.getElementById('hero-website').value
                     };
                     
                     // In localStorage speichern
                     localStorage.setItem('heroData', JSON.stringify(heroData));
                     showHeroMessage('Hero-Bereich erfolgreich gespeichert!', 'success');
                     console.log('✅ HERO: Data saved:', heroData);
+                });
+            }
+            
+            // Website-Synchronisation
+            const syncBtn = document.getElementById('sync-website-btn');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', function() {
+                    syncWithWebsite();
                 });
             }
             
@@ -7733,12 +7781,67 @@
                     if (heroData.textColor) document.getElementById('hero-text-color').value = heroData.textColor;
                     if (heroData.buttonText) document.getElementById('hero-button-text').value = heroData.buttonText;
                     if (heroData.buttonLink) document.getElementById('hero-button-link').value = heroData.buttonLink;
+                    if (heroData.email) document.getElementById('hero-email').value = heroData.email;
+                    if (heroData.phone) document.getElementById('hero-phone').value = heroData.phone;
+                    if (heroData.location) document.getElementById('hero-location').value = heroData.location;
+                    if (heroData.linkedin) document.getElementById('hero-linkedin').value = heroData.linkedin;
+                    if (heroData.website) document.getElementById('hero-website').value = heroData.website;
                     
                     console.log('✅ HERO: Data loaded from localStorage');
                 } catch (error) {
                     console.error('❌ HERO: Error loading data:', error);
                 }
             }
+        }
+        
+        // Website-Synchronisation
+        function syncWithWebsite() {
+            console.log('🔄 HERO: Starting website synchronization...');
+            showHeroMessage('Synchronisiere mit Website...', 'info');
+            
+            // Hero-Daten sammeln
+            const heroData = {
+                name: document.getElementById('hero-name').value,
+                title: document.getElementById('hero-title').value,
+                subtitle: document.getElementById('hero-subtitle').value,
+                description: document.getElementById('hero-description').value,
+                bgColor1: document.getElementById('hero-bg-color1').value,
+                bgColor2: document.getElementById('hero-bg-color2').value,
+                textColor: document.getElementById('hero-text-color').value,
+                buttonText: document.getElementById('hero-button-text').value,
+                buttonLink: document.getElementById('hero-button-link').value,
+                email: document.getElementById('hero-email').value,
+                phone: document.getElementById('hero-phone').value,
+                location: document.getElementById('hero-location').value,
+                linkedin: document.getElementById('hero-linkedin').value,
+                website: document.getElementById('hero-website').value
+            };
+            
+            // Profilbild-Daten
+            const profileImage = document.getElementById('current-profile-image');
+            const imageData = profileImage.src;
+            
+            // Daten für Website vorbereiten
+            const websiteData = {
+                hero: heroData,
+                profileImage: imageData,
+                timestamp: new Date().toISOString()
+            };
+            
+            // In localStorage für Website-Zugriff speichern
+            localStorage.setItem('websiteHeroData', JSON.stringify(websiteData));
+            
+            // Auch in sessionStorage für sofortigen Zugriff
+            sessionStorage.setItem('heroUpdate', JSON.stringify(websiteData));
+            
+            // Erfolgsmeldung
+            showHeroMessage('✅ Hero-Bereich erfolgreich mit Website synchronisiert!', 'success');
+            console.log('✅ HERO: Website sync completed:', websiteData);
+            
+            // Hinweis für Website-Besucher
+            setTimeout(() => {
+                showHeroMessage('💡 Tipp: Besuchen Sie Ihre Website um die Änderungen zu sehen!', 'info');
+            }, 2000);
         }
         
         // Status-Nachricht anzeigen
