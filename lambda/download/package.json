@@ -1,0 +1,21 @@
+{
+  "name": "manuel-weiss-download-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for document download from S3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "s3",
+    "download",
+    "documents"
+  ],
+  "author": "Manuel Weiss",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1490.0"
+  }
+}
