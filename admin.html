@@ -12872,6 +12872,20 @@ Bitte antworte im folgenden JSON-Format:
                 resetBtn.addEventListener('click', resetHero);
             }
             
+            // Update hero content button
+            const updateHeroBtn = document.querySelector('[data-action="update-hero-content"]');
+            if (updateHeroBtn) {
+                updateHeroBtn.addEventListener('click', updateHeroContent);
+            }
+            
+            // Hero settings tab
+            const heroTab = document.querySelector('[data-tab="hero-settings"]');
+            if (heroTab) {
+                heroTab.addEventListener('click', function() {
+                    showSettingsTab('hero-settings');
+                });
+            }
+            
             // Image upload
             const imageInput = document.getElementById('hero-image');
             if (imageInput) {
@@ -13019,6 +13033,53 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
+        function showSettingsTab(tabName) {
+            // Hide all settings panels
+            const panels = document.querySelectorAll('.settings-panel');
+            panels.forEach(panel => panel.style.display = 'none');
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.settings-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected panel
+            const targetPanel = document.getElementById(tabName + 'Settings');
+            if (targetPanel) {
+                targetPanel.style.display = 'block';
+            }
+            
+            // Add active class to selected tab
+            const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            console.log(`📋 Settings tab switched to: ${tabName}`);
+        }
+        
+        function setupSettingsTabs() {
+            const settingsTabs = document.querySelectorAll('.settings-tab');
+            settingsTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    showSettingsTab(tabName);
+                });
+            });
+            console.log('📋 Settings tabs initialized');
+        }
+        
+        function setupSettingsForms() {
+            // Setup form validation and submission
+            const forms = document.querySelectorAll('.settings-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('📝 Settings form submitted');
+                });
+            });
+            console.log('📝 Settings forms initialized');
+        }
+        
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -13060,6 +13121,12 @@ Bitte antworte im folgenden JSON-Format:
             
             // Initialize Settings immediately
             console.log('⚙️ Initializing Settings...');
+            
+            // Initialize Hero Settings
+            console.log('🏠 Initializing Hero Settings...');
+            loadHeroSettings();
+            setupHeroEventListeners();
+            showSettingsTab('general');
             loadSettings();
             setupSettingsTabs();
             setupSettingsForms();
