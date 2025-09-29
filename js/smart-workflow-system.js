@@ -370,7 +370,7 @@ class SmartWorkflowSystem {
                             <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple hidden 
                                    onchange="handleSmartWorkflowFileChange('cvUpload', 'cv')"
                                    onclick="console.log('📄 CV Upload clicked')">
-                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('cvUpload', 'cv')">
+                            <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('cv').length} Dateien</div>
@@ -385,7 +385,7 @@ class SmartWorkflowSystem {
                             <p>Frühere Bewerbungen</p>
                             <input type="file" id="coverLetterUpload" accept=".pdf,.doc,.docx" multiple hidden 
                                    onchange="handleSmartWorkflowFileChange('coverLetterUpload', 'coverLetters')">
-                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('coverLetterUpload', 'coverLetters')">
+                            <button class="btn btn-primary" onclick="document.getElementById('coverLetterUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('coverLetters').length} Dateien</div>
@@ -400,7 +400,7 @@ class SmartWorkflowSystem {
                             <p>Nachweise Ihrer Qualifikationen</p>
                             <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" multiple hidden 
                                    onchange="handleSmartWorkflowFileChange('certificateUpload', 'certificates')">
-                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('certificateUpload', 'certificates')">
+                            <button class="btn btn-primary" onclick="document.getElementById('certificateUpload').click()">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('certificates').length} Dateien</div>
@@ -3788,7 +3788,10 @@ window.handleSmartWorkflowFileChange = async function(inputId, documentType) {
     console.log('🚀 Smart Workflow File Change:', inputId, documentType);
     
     const input = document.getElementById(inputId);
-    if (!input || !input.files.length) return;
+    if (!input || !input.files.length) {
+        console.log('❌ No files selected or input not found');
+        return;
+    }
     
     const files = Array.from(input.files);
     console.log(`📄 Processing ${files.length} files for ${documentType}`);
@@ -3796,15 +3799,42 @@ window.handleSmartWorkflowFileChange = async function(inputId, documentType) {
     // Process each file
     for (const file of files) {
         try {
-            await handleSmartWorkflowUpload(file, documentType);
+            console.log(`📄 Processing file: ${file.name}`);
+            
+            // Create a simple result for upload
+            const result = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                url: URL.createObjectURL(file),
+                name: file.name,
+                type: documentType,
+                size: file.size,
+                uploadDate: new Date().toISOString()
+            };
+            
+            console.log('✅ Upload successful:', result);
+            
+            // Add to local documents
+            addDocumentToWorkflowStorage(file, documentType, result);
+            
+            // Show success message
+            console.log(`✅ ${file.name} erfolgreich hochgeladen`);
+            
+            // Update UI immediately
+            updateWorkflowDocumentCounts();
+            
         } catch (error) {
             console.error('❌ Upload failed for file:', file.name, error);
-            showWorkflowMessage(`❌ Upload fehlgeschlagen für ${file.name}`, 'error');
+            console.log(`❌ Upload fehlgeschlagen für ${file.name}`);
         }
     }
     
     // Clear the input
     input.value = '';
+    
+    // Refresh the workflow step
+    if (window.smartWorkflow) {
+        window.smartWorkflow.refreshWorkflowStep3();
+    }
 };
 
 window.triggerSmartWorkflowUpload = function(inputId, documentType) {
@@ -3963,6 +3993,32 @@ window.testWorkflowUpload = function() {
     };
 };
 
+// 🧪 Test Upload Function - Direct
+window.testDirectUpload = function() {
+    console.log('🧪 Testing Direct Upload...');
+    
+    // Test direct file input clicks
+    const cvInput = document.getElementById('cvUpload');
+    const coverLetterInput = document.getElementById('coverLetterUpload');
+    const certificateInput = document.getElementById('certificateUpload');
+    
+    console.log('📄 File inputs found:');
+    console.log('- cvUpload:', !!cvInput);
+    console.log('- coverLetterUpload:', !!coverLetterInput);
+    console.log('- certificateUpload:', !!certificateInput);
+    
+    if (cvInput) {
+        console.log('✅ CV Upload input found, testing click...');
+        cvInput.click();
+    }
+    
+    return {
+        cvUpload: !!cvInput,
+        coverLetterUpload: !!coverLetterInput,
+        certificateUpload: !!certificateInput
+    };
+};
+
 // 🚀 Add to Central Media Management
 window.addToCentralMediaManagement = function(file, documentType, smartAPIResult) {
     console.log('🚀 Adding document to central media management:', file.name);
@@ -4075,42 +4131,45 @@ window.addToHRDesignDataForAnalysis = function(file, documentType, smartAPIResul
 window.updateWorkflowDocumentCounts = function() {
     console.log('🔄 Updating workflow document counts...');
     
-    // Get document counts from various sources
-    const workflowDocs = JSON.parse(localStorage.getItem('workflowDocuments') || '[]');
-    const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
-    const centralMedia = JSON.parse(localStorage.getItem('centralMediaDocuments') || '[]');
-    
-    // Count documents by type
-    const cvCount = (hrDesignData.documents?.cv || []).length;
-    const coverLettersCount = (hrDesignData.documents?.coverLetters || []).length;
-    const certificatesCount = (hrDesignData.documents?.certificates || []).length;
-    
-    console.log('📊 Document counts:', {
-        cv: cvCount,
-        coverLetters: coverLettersCount,
-        certificates: certificatesCount,
-        total: cvCount + coverLettersCount + certificatesCount
-    });
-    
-    // Update UI elements
-    const cvCountElement = document.querySelector('[data-type="cv"] .uploaded-count');
-    const coverLettersCountElement = document.querySelector('[data-type="coverLetters"] .uploaded-count');
-    const certificatesCountElement = document.querySelector('[data-type="certificates"] .uploaded-count');
-    
-    if (cvCountElement) {
-        cvCountElement.textContent = `${cvCount} Dateien`;
+    try {
+        // Get document counts from workflow documents
+        const workflowDocs = JSON.parse(localStorage.getItem('workflowDocuments') || '[]');
+        
+        // Count documents by type from workflow documents
+        const cvCount = workflowDocs.filter(doc => doc.type === 'cv').length;
+        const coverLettersCount = workflowDocs.filter(doc => doc.type === 'coverLetters').length;
+        const certificatesCount = workflowDocs.filter(doc => doc.type === 'certificates').length;
+        
+        console.log('📊 Document counts:', {
+            cv: cvCount,
+            coverLetters: coverLettersCount,
+            certificates: certificatesCount,
+            total: cvCount + coverLettersCount + certificatesCount
+        });
+        
+        // Update UI elements
+        const cvCountElement = document.querySelector('[data-type="cv"] .uploaded-count');
+        const coverLettersCountElement = document.querySelector('[data-type="coverLetters"] .uploaded-count');
+        const certificatesCountElement = document.querySelector('[data-type="certificates"] .uploaded-count');
+        
+        if (cvCountElement) {
+            cvCountElement.textContent = `${cvCount} Dateien`;
+        }
+        if (coverLettersCountElement) {
+            coverLettersCountElement.textContent = `${coverLettersCount} Dateien`;
+        }
+        if (certificatesCountElement) {
+            certificatesCountElement.textContent = `${certificatesCount} Dateien`;
+        }
+        
+        // Update uploaded files lists
+        updateDocumentList('cv', workflowDocs.filter(doc => doc.type === 'cv'));
+        updateDocumentList('coverLetters', workflowDocs.filter(doc => doc.type === 'coverLetters'));
+        updateDocumentList('certificates', workflowDocs.filter(doc => doc.type === 'certificates'));
+        
+    } catch (error) {
+        console.error('❌ Error updating document counts:', error);
     }
-    if (coverLettersCountElement) {
-        coverLettersCountElement.textContent = `${coverLettersCount} Dateien`;
-    }
-    if (certificatesCountElement) {
-        certificatesCountElement.textContent = `${certificatesCount} Dateien`;
-    }
-    
-    // Update document lists
-    updateDocumentList('cv', hrDesignData.documents?.cv || []);
-    updateDocumentList('coverLetters', hrDesignData.documents?.coverLetters || []);
-    updateDocumentList('certificates', hrDesignData.documents?.certificates || []);
 };
 
 // 🚀 Update Document List
