@@ -269,6 +269,10 @@ class SmartWorkflowSystem {
                                 </div>
                             </div>
                         </div>
+                        
+                        <div id="requirementsList" class="requirements-list" style="display: none;">
+                            ${this.renderRequirementsList()}
+                        </div>
                     </div>
                 </div>
             `;
@@ -314,7 +318,7 @@ class SmartWorkflowSystem {
         }
 
         return this.applicationData.requirements.map((req, index) => `
-            <div class="requirement-item" data-index="${index}" draggable="true">
+            <div class="requirement-item" data-index="${index}" draggable="true" ondragstart="window.smartWorkflow.handleDragStart(event)" ondragover="window.smartWorkflow.handleDragOver(event)" ondrop="window.smartWorkflow.handleDrop(event)">
                 <div class="drag-handle">
                     <i class="fas fa-grip-vertical"></i>
                 </div>
@@ -327,19 +331,21 @@ class SmartWorkflowSystem {
                         placeholder="Anforderung bearbeiten..."
                     >${req.text}</textarea>
                     <div class="requirement-meta">
-                        <span class="priority-badge priority-${req.priority || 'medium'}">
-                            ${req.priority || 'medium'}
-                        </span>
+                        <select class="priority-select" onchange="window.smartWorkflow.setPriority(${index}, this.value)" title="Priorität ändern">
+                            <option value="high" ${req.priority === 'high' ? 'selected' : ''}>Hoch</option>
+                            <option value="medium" ${req.priority === 'medium' ? 'selected' : ''}>Mittel</option>
+                            <option value="low" ${req.priority === 'low' ? 'selected' : ''}>Niedrig</option>
+                        </select>
                         <span class="match-score">
                             <i class="fas fa-chart-line"></i> ${req.matchScore || 0}% Match
                         </span>
                     </div>
                 </div>
                 <div class="requirement-actions">
-                    <button class="btn-icon" onclick="window.smartWorkflow.setPriority(${index}, 'high')" title="Hohe Priorität">
+                    <button class="btn-icon" onclick="window.smartWorkflow.moveRequirement(${index}, 'up')" title="Nach oben">
                         <i class="fas fa-arrow-up"></i>
                     </button>
-                    <button class="btn-icon" onclick="window.smartWorkflow.setPriority(${index}, 'low')" title="Niedrige Priorität">
+                    <button class="btn-icon" onclick="window.smartWorkflow.moveRequirement(${index}, 'down')" title="Nach unten">
                         <i class="fas fa-arrow-down"></i>
                     </button>
                     <button class="btn-icon btn-danger" onclick="window.smartWorkflow.removeRequirement(${index})" title="Entfernen">
@@ -348,6 +354,56 @@ class SmartWorkflowSystem {
                 </div>
             </div>
         `).join('');
+    }
+
+    // Drag & Drop Funktionen für Prioritätskarten
+    handleDragStart(event) {
+        event.dataTransfer.setData('text/plain', event.target.dataset.index);
+        event.target.classList.add('dragging');
+    }
+
+    handleDragOver(event) {
+        event.preventDefault();
+        event.target.classList.add('drag-over');
+    }
+
+    handleDrop(event) {
+        event.preventDefault();
+        const draggedIndex = parseInt(event.dataTransfer.getData('text/plain'));
+        const targetIndex = parseInt(event.target.dataset.index);
+        
+        if (draggedIndex !== targetIndex) {
+            this.moveRequirementByIndex(draggedIndex, targetIndex);
+        }
+        
+        // Cleanup
+        document.querySelectorAll('.requirement-item').forEach(item => {
+            item.classList.remove('dragging', 'drag-over');
+        });
+    }
+
+    moveRequirement(index, direction) {
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex >= 0 && newIndex < this.applicationData.requirements.length) {
+            this.moveRequirementByIndex(index, newIndex);
+        }
+    }
+
+    moveRequirementByIndex(fromIndex, toIndex) {
+        const requirements = this.applicationData.requirements;
+        const [movedItem] = requirements.splice(fromIndex, 1);
+        requirements.splice(toIndex, 0, movedItem);
+        
+        this.saveData();
+        this.refreshWorkflowStep2();
+    }
+
+    setPriority(index, priority) {
+        if (this.applicationData.requirements[index]) {
+            this.applicationData.requirements[index].priority = priority;
+            this.saveData();
+            this.refreshWorkflowStep2();
+        }
     }
 
     // Schritt 3: Profil-Analyse
@@ -780,6 +836,24 @@ class SmartWorkflowSystem {
                 <div class="step-header">
                     <h2>Schritt 6: Design & Veröffentlichung</h2>
                     <p class="step-description">Gestalten Sie Ihre Bewerbung und wählen Sie das Ausgabeformat</p>
+                </div>
+
+                <div class="docmosis-section">
+                    <h3><i class="fas fa-file-alt"></i> Docmosis DocGen Editor</h3>
+                    <div class="docmosis-controls">
+                        <button class="btn btn-primary" onclick="openDocmosisEditor()">
+                            <i class="fas fa-edit"></i> DocGen Editor öffnen
+                        </button>
+                        <button class="btn btn-secondary" onclick="generateDocmosisTemplate()">
+                            <i class="fas fa-magic"></i> Template generieren
+                        </button>
+                        <button class="btn btn-success" onclick="generateFinalDocument()">
+                            <i class="fas fa-download"></i> Finales Dokument generieren
+                        </button>
+                    </div>
+                    <div class="docmosis-info">
+                        <p><i class="fas fa-info-circle"></i> Der DocGen Editor ermöglicht es Ihnen, professionelle Dokumente mit Platzhaltern und Vorlagen zu erstellen.</p>
+                    </div>
                 </div>
 
                 <div class="design-section">
@@ -3889,6 +3963,9 @@ window.handleSmartWorkflowFileChange = async function(inputId, documentType) {
     if (window.smartWorkflow) {
         window.smartWorkflow.refreshWorkflowStep3();
     }
+    
+    // Show success message to user
+    alert(`✅ ${files.length} Datei(en) erfolgreich hochgeladen!`);
 };
 
 window.triggerSmartWorkflowUpload = function(inputId, documentType) {
@@ -4073,6 +4150,90 @@ window.testDirectUpload = function() {
     };
 };
 
+// 🚀 Docmosis DocGen Functions
+window.openDocmosisEditor = function() {
+    console.log('📝 Opening Docmosis DocGen Editor...');
+    
+    // Load Docmosis Editor script if not already loaded
+    if (!window.docmosisEditor) {
+        const script = document.createElement('script');
+        script.src = 'js/docmosis-docgen-editor.js';
+        script.onload = () => {
+            window.docmosisEditor.openEditor();
+        };
+        document.head.appendChild(script);
+    } else {
+        window.docmosisEditor.openEditor();
+    }
+};
+
+window.generateDocmosisTemplate = function() {
+    console.log('🤖 Generating Docmosis template...');
+    
+    const workflowData = window.smartWorkflow?.applicationData || {};
+    
+    const template = `
+# Anschreiben - ${workflowData.company || 'Unbekanntes Unternehmen'}
+
+{{senderName}}
+{{senderAddress}}
+
+${workflowData.company || 'Unbekanntes Unternehmen'}
+{{companyAddress}}
+
+Betreff: Bewerbung als ${workflowData.position || 'Unbekannte Position'}
+
+Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${workflowData.position || 'Unbekannte Position'} gelesen.
+
+${workflowData.requirements?.map(req => `- ${req.text}`).join('\n') || '- Keine Anforderungen verfügbar'}
+
+Mit freundlichen Grüßen
+{{senderName}}
+    `.trim();
+    
+    console.log('✅ Docmosis template generated');
+    return template;
+};
+
+window.generateFinalDocument = function() {
+    console.log('📄 Generating final document...');
+    
+    const workflowData = window.smartWorkflow?.applicationData || {};
+    
+    // Collect all data for document generation
+    const documentData = {
+        senderName: 'Manuel Weiss', // This should come from user profile
+        senderAddress: 'Musterstraße 123, 12345 Musterstadt',
+        company: workflowData.company || 'Unbekanntes Unternehmen',
+        position: workflowData.position || 'Unbekannte Position',
+        requirementSentences: workflowData.requirements?.map(req => req.text).join('\n') || 'Keine Anforderungen verfügbar',
+        currentDate: new Date().toLocaleDateString('de-DE')
+    };
+    
+    // Generate document using Docmosis
+    if (window.docmosisEditor) {
+        const template = window.generateDocmosisTemplate();
+        const finalDocument = window.docmosisEditor.generateDocumentFromTemplate(template, documentData);
+        
+        // Create downloadable file
+        const blob = new Blob([finalDocument], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bewerbung_${workflowData.company || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('✅ Finales Dokument wurde generiert und heruntergeladen!');
+    } else {
+        alert('❌ Docmosis Editor nicht verfügbar. Bitte laden Sie die Seite neu.');
+    }
+};
+
 // 🚀 Generate All Sentences for Step 4
 window.generateAllSentences = async function() {
     console.log('🚀 Generating all sentences for Step 4...');
@@ -4101,6 +4262,9 @@ window.generateAllSentences = async function() {
         }
         
         console.log('✅ All sentences generated successfully');
+        
+        // Show success message
+        alert('✅ Alle Sätze wurden erfolgreich generiert!');
         
     } catch (error) {
         console.error('❌ Error generating sentences:', error);
