@@ -1,195 +1,67 @@
 #!/bin/bash
 
-# AWS Deployment Script für Multi-User File System
-# Dieses Skript automatisiert das komplette AWS Setup
+# AWS Deployment Script für Manuel Weiss Website
+echo "🚀 Starting AWS Deployment for Manuel Weiss Website..."
 
-set -e  # Exit bei Fehlern
-
-echo "🚀 Starting AWS Multi-User System Deployment..."
-
-# Konfiguration
-PROJECT_NAME="manuel-weiss-userfiles"
-DOMAIN_NAME="manuel-weiss.com"
-REGION="eu-central-1"
-ALLOWED_ORIGINS="https://manuel-weiss.com,http://localhost:8000"
-
-# Prüfe AWS CLI
+# Check if AWS CLI is installed
 if ! command -v aws &> /dev/null; then
-    echo "❌ AWS CLI ist nicht installiert. Bitte installieren Sie es zuerst."
-    echo "   https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html"
+    echo "❌ AWS CLI not found. Please install AWS CLI first."
     exit 1
 fi
 
-# Prüfe AWS-Credentials
-if ! aws sts get-caller-identity &> /dev/null; then
-    echo "❌ AWS-Credentials sind nicht konfiguriert."
-    echo "   Führen Sie 'aws configure' aus oder setzen Sie Umgebungsvariablen."
-    exit 1
+# Check if CDK is installed
+if ! command -v cdk &> /dev/null; then
+    echo "❌ AWS CDK not found. Installing..."
+    npm install -g aws-cdk
 fi
 
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-echo "✅ AWS Account ID: $AWS_ACCOUNT_ID"
+# Set AWS region
+export AWS_DEFAULT_REGION=eu-central-1
 
-# 1. CloudFormation Stack deployen
-echo "📦 Deploying CloudFormation Stack..."
-aws cloudformation deploy \
-    --template-file aws-infrastructure.yaml \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --parameter-overrides \
-        ProjectName="$PROJECT_NAME" \
-        DomainName="$DOMAIN_NAME" \
-        AllowedOrigins="$ALLOWED_ORIGINS" \
-    --capabilities CAPABILITY_NAMED_IAM \
-    --region "$REGION"
+# Create CDK app directory
+mkdir -p cdk-app
+cd cdk-app
 
-if [ $? -eq 0 ]; then
-    echo "✅ CloudFormation Stack deployed successfully"
-else
-    echo "❌ CloudFormation deployment failed"
-    exit 1
+# Initialize CDK app if not exists
+if [ ! -f "package.json" ]; then
+    echo "📦 Initializing CDK app..."
+    cdk init app --language typescript
 fi
 
-# 2. Lambda-Funktionen mit echtem Code aktualisieren
-echo "📝 Updating Lambda functions with actual code..."
+# Copy infrastructure code
+echo "📋 Copying infrastructure code..."
+cp ../aws-infrastructure-cdk.ts lib/manuel-weiss-website-stack.ts
 
-# Hole Stack Outputs
-UPLOAD_URL_FUNCTION=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='UploadUrlFunctionName'].OutputValue" \
-    --output text)
+# Install dependencies
+echo "📦 Installing dependencies..."
+npm install
 
-DOCS_FUNCTION=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='DocsFunctionName'].OutputValue" \
-    --output text)
+# Install Lambda dependencies
+echo "📦 Installing Lambda dependencies..."
+cd ../lambda/upload && npm install
+cd ../download && npm install
+cd ../user-management && npm install
+cd ../..
 
-# Temporäre Verzeichnisse für Lambda-Pakete
-TEMP_DIR=$(mktemp -d)
-UPLOAD_DIR="$TEMP_DIR/upload-url"
-DOCS_DIR="$TEMP_DIR/docs"
+# Bootstrap CDK (if not already bootstrapped)
+echo "🔧 Bootstrapping CDK..."
+cdk bootstrap
 
-mkdir -p "$UPLOAD_DIR" "$DOCS_DIR"
+# Deploy the stack
+echo "🚀 Deploying AWS infrastructure..."
+cdk deploy --require-approval never
 
-# Upload-URL Lambda vorbereiten
-echo "📁 Preparing upload-url Lambda package..."
-cp backend/upload-url/handler.mjs "$UPLOAD_DIR/"
-cp backend/package.json "$UPLOAD_DIR/"
+# Get outputs
+echo "📊 Getting deployment outputs..."
+aws cloudformation describe-stacks \
+    --stack-name ManuelWeissWebsiteStack \
+    --query 'Stacks[0].Outputs' \
+    --output table
 
-cd "$UPLOAD_DIR"
-npm install --production
-zip -r ../upload-url.zip .
-cd - > /dev/null
-
-# Docs Lambda vorbereiten  
-echo "📁 Preparing docs Lambda package..."
-cp backend/docs/handler.mjs "$DOCS_DIR/"
-cp backend/package.json "$DOCS_DIR/"
-
-cd "$DOCS_DIR"
-npm install --production
-zip -r ../docs.zip .
-cd - > /dev/null
-
-# Lambda-Funktionen aktualisieren
-echo "🔄 Updating Lambda functions..."
-aws lambda update-function-code \
-    --function-name "$UPLOAD_URL_FUNCTION" \
-    --zip-file "fileb://$TEMP_DIR/upload-url.zip" \
-    --region "$REGION"
-
-aws lambda update-function-code \
-    --function-name "$DOCS_FUNCTION" \
-    --zip-file "fileb://$TEMP_DIR/docs.zip" \
-    --region "$REGION"
-
-# Temporäre Dateien löschen
-rm -rf "$TEMP_DIR"
-
-# 3. Stack-Informationen abrufen und anzeigen
-echo "📋 Retrieving deployment information..."
-
-API_URL=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='ApiGatewayUrl'].OutputValue" \
-    --output text)
-
-COGNITO_URL=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='CognitoHostedUIUrl'].OutputValue" \
-    --output text)
-
-USER_POOL_ID=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolId'].OutputValue" \
-    --output text)
-
-CLIENT_ID=$(aws cloudformation describe-stacks \
-    --stack-name "${PROJECT_NAME}-stack" \
-    --region "$REGION" \
-    --query "Stacks[0].Outputs[?OutputKey=='CognitoUserPoolClientId'].OutputValue" \
-    --output text)
-
-# 4. Frontend-Konfiguration aktualisieren
-echo "🔧 Updating frontend configuration..."
-
-# Login/Logout URLs generieren
-LOGIN_URL="${COGNITO_URL}/login?client_id=${CLIENT_ID}&response_type=code&scope=email+openid+profile&redirect_uri=https%3A//${DOMAIN_NAME}/bewerbung.html"
-LOGOUT_URL="${COGNITO_URL}/logout?client_id=${CLIENT_ID}&logout_uri=https%3A//${DOMAIN_NAME}"
-
-# API Base URL in docs.js aktualisieren
-sed -i.bak "s|const API_BASE = '/api';|const API_BASE = '${API_URL}';|" js/docs.js
-
-# Globale API-Konfiguration aktualisieren
-sed -i.bak "s|baseUrl: '/api'|baseUrl: '${API_URL}'|" js/api-config.js
-
-# AWS Exports aktualisieren - Identity Pool ID und API Endpoint
-sed -i.bak "s|YOUR_IDENTITY_POOL_ID|${IDENTITY_POOL_ID:-PLACEHOLDER}|g" src/aws-exports.js
-sed -i.bak "s|YOUR_API_ID.execute-api.eu-central-1.amazonaws.com/prod|${API_URL#https://}|g" src/aws-exports.js
-
-# Login URLs in bewerbung.html aktualisieren
-sed -i.bak "s|const LOGIN_URL  = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/login?...';|const LOGIN_URL  = '${LOGIN_URL}';|" bewerbung.html
-sed -i.bak "s|const LOGOUT_URL = 'https://YOUR_DOMAIN.auth.eu-central-1.amazoncognito.com/logout?...';|const LOGOUT_URL = '${LOGOUT_URL}';|" bewerbung.html
-
-# Admin Panel HTML aktualisieren - API-Config Script hinzufügen falls nicht vorhanden
-if ! grep -q "api-config.js" admin.html; then
-    echo "📝 Adding API config script to admin.html..."
-    sed -i.bak 's|<script.*admin-script.js.*>|<script src="js/api-config.js"></script>\n        &|' admin.html
-fi
-
-# Backup-Dateien löschen
-rm -f js/docs.js.bak js/api-config.js.bak src/aws-exports.js.bak bewerbung.html.bak admin.html.bak
-
+echo "✅ AWS Deployment completed!"
 echo ""
-echo "🎉 ===== DEPLOYMENT SUCCESSFUL ===== 🎉"
-echo ""
-echo "📊 System Information:"
-echo "   API Gateway URL: $API_URL"
-echo "   Cognito Hosted UI: $COGNITO_URL"
-echo "   User Pool ID: $USER_POOL_ID"
-echo "   Client ID: $CLIENT_ID"
-echo ""
-echo "🔗 URLs:"
-echo "   Login URL: $LOGIN_URL"
-echo "   Logout URL: $LOGOUT_URL"
-echo ""
-echo "✅ Next Steps:"
-echo "   1. Commit und push your updated frontend files"
-echo "   2. Deploy your website (Netlify/Amplify/etc.)"
-echo "   3. Test the system by opening bewerbung.html"
-echo "   4. Create a test user via Cognito console or sign-up flow"
-echo ""
-echo "🔍 Testing:"
-echo "   - Open: https://${DOMAIN_NAME}/bewerbung.html"
-echo "   - Open: https://${DOMAIN_NAME}/health.html"
-echo "   - Check browser console for API responses"
-echo ""
-echo "🛠️ Troubleshooting:"
-echo "   - Check CloudWatch Logs for Lambda errors"
-echo "   - Verify CORS settings if browser blocks requests"
-echo "   - Ensure your domain SSL certificate is valid"
-echo ""
+echo "📋 Next steps:"
+echo "1. Update your frontend to use the new API endpoints"
+echo "2. Configure Cognito User Pool for authentication"
+echo "3. Test the upload/download functionality"
+echo "4. Monitor the AWS resources in the console"

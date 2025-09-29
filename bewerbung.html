@@ -1386,6 +1386,7 @@ Manuel Weiss`;
       </div>
     </section>
 
+    <script src="js/aws-upload-config.js"></script>
     <script type="module">
       import { initAuth, isLoggedIn, getUser } from './js/auth.js';
       import { uploadDocument, listDocuments, deleteDocument, getDownloadUrl } from './js/docs.js';
@@ -2832,32 +2833,77 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
         return '';
       }
 
-      // SERVER UPLOAD FUNCTIONALITY
-      async function uploadToServer(file, type = 'document') {
-        console.log('🌐 Uploading to server:', file.name, 'Type:', type);
-        
-        // Create FormData for file upload
+      // Helper function to convert file to base64
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            const base64 = reader.result.split(',')[1]; // Remove data:type;base64, prefix
+            resolve(base64);
+          };
+          reader.onerror = error => reject(error);
+        });
+      }
+
+      // Helper function to create FormData for local endpoints
+      function createFormData(file, type) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('type', type);
         formData.append('userId', getUser()?.userId || 'anonymous');
+        return formData;
+      }
+
+      // AWS UPLOAD SERVICE INTEGRATION
+      async function uploadToServer(file, type = 'document') {
+        console.log('🚀 AWS Upload Service: Starting upload for', file.name, 'Type:', type);
         
         try {
-          // Try multiple server endpoints
+          // Use AWS Upload Service if available
+          if (window.awsUploadService) {
+            console.log('🌐 Using AWS Upload Service');
+            return await window.awsUploadService.uploadFile(file, type);
+          }
+          
+          // Fallback to original implementation
+          console.log('🔄 Using fallback upload method');
+          
+          // Convert file to base64 for AWS Lambda
+          const base64Data = await fileToBase64(file);
+          
+          const uploadData = {
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: base64Data
+            },
+            type: type,
+            userId: getUser()?.userId || 'anonymous'
+          };
+          
+          // Try AWS endpoints first, then fallback to local server
           const endpoints = [
-            'http://localhost:3001/api/upload',
-            'https://api.manuel-weiss.com/upload',
-            '/api/upload',
-            'https://manuel-weiss.com/api/upload'
+            'https://api.manuel-weiss.com/upload',  // AWS API Gateway
+            'https://manuel-weiss.com/api/upload', // AWS API Gateway
+            'https://d1234567890.execute-api.eu-central-1.amazonaws.com/api/upload', // AWS Lambda
+            'http://localhost:3001/api/upload',    // Local fallback
+            '/api/upload'                          // Relative fallback
           ];
           
           for (const endpoint of endpoints) {
             try {
               console.log(`🔄 Trying endpoint: ${endpoint}`);
+              
+              // Check if it's AWS endpoint (JSON) or local endpoint (FormData)
+              const isAWSEndpoint = endpoint.includes('api.manuel-weiss.com') || endpoint.includes('manuel-weiss.com') || endpoint.includes('execute-api');
+              
               const response = await fetch(endpoint, {
                 method: 'POST',
-                body: formData,
+                body: isAWSEndpoint ? JSON.stringify(uploadData) : createFormData(file, type),
                 headers: {
+                  'Content-Type': isAWSEndpoint ? 'application/json' : 'multipart/form-data',
                   'Authorization': `Bearer ${getUser()?.idToken || ''}`
                 }
               });
