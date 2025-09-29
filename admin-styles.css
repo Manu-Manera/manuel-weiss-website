@@ -574,7 +574,8 @@ body {
 }
 
 /* Applications Overview Styles */
-.applications-overview {
+.applications-overview,
+.user-overview {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -609,7 +610,8 @@ body {
     text-transform: uppercase;
 }
 
-.recent-applications h4 {
+.recent-applications h4,
+.recent-users h4 {
     color: #1e293b;
     font-size: 1rem;
     font-weight: 600;
