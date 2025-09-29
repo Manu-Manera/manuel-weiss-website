@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Management Workflow - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for Change Management Workflow -->
+    <style>
+        .change-mgmt-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .workflow-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 2rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .workflow-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+        
+        .workflow-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .workflow-progress {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            border-radius: 25px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .progress-step.completed {
+            background: #d97706;
+            color: white;
+        }
+        
+        .workflow-step {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-number {
+            background: #f59e0b;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .step-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 0.75rem;
+            width: auto;
+        }
+        
+        .btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #059669;
+        }
+        
+        .btn-success:hover {
+            background: #047857;
+        }
+        
+        .methodology-section {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .methodology-section h4 {
+            color: #d97706;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .methodology-section .methodology {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .methodology-section .methodology i {
+            color: #f59e0b;
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+        
+        .methodology-section .methodology strong {
+            color: #d97706;
+            margin-right: 0.5rem;
+        }
+        
+        .practical-implementation {
+            background: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .practical-implementation h5 {
+            color: #1d4ed8;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .export-section {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .export-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-pdf {
+            background: #dc2626;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pdf:hover {
+            background: white;
+            color: #dc2626;
+        }
+        
+        .btn-excel {
+            background: #059669;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-excel:hover {
+            background: white;
+            color: #059669;
+        }
+        
+        .btn-word {
+            background: #2563eb;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-word:hover {
+            background: white;
+            color: #2563eb;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-progress {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .progress-step {
+                margin: 0.25rem 0;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="change-mgmt-container">
+        <!-- Header -->
+        <div class="workflow-header">
+            <h1><i class="fas fa-sync-alt"></i> Change Management</h1>
+            <p>Führen Sie erfolgreiche Transformationen durch mit systematischen Veränderungsprozessen</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="workflow-progress">
+            <div class="progress-step active" id="step1-progress">
+                <i class="fas fa-clipboard-check"></i> Assessment
+            </div>
+            <div class="progress-step" id="step2-progress">
+                <i class="fas fa-users"></i> Stakeholder
+            </div>
+            <div class="progress-step" id="step3-progress">
+                <i class="fas fa-comments"></i> Kommunikation
+            </div>
+            <div class="progress-step" id="step4-progress">
+                <i class="fas fa-exclamation-triangle"></i> Widerstand
+            </div>
+            <div class="progress-step" id="step5-progress">
+                <i class="fas fa-graduation-cap"></i> Training
+            </div>
+            <div class="progress-step" id="step6-progress">
+                <i class="fas fa-chart-line"></i> Monitoring
+            </div>
+            <div class="progress-step" id="step7-progress">
+                <i class="fas fa-anchor"></i> Verankerung
+            </div>
+        </div>
+
+        <!-- Step 1: Change Readiness Assessment -->
+        <div class="workflow-step" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Change Readiness Assessment</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Bewerten Sie die Bereitschaft Ihrer Organisation für Veränderungen und identifizieren Sie kritische Erfolgsfaktoren.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Change Readiness Methoden</h4>
+                <div class="methodology">
+                    <i class="fas fa-clipboard-check"></i>
+                    <strong>Readiness Assessment:</strong> Systematische Bewertung der Organisationsbereitschaft für Change.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-chart-bar"></i>
+                    <strong>Capability Analysis:</strong> Analyse der vorhandenen Change-Management-Fähigkeiten.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Risk Assessment:</strong> Identifikation und Bewertung von Change-Risiken.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="changeType">Art der Veränderung</label>
+                <select id="changeType">
+                    <option value="strategic">Strategische Transformation</option>
+                    <option value="organizational">Organisatorische Veränderung</option>
+                    <option value="technological">Technologische Transformation</option>
+                    <option value="cultural">Kulturwandel</option>
+                    <option value="process">Prozessoptimierung</option>
+                    <option value="digital">Digitale Transformation</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="changeScope">Umfang der Veränderung</label>
+                <select id="changeScope">
+                    <option value="department">Abteilungsweise</option>
+                    <option value="division">Bereichsweise</option>
+                    <option value="company">Unternehmensweit</option>
+                    <option value="group">Konzernweit</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Change Readiness Faktoren</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="leadership" value="leadership">
+                        <label for="leadership">Führungsunterstützung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="culture" value="culture">
+                        <label for="culture">Change-freundliche Kultur</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="resources" value="resources">
+                        <label for="resources">Verfügbare Ressourcen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="capabilities" value="capabilities">
+                        <label for="capabilities">Change-Management-Fähigkeiten</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="communication" value="communication">
+                        <label for="communication">Kommunikationsstrukturen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stakeholders" value="stakeholders">
+                        <label for="stakeholders">Stakeholder-Engagement</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="readinessScore">Change Readiness Score (1-10)</label>
+                <input type="range" id="readinessScore" min="1" max="10" value="5">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #6b7280;">
+                    <span>Niedrig (1)</span>
+                    <span>Mittel (5)</span>
+                    <span>Hoch (10)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Stakeholder-Analyse -->
+        <div class="workflow-step" id="step2" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Stakeholder-Analyse & Mapping</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Identifizieren und analysieren Sie alle relevanten Stakeholder für Ihren Change-Prozess.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Stakeholder Management</h4>
+                <div class="methodology">
+                    <i class="fas fa-users"></i>
+                    <strong>Stakeholder Mapping:</strong> Systematische Identifikation und Kategorisierung aller Stakeholder.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-chart-pie"></i>
+                    <strong>Influence-Interest Matrix:</strong> Bewertung von Einfluss und Interesse der Stakeholder.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-handshake"></i>
+                    <strong>Engagement Strategy:</strong> Entwicklung maßgeschneiderter Engagement-Strategien.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Stakeholder-Gruppen</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="executives" value="executives">
+                        <label for="executives">Geschäftsführung & Vorstand</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="managers" value="managers">
+                        <label for="managers">Führungskräfte</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="employees" value="employees">
+                        <label for="employees">Mitarbeiter</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="customers" value="customers">
+                        <label for="customers">Kunden</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="suppliers" value="suppliers">
+                        <label for="suppliers">Lieferanten & Partner</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="investors" value="investors">
+                        <label for="investors">Investoren</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="keyStakeholders">Wichtige Stakeholder</label>
+                <textarea id="keyStakeholders" rows="3" placeholder="Listen Sie die wichtigsten Stakeholder auf..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="stakeholderStrategy">Stakeholder-Engagement-Strategie</label>
+                <textarea id="stakeholderStrategy" rows="4" placeholder="Beschreiben Sie Ihre Strategie für das Stakeholder-Engagement..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 3: Kommunikationsstrategie -->
+        <div class="workflow-step" id="step3" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Kommunikationsstrategie</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Entwickeln Sie eine umfassende Kommunikationsstrategie für transparente und effektive Change-Kommunikation.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Change Communication</h4>
+                <div class="methodology">
+                    <i class="fas fa-comments"></i>
+                    <strong>Multi-Channel Communication:</strong> Nutzung verschiedener Kommunikationskanäle für maximale Reichweite.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-heart"></i>
+                    <strong>Emotional Intelligence:</strong> Berücksichtigung emotionaler Aspekte in der Change-Kommunikation.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-repeat"></i>
+                    <strong>Two-Way Communication:</strong> Förderung von Dialog und Feedback in der Kommunikation.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Kommunikationskanäle</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="townhalls" value="townhalls">
+                        <label for="townhalls">Town Hall Meetings</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="newsletters" value="newsletters">
+                        <label for="newsletters">Newsletter & E-Mails</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="intranet" value="intranet">
+                        <label for="intranet">Intranet & Digitale Plattformen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="workshops" value="workshops">
+                        <label for="workshops">Workshops & Trainings</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="oneonone" value="oneonone">
+                        <label for="oneonone">Einzelgespräche</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="social" value="social">
+                        <label for="social">Social Media & Collaboration Tools</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="keyMessages">Kernbotschaften</label>
+                <textarea id="keyMessages" rows="4" placeholder="Definieren Sie die wichtigsten Botschaften für den Change..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="communicationPlan">Kommunikationsplan</label>
+                <textarea id="communicationPlan" rows="4" placeholder="Beschreiben Sie Ihren detaillierten Kommunikationsplan..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 4: Widerstandsmanagement -->
+        <div class="workflow-step" id="step4" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Widerstandsmanagement</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Identifizieren und adressieren Sie Widerstände gegen den Change-Prozess proaktiv.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Resistance Management</h4>
+                <div class="methodology">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Resistance Analysis:</strong> Systematische Analyse von Widerstandsquellen und -ursachen.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-handshake"></i>
+                    <strong>Engagement Strategies:</strong> Entwicklung von Strategien zur Überwindung von Widerständen.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-comments"></i>
+                    <strong>Open Dialogue:</strong> Förderung offener Kommunikation über Bedenken und Ängste.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Typische Widerstandsquellen</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="fear" value="fear">
+                        <label for="fear">Angst vor Veränderung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="uncertainty" value="uncertainty">
+                        <label for="uncertainty">Unsicherheit über die Zukunft</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="loss" value="loss">
+                        <label for="loss">Verlust von Status oder Macht</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="workload" value="workload">
+                        <label for="workload">Zusätzliche Arbeitsbelastung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="skills" value="skills">
+                        <label for="skills">Fehlende Kompetenzen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="trust" value="trust">
+                        <label for="trust">Mangelndes Vertrauen</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="resistanceStrategy">Widerstandsmanagement-Strategie</label>
+                <textarea id="resistanceStrategy" rows="4" placeholder="Beschreiben Sie Ihre Strategie zur Bewältigung von Widerständen..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 5: Training & Development -->
+        <div class="workflow-step" id="step5" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Training & Development</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Entwickeln Sie die notwendigen Kompetenzen für eine erfolgreiche Change-Implementierung.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Change Training</h4>
+                <div class="methodology">
+                    <i class="fas fa-graduation-cap"></i>
+                    <strong>Competency Development:</strong> Entwicklung der notwendigen Change-Management-Kompetenzen.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-users"></i>
+                    <strong>Role-Based Training:</strong> Maßgeschneiderte Schulungen für verschiedene Rollen.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-handshake"></i>
+                    <strong>Change Champions:</strong> Ausbildung von Change-Botschaftern in der Organisation.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Schulungsbereiche</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="changeBasics" value="change-basics">
+                        <label for="changeBasics">Change Management Grundlagen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="leadership" value="leadership">
+                        <label for="leadership">Change Leadership</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="communication" value="communication">
+                        <label for="communication">Change Communication</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="resistance" value="resistance">
+                        <label for="resistance">Widerstandsmanagement</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tools" value="tools">
+                        <label for="tools">Change Management Tools</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coaching" value="coaching">
+                        <label for="coaching">Change Coaching</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="trainingPlan">Schulungsplan</label>
+                <textarea id="trainingPlan" rows="4" placeholder="Beschreiben Sie Ihren detaillierten Schulungsplan..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 6: Monitoring & Evaluation -->
+        <div class="workflow-step" id="step6" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Monitoring & Evaluation</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Überwachen Sie den Fortschritt des Change-Prozesses und bewerten Sie den Erfolg.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Change Monitoring</h4>
+                <div class="methodology">
+                    <i class="fas fa-chart-line"></i>
+                    <strong>Progress Tracking:</strong> Kontinuierliche Überwachung des Change-Fortschritts.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-chart-bar"></i>
+                    <strong>KPI Monitoring:</strong> Messung und Bewertung von Change-Kennzahlen.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-comments"></i>
+                    <strong>Feedback Loops:</strong> Etablierung von Feedback-Mechanismen für kontinuierliche Verbesserung.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Monitoring-Bereiche</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="adoption" value="adoption">
+                        <label for="adoption">Adoption Rate</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="engagement" value="engagement">
+                        <label for="engagement">Engagement Level</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="satisfaction" value="satisfaction">
+                        <label for="satisfaction">Mitarbeiterzufriedenheit</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="performance" value="performance">
+                        <label for="performance">Performance-Metriken</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="resistance" value="resistance">
+                        <label for="resistance">Widerstandslevel</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="timeline" value="timeline">
+                        <label for="timeline">Timeline-Adherence</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="evaluationPlan">Evaluationsplan</label>
+                <textarea id="evaluationPlan" rows="4" placeholder="Beschreiben Sie Ihren Plan für die Bewertung des Change-Erfolgs..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 7: Nachhaltige Verankerung -->
+        <div class="workflow-step" id="step7" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">Nachhaltige Verankerung</div>
+            </div>
+            
+            <div class="step-description">
+                <p>Sichern Sie den langfristigen Erfolg der Change-Implementierung durch nachhaltige Verankerung.</p>
+            </div>
+            
+            <div class="methodology-section">
+                <h4><i class="fas fa-graduation-cap"></i> Sustainable Change</h4>
+                <div class="methodology">
+                    <i class="fas fa-anchor"></i>
+                    <strong>Change Anchoring:</strong> Verankerung der Veränderungen in der Organisationskultur.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-sync-alt"></i>
+                    <strong>Continuous Improvement:</strong> Etablierung kontinuierlicher Verbesserungsprozesse.
+                </div>
+                <div class="methodology">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Change Sustainability:</strong> Sicherstellung der langfristigen Nachhaltigkeit der Veränderungen.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Verankerungsstrategien</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="culture" value="culture">
+                        <label for="culture">Kulturintegration</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="processes" value="processes">
+                        <label for="processes">Prozessintegration</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="systems" value="systems">
+                        <label for="systems">Systemintegration</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="governance" value="governance">
+                        <label for="governance">Governance-Strukturen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="leadership" value="leadership">
+                        <label for="leadership">Leadership-Commitment</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="rewards" value="rewards">
+                        <label for="rewards">Belohnungssysteme</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sustainabilityPlan">Nachhaltigkeitsplan</label>
+                <textarea id="sustainabilityPlan" rows="4" placeholder="Beschreiben Sie Ihren Plan für die nachhaltige Verankerung der Veränderungen..."></textarea>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h3><i class="fas fa-download"></i> Change Management Plan herunterladen</h3>
+            <p>Ihr entwickelter Change Management Plan ist bereit! Laden Sie die Zusammenfassung herunter und implementieren Sie sie in Ihrem Unternehmen.</p>
+            
+            <div class="export-buttons">
+                <a href="#" class="btn-pdf" onclick="exportChangeMgmtToPDF()">
+                    <i class="fas fa-file-pdf"></i> Als PDF
+                </a>
+                <a href="#" class="btn-excel" onclick="exportChangeMgmtToExcel()">
+                    <i class="fas fa-file-excel"></i> Als Excel
+                </a>
+                <a href="#" class="btn-word" onclick="exportChangeMgmtToWord()">
+                    <i class="fas fa-file-word"></i> Als Word
+                </a>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button class="btn btn-success" id="nextBtn" onclick="changeStep(1)">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+
+        function changeStep(direction) {
+            const prevStep = currentStep;
+            currentStep += direction;
+            
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            
+            if (currentStep !== prevStep) {
+                updateStepDisplay();
+                updateProgress();
+                updateNavigation();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}`).style.display = 'none';
+            }
+            
+            // Show current step
+            document.getElementById(`step${currentStep}`).style.display = 'block';
+        }
+
+        function updateProgress() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const progressStep = document.getElementById(`step${i}-progress`);
+                if (i < currentStep) {
+                    progressStep.classList.remove('active');
+                    progressStep.classList.add('completed');
+                } else if (i === currentStep) {
+                    progressStep.classList.remove('completed');
+                    progressStep.classList.add('active');
+                } else {
+                    progressStep.classList.remove('active', 'completed');
+                }
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (currentStep === totalSteps) {
+                nextBtn.innerHTML = '<i class="fas fa-download"></i> Plan generieren';
+                nextBtn.onclick = generateChangeMgmtPlan;
+            } else {
+                nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        function generateChangeMgmtPlan() {
+            // Collect all form data
+            const planData = {
+                changeType: document.getElementById('changeType').value || '',
+                changeScope: document.getElementById('changeScope').value || '',
+                readinessScore: document.getElementById('readinessScore').value || '',
+                keyStakeholders: document.getElementById('keyStakeholders').value || '',
+                stakeholderStrategy: document.getElementById('stakeholderStrategy').value || '',
+                keyMessages: document.getElementById('keyMessages').value || '',
+                communicationPlan: document.getElementById('communicationPlan').value || '',
+                resistanceStrategy: document.getElementById('resistanceStrategy').value || '',
+                trainingPlan: document.getElementById('trainingPlan').value || '',
+                evaluationPlan: document.getElementById('evaluationPlan').value || '',
+                sustainabilityPlan: document.getElementById('sustainabilityPlan').value || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Change Management Plan Data:', planData);
+            alert('✅ Change Management Plan erfolgreich generiert! Sie können jetzt die Zusammenfassung herunterladen.');
+        }
+
+        function exportChangeMgmtToPDF() {
+            const planData = collectChangeMgmtData();
+            const content = generateChangeMgmtContent(planData);
+            downloadFile(content, 'change-management-plan.pdf', 'application/pdf');
+        }
+
+        function exportChangeMgmtToExcel() {
+            const planData = collectChangeMgmtData();
+            const content = generateChangeMgmtContent(planData);
+            downloadFile(content, 'change-management-plan.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        }
+
+        function exportChangeMgmtToWord() {
+            const planData = collectChangeMgmtData();
+            const content = generateChangeMgmtContent(planData);
+            downloadFile(content, 'change-management-plan.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        }
+
+        function collectChangeMgmtData() {
+            return {
+                company: 'Ihr Unternehmen',
+                changeType: document.getElementById('changeType').value || '',
+                changeScope: document.getElementById('changeScope').value || '',
+                readinessScore: document.getElementById('readinessScore').value || '',
+                keyStakeholders: document.getElementById('keyStakeholders').value || '',
+                stakeholderStrategy: document.getElementById('stakeholderStrategy').value || '',
+                keyMessages: document.getElementById('keyMessages').value || '',
+                communicationPlan: document.getElementById('communicationPlan').value || '',
+                resistanceStrategy: document.getElementById('resistanceStrategy').value || '',
+                trainingPlan: document.getElementById('trainingPlan').value || '',
+                evaluationPlan: document.getElementById('evaluationPlan').value || '',
+                sustainabilityPlan: document.getElementById('sustainabilityPlan').value || '',
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function generateChangeMgmtContent(data) {
+            return `# Change Management Plan für ${data.company}
+
+## 1. Change Assessment
+**Art der Veränderung:** ${data.changeType || 'Nicht definiert'}
+**Umfang:** ${data.changeScope || 'Nicht definiert'}
+**Readiness Score:** ${data.readinessScore || 'Nicht definiert'}/10
+
+## 2. Stakeholder Management
+**Wichtige Stakeholder:** ${data.keyStakeholders || 'Nicht definiert'}
+**Engagement-Strategie:** ${data.stakeholderStrategy || 'Nicht definiert'}
+
+## 3. Kommunikationsstrategie
+**Kernbotschaften:** ${data.keyMessages || 'Nicht definiert'}
+**Kommunikationsplan:** ${data.communicationPlan || 'Nicht definiert'}
+
+## 4. Widerstandsmanagement
+**Strategie:** ${data.resistanceStrategy || 'Nicht definiert'}
+
+## 5. Training & Development
+**Schulungsplan:** ${data.trainingPlan || 'Nicht definiert'}
+
+## 6. Monitoring & Evaluation
+**Evaluationsplan:** ${data.evaluationPlan || 'Nicht definiert'}
+
+## 7. Nachhaltige Verankerung
+**Nachhaltigkeitsplan:** ${data.sustainabilityPlan || 'Nicht definiert'}
+
+---
+Erstellt am: ${data.timestamp}
+Entwickelt mit wissenschaftlichen Change Management Methoden`;
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ ${filename} erfolgreich heruntergeladen!`);
+        }
+
+        // Initialize
+        updateStepDisplay();
+        updateProgress();
+        updateNavigation();
+    </script>
+</body>
+</html>
