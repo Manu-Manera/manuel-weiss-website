@@ -1387,6 +1387,7 @@ Manuel Weiss`;
     </section>
 
     <script src="js/aws-upload-config.js"></script>
+    <script src="js/smart-api-system.js"></script>
     <script type="module">
       import { initAuth, isLoggedIn, getUser } from './js/auth.js';
       import { uploadDocument, listDocuments, deleteDocument, getDownloadUrl } from './js/docs.js';
@@ -2925,9 +2926,9 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
         return formData;
       }
 
-      // SMART STORAGE SYSTEM - Central vs User-specific
+      // 🚀 SMART API SYSTEM - Intelligentes Upload-System
       async function uploadToServer(file, type = 'document') {
-        console.log('🚀 Smart Storage System: Starting upload for', file.name, 'Type:', type);
+        console.log('🚀 Smart API System: Starting upload for', file.name, 'Type:', type);
         
         try {
           // Check if user is logged in (try both auth systems)
@@ -2940,6 +2941,15 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
             isLoggedIn = simpleAuth.isLoggedIn();
           }
           
+          // Use Smart API System if available
+          if (window.smartAPI) {
+            console.log('🌐 Using Smart API System');
+            return await uploadWithSmartAPI(file, type, user, isLoggedIn);
+          }
+          
+          // Fallback to original system
+          console.log('🔄 Using fallback upload system');
+          
           if (isLoggedIn) {
             console.log('👤 User logged in - storing user-specific:', user.userId);
             return await uploadToUserStorage(file, type, user);
@@ -2950,6 +2960,53 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
           
         } catch (error) {
           console.error('❌ Upload failed:', error);
+          throw error;
+        }
+      }
+      
+      // 🚀 Smart API Upload Function
+      async function uploadWithSmartAPI(file, type, user, isLoggedIn) {
+        try {
+          // Convert file to base64 for Smart API
+          const base64Data = await fileToBase64(file);
+          
+          const uploadData = {
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: base64Data
+            },
+            type: type,
+            userId: isLoggedIn ? user.userId : 'anonymous',
+            storageType: isLoggedIn ? 'user-specific' : 'central',
+            options: {
+              enableProgress: true,
+              enableCaching: true,
+              retryOnError: true
+            }
+          };
+          
+          // Use Smart API for upload
+          const result = await window.smartAPI.uploadFile(uploadData.file, uploadData);
+          
+          console.log('✅ Smart API upload successful:', result);
+          return {
+            success: true,
+            id: result.id,
+            name: result.name,
+            size: result.size,
+            type: result.type,
+            uploadedAt: result.uploadedAt,
+            storage: result.storage || 'aws-s3',
+            url: result.url,
+            s3Key: result.s3Key,
+            userId: uploadData.userId,
+            storageType: uploadData.storageType
+          };
+          
+        } catch (error) {
+          console.error('❌ Smart API upload failed:', error);
           throw error;
         }
       }
@@ -3196,6 +3253,79 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
         }
         
         if (logged) loadList();
+        
+        // Load analytics if Smart API is available
+        if (window.smartAPI && logged) {
+          loadAnalytics();
+        }
+      }
+      
+      // 📊 ANALYTICS FUNCTIONS
+      async function loadAnalytics() {
+        try {
+          console.log('📊 Loading analytics...');
+          
+          // Get upload statistics
+          const uploadStats = await window.smartAPI.getUploadStats({ timeRange: '7d' });
+          console.log('📈 Upload stats:', uploadStats);
+          
+          // Get storage statistics
+          const storageStats = await window.smartAPI.getStorageStats();
+          console.log('💾 Storage stats:', storageStats);
+          
+          // Get user documents
+          const userDocs = await window.smartAPI.getUserDocuments(user.userId);
+          console.log('📁 User documents:', userDocs);
+          
+          // Update UI with analytics
+          updateAnalyticsDisplay(uploadStats, storageStats, userDocs);
+          
+        } catch (error) {
+          console.error('❌ Analytics loading failed:', error);
+        }
+      }
+      
+      function updateAnalyticsDisplay(uploadStats, storageStats, userDocs) {
+        // Create analytics display if it doesn't exist
+        let analyticsDiv = document.getElementById('analytics');
+        if (!analyticsDiv) {
+          analyticsDiv = document.createElement('div');
+          analyticsDiv.id = 'analytics';
+          analyticsDiv.style.cssText = `
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+          `;
+          analyticsDiv.innerHTML = `
+            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-700);">📊 Analytics</h4>
+            <div id="analytics-content"></div>
+          `;
+          document.getElementById('msg').parentNode.insertBefore(analyticsDiv, document.getElementById('msg'));
+        }
+        
+        const content = document.getElementById('analytics-content');
+        content.innerHTML = `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div style="padding: 0.75rem; background: white; border-radius: var(--radius-sm); border: 1px solid var(--neutral-200);">
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary);">${uploadStats.stats.totalUploads}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Uploads (7d)</div>
+            </div>
+            <div style="padding: 0.75rem; background: white; border-radius: var(--radius-sm); border: 1px solid var(--neutral-200);">
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--success);">${storageStats.storage.storageUsed}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Storage Used</div>
+            </div>
+            <div style="padding: 0.75rem; background: white; border-radius: var(--radius-sm); border: 1px solid var(--neutral-200);">
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--warning);">${userDocs.documents.length}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Total Documents</div>
+            </div>
+            <div style="padding: 0.75rem; background: white; border-radius: var(--radius-sm); border: 1px solid var(--neutral-200);">
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--info);">${Math.round(storageStats.storage.averageFileSize / 1024)}KB</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Avg File Size</div>
+            </div>
+          </div>
+        `;
       }
 
       function showMessage(text, type = 'info') {
