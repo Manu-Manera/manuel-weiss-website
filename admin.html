@@ -1316,11 +1316,13 @@
         }
         
         .settings-panel {
-            display: none !important;
+            display: none;
         }
         
         .settings-panel.active {
             display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         .settings-panel[style*="display: block"] {
@@ -1363,11 +1365,7 @@
             position: relative !important;
         }
         
-        /* Override any conflicting styles */
-        .admin-section .settings-panel {
-            display: none !important;
-        }
-        
+        /* Settings panels should be visible when active */
         .admin-section .settings-panel.active {
             display: block !important;
             visibility: visible !important;
@@ -7381,49 +7379,40 @@
         });
     </script>
     
-    <!-- EINFACHE BACKUP-LÖSUNG -->
+    <!-- KOMPLETTE SETTINGS-LÖSUNG -->
     <script>
-        console.log('🚀 BACKUP: Loading simple backup solution...');
+        console.log('🚀 SETTINGS: Loading complete settings solution...');
         
-        // Einfache Backup-Panel Lösung
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('📋 BACKUP: Initializing backup panel...');
+        // Komplette Settings-Funktionalität
+        function initializeSettings() {
+            console.log('📋 SETTINGS: Initializing all settings...');
             
-            // Force show backup panel
-            const backupPanel = document.getElementById('backupSettings');
-            if (backupPanel) {
-                backupPanel.style.display = 'block';
-                backupPanel.style.visibility = 'visible';
-                backupPanel.style.opacity = '1';
-                backupPanel.classList.add('active');
-                console.log('✅ BACKUP: Panel shown');
-            }
+            // Alle Settings-Panels finden
+            const panels = document.querySelectorAll('.settings-panel');
+            console.log(`📋 SETTINGS: Found ${panels.length} settings panels`);
             
-            // Setup backup tab as active
-            const backupTab = document.querySelector('[data-tab="backup"]');
-            if (backupTab) {
-                backupTab.classList.add('active');
-                console.log('✅ BACKUP: Tab activated');
-            }
+            // Alle Settings-Tabs finden
+            const tabs = document.querySelectorAll('.settings-tab');
+            console.log(`📋 SETTINGS: Found ${tabs.length} settings tabs`);
             
-            // Setup all settings tabs
-            const allTabs = document.querySelectorAll('.settings-tab');
-            allTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
+            // Tab-Click-Handler für alle Tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const tabName = this.getAttribute('data-tab');
-                    console.log('🔄 BACKUP: Tab clicked:', tabName);
+                    console.log(`🔄 SETTINGS: Tab clicked: ${tabName}`);
                     
-                    // Remove active from all tabs
-                    allTabs.forEach(t => t.classList.remove('active'));
+                    // Alle Tabs deaktivieren
+                    tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Hide all panels
-                    document.querySelectorAll('.settings-panel').forEach(panel => {
+                    // Alle Panels verstecken
+                    panels.forEach(panel => {
                         panel.style.display = 'none';
                         panel.classList.remove('active');
                     });
                     
-                    // Show selected panel
+                    // Gewähltes Panel anzeigen
                     let targetPanel = null;
                     switch(tabName) {
                         case 'hero-settings': targetPanel = document.getElementById('heroSettings'); break;
@@ -7436,12 +7425,33 @@
                     if (targetPanel) {
                         targetPanel.style.display = 'block';
                         targetPanel.classList.add('active');
-                        console.log('✅ BACKUP: Panel shown:', targetPanel.id);
+                        console.log(`✅ SETTINGS: Panel shown: ${targetPanel.id}`);
+                        
+                        // Force show all content
+                        const allElements = targetPanel.querySelectorAll('*');
+                        allElements.forEach(el => {
+                            el.style.display = '';
+                            el.style.visibility = 'visible';
+                            el.style.opacity = '1';
+                        });
+                    } else {
+                        console.error(`❌ SETTINGS: Panel not found for tab: ${tabName}`);
                     }
                 });
             });
             
-            // Setup backup buttons
+            // Standardmäßig Backup-Panel anzeigen
+            const backupPanel = document.getElementById('backupSettings');
+            const backupTab = document.querySelector('[data-tab="backup"]');
+            
+            if (backupPanel && backupTab) {
+                backupTab.classList.add('active');
+                backupPanel.style.display = 'block';
+                backupPanel.classList.add('active');
+                console.log('✅ SETTINGS: Backup panel set as default');
+            }
+            
+            // Backup-Buttons
             const createBtn = document.querySelector('[data-action="create-backup"]');
             if (createBtn) {
                 createBtn.addEventListener('click', function() {
@@ -7456,63 +7466,78 @@
                 });
             }
             
-            console.log('✅ BACKUP: Simple solution initialized');
-        });
+            console.log('✅ SETTINGS: Complete settings initialized');
+        }
+        
+        // Initialisierung
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSettings);
+        } else {
+            initializeSettings();
+        }
+        
+        // Fallback nach kurzer Verzögerung
+        setTimeout(initializeSettings, 100);
     </script>
-                            console.log('✅ IMMEDIATE: Panel has content:', content.length, 'characters');
-                        } else {
-                            console.error('❌ IMMEDIATE: Panel is empty!');
-                        }
+    
+    <!-- EINFACHE SETTINGS-LÖSUNG -->
+    <script>
+        console.log('🚀 SETTINGS: Loading simple settings solution...');
+        
+        // Einfache Settings-Lösung
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 SETTINGS: Initializing simple settings...');
+            
+            // Alle Settings-Tabs finden und Event-Listener hinzufügen
+            const settingsTabs = document.querySelectorAll('.settings-tab');
+            console.log(`📋 SETTINGS: Found ${settingsTabs.length} settings tabs`);
+            
+            settingsTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    console.log(`🔄 SETTINGS: Tab clicked: ${tabName}`);
+                    
+                    // Alle Tabs deaktivieren
+                    settingsTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Alle Panels verstecken
+                    document.querySelectorAll('.settings-panel').forEach(panel => {
+                        panel.style.display = 'none';
+                        panel.classList.remove('active');
+                    });
+                    
+                    // Gewähltes Panel anzeigen
+                    let targetPanel = null;
+                    switch(tabName) {
+                        case 'hero-settings': targetPanel = document.getElementById('heroSettings'); break;
+                        case 'general': targetPanel = document.getElementById('generalSettings'); break;
+                        case 'seo': targetPanel = document.getElementById('seoSettings'); break;
+                        case 'security': targetPanel = document.getElementById('securitySettings'); break;
+                        case 'backup': targetPanel = document.getElementById('backupSettings'); break;
+                    }
+                    
+                    if (targetPanel) {
+                        targetPanel.style.display = 'block';
+                        targetPanel.classList.add('active');
+                        console.log(`✅ SETTINGS: Panel shown: ${targetPanel.id}`);
                     }
                 });
             });
+            
+            // Standardmäßig Backup-Panel anzeigen
+            const backupPanel = document.getElementById('backupSettings');
+            const backupTab = document.querySelector('[data-tab="backup"]');
+            
+            if (backupPanel && backupTab) {
+                backupTab.classList.add('active');
+                backupPanel.style.display = 'block';
+                backupPanel.classList.add('active');
+                console.log('✅ SETTINGS: Backup panel set as default');
+            }
+            
+            console.log('✅ SETTINGS: Simple settings initialized');
         });
-        
-        // Sofortiger Fallback nach 2 Sekunden
-        setTimeout(function() {
-            console.log('🆘 EMERGENCY: Activating loading screen fallback...');
-            
-            const loadingScreen = document.getElementById('loadingScreen');
-            const adminWrapper = document.querySelector('.admin-container');
-            
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-                loadingScreen.style.visibility = 'hidden';
-                loadingScreen.style.opacity = '0';
-                console.log('🆘 EMERGENCY: Loading screen hidden');
-            }
-            
-            if (adminWrapper) {
-                adminWrapper.style.display = 'flex';
-                adminWrapper.style.opacity = '1';
-                adminWrapper.style.visibility = 'visible';
-                console.log('🆘 EMERGENCY: Admin wrapper shown');
-            }
-            
-            // Dashboard aktivieren
-            const dashboard = document.getElementById('dashboard');
-            if (dashboard) {
-                dashboard.classList.add('active');
-                dashboard.style.display = 'block';
-            }
-            
-            console.log('🆘 EMERGENCY: Fallback completed - Admin Panel should be visible now');
-        }, 2000);
-        
-        // Zusätzlicher ultra-sicherer Fallback nach 5 Sekunden
-        setTimeout(function() {
-            const loadingElements = document.querySelectorAll('#loadingScreen, .loading-screen, [class*="loading"]');
-            loadingElements.forEach(function(el) {
-                el.remove(); // Komplett entfernen
-            });
-            
-            const adminWrapper = document.querySelector('.admin-container');
-            if (adminWrapper) {
-                adminWrapper.style.cssText = 'display: flex !important; opacity: 1 !important; visibility: visible !important;';
-            }
-            
-            console.log('🆘 ULTRA-EMERGENCY: Loading elements completely removed');
-        }, 5000);
     </script>
 
     <!-- EINZIGES ADMIN SCRIPT - Alle anderen entfernt um Konflikte zu vermeiden -->
