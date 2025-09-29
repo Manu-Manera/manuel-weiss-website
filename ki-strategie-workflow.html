@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Strategieentwicklung Workflow - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Strukturierter Workflow für KI-Strategieentwicklung in HR nach Harvard & MIT Methoden. Schritt-für-Schritt Anleitung.">
+    <meta name="keywords" content="KI-Strategie Workflow, HR, Harvard, MIT, KI-Integration, Strategieentwicklung">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for KI Strategy Workflow -->
+    <style>
+        .workflow-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .workflow-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+        }
+        
+        .workflow-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .workflow-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .workflow-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+            gap: 1rem;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .progress-step.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .workflow-step {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            display: none;
+        }
+        
+        .workflow-step.active {
+            display: block;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .step-title {
+            flex: 1;
+        }
+        
+        .step-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .step-title p {
+            color: #6b7280;
+            margin: 0.5rem 0 0;
+        }
+        
+        .step-content {
+            margin-top: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .checkbox-item.checked {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .use-case-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .use-case-card h4 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .use-case-card p {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .kpi-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .kpi-item input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .kpi-item label {
+            display: block;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .workflow-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f3f4f6;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .summary-card {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-card h4 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-item strong {
+            color: #374151;
+        }
+        
+        .summary-item span {
+            color: #6b7280;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-container {
+                padding: 1rem;
+            }
+            
+            .workflow-header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-progress {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .progress-step {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .step-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="workflow-container">
+        <!-- Workflow Header -->
+        <div class="workflow-header">
+            <h1>KI-Strategieentwicklung für HR</h1>
+            <p>Entwickeln Sie eine umfassende KI-Strategie mit bewährten Harvard & MIT Methoden</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <i class="fas fa-eye"></i>
+                <span>Vision</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                <i class="fas fa-chart-line"></i>
+                <span>Wertschöpfung</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                <i class="fas fa-database"></i>
+                <span>Daten-Architektur</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                <i class="fas fa-sitemap"></i>
+                <span>Organisation</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                <i class="fas fa-balance-scale"></i>
+                <span>Ethik</span>
+            </div>
+            <div class="progress-step" data-step="6">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <span>Skalierung</span>
+            </div>
+            <div class="progress-step" data-step="7">
+                <i class="fas fa-sync-alt"></i>
+                <span>Lernen</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Vision & strategische Verankerung -->
+        <div class="workflow-step active" data-step="1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">
+                    <h2>Vision & strategische Verankerung</h2>
+                    <p>Harvard: KI in HR muss die übergeordnete Unternehmensstrategie stützen</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>Unternehmensname</label>
+                    <input type="text" id="companyName" placeholder="Ihr Unternehmen">
+                </div>
+                
+                <div class="form-group">
+                    <label>Branche</label>
+                    <select id="industry">
+                        <option value="">Branche auswählen</option>
+                        <option value="technology">Technologie</option>
+                        <option value="finance">Finanzdienstleistungen</option>
+                        <option value="healthcare">Gesundheitswesen</option>
+                        <option value="manufacturing">Produktion</option>
+                        <option value="retail">Einzelhandel</option>
+                        <option value="consulting">Beratung</option>
+                        <option value="other">Andere</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mitarbeiteranzahl</label>
+                    <select id="employeeCount">
+                        <option value="">Anzahl auswählen</option>
+                        <option value="1-50">1-50</option>
+                        <option value="51-200">51-200</option>
+                        <option value="201-500">201-500</option>
+                        <option value="501-1000">501-1000</option>
+                        <option value="1000+">1000+</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Übergeordnete Unternehmensstrategie</label>
+                    <textarea id="corporateStrategy" placeholder="Beschreiben Sie Ihre aktuelle Unternehmensstrategie und wie HR diese unterstützen soll..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>HR-Strategische Ziele mit KI</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal1" value="talent-acquisition">
+                            <label for="goal1">Talentgewinnung optimieren</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal2" value="employee-development">
+                            <label for="goal2">Mitarbeiterentwicklung verbessern</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal3" value="engagement">
+                            <label for="goal3">Employee Engagement steigern</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal4" value="retention">
+                            <label for="goal4">Retention verbessern</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal5" value="performance">
+                            <label for="goal5">Performance Management optimieren</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="goal6" value="analytics">
+                            <label for="goal6">People Analytics aufbauen</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Leitfrage: Wie unterstützt KI unsere HR-Strategie?</label>
+                    <textarea id="visionQuestion" placeholder="Beantworten Sie die Leitfrage: Wie unterstützt KI unsere HR-Strategie in den Dimensionen Talentgewinnung, Mitarbeiterentwicklung, Engagement und Retention?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Wertschöpfung & HR-Use Cases -->
+        <div class="workflow-step" data-step="2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">
+                    <h2>Wertschöpfung & HR-Use Cases</h2>
+                    <p>MIT: "Use case factory" - Pilotieren in abgegrenzten HR-Feldern, dann iterativ skalieren</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>Prioritäre HR-Bereiche für KI-Integration</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area1" value="recruiting">
+                            <label for="area1">Recruiting & Talent Acquisition</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area2" value="onboarding">
+                            <label for="area2">Onboarding & Integration</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area3" value="learning">
+                            <label for="area3">Learning & Development</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area4" value="performance">
+                            <label for="area4">Performance Management</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area5" value="engagement">
+                            <label for="area5">Employee Engagement</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="area6" value="analytics">
+                            <label for="area6">People Analytics</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Konkrete Use Cases identifizieren</label>
+                    <div class="use-case-card">
+                        <h4>KI-gestütztes Recruiting</h4>
+                        <p>CV-Screening, Chatbots für Bewerber, Matching-Algorithmen</p>
+                    </div>
+                    <div class="use-case-card">
+                        <h4>Skill-Mapping & Learning Recommendation</h4>
+                        <p>Individuelle Lernpfade, Skill-Gap-Analysen, Personalisierte Empfehlungen</p>
+                    </div>
+                    <div class="use-case-card">
+                        <h4>Predictive Analytics</h4>
+                        <p>Retention-Prognosen, Engagement-Vorhersagen, Fluktuationsrisiken</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Erwartete Werthebel</label>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <label>Bessere Recruiting-Qualität (%)</label>
+                            <input type="number" id="recruitingQuality" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Schnellere Onboarding-Prozesse (Tage)</label>
+                            <input type="number" id="onboardingSpeed" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Kosteneinsparungen (€)</label>
+                            <input type="number" id="costSavings" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Zeitersparnis (Stunden/Monat)</label>
+                            <input type="number" id="timeSavings" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Daten- und Technologie-Architektur -->
+        <div class="workflow-step" data-step="3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">
+                    <h2>Daten- und Technologie-Architektur</h2>
+                    <p>Harvard: People Data Governance - MIT: "Data Readiness" für strukturierte HR-Daten</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>Bestehende HR-Systeme</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system1" value="ats">
+                            <label for="system1">ATS (Applicant Tracking System)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system2" value="lms">
+                            <label for="system2">LMS (Learning Management System)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system3" value="hris">
+                            <label for="system3">HRIS (HR Information System)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system4" value="performance">
+                            <label for="system4">Performance Management System</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system5" value="payroll">
+                            <label for="system5">Payroll System</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system6" value="other">
+                            <label for="system6">Andere Systeme</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Datenqualität bewerten</label>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <label>Datenvollständigkeit (%)</label>
+                            <input type="number" id="dataCompleteness" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Datenaktualität (Tage)</label>
+                            <input type="number" id="dataFreshness" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>System-Integration (%)</label>
+                            <input type="number" id="systemIntegration" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Datenqualität (1-10)</label>
+                            <input type="number" id="dataQuality" placeholder="0" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>People Data Governance Maßnahmen</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="governance1" value="privacy">
+                            <label for="governance1">Datenschutz-Richtlinien</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="governance2" value="consent">
+                            <label for="governance2">Employee Consent Management</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="governance3" value="fairness">
+                            <label for="governance3">Fairness & Anti-Bias Richtlinien</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="governance4" value="security">
+                            <label for="governance4">Daten-Sicherheitsmaßnahmen</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>HR-Datenplattform Anforderungen</label>
+                    <textarea id="dataPlatformRequirements" placeholder="Beschreiben Sie Ihre Anforderungen an eine HR-Datenplattform mit Schnittstellen zu Recruiting-, Learning- und Performance-Systemen..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Organisation & HR Operating Model -->
+        <div class="workflow-step" data-step="4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">
+                    <h2>Organisation & HR Operating Model</h2>
+                    <p>Harvard: HR Analytics / AI CoE - MIT: "Hybrid HR" mit People Scientists</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>Neue HR-Rollen definieren</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="role1" value="data-analyst">
+                            <label for="role1">People Data Analyst</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="role2" value="ai-specialist">
+                            <label for="role2">HR AI Specialist</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="role3" value="ethics-officer">
+                            <label for="role3">Ethik-Beauftragter für People Analytics</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="role4" value="change-manager">
+                            <label for="role4">AI Change Manager</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>HR Analytics / AI CoE Struktur</label>
+                    <textarea id="coeStructure" placeholder="Beschreiben Sie die Struktur Ihres HR Analytics / AI Center of Excellence..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Kompetenzentwicklung für HR-Teams</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="competency1" value="data-literacy">
+                            <label for="competency1">Data Literacy</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="competency2" value="ai-understanding">
+                            <label for="competency2">AI-Grundverständnis</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="competency3" value="analytics-skills">
+                            <label for="competency3">Analytics-Skills</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="competency4" value="change-management">
+                            <label for="competency4">Change Management</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Hybrid HR Operating Model</label>
+                    <textarea id="hybridModel" placeholder="Beschreiben Sie Ihr Hybrid HR Operating Model - wie werden HR-Profis zu People Scientists?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Ethik, Fairness & Employee Trust -->
+        <div class="workflow-step" data-step="5">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">
+                    <h2>Ethik, Fairness & Employee Trust</h2>
+                    <p>Harvard: Anti-Bias - MIT: "Explainable AI" für transparente Algorithmen</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>Ethik-Maßnahmen implementieren</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ethics1" value="bias-audit">
+                            <label for="ethics1">Bias-Audits bei Recruiting-KI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ethics2" value="transparency">
+                            <label for="ethics2">Transparenz in Mitarbeiterkommunikation</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ethics3" value="employee-council">
+                            <label for="ethics3">Beteiligung von Betriebsrat/Employee Council</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ethics4" value="explainable-ai">
+                            <label for="ethics4">Explainable AI Implementierung</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Fairness & Anti-Bias Strategie</label>
+                    <textarea id="fairnessStrategy" placeholder="Beschreiben Sie Ihre Strategie für Fairness und Anti-Bias in KI-gestützten HR-Entscheidungen..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Employee Trust Maßnahmen</label>
+                    <textarea id="trustMeasures" placeholder="Welche Maßnahmen planen Sie, um das Vertrauen der Mitarbeiter in KI-gestützte HR-Entscheidungen aufzubauen?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Transparenz & Kommunikation</label>
+                    <textarea id="transparencyCommunication" placeholder="Wie werden Sie Mitarbeiter über KI-gestützte Entscheidungen informieren und Transparenz schaffen?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Skalierung & HR-Ökosystem -->
+        <div class="workflow-step" data-step="6">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">
+                    <h2>Skalierung & HR-Ökosystem</h2>
+                    <p>Harvard: Partnerschaften mit HR-Tech-Providern - MIT: Open Innovation & Plattform-Ökosysteme</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>HR-Tech Partnerschaften</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="partnership1" value="linkedin">
+                            <label for="partnership1">LinkedIn Talent Solutions</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="partnership2" value="workday">
+                            <label for="partnership2">Workday</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="partnership3" value="sap">
+                            <label for="partnership3">SAP SuccessFactors</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="partnership4" value="startups">
+                            <label for="partnership4">HR-Tech Startups</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="partnership5" value="universities">
+                            <label for="partnership5">Universitäten & Forschung</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Open Innovation Strategie</label>
+                    <textarea id="openInnovation" placeholder="Beschreiben Sie Ihre Open Innovation Strategie für HR-KI..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Plattform-Ökosystem Integration</label>
+                    <textarea id="platformEcosystem" placeholder="Wie werden Sie HR-KI ins gesamte Talent-Ökosystem einbetten?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Skalierungsplan</label>
+                    <textarea id="scalingPlan" placeholder="Beschreiben Sie Ihren Plan für die Skalierung der HR-KI-Initiativen..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7: Kontinuierliches Lernen & Anpassung -->
+        <div class="workflow-step" data-step="7">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">
+                    <h2>Kontinuierliches Lernen & Anpassung</h2>
+                    <p>Harvard: "Disruptive HR" - MIT: KI-Strategie als lebendes System</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="form-group">
+                    <label>KPI-System für HR-KI</label>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <label>Time-to-Hire (Tage)</label>
+                            <input type="number" id="timeToHire" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Employee Satisfaction (1-10)</label>
+                            <input type="number" id="employeeSatisfaction" placeholder="0" min="1" max="10">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Learning Impact (%)</label>
+                            <input type="number" id="learningImpact" placeholder="0">
+                        </div>
+                        <div class="kpi-item">
+                            <label>Retention Rate (%)</label>
+                            <input type="number" id="retentionRate" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Review-Zyklus</label>
+                    <select id="reviewCycle">
+                        <option value="">Review-Zyklus auswählen</option>
+                        <option value="monthly">Monatlich</option>
+                        <option value="quarterly">Quartalsweise</option>
+                        <option value="biannual">Halbjährlich</option>
+                        <option value="annual">Jährlich</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Anpassungskriterien</label>
+                    <textarea id="adaptationCriteria" placeholder="Definieren Sie Kriterien für die Anpassung Ihrer KI-Strategie..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Disruptive HR Transformation</label>
+                    <textarea id="disruptiveTransformation" placeholder="Wie wird sich HR selbst neu erfinden, bevor andere es tun?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Step -->
+        <div class="workflow-step" data-step="8">
+            <div class="step-header">
+                <div class="step-number">✓</div>
+                <div class="step-title">
+                    <h2>Ihre KI-Strategie Zusammenfassung</h2>
+                    <p>Überprüfen Sie Ihre entwickelte KI-Strategie</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="summary-card">
+                    <h4>Unternehmensinformationen</h4>
+                    <div class="summary-item">
+                        <strong>Unternehmen:</strong>
+                        <span id="summaryCompany">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Branche:</strong>
+                        <span id="summaryIndustry">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Mitarbeiteranzahl:</strong>
+                        <span id="summaryEmployees">-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <h4>Strategische Ziele</h4>
+                    <div id="summaryGoals">-</div>
+                </div>
+                
+                <div class="summary-card">
+                    <h4>HR-Bereiche</h4>
+                    <div id="summaryAreas">-</div>
+                </div>
+                
+                <div class="summary-card">
+                    <h4>Erwartete Werthebel</h4>
+                    <div id="summaryValue">-</div>
+                </div>
+                
+                <div class="summary-card">
+                    <h4>Nächste Schritte</h4>
+                    <div id="summaryNextSteps">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="workflow-navigation">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" disabled>
+                <i class="fas fa-arrow-left"></i>
+                Zurück
+            </button>
+            
+            <div class="step-indicator">
+                <span id="currentStep">1</span> von <span id="totalSteps">7</span>
+            </div>
+            
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                Weiter
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 8;
+        
+        function updateProgress() {
+            // Update progress indicators
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Update step visibility
+            document.querySelectorAll('.workflow-step').forEach((step, index) => {
+                step.classList.remove('active');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Update navigation
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Zusammenfassung' : 'Weiter';
+            document.getElementById('currentStep').textContent = currentStep;
+            document.getElementById('totalSteps').textContent = totalSteps;
+        }
+        
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateProgress();
+                
+                if (currentStep === totalSteps) {
+                    generateSummary();
+                }
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateProgress();
+            }
+        }
+        
+        function generateSummary() {
+            // Generate summary from form data
+            const companyName = document.getElementById('companyName').value || '-';
+            const industry = document.getElementById('industry').value || '-';
+            const employeeCount = document.getElementById('employeeCount').value || '-';
+            
+            document.getElementById('summaryCompany').textContent = companyName;
+            document.getElementById('summaryIndustry').textContent = industry;
+            document.getElementById('summaryEmployees').textContent = employeeCount;
+            
+            // Collect selected goals
+            const selectedGoals = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.nextElementSibling.textContent)
+                .join(', ');
+            document.getElementById('summaryGoals').textContent = selectedGoals || '-';
+            
+            // Collect selected areas
+            const selectedAreas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.nextElementSibling.textContent)
+                .join(', ');
+            document.getElementById('summaryAreas').textContent = selectedAreas || '-';
+            
+            // Generate next steps
+            const nextSteps = [
+                '1. HR Analytics / AI CoE einrichten',
+                '2. Datenqualität bewerten und verbessern',
+                '3. Pilot-Projekte in priorisierten Bereichen starten',
+                '4. Ethik-Richtlinien implementieren',
+                '5. Mitarbeiter schulen und sensibilisieren',
+                '6. KPI-System aufbauen und monitoren'
+            ];
+            document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
+        }
+        
+        // Initialize
+        updateProgress();
+        
+        // Add event listeners for checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const item = this.closest('.checkbox-item');
+                if (this.checked) {
+                    item.classList.add('checked');
+                } else {
+                    item.classList.remove('checked');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
