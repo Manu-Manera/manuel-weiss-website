@@ -6756,6 +6756,10 @@
                 <!-- Settings Section -->
                 <section id="settings" class="admin-section">
                     <div class="settings-tabs">
+                        <button class="settings-tab" data-tab="hero-settings">
+                            <i class="fas fa-home"></i>
+                            Hero-Bereich
+                        </button>
                         <button class="settings-tab active" data-tab="general">
                             <i class="fas fa-cog"></i>
                             Allgemein
@@ -6775,6 +6779,81 @@
                     </div>
                     
                     <div class="settings-content">
+                        <div class="settings-panel" id="heroSettings">
+                            <h3><i class="fas fa-home"></i> Hero-Bereich Anpassen</h3>
+                            <p>Passen Sie den Hero-Bereich Ihrer Website an</p>
+                            
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="hero-title">Haupttitel</label>
+                                    <input type="text" id="hero-title" name="hero-title" class="form-control" placeholder="z.B. Berater für AI & Digitalisierung">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-subtitle">Untertitel</label>
+                                    <textarea id="hero-subtitle" name="hero-subtitle" class="form-control" rows="3" placeholder="Beschreibung Ihrer Dienstleistungen..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-background">Hintergrund-Farbe</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="hero-bg-color1" name="hero-bg-color1" value="#667eea">
+                                        <input type="color" id="hero-bg-color2" name="hero-bg-color2" value="#764ba2">
+                                        <span>Gradient von links nach rechts</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-text-color">Text-Farbe</label>
+                                    <input type="color" id="hero-text-color" name="hero-text-color" value="#ffffff">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-button-text">Button-Text</label>
+                                    <input type="text" id="hero-button-text" name="hero-button-text" class="form-control" placeholder="z.B. Jetzt starten">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-button-link">Button-Link</label>
+                                    <input type="url" id="hero-button-link" name="hero-button-link" class="form-control" placeholder="https://...">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-image">Profilbild</label>
+                                    <input type="file" id="hero-image" name="hero-image" accept="image/*" class="form-control">
+                                    <div class="image-preview" id="hero-image-preview"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="hero-animations" name="hero-animations" checked>
+                                        <span class="checkmark"></span>
+                                        Animationen aktivieren
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="hero-glass-effect" name="hero-glass-effect" checked>
+                                        <span class="checkmark"></span>
+                                        Glasmorphismus-Effekt
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" data-action="save-hero-settings">
+                                        <i class="fas fa-save"></i> Hero-Einstellungen speichern
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-action="preview-hero">
+                                        <i class="fas fa-eye"></i> Vorschau
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-action="reset-hero">
+                                        <i class="fas fa-undo"></i> Zurücksetzen
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
                         <div class="settings-panel active" id="generalSettings">
                             <h3>Allgemeine Einstellungen</h3>
                             <form class="settings-form">
@@ -10471,6 +10550,9 @@ Bitte antworte im folgenden JSON-Format:
             // Initialize Settings if needed
             if (sectionId === 'settings') {
                 initializeSettings();
+                
+                // Initialize Hero Settings
+                initializeHeroSettings();
             }
             
             // Initialize Pulsing Menu
