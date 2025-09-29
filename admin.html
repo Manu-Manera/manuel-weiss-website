@@ -2472,52 +2472,6 @@
                             </div>
                         </div>
                         
-                        <div class="dashboard-card">
-                            <h3>Quick Actions</h3>
-                            
-                            <div class="quick-actions">
-                                <button class="quick-action-btn" data-action="content">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Neuer Inhalt</span>
-                                </button>
-                                <button class="quick-action-btn" data-action="nutrition">
-                                    <i class="fas fa-apple-alt"></i>
-                                    <span>Ernährungsplan</span>
-                                </button>
-                                <button class="quick-action-btn" data-action="ikigai">
-                                    <i class="fas fa-seedling"></i>
-                                    <span>Ikigai-Workflow</span>
-                                </button>
-                                <button class="quick-action-btn" data-action="personal-training">
-                                    <i class="fas fa-dumbbell"></i>
-                                    <span>Personal Training</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('applications')">
-                                    <i class="fas fa-file-alt"></i>
-                                    <span>Bewerbungen</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('ai-twin')">
-                                    <i class="fas fa-robot"></i>
-                                    <span>AI Twin erstellen</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('media')">
-                                    <i class="fas fa-upload"></i>
-                                    <span>Medien hochladen</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('vermietungen')">
-                                    <i class="fas fa-key"></i>
-                                    <span>Vermietung verwalten</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('analytics')">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Analytics</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="showAdminSection('settings')">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Einstellungen</span>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </section>
 
@@ -6965,50 +6919,6 @@
             });
             
             // 2. Quick Actions Event Listener
-            const quickActionButtons = document.querySelectorAll('.quick-action-btn');
-            console.log(`🚀 Gefunden: ${quickActionButtons.length} Quick Action Buttons`);
-            
-            quickActionButtons.forEach(function(button) {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const action = this.getAttribute('data-action');
-                    const text = this.querySelector('span').textContent;
-                    console.log(`🚀 Quick Action geklickt: ${text} (${action})`);
-                    
-                    if (action) {
-                        // Alle Sektionen verstecken
-                        document.querySelectorAll('.admin-section').forEach(function(s) {
-                            s.classList.remove('active');
-                        });
-                        
-                        // Gewählte Sektion anzeigen
-                        const targetSection = document.getElementById(action);
-                        if (targetSection) {
-                            targetSection.classList.add('active');
-                            console.log(`✅ Sektion aktiviert: ${action}`);
-                            
-                            // Dashboard verstecken
-                            const dashboard = document.getElementById('dashboard');
-                            if (dashboard) {
-                                dashboard.classList.remove('active');
-                            }
-                        }
-                        
-                        // Navigation aktualisieren
-                        document.querySelectorAll('.nav-item').forEach(function(nav) {
-                            nav.classList.remove('active');
-                        });
-                        
-                        // Passende Navigation aktivieren
-                        const navItem = document.querySelector(`[data-section="${action}"]`);
-                        if (navItem) {
-                            navItem.classList.add('active');
-                        }
-                    }
-                });
-            });
             
             // 3. Sidebar Toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
