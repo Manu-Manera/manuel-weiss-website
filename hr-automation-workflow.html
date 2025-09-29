@@ -25,21 +25,21 @@
         
         .workflow-header {
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            border-radius: 16px;
+            border-radius: 12px;
         }
         
         .workflow-header h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         
         .workflow-header p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto;
@@ -293,6 +293,111 @@
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .export-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .export-section h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-pdf {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-excel {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-excel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-word {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-word:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .custom-inputs {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .custom-input-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+        
+        .custom-input-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
         }
         
         .summary-card {
@@ -750,19 +855,19 @@
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" id="transparency1" value="communication">
-                            <label for="transparency1">Klare Kommunikation über automatisierte Prozesse</label>
+                            <label for="transparency1">Klare Kommunikation</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="transparency2" value="human-consultation">
-                            <label for="transparency2">Menschliche HR-Beratung bei sensiblen Themen</label>
+                            <label for="transparency2">Menschliche HR-Beratung</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="transparency3" value="transparency-portal">
-                            <label for="transparency3">Transparenzportal für Mitarbeiter</label>
+                            <label for="transparency3">Transparenzportal</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="transparency4" value="explainable-ai">
-                            <label for="transparency4">Explainable AI für Entscheidungen</label>
+                            <label for="transparency4">Explainable AI</label>
                         </div>
                     </div>
                 </div>
@@ -780,11 +885,11 @@
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="compliance3" value="audit-trails">
-                            <label for="compliance3">Audit Trails für Prozesse</label>
+                            <label for="compliance3">Audit Trails</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="compliance4" value="data-retention">
-                            <label for="compliance4">Datenaufbewahrungsrichtlinien</label>
+                            <label for="compliance4">Datenaufbewahrung</label>
                         </div>
                     </div>
                 </div>
@@ -797,6 +902,27 @@
                 <div class="form-group">
                     <label>Ethik-Richtlinien für Automatisierung</label>
                     <textarea id="ethicsGuidelines" placeholder="Welche Ethik-Richtlinien gelten für Ihre HR-Automatisierung?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Weitere eigene Angaben</label>
+                    <div class="custom-inputs">
+                        <div class="custom-input-item">
+                            <input type="text" id="customInput1" placeholder="Eigene Angabe 1">
+                            <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="custom-input-item">
+                            <input type="text" id="customInput2" placeholder="Eigene Angabe 2">
+                            <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="addCustomInput()">
+                            <i class="fas fa-plus"></i> Weitere Angabe hinzufügen
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -945,6 +1071,21 @@
                 </div>
             </div>
             
+            <div class="export-section">
+                <h3><i class="fas fa-download"></i> Zusammenfassung herunterladen</h3>
+                <div class="export-buttons">
+                    <button class="btn btn-pdf" onclick="exportWorkflowToPDF(getWorkflowData(), 'HR-Automatisierung')">
+                        <i class="fas fa-file-pdf"></i> Als PDF
+                    </button>
+                    <button class="btn btn-excel" onclick="exportWorkflowToExcel(getWorkflowData(), 'HR-Automatisierung')">
+                        <i class="fas fa-file-excel"></i> Als Excel
+                    </button>
+                    <button class="btn btn-word" onclick="exportWorkflowToWord(getWorkflowData(), 'HR-Automatisierung')">
+                        <i class="fas fa-file-word"></i> Als Word
+                    </button>
+                </div>
+            </div>
+            
             <div class="step-content">
                 <div class="summary-card">
                     <h4>Unternehmensinformationen</h4>
@@ -1002,6 +1143,7 @@
         </div>
     </div>
 
+    <script src="js/workflow-export.js"></script>
     <script>
         let currentStep = 1;
         const totalSteps = 8;
@@ -1082,6 +1224,48 @@
                 '6. KPI-System implementieren und monitoren'
             ];
             document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
+        }
+        
+        function getWorkflowData() {
+            return {
+                company: document.getElementById('companyName').value || '',
+                industry: document.getElementById('industry').value || '',
+                employeeCount: document.getElementById('employeeCount').value || '',
+                goals: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.nextElementSibling.textContent),
+                areas: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.nextElementSibling.textContent),
+                timeSavings: document.getElementById('timeSavings')?.value || 0,
+                productivityGain: document.getElementById('productivityGain')?.value || 0,
+                employeeSatisfaction: document.getElementById('employeeSatisfaction')?.value || 0,
+                collaborationEfficiency: document.getElementById('collaborationEfficiency')?.value || 0,
+                customInputs: Array.from(document.querySelectorAll('.custom-input-item input'))
+                    .map(input => input.value)
+                    .filter(value => value.trim() !== '')
+            };
+        }
+        
+        function addCustomInput() {
+            const customInputs = document.querySelector('.custom-inputs');
+            const inputCount = customInputs.querySelectorAll('.custom-input-item').length;
+            const newInputId = `customInput${inputCount + 1}`;
+            
+            const newInputItem = document.createElement('div');
+            newInputItem.className = 'custom-input-item';
+            newInputItem.innerHTML = `
+                <input type="text" id="${newInputId}" placeholder="Eigene Angabe ${inputCount + 1}">
+                <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            // Insert before the "Add" button
+            const addButton = customInputs.querySelector('button');
+            customInputs.insertBefore(newInputItem, addButton);
+        }
+        
+        function removeCustomInput(button) {
+            button.parentElement.remove();
         }
         
         // Initialize
