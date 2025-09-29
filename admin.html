@@ -4303,43 +4303,12 @@
                                     </button>
                                 </div>
                                 
-                                <!-- Hero-Text & Effekte -->
-                                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                                    <h4 style="color: #555; margin-bottom: 1rem;">✨ Hero-Bereich anpassen</h4>
-                                    
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Name:</label>
-                                        <input type="text" id="heroName" placeholder="Manuel Weiss" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Titel:</label>
-                                        <input type="text" id="heroTitle" placeholder="Professional Services" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Untertitel:</label>
-                                        <input type="text" id="heroSubtitle" placeholder="Digitalisierung • Prozessmanagement • HR-Tech Beratung" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Beschreibung:</label>
-                                        <textarea id="heroDescription" placeholder="Seit über 6 Jahren begleite ich Unternehmen..." style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; height: 80px; resize: vertical;"></textarea>
-                                    </div>
-                                    
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Schrift-Effekte:</label>
-                                        <select id="heroTextEffect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                                            <option value="none">Keine Effekte</option>
-                                            <option value="gradient">Gradient-Text</option>
-                                            <option value="glow">Glow-Effekt</option>
-                                            <option value="shadow">Schatten-Effekt</option>
-                                            <option value="animated">Animierter Text</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <button data-action="update-hero-content" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                        💾 Hero-Bereich speichern
+                                <!-- Hero-Bereich Einstellungen wurden in die Einstellungen-Sektion verschoben -->
+                                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 2px dashed #dee2e6; text-align: center;">
+                                    <h4 style="color: #6c757d; margin-bottom: 1rem;">ℹ️ Hero-Bereich Einstellungen</h4>
+                                    <p style="color: #6c757d; margin-bottom: 1rem;">Die Hero-Bereich-Funktionen wurden in die Einstellungen-Sektion verschoben.</p>
+                                    <button onclick="showSection('settings')" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        ⚙️ Zu den Einstellungen
                                     </button>
                                 </div>
                                 
@@ -7013,6 +6982,27 @@
                                 </div>
                                 
                                 <div class="form-group">
+                                    <label for="hero-name">Name</label>
+                                    <input type="text" id="hero-name" name="hero-name" class="form-control" placeholder="z.B. Manuel Weiss">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-description">Beschreibung</label>
+                                    <textarea id="hero-description" name="hero-description" class="form-control" rows="3" placeholder="Detaillierte Beschreibung Ihrer Dienstleistungen..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="hero-text-effect">Schrift-Effekte</label>
+                                    <select id="hero-text-effect" name="hero-text-effect" class="form-control">
+                                        <option value="none">Keine Effekte</option>
+                                        <option value="gradient">Gradient-Text</option>
+                                        <option value="glow">Glow-Effekt</option>
+                                        <option value="shadow">Schatten-Effekt</option>
+                                        <option value="animated">Animierter Text</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label for="hero-image">Profilbild</label>
                                     <input type="file" id="hero-image" name="hero-image" accept="image/*" class="form-control">
                                     <div class="image-preview" id="hero-image-preview"></div>
@@ -7950,14 +7940,28 @@
             }
         }
         
-        // Hero-Bereich aktualisieren
+        // Hero-Bereich aktualisieren (erweiterte Version für Einstellungen)
         function updateHeroContent() {
+            // Prüfe ob wir in der AI Twin Sektion sind (alte IDs)
+            const heroName = document.getElementById('heroName');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const heroDescription = document.getElementById('heroDescription');
+            const heroTextEffect = document.getElementById('heroTextEffect');
+            
+            // Prüfe ob wir in der Einstellungen-Sektion sind (neue IDs)
+            const heroNameNew = document.getElementById('hero-name');
+            const heroTitleNew = document.getElementById('hero-title');
+            const heroSubtitleNew = document.getElementById('hero-subtitle');
+            const heroDescriptionNew = document.getElementById('hero-description');
+            const heroTextEffectNew = document.getElementById('hero-text-effect');
+            
             const heroData = {
-                name: document.getElementById('heroName').value,
-                title: document.getElementById('heroTitle').value,
-                subtitle: document.getElementById('heroSubtitle').value,
-                description: document.getElementById('heroDescription').value,
-                textEffect: document.getElementById('heroTextEffect').value
+                name: heroName ? heroName.value : (heroNameNew ? heroNameNew.value : ''),
+                title: heroTitle ? heroTitle.value : (heroTitleNew ? heroTitleNew.value : ''),
+                subtitle: heroSubtitle ? heroSubtitle.value : (heroSubtitleNew ? heroSubtitleNew.value : ''),
+                description: heroDescription ? heroDescription.value : (heroDescriptionNew ? heroDescriptionNew.value : ''),
+                textEffect: heroTextEffect ? heroTextEffect.value : (heroTextEffectNew ? heroTextEffectNew.value : 'none')
             };
             
             // Prüfe ob alle Felder ausgefüllt sind
@@ -8000,12 +8004,37 @@
                 try {
                     const heroData = JSON.parse(savedHeroContent);
                     
-                    // Fülle die Formularfelder
-                    if (heroData.name) document.getElementById('heroName').value = heroData.name;
-                    if (heroData.title) document.getElementById('heroTitle').value = heroData.title;
-                    if (heroData.subtitle) document.getElementById('heroSubtitle').value = heroData.subtitle;
-                    if (heroData.description) document.getElementById('heroDescription').value = heroData.description;
-                    if (heroData.textEffect) document.getElementById('heroTextEffect').value = heroData.textEffect;
+                    // Fülle die Formularfelder (unterstützt beide Sektionen)
+                    if (heroData.name) {
+                        const heroName = document.getElementById('heroName');
+                        const heroNameNew = document.getElementById('hero-name');
+                        if (heroName) heroName.value = heroData.name;
+                        if (heroNameNew) heroNameNew.value = heroData.name;
+                    }
+                    if (heroData.title) {
+                        const heroTitle = document.getElementById('heroTitle');
+                        const heroTitleNew = document.getElementById('hero-title');
+                        if (heroTitle) heroTitle.value = heroData.title;
+                        if (heroTitleNew) heroTitleNew.value = heroData.title;
+                    }
+                    if (heroData.subtitle) {
+                        const heroSubtitle = document.getElementById('heroSubtitle');
+                        const heroSubtitleNew = document.getElementById('hero-subtitle');
+                        if (heroSubtitle) heroSubtitle.value = heroData.subtitle;
+                        if (heroSubtitleNew) heroSubtitleNew.value = heroData.subtitle;
+                    }
+                    if (heroData.description) {
+                        const heroDescription = document.getElementById('heroDescription');
+                        const heroDescriptionNew = document.getElementById('hero-description');
+                        if (heroDescription) heroDescription.value = heroData.description;
+                        if (heroDescriptionNew) heroDescriptionNew.value = heroData.description;
+                    }
+                    if (heroData.textEffect) {
+                        const heroTextEffect = document.getElementById('heroTextEffect');
+                        const heroTextEffectNew = document.getElementById('hero-text-effect');
+                        if (heroTextEffect) heroTextEffect.value = heroData.textEffect;
+                        if (heroTextEffectNew) heroTextEffectNew.value = heroData.textEffect;
+                    }
                     
                     console.log('✅ Hero-Content aus localStorage geladen');
                 } catch (error) {
@@ -13255,10 +13284,45 @@ Bitte antworte im folgenden JSON-Format:
                 resetBtn.addEventListener('click', resetHero);
             }
             
-            // Update hero content button
+            // Update hero content button (AI Twin Sektion)
             const updateHeroBtn = document.querySelector('[data-action="update-hero-content"]');
             if (updateHeroBtn) {
                 updateHeroBtn.addEventListener('click', updateHeroContent);
+            }
+            
+            // Hero settings buttons (Einstellungen-Sektion)
+            const saveHeroBtn = document.querySelector('[data-action="save-hero-settings"]');
+            if (saveHeroBtn) {
+                saveHeroBtn.addEventListener('click', updateHeroContent);
+            }
+            
+            const previewHeroBtn = document.querySelector('[data-action="preview-hero"]');
+            if (previewHeroBtn) {
+                previewHeroBtn.addEventListener('click', function() {
+                    alert('Vorschau-Funktion wird implementiert...');
+                });
+            }
+            
+            const resetHeroBtn = document.querySelector('[data-action="reset-hero"]');
+            if (resetHeroBtn) {
+                resetHeroBtn.addEventListener('click', function() {
+                    if (confirm('Möchten Sie alle Hero-Einstellungen zurücksetzen?')) {
+                        // Reset alle Hero-Felder
+                        const heroFields = ['hero-name', 'hero-title', 'hero-subtitle', 'hero-description', 'hero-text-effect', 'hero-bg-color1', 'hero-bg-color2', 'hero-text-color', 'hero-button-text', 'hero-button-link'];
+                        heroFields.forEach(fieldId => {
+                            const field = document.getElementById(fieldId);
+                            if (field) {
+                                if (field.type === 'checkbox') {
+                                    field.checked = false;
+                                } else {
+                                    field.value = '';
+                                }
+                            }
+                        });
+                        localStorage.removeItem('heroContent');
+                        alert('Hero-Einstellungen wurden zurückgesetzt!');
+                    }
+                });
             }
             
             // Hero settings tab
