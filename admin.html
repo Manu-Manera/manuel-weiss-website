@@ -3693,8 +3693,8 @@
                                                             <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple style="display: none;">
                                                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
                                                             <p style="font-weight: 600; margin-bottom: 0.5rem;">Dokumente hochladen</p>
-                                                            <button data-action="upload-document" class="btn btn-primary" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                                                                Dateien auswählen
+                                                            <button data-action="upload-document" class="btn btn-primary" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="triggerBewerbungsunterlagenUpload()">
+                                                                <i class="fas fa-cloud-upload-alt"></i> Dateien auswählen
                                                             </button>
                                                             <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, HTML, JPG, PNG</p>
                                                 </div>
@@ -9378,6 +9378,22 @@ Bitte antworte im folgenden JSON-Format:
         script.src = `admin-script.js?v=3.5&t=${timestamp}`;
         document.head.appendChild(script);
         
+        // Load Smart API System
+        const smartApiScript = document.createElement('script');
+        smartApiScript.src = `js/smart-api-system.js?v=1.0&t=${timestamp}`;
+        smartApiScript.onload = function() {
+            console.log('✅ Smart API System loaded');
+            // Initialize Smart API for Bewerbungsunterlagen if we're in the applications section
+            if (window.location.hash === '#applications' || document.querySelector('.admin-section.active')?.id === 'applications') {
+                setTimeout(() => {
+                    if (window.smartAPI) {
+                        initializeBewerbungsunterlagenSmartAPI();
+                    }
+                }, 1000);
+            }
+        };
+        document.head.appendChild(smartApiScript);
+        
         // Load workflow functions
         const workflowScript = document.createElement('script');
         workflowScript.src = `js/workflow-functions.js?v=1.0&t=${timestamp}`;
@@ -11289,6 +11305,66 @@ Bitte antworte im folgenden JSON-Format:
                 });
             }
         }
+        
+        // 🚀 Trigger Bewerbungsunterlagen Upload
+        function triggerBewerbungsunterlagenUpload() {
+            console.log('🚀 Triggering Bewerbungsunterlagen upload...');
+            
+            // Debug: Check current state
+            console.log('🔍 Debug Info:');
+            console.log('- Smart API available:', !!window.smartAPI);
+            console.log('- File input exists:', !!document.getElementById('doc-upload'));
+            console.log('- Current user ID:', getCurrentUserId());
+            
+            // Check if Smart API is available
+            if (window.smartAPI) {
+                console.log('✅ Smart API available, using Smart Upload');
+                const fileInput = document.getElementById('doc-upload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ File input not found');
+                    showBewerbungsunterlagenMessage('Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showBewerbungsunterlagenMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying upload');
+                    triggerBewerbungsunterlagenUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showBewerbungsunterlagenMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        }
+        
+        // 🔧 Debug Function for Testing
+        function debugBewerbungsunterlagenSystem() {
+            console.log('🔧 Debug Bewerbungsunterlagen System:');
+            console.log('- Smart API available:', !!window.smartAPI);
+            console.log('- File input exists:', !!document.getElementById('doc-upload'));
+            console.log('- Current user ID:', getCurrentUserId());
+            console.log('- Local storage documents:', localStorage.getItem('documents'));
+            console.log('- Selected documents:', localStorage.getItem('selectedBewerbungsunterlagen'));
+            
+            // Test Smart API if available
+            if (window.smartAPI) {
+                console.log('🧪 Testing Smart API...');
+                window.smartAPI.getHealthStatus()
+                    .then(result => console.log('✅ Smart API Health:', result))
+                    .catch(error => console.error('❌ Smart API Health failed:', error));
+            }
+        }
+        
+        // Make debug function globally available
+        window.debugBewerbungsunterlagenSystem = debugBewerbungsunterlagenSystem;
         
         // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
         function collapseAllMethods() {
