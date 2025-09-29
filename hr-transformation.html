@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR-Transformation - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for HR Transformation -->
+    <style>
+        .hr-transformation-hero {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 3rem 0 4rem 0;
+            text-align: center;
+            margin-top: 0;
+        }
+        
+        .hr-transformation-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .hr-transformation-hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+        }
+        
+        .methodology-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .service-card:nth-child(1) .service-icon {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        .service-card:nth-child(2) .service-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .service-card:nth-child(3) .service-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .service-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .service-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .service-features li i {
+            color: #3b82f6;
+            margin-right: 0.75rem;
+            width: 16px;
+        }
+        
+        .service-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 8px;
+            margin-top: auto;
+        }
+        
+        .cta-text {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .cta-arrow {
+            color: #3b82f6;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover .cta-arrow {
+            transform: translateX(4px);
+        }
+        
+        .workflow-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .workflow-preview h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .workflow-step {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        
+        .workflow-step strong {
+            color: #1f2937;
+        }
+        
+        .intro-section {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .intro-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .intro-section p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            line-height: 1.7;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .benefit-item i {
+            color: #3b82f6;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .benefit-item span {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        @media (max-width: 768px) {
+            .hr-transformation-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#services">Services</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hr-transformation-hero">
+        <div class="methodology-badge">
+            <i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie
+        </div>
+        <h1>HR-Transformation</h1>
+        <p>Strategische Beratung für die Transformation von HR-Organisationen. Wissenschaftlich fundiert, praxisorientiert und zukunftssicher.</p>
+    </div>
+
+    <div class="container">
+        <!-- Introduction -->
+        <div class="intro-section">
+            <h2>Unsere HR-Transformation Services</h2>
+            <p>Drei zentrale Bereiche für erfolgreiche HR-Transformation mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Organisationsentwicklung und Change Management für nachhaltigen Erfolg.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Strategische Verankerung</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-users"></i>
+                    <span>Organisationsentwicklung</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Change Management</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Wissenschaftlich fundiert</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-rocket"></i>
+                    <span>Praxisorientiert</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Zukunftssicher</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="services-grid">
+            <!-- HR-Strategieentwicklung -->
+            <div class="service-card" onclick="window.location.href='hr-strategie-workflow.html'">
+                <div class="service-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>HR-Strategieentwicklung</h3>
+                <p>Entwickeln Sie eine umfassende HR-Strategie mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Wertschöpfung und ethische Implementierung für nachhaltigen Erfolg.</p>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i>Vision & strategische Verankerung</li>
+                    <li><i class="fas fa-check"></i>Wertschöpfung & Schlüsselfelder</li>
+                    <li><i class="fas fa-check"></i>Daten- & Infrastruktur-Basis</li>
+                    <li><i class="fas fa-check"></i>Organisation & HR Operating Model</li>
+                    <li><i class="fas fa-check"></i>Ethik, Fairness & Vertrauen</li>
+                    <li><i class="fas fa-check"></i>Skalierung & HR-Ökosystem</li>
+                    <li><i class="fas fa-check"></i>Kontinuierliches Lernen & Anpassung</li>
+                </ul>
+                
+                <div class="workflow-preview">
+                    <h4>7-Schritte-Workflow:</h4>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <strong>1. Vision</strong><br>
+                            Strategische Verankerung
+                        </div>
+                        <div class="workflow-step">
+                            <strong>2. Wertschöpfung</strong><br>
+                            Schlüsselfelder definieren
+                        </div>
+                        <div class="workflow-step">
+                            <strong>3. Datenbasis</strong><br>
+                            Infrastruktur aufbauen
+                        </div>
+                        <div class="workflow-step">
+                            <strong>4. Organisation</strong><br>
+                            Rollen transformieren
+                        </div>
+                        <div class="workflow-step">
+                            <strong>5. Ethik</strong><br>
+                            Fairness & Vertrauen
+                        </div>
+                        <div class="workflow-step">
+                            <strong>6. Skalierung</strong><br>
+                            HR-Ökosystem nutzen
+                        </div>
+                        <div class="workflow-step">
+                            <strong>7. Lernen</strong><br>
+                            Kontinuierliche Anpassung
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-cta">
+                    <span class="cta-text">HR-Strategie entwickeln</span>
+                    <i class="fas fa-arrow-right cta-arrow"></i>
+                </div>
+            </div>
+
+            <!-- Organisationsentwicklung -->
+            <div class="service-card" onclick="window.location.href='organisationsentwicklung-workflow.html'">
+                <div class="service-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Organisationsentwicklung</h3>
+                <p>Gestalten Sie Ihre Organisation für die Zukunft. Agile Strukturen, kollaborative Kulturen und nachhaltige Entwicklungsprozesse für maximale Performance und Mitarbeiterengagement.</p>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i>Organisationsdiagnose & Assessment</li>
+                    <li><i class="fas fa-check"></i>Agile Transformation</li>
+                    <li><i class="fas fa-check"></i>Kultur- & Werteentwicklung</li>
+                    <li><i class="fas fa-check"></i>Leadership Development</li>
+                    <li><i class="fas fa-check"></i>Team-Entwicklung</li>
+                    <li><i class="fas fa-check"></i>Change Readiness</li>
+                    <li><i class="fas fa-check"></i>Nachhaltige Implementierung</li>
+                </ul>
+                
+                <div class="workflow-preview">
+                    <h4>7-Schritte-Workflow:</h4>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <strong>1. Diagnose</strong><br>
+                            Organisations-Assessment
+                        </div>
+                        <div class="workflow-step">
+                            <strong>2. Vision</strong><br>
+                            Zukunftsbild entwickeln
+                        </div>
+                        <div class="workflow-step">
+                            <strong>3. Struktur</strong><br>
+                            Agile Organisation
+                        </div>
+                        <div class="workflow-step">
+                            <strong>4. Kultur</strong><br>
+                            Werte & Verhalten
+                        </div>
+                        <div class="workflow-step">
+                            <strong>5. Leadership</strong><br>
+                            Führung entwickeln
+                        </div>
+                        <div class="workflow-step">
+                            <strong>6. Teams</strong><br>
+                            Kollaboration stärken
+                        </div>
+                        <div class="workflow-step">
+                            <strong>7. Nachhaltigkeit</strong><br>
+                            Kontinuierliche Entwicklung
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-cta">
+                    <span class="cta-text">Organisation entwickeln</span>
+                    <i class="fas fa-arrow-right cta-arrow"></i>
+                </div>
+            </div>
+
+            <!-- Change Management -->
+            <div class="service-card" onclick="window.location.href='change-management-workflow.html'">
+                <div class="service-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Change Management</h3>
+                <p>Führen Sie erfolgreiche Transformationen durch. Systematische Veränderungsprozesse, Stakeholder-Management und nachhaltige Implementierung für dauerhaften Erfolg.</p>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i>Change Readiness Assessment</li>
+                    <li><i class="fas fa-check"></i>Stakeholder-Analyse</li>
+                    <li><i class="fas fa-check"></i>Kommunikationsstrategie</li>
+                    <li><i class="fas fa-check"></i>Widerstandsmanagement</li>
+                    <li><i class="fas fa-check"></i>Training & Development</li>
+                    <li><i class="fas fa-check"></i>Monitoring & Evaluation</li>
+                    <li><i class="fas fa-check"></i>Nachhaltige Verankerung</li>
+                </ul>
+                
+                <div class="workflow-preview">
+                    <h4>7-Schritte-Workflow:</h4>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <strong>1. Assessment</strong><br>
+                            Change Readiness
+                        </div>
+                        <div class="workflow-step">
+                            <strong>2. Stakeholder</strong><br>
+                            Analyse & Mapping
+                        </div>
+                        <div class="workflow-step">
+                            <strong>3. Kommunikation</strong><br>
+                            Strategie entwickeln
+                        </div>
+                        <div class="workflow-step">
+                            <strong>4. Widerstand</strong><br>
+                            Management & Lösung
+                        </div>
+                        <div class="workflow-step">
+                            <strong>5. Training</strong><br>
+                            Kompetenzen entwickeln
+                        </div>
+                        <div class="workflow-step">
+                            <strong>6. Monitoring</strong><br>
+                            Fortschritt & Evaluation
+                        </div>
+                        <div class="workflow-step">
+                            <strong>7. Verankerung</strong><br>
+                            Nachhaltige Implementierung
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-cta">
+                    <span class="cta-text">Change Management starten</span>
+                    <i class="fas fa-arrow-right cta-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR-Transformation & Organisationsentwicklung</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="hr-strategie-workflow.html">HR-Strategieentwicklung</a></li>
+                        <li><a href="organisationsentwicklung-workflow.html">Organisationsentwicklung</a></li>
+                        <li><a href="change-management-workflow.html">Change Management</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <p>E-Mail: info@manuel-weiss.com</p>
+                    <p>Telefon: +49 (0) 123 456 789</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
