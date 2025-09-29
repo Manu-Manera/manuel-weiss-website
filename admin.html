@@ -4400,25 +4400,25 @@
                         </h3>
                         
                         <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('standard')">
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('standard')">
                                 <i class="fas fa-upload" style="font-size: 2rem; color: #6366f1; margin-bottom: 0.5rem;"></i>
                                 <h4 style="margin: 0.5rem 0; color: #333;">Standard Upload</h4>
                                 <p style="margin: 0; color: #666; font-size: 0.9rem;">Normale Datei-Uploads</p>
                             </div>
                             
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('bulk')">
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('bulk')">
                                 <i class="fas fa-layer-group" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
                                 <h4 style="margin: 0.5rem 0; color: #333;">Bulk Upload</h4>
                                 <p style="margin: 0; color: #666; font-size: 0.9rem;">Mehrere Dateien gleichzeitig</p>
                             </div>
                             
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('chunked')">
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('chunked')">
                                 <i class="fas fa-puzzle-piece" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
                                 <h4 style="margin: 0.5rem 0; color: #333;">Chunked Upload</h4>
                                 <p style="margin: 0; color: #666; font-size: 0.9rem;">Große Dateien in Chunks</p>
                             </div>
                             
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="showUploadMethod('direct')">
+                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('direct')">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 0.5rem;"></i>
                                 <h4 style="margin: 0.5rem 0; color: #333;">Direct Upload</h4>
                                 <p style="margin: 0; color: #666; font-size: 0.9rem;">Direkter S3-Upload</p>
@@ -4436,11 +4436,11 @@
                     
                     <div class="section-toolbar">
                         <div class="toolbar-left">
-                            <button class="btn btn-primary" data-action="open-media-upload">
+                            <button class="btn btn-primary" data-action="open-media-upload" onclick="triggerSmartMediaUpload()">
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 Dateien hochladen
                             </button>
-                            <button class="btn btn-outline" data-action="create-folder">
+                            <button class="btn btn-outline" data-action="create-folder" onclick="triggerSmartFolderCreation()">
                                 <i class="fas fa-folder-plus"></i>
                                 Ordner erstellen
                             </button>
@@ -4510,7 +4510,7 @@
                                     <img id="applicationPhotoPreview" src="manuel-weiss-photo.svg" alt="Bewerbungsbild">
                                 </div>
                                 <input type="file" id="portraitUpload" accept="image/*" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('portrait', file))">
-                                <button onclick="document.getElementById('portraitUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartPortraitUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Portrait hochladen
                                 </button>
                                 <div id="portrait-documents-list" class="documents-list"></div>
@@ -4522,7 +4522,7 @@
                                     <p id="cvFileName">Manuel_Weiss_CV.pdf</p>
                                 </div>
                                 <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('cv', file))">
-                                <button onclick="document.getElementById('cvUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartCVUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Lebenslauf hochladen
                                 </button>
                                 <div id="cv-documents-list" class="documents-list"></div>
@@ -4534,7 +4534,7 @@
                                     <p id="certificatesFileName">Zugnisse.pdf</p>
                                 </div>
                                 <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('certificates', file))">
-                                <button onclick="document.getElementById('certificatesUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartCertificatesUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Zeugnisse hochladen
                                 </button>
                                 <div id="certificates-documents-list" class="documents-list"></div>
@@ -4546,7 +4546,7 @@
                                     <p>Weiterbildungszertifikate</p>
                                 </div>
                                 <input type="file" id="certificationsUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('certifications', file))">
-                                <button onclick="document.getElementById('certificationsUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartCertificationsUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Zertifikate hochladen
                                 </button>
                                 <div id="certifications-documents-list" class="documents-list"></div>
@@ -4558,7 +4558,7 @@
                                     <p>Frühere Anschreiben</p>
                                 </div>
                                 <input type="file" id="coverLettersUpload" accept=".pdf,.doc,.docx,.txt" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('coverLetters', file))">
-                                <button onclick="document.getElementById('coverLettersUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartCoverLettersUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Anschreiben hochladen
                                 </button>
                                 <div id="coverLetters-documents-list" class="documents-list"></div>
@@ -4570,7 +4570,7 @@
                                     <p>Komplette Bewerbungsmappen</p>
                                 </div>
                                 <input type="file" id="fullApplicationsUpload" accept=".pdf,.zip,.rar" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('fullApplications', file))">
-                                <button onclick="document.getElementById('fullApplicationsUpload').click()" class="btn btn-outline">
+                                <button onclick="triggerSmartFullApplicationsUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Bewerbungsmappe hochladen
                                 </button>
                                 <div id="fullApplications-documents-list" class="documents-list"></div>
@@ -11365,6 +11365,346 @@ Bitte antworte im folgenden JSON-Format:
         
         // Make debug function globally available
         window.debugBewerbungsunterlagenSystem = debugBewerbungsunterlagenSystem;
+        
+        // 🚀 SMART MEDIA MANAGEMENT BUTTONS
+        window.triggerSmartMediaUpload = function() {
+            console.log('🚀 Triggering Smart Media Upload...');
+            
+            // Check if Smart API is available
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for media upload');
+                const fileInput = document.getElementById('smart-file-input');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Smart file input not found');
+                    showSmartMediaMessage('Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying upload');
+                    triggerSmartMediaUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartFolderCreation = function() {
+            console.log('🚀 Triggering Smart Folder Creation...');
+            
+            const folderName = prompt('Ordner-Name eingeben:');
+            if (!folderName) return;
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for folder creation');
+                // Use Smart API for folder creation
+                window.smartAPI.createFolder(folderName, {
+                    category: 'media',
+                    userId: getCurrentUserId()
+                }).then(result => {
+                    console.log('✅ Smart API folder creation successful:', result);
+                    showSmartMediaMessage(`✅ Ordner "${folderName}" erstellt`, 'success');
+                    // Refresh media categories
+                    if (window.loadMediaCategories) {
+                        window.loadMediaCategories();
+                    }
+                }).catch(error => {
+                    console.error('❌ Smart API folder creation failed:', error);
+                    showSmartMediaMessage(`❌ Ordner-Erstellung fehlgeschlagen: ${error.message}`, 'error');
+                });
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying folder creation');
+                    triggerSmartFolderCreation();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartUploadMethod = function(method) {
+            console.log('🚀 Triggering Smart Upload Method:', method);
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for upload method:', method);
+                showSmartMediaMessage(`✅ ${method} Upload-Methode aktiviert`, 'success');
+                
+                // Configure upload method
+                window.smartAPI.setUploadMethod(method);
+                
+                // Open file input
+                const fileInput = document.getElementById('smart-file-input');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Smart file input not found');
+                    showSmartMediaMessage('Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying upload method');
+                    triggerSmartUploadMethod(method);
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        // 🚀 SMART BEWERBUNGSUNTERLAGEN BUTTONS
+        window.triggerSmartPortraitUpload = function() {
+            console.log('🚀 Triggering Smart Portrait Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for portrait upload');
+                const fileInput = document.getElementById('portraitUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Portrait upload input not found');
+                    showSmartMediaMessage('Portrait-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying portrait upload');
+                    triggerSmartPortraitUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartCVUpload = function() {
+            console.log('🚀 Triggering Smart CV Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for CV upload');
+                const fileInput = document.getElementById('cvUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ CV upload input not found');
+                    showSmartMediaMessage('CV-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying CV upload');
+                    triggerSmartCVUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartCertificatesUpload = function() {
+            console.log('🚀 Triggering Smart Certificates Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for certificates upload');
+                const fileInput = document.getElementById('certificatesUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Certificates upload input not found');
+                    showSmartMediaMessage('Zeugnisse-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying certificates upload');
+                    triggerSmartCertificatesUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartCertificationsUpload = function() {
+            console.log('🚀 Triggering Smart Certifications Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for certifications upload');
+                const fileInput = document.getElementById('certificationsUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Certifications upload input not found');
+                    showSmartMediaMessage('Zertifikate-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying certifications upload');
+                    triggerSmartCertificationsUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartCoverLettersUpload = function() {
+            console.log('🚀 Triggering Smart Cover Letters Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for cover letters upload');
+                const fileInput = document.getElementById('coverLettersUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Cover letters upload input not found');
+                    showSmartMediaMessage('Anschreiben-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying cover letters upload');
+                    triggerSmartCoverLettersUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        window.triggerSmartFullApplicationsUpload = function() {
+            console.log('🚀 Triggering Smart Full Applications Upload...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for full applications upload');
+                const fileInput = document.getElementById('fullApplicationsUpload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ Full applications upload input not found');
+                    showSmartMediaMessage('Bewerbungsmappe-Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showSmartMediaMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying full applications upload');
+                    triggerSmartFullApplicationsUpload();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showSmartMediaMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        // 💬 Show Smart Media Message
+        window.showSmartMediaMessage = function(message, type = 'info') {
+            // Create message element if it doesn't exist
+            let messageDiv = document.getElementById('smart-media-message');
+            if (!messageDiv) {
+                messageDiv = document.createElement('div');
+                messageDiv.id = 'smart-media-message';
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    transition: all 0.3s ease;
+                `;
+                document.body.appendChild(messageDiv);
+            }
+            
+            // Set message content and style
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                info: '#6366f1',
+                warning: '#f59e0b'
+            };
+            
+            messageDiv.style.backgroundColor = colors[type] || colors.info;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        };
         
         // PERSÖNLICHKEITSENTWICKLUNG: Alle aufgeklappten Methoden einklappen
         function collapseAllMethods() {
