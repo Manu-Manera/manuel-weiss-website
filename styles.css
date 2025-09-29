@@ -482,12 +482,13 @@ a:hover {
     display: block;
     font-size: var(--font-size-3xl);
     font-weight: 700;
-    color: var(--primary);
+    color: white;
 }
 
 .stat-label {
     font-size: var(--font-size-sm);
-    color: var(--gray-500);
+    color: white;
+    opacity: 0.9;
 }
 
 /* Buttons */
