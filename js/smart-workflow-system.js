@@ -368,9 +368,9 @@ class SmartWorkflowSystem {
                             <h4>Lebensläufe</h4>
                             <p>PDF oder Word Dokumente</p>
                             <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple hidden 
-                                   onchange="window.fixedHandleDocumentUpload ? window.fixedHandleDocumentUpload('cvUpload', 'cv') : window.smartWorkflow.handleDocumentUpload('cvUpload', 'cv')"
+                                   onchange="handleSmartWorkflowFileChange('cvUpload', 'cv')"
                                    onclick="console.log('📄 CV Upload clicked')">
-                            <button class="btn btn-primary" onclick="document.getElementById('cvUpload').click()">
+                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('cvUpload', 'cv')">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('cv').length} Dateien</div>
@@ -384,8 +384,8 @@ class SmartWorkflowSystem {
                             <h4>Anschreiben</h4>
                             <p>Frühere Bewerbungen</p>
                             <input type="file" id="coverLetterUpload" accept=".pdf,.doc,.docx" multiple hidden 
-                                   onchange="window.fixedHandleDocumentUpload ? window.fixedHandleDocumentUpload('coverLetterUpload', 'coverLetters') : window.smartWorkflow.handleDocumentUpload('coverLetterUpload', 'coverLetters')">
-                            <button class="btn btn-primary" onclick="document.getElementById('coverLetterUpload').click()">
+                                   onchange="handleSmartWorkflowFileChange('coverLetterUpload', 'coverLetters')">
+                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('coverLetterUpload', 'coverLetters')">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('coverLetters').length} Dateien</div>
@@ -399,8 +399,8 @@ class SmartWorkflowSystem {
                             <h4>Zeugnisse & Zertifikate</h4>
                             <p>Nachweise Ihrer Qualifikationen</p>
                             <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" multiple hidden 
-                                   onchange="window.smartWorkflow.handleDocumentUpload('certificateUpload', 'certificates')">
-                            <button class="btn btn-primary" onclick="document.getElementById('certificateUpload').click()">
+                                   onchange="handleSmartWorkflowFileChange('certificateUpload', 'certificates')">
+                            <button class="btn btn-primary" onclick="triggerSmartWorkflowUpload('certificateUpload', 'certificates')">
                                 <i class="fas fa-upload"></i> Hochladen
                             </button>
                             <div class="uploaded-count">${this.getUploadedDocuments('certificates').length} Dateien</div>
@@ -3782,4 +3782,200 @@ window.smartWorkflow.customizeSentence = window.smartWorkflow.customizeSentence.
 window.smartWorkflow.selectAllDocuments = window.smartWorkflow.selectAllDocuments.bind(window.smartWorkflow);
 window.smartWorkflow.startProfileAnalysis = window.smartWorkflow.startProfileAnalysis.bind(window.smartWorkflow);
 window.smartWorkflow.showProfileDetails = window.smartWorkflow.showProfileDetails.bind(window.smartWorkflow);
+
+// 🚀 SMART API WORKFLOW UPLOAD FUNCTIONS
+window.handleSmartWorkflowFileChange = async function(inputId, documentType) {
+    console.log('🚀 Smart Workflow File Change:', inputId, documentType);
+    
+    const input = document.getElementById(inputId);
+    if (!input || !input.files.length) return;
+    
+    const files = Array.from(input.files);
+    console.log(`📄 Processing ${files.length} files for ${documentType}`);
+    
+    // Process each file
+    for (const file of files) {
+        try {
+            await handleSmartWorkflowUpload(file, documentType);
+        } catch (error) {
+            console.error('❌ Upload failed for file:', file.name, error);
+            showWorkflowMessage(`❌ Upload fehlgeschlagen für ${file.name}`, 'error');
+        }
+    }
+    
+    // Clear the input
+    input.value = '';
+};
+
+window.triggerSmartWorkflowUpload = function(inputId, documentType) {
+    console.log('🚀 Triggering Smart Workflow Upload:', inputId, documentType);
+    
+    // Check if Smart API is available
+    if (window.smartAPI) {
+        console.log('✅ Smart API available for workflow upload');
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.click();
+        } else {
+            console.error('❌ Input element not found:', inputId);
+            showWorkflowMessage('Upload-Button nicht gefunden', 'error');
+        }
+    } else {
+        console.log('⚠️ Smart API not available, using fallback');
+        showWorkflowMessage('Smart API System wird geladen...', 'info');
+        
+        // Try to load Smart API System
+        const smartApiScript = document.createElement('script');
+        smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+        smartApiScript.onload = function() {
+            console.log('✅ Smart API System loaded, retrying upload');
+            triggerSmartWorkflowUpload(inputId, documentType);
+        };
+        smartApiScript.onerror = function() {
+            console.error('❌ Failed to load Smart API System');
+            showWorkflowMessage('Smart API System konnte nicht geladen werden', 'error');
+        };
+        document.head.appendChild(smartApiScript);
+    }
+};
+
+// 🚀 Smart API Upload Handler
+window.handleSmartWorkflowUpload = async function(file, documentType) {
+    console.log('🚀 Smart Workflow Upload Handler:', file.name, 'Type:', documentType);
+    
+    try {
+        // Check if Smart API is available
+        if (window.smartAPI) {
+            console.log('✅ Smart API available for workflow upload');
+            
+            // Use Smart API for upload
+            const result = await window.smartAPI.uploadFile(file, {
+                type: documentType,
+                category: 'application',
+                userId: getCurrentUserId(),
+                workflowStep: 3,
+                metadata: {
+                    workflowId: window.smartWorkflow?.workflowId || 'default',
+                    step: 3,
+                    purpose: 'profile-analysis'
+                }
+            });
+            
+            console.log('✅ Smart API upload successful:', result);
+            
+            // Add to local documents
+            addDocumentToWorkflowStorage(file, documentType, result);
+            
+            // Show success message
+            showWorkflowMessage(`✅ ${file.name} erfolgreich hochgeladen`, 'success');
+            
+            // Refresh UI
+            if (window.smartWorkflow) {
+                window.smartWorkflow.refreshWorkflowStep3();
+            }
+            
+            return result;
+            
+        } else {
+            console.log('⚠️ Smart API not available, using fallback');
+            return await handleWorkflowUploadFallback(file, documentType);
+        }
+        
+    } catch (error) {
+        console.error('❌ Smart API upload failed:', error);
+        showWorkflowMessage(`❌ Upload fehlgeschlagen: ${error.message}`, 'error');
+        throw error;
+    }
+};
+
+// 🔄 Fallback Upload Handler
+window.handleWorkflowUploadFallback = async function(file, documentType) {
+    console.log('🔄 Using fallback upload for:', file.name);
+    
+    // Use existing workflow upload method
+    if (window.smartWorkflow && window.smartWorkflow.handleDocumentUpload) {
+        return await window.smartWorkflow.handleDocumentUpload(file, documentType);
+    } else {
+        throw new Error('No upload method available');
+    }
+};
+
+// 👤 Get Current User ID
+window.getCurrentUserId = function() {
+    // Try to get user ID from various sources
+    if (typeof getUser === 'function') {
+        const user = getUser();
+        return user?.userId || 'anonymous';
+    }
+    
+    if (typeof simpleAuth !== 'undefined' && simpleAuth.getUser) {
+        const user = simpleAuth.getUser();
+        return user?.userId || 'anonymous';
+    }
+    
+    return 'anonymous';
+};
+
+// 📄 Add Document to Workflow Storage
+window.addDocumentToWorkflowStorage = function(file, documentType, smartAPIResult) {
+    const document = {
+        id: smartAPIResult.id || Date.now().toString(),
+        name: file.name,
+        type: documentType,
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        smartAPIId: smartAPIResult.id,
+        smartAPIUrl: smartAPIResult.url,
+        storage: 'smart-api',
+        workflowStep: 3
+    };
+    
+    // Add to local storage
+    const documents = JSON.parse(localStorage.getItem('workflowDocuments') || '[]');
+    documents.push(document);
+    localStorage.setItem('workflowDocuments', JSON.stringify(documents));
+    
+    console.log('📄 Document added to workflow storage:', document);
+};
+
+// 💬 Show Workflow Message
+window.showWorkflowMessage = function(message, type = 'info') {
+    // Create message element if it doesn't exist
+    let messageDiv = document.getElementById('workflow-message');
+    if (!messageDiv) {
+        messageDiv = document.createElement('div');
+        messageDiv.id = 'workflow-message';
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        `;
+        document.body.appendChild(messageDiv);
+    }
+    
+    // Set message content and style
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+    
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#6366f1',
+        warning: '#f59e0b'
+    };
+    
+    messageDiv.style.backgroundColor = colors[type] || colors.info;
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 3000);
+};
 window.smartWorkflow.regenerateProfile = window.smartWorkflow.regenerateProfile.bind(window.smartWorkflow);
