@@ -3688,6 +3688,66 @@
                                                 <div>
                                                         <h4 style="color: #555; margin-bottom: 1rem;">Aktionen</h4>
                                                         
+                                                        <!-- 🚀 SMART UPLOAD SYSTEM -->
+                                                        <div class="smart-upload-section" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                                            <h5 style="color: #333; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                                                <i class="fas fa-upload"></i>
+                                                                Smart Upload System
+                                                            </h5>
+                                                            
+                                                            <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
+                                                                <div class="upload-method" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerBewerbungsunterlagenUploadMethod('standard')">
+                                                                    <i class="fas fa-upload" style="font-size: 1.2rem; color: #6366f1; margin-bottom: 0.25rem;"></i>
+                                                                    <p style="margin: 0; font-size: 0.75rem; color: #333;">Standard</p>
+                                                                </div>
+                                                                
+                                                                <div class="upload-method" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerBewerbungsunterlagenUploadMethod('bulk')">
+                                                                    <i class="fas fa-layer-group" style="font-size: 1.2rem; color: #10b981; margin-bottom: 0.25rem;"></i>
+                                                                    <p style="margin: 0; font-size: 0.75rem; color: #333;">Bulk</p>
+                                                                </div>
+                                                                
+                                                                <div class="upload-method" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerBewerbungsunterlagenUploadMethod('chunked')">
+                                                                    <i class="fas fa-puzzle-piece" style="font-size: 1.2rem; color: #f59e0b; margin-bottom: 0.25rem;"></i>
+                                                                    <p style="margin: 0; font-size: 0.75rem; color: #333;">Chunked</p>
+                                                                </div>
+                                                                
+                                                                <div class="upload-method" style="padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerBewerbungsunterlagenUploadMethod('direct')">
+                                                                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.2rem; color: #8b5cf6; margin-bottom: 0.25rem;"></i>
+                                                                    <p style="margin: 0; font-size: 0.75rem; color: #333;">Direct</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- 🚀 CLOUD STORAGE STATUS -->
+                                                        <div class="cloud-storage-status" style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                                <i class="fas fa-cloud" style="font-size: 1.2rem; color: #0ea5e9;"></i>
+                                                                <div style="flex: 1;">
+                                                                    <h5 style="margin: 0; color: #0c4a6e; font-size: 0.9rem;">Cloud-Speicher</h5>
+                                                                    <div style="display: flex; gap: 1rem; margin-top: 0.25rem;">
+                                                                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                                            <i class="fas fa-folder" style="color: #6b7280; font-size: 0.8rem;"></i>
+                                                                            <span style="color: #374151; font-size: 0.8rem;">0 lokal</span>
+                                                                        </div>
+                                                                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                                            <i class="fas fa-cloud" style="color: #0ea5e9; font-size: 0.8rem;"></i>
+                                                                            <span style="color: #374151; font-size: 0.8rem;">0 online</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div style="display: flex; gap: 0.25rem;">
+                                                                    <button onclick="syncBewerbungsunterlagenDocuments()" 
+                                                                            style="padding: 0.25rem 0.5rem; background: #0ea5e9; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+                                                                        <i class="fas fa-sync"></i>
+                                                                    </button>
+                                                                    <button onclick="uploadAllBewerbungsunterlagenDocuments()" 
+                                                                            style="padding: 0.25rem 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+                                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
                                                         <!-- Upload Area -->
                                                         <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; background: #f8f9ff;">
                                                             <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple style="display: none;">
@@ -3697,7 +3757,7 @@
                                                                 <i class="fas fa-cloud-upload-alt"></i> Dateien auswählen
                                                             </button>
                                                             <p style="color: #666; margin: 1rem 0 0 0; font-size: 0.9rem;">PDF, Word, HTML, JPG, PNG</p>
-                                                </div>
+                                                        </div>
                                                         
                                                         <!-- PDF Editor Button -->
                                                         <button data-action="open-p-d-f-editor" class="btn btn-primary" style="width: 100%; padding: 1rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
@@ -11365,6 +11425,289 @@ Bitte antworte im folgenden JSON-Format:
         
         // Make debug function globally available
         window.debugBewerbungsunterlagenSystem = debugBewerbungsunterlagenSystem;
+        
+        // 🚀 BEWERBUNGSUNTERLAGEN TAB SYSTEM
+        window.switchBewerbungsunterlagenTab = function(category) {
+            console.log('🔄 Switching Bewerbungsunterlagen tab to:', category);
+            
+            // Update tab styles
+            document.querySelectorAll('.doc-tab').forEach(tab => {
+                tab.style.background = 'none';
+                tab.style.borderBottom = '2px solid transparent';
+                tab.style.color = '#374151';
+            });
+            
+            const activeTab = document.querySelector(`[data-param="${category}"]`);
+            if (activeTab) {
+                activeTab.style.background = '#6366f1';
+                activeTab.style.borderBottom = '2px solid #6366f1';
+                activeTab.style.color = 'white';
+            }
+            
+            // Filter documents based on category
+            filterBewerbungsunterlagenDocuments(category);
+        };
+        
+        // 🚀 Filter Bewerbungsunterlagen Documents
+        window.filterBewerbungsunterlagenDocuments = function(category) {
+            console.log('🔍 Filtering Bewerbungsunterlagen documents by category:', category);
+            
+            const documentsList = document.getElementById('smart-documentsList');
+            if (!documentsList) return;
+            
+            // Get all document elements
+            const documentElements = documentsList.querySelectorAll('.document-item');
+            
+            documentElements.forEach(element => {
+                const documentType = element.getAttribute('data-type');
+                
+                if (category === 'all' || documentType === category) {
+                    element.style.display = 'block';
+                } else {
+                    element.style.display = 'none';
+                }
+            });
+            
+            // Update document count
+            const visibleDocuments = documentsList.querySelectorAll('.document-item[style*="block"], .document-item:not([style*="none"])');
+            const countElement = document.getElementById('documents-count');
+            if (countElement) {
+                countElement.textContent = visibleDocuments.length;
+            }
+        };
+        
+        // 🚀 Bewerbungsunterlagen Upload Methods
+        window.triggerBewerbungsunterlagenUploadMethod = function(method) {
+            console.log('🚀 Triggering Bewerbungsunterlagen Upload Method:', method);
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for Bewerbungsunterlagen upload method:', method);
+                showBewerbungsunterlagenMessage(`✅ ${method} Upload-Methode aktiviert`, 'success');
+                
+                // Configure upload method
+                window.smartAPI.setUploadMethod(method);
+                
+                // Open file input
+                const fileInput = document.getElementById('doc-upload');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('❌ File input not found');
+                    showBewerbungsunterlagenMessage('Upload-Button nicht gefunden', 'error');
+                }
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showBewerbungsunterlagenMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying upload method');
+                    triggerBewerbungsunterlagenUploadMethod(method);
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showBewerbungsunterlagenMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        // 🚀 Sync Bewerbungsunterlagen Documents
+        window.syncBewerbungsunterlagenDocuments = function() {
+            console.log('🔄 Syncing Bewerbungsunterlagen documents...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for sync');
+                showBewerbungsunterlagenMessage('🔄 Synchronisiere Dokumente...', 'info');
+                
+                // Sync with central media management
+                window.smartAPI.syncDocuments({
+                    category: 'application',
+                    userId: getCurrentUserId()
+                }).then(result => {
+                    console.log('✅ Sync successful:', result);
+                    showBewerbungsunterlagenMessage('✅ Synchronisation erfolgreich', 'success');
+                    
+                    // Reload documents
+                    if (window.loadBewerbungsunterlagenFromCentralMedia) {
+                        window.loadBewerbungsunterlagenFromCentralMedia();
+                    }
+                }).catch(error => {
+                    console.error('❌ Sync failed:', error);
+                    showBewerbungsunterlagenMessage(`❌ Synchronisation fehlgeschlagen: ${error.message}`, 'error');
+                });
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showBewerbungsunterlagenMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying sync');
+                    syncBewerbungsunterlagenDocuments();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showBewerbungsunterlagenMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        // 🚀 Upload All Bewerbungsunterlagen Documents
+        window.uploadAllBewerbungsunterlagenDocuments = function() {
+            console.log('🚀 Uploading all Bewerbungsunterlagen documents...');
+            
+            if (window.smartAPI) {
+                console.log('✅ Smart API available for bulk upload');
+                showBewerbungsunterlagenMessage('🚀 Lade alle Dokumente hoch...', 'info');
+                
+                // Get local documents
+                const localDocuments = JSON.parse(localStorage.getItem('localDocuments') || '[]');
+                
+                if (localDocuments.length === 0) {
+                    showBewerbungsunterlagenMessage('❌ Keine lokalen Dokumente gefunden', 'warning');
+                    return;
+                }
+                
+                // Upload all documents
+                const uploadPromises = localDocuments.map(doc => {
+                    return window.smartAPI.uploadFile(doc.file, {
+                        type: doc.type,
+                        category: 'application',
+                        userId: getCurrentUserId(),
+                        metadata: {
+                            source: 'bulk-upload',
+                            originalName: doc.name
+                        }
+                    });
+                });
+                
+                Promise.all(uploadPromises).then(results => {
+                    console.log('✅ Bulk upload successful:', results);
+                    showBewerbungsunterlagenMessage(`✅ ${results.length} Dokumente erfolgreich hochgeladen`, 'success');
+                    
+                    // Reload documents
+                    if (window.loadBewerbungsunterlagenFromCentralMedia) {
+                        window.loadBewerbungsunterlagenFromCentralMedia();
+                    }
+                }).catch(error => {
+                    console.error('❌ Bulk upload failed:', error);
+                    showBewerbungsunterlagenMessage(`❌ Bulk Upload fehlgeschlagen: ${error.message}`, 'error');
+                });
+            } else {
+                console.log('⚠️ Smart API not available, using fallback');
+                showBewerbungsunterlagenMessage('Smart API System wird geladen...', 'info');
+                
+                // Try to load Smart API System
+                const smartApiScript = document.createElement('script');
+                smartApiScript.src = 'js/smart-api-system.js?v=1.0';
+                smartApiScript.onload = function() {
+                    console.log('✅ Smart API System loaded, retrying bulk upload');
+                    uploadAllBewerbungsunterlagenDocuments();
+                };
+                smartApiScript.onerror = function() {
+                    console.error('❌ Failed to load Smart API System');
+                    showBewerbungsunterlagenMessage('Smart API System konnte nicht geladen werden', 'error');
+                };
+                document.head.appendChild(smartApiScript);
+            }
+        };
+        
+        // 🚀 Open PDF Editor
+        window.openPDFEditor = function() {
+            console.log('📄 Opening PDF Editor...');
+            
+            // Check if PDF editor is available
+            if (window.openPDFEditorWindow) {
+                window.openPDFEditorWindow();
+            } else {
+                showBewerbungsunterlagenMessage('📄 PDF Editor wird geöffnet...', 'info');
+                
+                // Open PDF editor in new window
+                const pdfEditorWindow = window.open('', 'pdf-editor', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                if (pdfEditorWindow) {
+                    pdfEditorWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>PDF Editor</title>
+                                <style>
+                                    body { font-family: Arial, sans-serif; margin: 0; padding: 2rem; background: #f8fafc; }
+                                    .editor-container { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+                                    h1 { color: #1f2937; margin-bottom: 1rem; }
+                                    .upload-area { border: 2px dashed #d1d5db; border-radius: 8px; padding: 3rem; text-align: center; margin: 2rem 0; }
+                                    .upload-area:hover { border-color: #6366f1; background: #f8f9ff; }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="editor-container">
+                                    <h1><i class="fas fa-file-pdf"></i> PDF Editor</h1>
+                                    <div class="upload-area">
+                                        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626; margin-bottom: 1rem;"></i>
+                                        <h3>PDF-Datei hochladen</h3>
+                                        <p>Ziehen Sie eine PDF-Datei hierher oder klicken Sie zum Auswählen</p>
+                                        <input type="file" accept=".pdf" style="display: none;">
+                                        <button onclick="this.previousElementSibling.click()" style="padding: 0.75rem 2rem; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                            <i class="fas fa-upload"></i> PDF auswählen
+                                        </button>
+                                    </div>
+                                    <div id="pdf-content" style="display: none;">
+                                        <h3>PDF-Inhalt wird hier angezeigt</h3>
+                                        <p>PDF-Editor-Funktionalität wird hier implementiert</p>
+                                    </div>
+                                </div>
+                            </body>
+                        </html>
+                    `);
+                } else {
+                    showBewerbungsunterlagenMessage('❌ PDF Editor konnte nicht geöffnet werden', 'error');
+                }
+            }
+        };
+        
+        // 💬 Show Bewerbungsunterlagen Message
+        window.showBewerbungsunterlagenMessage = function(message, type = 'info') {
+            // Create message element if it doesn't exist
+            let messageDiv = document.getElementById('bewerbungsunterlagen-message');
+            if (!messageDiv) {
+                messageDiv = document.createElement('div');
+                messageDiv.id = 'bewerbungsunterlagen-message';
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    transition: all 0.3s ease;
+                `;
+                document.body.appendChild(messageDiv);
+            }
+            
+            // Set message content and style
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                info: '#6366f1',
+                warning: '#f59e0b'
+            };
+            
+            messageDiv.style.backgroundColor = colors[type] || colors.info;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        };
         
         // 🚀 SMART MEDIA MANAGEMENT BUTTONS
         window.triggerSmartMediaUpload = function() {
