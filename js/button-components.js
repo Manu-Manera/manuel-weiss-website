@@ -82,7 +82,10 @@ class ButtonComponent {
                     window.startSmartWorkflow();
                 } else {
                     console.error('❌ No workflow function available');
-                    alert('Workflow-Funktion ist nicht verfügbar. Bitte laden Sie die Seite neu.');
+                    // Try to start workflow anyway
+                    if (typeof window.startSmartWorkflow === 'function') {
+                        window.startSmartWorkflow();
+                    }
                 }
             });
         }

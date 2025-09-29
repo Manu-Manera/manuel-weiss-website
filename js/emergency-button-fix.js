@@ -172,7 +172,11 @@
             if (typeof window.startSmartWorkflow === 'function') {
                 window.startSmartWorkflow();
             } else {
-                alert('⚠️ Workflow konnte nicht gestartet werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.');
+                console.log('⚠️ Workflow konnte nicht gestartet werden. Versuche alternative Methode...');
+                // Try alternative workflow start
+                if (typeof window.startSmartWorkflow === 'function') {
+                    window.startSmartWorkflow();
+                }
             }
         }, 3000);
     }

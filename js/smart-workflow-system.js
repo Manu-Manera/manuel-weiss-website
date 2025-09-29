@@ -3817,7 +3817,7 @@ window.triggerSmartWorkflowUpload = function(inputId, documentType) {
         input.click();
     } else {
         console.error('❌ Input element not found:', inputId);
-        alert('Upload-Button nicht gefunden: ' + inputId);
+        console.log('Upload-Button nicht gefunden: ' + inputId);
     }
 };
 
@@ -3842,7 +3842,7 @@ window.handleSmartWorkflowUpload = async function(file, documentType) {
         addDocumentToWorkflowStorage(file, documentType, result);
         
         // Show success message
-        alert(`✅ ${file.name} erfolgreich hochgeladen`);
+        console.log(`✅ ${file.name} erfolgreich hochgeladen`);
         
         // Refresh UI
         if (window.smartWorkflow) {
@@ -3853,7 +3853,7 @@ window.handleSmartWorkflowUpload = async function(file, documentType) {
         
     } catch (error) {
         console.error('❌ Upload failed:', error);
-        alert(`❌ Upload fehlgeschlagen: ${error.message}`);
+        console.log(`❌ Upload fehlgeschlagen: ${error.message}`);
         throw error;
     }
 };

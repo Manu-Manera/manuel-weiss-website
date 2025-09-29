@@ -1367,7 +1367,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('🚀 WORKFLOW BUTTON CLICKED!');
-                alert('✅ Smart Workflow wird gestartet! Button funktioniert!');
+                // Start workflow without confirmation
+                if (typeof window.startSmartWorkflow === 'function') {
+                    window.startSmartWorkflow();
+                }
             });
         });
         
@@ -1393,7 +1396,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('🚀 EMERGENCY BUTTON CLICKED:', text);
-                    alert('✅ BUTTON FUNKTIONIERT! "' + text + '" wurde geklickt!');
+                    // Start workflow without confirmation
+                    if (typeof window.startSmartWorkflow === 'function') {
+                        window.startSmartWorkflow();
+                    }
                 });
             }
         });

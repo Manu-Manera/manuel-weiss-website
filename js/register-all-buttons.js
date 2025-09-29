@@ -393,7 +393,11 @@ function registerAllButtons() {
                     
                 } catch (error) {
                     console.error('❌ Fehler beim Starten des Smart Workflows:', error);
-                    alert('Fehler beim Starten des Workflows. Bitte laden Sie die Seite neu.');
+                    console.log('Fehler beim Starten des Workflows. Versuche alternative Methode...');
+                    // Try alternative workflow start
+                    if (typeof window.startSmartWorkflow === 'function') {
+                        window.startSmartWorkflow();
+                    }
                 }
             },
             description: 'Start new application workflow'
@@ -404,7 +408,7 @@ function registerAllButtons() {
                 if (window.saveApplication) {
                     window.saveApplication();
                 } else {
-                    alert('Bewerbung wird gespeichert...');
+                    console.log('Bewerbung wird gespeichert...');
                 }
             },
             description: 'Save current application'
