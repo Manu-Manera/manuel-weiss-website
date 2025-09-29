@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI & Digitalisierung - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Strategische Beratung für AI & Digitalisierung in HR. KI-Strategieentwicklung, Prozessautomatisierung und Digital Workplace nach Harvard & MIT Methoden.">
+    <meta name="keywords" content="AI Digitalisierung, KI-Strategie, HR-Automatisierung, Digital Workplace, Harvard, MIT">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for AI & Digitalisierung -->
+    <style>
+        .ai-digitalization-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .ai-digitalization-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .ai-digitalization-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .methodology-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .services-overview {
+            padding: 4rem 0;
+            background: #f8fafc;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .service-card h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .service-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .service-card .icon.strategy { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .service-card .icon.automation { background: linear-gradient(135deg, #10b981, #059669); }
+        .service-card .icon.workplace { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        
+        .service-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .service-features li i {
+            color: #6366f1;
+            font-size: 0.875rem;
+        }
+        
+        .service-cta {
+            margin-top: auto;
+            padding-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #6366f1;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover .service-cta {
+            color: #4f46e5;
+            transform: translateX(4px);
+        }
+        
+        .service-cta i {
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover .service-cta i {
+            transform: translateX(4px);
+        }
+        
+        .methodology-section {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+        
+        .methodology-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 2rem;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .methodology-card h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .methodology-card .university-badge {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .workflow-cta {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .workflow-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .workflow-cta p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-workflow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            color: #6366f1;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-workflow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            color: #4f46e5;
+        }
+        
+        @media (max-width: 768px) {
+            .ai-digitalization-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .methodology-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="ai-digitalization-hero">
+        <div class="container">
+            <div class="methodology-badge">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Harvard & MIT Methodologie</span>
+            </div>
+            <h1>AI & Digitalisierung</h1>
+            <p>Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe. Wissenschaftlich fundiert, praxisorientiert.</p>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="services-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2>Unsere AI & Digitalisierung Services</h2>
+                <p>Drei zentrale Bereiche für erfolgreiche KI-Integration in HR</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card" onclick="window.location.href='ki-strategieentwicklung.html'">
+                    <h3>
+                        <div class="icon strategy">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        KI-Strategieentwicklung
+                    </h3>
+                    <p>Entwickeln Sie eine umfassende KI-Strategie für Ihr HR mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Wertschöpfung und ethische Implementierung.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Vision & strategische Verankerung</li>
+                        <li><i class="fas fa-check"></i> Wertschöpfung & HR-Use Cases</li>
+                        <li><i class="fas fa-check"></i> Daten- und Technologie-Architektur</li>
+                        <li><i class="fas fa-check"></i> Organisation & HR Operating Model</li>
+                        <li><i class="fas fa-check"></i> Ethik, Fairness & Employee Trust</li>
+                        <li><i class="fas fa-check"></i> Skalierung & HR-Ökosystem</li>
+                        <li><i class="fas fa-check"></i> Kontinuierliches Lernen & Anpassung</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text">KI-Strategie entwickeln</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='hr-prozessautomatisierung.html'">
+                    <h3>
+                        <div class="icon automation">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        HR-Prozessautomatisierung
+                    </h3>
+                    <p>KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience. RPA, Self-Service und intelligente Workflows.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> RPA & KI-Integration</li>
+                        <li><i class="fas fa-check"></i> HR-Self-Service</li>
+                        <li><i class="fas fa-check"></i> Prozessoptimierung</li>
+                        <li><i class="fas fa-check"></i> Chatbots & Conversational AI</li>
+                        <li><i class="fas fa-check"></i> Workflow-Automatisierung</li>
+                        <li><i class="fas fa-check"></i> Compliance & Governance</li>
+                        <li><i class="fas fa-check"></i> Citizen Development</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text">Automatisierung starten</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='digital-workplace.html'">
+                    <h3>
+                        <div class="icon workplace">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        Digital Workplace
+                    </h3>
+                    <p>Strategische Gestaltung des digitalen Arbeitsplatzes mit KI-Unterstützung. Produktivität, Innovation und Employee Experience durch intelligente Tools.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> KI-gestützte Kommunikation</li>
+                        <li><i class="fas fa-check"></i> Wissensmanagement & Suche</li>
+                        <li><i class="fas fa-check"></i> Produktivität & Automatisierung</li>
+                        <li><i class="fas fa-check"></i> Employee Experience</li>
+                        <li><i class="fas fa-check"></i> Collaboration Suites</li>
+                        <li><i class="fas fa-check"></i> Generative KI-Tools</li>
+                        <li><i class="fas fa-check"></i> AI Literacy & Training</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text">Digital Workplace gestalten</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology Section -->
+    <section class="methodology-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Wissenschaftlich fundierte Methodologie</h2>
+                <p>Basierend auf bewährten Ansätzen von führenden Universitäten</p>
+            </div>
+            
+            <div class="methodology-grid">
+                <div class="methodology-card">
+                    <h3>
+                        <span class="university-badge">Harvard</span>
+                        Harvard Business School Ansatz
+                    </h3>
+                    <p><strong>Strategische Verankerung:</strong> KI-Integration muss messbar zur Unternehmensstrategie beitragen. Fokus auf klare Werthebel und ROI.</p>
+                    <p><strong>Center of Excellence:</strong> Einrichtung von CoEs für systematische KI-Implementierung und Governance.</p>
+                    <p><strong>Ethik & Fairness:</strong> Starke Betonung von Transparenz, Fairness und Employee Trust in allen KI-Anwendungen.</p>
+                </div>
+                
+                <div class="methodology-card">
+                    <h3>
+                        <span class="university-badge">MIT</span>
+                        MIT Sloan School Ansatz
+                    </h3>
+                    <p><strong>Augmentation statt Substitution:</strong> KI soll Mitarbeitende befähigen, nicht ersetzen. Fokus auf "Humans + AI" Collaboration.</p>
+                    <p><strong>Use Case Factory:</strong> Iterative Entwicklung mit kleinen Piloten, dann Skalierung auf komplexere Anwendungen.</p>
+                    <p><strong>Open Innovation:</strong> Nutzung von Ökosystemen und Partnerschaften für nachhaltige KI-Integration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow CTA -->
+    <section class="workflow-cta">
+        <div class="container">
+            <h2>Starten Sie Ihre AI & Digitalisierung Journey</h2>
+            <p>Wählen Sie den passenden Workflow für Ihre Herausforderungen und entwickeln Sie eine maßgeschneiderte KI-Strategie.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="ki-strategie-workflow.html" class="btn-workflow">
+                    <i class="fas fa-brain"></i>
+                    KI-Strategie Workflow
+                </a>
+                <a href="hr-automation-workflow.html" class="btn-workflow">
+                    <i class="fas fa-cogs"></i>
+                    HR-Automatisierung Workflow
+                </a>
+                <a href="digital-workplace-workflow.html" class="btn-workflow">
+                    <i class="fas fa-laptop"></i>
+                    Digital Workplace Workflow
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR Berater für AI & Transformation</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="ki-strategieentwicklung.html">KI-Strategieentwicklung</a></li>
+                        <li><a href="hr-prozessautomatisierung.html">HR-Prozessautomatisierung</a></li>
+                        <li><a href="digital-workplace.html">Digital Workplace</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <p>manuel.weiss@example.com</p>
+                    <p>+41 79 123 45 67</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
