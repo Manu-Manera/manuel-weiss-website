@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unternehmens-Chatbot Workflow - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for Chatbot Workflow -->
+    <style>
+        .chatbot-workflow-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .workflow-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .workflow-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+        
+        .workflow-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .workflow-progress {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            border-radius: 25px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .progress-step.completed {
+            background: #059669;
+            color: white;
+        }
+        
+        .workflow-step {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-number {
+            background: #10b981;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 0.75rem;
+            width: auto;
+        }
+        
+        .btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #059669;
+        }
+        
+        .btn-success:hover {
+            background: #047857;
+        }
+        
+        .api-endpoint {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .integration-card {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .integration-card h4 {
+            color: #059669;
+            margin-bottom: 1rem;
+        }
+        
+        .download-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-download {
+            background: white;
+            color: #10b981;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download:hover {
+            background: transparent;
+            color: white;
+        }
+        
+        .custom-inputs {
+            margin-top: 1rem;
+        }
+        
+        .custom-input-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .custom-input-item input {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-progress {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .progress-step {
+                margin: 0.25rem 0;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-workflow-container">
+        <!-- Header -->
+        <div class="workflow-header">
+            <h1><i class="fas fa-robot"></i> Unternehmens-Chatbot Workflow</h1>
+            <p>Erstellen Sie einen intelligenten Chatbot mit OpenAI-Integration für Ihr Unternehmen</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="workflow-progress">
+            <div class="progress-step active" id="step1-progress">
+                <i class="fas fa-cog"></i> Konfiguration
+            </div>
+            <div class="progress-step" id="step2-progress">
+                <i class="fas fa-brain"></i> KI-Setup
+            </div>
+            <div class="progress-step" id="step3-progress">
+                <i class="fas fa-plug"></i> API-Integration
+            </div>
+            <div class="progress-step" id="step4-progress">
+                <i class="fas fa-database"></i> Datenquellen
+            </div>
+            <div class="progress-step" id="step5-progress">
+                <i class="fas fa-cogs"></i> Training
+            </div>
+            <div class="progress-step" id="step6-progress">
+                <i class="fas fa-shield-alt"></i> Sicherheit
+            </div>
+            <div class="progress-step" id="step7-progress">
+                <i class="fas fa-download"></i> Deployment
+            </div>
+        </div>
+
+        <!-- Step 1: Konfiguration -->
+        <div class="workflow-step" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Chatbot-Konfiguration</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="companyName">Unternehmensname</label>
+                <input type="text" id="companyName" placeholder="Ihr Unternehmen">
+            </div>
+            
+            <div class="form-group">
+                <label for="chatbotName">Chatbot-Name</label>
+                <input type="text" id="chatbotName" placeholder="z.B. HR-Assistent, Kunden-Support">
+            </div>
+            
+            <div class="form-group">
+                <label for="primaryLanguage">Hauptsprache</label>
+                <select id="primaryLanguage">
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Chatbot-Funktionen</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hrSupport" value="hr-support">
+                        <label for="hrSupport">HR-Support & Fragen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="customerService" value="customer-service">
+                        <label for="customerService">Kundenservice</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="internalHelp" value="internal-help">
+                        <label for="internalHelp">Interne Hilfe & IT-Support</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="salesSupport" value="sales-support">
+                        <label for="salesSupport">Vertriebsunterstützung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="training" value="training">
+                        <label for="training">Schulungen & Onboarding</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="analytics" value="analytics">
+                        <label for="analytics">Analytics & Reporting</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Weitere eigene Angaben</label>
+                <div class="custom-inputs">
+                    <div class="custom-input-item">
+                        <input type="text" id="customInput1" placeholder="Eigene Funktion 1">
+                        <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="custom-input-item">
+                        <input type="text" id="customInput2" placeholder="Eigene Funktion 2">
+                        <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="addCustomInput()">
+                        <i class="fas fa-plus"></i> Weitere Funktion hinzufügen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: KI-Setup -->
+        <div class="workflow-step" id="step2" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">OpenAI-Integration & KI-Setup</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="openaiModel">OpenAI-Modell</label>
+                <select id="openaiModel">
+                    <option value="gpt-4">GPT-4 (Empfohlen für komplexe Aufgaben)</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Kosteneffizient)</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo (Neueste Version)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="temperature">Kreativität (Temperature)</label>
+                <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #6b7280;">
+                    <span>Konservativ (0.0)</span>
+                    <span>Ausgewogen (0.7)</span>
+                    <span>Kreativ (1.0)</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="maxTokens">Maximale Antwortlänge</label>
+                <select id="maxTokens">
+                    <option value="500">Kurz (500 Tokens)</option>
+                    <option value="1000" selected>Mittel (1000 Tokens)</option>
+                    <option value="2000">Lang (2000 Tokens)</option>
+                    <option value="4000">Sehr lang (4000 Tokens)</option>
+                </select>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-key"></i> OpenAI API-Konfiguration</h4>
+                <div class="api-endpoint">
+                    <strong>API-Endpunkt:</strong> https://api.openai.com/v1/chat/completions<br>
+                    <strong>Authentifizierung:</strong> Bearer Token<br>
+                    <strong>Rate Limits:</strong> Konfigurierbar nach Bedarf
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: API-Integration -->
+        <div class="workflow-step" id="step3" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">API-Endpunkte & Integrationen</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Interne Systeme verbinden</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hrSystem" value="hr-system">
+                        <label for="hrSystem">HR-System (SAP SuccessFactors, Workday)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="crmSystem" value="crm-system">
+                        <label for="crmSystem">CRM-System (Salesforce, HubSpot)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="erpSystem" value="erp-system">
+                        <label for="erpSystem">ERP-System (SAP, Oracle)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ticketingSystem" value="ticketing-system">
+                        <label for="ticketingSystem">Ticketing-System (Jira, ServiceNow)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emailSystem" value="email-system">
+                        <label for="emailSystem">E-Mail-System (Exchange, Gmail)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="calendarSystem" value="calendar-system">
+                        <label for="calendarSystem">Kalender-System (Outlook, Google Calendar)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-code"></i> REST API-Endpunkte</h4>
+                <div class="code-block">
+POST /api/chatbot/query
+{
+  "message": "Benutzerfrage",
+  "context": "Zusätzlicher Kontext",
+  "user_id": "Benutzer-ID"
+}
+
+GET /api/chatbot/history/{user_id}
+GET /api/chatbot/analytics
+POST /api/chatbot/feedback
+                </div>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-database"></i> Webhook-Integration</h4>
+                <div class="api-endpoint">
+                    <strong>Webhook-URL:</strong> https://your-domain.com/webhook/chatbot<br>
+                    <strong>Authentifizierung:</strong> JWT Token<br>
+                    <strong>Format:</strong> JSON
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Datenquellen & Lernplattform -->
+        <div class="workflow-step" id="step4" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Zentrale Wissensplattform & Lernsystem</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Unternehmensinterne Wissensquellen</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="companyDocs" value="company-docs">
+                        <label for="companyDocs">Unternehmensdokumente (PDF, Word, PowerPoint)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="faqDatabase" value="faq-database">
+                        <label for="faqDatabase">FAQ-Datenbank & Support-Tickets</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="knowledgeBase" value="knowledge-base">
+                        <label for="knowledgeBase">Wissensdatenbank (Confluence, Notion, SharePoint)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="trainingMaterials" value="training-materials">
+                        <label for="trainingMaterials">Schulungsmaterialien & Onboarding-Docs</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="policies" value="policies">
+                        <label for="policies">Richtlinien, Verfahren & Compliance-Docs</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="meetingNotes" value="meeting-notes">
+                        <label for="meetingNotes">Meeting-Notizen & Entscheidungen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="projectDocs" value="project-docs">
+                        <label for="projectDocs">Projektdokumentation & Lessons Learned</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="technicalDocs" value="technical-docs">
+                        <label for="technicalDocs">Technische Dokumentation & Handbücher</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emailArchives" value="email-archives">
+                        <label for="emailArchives">E-Mail-Archive & Kommunikation</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="externalData" value="external-data">
+                        <label for="externalData">Externe Datenquellen (APIs, News, Marktdaten)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Intelligentes Lernsystem</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="continuousLearning" value="continuous-learning" checked>
+                        <label for="continuousLearning">Kontinuierliches Lernen aus Gesprächen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feedbackLearning" value="feedback-learning" checked>
+                        <label for="feedbackLearning">Lernen aus Benutzer-Feedback</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="patternRecognition" value="pattern-recognition" checked>
+                        <label for="patternRecognition">Mustererkennung in Anfragen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="knowledgeGraph" value="knowledge-graph" checked>
+                        <label for="knowledgeGraph">Wissensgraph-Integration</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="semanticSearch" value="semantic-search" checked>
+                        <label for="semanticSearch">Semantische Suche & Verknüpfungen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="autoCategorization" value="auto-categorization" checked>
+                        <label for="autoCategorization">Automatische Kategorisierung</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Wissensplattform-Features</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="smartSearch" value="smart-search" checked>
+                        <label for="smartSearch">Intelligente Suche über alle Quellen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="knowledgeRecommendations" value="knowledge-recommendations" checked>
+                        <label for="knowledgeRecommendations">Wissensempfehlungen basierend auf Kontext</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="expertIdentification" value="expert-identification" checked>
+                        <label for="expertIdentification">Experten-Identifikation & Weiterleitung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="knowledgeGaps" value="knowledge-gaps" checked>
+                        <label for="knowledgeGaps">Wissenslücken-Erkennung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="contentGeneration" value="content-generation" checked>
+                        <label for="contentGeneration">Automatische Inhaltsgenerierung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="collaborativeLearning" value="collaborative-learning" checked>
+                        <label for="collaborativeLearning">Kollaboratives Lernen & Wissensaustausch</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="dataRefresh">Datenaktualisierung</label>
+                <select id="dataRefresh">
+                    <option value="realtime">Echtzeit</option>
+                    <option value="hourly">Stündlich</option>
+                    <option value="daily" selected>Täglich</option>
+                    <option value="weekly">Wöchentlich</option>
+                </select>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-search"></i> Intelligente Wissensplattform</h4>
+                <div class="code-block">
+# Vektordatenbank-Integration mit Lernfunktionen
+vector_store = VectorStore(
+    provider="pinecone",
+    api_key="your-api-key",
+    index_name="company-knowledge"
+)
+
+# Kontinuierliches Lernen
+class LearningSystem:
+    def __init__(self):
+        self.embeddings = OpenAIEmbeddings()
+        self.knowledge_graph = KnowledgeGraph()
+        self.feedback_system = FeedbackLearning()
+    
+    def learn_from_conversation(self, conversation):
+        # Extrahiere neue Erkenntnisse
+        insights = self.extract_insights(conversation)
+        # Aktualisiere Wissensgraph
+        self.knowledge_graph.update(insights)
+        # Speichere in Vektordatenbank
+        self.vector_store.add_documents(insights)
+    
+    def identify_knowledge_gaps(self, queries):
+        # Erkenne Wissenslücken
+        gaps = self.analyze_query_patterns(queries)
+        return gaps
+                </div>
+            </div>
+
+            <div class="integration-card">
+                <h4><i class="fas fa-brain"></i> KI-Lernsystem</h4>
+                <div class="code-block">
+# Automatisches Lernen aus Unternehmensdaten
+class EnterpriseLearningBot:
+    def __init__(self):
+        self.document_processor = DocumentProcessor()
+        self.semantic_search = SemanticSearch()
+        self.expert_finder = ExpertIdentifier()
+    
+    def process_company_data(self, sources):
+        # Verarbeite alle Unternehmensquellen
+        for source in sources:
+            documents = self.document_processor.extract(source)
+            embeddings = self.embeddings.embed_documents(documents)
+            self.vector_store.add(embeddings)
+    
+    def continuous_learning(self, user_interactions):
+        # Lerne aus jeder Benutzerinteraktion
+        patterns = self.analyze_patterns(user_interactions)
+        self.update_knowledge_base(patterns)
+                </div>
+            </div>
+
+            <div class="integration-card">
+                <h4><i class="fas fa-project-diagram"></i> Wissensgraph-Integration</h4>
+                <div class="code-block">
+# Wissensgraph für semantische Verknüpfungen
+class KnowledgeGraph:
+    def __init__(self):
+        self.graph = nx.Graph()
+        self.entity_extractor = EntityExtractor()
+    
+    def build_from_documents(self, documents):
+        # Erstelle Wissensgraph aus Dokumenten
+        entities = self.entity_extractor.extract(documents)
+        relationships = self.find_relationships(entities)
+        self.graph.add_edges_from(relationships)
+    
+    def find_experts(self, topic):
+        # Finde Experten für ein Thema
+        relevant_nodes = self.graph.neighbors(topic)
+        return self.rank_experts(relevant_nodes)
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Training & Lernsystem -->
+        <div class="workflow-step" id="step5" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Intelligentes Training & Lernsystem</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="trainingData">Unternehmensdaten hochladen</label>
+                <input type="file" id="trainingData" multiple accept=".txt,.pdf,.docx,.csv,.pptx,.xlsx">
+                <small>Unterstützte Formate: TXT, PDF, DOCX, CSV, PPTX, XLSX</small>
+            </div>
+
+            <div class="form-group">
+                <label>Lernmodi aktivieren</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="realTimeLearning" value="real-time-learning" checked>
+                        <label for="realTimeLearning">Echtzeit-Lernen aus Gesprächen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="documentLearning" value="document-learning" checked>
+                        <label for="documentLearning">Automatisches Lernen aus neuen Dokumenten</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="userBehaviorLearning" value="user-behavior-learning" checked>
+                        <label for="userBehaviorLearning">Lernen aus Benutzerverhalten</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feedbackLearning" value="feedback-learning" checked>
+                        <label for="feedbackLearning">Lernen aus explizitem Feedback</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="contextLearning" value="context-learning" checked>
+                        <label for="contextLearning">Kontext-basiertes Lernen</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="collaborativeLearning" value="collaborative-learning" checked>
+                        <label for="collaborativeLearning">Kollaboratives Lernen zwischen Teams</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="personality">Chatbot-Persönlichkeit</label>
+                <select id="personality">
+                    <option value="professional">Professionell & Formal</option>
+                    <option value="friendly">Freundlich & Hilfsbereit</option>
+                    <option value="technical">Technisch & Präzise</option>
+                    <option value="casual">Locker & Ungezwungen</option>
+                    <option value="expert">Experten-ähnlich & Autoritativ</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="responseStyle">Antwortstil & Lernverhalten</label>
+                <textarea id="responseStyle" rows="4" placeholder="z.B. Kurze, präzise Antworten bevorzugen. Immer höflich und professionell. Bei Unsicherheit nachfragen und aus Gesprächen lernen."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="learningFrequency">Lernfrequenz</label>
+                <select id="learningFrequency">
+                    <option value="realtime">Echtzeit (Sofortiges Lernen)</option>
+                    <option value="hourly">Stündlich</option>
+                    <option value="daily" selected>Täglich</option>
+                    <option value="weekly">Wöchentlich</option>
+                </select>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-brain"></i> Intelligentes Lernsystem</h4>
+                <div class="code-block">
+# Kontinuierliches Lernen & Wissensplattform
+class EnterpriseLearningBot:
+    def __init__(self):
+        self.knowledge_base = KnowledgeBase()
+        self.learning_engine = LearningEngine()
+        self.feedback_system = FeedbackSystem()
+    
+    def continuous_learning(self, interactions):
+        # Lerne aus jeder Benutzerinteraktion
+        for interaction in interactions:
+            insights = self.extract_insights(interaction)
+            self.knowledge_base.update(insights)
+            self.learning_engine.adapt(insights)
+    
+    def learn_from_documents(self, documents):
+        # Automatisches Lernen aus neuen Dokumenten
+        processed_docs = self.process_documents(documents)
+        self.knowledge_base.add_documents(processed_docs)
+        self.update_knowledge_graph(processed_docs)
+    
+    def identify_knowledge_gaps(self):
+        # Erkenne Wissenslücken
+        gaps = self.analyze_query_patterns()
+        return self.generate_learning_recommendations(gaps)
+                </div>
+            </div>
+
+            <div class="integration-card">
+                <h4><i class="fas fa-graduation-cap"></i> Adaptive Lernalgorithmen</h4>
+                <div class="code-block">
+# Machine Learning für kontinuierliche Verbesserung
+class AdaptiveLearning:
+    def __init__(self):
+        self.pattern_recognizer = PatternRecognizer()
+        self.semantic_analyzer = SemanticAnalyzer()
+        self.expert_identifier = ExpertIdentifier()
+    
+    def learn_from_feedback(self, feedback_data):
+        # Lerne aus Benutzer-Feedback
+        patterns = self.pattern_recognizer.analyze(feedback_data)
+        self.update_response_strategies(patterns)
+    
+    def collaborative_learning(self, team_interactions):
+        # Kollaboratives Lernen zwischen Teams
+        shared_knowledge = self.extract_shared_insights(team_interactions)
+        self.distribute_knowledge(shared_knowledge)
+    
+    def expert_knowledge_integration(self, expert_inputs):
+        # Integration von Expertenwissen
+        expert_insights = self.process_expert_inputs(expert_inputs)
+        self.knowledge_base.merge_expert_knowledge(expert_insights)
+                </div>
+            </div>
+
+            <div class="integration-card">
+                <h4><i class="fas fa-project-diagram"></i> Wissensgraph & Semantik</h4>
+                <div class="code-block">
+# Wissensgraph für semantische Verknüpfungen
+class KnowledgeGraphLearning:
+    def __init__(self):
+        self.graph = nx.MultiDiGraph()
+        self.entity_extractor = EntityExtractor()
+        self.relationship_finder = RelationshipFinder()
+    
+    def build_semantic_network(self, documents):
+        # Erstelle semantisches Netzwerk
+        entities = self.entity_extractor.extract_all(documents)
+        relationships = self.relationship_finder.find(entities)
+        self.graph.add_edges_from(relationships)
+    
+    def find_knowledge_paths(self, query):
+        # Finde Wissenspfade für komplexe Anfragen
+        relevant_nodes = self.semantic_search(query)
+        paths = self.find_shortest_paths(relevant_nodes)
+        return self.rank_paths_by_relevance(paths)
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Sicherheit -->
+        <div class="workflow-step" id="step6" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Sicherheit & Compliance</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Sicherheitsmaßnahmen</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="authentication" value="authentication" checked>
+                        <label for="authentication">Benutzerauthentifizierung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="encryption" value="encryption" checked>
+                        <label for="encryption">Ende-zu-Ende Verschlüsselung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="auditLog" value="audit-log" checked>
+                        <label for="auditLog">Audit-Logs</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dataRetention" value="data-retention">
+                        <label for="dataRetention">Datenaufbewahrung</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gdprCompliance" value="gdpr-compliance" checked>
+                        <label for="gdprCompliance">DSGVO-Compliance</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="rateLimiting" value="rate-limiting" checked>
+                        <label for="rateLimiting">Rate Limiting</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="accessControl">Zugriffskontrolle</label>
+                <select id="accessControl">
+                    <option value="public">Öffentlich (Alle Mitarbeiter)</option>
+                    <option value="department">Abteilungsweise</option>
+                    <option value="role">Rollenbasiert</option>
+                    <option value="custom">Benutzerdefiniert</option>
+                </select>
+            </div>
+            
+            <div class="integration-card">
+                <h4><i class="fas fa-shield-alt"></i> Sicherheitskonfiguration</h4>
+                <div class="code-block">
+# JWT Authentication
+import jwt
+from datetime import datetime, timedelta
+
+def create_access_token(user_id):
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.utcnow() + timedelta(hours=24)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+# Rate Limiting
+from flask_limiter import Limiter
+limiter = Limiter(
+    app,
+    key_func=lambda: request.remote_addr
+)
+
+@app.route('/api/chatbot/query')
+@limiter.limit("10 per minute")
+def chatbot_query():
+    pass
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7: Deployment -->
+        <div class="workflow-step" id="step7" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">Deployment & Download</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="deploymentType">Deployment-Option</label>
+                <select id="deploymentType">
+                    <option value="docker">Docker Container</option>
+                    <option value="cloud">Cloud Deployment (AWS/Azure/GCP)</option>
+                    <option value="onpremise">On-Premise Server</option>
+                    <option value="serverless">Serverless (Vercel/Netlify)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="domainName">Domain-Name (optional)</label>
+                <input type="text" id="domainName" placeholder="chatbot.yourcompany.com">
+            </div>
+            
+            <div class="download-section">
+                <h3><i class="fas fa-download"></i> Chatbot herunterladen</h3>
+                <p>Ihr personalisierter Chatbot ist bereit! Laden Sie den vollständigen Code herunter und deployen Sie ihn in Ihrer Infrastruktur.</p>
+                
+                <div class="download-buttons">
+                    <a href="#" class="btn-download" onclick="downloadChatbot('zip')">
+                        <i class="fas fa-file-archive"></i> Als ZIP herunterladen
+                    </a>
+                    <a href="#" class="btn-download" onclick="downloadChatbot('docker')">
+                        <i class="fab fa-docker"></i> Docker Image
+                    </a>
+                    <a href="#" class="btn-download" onclick="downloadChatbot('cloud')">
+                        <i class="fas fa-cloud"></i> Cloud Deployment
+                    </a>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h4>Was ist enthalten:</h4>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>Vollständiger Python/Node.js Code</li>
+                        <li>OpenAI Integration</li>
+                        <li>REST API Endpunkte</li>
+                        <li>Intelligentes Lernsystem</li>
+                        <li>Wissensplattform-Integration</li>
+                        <li>Kontinuierliches Lernen</li>
+                        <li>Wissensgraph & Semantik</li>
+                        <li>Experten-Identifikation</li>
+                        <li>Datenbank-Schema</li>
+                        <li>Docker-Konfiguration</li>
+                        <li>Deployment-Skripte</li>
+                        <li>Dokumentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button class="btn btn-success" id="nextBtn" onclick="changeStep(1)">
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+
+        function changeStep(direction) {
+            const prevStep = currentStep;
+            currentStep += direction;
+            
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            
+            if (currentStep !== prevStep) {
+                updateStepDisplay();
+                updateProgress();
+                updateNavigation();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}`).style.display = 'none';
+            }
+            
+            // Show current step
+            document.getElementById(`step${currentStep}`).style.display = 'block';
+        }
+
+        function updateProgress() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const progressStep = document.getElementById(`step${i}-progress`);
+                if (i < currentStep) {
+                    progressStep.classList.remove('active');
+                    progressStep.classList.add('completed');
+                } else if (i === currentStep) {
+                    progressStep.classList.remove('completed');
+                    progressStep.classList.add('active');
+                } else {
+                    progressStep.classList.remove('active', 'completed');
+                }
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (currentStep === totalSteps) {
+                nextBtn.innerHTML = '<i class="fas fa-download"></i> Chatbot generieren';
+                nextBtn.onclick = generateChatbot;
+            } else {
+                nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        function addCustomInput() {
+            const customInputs = document.querySelector('.custom-inputs');
+            const inputCount = customInputs.querySelectorAll('.custom-input-item').length;
+            const newInputId = `customInput${inputCount + 1}`;
+            
+            const newInputItem = document.createElement('div');
+            newInputItem.className = 'custom-input-item';
+            newInputItem.innerHTML = `
+                <input type="text" id="${newInputId}" placeholder="Eigene Funktion ${inputCount + 1}">
+                <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            const addButton = customInputs.querySelector('button');
+            customInputs.insertBefore(newInputItem, addButton);
+        }
+
+        function removeCustomInput(button) {
+            button.parentElement.remove();
+        }
+
+        function generateChatbot() {
+            // Collect all form data
+            const chatbotData = {
+                company: document.getElementById('companyName').value || '',
+                name: document.getElementById('chatbotName').value || '',
+                language: document.getElementById('primaryLanguage').value || 'de',
+                functions: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value),
+                openaiModel: document.getElementById('openaiModel').value || 'gpt-4',
+                temperature: document.getElementById('temperature').value || 0.7,
+                maxTokens: document.getElementById('maxTokens').value || 1000,
+                integrations: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value),
+                dataSources: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value),
+                personality: document.getElementById('personality').value || 'professional',
+                responseStyle: document.getElementById('responseStyle').value || '',
+                security: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value),
+                deployment: document.getElementById('deploymentType').value || 'docker',
+                domain: document.getElementById('domainName').value || '',
+                customInputs: Array.from(document.querySelectorAll('.custom-input-item input'))
+                    .map(input => input.value)
+                    .filter(value => value.trim() !== '')
+            };
+            
+            console.log('Chatbot Data:', chatbotData);
+            alert('✅ Chatbot-Konfiguration gespeichert! Sie können jetzt den Code herunterladen.');
+        }
+
+        function downloadChatbot(format) {
+            const chatbotData = {
+                company: document.getElementById('companyName').value || 'Unbekanntes Unternehmen',
+                name: document.getElementById('chatbotName').value || 'Unternehmens-Chatbot',
+                language: document.getElementById('primaryLanguage').value || 'de',
+                functions: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value),
+                openaiModel: document.getElementById('openaiModel').value || 'gpt-4',
+                temperature: document.getElementById('temperature').value || 0.7,
+                maxTokens: document.getElementById('maxTokens').value || 1000,
+                personality: document.getElementById('personality').value || 'professional',
+                deployment: document.getElementById('deploymentType').value || 'docker',
+                domain: document.getElementById('domainName').value || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Generate chatbot code based on format
+            let content = '';
+            let filename = '';
+            let mimeType = '';
+            
+            if (format === 'zip') {
+                // Create a comprehensive chatbot package
+                content = generateChatbotPackage(chatbotData);
+                filename = `chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.zip`;
+                mimeType = 'application/zip';
+            } else if (format === 'docker') {
+                content = generateDockerFiles(chatbotData);
+                filename = `docker-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.tar.gz`;
+                mimeType = 'application/gzip';
+            } else if (format === 'cloud') {
+                content = generateCloudDeployment(chatbotData);
+                filename = `cloud-chatbot-${chatbotData.company.toLowerCase().replace(/\s+/g, '-')}.yaml`;
+                mimeType = 'application/yaml';
+            }
+            
+            // Download the file
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ ${format.toUpperCase()} Chatbot-Package heruntergeladen!`);
+        }
+
+        function generateChatbotPackage(data) {
+            return `# Intelligenter Unternehmens-Chatbot für ${data.company}
+
+## Konfiguration
+- Name: ${data.name}
+- Sprache: ${data.language}
+- OpenAI Modell: ${data.openaiModel}
+- Temperatur: ${data.temperature}
+- Max Tokens: ${data.maxTokens}
+- Persönlichkeit: ${data.personality}
+
+## Lernsystem & Wissensplattform
+- Kontinuierliches Lernen: Aktiviert
+- Wissensgraph-Integration: Aktiviert
+- Experten-Identifikation: Aktiviert
+- Semantische Suche: Aktiviert
+- Kollaboratives Lernen: Aktiviert
+
+## Installation
+1. Python 3.8+ installieren
+2. Abhängigkeiten installieren: pip install -r requirements.txt
+3. OpenAI API Key in .env setzen
+4. Wissensdatenbank konfigurieren
+5. Server starten: python app.py
+
+## API Endpunkte
+- POST /api/chatbot/query - Chatbot-Anfrage
+- GET /api/chatbot/history - Verlauf
+- POST /api/chatbot/feedback - Feedback
+- GET /api/chatbot/experts - Experten finden
+- POST /api/chatbot/learn - Manuelles Lernen
+- GET /api/chatbot/knowledge - Wissensbasis abfragen
+
+## Lernfunktionen
+- Automatisches Lernen aus Gesprächen
+- Dokumenten-Integration
+- Wissenslücken-Erkennung
+- Experten-Empfehlungen
+- Semantische Verknüpfungen
+
+## Deployment
+- Docker: docker build -t chatbot .
+- Cloud: Siehe cloud-deployment.yaml
+- On-Premise: Siehe deployment-guide.md
+
+Erstellt am: ${data.timestamp}`;
+        }
+
+        function generateDockerFiles(data) {
+            return `FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["python", "app.py"]
+
+# Docker Compose
+version: '3.8'
+services:
+  chatbot:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=\${OPENAI_API_KEY}
+      - DATABASE_URL=\${DATABASE_URL}
+    volumes:
+      - ./data:/app/data`;
+        }
+
+        function generateCloudDeployment(data) {
+            return `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-${data.company.toLowerCase().replace(/\s+/g, '-')}
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chatbot
+  template:
+    metadata:
+      labels:
+        app: chatbot
+    spec:
+      containers:
+      - name: chatbot
+        image: chatbot:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-secrets
+              key: openai-api-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot-service
+spec:
+  selector:
+    app: chatbot
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: LoadBalancer`;
+        }
+
+        // Initialize
+        updateStepDisplay();
+        updateProgress();
+        updateNavigation();
+    </script>
+</body>
+</html>

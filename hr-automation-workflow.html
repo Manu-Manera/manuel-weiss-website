@@ -372,6 +372,73 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
         }
+
+        .chatbot-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .chatbot-section h3 {
+            color: #059669;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .chatbot-info p {
+            color: #374151;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .chatbot-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #10b981;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .feature-item i {
+            color: #10b981;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-item span {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .chatbot-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .chatbot-actions .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
         
         .custom-inputs {
             background: #f8fafc;
@@ -1071,20 +1138,57 @@
                 </div>
             </div>
             
-            <div class="export-section">
-                <h3><i class="fas fa-download"></i> Zusammenfassung herunterladen</h3>
-                <div class="export-buttons">
-                    <button class="btn btn-pdf" onclick="exportWorkflowToPDF(getWorkflowData(), 'HR-Automatisierung')">
-                        <i class="fas fa-file-pdf"></i> Als PDF
-                    </button>
-                    <button class="btn btn-excel" onclick="exportWorkflowToExcel(getWorkflowData(), 'HR-Automatisierung')">
-                        <i class="fas fa-file-excel"></i> Als Excel
-                    </button>
-                    <button class="btn btn-word" onclick="exportWorkflowToWord(getWorkflowData(), 'HR-Automatisierung')">
-                        <i class="fas fa-file-word"></i> Als Word
-                    </button>
+        <div class="export-section">
+            <h3><i class="fas fa-download"></i> Zusammenfassung herunterladen</h3>
+            <div class="export-buttons">
+                <button class="btn btn-pdf" onclick="exportWorkflowToPDF(getWorkflowData(), 'HR-Automatisierung')">
+                    <i class="fas fa-file-pdf"></i> Als PDF
+                </button>
+                <button class="btn btn-excel" onclick="exportWorkflowToExcel(getWorkflowData(), 'HR-Automatisierung')">
+                    <i class="fas fa-file-excel"></i> Als Excel
+                </button>
+                <button class="btn btn-word" onclick="exportWorkflowToWord(getWorkflowData(), 'HR-Automatisierung')">
+                    <i class="fas fa-file-word"></i> Als Word
+                </button>
+            </div>
+        </div>
+
+        <div class="chatbot-section">
+            <h3><i class="fas fa-robot"></i> Unternehmens-Chatbot erstellen</h3>
+            <div class="chatbot-info">
+                <p>Erstellen Sie einen intelligenten Chatbot mit OpenAI-Integration für Ihr Unternehmen. Der Chatbot kann mit internen Systemen verbunden werden und bietet offene API-Endpunkte für die Integration in bestehende Anwendungen.</p>
+                <div class="chatbot-features">
+                    <div class="feature-item">
+                        <i class="fas fa-brain"></i>
+                        <span>OpenAI GPT-4 Integration</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-plug"></i>
+                        <span>REST API Endpunkte</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-database"></i>
+                        <span>System-Integration</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Sicherheit & Compliance</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-download"></i>
+                        <span>Download & Deployment</span>
+                    </div>
                 </div>
             </div>
+            <div class="chatbot-actions">
+                <button class="btn btn-primary" onclick="startChatbotWorkflow()">
+                    <i class="fas fa-robot"></i> Chatbot-Workflow starten
+                </button>
+                <button class="btn btn-secondary" onclick="viewChatbotDemo()">
+                    <i class="fas fa-eye"></i> Demo ansehen
+                </button>
+            </div>
+        </div>
             
             <div class="step-content">
                 <div class="summary-card">
@@ -1264,9 +1368,19 @@
             customInputs.insertBefore(newInputItem, addButton);
         }
         
-        function removeCustomInput(button) {
-            button.parentElement.remove();
-        }
+    function removeCustomInput(button) {
+        button.parentElement.remove();
+    }
+
+    function startChatbotWorkflow() {
+        console.log('🤖 Starting Chatbot Workflow...');
+        window.location.href = 'chatbot-workflow.html';
+    }
+
+    function viewChatbotDemo() {
+        console.log('👁️ Viewing Chatbot Demo...');
+        alert('🤖 Chatbot-Demo wird geladen...\n\nDer Chatbot kann:\n• OpenAI GPT-4 Integration\n• REST API Endpunkte\n• System-Integration (HR, CRM, ERP)\n• Sicherheit & Compliance\n• Download & Deployment\n\nKlicken Sie auf "Chatbot-Workflow starten" für die vollständige Konfiguration!');
+    }
         
         // Initialize
         updateProgress();
