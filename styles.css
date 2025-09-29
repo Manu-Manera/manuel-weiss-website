@@ -750,6 +750,9 @@ a:hover {
     flex-direction: column;
     height: 100%;
     min-height: 400px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
 .service-card:hover {
@@ -771,6 +774,30 @@ a:hover {
 .service-card:hover .btn-primary {
     background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%);
     box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+.service-cta {
+    margin-top: auto;
+    padding-top: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--primary);
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.service-card:hover .service-cta {
+    color: var(--primary-dark);
+    transform: translateX(4px);
+}
+
+.service-cta i {
+    transition: transform var(--transition-base);
+}
+
+.service-card:hover .service-cta i {
+    transform: translateX(4px);
 }
 
 .service-icon {
