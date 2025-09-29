@@ -551,7 +551,6 @@
             width: calc(100vw - 70px) !important;
         }
         
-        /* MODERN FLOATING ACTION BUTTON - BESSERE SICHTBARKEIT */
         .global-sidebar-toggle {
             position: fixed;
             bottom: 30px;
@@ -1978,10 +1977,6 @@
     <div class="admin-container">
         <!-- Sidebar -->
         <!-- Modern Floating Action Button - IMMER SICHTBAR -->
-        <button class="global-sidebar-toggle" id="globalSidebarToggle" title="Sidebar ein-/ausklappen">
-            <i class="fas fa-bars"></i>
-            <span class="button-label">Menü</span>
-        </button>
         
         
         <aside class="sidebar admin-sidebar" id="adminSidebar">
@@ -3720,16 +3715,6 @@
                                                             <i class="fas fa-file-pdf"></i> PDF Editor öffnen
                                                     </button>
                                                         
-                                                        <!-- Quick Actions -->
-                                                        <div style="background: #f8fafc; padding: 1rem; border-radius: 6px;">
-                                                            <h5 style="margin-bottom: 0.75rem;">Schnellaktionen</h5>
-                                                            <button data-action="merge-documents" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
-                                                                <i class="fas fa-object-group"></i> Dokumente zusammenführen
-                                                            </button>
-                                                            <button data-action="create-template" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                                                <i class="fas fa-save"></i> Als Vorlage speichern
-                                                    </button>
-                                                </div>
                                             </div>
                                                 </div>
 
@@ -6997,7 +6982,6 @@
                 });
             });
             
-            // 2. Quick Actions Event Listener
             
             // 3. Sidebar Toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -11335,6 +11319,239 @@ Bitte antworte im folgenden JSON-Format:
         function hasPendingSettings() {
             const pendingChanges = localStorage.getItem('settings_pending_changes');
             return pendingChanges === 'true';
+        }
+        
+        // Initialize Hero Settings
+        function initializeHeroSettings() {
+            console.log('🏠 Initializing Hero Settings...');
+            
+            // Load existing hero settings
+            loadHeroSettings();
+            
+            // Setup event listeners
+            setupHeroEventListeners();
+            
+            console.log('✅ Hero Settings initialized');
+        }
+        
+        function loadHeroSettings() {
+            const heroSettings = JSON.parse(localStorage.getItem('heroSettings') || '{}');
+            
+            // Load form values
+            const titleInput = document.getElementById('hero-title');
+            const subtitleInput = document.getElementById('hero-subtitle');
+            const bgColor1Input = document.getElementById('hero-bg-color1');
+            const bgColor2Input = document.getElementById('hero-bg-color2');
+            const textColorInput = document.getElementById('hero-text-color');
+            const buttonTextInput = document.getElementById('hero-button-text');
+            const buttonLinkInput = document.getElementById('hero-button-link');
+            const animationsInput = document.getElementById('hero-animations');
+            const glassEffectInput = document.getElementById('hero-glass-effect');
+            
+            if (titleInput) titleInput.value = heroSettings.title || '';
+            if (subtitleInput) subtitleInput.value = heroSettings.subtitle || '';
+            if (bgColor1Input) bgColor1Input.value = heroSettings.bgColor1 || '#667eea';
+            if (bgColor2Input) bgColor2Input.value = heroSettings.bgColor2 || '#764ba2';
+            if (textColorInput) textColorInput.value = heroSettings.textColor || '#ffffff';
+            if (buttonTextInput) buttonTextInput.value = heroSettings.buttonText || '';
+            if (buttonLinkInput) buttonLinkInput.value = heroSettings.buttonLink || '';
+            if (animationsInput) animationsInput.checked = heroSettings.animations !== false;
+            if (glassEffectInput) glassEffectInput.checked = heroSettings.glassEffect !== false;
+            
+            // Load image preview if exists
+            if (heroSettings.imageUrl) {
+                showImagePreview(heroSettings.imageUrl);
+            }
+        }
+        
+        function setupHeroEventListeners() {
+            // Save hero settings
+            const saveBtn = document.querySelector('[data-action="save-hero-settings"]');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveHeroSettings);
+            }
+            
+            // Preview hero
+            const previewBtn = document.querySelector('[data-action="preview-hero"]');
+            if (previewBtn) {
+                previewBtn.addEventListener('click', previewHero);
+            }
+            
+            // Reset hero
+            const resetBtn = document.querySelector('[data-action="reset-hero"]');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', resetHero);
+            }
+            
+            // Image upload
+            const imageInput = document.getElementById('hero-image');
+            if (imageInput) {
+                imageInput.addEventListener('change', handleImageUpload);
+            }
+            
+            // Color changes
+            const bgColor1Input = document.getElementById('hero-bg-color1');
+            const bgColor2Input = document.getElementById('hero-bg-color2');
+            const textColorInput = document.getElementById('hero-text-color');
+            
+            if (bgColor1Input) bgColor1Input.addEventListener('change', updateHeroPreview);
+            if (bgColor2Input) bgColor2Input.addEventListener('change', updateHeroPreview);
+            if (textColorInput) textColorInput.addEventListener('change', updateHeroPreview);
+        }
+        
+        function saveHeroSettings() {
+            const heroSettings = {
+                title: document.getElementById('hero-title').value,
+                subtitle: document.getElementById('hero-subtitle').value,
+                bgColor1: document.getElementById('hero-bg-color1').value,
+                bgColor2: document.getElementById('hero-bg-color2').value,
+                textColor: document.getElementById('hero-text-color').value,
+                buttonText: document.getElementById('hero-button-text').value,
+                buttonLink: document.getElementById('hero-button-link').value,
+                animations: document.getElementById('hero-animations').checked,
+                glassEffect: document.getElementById('hero-glass-effect').checked,
+                imageUrl: document.getElementById('hero-image-preview').querySelector('img')?.src || ''
+            };
+            
+            localStorage.setItem('heroSettings', JSON.stringify(heroSettings));
+            
+            // Apply to main website
+            applyHeroSettings(heroSettings);
+            
+            showMessage('✅ Hero-Einstellungen gespeichert!', 'success');
+        }
+        
+        function applyHeroSettings(settings) {
+            // Apply to main website (this would need to be implemented in the main website)
+            console.log('🎨 Applying hero settings:', settings);
+            
+            // Send to main website via postMessage or direct manipulation
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'UPDATE_HERO',
+                    settings: settings
+                }, '*');
+            }
+        }
+        
+        function previewHero() {
+            const settings = {
+                title: document.getElementById('hero-title').value,
+                subtitle: document.getElementById('hero-subtitle').value,
+                bgColor1: document.getElementById('hero-bg-color1').value,
+                bgColor2: document.getElementById('hero-bg-color2').value,
+                textColor: document.getElementById('hero-text-color').value,
+                buttonText: document.getElementById('hero-button-text').value,
+                buttonLink: document.getElementById('hero-button-link').value,
+                animations: document.getElementById('hero-animations').checked,
+                glassEffect: document.getElementById('hero-glass-effect').checked
+            };
+            
+            // Open preview window
+            const previewWindow = window.open('', 'hero-preview', 'width=1200,height=800');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Hero Preview</title>
+                    <style>
+                        body { margin: 0; font-family: Inter, sans-serif; }
+                        .hero-preview {
+                            background: linear-gradient(135deg, ${settings.bgColor1} 0%, ${settings.bgColor2} 100%);
+                            color: ${settings.textColor};
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        .hero-preview::before {
+                            content: '';
+                            position: absolute;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                                       radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+                            z-index: 1;
+                        }
+                        .hero-content {
+                            position: relative;
+                            z-index: 2;
+                            max-width: 800px;
+                            padding: 2rem;
+                        }
+                        .hero-title {
+                            font-size: 3rem;
+                            font-weight: 700;
+                            margin-bottom: 1rem;
+                            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                        }
+                        .hero-subtitle {
+                            font-size: 1.2rem;
+                            margin-bottom: 2rem;
+                            opacity: 0.9;
+                        }
+                        .hero-button {
+                            background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            color: ${settings.textColor};
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            text-decoration: none;
+                            display: inline-block;
+                            backdrop-filter: blur(10px);
+                            transition: all 0.3s ease;
+                        }
+                        .hero-button:hover {
+                            background: rgba(255, 255, 255, 0.2);
+                            transform: translateY(-2px);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="hero-preview">
+                        <div class="hero-content">
+                            <h1 class="hero-title">${settings.title || 'Berater für AI & Digitalisierung'}</h1>
+                            <p class="hero-subtitle">${settings.subtitle || 'Ihre Beschreibung hier...'}</p>
+                            ${settings.buttonText ? `<a href="${settings.buttonLink || '#'}" class="hero-button">${settings.buttonText}</a>` : ''}
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+        
+        function resetHero() {
+            if (confirm('Möchten Sie alle Hero-Einstellungen zurücksetzen?')) {
+                localStorage.removeItem('heroSettings');
+                loadHeroSettings();
+                showMessage('🔄 Hero-Einstellungen zurückgesetzt!', 'info');
+            }
+        }
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function showImagePreview(imageUrl) {
+            const preview = document.getElementById('hero-image-preview');
+            if (preview) {
+                preview.innerHTML = `<img src="${imageUrl}" alt="Hero Image Preview">`;
+                preview.classList.remove('empty');
+            }
+        }
+        
+        function updateHeroPreview() {
+            // Update preview in real-time if preview window is open
+            console.log('🎨 Updating hero preview...');
         }
         
         function hasNewNotifications() {
