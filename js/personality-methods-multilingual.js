@@ -350,27 +350,25 @@ class PersonalityMethodsMultilingual {
             window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
         } else {
             // For other languages, show a message that English version is available
-            alert('Ikigai workflow is currently available in English. Would you like to start the English version?');
-            if (confirm('Start English Ikigai workflow?')) {
-                window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
-            }
+            console.log('Ikigai workflow is currently available in English. Starting English version...');
+            window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
         }
     }
     
     startSWOTAnalysis() {
-        alert('SWOT Analysis method will be implemented soon!');
+        console.log('SWOT Analysis method will be implemented soon!');
     }
     
     startWheelOfLife() {
-        alert('Wheel of Life method will be implemented soon!');
+        console.log('Wheel of Life method will be implemented soon!');
     }
     
     startJohariWindow() {
-        alert('Johari Window method will be implemented soon!');
+        console.log('Johari Window method will be implemented soon!');
     }
     
     startValuesClarification() {
-        alert('Values Clarification method will be implemented soon!');
+        console.log('Values Clarification method will be implemented soon!');
     }
     
     setLanguage(language) {
