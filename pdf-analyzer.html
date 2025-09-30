@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Analyzer - Manuel Weiss</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .result-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-section h3 i {
+            color: #667eea;
+        }
+
+        .experience-item, .education-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .experience-item h4, .education-item h4 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .experience-item p, .education-item p {
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #667eea;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #fca5a5;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #a7f3d0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-pdf"></i> PDF Analyzer</h1>
+            <p>Analysieren Sie PDF-Dokumente und extrahieren Sie wichtige Informationen</p>
+        </div>
+
+        <div class="content">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <strong>PDF-Datei hier ablegen</strong><br>
+                    oder klicken Sie zum Auswählen
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Datei auswählen
+                </button>
+            </div>
+
+            <div id="status"></div>
+
+            <div class="results" id="results">
+                <div class="result-section">
+                    <h3><i class="fas fa-user"></i> Persönliche Informationen</h3>
+                    <div id="personalInfo"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3><i class="fas fa-briefcase"></i> Arbeitserfahrung</h3>
+                    <div id="experienceInfo"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3><i class="fas fa-graduation-cap"></i> Ausbildung</h3>
+                    <div id="educationInfo"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3><i class="fas fa-tools"></i> Fähigkeiten</h3>
+                    <div id="skillsInfo"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3><i class="fas fa-language"></i> Sprachen</h3>
+                    <div id="languagesInfo"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3><i class="fas fa-file-alt"></i> Zusammenfassung</h3>
+                    <div id="summaryInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Reader Script -->
+    <script src="js/pdf-reader.js"></script>
+
+    <script>
+        let pdfReader = null;
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 PDF Analyzer wird initialisiert...');
+            
+            // PDF Reader initialisieren
+            pdfReader = new PDFReader();
+            
+            // Event Listeners
+            setupEventListeners();
+            
+            console.log('✅ PDF Analyzer bereit');
+        });
+
+        function setupEventListeners() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            // Drag & Drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+
+            // File Input
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // Click to upload
+            uploadArea.addEventListener('click', () => fileInput.click());
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        async function processFile(file) {
+            if (!file.type.includes('pdf')) {
+                showStatus('Bitte wählen Sie eine PDF-Datei aus.', 'error');
+                return;
+            }
+
+            showStatus('PDF wird analysiert...', 'loading');
+            
+            try {
+                const cvData = await pdfReader.loadAndAnalyzePDF(file);
+                displayResults(cvData);
+                showStatus('PDF erfolgreich analysiert!', 'success');
+            } catch (error) {
+                console.error('Fehler bei PDF-Analyse:', error);
+                showStatus('Fehler beim Analysieren der PDF: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `
+                <div class="${type}">
+                    ${type === 'loading' ? '<i class="fas fa-spinner fa-spin"></i> ' : ''}
+                    ${message}
+                </div>
+            `;
+        }
+
+        function displayResults(cvData) {
+            // Persönliche Informationen
+            document.getElementById('personalInfo').innerHTML = `
+                <p><strong>Name:</strong> ${cvData.name}</p>
+                <p><strong>E-Mail:</strong> ${cvData.email}</p>
+                <p><strong>Telefon:</strong> ${cvData.phone}</p>
+            `;
+
+            // Arbeitserfahrung
+            const experienceHtml = cvData.experience.map(exp => `
+                <div class="experience-item">
+                    <h4>${exp.position}</h4>
+                    <p><strong>Unternehmen:</strong> ${exp.company}</p>
+                    <p><strong>Zeitraum:</strong> ${exp.period}</p>
+                    <p><strong>Beschreibung:</strong> ${exp.description}</p>
+                </div>
+            `).join('');
+            document.getElementById('experienceInfo').innerHTML = experienceHtml || '<p>Keine Arbeitserfahrung gefunden</p>';
+
+            // Ausbildung
+            const educationHtml = cvData.education.map(edu => `
+                <div class="education-item">
+                    <h4>${edu.degree}</h4>
+                    <p><strong>Institution:</strong> ${edu.institution}</p>
+                    <p><strong>Zeitraum:</strong> ${edu.period}</p>
+                </div>
+            `).join('');
+            document.getElementById('educationInfo').innerHTML = educationHtml || '<p>Keine Ausbildung gefunden</p>';
+
+            // Fähigkeiten
+            const skillsHtml = cvData.skills.map(skill => 
+                `<span class="skill-tag">${skill}</span>`
+            ).join('');
+            document.getElementById('skillsInfo').innerHTML = 
+                skillsHtml ? `<div class="skills-grid">${skillsHtml}</div>` : '<p>Keine Fähigkeiten gefunden</p>';
+
+            // Sprachen
+            const languagesHtml = cvData.languages.map(lang => 
+                `<span class="skill-tag">${lang}</span>`
+            ).join('');
+            document.getElementById('languagesInfo').innerHTML = 
+                languagesHtml ? `<div class="skills-grid">${languagesHtml}</div>` : '<p>Keine Sprachen gefunden</p>';
+
+            // Zusammenfassung
+            document.getElementById('summaryInfo').innerHTML = `<p>${cvData.summary}</p>`;
+
+            // Ergebnisse anzeigen
+            document.getElementById('results').classList.add('show');
+        }
+    </script>
+</body>
+</html>

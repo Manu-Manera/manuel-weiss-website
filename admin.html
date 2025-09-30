@@ -2816,6 +2816,29 @@
                                 </form>
                             </div>
                             
+                            <!-- PDF-Analyzer -->
+                            <div class="hero-card">
+                                <h3>📄 PDF-Analyzer</h3>
+                                <div class="pdf-analyzer">
+                                    <div class="pdf-upload-area" id="pdfUploadArea">
+                                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: #667eea; margin-bottom: 1rem;"></i>
+                                        <p>Lebenslauf-PDF hier ablegen oder auswählen</p>
+                                        <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                                        <button type="button" id="selectPdfBtn" class="btn btn-secondary">
+                                            <i class="fas fa-folder-open"></i> PDF auswählen
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="pdfAnalysisResults" style="display: none; margin-top: 1rem;">
+                                        <h4>Analysierte Daten:</h4>
+                                        <div id="pdfExtractedData"></div>
+                                        <button type="button" id="applyPdfDataBtn" class="btn btn-success" style="margin-top: 1rem;">
+                                            <i class="fas fa-check"></i> Daten übernehmen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Aktionen -->
                             <div class="hero-card">
                                 <h3>⚡ Aktionen</h3>
@@ -7647,6 +7670,9 @@
     </script>
     
     <!-- HERO-SEKTION FUNKTIONALITÄT -->
+    <!-- PDF-Reader Script laden -->
+    <script src="js/pdf-reader.js"></script>
+    
     <script>
         console.log('🚀 HERO: Loading hero section functionality...');
         
@@ -7715,6 +7741,13 @@
                     
                     // In localStorage speichern
                     localStorage.setItem('heroData', JSON.stringify(heroData));
+                    
+                    // Profilbild auch speichern (falls vorhanden)
+                    const profileImage = document.getElementById('current-profile-image');
+                    if (profileImage && profileImage.src) {
+                        localStorage.setItem('heroProfileImage', profileImage.src);
+                    }
+                    
                     showHeroMessage('Hero-Bereich erfolgreich gespeichert!', 'success');
                     console.log('✅ HERO: Data saved:', heroData);
                 });
@@ -7759,6 +7792,9 @@
                 });
             }
             
+            // PDF-Analyzer Funktionalität
+            initializePDFAnalyzer();
+            
             // Gespeicherte Daten laden
             loadHeroData();
             
@@ -7792,6 +7828,16 @@
                     console.error('❌ HERO: Error loading data:', error);
                 }
             }
+            
+            // Profilbild laden
+            const savedImage = localStorage.getItem('heroProfileImage');
+            if (savedImage) {
+                const profileImage = document.getElementById('current-profile-image');
+                if (profileImage) {
+                    profileImage.src = savedImage;
+                    console.log('✅ HERO: Profile image loaded from localStorage');
+                }
+            }
         }
         
         // Website-Synchronisation
@@ -7821,27 +7867,206 @@
             const profileImage = document.getElementById('current-profile-image');
             const imageData = profileImage.src;
             
-            // Daten für Website vorbereiten
-            const websiteData = {
+            // Alle Daten in localStorage speichern (für Website-Zugriff)
+            localStorage.setItem('heroData', JSON.stringify(heroData));
+            localStorage.setItem('heroProfileImage', imageData);
+            
+            // Auch in sessionStorage für sofortigen Zugriff
+            sessionStorage.setItem('heroUpdate', JSON.stringify({
                 hero: heroData,
                 profileImage: imageData,
                 timestamp: new Date().toISOString()
-            };
-            
-            // In localStorage für Website-Zugriff speichern
-            localStorage.setItem('websiteHeroData', JSON.stringify(websiteData));
-            
-            // Auch in sessionStorage für sofortigen Zugriff
-            sessionStorage.setItem('heroUpdate', JSON.stringify(websiteData));
+            }));
             
             // Erfolgsmeldung
             showHeroMessage('✅ Hero-Bereich erfolgreich mit Website synchronisiert!', 'success');
-            console.log('✅ HERO: Website sync completed:', websiteData);
+            console.log('✅ HERO: Website sync completed:', heroData);
             
             // Hinweis für Website-Besucher
             setTimeout(() => {
                 showHeroMessage('💡 Tipp: Besuchen Sie Ihre Website um die Änderungen zu sehen!', 'info');
             }, 2000);
+        }
+        
+        // PDF-Analyzer initialisieren
+        function initializePDFAnalyzer() {
+            console.log('📄 PDF: Initializing PDF analyzer...');
+            
+            const pdfFileInput = document.getElementById('pdfFileInput');
+            const selectPdfBtn = document.getElementById('selectPdfBtn');
+            const pdfUploadArea = document.getElementById('pdfUploadArea');
+            const applyPdfDataBtn = document.getElementById('applyPdfDataBtn');
+            
+            // PDF-Datei auswählen
+            if (selectPdfBtn) {
+                selectPdfBtn.addEventListener('click', function() {
+                    pdfFileInput.click();
+                });
+            }
+            
+            // PDF-Datei verarbeiten
+            if (pdfFileInput) {
+                pdfFileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        processPDFFile(file);
+                    }
+                });
+            }
+            
+            // Drag & Drop für PDF
+            if (pdfUploadArea) {
+                pdfUploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    pdfUploadArea.style.background = '#f0f2ff';
+                    pdfUploadArea.style.borderColor = '#764ba2';
+                });
+                
+                pdfUploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    pdfUploadArea.style.background = '';
+                    pdfUploadArea.style.borderColor = '';
+                });
+                
+                pdfUploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    pdfUploadArea.style.background = '';
+                    pdfUploadArea.style.borderColor = '';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0 && files[0].type.includes('pdf')) {
+                        processPDFFile(files[0]);
+                    }
+                });
+            }
+            
+            // PDF-Daten übernehmen
+            if (applyPdfDataBtn) {
+                applyPdfDataBtn.addEventListener('click', function() {
+                    applyPDFDataToHeroForm();
+                });
+            }
+            
+            console.log('✅ PDF: PDF analyzer initialized');
+        }
+        
+        // PDF-Datei verarbeiten
+        async function processPDFFile(file) {
+            console.log('📄 PDF: Processing PDF file:', file.name);
+            showHeroMessage('PDF wird analysiert...', 'info');
+            
+            try {
+                // PDF Reader initialisieren
+                const pdfReader = new PDFReader();
+                
+                // PDF analysieren
+                const cvData = await pdfReader.loadAndAnalyzePDF(file);
+                
+                // Ergebnisse anzeigen
+                displayPDFResults(cvData);
+                showHeroMessage('PDF erfolgreich analysiert!', 'success');
+                
+            } catch (error) {
+                console.error('❌ PDF: Error processing PDF:', error);
+                showHeroMessage('Fehler beim Analysieren der PDF: ' + error.message, 'error');
+            }
+        }
+        
+        // PDF-Ergebnisse anzeigen
+        function displayPDFResults(cvData) {
+            const resultsDiv = document.getElementById('pdfAnalysisResults');
+            const dataDiv = document.getElementById('pdfExtractedData');
+            
+            if (resultsDiv && dataDiv) {
+                // Ergebnisse zusammenstellen
+                let html = '<div style="max-height: 300px; overflow-y: auto; padding: 1rem; background: #f8f9fa; border-radius: 8px;">';
+                
+                // Persönliche Daten
+                html += '<h5 style="color: #2c3e50; margin-bottom: 0.5rem;"><i class="fas fa-user"></i> Persönliche Daten</h5>';
+                html += `<p><strong>Name:</strong> ${cvData.name}</p>`;
+                html += `<p><strong>E-Mail:</strong> ${cvData.email}</p>`;
+                html += `<p><strong>Telefon:</strong> ${cvData.phone}</p>`;
+                
+                // Arbeitserfahrung
+                if (cvData.experience && cvData.experience.length > 0) {
+                    html += '<h5 style="color: #2c3e50; margin: 1rem 0 0.5rem 0;"><i class="fas fa-briefcase"></i> Arbeitserfahrung</h5>';
+                    cvData.experience.forEach(exp => {
+                        html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 4px;">`;
+                        html += `<strong>${exp.position}</strong><br>`;
+                        html += `<small>${exp.company} - ${exp.period}</small>`;
+                        html += `</div>`;
+                    });
+                }
+                
+                // Fähigkeiten
+                if (cvData.skills && cvData.skills.length > 0) {
+                    html += '<h5 style="color: #2c3e50; margin: 1rem 0 0.5rem 0;"><i class="fas fa-tools"></i> Fähigkeiten</h5>';
+                    html += `<div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">`;
+                    cvData.skills.forEach(skill => {
+                        html += `<span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">${skill}</span>`;
+                    });
+                    html += `</div>`;
+                }
+                
+                html += '</div>';
+                
+                dataDiv.innerHTML = html;
+                resultsDiv.style.display = 'block';
+                
+                // Daten für spätere Verwendung speichern
+                window.currentPDFData = cvData;
+            }
+        }
+        
+        // PDF-Daten in Hero-Formular übernehmen
+        function applyPDFDataToHeroForm() {
+            if (!window.currentPDFData) {
+                showHeroMessage('Keine PDF-Daten verfügbar', 'error');
+                return;
+            }
+            
+            const cvData = window.currentPDFData;
+            console.log('📄 PDF: Applying PDF data to hero form:', cvData);
+            
+            // Name übernehmen
+            if (cvData.name && cvData.name !== 'Name nicht gefunden') {
+                const nameField = document.getElementById('hero-name');
+                if (nameField) nameField.value = cvData.name;
+            }
+            
+            // E-Mail übernehmen
+            if (cvData.email && cvData.email !== 'E-Mail nicht gefunden') {
+                const emailField = document.getElementById('hero-email');
+                if (emailField) emailField.value = cvData.email;
+            }
+            
+            // Telefon übernehmen
+            if (cvData.phone && cvData.phone !== 'Telefon nicht gefunden') {
+                const phoneField = document.getElementById('hero-phone');
+                if (phoneField) phoneField.value = cvData.phone;
+            }
+            
+            // Aktuelle Position als Titel verwenden
+            if (cvData.experience && cvData.experience.length > 0) {
+                const titleField = document.getElementById('hero-title');
+                if (titleField && cvData.experience[0].position) {
+                    titleField.value = cvData.experience[0].position;
+                }
+            }
+            
+            // Zusammenfassung als Beschreibung verwenden
+            if (cvData.summary && cvData.summary !== 'Zusammenfassung nicht gefunden') {
+                const descriptionField = document.getElementById('hero-description');
+                if (descriptionField) descriptionField.value = cvData.summary;
+            }
+            
+            showHeroMessage('PDF-Daten erfolgreich übernommen!', 'success');
+            
+            // Ergebnisse ausblenden
+            const resultsDiv = document.getElementById('pdfAnalysisResults');
+            if (resultsDiv) {
+                resultsDiv.style.display = 'none';
+            }
         }
         
         // Status-Nachricht anzeigen
