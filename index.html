@@ -34,18 +34,26 @@
             </div>
             
             <div class="nav-menu" id="navMenu">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#about" class="nav-link">Über mich</a>
-                <a href="#services" class="nav-link">Services</a>
-                <a href="#contact" class="nav-link">Kontakt</a>
+                <a href="#home" class="nav-link active" data-de="Home" data-en="Home">Home</a>
+                <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
+                <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
+                <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
                 
-                <!-- Beraterprofil herunterladen Button -->
-                <div class="profile-download-section">
-                    <a href="#profile-download" class="btn btn-profile" id="profileDownloadBtn">
-                        <i class="fas fa-download"></i>
-                        Beraterprofil herunterladen
-                    </a>
-                </div>
+        <!-- Sprachumschaltung -->
+        <div class="language-switch">
+            <button id="langSwitch" class="btn btn-lang">
+                <i class="fas fa-globe"></i>
+                <span id="currentLang">DE</span>
+            </button>
+        </div>
+        
+        <!-- Beraterprofil herunterladen Button -->
+        <div class="profile-download-section">
+            <a href="#profile-download" class="btn btn-profile" id="profileDownloadBtn">
+                <i class="fas fa-download"></i>
+                <span class="download-text">Beraterprofil herunterladen</span>
+            </a>
+        </div>
                 
                 <!-- Einloggen Button - nur sichtbar wenn von Service-Unterseite -->
                 <div id="login-section" class="login-section" style="display: none;">
@@ -74,16 +82,16 @@
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title">
-                    HR Berater für 
-                    <span class="gradient-text">AI & Transformation</span>
+                    <span data-de="HR Berater für" data-en="HR Consultant for">HR Berater für</span> 
+                    <span class="gradient-text" data-de="AI & Transformation" data-en="AI & Transformation">AI & Transformation</span>
                 </h1>
-                <p class="hero-subtitle">
+                <p class="hero-subtitle" data-de="Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen." data-en="Innovative solutions for modern companies. Digitalization, business processes and human resources.">
                     Innovative Lösungen für moderne Unternehmen. 
                     Digitalisierung, Geschäftsprozesse und Personalwesen.
                 </p>
                 <div class="hero-actions">
-                    <a href="#services" class="btn btn-primary">Services entdecken</a>
-                    <a href="#contact" class="btn btn-outline">Kontakt aufnehmen</a>
+                    <a href="#services" class="btn btn-primary" data-de="Services entdecken" data-en="Discover Services">Services entdecken</a>
+                    <a href="#contact" class="btn btn-outline" data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -736,17 +744,24 @@
                 projects: [
                     {
                         name: 'UKG HRSD Implementierungen',
-                        type: 'HR Campus AG',
+                        type: 'KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler',
                         period: '2021 - 2025',
-                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden mit agilen und Wasserfall-Methodologien. SAP SuccessFactors/HCM Integration über RPA, API Endpoints und SAML SSO.',
-                        skills: ['UKG HRSD', 'SAP SuccessFactors', 'RPA', 'API Integration', 'SAML SSO']
+                        description: 'End-to-end UKG HRSD Implementierungen mit Wissensdatenbank, Prozessoptimierung und digitalem Personaldossier für verschiedene Branchen. Kunden: KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler.',
+                        skills: ['UKG HRSD', 'Wissensdatenbank', 'Digitales Personaldossier', 'Prozessoptimierung']
                     },
                     {
-                        name: 'ADONIS BPMN 2.0 Modellierung',
-                        type: 'HR Campus AG',
-                        period: '2021 - 2025',
-                        description: 'HR-Prozess-Mapping und ADONIS BPMN 2.0 Modellierung für optimierte HR-Workflows. HR Health Checks und Digitalisierungs-Roadmaps mit Best-Practice Prozess-Katalogen.',
-                        skills: ['ADONIS', 'BPMN 2.0', 'Prozess-Mapping', 'HR Health Checks']
+                        name: 'ADONIS BPMN 2.0 Einführung',
+                        type: 'Müller Milch, KFW',
+                        period: '2019 - 2021',
+                        description: 'Einführung von ADONIS und fachliches Business Process Management (BPM) bei Müller Milch. GRC-Implementierung bei KFW für optimierte Governance-Prozesse.',
+                        skills: ['ADONIS', 'BPMN 2.0', 'GRC', 'Governance']
+                    },
+                    {
+                        name: 'Prozessschulungen & Workshops',
+                        type: 'Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr',
+                        period: '2019 - 2021',
+                        description: 'Durchführung von Prozessschulungen und Workshops für verschiedene Organisationen. Training in BPM-Methoden und Prozessoptimierung bei Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr.',
+                        skills: ['Prozessschulungen', 'Workshops', 'BPM-Training', 'Change Management']
                     },
                     {
                         name: 'Business Process Management (BPM)',
@@ -754,13 +769,6 @@
                         period: '2019 - 2021',
                         description: 'Strukturierte BPM-Praxis für Kundenorganisationen. Prozess-Discovery Sessions, Workflow-Dokumentation und Gap-Analyse mit SIPOC und Root-Cause-Analyse Techniken.',
                         skills: ['BPM', 'Prozess-Discovery', 'Gap-Analyse', 'SIPOC', 'Root-Cause-Analyse']
-                    },
-                    {
-                        name: 'Digitalisierungsprojekte',
-                        type: 'eeMobility Startup',
-                        period: '2019',
-                        description: 'Digitalisierungsprojekte zur Optimierung und Streamlining von Vertrags-Workflows. Verbesserung der operativen Effizienz und Produktivität durch digitale Lösungen.',
-                        skills: ['Digitalisierung', 'Prozessoptimierung', 'Vertragsmanagement', 'Workflow-Design']
                     }
                 ],
                 skills: {
@@ -1105,9 +1113,43 @@
             }
         }
         
+        // Sprachumschaltung Funktionalität
+        function initializeLanguageSwitch() {
+            const langSwitch = document.getElementById('langSwitch');
+            const currentLangSpan = document.getElementById('currentLang');
+            let currentLang = 'de';
+            
+            // Sprache wechseln
+            if (langSwitch) {
+                langSwitch.addEventListener('click', function() {
+                    currentLang = currentLang === 'de' ? 'en' : 'de';
+                    currentLangSpan.textContent = currentLang.toUpperCase();
+                    switchLanguage(currentLang);
+                });
+            }
+        }
+        
+        // Sprache umschalten
+        function switchLanguage(lang) {
+            const elements = document.querySelectorAll('[data-de][data-en]');
+            elements.forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    element.textContent = text;
+                }
+            });
+            
+            // Spezielle Behandlung für Download-Button
+            const downloadText = document.querySelector('.download-text');
+            if (downloadText) {
+                downloadText.textContent = lang === 'de' ? 'Beraterprofil herunterladen' : 'Download Consultant Profile';
+            }
+        }
+        
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', function() {
             loadHeroDataFromAdmin();
+            initializeLanguageSwitch();
         });
         
         // Auch bei Storage-Änderungen reagieren (für Live-Updates)
