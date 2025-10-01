@@ -648,6 +648,42 @@ a:hover {
     }
 }
 
+/* LANGUAGE SWITCH STYLES */
+.language-switch {
+    display: flex;
+    align-items: center;
+    margin-left: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    border-left: 1px solid var(--gray-200);
+}
+
+.btn-lang {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: var(--white);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-lang:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+.btn-lang i {
+    font-size: var(--text-sm);
+}
+
 /* PROFILE DOWNLOAD SECTION STYLES */
 .profile-download-section {
     display: flex;
