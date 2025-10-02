@@ -808,49 +808,35 @@
                         }
                     }
                     
-                    // Profilbild aktualisieren (falls hochgeladen)
-                    let profileImage = localStorage.getItem('heroProfileImage');
+                    // PROFILBILD LADEN - EINFACH UND FUNKTIONIEREND
+                    console.log('📸 WEBSITE: Loading profile image...');
                     
-                    // Erst versuchen von AWS zu laden
-                    if (!profileImage && window.smartAPI) {
-                        try {
-                            const awsProfile = await window.smartAPI.getUserDocuments('default-user');
-                            if (awsProfile && awsProfile.documents) {
-                                const heroProfile = awsProfile.documents.find(doc => 
-                                    doc.type === 'profile' && doc.category === 'hero'
-                                );
-                                if (heroProfile && heroProfile.url) {
-                                    profileImage = heroProfile.url;
-                                    localStorage.setItem('heroProfileImage', heroProfile.url);
-                                    console.log('✅ WEBSITE: Profile image loaded from AWS');
-                                }
-                            }
-                        } catch (error) {
-                            console.log('⚠️ WEBSITE: Could not load profile image from AWS');
-                        }
+                    let profileImage = null;
+                    
+                    // 1. Erst aus heroData laden
+                    if (data.profileImage) {
+                        profileImage = data.profileImage;
+                        console.log('✅ WEBSITE: Profile image found in heroData');
                     }
                     
-                    if (profileImage) {
+                    // 2. Falls nicht da, aus localStorage laden
+                    if (!profileImage) {
+                        profileImage = localStorage.getItem('heroProfileImage');
+                        console.log('📸 WEBSITE: Checking localStorage:', profileImage ? 'Found' : 'Not found');
+                    }
+                    
+                    // 3. Profilbild anzeigen
+                    if (profileImage && profileImage !== 'manuel-weiss-photo.svg') {
                         const profilePhoto = document.getElementById('profile-photo');
                         if (profilePhoto) {
                             profilePhoto.src = profileImage;
                             profilePhoto.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image updated');
+                            console.log('✅ WEBSITE: Profile image displayed');
                         } else {
-                            console.warn('⚠️ WEBSITE: Profile photo element not found');
+                            console.error('❌ WEBSITE: profile-photo element not found');
                         }
                     } else {
-                        console.log('ℹ️ WEBSITE: No custom profile image found, using default');
-                    }
-                    
-                    // Zusätzlich: Profilbild aus heroData laden
-                    if (data.profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = data.profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image loaded from heroData');
-                        }
+                        console.log('ℹ️ WEBSITE: Using default profile image');
                     }
                     
                     // Button-Text aktualisieren
