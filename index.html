@@ -842,6 +842,28 @@
                         }
                     }
                     
+                    // Hero-Statistiken aktualisieren
+                    if (data.stat1Number && data.stat1Label) {
+                        const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
+                        const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
+                        if (stat1Number) stat1Number.textContent = data.stat1Number;
+                        if (stat1Label) stat1Label.textContent = data.stat1Label;
+                    }
+                    
+                    if (data.stat2Number && data.stat2Label) {
+                        const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
+                        const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
+                        if (stat2Number) stat2Number.textContent = data.stat2Number;
+                        if (stat2Label) stat2Label.textContent = data.stat2Label;
+                    }
+                    
+                    if (data.stat3Number && data.stat3Label) {
+                        const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
+                        const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+                        if (stat3Number) stat3Number.textContent = data.stat3Number;
+                        if (stat3Label) stat3Label.textContent = data.stat3Label;
+                    }
+                    
                     console.log('✅ WEBSITE: Hero data applied successfully');
                     
                 } catch (error) {

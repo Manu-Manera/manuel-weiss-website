@@ -7246,6 +7246,42 @@
                                 </div>
                             </div>
                             
+                            <!-- Hero-Statistiken -->
+                            <div class="hero-card">
+                                <h3>📊 Hero-Statistiken</h3>
+                                <form class="hero-form">
+                                    <div class="form-group">
+                                        <label for="hero-stat1-number">Statistik 1 - Zahl</label>
+                                        <input type="text" id="hero-stat1-number" name="hero-stat1-number" class="form-control" placeholder="z.B. 5+" value="5+">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-stat1-label">Statistik 1 - Text</label>
+                                        <input type="text" id="hero-stat1-label" name="hero-stat1-label" class="form-control" placeholder="z.B. Jahre Erfahrung" value="Jahre Erfahrung">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-stat2-number">Statistik 2 - Zahl</label>
+                                        <input type="text" id="hero-stat2-number" name="hero-stat2-number" class="form-control" placeholder="z.B. 50+" value="50+">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-stat2-label">Statistik 2 - Text</label>
+                                        <input type="text" id="hero-stat2-label" name="hero-stat2-label" class="form-control" placeholder="z.B. Projekte" value="Projekte">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-stat3-number">Statistik 3 - Zahl</label>
+                                        <input type="text" id="hero-stat3-number" name="hero-stat3-number" class="form-control" placeholder="z.B. 100%" value="100%">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-stat3-label">Statistik 3 - Text</label>
+                                        <input type="text" id="hero-stat3-label" name="hero-stat3-label" class="form-control" placeholder="z.B. Zufriedenheit" value="Zufriedenheit">
+                                    </div>
+                                </form>
+                            </div>
+                            
                             <!-- Aktionen -->
                             <div class="hero-card">
                                 <h3>⚡ Aktionen</h3>
@@ -7842,7 +7878,14 @@
                             phone: document.getElementById('hero-phone').value,
                             location: document.getElementById('hero-location').value,
                             linkedin: document.getElementById('hero-linkedin').value,
-                            website: document.getElementById('hero-website').value
+                            website: document.getElementById('hero-website').value,
+                            // Hero-Statistiken
+                            stat1Number: document.getElementById('hero-stat1-number').value,
+                            stat1Label: document.getElementById('hero-stat1-label').value,
+                            stat2Number: document.getElementById('hero-stat2-number').value,
+                            stat2Label: document.getElementById('hero-stat2-label').value,
+                            stat3Number: document.getElementById('hero-stat3-number').value,
+                            stat3Label: document.getElementById('hero-stat3-label').value
                         };
                         
                         // In localStorage speichern
@@ -7916,7 +7959,9 @@
                     'hero-name', 'hero-title', 'hero-subtitle', 'hero-description',
                     'hero-bg-color1', 'hero-bg-color2', 'hero-text-color',
                     'hero-button-text', 'hero-button-link',
-                    'hero-email', 'hero-phone', 'hero-location', 'hero-linkedin', 'hero-website'
+                    'hero-email', 'hero-phone', 'hero-location', 'hero-linkedin', 'hero-website',
+                    'hero-stat1-number', 'hero-stat1-label', 'hero-stat2-number', 'hero-stat2-label',
+                    'hero-stat3-number', 'hero-stat3-label'
                 ];
                 
                 heroInputs.forEach(inputId => {
@@ -7981,7 +8026,14 @@
                     phone: document.getElementById('hero-phone')?.value || '',
                     location: document.getElementById('hero-location')?.value || '',
                     linkedin: document.getElementById('hero-linkedin')?.value || '',
-                    website: document.getElementById('hero-website')?.value || ''
+                    website: document.getElementById('hero-website')?.value || '',
+                    // Hero-Statistiken
+                    stat1Number: document.getElementById('hero-stat1-number')?.value || '5+',
+                    stat1Label: document.getElementById('hero-stat1-label')?.value || 'Jahre Erfahrung',
+                    stat2Number: document.getElementById('hero-stat2-number')?.value || '50+',
+                    stat2Label: document.getElementById('hero-stat2-label')?.value || 'Projekte',
+                    stat3Number: document.getElementById('hero-stat3-number')?.value || '100%',
+                    stat3Label: document.getElementById('hero-stat3-label')?.value || 'Zufriedenheit'
                 };
                 
                 // In localStorage speichern für Website-Sync
@@ -8297,6 +8349,14 @@
                     if (heroData.location) document.getElementById('hero-location').value = heroData.location;
                     if (heroData.linkedin) document.getElementById('hero-linkedin').value = heroData.linkedin;
                     if (heroData.website) document.getElementById('hero-website').value = heroData.website;
+                    
+                    // Hero-Statistiken laden
+                    if (heroData.stat1Number) document.getElementById('hero-stat1-number').value = heroData.stat1Number;
+                    if (heroData.stat1Label) document.getElementById('hero-stat1-label').value = heroData.stat1Label;
+                    if (heroData.stat2Number) document.getElementById('hero-stat2-number').value = heroData.stat2Number;
+                    if (heroData.stat2Label) document.getElementById('hero-stat2-label').value = heroData.stat2Label;
+                    if (heroData.stat3Number) document.getElementById('hero-stat3-number').value = heroData.stat3Number;
+                    if (heroData.stat3Label) document.getElementById('hero-stat3-label').value = heroData.stat3Label;
                     
                     console.log('✅ HERO: Data loaded from localStorage');
                 } catch (error) {
