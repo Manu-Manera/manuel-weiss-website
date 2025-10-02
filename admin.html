@@ -4654,15 +4654,12 @@
                             </h3>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                                <!-- Profilbild -->
+                                <!-- Profilbild-Verwaltung -->
                                 <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                                    <h4 style="color: #555; margin-bottom: 1rem;">📸 Profilbild</h4>
-                                    <div style="text-align: center; margin-bottom: 1rem;">
-                                        <img id="profileImage" src="manuel-weiss-photo.svg" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #6366f1;">
-                                    </div>
-                                    <input type="file" id="profileImageInput" accept="image/*" style="width: 100%; margin-bottom: 1rem;">
-                                    <button data-action="update-profile-image" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                        🔄 Profilbild aktualisieren
+                                    <h4 style="color: #555; margin-bottom: 1rem;">📸 Profilbild-Verwaltung</h4>
+                                    <p style="color: #666; margin-bottom: 1rem;">Profilbilder werden in der Hero & Über mich-Sektion verwaltet.</p>
+                                    <button onclick="showSection('hero-about')" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        🏠 Zur Profilbild-Galerie
                                     </button>
                                 </div>
                                 
@@ -7657,22 +7654,7 @@
                             
                             <div class="hero-management">
                                 <div class="hero-content-grid">
-                                    <!-- Profilbild-Upload -->
-                                    <div class="hero-card">
-                                        <h4>📸 Profilbild</h4>
-                                        <div class="image-upload-area">
-                                            <div class="current-image">
-                                                <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
-                                            </div>
-                                            <div class="upload-controls">
-                                                <input type="file" id="profile-image-upload" accept="image/*" style="display: none;">
-                                                <button type="button" id="upload-profile-btn" class="btn btn-primary">
-                                                    <i class="fas fa-upload"></i> Neues Profilbild hochladen
-                                                </button>
-                                                <p class="upload-info">Unterstützte Formate: JPG, PNG, SVG (max. 5MB)</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <!-- Profilbild-Upload entfernt - wird in der Galerie verwaltet -->
                                     
                                     <!-- Hero-Text-Einstellungen -->
                                     <div class="hero-card">
@@ -16476,6 +16458,62 @@ Bitte antworte im folgenden JSON-Format:
             window.debugLog.log('🚀 DEBUG: Debug panel created');
             setTimeout(testUpload, 1000);
         });
+        
+        // EINFACHER UPLOAD-TEST
+        function simpleUploadTest() {
+            window.debugLog.log('🧪 SIMPLE TEST: Starting simple upload test');
+            
+            // Test 1: Elemente finden
+            const elements = {
+                directBtn: document.getElementById('direct-upload-btn'),
+                directInput: document.getElementById('direct-profile-upload'),
+                currentImage: document.getElementById('current-profile-image'),
+                currentName: document.getElementById('current-profile-name')
+            };
+            
+            window.debugLog.log('🧪 SIMPLE TEST: Element check', {
+                directBtn: elements.directBtn ? 'FOUND' : 'NOT_FOUND',
+                directInput: elements.directInput ? 'FOUND' : 'NOT_FOUND',
+                currentImage: elements.currentImage ? 'FOUND' : 'NOT_FOUND',
+                currentName: elements.currentName ? 'FOUND' : 'NOT_FOUND'
+            });
+            
+            // Test 2: Button-Click simulieren
+            if (elements.directBtn) {
+                window.debugLog.log('🧪 SIMPLE TEST: Testing button click');
+                try {
+                    elements.directBtn.click();
+                    window.debugLog.log('✅ SIMPLE TEST: Button click successful');
+                } catch (error) {
+                    window.debugLog.error('❌ SIMPLE TEST: Button click failed', error);
+                }
+            }
+            
+            // Test 3: localStorage testen
+            const testImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iIzY2N2VlYSIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMTIiPk1BTlVFTDwvdGV4dD48L3N2Zz4=';
+            
+            try {
+                localStorage.setItem('heroProfileImage', testImage);
+                window.debugLog.log('✅ SIMPLE TEST: localStorage write successful');
+                
+                const retrieved = localStorage.getItem('heroProfileImage');
+                window.debugLog.log('✅ SIMPLE TEST: localStorage read successful', {
+                    length: retrieved ? retrieved.length : 0
+                });
+            } catch (error) {
+                window.debugLog.error('❌ SIMPLE TEST: localStorage failed', error);
+            }
+            
+            // Test 4: Bild anzeigen
+            if (elements.currentImage) {
+                elements.currentImage.src = testImage;
+                elements.currentImage.style.display = 'block';
+                window.debugLog.log('✅ SIMPLE TEST: Image display test successful');
+            }
+        }
+        
+        // Test nach 2 Sekunden
+        setTimeout(simpleUploadTest, 2000);
     </script>
 </body>
 </html>
