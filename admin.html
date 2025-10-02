@@ -157,6 +157,17 @@
             gap: 1rem;
             justify-content: center;
         }
+        
+        .profile-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .profile-actions .btn {
+            flex: 1;
+            min-width: 120px;
+        }
         /* MODERNE SIDEBAR */
         .sidebar,
         .admin-sidebar {
@@ -7275,9 +7286,15 @@
                                         </div>
                                         <div class="current-profile-info">
                                             <p id="current-profile-name">Standard Profilbild</p>
-                                            <button type="button" id="change-profile-btn" class="btn btn-secondary">
-                                                <i class="fas fa-exchange-alt"></i> Profilbild wechseln
-                                            </button>
+                                            <div class="profile-actions">
+                                                <button type="button" id="change-profile-btn" class="btn btn-secondary">
+                                                    <i class="fas fa-exchange-alt"></i> Profilbild wechseln
+                                                </button>
+                                                <button type="button" id="direct-upload-btn" class="btn btn-primary">
+                                                    <i class="fas fa-upload"></i> Direkt hochladen
+                                                </button>
+                                            </div>
+                                            <input type="file" id="direct-profile-upload" accept="image/*" style="display: none;">
                                         </div>
                                     </div>
                                     
@@ -8486,21 +8503,48 @@
                 const selectGalleryBtn = document.getElementById('select-gallery-images-btn');
                 const galleryInput = document.getElementById('gallery-upload-input');
                 
-                console.log('📸 GALLERY: Setting up upload button...', { selectGalleryBtn, galleryInput });
+                console.log('📸 GALLERY: Setting up upload button...', { 
+                    selectGalleryBtn: !!selectGalleryBtn, 
+                    galleryInput: !!galleryInput,
+                    selectGalleryBtnElement: selectGalleryBtn,
+                    galleryInputElement: galleryInput
+                });
                 
                 if (selectGalleryBtn && galleryInput) {
-                    selectGalleryBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        console.log('📸 GALLERY: Upload button clicked');
-                        galleryInput.click();
-                    });
+                    // Event-Listener entfernen falls bereits vorhanden
+                    selectGalleryBtn.removeEventListener('click', handleGalleryButtonClick);
+                    galleryInput.removeEventListener('change', handleGalleryFileChange);
                     
-                    galleryInput.addEventListener('change', (e) => {
-                        console.log('📸 GALLERY: Files selected:', e.target.files.length);
-                        handleGalleryUpload(e);
-                    });
+                    // Neue Event-Listener hinzufügen
+                    selectGalleryBtn.addEventListener('click', handleGalleryButtonClick);
+                    galleryInput.addEventListener('change', handleGalleryFileChange);
+                    
+                    console.log('✅ GALLERY: Upload button and input configured');
                 } else {
-                    console.error('❌ GALLERY: Upload elements not found:', { selectGalleryBtn, galleryInput });
+                    console.error('❌ GALLERY: Upload elements not found:', { 
+                        selectGalleryBtn: !!selectGalleryBtn, 
+                        galleryInput: !!galleryInput 
+                    });
+                }
+                
+                // Separate Funktionen für bessere Debugging
+                function handleGalleryButtonClick(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('📸 GALLERY: Upload button clicked');
+                    if (galleryInput) {
+                        console.log('📸 GALLERY: Triggering file input click');
+                        galleryInput.click();
+                    } else {
+                        console.error('❌ GALLERY: Gallery input not found');
+                    }
+                }
+                
+                function handleGalleryFileChange(e) {
+                    console.log('📸 GALLERY: Files selected:', e.target.files.length);
+                    if (e.target.files.length > 0) {
+                        handleGalleryUpload(e);
+                    }
                 }
                 
                 // Drag & Drop für Galerie
@@ -8528,6 +8572,8 @@
                 const refreshBtn = document.getElementById('refresh-gallery-btn');
                 const clearBtn = document.getElementById('clear-gallery-btn');
                 const changeProfileBtn = document.getElementById('change-profile-btn');
+                const directUploadBtn = document.getElementById('direct-upload-btn');
+                const directUploadInput = document.getElementById('direct-profile-upload');
                 
                 if (refreshBtn) {
                     refreshBtn.addEventListener('click', loadProfileGallery);
@@ -8541,10 +8587,71 @@
                     changeProfileBtn.addEventListener('click', showProfileSelector);
                 }
                 
+                // Direkter Upload
+                if (directUploadBtn && directUploadInput) {
+                    directUploadBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log('📸 DIRECT UPLOAD: Direct upload button clicked');
+                        directUploadInput.click();
+                    });
+                    
+                    directUploadInput.addEventListener('change', (e) => {
+                        console.log('📸 DIRECT UPLOAD: File selected for direct upload');
+                        if (e.target.files.length > 0) {
+                            handleDirectProfileUpload(e);
+                        }
+                    });
+                }
+                
                 // Galerie beim Start laden
                 loadProfileGallery();
                 
                 console.log('✅ GALLERY: Profile gallery initialized');
+            }
+            
+            // Direkter Profilbild-Upload
+            async function handleDirectProfileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                console.log('📸 DIRECT UPLOAD: Processing direct upload:', file.name);
+                
+                try {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        const imageUrl = e.target.result;
+                        
+                        // Aktuelles Profilbild aktualisieren
+                        const currentImage = document.getElementById('current-profile-image');
+                        const currentName = document.getElementById('current-profile-name');
+                        
+                        if (currentImage) {
+                            currentImage.src = imageUrl;
+                        }
+                        
+                        if (currentName) {
+                            currentName.textContent = file.name;
+                        }
+                        
+                        // In localStorage speichern
+                        localStorage.setItem('heroProfileImage', imageUrl);
+                        
+                        // AWS-Speicherung
+                        if (window.smartAPI) {
+                            await saveProfileImageToAWS(imageUrl);
+                        }
+                        
+                        // Live-Update
+                        updateWebsiteLive();
+                        
+                        showHeroMessage(`Profilbild erfolgreich hochgeladen: ${file.name}`, 'success');
+                        console.log('✅ DIRECT UPLOAD: Profile image uploaded successfully');
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('❌ DIRECT UPLOAD: Upload failed:', error);
+                    showHeroMessage('Fehler beim Hochladen des Profilbildes', 'error');
+                }
             }
             
             // Galerie-Upload verarbeiten
@@ -8794,6 +8901,14 @@
             
             // Galerie initialisieren
             initializeProfileGallery();
+            
+            // Zusätzliche Initialisierung nach DOM-Load
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('🚀 ADMIN: DOM loaded, re-initializing gallery...');
+                setTimeout(() => {
+                    initializeProfileGallery();
+                }, 500);
+            });
             
             // Also initialize after a short delay as fallback
             setTimeout(initializeSettings, 100);
