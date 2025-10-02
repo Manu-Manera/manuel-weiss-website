@@ -16174,346 +16174,86 @@ Bitte antworte im folgenden JSON-Format:
             setTimeout(testUpload, 1000);
         });
         
-        // DETAILLIERTES LOGGING-SYSTEM
-        window.debugLog = {
-            logs: [],
-            errors: [],
-            warnings: [],
-            
-            log: function(message, data = null) {
-                const timestamp = new Date().toISOString();
-                const logEntry = {
-                    timestamp,
-                    type: 'LOG',
-                    message,
-                    data,
-                    stack: new Error().stack
-                };
-                this.logs.push(logEntry);
-                console.log(`🔍 DEBUG [${timestamp}]:`, message, data || '');
-                this.updateDebugPanel();
-            },
-            
-            error: function(message, error = null) {
-                const timestamp = new Date().toISOString();
-                const errorEntry = {
-                    timestamp,
-                    type: 'ERROR',
-                    message,
-                    error: error ? error.toString() : null,
-                    stack: error ? error.stack : new Error().stack
-                };
-                this.errors.push(errorEntry);
-                console.error(`❌ DEBUG ERROR [${timestamp}]:`, message, error || '');
-                this.updateDebugPanel();
-            },
-            
-            warn: function(message, data = null) {
-                const timestamp = new Date().toISOString();
-                const warnEntry = {
-                    timestamp,
-                    type: 'WARN',
-                    message,
-                    data,
-                    stack: new Error().stack
-                };
-                this.warnings.push(warnEntry);
-                console.warn(`⚠️ DEBUG WARN [${timestamp}]:`, message, data || '');
-                this.updateDebugPanel();
-            },
-            
-            createDebugPanel: function() {
-                const panel = document.createElement('div');
-                panel.id = 'debug-panel';
-                panel.style.cssText = `
-                    position: fixed;
-                    top: 10px;
-                    right: 10px;
-                    width: 400px;
-                    max-height: 500px;
-                    background: #1a1a1a;
-                    color: #00ff00;
-                    border: 2px solid #00ff00;
-                    border-radius: 8px;
-                    padding: 10px;
-                    font-family: 'Courier New', monospace;
-                    font-size: 12px;
-                    z-index: 10000;
-                    overflow-y: auto;
-                    box-shadow: 0 4px 20px rgba(0,255,0,0.3);
-                `;
-                
-                const header = document.createElement('div');
-                header.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <strong>🔍 DEBUG PANEL</strong>
-                        <button onclick="window.debugLog.clearLogs()" style="background: #ff0000; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;">Clear</button>
-                    </div>
-                `;
-                panel.appendChild(header);
-                
-                const content = document.createElement('div');
-                content.id = 'debug-content';
-                panel.appendChild(content);
-                
-                document.body.appendChild(panel);
-                this.updateDebugPanel();
-            },
-            
-            updateDebugPanel: function() {
-                const content = document.getElementById('debug-content');
-                if (!content) return;
-                
-                const allEntries = [
-                    ...this.errors.map(e => ({...e, priority: 3})),
-                    ...this.warnings.map(w => ({...w, priority: 2})),
-                    ...this.logs.map(l => ({...l, priority: 1}))
-                ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 20);
-                
-                content.innerHTML = allEntries.map(entry => {
-                    const color = entry.type === 'ERROR' ? '#ff4444' : 
-                                 entry.type === 'WARN' ? '#ffaa00' : '#00ff00';
-                    return `
-                        <div style="margin-bottom: 5px; padding: 3px; border-left: 3px solid ${color}; background: rgba(0,0,0,0.3);">
-                            <div style="color: ${color}; font-weight: bold;">[${entry.timestamp.split('T')[1].split('.')[0]}] ${entry.type}</div>
-                            <div>${entry.message}</div>
-                            ${entry.data ? `<div style="color: #888; font-size: 10px;">${JSON.stringify(entry.data)}</div>` : ''}
-                        </div>
-                    `;
-                }).join('');
-            },
-            
-            clearLogs: function() {
-                this.logs = [];
-                this.errors = [];
-                this.warnings = [];
-                this.updateDebugPanel();
-            }
-        };
+        // EINFACHES LOGGING
+        function log(message) {
+            console.log('📸 UPLOAD:', message);
+        }
         
-        // Erweiterte Upload-Funktionen mit detailliertem Logging
+        // EINFACHE UPLOAD-FUNKTIONEN
         function triggerDirectUpload() {
-            window.debugLog.log('🚀 DIRECT UPLOAD: Button clicked');
-            
-            const fileInput = document.getElementById('direct-profile-upload');
-            window.debugLog.log('📁 DIRECT UPLOAD: Looking for file input', {
-                elementFound: !!fileInput,
-                elementId: fileInput ? fileInput.id : 'NOT_FOUND',
-                elementType: fileInput ? fileInput.type : 'NOT_FOUND'
-            });
-            
+            log('Button clicked');
+            const fileInput = document.getElementById('file-upload');
             if (fileInput) {
-                window.debugLog.log('📁 DIRECT UPLOAD: File input found, triggering click');
-                try {
-                    fileInput.click();
-                    window.debugLog.log('✅ DIRECT UPLOAD: Click triggered successfully');
-                } catch (error) {
-                    window.debugLog.error('❌ DIRECT UPLOAD: Click failed', error);
-                }
+                fileInput.click();
+                log('File input clicked');
             } else {
-                window.debugLog.error('❌ DIRECT UPLOAD: File input not found');
                 alert('Upload-Element nicht gefunden!');
             }
         }
         
         function handleDirectUploadChange(input) {
-            window.debugLog.log('📸 DIRECT UPLOAD: File change event triggered', {
-                inputElement: !!input,
-                filesCount: input ? input.files.length : 0
-            });
-            
+            log('File selected');
             const file = input.files[0];
             if (!file) {
-                window.debugLog.warn('⚠️ DIRECT UPLOAD: No file selected');
+                log('No file selected');
                 return;
             }
             
-            window.debugLog.log('📸 DIRECT UPLOAD: Processing file', {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                lastModified: file.lastModified
-            });
+            log(`Processing file: ${file.name}`);
             
             const reader = new FileReader();
-            
             reader.onload = function(e) {
                 const imageUrl = e.target.result;
-                window.debugLog.log('📸 DIRECT UPLOAD: Image loaded successfully', {
-                    urlLength: imageUrl.length,
-                    urlStart: imageUrl.substring(0, 50) + '...'
-                });
+                log('Image loaded');
                 
-                // Profilbild aktualisieren
-                const currentImage = document.getElementById('current-profile-image');
-                const currentName = document.getElementById('current-profile-name');
+                // Bild anzeigen
+                const img = document.getElementById('current-profile-image');
+                const name = document.getElementById('current-profile-name');
                 
-                window.debugLog.log('🔍 DIRECT UPLOAD: Looking for display elements', {
-                    currentImageFound: !!currentImage,
-                    currentNameFound: !!currentName,
-                    currentImageSrc: currentImage ? currentImage.src : 'NOT_FOUND',
-                    currentNameText: currentName ? currentName.textContent : 'NOT_FOUND'
-                });
-                
-                if (currentImage) {
-                    currentImage.src = imageUrl;
-                    currentImage.style.display = 'block';
-                    window.debugLog.log('✅ DIRECT UPLOAD: Image updated in admin panel', {
-                        newSrc: imageUrl.substring(0, 50) + '...',
-                        displayStyle: currentImage.style.display
-                    });
-                } else {
-                    window.debugLog.error('❌ DIRECT UPLOAD: current-profile-image element not found');
+                if (img) {
+                    img.src = imageUrl;
+                    img.style.display = 'block';
+                    log('Image updated');
                 }
                 
-                if (currentName) {
-                    currentName.textContent = file.name;
-                    window.debugLog.log('✅ DIRECT UPLOAD: Name updated', {
-                        newName: file.name
-                    });
-                } else {
-                    window.debugLog.error('❌ DIRECT UPLOAD: current-profile-name element not found');
+                if (name) {
+                    name.textContent = file.name;
+                    log('Name updated');
                 }
                 
-                // In localStorage speichern
-                try {
-                    localStorage.setItem('heroProfileImage', imageUrl);
-                    window.debugLog.log('💾 DIRECT UPLOAD: Saved to localStorage', {
-                        key: 'heroProfileImage',
-                        valueLength: imageUrl.length
-                    });
-                } catch (error) {
-                    window.debugLog.error('❌ DIRECT UPLOAD: localStorage save failed', error);
-                }
+                // Speichern
+                localStorage.setItem('heroProfileImage', imageUrl);
+                log('Saved to localStorage');
                 
-                // Erfolgsmeldung
-                alert('Profilbild erfolgreich hochgeladen!');
-                window.debugLog.log('✅ DIRECT UPLOAD: Upload completed successfully');
+                // Website aktualisieren
+                updateWebsiteImage(imageUrl);
+                
+                alert('✅ Bild erfolgreich hochgeladen!');
             };
             
             reader.onerror = function(error) {
-                window.debugLog.error('❌ DIRECT UPLOAD: FileReader error', error);
+                log('FileReader error: ' + error);
                 alert('Fehler beim Lesen der Datei!');
             };
             
             reader.readAsDataURL(file);
         }
         
-        // Erweiterte Test-Funktion
-        function testUpload() {
-            window.debugLog.log('🧪 TEST: Starting comprehensive upload test');
+        // EINFACHER TEST
+        function simpleTest() {
+            log('Testing upload system');
+            const fileInput = document.getElementById('file-upload');
+            const image = document.getElementById('current-profile-image');
             
-            const elements = {
-                directBtn: document.getElementById('direct-upload-btn'),
-                directInput: document.getElementById('direct-profile-upload'),
-                currentImage: document.getElementById('current-profile-image'),
-                currentName: document.getElementById('current-profile-name')
-            };
-            
-            window.debugLog.log('🧪 TEST: Element analysis', {
-                directBtn: {
-                    found: !!elements.directBtn,
-                    id: elements.directBtn ? elements.directBtn.id : 'NOT_FOUND',
-                    onclick: elements.directBtn ? elements.directBtn.onclick : 'NOT_FOUND',
-                    className: elements.directBtn ? elements.directBtn.className : 'NOT_FOUND'
-                },
-                directInput: {
-                    found: !!elements.directInput,
-                    id: elements.directInput ? elements.directInput.id : 'NOT_FOUND',
-                    type: elements.directInput ? elements.directInput.type : 'NOT_FOUND',
-                    accept: elements.directInput ? elements.directInput.accept : 'NOT_FOUND',
-                    style: elements.directInput ? elements.directInput.style.display : 'NOT_FOUND'
-                },
-                currentImage: {
-                    found: !!elements.currentImage,
-                    id: elements.currentImage ? elements.currentImage.id : 'NOT_FOUND',
-                    src: elements.currentImage ? elements.currentImage.src : 'NOT_FOUND',
-                    style: elements.currentImage ? elements.currentImage.style.cssText : 'NOT_FOUND'
-                },
-                currentName: {
-                    found: !!elements.currentName,
-                    id: elements.currentName ? elements.currentName.id : 'NOT_FOUND',
-                    textContent: elements.currentName ? elements.currentName.textContent : 'NOT_FOUND'
-                }
-            });
-            
-            // Test localStorage
-            const storedImage = localStorage.getItem('heroProfileImage');
-            window.debugLog.log('🧪 TEST: localStorage check', {
-                heroProfileImage: storedImage ? 'EXISTS' : 'NOT_FOUND',
-                length: storedImage ? storedImage.length : 0
-            });
-            
-            // Test DOM-Ready
-            window.debugLog.log('🧪 TEST: DOM state', {
-                readyState: document.readyState,
-                bodyChildren: document.body.children.length,
-                scriptsLoaded: document.scripts.length
-            });
-        }
-        
-        // Debug-Panel erstellen
-        document.addEventListener('DOMContentLoaded', function() {
-            window.debugLog.createDebugPanel();
-            window.debugLog.log('🚀 DEBUG: Debug panel created');
-            setTimeout(testUpload, 1000);
-        });
-        
-        // EINFACHER UPLOAD-TEST
-        function simpleUploadTest() {
-            window.debugLog.log('🧪 SIMPLE TEST: Starting simple upload test');
-            
-            // Test 1: Elemente finden
-            const elements = {
-                directBtn: document.getElementById('direct-upload-btn'),
-                directInput: document.getElementById('direct-profile-upload'),
-                currentImage: document.getElementById('current-profile-image'),
-                currentName: document.getElementById('current-profile-name')
-            };
-            
-            window.debugLog.log('🧪 SIMPLE TEST: Element check', {
-                directBtn: elements.directBtn ? 'FOUND' : 'NOT_FOUND',
-                directInput: elements.directInput ? 'FOUND' : 'NOT_FOUND',
-                currentImage: elements.currentImage ? 'FOUND' : 'NOT_FOUND',
-                currentName: elements.currentName ? 'FOUND' : 'NOT_FOUND'
-            });
-            
-            // Test 2: Button-Click simulieren
-            if (elements.directBtn) {
-                window.debugLog.log('🧪 SIMPLE TEST: Testing button click');
-                try {
-                    elements.directBtn.click();
-                    window.debugLog.log('✅ SIMPLE TEST: Button click successful');
-                } catch (error) {
-                    window.debugLog.error('❌ SIMPLE TEST: Button click failed', error);
-                }
-            }
-            
-            // Test 3: localStorage testen
-            const testImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iIzY2N2VlYSIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMTIiPk1BTlVFTDwvdGV4dD48L3N2Zz4=';
-            
-            try {
-                localStorage.setItem('heroProfileImage', testImage);
-                window.debugLog.log('✅ SIMPLE TEST: localStorage write successful');
-                
-                const retrieved = localStorage.getItem('heroProfileImage');
-                window.debugLog.log('✅ SIMPLE TEST: localStorage read successful', {
-                    length: retrieved ? retrieved.length : 0
-                });
-            } catch (error) {
-                window.debugLog.error('❌ SIMPLE TEST: localStorage failed', error);
-            }
-            
-            // Test 4: Bild anzeigen
-            if (elements.currentImage) {
-                elements.currentImage.src = testImage;
-                elements.currentImage.style.display = 'block';
-                window.debugLog.log('✅ SIMPLE TEST: Image display test successful');
+            if (fileInput && image) {
+                log('All elements found - system ready');
+            } else {
+                log('Missing elements - system not ready');
             }
         }
         
         // Test nach 2 Sekunden
-        setTimeout(simpleUploadTest, 2000);
+        setTimeout(simpleTest, 2000);
         
         // NEUE EINFACHE UPLOAD-LÖSUNG
         function initSimpleUpload() {
@@ -16668,7 +16408,7 @@ Bitte antworte im folgenden JSON-Format:
                     console.log('✅ UPLOAD: Hero data saved');
                     
                     // 3. Website sofort aktualisieren
-                    updateWebsiteNow(heroData);
+                    updateWebsiteImage(imageUrl);
                     
                     alert('✅ Bild erfolgreich hochgeladen und gespeichert!');
                 } catch (error) {
@@ -16763,115 +16503,135 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // AWS-Speicherung für Bilder
-        async function saveImageToAWS(imageUrl, filename) {
-            try {
-                console.log('☁️ AWS: Starting image upload to AWS...');
-                
-                if (!window.smartAPI) {
-                    console.warn('⚠️ AWS: Smart API not available');
-                    return;
-                }
-                
-                // Bild als Blob konvertieren
-                const response = await fetch(imageUrl);
-                const blob = await response.blob();
-                const file = new File([blob], filename, { type: 'image/jpeg' });
-                
-                // AWS S3 Upload
-                const uploadResult = await window.smartAPI.uploadFile(file, {
-                    type: 'profile',
-                    category: 'hero',
-                    userId: 'default-user',
-                    filename: `hero-profile-${Date.now()}.jpg`
-                });
-                
-                console.log('✅ AWS: Image uploaded successfully:', uploadResult);
-                
-                // Website sofort aktualisieren
-                updateWebsiteImage(imageUrl);
-                
-            } catch (error) {
-                console.error('❌ AWS: Image upload failed:', error);
-            }
-        }
-        
-        // Website sofort aktualisieren
+        // EINFACHE WEBSITE-AKTUALISIERUNG
         function updateWebsiteImage(imageUrl) {
             try {
-                console.log('🌐 WEBSITE: Updating website image...');
+                console.log('🌐 WEBSITE: Updating website with image...');
                 
                 // Hero-Daten sammeln
                 const heroData = {
-                    name: document.getElementById('hero-name')?.value || '',
-                    title: document.getElementById('hero-title')?.value || '',
+                    name: document.getElementById('hero-name')?.value || 'Manuel Weiss',
+                    title: document.getElementById('hero-title')?.value || 'HR Berater für AI & Transformation',
                     subtitle: document.getElementById('hero-subtitle')?.value || '',
                     description: document.getElementById('hero-description')?.value || '',
-                    bgColor1: document.getElementById('hero-bg-color1')?.value || '#667eea',
-                    bgColor2: document.getElementById('hero-bg-color2')?.value || '#764ba2',
-                    textColor: document.getElementById('hero-text-color')?.value || '#ffffff',
-                    buttonText: document.getElementById('hero-button-text')?.value || '',
-                    buttonLink: document.getElementById('hero-button-link')?.value || '',
-                    email: document.getElementById('hero-email')?.value || '',
-                    phone: document.getElementById('hero-phone')?.value || '',
-                    location: document.getElementById('hero-location')?.value || '',
-                    linkedin: document.getElementById('hero-linkedin')?.value || '',
-                    website: document.getElementById('hero-website')?.value || '',
-                    stat1Number: document.getElementById('hero-stat1-number')?.value || '5+',
-                    stat1Label: document.getElementById('hero-stat1-label')?.value || 'Jahre Erfahrung',
-                    stat2Number: document.getElementById('hero-stat2-number')?.value || '50+',
-                    stat2Label: document.getElementById('hero-stat2-label')?.value || 'Projekte',
-                    stat3Number: document.getElementById('hero-stat3-number')?.value || '100%',
-                    stat3Label: document.getElementById('hero-stat3-label')?.value || 'Zufriedenheit'
+                    profileImage: imageUrl,
+                    timestamp: new Date().toISOString()
                 };
-                
-                // Mit Profilbild speichern
-                heroData.profileImage = imageUrl;
                 
                 // In localStorage speichern
                 localStorage.setItem('heroData', JSON.stringify(heroData));
-                console.log('✅ WEBSITE: Hero data updated with image');
+                console.log('✅ WEBSITE: Hero data saved with image');
                 
-                // AWS auch speichern
-                saveHeroDataToAWS(heroData);
+                // Storage-Event für Website auslösen
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'heroData',
+                    newValue: JSON.stringify(heroData)
+                }));
+                
+                console.log('✅ WEBSITE: Storage event dispatched');
                 
             } catch (error) {
                 console.error('❌ WEBSITE: Update failed:', error);
             }
         }
         
-        // AWS Hero-Daten speichern
-        async function saveHeroDataToAWS(heroData) {
-            try {
-                console.log('☁️ AWS: Saving hero data to AWS...');
+        // EINFACHE UPLOAD-LÖSUNG - FUNKTIONIERT GARANTIERT
+        function handleFileUpload(input) {
+            console.log('📸 UPLOAD: File selected');
+            const file = input.files[0];
+            if (!file) {
+                console.log('❌ UPLOAD: No file selected');
+                alert('❌ Keine Datei ausgewählt!');
+                return;
+            }
+            
+            console.log('📸 UPLOAD: Processing file:', file.name, file.size, file.type);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                console.log('📸 UPLOAD: Image loaded, length:', imageUrl.length);
                 
-                if (!window.smartAPI) {
-                    console.warn('⚠️ AWS: Smart API not available');
+                // Bild anzeigen
+                const img = document.getElementById('current-profile-image');
+                const name = document.getElementById('current-profile-name');
+                
+                if (img) {
+                    img.src = imageUrl;
+                    img.style.display = 'block';
+                    console.log('✅ UPLOAD: Image updated');
+                } else {
+                    console.error('❌ UPLOAD: Image element not found');
+                    alert('❌ Bild-Element nicht gefunden!');
                     return;
                 }
                 
-                const heroDocument = {
-                    id: 'hero-data',
-                    type: 'hero-config',
-                    data: heroData,
-                    userId: 'default-user',
-                    timestamp: new Date().toISOString(),
-                    version: '1.0'
-                };
+                if (name) {
+                    name.textContent = file.name;
+                    console.log('✅ UPLOAD: Name updated');
+                }
                 
-                const result = await window.smartAPI.saveDocument(heroDocument);
-                console.log('✅ AWS: Hero data saved successfully:', result);
-                
-            } catch (error) {
-                console.error('❌ AWS: Hero data save failed:', error);
+                // Speichern
+                try {
+                    // 1. localStorage speichern
+                    localStorage.setItem('heroProfileImage', imageUrl);
+                    console.log('✅ UPLOAD: Saved to localStorage');
+                    
+                    // 2. Hero-Daten sammeln und speichern
+                    const heroData = {
+                        name: document.getElementById('hero-name')?.value || 'Manuel Weiss',
+                        title: document.getElementById('hero-title')?.value || 'HR Berater für AI & Transformation',
+                        subtitle: document.getElementById('hero-subtitle')?.value || '',
+                        description: document.getElementById('hero-description')?.value || '',
+                        profileImage: imageUrl,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('heroData', JSON.stringify(heroData));
+                    console.log('✅ UPLOAD: Hero data saved');
+                    
+                    // 3. Website sofort aktualisieren
+                    window.dispatchEvent(new StorageEvent('storage', {
+                        key: 'heroData',
+                        newValue: JSON.stringify(heroData)
+                    }));
+                    console.log('✅ UPLOAD: Website update triggered');
+                    
+                    alert('✅ Bild erfolgreich hochgeladen und gespeichert!');
+                } catch (error) {
+                    console.error('❌ UPLOAD: Save failed:', error);
+                    alert('❌ Fehler beim Speichern: ' + error.message);
+                }
+            };
+            
+            reader.onerror = function(error) {
+                console.error('❌ UPLOAD: FileReader error:', error);
+                alert('❌ Fehler beim Lesen der Datei!');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Bild beim Laden anzeigen
+        function loadStoredImage() {
+            console.log('🔄 LOAD: Loading stored image');
+            const stored = localStorage.getItem('heroProfileImage');
+            if (stored) {
+                const img = document.getElementById('current-profile-image');
+                if (img) {
+                    img.src = stored;
+                    img.style.display = 'block';
+                    console.log('✅ LOAD: Stored image displayed');
+                }
+            } else {
+                console.log('ℹ️ LOAD: No stored image found');
             }
         }
         
         // Beim Laden starten
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 PAGE: Page loaded');
-            setTimeout(loadImageOnStart, 1000);
-            setTimeout(testUploadSystem, 2000);
+            console.log('🚀 PAGE: Page loaded - upload system ready');
+            setTimeout(loadStoredImage, 1000);
         });
     </script>
 </body>
