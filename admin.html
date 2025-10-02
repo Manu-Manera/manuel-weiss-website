@@ -8154,6 +8154,8 @@
                         input.addEventListener('input', function() {
                             console.log(`🔄 LIVE UPDATE: ${inputId} changed to: ${this.value}`);
                             updateWebsiteLive();
+                            // Automatisch in AWS speichern
+                            saveHeroDataToAWSAuto();
                         });
                         
                         // Live-Update bei Farbänderung
@@ -8161,6 +8163,8 @@
                             input.addEventListener('change', function() {
                                 console.log(`🎨 COLOR UPDATE: ${inputId} changed to: ${this.value}`);
                                 updateWebsiteLive();
+                                // Automatisch in AWS speichern
+                                saveHeroDataToAWSAuto();
                             });
                         }
                     }
@@ -8180,6 +8184,8 @@
                                     localStorage.setItem('heroProfileImage', e.target.result);
                                     console.log('📸 PROFILE UPDATE: Profile image updated live');
                                     updateWebsiteLive();
+                                    // Automatisch in AWS speichern
+                                    saveHeroDataToAWSAuto();
                                 }
                             };
                             reader.readAsDataURL(file);
@@ -8242,6 +8248,50 @@
             
             // Live-Updates initialisieren
             initializeLiveUpdates();
+            
+            // Automatische AWS-Speicherung (mit Debouncing)
+            let saveTimeout;
+            async function saveHeroDataToAWSAuto() {
+                // Debouncing: Nur nach 1 Sekunde Inaktivität speichern
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(async () => {
+                    try {
+                        console.log('💾 AUTO SAVE: Automatically saving hero data to AWS...');
+                        const heroData = collectHeroData();
+                        await saveHeroDataToAWS(heroData);
+                        console.log('✅ AUTO SAVE: Hero data saved automatically');
+                    } catch (error) {
+                        console.error('❌ AUTO SAVE: Failed to save hero data:', error);
+                    }
+                }, 1000);
+            }
+            
+            // Hero-Daten sammeln
+            function collectHeroData() {
+                return {
+                    name: document.getElementById('hero-name')?.value || '',
+                    title: document.getElementById('hero-title')?.value || '',
+                    subtitle: document.getElementById('hero-subtitle')?.value || '',
+                    description: document.getElementById('hero-description')?.value || '',
+                    bgColor1: document.getElementById('hero-bg-color1')?.value || '#667eea',
+                    bgColor2: document.getElementById('hero-bg-color2')?.value || '#764ba2',
+                    textColor: document.getElementById('hero-text-color')?.value || '#ffffff',
+                    buttonText: document.getElementById('hero-button-text')?.value || '',
+                    buttonLink: document.getElementById('hero-button-link')?.value || '',
+                    email: document.getElementById('hero-email')?.value || '',
+                    phone: document.getElementById('hero-phone')?.value || '',
+                    location: document.getElementById('hero-location')?.value || '',
+                    linkedin: document.getElementById('hero-linkedin')?.value || '',
+                    website: document.getElementById('hero-website')?.value || '',
+                    // Hero-Statistiken
+                    stat1Number: document.getElementById('hero-stat1-number')?.value || '5+',
+                    stat1Label: document.getElementById('hero-stat1-label')?.value || 'Jahre Erfahrung',
+                    stat2Number: document.getElementById('hero-stat2-number')?.value || '50+',
+                    stat2Label: document.getElementById('hero-stat2-label')?.value || 'Projekte',
+                    stat3Number: document.getElementById('hero-stat3-number')?.value || '100%',
+                    stat3Label: document.getElementById('hero-stat3-label')?.value || 'Zufriedenheit'
+                };
+            }
             
             // AWS-Integration für Hero-Daten
             async function saveHeroDataToAWS(heroData) {
