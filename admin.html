@@ -7301,11 +7301,11 @@
                                                 <button type="button" id="change-profile-btn" class="btn btn-secondary">
                                                     <i class="fas fa-exchange-alt"></i> Profilbild wechseln
                                                 </button>
-                                                <button type="button" id="simple-upload-btn" class="btn btn-primary">
+                                                <button type="button" onclick="document.getElementById('file-upload').click()" class="btn btn-primary">
                                                     <i class="fas fa-upload"></i> Bild hochladen
                                                 </button>
                                             </div>
-                                            <input type="file" id="simple-file-input" accept="image/*" style="display: none;">
+                                            <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(this)">
                                         </div>
                                     </div>
                                     
@@ -16610,10 +16610,125 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // Einfache Upload-Lösung initialisieren
+        // EINFACHSTE UPLOAD-LÖSUNG
+        function handleFileUpload(input) {
+            console.log('🚀 UPLOAD: File selected');
+            const file = input.files[0];
+            if (!file) {
+                console.log('❌ UPLOAD: No file selected');
+                return;
+            }
+            
+            console.log('🚀 UPLOAD: Processing file:', file.name, file.size, file.type);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                console.log('🚀 UPLOAD: Image loaded, length:', imageUrl.length);
+                
+                // Bild anzeigen
+                const img = document.getElementById('current-profile-image');
+                const name = document.getElementById('current-profile-name');
+                
+                if (img) {
+                    img.src = imageUrl;
+                    img.style.display = 'block';
+                    console.log('✅ UPLOAD: Image updated');
+                } else {
+                    console.error('❌ UPLOAD: Image element not found');
+                }
+                
+                if (name) {
+                    name.textContent = file.name;
+                    console.log('✅ UPLOAD: Name updated');
+                } else {
+                    console.error('❌ UPLOAD: Name element not found');
+                }
+                
+                // Speichern
+                try {
+                    localStorage.setItem('heroProfileImage', imageUrl);
+                    console.log('✅ UPLOAD: Saved to localStorage');
+                    alert('✅ Bild erfolgreich hochgeladen!');
+                } catch (error) {
+                    console.error('❌ UPLOAD: Save failed:', error);
+                    alert('❌ Fehler beim Speichern!');
+                }
+            };
+            
+            reader.onerror = function(error) {
+                console.error('❌ UPLOAD: FileReader error:', error);
+                alert('❌ Fehler beim Lesen der Datei!');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Bild beim Laden anzeigen
+        function loadImageOnStart() {
+            console.log('🔄 LOAD: Loading stored image');
+            const stored = localStorage.getItem('heroProfileImage');
+            if (stored && stored !== 'manuel-weiss-photo.svg') {
+                const img = document.getElementById('current-profile-image');
+                const name = document.getElementById('current-profile-name');
+                
+                if (img) {
+                    img.src = stored;
+                    img.style.display = 'block';
+                    console.log('✅ LOAD: Image loaded');
+                }
+                
+                if (name) {
+                    name.textContent = 'Hochgeladenes Profilbild';
+                    console.log('✅ LOAD: Name updated');
+                }
+            } else {
+                console.log('ℹ️ LOAD: No stored image');
+            }
+        }
+        
+        // Test-Funktion
+        function testUploadSystem() {
+            console.log('🧪 TEST: Testing upload system');
+            
+            const elements = {
+                uploadBtn: document.querySelector('button[onclick*="file-upload"]'),
+                fileInput: document.getElementById('file-upload'),
+                image: document.getElementById('current-profile-image'),
+                name: document.getElementById('current-profile-name')
+            };
+            
+            console.log('🧪 TEST: Elements found:', {
+                uploadBtn: !!elements.uploadBtn,
+                fileInput: !!elements.fileInput,
+                image: !!elements.image,
+                name: !!elements.name
+            });
+            
+            // Test localStorage
+            const stored = localStorage.getItem('heroProfileImage');
+            console.log('🧪 TEST: localStorage check:', {
+                hasStored: !!stored,
+                length: stored ? stored.length : 0
+            });
+            
+            // Test Button-Click
+            if (elements.uploadBtn) {
+                console.log('🧪 TEST: Testing button click');
+                try {
+                    elements.uploadBtn.click();
+                    console.log('✅ TEST: Button click successful');
+                } catch (error) {
+                    console.error('❌ TEST: Button click failed:', error);
+                }
+            }
+        }
+        
+        // Beim Laden starten
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initSimpleUpload, 500);
-            setTimeout(loadStoredImage, 1000);
+            console.log('🚀 PAGE: Page loaded');
+            setTimeout(loadImageOnStart, 1000);
+            setTimeout(testUploadSystem, 2000);
         });
     </script>
 </body>
