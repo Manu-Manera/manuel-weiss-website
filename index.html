@@ -1013,8 +1013,13 @@
         }
         
         // Beim Laden der Seite Hero-Daten laden
-        document.addEventListener('DOMContentLoaded', function() {
-            loadHeroDataFromAdmin();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 WEBSITE: Page loaded, loading hero data...');
+            try {
+                await loadHeroDataFromAdmin();
+            } catch (error) {
+                console.error('❌ WEBSITE: Failed to load hero data:', error);
+            }
             initializeLanguageSwitch();
         });
         
