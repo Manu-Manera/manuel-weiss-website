@@ -843,6 +843,16 @@
                         console.log('ℹ️ WEBSITE: No custom profile image found, using default');
                     }
                     
+                    // Zusätzlich: Profilbild aus heroData laden
+                    if (data.profileImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = data.profileImage;
+                            profilePhoto.style.display = 'block';
+                            console.log('✅ WEBSITE: Profile image loaded from heroData');
+                        }
+                    }
+                    
                     // Button-Text aktualisieren
                     if (data.buttonText) {
                         const contactButton = document.querySelector('.hero-actions .btn-outline');
@@ -1079,6 +1089,29 @@
         
         // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
         setInterval(updateHeroStatistics, 2000);
+        
+        // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
+        function updateWebsiteProfileImage() {
+            const heroData = localStorage.getItem('heroData');
+            if (heroData) {
+                try {
+                    const data = JSON.parse(heroData);
+                    if (data.profileImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = data.profileImage;
+                            profilePhoto.style.display = 'block';
+                            console.log('🔄 WEBSITE: Profile image updated from localStorage');
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ WEBSITE: Error updating profile image:', error);
+                }
+            }
+        }
+        
+        // Profilbild-Updates alle 3 Sekunden prüfen
+        setInterval(updateWebsiteProfileImage, 3000);
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
