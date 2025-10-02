@@ -406,7 +406,18 @@
     
     
     <!-- Scripts -->
-    <script src="script.js">    </script>
+    <script src="script.js"></script>
+    
+    <!-- Smart API für AWS-Integration -->
+    <script>
+        // Smart API laden für AWS-Integration
+        const smartApiScript = document.createElement('script');
+        smartApiScript.src = 'js/smart-api.js?v=1.0';
+        smartApiScript.onload = function() {
+            console.log('✅ WEBSITE: Smart API loaded for AWS integration');
+        };
+        document.head.appendChild(smartApiScript);
+    </script>
 
     <!-- Login Visibility Control -->
     <script>
@@ -748,11 +759,29 @@
         console.log('🚀 WEBSITE: Loading hero data integration...');
         
         // Hero-Daten aus Admin-Panel laden und anwenden
-        function loadHeroDataFromAdmin() {
+        async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
-            // Daten aus localStorage laden
-            const heroData = localStorage.getItem('heroData');
+            // Erst versuchen von AWS zu laden
+            let heroData = null;
+            try {
+                if (window.smartAPI) {
+                    console.log('☁️ WEBSITE: Trying to load hero data from AWS...');
+                    const awsData = await window.smartAPI.getDocument('hero-data', 'default-user');
+                    if (awsData && awsData.data) {
+                        heroData = JSON.stringify(awsData.data);
+                        console.log('✅ WEBSITE: Hero data loaded from AWS');
+                    }
+                }
+            } catch (error) {
+                console.log('⚠️ WEBSITE: AWS not available, using localStorage');
+            }
+            
+            // Falls AWS nicht verfügbar, localStorage verwenden
+            if (!heroData) {
+                heroData = localStorage.getItem('heroData');
+            }
+            
             if (heroData) {
                 try {
                     const data = JSON.parse(heroData);
@@ -780,7 +809,27 @@
                     }
                     
                     // Profilbild aktualisieren (falls hochgeladen)
-                    const profileImage = localStorage.getItem('heroProfileImage');
+                    let profileImage = localStorage.getItem('heroProfileImage');
+                    
+                    // Erst versuchen von AWS zu laden
+                    if (!profileImage && window.smartAPI) {
+                        try {
+                            const awsProfile = await window.smartAPI.getUserDocuments('default-user');
+                            if (awsProfile && awsProfile.documents) {
+                                const heroProfile = awsProfile.documents.find(doc => 
+                                    doc.type === 'profile' && doc.category === 'hero'
+                                );
+                                if (heroProfile && heroProfile.url) {
+                                    profileImage = heroProfile.url;
+                                    localStorage.setItem('heroProfileImage', heroProfile.url);
+                                    console.log('✅ WEBSITE: Profile image loaded from AWS');
+                                }
+                            }
+                        } catch (error) {
+                            console.log('⚠️ WEBSITE: Could not load profile image from AWS');
+                        }
+                    }
+                    
                     if (profileImage) {
                         const profilePhoto = document.getElementById('profile-photo');
                         if (profilePhoto) {
