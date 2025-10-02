@@ -2205,6 +2205,12 @@
                                 <span>Inhalte</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="hero-about" data-tooltip="Hero & Über mich">
+                            <a href="#hero-about">
+                                <i class="fas fa-home"></i>
+                                <span>Hero & Über mich</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="nutrition" data-tooltip="Ernährungsplan">
                             <a href="#nutrition">
                                 <i class="fas fa-apple-alt"></i>
@@ -2496,10 +2502,28 @@
                                 <span>System Health</span>
                             </a>
                         </li>
-                        <li class="nav-item" data-section="settings" data-tooltip="Einstellungen">
-                            <a href="#settings">
+                        <li class="nav-item" data-section="general-settings" data-tooltip="Allgemeine Einstellungen">
+                            <a href="#general-settings">
                                 <i class="fas fa-cog"></i>
-                                <span>Einstellungen</span>
+                                <span>Allgemeine Einstellungen</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-section="seo-settings" data-tooltip="SEO Einstellungen">
+                            <a href="#seo-settings">
+                                <i class="fas fa-search"></i>
+                                <span>SEO Einstellungen</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-section="security-settings" data-tooltip="Sicherheit">
+                            <a href="#security-settings">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Sicherheit</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-section="backup-settings" data-tooltip="Backup">
+                            <a href="#backup-settings">
+                                <i class="fas fa-database"></i>
+                                <span>Backup</span>
                             </a>
                         </li>
                     </ul>
@@ -7085,8 +7109,276 @@
                     </div>
                 </section>
 
-                <!-- Settings Section -->
-                <section id="settings" class="admin-section">
+                <!-- Hero & Über mich Section -->
+                <section id="hero-about" class="admin-section">
+                    <div class="hero-management">
+                        <div class="hero-header">
+                            <h2>🏠 Hero & Über mich verwalten</h2>
+                            <p>Passen Sie den Hero-Bereich und Über-mich-Informationen Ihrer Website an</p>
+                        </div>
+                        
+                        <div class="hero-content-grid">
+                            <!-- Profilbild-Upload -->
+                            <div class="hero-card">
+                                <h3>📸 Profilbild</h3>
+                                <div class="image-upload-area">
+                                    <div class="current-image">
+                                        <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
+                                    </div>
+                                    <div class="upload-controls">
+                                        <input type="file" id="profile-image-upload" accept="image/*" style="display: none;">
+                                        <button type="button" id="upload-profile-btn" class="btn btn-primary">
+                                            <i class="fas fa-upload"></i> Neues Profilbild hochladen
+                                        </button>
+                                        <p class="upload-info">Unterstützte Formate: JPG, PNG, SVG (max. 5MB)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hero-Text-Einstellungen -->
+                            <div class="hero-card">
+                                <h3>✏️ Hero-Text</h3>
+                                <form class="hero-form">
+                                    <div class="form-group">
+                                        <label for="hero-name">Name</label>
+                                        <input type="text" id="hero-name" name="hero-name" class="form-control" placeholder="z.B. Manuel Weiss" value="Manuel Weiss">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-title">Haupttitel</label>
+                                        <input type="text" id="hero-title" name="hero-title" class="form-control" placeholder="z.B. Berater für AI & Digitalisierung" value="HR Berater für AI & Transformation">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-subtitle">Untertitel</label>
+                                        <textarea id="hero-subtitle" name="hero-subtitle" class="form-control" rows="3" placeholder="Beschreibung Ihrer Dienstleistungen...">Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen.</textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-description">Beschreibung</label>
+                                        <textarea id="hero-description" name="hero-description" class="form-control" rows="4" placeholder="Detaillierte Beschreibung...">Seit über 6 Jahren begleite ich Unternehmen bei der digitalen Transformation und der Optimierung ihrer HR-Prozesse.</textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Design-Einstellungen -->
+                            <div class="hero-card">
+                                <h3>🎨 Design</h3>
+                                <form class="hero-form">
+                                    <div class="form-group">
+                                        <label for="hero-bg-color1">Hintergrund-Farbe 1</label>
+                                        <input type="color" id="hero-bg-color1" name="hero-bg-color1" value="#667eea">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-bg-color2">Hintergrund-Farbe 2</label>
+                                        <input type="color" id="hero-bg-color2" name="hero-bg-color2" value="#764ba2">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-text-color">Text-Farbe</label>
+                                        <input type="color" id="hero-text-color" name="hero-text-color" value="#ffffff">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-button-text">Button-Text</label>
+                                        <input type="text" id="hero-button-text" name="hero-button-text" class="form-control" placeholder="z.B. Jetzt starten" value="Kontakt aufnehmen">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-button-link">Button-Link</label>
+                                        <input type="url" id="hero-button-link" name="hero-button-link" class="form-control" placeholder="https://..." value="#kontakt">
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Kontaktdaten -->
+                            <div class="hero-card">
+                                <h3>📞 Kontaktdaten</h3>
+                                <form class="hero-form">
+                                    <div class="form-group">
+                                        <label for="hero-email">E-Mail</label>
+                                        <input type="email" id="hero-email" name="hero-email" class="form-control" placeholder="z.B. weissmanuel94@gmail.com" value="weissmanuel94@gmail.com">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-phone">Telefon</label>
+                                        <input type="tel" id="hero-phone" name="hero-phone" class="form-control" placeholder="z.B. +41 79 123 45 67" value="+41 79 123 45 67">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-location">Standort</label>
+                                        <input type="text" id="hero-location" name="hero-location" class="form-control" placeholder="z.B. Zürich, Schweiz" value="Zürich, Schweiz">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-linkedin">LinkedIn</label>
+                                        <input type="url" id="hero-linkedin" name="hero-linkedin" class="form-control" placeholder="https://linkedin.com/in/..." value="https://linkedin.com/in/manuel-weiss">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="hero-website">Website</label>
+                                        <input type="url" id="hero-website" name="hero-website" class="form-control" placeholder="https://..." value="https://manuel-weiss.ch">
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- PDF-Analyzer -->
+                            <div class="hero-card">
+                                <h3>📄 PDF-Analyzer</h3>
+                                <div class="pdf-analyzer">
+                                    <div class="pdf-upload-area" id="pdfUploadArea">
+                                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: #667eea; margin-bottom: 1rem;"></i>
+                                        <p>Lebenslauf-PDF hier ablegen oder auswählen</p>
+                                        <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                                        <button type="button" id="selectPdfBtn" class="btn btn-secondary">
+                                            <i class="fas fa-folder-open"></i> PDF auswählen
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="pdfAnalysisResults" style="display: none; margin-top: 1rem;">
+                                        <h4>Analysierte Daten:</h4>
+                                        <div id="pdfExtractedData"></div>
+                                        <button type="button" id="applyPdfDataBtn" class="btn btn-success" style="margin-top: 1rem;">
+                                            <i class="fas fa-check"></i> Daten übernehmen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Aktionen -->
+                            <div class="hero-card">
+                                <h3>⚡ Aktionen</h3>
+                                <div class="hero-actions">
+                                    <button type="button" id="save-hero-btn" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Hero-Bereich speichern
+                                    </button>
+                                    
+                                    <button type="button" id="preview-hero-btn" class="btn btn-secondary">
+                                        <i class="fas fa-eye"></i> Vorschau anzeigen
+                                    </button>
+                                    
+                                    <button type="button" id="sync-website-btn" class="btn btn-success">
+                                        <i class="fas fa-sync"></i> Mit Website synchronisieren
+                                    </button>
+                                    
+                                    <button type="button" id="reset-hero-btn" class="btn btn-danger">
+                                        <i class="fas fa-undo"></i> Zurücksetzen
+                                    </button>
+                                </div>
+                                
+                                <div class="hero-status">
+                                    <div id="hero-status-message" class="status-message"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- General Settings Section -->
+                <section id="general-settings" class="admin-section">
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-cog"></i> Allgemeine Einstellungen</h3>
+                        <p>Grundlegende Website-Einstellungen verwalten</p>
+                        <form class="settings-form">
+                            <div class="form-group">
+                                <label>Website-Titel</label>
+                                <input type="text" class="form-control" value="Manuel Weiss - Professional Services">
+                            </div>
+                            <div class="form-group">
+                                <label>Kontakt E-Mail</label>
+                                <input type="email" class="form-control" value="weissmanuel94@gmail.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Zeitzone</label>
+                                <select class="form-control">
+                                    <option>Europe/Zurich</option>
+                                    <option>Europe/Berlin</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- SEO Settings Section -->
+                <section id="seo-settings" class="admin-section">
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-search"></i> SEO Einstellungen</h3>
+                        <p>Suchmaschinenoptimierung für bessere Sichtbarkeit</p>
+                        <form class="settings-form">
+                            <div class="form-group">
+                                <label>Meta-Titel</label>
+                                <input type="text" class="form-control" value="Manuel Weiss - HR Berater für AI & Transformation">
+                            </div>
+                            <div class="form-group">
+                                <label>Meta-Beschreibung</label>
+                                <textarea class="form-control" rows="3">Professionelle HR-Beratung für digitale Transformation und Geschäftsprozesse.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Keywords</label>
+                                <input type="text" class="form-control" value="HR Berater, AI, Transformation, Digitalisierung">
+                            </div>
+                            <button type="submit" class="btn btn-primary">SEO-Einstellungen speichern</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Security Settings Section -->
+                <section id="security-settings" class="admin-section">
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-shield-alt"></i> Sicherheit</h3>
+                        <p>Sicherheitseinstellungen für Ihr Admin-Panel</p>
+                        <form class="settings-form">
+                            <div class="form-group">
+                                <label>Passwort ändern</label>
+                                <input type="password" class="form-control" placeholder="Neues Passwort">
+                            </div>
+                            <div class="form-group">
+                                <label>Zwei-Faktor-Authentifizierung</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="2fa">
+                                    <label class="form-check-label" for="2fa">2FA aktivieren</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Session-Timeout</label>
+                                <select class="form-control">
+                                    <option>30 Minuten</option>
+                                    <option>1 Stunde</option>
+                                    <option>2 Stunden</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Sicherheitseinstellungen speichern</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Backup Settings Section -->
+                <section id="backup-settings" class="admin-section">
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-database"></i> Backup</h3>
+                        <p>Backup und Wiederherstellung Ihrer Website-Daten</p>
+                        <div class="backup-actions">
+                            <button type="button" class="btn btn-primary" data-action="create-backup">
+                                <i class="fas fa-download"></i> Backup erstellen
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-action="restore-backup">
+                                <i class="fas fa-upload"></i> Backup wiederherstellen
+                            </button>
+                            <button type="button" class="btn btn-info" data-action="schedule-backup">
+                                <i class="fas fa-clock"></i> Automatisches Backup einrichten
+                            </button>
+                        </div>
+                        <div class="backup-info">
+                            <h4>Letztes Backup:</h4>
+                            <p>Kein Backup verfügbar</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section (Legacy - wird entfernt) -->
+                <section id="settings" class="admin-section" style="display: none;">
                     <div class="settings-tabs">
                         <button class="settings-tab active" data-tab="hero-settings">
                             <i class="fas fa-home"></i>
@@ -7614,6 +7906,107 @@
             
             // Hero-Funktionen initialisieren
             initializeHeroSettings();
+            
+            // Live-Updates für direkte Website-Synchronisation
+            function initializeLiveUpdates() {
+                console.log('🔄 LIVE UPDATES: Initializing live updates for direct website sync...');
+                
+                // Alle Hero-Input-Felder für Live-Updates überwachen
+                const heroInputs = [
+                    'hero-name', 'hero-title', 'hero-subtitle', 'hero-description',
+                    'hero-bg-color1', 'hero-bg-color2', 'hero-text-color',
+                    'hero-button-text', 'hero-button-link',
+                    'hero-email', 'hero-phone', 'hero-location', 'hero-linkedin', 'hero-website'
+                ];
+                
+                heroInputs.forEach(inputId => {
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        // Live-Update bei Eingabe
+                        input.addEventListener('input', function() {
+                            console.log(`🔄 LIVE UPDATE: ${inputId} changed to: ${this.value}`);
+                            updateWebsiteLive();
+                        });
+                        
+                        // Live-Update bei Farbänderung
+                        if (input.type === 'color') {
+                            input.addEventListener('change', function() {
+                                console.log(`🎨 COLOR UPDATE: ${inputId} changed to: ${this.value}`);
+                                updateWebsiteLive();
+                            });
+                        }
+                    }
+                });
+                
+                // Profilbild-Live-Update
+                const profileUpload = document.getElementById('profile-image-upload');
+                if (profileUpload) {
+                    profileUpload.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const profileImage = document.getElementById('current-profile-image');
+                                if (profileImage) {
+                                    profileImage.src = e.target.result;
+                                    localStorage.setItem('heroProfileImage', e.target.result);
+                                    console.log('📸 PROFILE UPDATE: Profile image updated live');
+                                    updateWebsiteLive();
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+                
+                console.log('✅ LIVE UPDATES: Live updates initialized');
+            }
+            
+            // Website Live-Update Funktion
+            function updateWebsiteLive() {
+                console.log('🌐 LIVE SYNC: Updating website with live changes...');
+                
+                // Hero-Daten sammeln
+                const heroData = {
+                    name: document.getElementById('hero-name')?.value || '',
+                    title: document.getElementById('hero-title')?.value || '',
+                    subtitle: document.getElementById('hero-subtitle')?.value || '',
+                    description: document.getElementById('hero-description')?.value || '',
+                    bgColor1: document.getElementById('hero-bg-color1')?.value || '#667eea',
+                    bgColor2: document.getElementById('hero-bg-color2')?.value || '#764ba2',
+                    textColor: document.getElementById('hero-text-color')?.value || '#ffffff',
+                    buttonText: document.getElementById('hero-button-text')?.value || '',
+                    buttonLink: document.getElementById('hero-button-link')?.value || '',
+                    email: document.getElementById('hero-email')?.value || '',
+                    phone: document.getElementById('hero-phone')?.value || '',
+                    location: document.getElementById('hero-location')?.value || '',
+                    linkedin: document.getElementById('hero-linkedin')?.value || '',
+                    website: document.getElementById('hero-website')?.value || ''
+                };
+                
+                // In localStorage speichern für Website-Sync
+                localStorage.setItem('heroData', JSON.stringify(heroData));
+                
+                // Profilbild auch speichern
+                const profileImage = document.getElementById('current-profile-image');
+                if (profileImage && profileImage.src) {
+                    localStorage.setItem('heroProfileImage', profileImage.src);
+                }
+                
+                // Storage-Event für Website-Sync auslösen
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'heroData',
+                    newValue: JSON.stringify(heroData)
+                }));
+                
+                // Visuelles Feedback
+                showHeroMessage('Änderungen werden live auf die Website übertragen...', 'info');
+                
+                console.log('✅ LIVE SYNC: Website updated with live changes');
+            }
+            
+            // Live-Updates initialisieren
+            initializeLiveUpdates();
             
             // Also initialize after a short delay as fallback
             setTimeout(initializeSettings, 100);
