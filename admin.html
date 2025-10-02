@@ -8312,6 +8312,10 @@
                         const result = await window.smartAPI.saveDocument(heroDocument);
                         console.log('✅ AWS: Hero data saved successfully:', result);
                         
+                        // Auch in localStorage speichern für sofortige Verfügbarkeit
+                        localStorage.setItem('heroData', JSON.stringify(heroData));
+                        console.log('💾 LOCAL: Hero data also saved to localStorage');
+                        
                         // Profilbild separat speichern (falls vorhanden)
                         const profileImage = document.getElementById('current-profile-image');
                         if (profileImage && profileImage.src && !profileImage.src.includes('manuel-weiss-photo.svg')) {
@@ -8463,6 +8467,16 @@
             
             // AWS-Initialisierung starten
             initializeHeroDataFromAWS();
+            
+            // Zusätzlich: Beim Laden der Seite sofort von AWS laden
+            document.addEventListener('DOMContentLoaded', async function() {
+                console.log('🚀 ADMIN: Page loaded, loading hero data from AWS...');
+                try {
+                    await loadHeroDataFromAWS();
+                } catch (error) {
+                    console.error('❌ ADMIN: Failed to load hero data from AWS:', error);
+                }
+            });
             
             // Profilbild-Galerie Funktionalität
             function initializeProfileGallery() {
