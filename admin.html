@@ -7304,11 +7304,11 @@
                                                 <button type="button" id="change-profile-btn" class="btn btn-secondary">
                                                     <i class="fas fa-exchange-alt"></i> Profilbild wechseln
                                                 </button>
-                                                <button type="button" id="direct-upload-btn" class="btn btn-primary">
+                                                <button type="button" id="direct-upload-btn" class="btn btn-primary" onclick="triggerDirectUpload()">
                                                     <i class="fas fa-upload"></i> Direkt hochladen
                                                 </button>
                                             </div>
-                                            <input type="file" id="direct-profile-upload" accept="image/*" style="display: none;">
+                                            <input type="file" id="direct-profile-upload" accept="image/*" style="display: none;" onchange="handleDirectUploadChange(this)">
                                         </div>
                                     </div>
                                     
@@ -16099,6 +16099,98 @@ Bitte antworte im folgenden JSON-Format:
                 panel.style.transition = 'transform 0.3s ease';
             }
         }, 15000);
+        
+        // Direkte Upload-Funktionen
+        function triggerDirectUpload() {
+            console.log('🚀 DIRECT UPLOAD: Button clicked');
+            const fileInput = document.getElementById('direct-profile-upload');
+            if (fileInput) {
+                console.log('📁 DIRECT UPLOAD: File input found, triggering click');
+                fileInput.click();
+            } else {
+                console.error('❌ DIRECT UPLOAD: File input not found');
+                alert('Upload-Element nicht gefunden!');
+            }
+        }
+        
+        function handleDirectUploadChange(input) {
+            console.log('📸 DIRECT UPLOAD: File selected');
+            const file = input.files[0];
+            if (!file) {
+                console.log('❌ DIRECT UPLOAD: No file selected');
+                return;
+            }
+            
+            console.log('📸 DIRECT UPLOAD: Processing file:', file.name, file.size, file.type);
+            
+            // Datei lesen
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                console.log('📸 DIRECT UPLOAD: Image loaded, URL length:', imageUrl.length);
+                
+                // Profilbild aktualisieren
+                const currentImage = document.getElementById('current-profile-image');
+                const currentName = document.getElementById('current-profile-name');
+                
+                if (currentImage) {
+                    currentImage.src = imageUrl;
+                    currentImage.style.display = 'block';
+                    console.log('✅ DIRECT UPLOAD: Image updated in admin panel');
+                } else {
+                    console.error('❌ DIRECT UPLOAD: current-profile-image not found');
+                }
+                
+                if (currentName) {
+                    currentName.textContent = file.name;
+                    console.log('✅ DIRECT UPLOAD: Name updated');
+                } else {
+                    console.error('❌ DIRECT UPLOAD: current-profile-name not found');
+                }
+                
+                // In localStorage speichern
+                localStorage.setItem('heroProfileImage', imageUrl);
+                console.log('💾 DIRECT UPLOAD: Saved to localStorage');
+                
+                // Erfolgsmeldung
+                alert('Profilbild erfolgreich hochgeladen!');
+                console.log('✅ DIRECT UPLOAD: Upload completed successfully');
+            };
+            
+            reader.onerror = function(error) {
+                console.error('❌ DIRECT UPLOAD: FileReader error:', error);
+                alert('Fehler beim Lesen der Datei!');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Test-Funktion
+        function testUpload() {
+            console.log('🧪 TEST: Testing upload functionality...');
+            const directBtn = document.getElementById('direct-upload-btn');
+            const directInput = document.getElementById('direct-profile-upload');
+            const currentImage = document.getElementById('current-profile-image');
+            const currentName = document.getElementById('current-profile-name');
+            
+            console.log('🧪 TEST: Elements found:', {
+                directBtn: !!directBtn,
+                directInput: !!directInput,
+                currentImage: !!currentImage,
+                currentName: !!currentName
+            });
+            
+            if (directBtn) {
+                console.log('🧪 TEST: Button clickable');
+            } else {
+                console.error('❌ TEST: Button not found');
+            }
+        }
+        
+        // Test beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(testUpload, 1000);
+        });
     </script>
 </body>
 </html>
