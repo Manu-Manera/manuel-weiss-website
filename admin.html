@@ -7897,6 +7897,9 @@
                             localStorage.setItem('heroProfileImage', profileImage.src);
                         }
                         
+                        // AWS-Speicherung für Persistenz
+                        await saveHeroDataToAWS(heroData);
+                        
                         showHeroMessage('Hero-Bereich erfolgreich gespeichert!', 'success');
                         console.log('✅ HERO SETTINGS: Data saved:', heroData);
                     });
@@ -8059,6 +8062,177 @@
             
             // Live-Updates initialisieren
             initializeLiveUpdates();
+            
+            // AWS-Integration für Hero-Daten
+            async function saveHeroDataToAWS(heroData) {
+                try {
+                    console.log('☁️ AWS: Saving hero data to AWS...');
+                    
+                    if (window.smartAPI) {
+                        // Hero-Daten als JSON-Dokument speichern
+                        const heroDocument = {
+                            id: 'hero-data',
+                            type: 'hero-config',
+                            data: heroData,
+                            userId: getCurrentUserId(),
+                            timestamp: new Date().toISOString(),
+                            version: '1.0'
+                        };
+                        
+                        const result = await window.smartAPI.saveDocument(heroDocument);
+                        console.log('✅ AWS: Hero data saved successfully:', result);
+                        
+                        // Profilbild separat speichern (falls vorhanden)
+                        const profileImage = document.getElementById('current-profile-image');
+                        if (profileImage && profileImage.src && !profileImage.src.includes('manuel-weiss-photo.svg')) {
+                            await saveProfileImageToAWS(profileImage.src);
+                        }
+                        
+                        return result;
+                    } else {
+                        console.warn('⚠️ AWS: Smart API not available, using localStorage only');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('❌ AWS: Failed to save hero data:', error);
+                    showHeroMessage('Fehler beim Speichern in AWS. Daten werden lokal gespeichert.', 'warning');
+                    return null;
+                }
+            }
+            
+            async function loadHeroDataFromAWS() {
+                try {
+                    console.log('☁️ AWS: Loading hero data from AWS...');
+                    
+                    if (window.smartAPI) {
+                        const heroDocument = await window.smartAPI.getDocument('hero-data', getCurrentUserId());
+                        
+                        if (heroDocument && heroDocument.data) {
+                            console.log('✅ AWS: Hero data loaded from AWS:', heroDocument.data);
+                            
+                            // Daten in Formular laden
+                            const data = heroDocument.data;
+                            if (data.name) document.getElementById('hero-name').value = data.name;
+                            if (data.title) document.getElementById('hero-title').value = data.title;
+                            if (data.subtitle) document.getElementById('hero-subtitle').value = data.subtitle;
+                            if (data.description) document.getElementById('hero-description').value = data.description;
+                            if (data.bgColor1) document.getElementById('hero-bg-color1').value = data.bgColor1;
+                            if (data.bgColor2) document.getElementById('hero-bg-color2').value = data.bgColor2;
+                            if (data.textColor) document.getElementById('hero-text-color').value = data.textColor;
+                            if (data.buttonText) document.getElementById('hero-button-text').value = data.buttonText;
+                            if (data.buttonLink) document.getElementById('hero-button-link').value = data.buttonLink;
+                            if (data.email) document.getElementById('hero-email').value = data.email;
+                            if (data.phone) document.getElementById('hero-phone').value = data.phone;
+                            if (data.location) document.getElementById('hero-location').value = data.location;
+                            if (data.linkedin) document.getElementById('hero-linkedin').value = data.linkedin;
+                            if (data.website) document.getElementById('hero-website').value = data.website;
+                            
+                            // Hero-Statistiken laden
+                            if (data.stat1Number) document.getElementById('hero-stat1-number').value = data.stat1Number;
+                            if (data.stat1Label) document.getElementById('hero-stat1-label').value = data.stat1Label;
+                            if (data.stat2Number) document.getElementById('hero-stat2-number').value = data.stat2Number;
+                            if (data.stat2Label) document.getElementById('hero-stat2-label').value = data.stat2Label;
+                            if (data.stat3Number) document.getElementById('hero-stat3-number').value = data.stat3Number;
+                            if (data.stat3Label) document.getElementById('hero-stat3-label').value = data.stat3Label;
+                            
+                            // Profilbild von AWS laden
+                            await loadProfileImageFromAWS();
+                            
+                            // Daten auch in localStorage speichern für Website-Sync
+                            localStorage.setItem('heroData', JSON.stringify(data));
+                            
+                            showHeroMessage('Hero-Daten von AWS geladen!', 'success');
+                            return data;
+                        } else {
+                            console.log('ℹ️ AWS: No hero data found in AWS, using localStorage');
+                            return null;
+                        }
+                    } else {
+                        console.warn('⚠️ AWS: Smart API not available, using localStorage only');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('❌ AWS: Failed to load hero data:', error);
+                    showHeroMessage('Fehler beim Laden von AWS. Verwende lokale Daten.', 'warning');
+                    return null;
+                }
+            }
+            
+            async function saveProfileImageToAWS(imageDataUrl) {
+                try {
+                    console.log('📸 AWS: Saving profile image to AWS...');
+                    
+                    if (window.smartAPI) {
+                        // Data URL zu Blob konvertieren
+                        const response = await fetch(imageDataUrl);
+                        const blob = await response.blob();
+                        
+                        // Datei für Upload vorbereiten
+                        const file = new File([blob], 'profile-image.jpg', { type: 'image/jpeg' });
+                        
+                        // Upload über Smart API
+                        const result = await window.smartAPI.uploadFile(file, {
+                            type: 'profile',
+                            category: 'hero',
+                            userId: getCurrentUserId(),
+                            filename: 'hero-profile-image.jpg'
+                        });
+                        
+                        console.log('✅ AWS: Profile image saved successfully:', result);
+                        return result;
+                    }
+                } catch (error) {
+                    console.error('❌ AWS: Failed to save profile image:', error);
+                    return null;
+                }
+            }
+            
+            async function loadProfileImageFromAWS() {
+                try {
+                    console.log('📸 AWS: Loading profile image from AWS...');
+                    
+                    if (window.smartAPI) {
+                        // Profilbild von AWS laden
+                        const profileImage = await window.smartAPI.getUserDocuments(getCurrentUserId());
+                        
+                        if (profileImage && profileImage.documents) {
+                            const heroProfile = profileImage.documents.find(doc => 
+                                doc.type === 'profile' && doc.category === 'hero'
+                            );
+                            
+                            if (heroProfile && heroProfile.url) {
+                                const profileImageElement = document.getElementById('current-profile-image');
+                                if (profileImageElement) {
+                                    profileImageElement.src = heroProfile.url;
+                                    localStorage.setItem('heroProfileImage', heroProfile.url);
+                                    console.log('✅ AWS: Profile image loaded from AWS');
+                                    return heroProfile.url;
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ AWS: Failed to load profile image:', error);
+                    return null;
+                }
+            }
+            
+            // Hero-Daten von AWS laden beim Start
+            async function initializeHeroDataFromAWS() {
+                console.log('🚀 HERO AWS: Initializing hero data from AWS...');
+                
+                // Erst versuchen von AWS zu laden
+                const awsData = await loadHeroDataFromAWS();
+                
+                // Falls AWS nicht verfügbar, localStorage verwenden
+                if (!awsData) {
+                    console.log('📱 HERO: Using localStorage fallback...');
+                    loadHeroData();
+                }
+            }
+            
+            // AWS-Initialisierung starten
+            initializeHeroDataFromAWS();
             
             // Also initialize after a short delay as fallback
             setTimeout(initializeSettings, 100);
