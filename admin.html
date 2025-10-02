@@ -7301,11 +7301,11 @@
                                                 <button type="button" id="change-profile-btn" class="btn btn-secondary">
                                                     <i class="fas fa-exchange-alt"></i> Profilbild wechseln
                                                 </button>
-                                                <button type="button" id="direct-upload-btn" class="btn btn-primary" onclick="triggerDirectUpload()">
-                                                    <i class="fas fa-upload"></i> Direkt hochladen
+                                                <button type="button" id="simple-upload-btn" class="btn btn-primary">
+                                                    <i class="fas fa-upload"></i> Bild hochladen
                                                 </button>
                                             </div>
-                                            <input type="file" id="direct-profile-upload" accept="image/*" style="display: none;" onchange="handleDirectUploadChange(this)">
+                                            <input type="file" id="simple-file-input" accept="image/*" style="display: none;">
                                         </div>
                                     </div>
                                     
@@ -16514,6 +16514,107 @@ Bitte antworte im folgenden JSON-Format:
         
         // Test nach 2 Sekunden
         setTimeout(simpleUploadTest, 2000);
+        
+        // NEUE EINFACHE UPLOAD-LÖSUNG
+        function initSimpleUpload() {
+            console.log('🚀 SIMPLE UPLOAD: Initializing simple upload system');
+            
+            const uploadBtn = document.getElementById('simple-upload-btn');
+            const fileInput = document.getElementById('simple-file-input');
+            const imageDisplay = document.getElementById('current-profile-image');
+            const nameDisplay = document.getElementById('current-profile-name');
+            
+            console.log('🚀 SIMPLE UPLOAD: Elements found:', {
+                uploadBtn: !!uploadBtn,
+                fileInput: !!fileInput,
+                imageDisplay: !!imageDisplay,
+                nameDisplay: !!nameDisplay
+            });
+            
+            if (uploadBtn && fileInput) {
+                uploadBtn.addEventListener('click', function() {
+                    console.log('🚀 SIMPLE UPLOAD: Button clicked');
+                    fileInput.click();
+                });
+                
+                fileInput.addEventListener('change', function(e) {
+                    console.log('🚀 SIMPLE UPLOAD: File selected');
+                    const file = e.target.files[0];
+                    if (file) {
+                        console.log('🚀 SIMPLE UPLOAD: Processing file:', file.name);
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imageUrl = e.target.result;
+                            console.log('🚀 SIMPLE UPLOAD: Image loaded, length:', imageUrl.length);
+                            
+                            // Bild anzeigen
+                            if (imageDisplay) {
+                                imageDisplay.src = imageUrl;
+                                imageDisplay.style.display = 'block';
+                                console.log('✅ SIMPLE UPLOAD: Image displayed');
+                            }
+                            
+                            // Name anzeigen
+                            if (nameDisplay) {
+                                nameDisplay.textContent = file.name;
+                                console.log('✅ SIMPLE UPLOAD: Name updated');
+                            }
+                            
+                            // In localStorage speichern
+                            try {
+                                localStorage.setItem('heroProfileImage', imageUrl);
+                                console.log('✅ SIMPLE UPLOAD: Saved to localStorage');
+                                alert('Bild erfolgreich hochgeladen!');
+                            } catch (error) {
+                                console.error('❌ SIMPLE UPLOAD: localStorage error:', error);
+                                alert('Fehler beim Speichern!');
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('❌ SIMPLE UPLOAD: FileReader error:', error);
+                            alert('Fehler beim Lesen der Datei!');
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                console.log('✅ SIMPLE UPLOAD: Event listeners attached');
+            } else {
+                console.error('❌ SIMPLE UPLOAD: Required elements not found');
+            }
+        }
+        
+        // Bild beim Laden anzeigen
+        function loadStoredImage() {
+            console.log('🔄 LOAD IMAGE: Loading stored image');
+            const storedImage = localStorage.getItem('heroProfileImage');
+            if (storedImage && storedImage !== 'manuel-weiss-photo.svg') {
+                const imageDisplay = document.getElementById('current-profile-image');
+                const nameDisplay = document.getElementById('current-profile-name');
+                
+                if (imageDisplay) {
+                    imageDisplay.src = storedImage;
+                    imageDisplay.style.display = 'block';
+                    console.log('✅ LOAD IMAGE: Image loaded from localStorage');
+                }
+                
+                if (nameDisplay) {
+                    nameDisplay.textContent = 'Hochgeladenes Profilbild';
+                    console.log('✅ LOAD IMAGE: Name updated');
+                }
+            } else {
+                console.log('ℹ️ LOAD IMAGE: No stored image found');
+            }
+        }
+        
+        // Einfache Upload-Lösung initialisieren
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initSimpleUpload, 500);
+            setTimeout(loadStoredImage, 1000);
+        });
     </script>
 </body>
 </html>
