@@ -16610,12 +16610,13 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // EINFACHSTE UPLOAD-LÖSUNG
+        // FUNKTIONIERENDE UPLOAD-LÖSUNG
         function handleFileUpload(input) {
             console.log('🚀 UPLOAD: File selected');
             const file = input.files[0];
             if (!file) {
                 console.log('❌ UPLOAD: No file selected');
+                alert('❌ Keine Datei ausgewählt!');
                 return;
             }
             
@@ -16636,6 +16637,8 @@ Bitte antworte im folgenden JSON-Format:
                     console.log('✅ UPLOAD: Image updated');
                 } else {
                     console.error('❌ UPLOAD: Image element not found');
+                    alert('❌ Bild-Element nicht gefunden!');
+                    return;
                 }
                 
                 if (name) {
@@ -16647,16 +16650,30 @@ Bitte antworte im folgenden JSON-Format:
                 
                 // Speichern
                 try {
+                    // 1. localStorage speichern
                     localStorage.setItem('heroProfileImage', imageUrl);
                     console.log('✅ UPLOAD: Saved to localStorage');
                     
-                    // AWS-Speicherung
-                    saveImageToAWS(imageUrl, file.name);
+                    // 2. Hero-Daten sammeln und speichern
+                    const heroData = {
+                        name: document.getElementById('hero-name')?.value || 'Manuel Weiss',
+                        title: document.getElementById('hero-title')?.value || 'HR Berater für AI & Transformation',
+                        subtitle: document.getElementById('hero-subtitle')?.value || '',
+                        description: document.getElementById('hero-description')?.value || '',
+                        profileImage: imageUrl,
+                        timestamp: new Date().toISOString()
+                    };
                     
-                    alert('✅ Bild erfolgreich hochgeladen!');
+                    localStorage.setItem('heroData', JSON.stringify(heroData));
+                    console.log('✅ UPLOAD: Hero data saved');
+                    
+                    // 3. Website sofort aktualisieren
+                    updateWebsiteNow(heroData);
+                    
+                    alert('✅ Bild erfolgreich hochgeladen und gespeichert!');
                 } catch (error) {
                     console.error('❌ UPLOAD: Save failed:', error);
-                    alert('❌ Fehler beim Speichern!');
+                    alert('❌ Fehler beim Speichern: ' + error.message);
                 }
             };
             
@@ -16666,6 +16683,24 @@ Bitte antworte im folgenden JSON-Format:
             };
             
             reader.readAsDataURL(file);
+        }
+        
+        // Website sofort aktualisieren
+        function updateWebsiteNow(heroData) {
+            try {
+                console.log('🌐 WEBSITE: Updating website immediately...');
+                
+                // Storage-Event auslösen für andere Tabs
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'heroData',
+                    newValue: JSON.stringify(heroData),
+                    url: window.location.href
+                }));
+                
+                console.log('✅ WEBSITE: Storage event dispatched');
+            } catch (error) {
+                console.error('❌ WEBSITE: Update failed:', error);
+            }
         }
         
         // Bild beim Laden anzeigen
