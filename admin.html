@@ -160,13 +160,27 @@
         
         .profile-actions {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
         }
         
         .profile-actions .btn {
-            flex: 1;
-            min-width: 120px;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .current-profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .current-profile-info p {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
         }
         /* MODERNE SIDEBAR */
         .sidebar,
@@ -8490,10 +8504,46 @@
                 console.log('🚀 ADMIN: Page loaded, loading hero data from AWS...');
                 try {
                     await loadHeroDataFromAWS();
+                    // Profilbild auch beim Laden überprüfen
+                    await loadProfileImageOnStart();
                 } catch (error) {
                     console.error('❌ ADMIN: Failed to load hero data from AWS:', error);
                 }
             });
+            
+            // Profilbild beim Start laden
+            async function loadProfileImageOnStart() {
+                console.log('📸 ADMIN: Loading profile image on start...');
+                
+                try {
+                    // Erst von localStorage laden
+                    const localImage = localStorage.getItem('heroProfileImage');
+                    if (localImage && localImage !== 'manuel-weiss-photo.svg') {
+                        const currentImage = document.getElementById('current-profile-image');
+                        const currentName = document.getElementById('current-profile-name');
+                        
+                        if (currentImage) {
+                            currentImage.src = localImage;
+                            console.log('📸 ADMIN: Profile image loaded from localStorage');
+                        }
+                        
+                        if (currentName) {
+                            currentName.textContent = 'Hochgeladenes Profilbild';
+                        }
+                    }
+                    
+                    // Dann von AWS laden (falls verfügbar)
+                    if (window.smartAPI) {
+                        try {
+                            await loadProfileImageFromAWS();
+                        } catch (awsError) {
+                            console.log('⚠️ ADMIN: AWS profile image load failed, using localStorage');
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ ADMIN: Failed to load profile image:', error);
+                }
+            }
             
             // Profilbild-Galerie Funktionalität
             function initializeProfileGallery() {
@@ -8614,39 +8664,69 @@
                 const file = event.target.files[0];
                 if (!file) return;
                 
-                console.log('📸 DIRECT UPLOAD: Processing direct upload:', file.name);
+                console.log('📸 DIRECT UPLOAD: Processing direct upload:', file.name, file.size, file.type);
                 
                 try {
                     const reader = new FileReader();
                     reader.onload = async function(e) {
                         const imageUrl = e.target.result;
+                        console.log('📸 DIRECT UPLOAD: Image loaded, URL length:', imageUrl.length);
                         
                         // Aktuelles Profilbild aktualisieren
                         const currentImage = document.getElementById('current-profile-image');
                         const currentName = document.getElementById('current-profile-name');
                         
+                        console.log('📸 DIRECT UPLOAD: Elements found:', {
+                            currentImage: !!currentImage,
+                            currentName: !!currentName
+                        });
+                        
                         if (currentImage) {
                             currentImage.src = imageUrl;
+                            currentImage.style.display = 'block';
+                            console.log('📸 DIRECT UPLOAD: Image src updated');
+                        } else {
+                            console.error('❌ DIRECT UPLOAD: current-profile-image element not found');
                         }
                         
                         if (currentName) {
                             currentName.textContent = file.name;
+                            console.log('📸 DIRECT UPLOAD: Name updated to:', file.name);
+                        } else {
+                            console.error('❌ DIRECT UPLOAD: current-profile-name element not found');
                         }
                         
                         // In localStorage speichern
                         localStorage.setItem('heroProfileImage', imageUrl);
+                        console.log('💾 DIRECT UPLOAD: Saved to localStorage');
                         
                         // AWS-Speicherung
                         if (window.smartAPI) {
-                            await saveProfileImageToAWS(imageUrl);
+                            try {
+                                await saveProfileImageToAWS(imageUrl);
+                                console.log('☁️ DIRECT UPLOAD: Saved to AWS');
+                            } catch (awsError) {
+                                console.error('❌ DIRECT UPLOAD: AWS save failed:', awsError);
+                            }
                         }
                         
                         // Live-Update
-                        updateWebsiteLive();
+                        try {
+                            updateWebsiteLive();
+                            console.log('🔄 DIRECT UPLOAD: Live update triggered');
+                        } catch (updateError) {
+                            console.error('❌ DIRECT UPLOAD: Live update failed:', updateError);
+                        }
                         
                         showHeroMessage(`Profilbild erfolgreich hochgeladen: ${file.name}`, 'success');
                         console.log('✅ DIRECT UPLOAD: Profile image uploaded successfully');
                     };
+                    
+                    reader.onerror = function(error) {
+                        console.error('❌ DIRECT UPLOAD: FileReader error:', error);
+                        showHeroMessage('Fehler beim Lesen der Datei', 'error');
+                    };
+                    
                     reader.readAsDataURL(file);
                 } catch (error) {
                     console.error('❌ DIRECT UPLOAD: Upload failed:', error);

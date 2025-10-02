@@ -834,8 +834,13 @@
                         const profilePhoto = document.getElementById('profile-photo');
                         if (profilePhoto) {
                             profilePhoto.src = profileImage;
+                            profilePhoto.style.display = 'block';
                             console.log('✅ WEBSITE: Profile image updated');
+                        } else {
+                            console.warn('⚠️ WEBSITE: Profile photo element not found');
                         }
+                    } else {
+                        console.log('ℹ️ WEBSITE: No custom profile image found, using default');
                     }
                     
                     // Button-Text aktualisieren
