@@ -8191,7 +8191,7 @@
             }
             
             // Website Live-Update Funktion
-            function updateWebsiteLive() {
+            async function updateWebsiteLive() {
                 console.log('🌐 LIVE SYNC: Updating website with live changes...');
                 
                 // Hero-Daten sammeln
@@ -8422,12 +8422,21 @@
                 const selectGalleryBtn = document.getElementById('select-gallery-images-btn');
                 const galleryInput = document.getElementById('gallery-upload-input');
                 
+                console.log('📸 GALLERY: Setting up upload button...', { selectGalleryBtn, galleryInput });
+                
                 if (selectGalleryBtn && galleryInput) {
-                    selectGalleryBtn.addEventListener('click', () => {
+                    selectGalleryBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log('📸 GALLERY: Upload button clicked');
                         galleryInput.click();
                     });
                     
-                    galleryInput.addEventListener('change', handleGalleryUpload);
+                    galleryInput.addEventListener('change', (e) => {
+                        console.log('📸 GALLERY: Files selected:', e.target.files.length);
+                        handleGalleryUpload(e);
+                    });
+                } else {
+                    console.error('❌ GALLERY: Upload elements not found:', { selectGalleryBtn, galleryInput });
                 }
                 
                 // Drag & Drop für Galerie

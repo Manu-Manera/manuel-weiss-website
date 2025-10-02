@@ -892,25 +892,49 @@
                     }
                     
                     // Hero-Statistiken aktualisieren
+                    console.log('📊 WEBSITE: Updating hero statistics...', {
+                        stat1: { number: data.stat1Number, label: data.stat1Label },
+                        stat2: { number: data.stat2Number, label: data.stat2Label },
+                        stat3: { number: data.stat3Number, label: data.stat3Label }
+                    });
+                    
                     if (data.stat1Number && data.stat1Label) {
                         const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
                         const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
-                        if (stat1Number) stat1Number.textContent = data.stat1Number;
-                        if (stat1Label) stat1Label.textContent = data.stat1Label;
+                        if (stat1Number) {
+                            stat1Number.textContent = data.stat1Number;
+                            console.log('✅ WEBSITE: Stat1 number updated to:', data.stat1Number);
+                        }
+                        if (stat1Label) {
+                            stat1Label.textContent = data.stat1Label;
+                            console.log('✅ WEBSITE: Stat1 label updated to:', data.stat1Label);
+                        }
                     }
                     
                     if (data.stat2Number && data.stat2Label) {
                         const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
                         const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
-                        if (stat2Number) stat2Number.textContent = data.stat2Number;
-                        if (stat2Label) stat2Label.textContent = data.stat2Label;
+                        if (stat2Number) {
+                            stat2Number.textContent = data.stat2Number;
+                            console.log('✅ WEBSITE: Stat2 number updated to:', data.stat2Number);
+                        }
+                        if (stat2Label) {
+                            stat2Label.textContent = data.stat2Label;
+                            console.log('✅ WEBSITE: Stat2 label updated to:', data.stat2Label);
+                        }
                     }
                     
                     if (data.stat3Number && data.stat3Label) {
                         const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
                         const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
-                        if (stat3Number) stat3Number.textContent = data.stat3Number;
-                        if (stat3Label) stat3Label.textContent = data.stat3Label;
+                        if (stat3Number) {
+                            stat3Number.textContent = data.stat3Number;
+                            console.log('✅ WEBSITE: Stat3 number updated to:', data.stat3Number);
+                        }
+                        if (stat3Label) {
+                            stat3Label.textContent = data.stat3Label;
+                            console.log('✅ WEBSITE: Stat3 label updated to:', data.stat3Label);
+                        }
                     }
                     
                     console.log('✅ WEBSITE: Hero data applied successfully');
@@ -1001,6 +1025,50 @@
                 loadHeroDataFromAdmin();
             }
         });
+        
+        // Zusätzliche Funktion für sofortige Statistiken-Updates
+        function updateHeroStatistics() {
+            const heroData = localStorage.getItem('heroData');
+            if (heroData) {
+                try {
+                    const data = JSON.parse(heroData);
+                    console.log('📊 WEBSITE: Updating statistics immediately...', data);
+                    
+                    // Statistiken sofort aktualisieren
+                    if (data.stat1Number) {
+                        const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
+                        if (stat1Number) stat1Number.textContent = data.stat1Number;
+                    }
+                    if (data.stat1Label) {
+                        const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
+                        if (stat1Label) stat1Label.textContent = data.stat1Label;
+                    }
+                    
+                    if (data.stat2Number) {
+                        const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
+                        if (stat2Number) stat2Number.textContent = data.stat2Number;
+                    }
+                    if (data.stat2Label) {
+                        const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
+                        if (stat2Label) stat2Label.textContent = data.stat2Label;
+                    }
+                    
+                    if (data.stat3Number) {
+                        const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
+                        if (stat3Number) stat3Number.textContent = data.stat3Number;
+                    }
+                    if (data.stat3Label) {
+                        const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+                        if (stat3Label) stat3Label.textContent = data.stat3Label;
+                    }
+                } catch (error) {
+                    console.error('❌ WEBSITE: Error updating statistics:', error);
+                }
+            }
+        }
+        
+        // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
+        setInterval(updateHeroStatistics, 2000);
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
