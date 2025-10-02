@@ -12,6 +12,151 @@
     
     <!-- Sidebar Fix Styles -->
     <style>
+        /* Profilbild-Galerie Styles */
+        .profile-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .current-profile-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .current-profile-info {
+            flex: 1;
+        }
+        
+        .current-profile-info p {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .gallery-upload-section {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            border: 2px dashed #0ea5e9;
+        }
+        
+        .gallery-upload-area {
+            text-align: center;
+        }
+        
+        .upload-zone {
+            padding: 2rem;
+            border: 2px dashed #0ea5e9;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #0284c7;
+        }
+        
+        .gallery-display-section {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+            border-radius: 12px;
+            border: 2px solid #f59e0b;
+        }
+        
+        .profile-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .gallery-image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .gallery-image-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gallery-image-item.active {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .gallery-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .gallery-image-item:hover .gallery-image-overlay {
+            opacity: 1;
+        }
+        
+        .gallery-image-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .gallery-image-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-image-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+        
+        .gallery-image-btn.select {
+            color: #10b981;
+        }
+        
+        .gallery-image-btn.delete {
+            color: #ef4444;
+        }
+        
+        .gallery-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
         /* MODERNE SIDEBAR */
         .sidebar,
         .admin-sidebar {
@@ -7118,19 +7263,54 @@
                         </div>
                         
                         <div class="hero-content-grid">
-                            <!-- Profilbild-Upload -->
+                            <!-- Profilbild-Galerie -->
                             <div class="hero-card">
-                                <h3>📸 Profilbild</h3>
-                                <div class="image-upload-area">
-                                    <div class="current-image">
-                                        <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
+                                <h3>📸 Profilbild-Galerie</h3>
+                                <div class="profile-gallery">
+                                    <!-- Aktuelles Profilbild -->
+                                    <div class="current-profile-section">
+                                        <h4>Aktuelles Profilbild</h4>
+                                        <div class="current-image">
+                                            <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
+                                        </div>
+                                        <div class="current-profile-info">
+                                            <p id="current-profile-name">Standard Profilbild</p>
+                                            <button type="button" id="change-profile-btn" class="btn btn-secondary">
+                                                <i class="fas fa-exchange-alt"></i> Profilbild wechseln
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="upload-controls">
-                                        <input type="file" id="profile-image-upload" accept="image/*" style="display: none;">
-                                        <button type="button" id="upload-profile-btn" class="btn btn-primary">
-                                            <i class="fas fa-upload"></i> Neues Profilbild hochladen
-                                        </button>
-                                        <p class="upload-info">Unterstützte Formate: JPG, PNG, SVG (max. 5MB)</p>
+                                    
+                                    <!-- Galerie-Upload -->
+                                    <div class="gallery-upload-section">
+                                        <h4>Neue Bilder hochladen</h4>
+                                        <div class="gallery-upload-area" id="gallery-upload-area">
+                                            <div class="upload-zone">
+                                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #667eea; margin-bottom: 1rem;"></i>
+                                                <p>Mehrere Profilbilder hier ablegen oder auswählen</p>
+                                                <input type="file" id="gallery-upload-input" accept="image/*" multiple style="display: none;">
+                                                <button type="button" id="select-gallery-images-btn" class="btn btn-primary">
+                                                    <i class="fas fa-images"></i> Bilder auswählen
+                                                </button>
+                                                <p class="upload-info">Unterstützte Formate: JPG, PNG, SVG (max. 5MB pro Bild)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Galerie-Anzeige -->
+                                    <div class="gallery-display-section">
+                                        <h4>Profilbild-Galerie</h4>
+                                        <div class="profile-gallery-grid" id="profile-gallery-grid">
+                                            <!-- Galerie-Bilder werden hier dynamisch geladen -->
+                                        </div>
+                                        <div class="gallery-actions">
+                                            <button type="button" id="refresh-gallery-btn" class="btn btn-outline">
+                                                <i class="fas fa-sync"></i> Galerie aktualisieren
+                                            </button>
+                                            <button type="button" id="clear-gallery-btn" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i> Alle Bilder löschen
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -8233,6 +8413,314 @@
             
             // AWS-Initialisierung starten
             initializeHeroDataFromAWS();
+            
+            // Profilbild-Galerie Funktionalität
+            function initializeProfileGallery() {
+                console.log('📸 GALLERY: Initializing profile gallery...');
+                
+                // Galerie-Upload Button
+                const selectGalleryBtn = document.getElementById('select-gallery-images-btn');
+                const galleryInput = document.getElementById('gallery-upload-input');
+                
+                if (selectGalleryBtn && galleryInput) {
+                    selectGalleryBtn.addEventListener('click', () => {
+                        galleryInput.click();
+                    });
+                    
+                    galleryInput.addEventListener('change', handleGalleryUpload);
+                }
+                
+                // Drag & Drop für Galerie
+                const uploadArea = document.getElementById('gallery-upload-area');
+                if (uploadArea) {
+                    uploadArea.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        uploadArea.style.background = 'rgba(14, 165, 233, 0.1)';
+                    });
+                    
+                    uploadArea.addEventListener('dragleave', (e) => {
+                        e.preventDefault();
+                        uploadArea.style.background = '';
+                    });
+                    
+                    uploadArea.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        uploadArea.style.background = '';
+                        const files = Array.from(e.dataTransfer.files);
+                        handleGalleryUpload({ target: { files } });
+                    });
+                }
+                
+                // Galerie-Aktionen
+                const refreshBtn = document.getElementById('refresh-gallery-btn');
+                const clearBtn = document.getElementById('clear-gallery-btn');
+                const changeProfileBtn = document.getElementById('change-profile-btn');
+                
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', loadProfileGallery);
+                }
+                
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', clearProfileGallery);
+                }
+                
+                if (changeProfileBtn) {
+                    changeProfileBtn.addEventListener('click', showProfileSelector);
+                }
+                
+                // Galerie beim Start laden
+                loadProfileGallery();
+                
+                console.log('✅ GALLERY: Profile gallery initialized');
+            }
+            
+            // Galerie-Upload verarbeiten
+            async function handleGalleryUpload(event) {
+                const files = Array.from(event.target.files);
+                console.log('📸 GALLERY: Uploading', files.length, 'images...');
+                
+                if (files.length === 0) return;
+                
+                try {
+                    for (const file of files) {
+                        if (file.type.startsWith('image/')) {
+                            await uploadProfileImageToGallery(file);
+                        }
+                    }
+                    
+                    showHeroMessage(`${files.length} Bilder erfolgreich hochgeladen!`, 'success');
+                    loadProfileGallery();
+                } catch (error) {
+                    console.error('❌ GALLERY: Upload failed:', error);
+                    showHeroMessage('Fehler beim Hochladen der Bilder', 'error');
+                }
+            }
+            
+            // Einzelnes Profilbild zur Galerie hochladen
+            async function uploadProfileImageToGallery(file) {
+                try {
+                    if (window.smartAPI) {
+                        const result = await window.smartAPI.uploadFile(file, {
+                            type: 'profile',
+                            category: 'gallery',
+                            userId: getCurrentUserId(),
+                            filename: `profile-gallery-${Date.now()}-${file.name}`
+                        });
+                        
+                        console.log('✅ GALLERY: Image uploaded:', result);
+                        return result;
+                    } else {
+                        // Fallback: als Data URL speichern
+                        const reader = new FileReader();
+                        return new Promise((resolve) => {
+                            reader.onload = (e) => {
+                                const imageData = {
+                                    id: `gallery-${Date.now()}`,
+                                    url: e.target.result,
+                                    name: file.name,
+                                    size: file.size,
+                                    type: file.type,
+                                    timestamp: new Date().toISOString()
+                                };
+                                
+                                // In localStorage speichern
+                                const gallery = JSON.parse(localStorage.getItem('profileGallery') || '[]');
+                                gallery.push(imageData);
+                                localStorage.setItem('profileGallery', JSON.stringify(gallery));
+                                
+                                resolve(imageData);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                } catch (error) {
+                    console.error('❌ GALLERY: Upload error:', error);
+                    throw error;
+                }
+            }
+            
+            // Galerie laden und anzeigen
+            async function loadProfileGallery() {
+                console.log('📸 GALLERY: Loading profile gallery...');
+                
+                try {
+                    let galleryImages = [];
+                    
+                    if (window.smartAPI) {
+                        // Von AWS laden
+                        const userDocs = await window.smartAPI.getUserDocuments(getCurrentUserId());
+                        if (userDocs && userDocs.documents) {
+                            galleryImages = userDocs.documents.filter(doc => 
+                                doc.type === 'profile' && doc.category === 'gallery'
+                            );
+                        }
+                    } else {
+                        // Von localStorage laden
+                        galleryImages = JSON.parse(localStorage.getItem('profileGallery') || '[]');
+                    }
+                    
+                    displayProfileGallery(galleryImages);
+                    console.log('✅ GALLERY: Loaded', galleryImages.length, 'images');
+                } catch (error) {
+                    console.error('❌ GALLERY: Load failed:', error);
+                    showHeroMessage('Fehler beim Laden der Galerie', 'error');
+                }
+            }
+            
+            // Galerie anzeigen
+            function displayProfileGallery(images) {
+                const galleryGrid = document.getElementById('profile-gallery-grid');
+                if (!galleryGrid) return;
+                
+                galleryGrid.innerHTML = '';
+                
+                if (images.length === 0) {
+                    galleryGrid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1 / -1;">Keine Bilder in der Galerie</p>';
+                    return;
+                }
+                
+                images.forEach((image, index) => {
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'gallery-image-item';
+                    imageItem.dataset.imageId = image.id || index;
+                    imageItem.dataset.imageUrl = image.url;
+                    
+                    imageItem.innerHTML = `
+                        <img src="${image.url}" alt="Profilbild ${index + 1}" loading="lazy">
+                        <div class="gallery-image-overlay">
+                            <div class="gallery-image-actions">
+                                <button class="gallery-image-btn select" title="Als Profilbild auswählen">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="gallery-image-btn delete" title="Bild löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Event-Listener für Aktionen
+                    const selectBtn = imageItem.querySelector('.gallery-image-btn.select');
+                    const deleteBtn = imageItem.querySelector('.gallery-image-btn.delete');
+                    
+                    selectBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectProfileImage(image.url, image.name || `Bild ${index + 1}`);
+                    });
+                    
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteProfileImage(image.id || index, imageItem);
+                    });
+                    
+                    galleryGrid.appendChild(imageItem);
+                });
+            }
+            
+            // Profilbild auswählen
+            function selectProfileImage(imageUrl, imageName) {
+                console.log('📸 GALLERY: Selecting profile image:', imageName);
+                
+                // Aktuelles Profilbild aktualisieren
+                const currentImage = document.getElementById('current-profile-image');
+                const currentName = document.getElementById('current-profile-name');
+                
+                if (currentImage) {
+                    currentImage.src = imageUrl;
+                }
+                
+                if (currentName) {
+                    currentName.textContent = imageName;
+                }
+                
+                // In localStorage speichern
+                localStorage.setItem('heroProfileImage', imageUrl);
+                
+                // AWS-Speicherung
+                if (window.smartAPI) {
+                    saveProfileImageToAWS(imageUrl);
+                }
+                
+                // Galerie-Status aktualisieren
+                updateGallerySelection(imageUrl);
+                
+                showHeroMessage(`Profilbild geändert zu: ${imageName}`, 'success');
+            }
+            
+            // Galerie-Auswahl aktualisieren
+            function updateGallerySelection(selectedUrl) {
+                const galleryItems = document.querySelectorAll('.gallery-image-item');
+                galleryItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.imageUrl === selectedUrl) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // Profilbild löschen
+            async function deleteProfileImage(imageId, imageElement) {
+                if (!confirm('Möchten Sie dieses Bild wirklich löschen?')) return;
+                
+                try {
+                    if (window.smartAPI) {
+                        await window.smartAPI.deleteDocument(imageId, getCurrentUserId());
+                    } else {
+                        // Von localStorage entfernen
+                        const gallery = JSON.parse(localStorage.getItem('profileGallery') || '[]');
+                        const updatedGallery = gallery.filter(img => img.id !== imageId);
+                        localStorage.setItem('profileGallery', JSON.stringify(updatedGallery));
+                    }
+                    
+                    imageElement.remove();
+                    showHeroMessage('Bild erfolgreich gelöscht', 'success');
+                } catch (error) {
+                    console.error('❌ GALLERY: Delete failed:', error);
+                    showHeroMessage('Fehler beim Löschen des Bildes', 'error');
+                }
+            }
+            
+            // Galerie leeren
+            async function clearProfileGallery() {
+                if (!confirm('Möchten Sie wirklich alle Bilder aus der Galerie löschen?')) return;
+                
+                try {
+                    if (window.smartAPI) {
+                        const userDocs = await window.smartAPI.getUserDocuments(getCurrentUserId());
+                        if (userDocs && userDocs.documents) {
+                            const galleryImages = userDocs.documents.filter(doc => 
+                                doc.type === 'profile' && doc.category === 'gallery'
+                            );
+                            
+                            for (const image of galleryImages) {
+                                await window.smartAPI.deleteDocument(image.id, getCurrentUserId());
+                            }
+                        }
+                    } else {
+                        localStorage.removeItem('profileGallery');
+                    }
+                    
+                    loadProfileGallery();
+                    showHeroMessage('Galerie erfolgreich geleert', 'success');
+                } catch (error) {
+                    console.error('❌ GALLERY: Clear failed:', error);
+                    showHeroMessage('Fehler beim Leeren der Galerie', 'error');
+                }
+            }
+            
+            // Profilbild-Auswahl-Dialog
+            function showProfileSelector() {
+                const galleryGrid = document.getElementById('profile-gallery-grid');
+                if (galleryGrid && galleryGrid.children.length > 0) {
+                    galleryGrid.scrollIntoView({ behavior: 'smooth' });
+                    showHeroMessage('Wählen Sie ein Bild aus der Galerie aus', 'info');
+                } else {
+                    showHeroMessage('Keine Bilder in der Galerie. Laden Sie zuerst Bilder hoch.', 'warning');
+                }
+            }
+            
+            // Galerie initialisieren
+            initializeProfileGallery();
             
             // Also initialize after a short delay as fallback
             setTimeout(initializeSettings, 100);
