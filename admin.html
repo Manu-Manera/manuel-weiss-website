@@ -16649,6 +16649,10 @@ Bitte antworte im folgenden JSON-Format:
                 try {
                     localStorage.setItem('heroProfileImage', imageUrl);
                     console.log('✅ UPLOAD: Saved to localStorage');
+                    
+                    // AWS-Speicherung
+                    saveImageToAWS(imageUrl, file.name);
+                    
                     alert('✅ Bild erfolgreich hochgeladen!');
                 } catch (error) {
                     console.error('❌ UPLOAD: Save failed:', error);
@@ -16721,6 +16725,110 @@ Bitte antworte im folgenden JSON-Format:
                 } catch (error) {
                     console.error('❌ TEST: Button click failed:', error);
                 }
+            }
+        }
+        
+        // AWS-Speicherung für Bilder
+        async function saveImageToAWS(imageUrl, filename) {
+            try {
+                console.log('☁️ AWS: Starting image upload to AWS...');
+                
+                if (!window.smartAPI) {
+                    console.warn('⚠️ AWS: Smart API not available');
+                    return;
+                }
+                
+                // Bild als Blob konvertieren
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const file = new File([blob], filename, { type: 'image/jpeg' });
+                
+                // AWS S3 Upload
+                const uploadResult = await window.smartAPI.uploadFile(file, {
+                    type: 'profile',
+                    category: 'hero',
+                    userId: 'default-user',
+                    filename: `hero-profile-${Date.now()}.jpg`
+                });
+                
+                console.log('✅ AWS: Image uploaded successfully:', uploadResult);
+                
+                // Website sofort aktualisieren
+                updateWebsiteImage(imageUrl);
+                
+            } catch (error) {
+                console.error('❌ AWS: Image upload failed:', error);
+            }
+        }
+        
+        // Website sofort aktualisieren
+        function updateWebsiteImage(imageUrl) {
+            try {
+                console.log('🌐 WEBSITE: Updating website image...');
+                
+                // Hero-Daten sammeln
+                const heroData = {
+                    name: document.getElementById('hero-name')?.value || '',
+                    title: document.getElementById('hero-title')?.value || '',
+                    subtitle: document.getElementById('hero-subtitle')?.value || '',
+                    description: document.getElementById('hero-description')?.value || '',
+                    bgColor1: document.getElementById('hero-bg-color1')?.value || '#667eea',
+                    bgColor2: document.getElementById('hero-bg-color2')?.value || '#764ba2',
+                    textColor: document.getElementById('hero-text-color')?.value || '#ffffff',
+                    buttonText: document.getElementById('hero-button-text')?.value || '',
+                    buttonLink: document.getElementById('hero-button-link')?.value || '',
+                    email: document.getElementById('hero-email')?.value || '',
+                    phone: document.getElementById('hero-phone')?.value || '',
+                    location: document.getElementById('hero-location')?.value || '',
+                    linkedin: document.getElementById('hero-linkedin')?.value || '',
+                    website: document.getElementById('hero-website')?.value || '',
+                    stat1Number: document.getElementById('hero-stat1-number')?.value || '5+',
+                    stat1Label: document.getElementById('hero-stat1-label')?.value || 'Jahre Erfahrung',
+                    stat2Number: document.getElementById('hero-stat2-number')?.value || '50+',
+                    stat2Label: document.getElementById('hero-stat2-label')?.value || 'Projekte',
+                    stat3Number: document.getElementById('hero-stat3-number')?.value || '100%',
+                    stat3Label: document.getElementById('hero-stat3-label')?.value || 'Zufriedenheit'
+                };
+                
+                // Mit Profilbild speichern
+                heroData.profileImage = imageUrl;
+                
+                // In localStorage speichern
+                localStorage.setItem('heroData', JSON.stringify(heroData));
+                console.log('✅ WEBSITE: Hero data updated with image');
+                
+                // AWS auch speichern
+                saveHeroDataToAWS(heroData);
+                
+            } catch (error) {
+                console.error('❌ WEBSITE: Update failed:', error);
+            }
+        }
+        
+        // AWS Hero-Daten speichern
+        async function saveHeroDataToAWS(heroData) {
+            try {
+                console.log('☁️ AWS: Saving hero data to AWS...');
+                
+                if (!window.smartAPI) {
+                    console.warn('⚠️ AWS: Smart API not available');
+                    return;
+                }
+                
+                const heroDocument = {
+                    id: 'hero-data',
+                    type: 'hero-config',
+                    data: heroData,
+                    userId: 'default-user',
+                    timestamp: new Date().toISOString(),
+                    version: '1.0'
+                };
+                
+                const result = await window.smartAPI.saveDocument(heroDocument);
+                console.log('✅ AWS: Hero data saved successfully:', result);
+                
+            } catch (error) {
+                console.error('❌ AWS: Hero data save failed:', error);
             }
         }
         
