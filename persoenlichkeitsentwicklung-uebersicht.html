@@ -154,7 +154,7 @@
                 </div>
 
                 <!-- RAISEC-Modell -->
-                <div class="method-card" onclick="startMethod('raisec')" data-category="analysis">
+                <div class="method-card" data-category="analysis">
                     <div class="method-header">
                         <div class="method-icon raisec">
                             <i class="fas fa-chart-radar"></i>
@@ -173,26 +173,24 @@
                     </div>
                     
                     <div class="method-stats">
-                        <div class="stat">
-                            <i class="fas fa-clock"></i>
-                            <span>5 Min</span>
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Min</div>
                         </div>
-                        <div class="stat">
-                            <i class="fas fa-question-circle"></i>
-                            <span>30 Fragen</span>
+                        <div class="stat-item">
+                            <div class="stat-number">30</div>
+                            <div class="stat-label">Fragen</div>
                         </div>
-                        <div class="stat">
-                            <i class="fas fa-chart-pie"></i>
-                            <span>6 Typen</span>
+                        <div class="stat-item">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">Typen</div>
                         </div>
                     </div>
                     
-                    <div class="method-actions">
-                        <button class="btn btn-primary" onclick="startMethod('raisec')">
-                            <i class="fas fa-play"></i> Assessment starten
-                        </button>
-                        <button class="btn btn-outline" onclick="previewMethod('raisec')">
-                            <i class="fas fa-eye"></i> Vorschau
+                    <div class="method-action">
+                        <button class="btn btn-primary" onclick="startMethod('raisec')">Assessment starten</button>
+                        <button class="btn btn-outline" data-action="download-pdf" data-param="raisec">
+                            <i class="fas fa-download"></i> <span>PDF</span>
                         </button>
                     </div>
                 </div>
@@ -1781,8 +1779,258 @@
     
     function downloadPDF(methodName) {
         console.log('Downloading PDF for method:', methodName);
-        // Hier würde der PDF-Download gestartet werden
-        alert('PDF für ' + methodName + ' wird heruntergeladen...');
+        
+        if (methodName === 'raisec') {
+            // RAISEC PDF Download
+            const raisecPDFContent = createRAISECPDF();
+            downloadRAISECPDF(raisecPDFContent);
+        } else {
+            // Standard PDF Download für andere Methoden
+            alert('PDF für ' + methodName + ' wird heruntergeladen...');
+        }
+    }
+
+    function createRAISECPDF() {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>RAISEC-Modell Übersicht</title>
+                <style>
+                    body { 
+                        font-family: 'Inter', Arial, sans-serif; 
+                        margin: 0; 
+                        padding: 40px; 
+                        background: #f8fafc; 
+                        line-height: 1.6;
+                    }
+                    .header { 
+                        text-align: center; 
+                        margin-bottom: 40px; 
+                        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                        color: white;
+                        padding: 40px;
+                        border-radius: 16px;
+                    }
+                    .logo { 
+                        font-size: 2.5rem; 
+                        font-weight: 800; 
+                        margin-bottom: 10px; 
+                    }
+                    .subtitle { 
+                        font-size: 1.2rem; 
+                        opacity: 0.9;
+                    }
+                    .section { 
+                        margin-bottom: 30px; 
+                        background: white; 
+                        padding: 30px; 
+                        border-radius: 12px; 
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+                    }
+                    .section-title { 
+                        font-size: 1.5rem; 
+                        font-weight: 700; 
+                        color: #1e293b; 
+                        margin-bottom: 20px; 
+                        border-bottom: 3px solid #6366f1; 
+                        padding-bottom: 10px; 
+                    }
+                    .type-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .type-card { 
+                        background: linear-gradient(135deg, #f0f4ff, #e0e7ff); 
+                        padding: 20px; 
+                        border-radius: 12px; 
+                        border-left: 4px solid #6366f1;
+                    }
+                    .type-name { 
+                        font-size: 1.2rem; 
+                        font-weight: 700; 
+                        color: #6366f1; 
+                        margin-bottom: 8px; 
+                    }
+                    .type-description { 
+                        color: #64748b; 
+                        font-size: 0.95rem;
+                    }
+                    .job-list { 
+                        list-style: none; 
+                        padding: 0; 
+                    }
+                    .job-list li { 
+                        padding: 8px 0; 
+                        border-bottom: 1px solid #e2e8f0; 
+                        position: relative; 
+                        padding-left: 20px; 
+                    }
+                    .job-list li:before { 
+                        content: '→'; 
+                        position: absolute; 
+                        left: 0; 
+                        color: #6366f1; 
+                        font-weight: bold; 
+                    }
+                    .footer { 
+                        text-align: center; 
+                        margin-top: 40px; 
+                        color: #64748b; 
+                        font-size: 0.9rem; 
+                    }
+                    .highlight-box {
+                        background: linear-gradient(135deg, #fef3c7, #fde68a);
+                        border: 1px solid #f59e0b;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin: 20px 0;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="logo">RAISEC-Modell</div>
+                    <div class="subtitle">Berufliche Interessen & Persönlichkeitstypen nach Holland</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Was ist das RAISEC-Modell?</div>
+                    <p>Das RAISEC-Modell (auch Holland-Codes genannt) wurde von John L. Holland entwickelt und ist eines der bewährtesten Instrumente zur Berufsorientierung. Es identifiziert sechs grundlegende Persönlichkeitstypen und ihre passenden Berufsfelder.</p>
+                    
+                    <div class="highlight-box">
+                        <strong>🎯 Ziel:</strong> Entdecken Sie Ihre beruflichen Interessen und finden Sie passende Berufsfelder, die zu Ihrer Persönlichkeit passen.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Die 6 RAISEC-Typen</div>
+                    <div class="type-grid">
+                        <div class="type-card">
+                            <div class="type-name">R - Realistisch</div>
+                            <div class="type-description">Praktisch, handwerklich, technisch orientiert. Arbeiten gerne mit Werkzeugen und Maschinen.</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">A - Analytisch</div>
+                            <div class="type-description">Forschend, wissenschaftlich, intellektuell. Interessieren sich für komplexe Probleme.</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">I - Künstlerisch</div>
+                            <div class="type-description">Kreativ, expressiv, unkonventionell. Schätzen künstlerische und kreative Tätigkeiten.</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">S - Sozial</div>
+                            <div class="type-description">Hilfsbereit, kommunikativ, kooperativ. Arbeiten gerne mit Menschen.</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">E - Unternehmerisch</div>
+                            <div class="type-description">Führungsstark, verkaufsorientiert, ehrgeizig. Übernehmen gerne Verantwortung.</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">C - Konventionell</div>
+                            <div class="type-description">Strukturiert, organisiert, detailorientiert. Arbeiten gerne nach festen Regeln.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Berufsempfehlungen nach Typen</div>
+                    
+                    <h4>Realistische Berufe (R)</h4>
+                    <ul class="job-list">
+                        <li>Ingenieur (Maschinenbau, Elektrotechnik)</li>
+                        <li>Techniker & Mechaniker</li>
+                        <li>Landwirt & Forstwirt</li>
+                        <li>Polizist & Sicherheitsdienst</li>
+                        <li>Handwerker (Zimmerer, Elektriker)</li>
+                        <li>Pilot & Flugzeugmechaniker</li>
+                    </ul>
+
+                    <h4>Analytische Berufe (A)</h4>
+                    <ul class="job-list">
+                        <li>Wissenschaftler & Forscher</li>
+                        <li>Arzt & Mediziner</li>
+                        <li>Programmierer & Software-Entwickler</li>
+                        <li>Datenanalyst & Data Scientist</li>
+                        <li>Psychologe & Therapeut</li>
+                        <li>Mathematiker & Statistiker</li>
+                    </ul>
+
+                    <h4>Künstlerische Berufe (I)</h4>
+                    <ul class="job-list">
+                        <li>Künstler & Designer</li>
+                        <li>Musiker & Komponist</li>
+                        <li>Schriftsteller & Journalist</li>
+                        <li>Fotograf & Videograf</li>
+                        <li>Schauspieler & Regisseur</li>
+                        <li>Grafikdesigner & Illustrator</li>
+                    </ul>
+
+                    <h4>Soziale Berufe (S)</h4>
+                    <ul class="job-list">
+                        <li>Lehrer & Dozent</li>
+                        <li>Sozialarbeiter & Pädagoge</li>
+                        <li>Therapeut & Berater</li>
+                        <li>Trainer & Coach</li>
+                        <li>Pfleger & Mediziner</li>
+                        <li>Psychologe & Seelsorger</li>
+                    </ul>
+
+                    <h4>Unternehmerische Berufe (E)</h4>
+                    <ul class="job-list">
+                        <li>Manager & Geschäftsführer</li>
+                        <li>Verkäufer & Account Manager</li>
+                        <li>Unternehmer & Gründer</li>
+                        <li>Politiker & Lobbyist</li>
+                        <li>Projektleiter & Teamleiter</li>
+                        <li>Immobilienmakler & Versicherungsvertreter</li>
+                    </ul>
+
+                    <h4>Konventionelle Berufe (C)</h4>
+                    <ul class="job-list">
+                        <li>Buchhalter & Controller</li>
+                        <li>Sekretär & Assistent</li>
+                        <li>Banker & Finanzberater</li>
+                        <li>Verwaltungsangestellter</li>
+                        <li>Datenbankadministrator</li>
+                        <li>Qualitätsmanager & Prüfer</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">So funktioniert das Assessment</div>
+                    <p><strong>Dauer:</strong> 5-7 Minuten</p>
+                    <p><strong>Fragen:</strong> 30 Fragen zu beruflichen Interessen</p>
+                    <p><strong>Ergebnis:</strong> Ihr persönliches RAISEC-Profil mit den drei stärksten Typen</p>
+                    <p><strong>Zusatz:</strong> Detaillierte Berufsempfehlungen basierend auf Ihrem Profil</p>
+                </div>
+
+                <div class="footer">
+                    <p><strong>Manuel Weiss HR-Beratung</strong></p>
+                    <p>www.manuel-weiss.de • ${new Date().toLocaleDateString('de-DE')}</p>
+                    <p>Erstellt mit dem RAISEC-Modell nach Holland</p>
+                </div>
+            </body>
+            </html>
+        `;
+    }
+
+    function downloadRAISECPDF(content) {
+        // Create a new window with the PDF content
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 1000);
+        };
     }
     
     // Filter-Funktionen
