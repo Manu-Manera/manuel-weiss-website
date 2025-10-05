@@ -23,18 +23,23 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">
-                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo-img">
-                    <span class="nav-logo-text">Manuel Weiss</span>
+            <div class="nav-brand">
+                <a href="index.html" class="nav-brand-link">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
                 </a>
             </div>
-            <div class="nav-menu">
+            <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Start</a>
-                <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="lebenslauf.html" class="nav-link">Lebenslauf</a>
                 <a href="beraterprofil.html" class="nav-link">Beratung</a>
                 <a href="bewerbung.html" class="nav-link">Bewerbung</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
@@ -341,10 +346,13 @@
             </div>
 
             <div class="results-actions">
-                <button class="btn btn-primary" onclick="downloadResults()">
-                    <i class="fas fa-download"></i> Ergebnisse herunterladen
+                <button class="btn btn-primary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> PDF-Report erstellen
                 </button>
-                <button class="btn btn-secondary" onclick="restartAssessment()">
+                <button class="btn btn-secondary" onclick="downloadResults()">
+                    <i class="fas fa-download"></i> JSON-Daten herunterladen
+                </button>
+                <button class="btn btn-outline" onclick="restartAssessment()">
                     <i class="fas fa-redo"></i> Assessment wiederholen
                 </button>
             </div>
@@ -750,6 +758,242 @@
             URL.revokeObjectURL(url);
         }
 
+        // PDF Generation with Job Recommendations
+        function generatePDF() {
+            const assessment = window.raisecAssessment;
+            if (!assessment) {
+                alert('Keine Assessment-Daten verfügbar!');
+                return;
+            }
+
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF wird erstellt...';
+            button.disabled = true;
+
+            // Get sorted scores
+            const sortedScores = Object.entries(assessment.scores)
+                .sort(([,a], [,b]) => b - a);
+
+            const typeNames = {
+                R: 'Realistisch',
+                A: 'Analytisch', 
+                I: 'Künstlerisch',
+                S: 'Sozial',
+                E: 'Unternehmerisch',
+                C: 'Konventionell'
+            };
+
+            const primaryType = sortedScores[0];
+            const secondaryType = sortedScores[1];
+            const tertiaryType = sortedScores[2];
+
+            // Job recommendations based on types
+            const jobRecommendations = getJobRecommendations(primaryType[0], secondaryType[0]);
+
+            // Create PDF content
+            const pdfContent = createPDFContent({
+                primaryType: primaryType,
+                secondaryType: secondaryType,
+                tertiaryType: tertiaryType,
+                typeNames: typeNames,
+                scores: assessment.scores,
+                jobRecommendations: jobRecommendations,
+                timestamp: new Date().toLocaleDateString('de-DE')
+            });
+
+            // Generate and download PDF
+            generatePDFDocument(pdfContent, () => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+
+        function getJobRecommendations(primary, secondary) {
+            const recommendations = {
+                'R': {
+                    title: 'Realistische Berufe',
+                    description: 'Praktische, handwerkliche und technische Tätigkeiten',
+                    jobs: [
+                        'Ingenieur (Maschinenbau, Elektrotechnik)',
+                        'Techniker & Mechaniker',
+                        'Landwirt & Forstwirt',
+                        'Polizist & Sicherheitsdienst',
+                        'Handwerker (Zimmerer, Elektriker)',
+                        'Pilot & Flugzeugmechaniker',
+                        'Architekt & Bauingenieur'
+                    ]
+                },
+                'A': {
+                    title: 'Analytische Berufe',
+                    description: 'Forschung, Wissenschaft und intellektuelle Tätigkeiten',
+                    jobs: [
+                        'Wissenschaftler & Forscher',
+                        'Arzt & Mediziner',
+                        'Programmierer & Software-Entwickler',
+                        'Datenanalyst & Data Scientist',
+                        'Psychologe & Therapeut',
+                        'Mathematiker & Statistiker',
+                        'Laborant & Chemiker'
+                    ]
+                },
+                'I': {
+                    title: 'Künstlerische Berufe',
+                    description: 'Kreative und expressive Tätigkeiten',
+                    jobs: [
+                        'Künstler & Designer',
+                        'Musiker & Komponist',
+                        'Schriftsteller & Journalist',
+                        'Fotograf & Videograf',
+                        'Schauspieler & Regisseur',
+                        'Grafikdesigner & Illustrator',
+                        'Architekt & Innenarchitekt'
+                    ]
+                },
+                'S': {
+                    title: 'Soziale Berufe',
+                    description: 'Hilfsbereite und kommunikative Tätigkeiten',
+                    jobs: [
+                        'Lehrer & Dozent',
+                        'Sozialarbeiter & Pädagoge',
+                        'Therapeut & Berater',
+                        'Trainer & Coach',
+                        'Pfleger & Mediziner',
+                        'Psychologe & Seelsorger',
+                        'Personalberater & Recruiter'
+                    ]
+                },
+                'E': {
+                    title: 'Unternehmerische Berufe',
+                    description: 'Führungs- und verkaufsorientierte Tätigkeiten',
+                    jobs: [
+                        'Manager & Geschäftsführer',
+                        'Verkäufer & Account Manager',
+                        'Unternehmer & Gründer',
+                        'Politiker & Lobbyist',
+                        'Projektleiter & Teamleiter',
+                        'Immobilienmakler & Versicherungsvertreter',
+                        'Eventmanager & Veranstalter'
+                    ]
+                },
+                'C': {
+                    title: 'Konventionelle Berufe',
+                    description: 'Strukturierte und organisatorische Tätigkeiten',
+                    jobs: [
+                        'Buchhalter & Controller',
+                        'Sekretär & Assistent',
+                        'Banker & Finanzberater',
+                        'Verwaltungsangestellter',
+                        'Datenbankadministrator',
+                        'Qualitätsmanager & Prüfer',
+                        'Steuerberater & Wirtschaftsprüfer'
+                    ]
+                }
+            };
+
+            return {
+                primary: recommendations[primary] || recommendations['R'],
+                secondary: recommendations[secondary] || recommendations['A']
+            };
+        }
+
+        function createPDFContent(data) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>RAISEC-Assessment Report</title>
+                    <style>
+                        body { font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 40px; background: #f8fafc; }
+                        .header { text-align: center; margin-bottom: 40px; }
+                        .logo { font-size: 2rem; font-weight: 800; color: #6366f1; margin-bottom: 10px; }
+                        .subtitle { color: #64748b; font-size: 1.1rem; }
+                        .section { margin-bottom: 30px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                        .section-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 20px; border-bottom: 3px solid #6366f1; padding-bottom: 10px; }
+                        .type-card { background: linear-gradient(135deg, #f0f4ff, #e0e7ff); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+                        .type-name { font-size: 1.3rem; font-weight: 700; color: #6366f1; margin-bottom: 10px; }
+                        .type-score { font-size: 2rem; font-weight: 800; color: #1e293b; }
+                        .job-list { list-style: none; padding: 0; }
+                        .job-list li { padding: 8px 0; border-bottom: 1px solid #e2e8f0; position: relative; padding-left: 20px; }
+                        .job-list li:before { content: '→'; position: absolute; left: 0; color: #6366f1; font-weight: bold; }
+                        .chart-placeholder { background: #f1f5f9; height: 200px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.1rem; }
+                        .footer { text-align: center; margin-top: 40px; color: #64748b; font-size: 0.9rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="logo">RAISEC-Assessment Report</div>
+                        <div class="subtitle">Ihr persönliches Interessenprofil • ${data.timestamp}</div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Ihr Haupttyp: ${data.typeNames[data.primaryType[0]]}</div>
+                        <div class="type-card">
+                            <div class="type-name">${data.typeNames[data.primaryType[0]]} (${data.primaryType[0]})</div>
+                            <div class="type-score">${data.primaryType[1]} Punkte</div>
+                            <p>Dieser Typ beschreibt am besten Ihre beruflichen Interessen und Präferenzen.</p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Ihr Interessenprofil</div>
+                        <div class="type-card">
+                            <div class="type-name">1. ${data.typeNames[data.primaryType[0]]}</div>
+                            <div class="type-score">${data.primaryType[1]} Punkte</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">2. ${data.typeNames[data.secondaryType[0]]}</div>
+                            <div class="type-score">${data.secondaryType[1]} Punkte</div>
+                        </div>
+                        <div class="type-card">
+                            <div class="type-name">3. ${data.typeNames[data.tertiaryType[0]]}</div>
+                            <div class="type-score">${data.tertiaryType[1]} Punkte</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Empfohlene Berufe - ${data.jobRecommendations.primary.title}</div>
+                        <p>${data.jobRecommendations.primary.description}</p>
+                        <ul class="job-list">
+                            ${data.jobRecommendations.primary.jobs.map(job => `<li>${job}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Zusätzliche Empfehlungen - ${data.jobRecommendations.secondary.title}</div>
+                        <p>${data.jobRecommendations.secondary.description}</p>
+                        <ul class="job-list">
+                            ${data.jobRecommendations.secondary.jobs.slice(0, 5).map(job => `<li>${job}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="footer">
+                        <p>Erstellt mit dem RAISEC-Modell nach Holland • Manuel Weiss HR-Beratung</p>
+                        <p>www.manuel-weiss.de • ${data.timestamp}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function generatePDFDocument(content, callback) {
+            // Create a new window with the PDF content
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            
+            // Wait for content to load, then trigger print
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                    if (callback) callback();
+                }, 1000);
+            };
+        }
+
         function restartAssessment() {
             document.getElementById('raisec-results').style.display = 'none';
             document.getElementById('raisec-assessment').style.display = 'block';
@@ -759,6 +1003,26 @@
         // Initialize assessment when page loads
         document.addEventListener('DOMContentLoaded', function() {
             window.raisecAssessment = new RAISECAssessment();
+            
+            // Mobile navigation toggle
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    navToggle.classList.toggle('active');
+                });
+                
+                // Close menu when clicking on a link
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        navToggle.classList.remove('active');
+                    });
+                });
+            }
         });
     </script>
 </body>
