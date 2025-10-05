@@ -54,13 +54,6 @@
             </a>
         </div>
                 
-                <!-- Einloggen Button - nur sichtbar wenn von Service-Unterseite -->
-                <div id="login-section" class="login-section" style="display: none;">
-                    <a href="bewerbung.html" class="btn btn-login">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Einloggen
-                    </a>
-                </div>
                 
             </div>
             
@@ -455,17 +448,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const serviceReferrer = urlParams.get('from_service');
             
-            // Zeige Login-Button wenn von Service-Unterseite oder Parameter gesetzt
-            const loginSection = document.getElementById('login-section');
-            if (loginSection) {
-                if (isFromServicePage || serviceReferrer === 'true') {
-                    loginSection.style.display = 'flex';
-                    console.log('🔓 Login button shown - user came from service page');
-                } else {
-                    loginSection.style.display = 'none';
-                    console.log('🔒 Login button hidden - direct access to main page');
-                }
-            }
         }
         
         // Initial check when page loads
