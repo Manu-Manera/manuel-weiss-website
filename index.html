@@ -808,25 +808,25 @@
                         }
                     }
                     
-                    // PROFILBILD LADEN - EINFACH UND FUNKTIONIEREND
+                    // PROFILBILD LADEN - GARANTIERT FUNKTIONIEREND
                     console.log('📸 WEBSITE: Loading profile image...');
                     
                     let profileImage = null;
                     
-                    // 1. Erst aus heroData laden
+                    // 1. Aus heroData laden
                     if (data.profileImage) {
                         profileImage = data.profileImage;
-                        console.log('✅ WEBSITE: Profile image found in heroData');
+                        console.log('✅ WEBSITE: Profile image from heroData');
                     }
                     
-                    // 2. Falls nicht da, aus localStorage laden
+                    // 2. Aus localStorage laden
                     if (!profileImage) {
                         profileImage = localStorage.getItem('heroProfileImage');
-                        console.log('📸 WEBSITE: Checking localStorage:', profileImage ? 'Found' : 'Not found');
+                        console.log('📸 WEBSITE: Profile image from localStorage:', profileImage ? 'Found' : 'Not found');
                     }
                     
                     // 3. Profilbild anzeigen
-                    if (profileImage && profileImage !== 'manuel-weiss-photo.svg') {
+                    if (profileImage) {
                         const profilePhoto = document.getElementById('profile-photo');
                         if (profilePhoto) {
                             profilePhoto.src = profileImage;
@@ -836,7 +836,7 @@
                             console.error('❌ WEBSITE: profile-photo element not found');
                         }
                     } else {
-                        console.log('ℹ️ WEBSITE: Using default profile image');
+                        console.log('ℹ️ WEBSITE: No custom image, using default');
                     }
                     
                     // Button-Text aktualisieren
@@ -1097,7 +1097,21 @@
         }
         
         // Profilbild-Updates alle 3 Sekunden prüfen
-        setInterval(updateWebsiteProfileImage, 3000);
+        // Live-Update für Profilbild
+        function updateProfileImageLive() {
+            const storedImage = localStorage.getItem('heroProfileImage');
+            if (storedImage) {
+                const profilePhoto = document.getElementById('profile-photo');
+                if (profilePhoto && profilePhoto.src !== storedImage) {
+                    profilePhoto.src = storedImage;
+                    profilePhoto.style.display = 'block';
+                    console.log('🔄 WEBSITE: Profile image updated live');
+                }
+            }
+        }
+        
+        // Polling für Live-Updates
+        setInterval(updateProfileImageLive, 2000);
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
