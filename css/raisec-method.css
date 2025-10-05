@@ -155,6 +155,166 @@ body {
     }
 }
 
+/* RAISEC Hero Section - Ultra Modern like Ikigai */
+.raisec-hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    color: white !important;
+    padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.raisec-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.4;
+}
+
+.raisec-hero * {
+    color: white !important;
+    position: relative;
+    z-index: 1;
+}
+
+.raisec-hero .hero-title,
+.raisec-hero .hero-subtitle,
+.raisec-hero .btn,
+.raisec-hero .stat-label,
+.raisec-hero .stat-number {
+    color: white !important;
+}
+
+.raisec-hero .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.raisec-hero .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.raisec-hero .gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+}
+
+/* RAISEC Visual Circle */
+.raisec-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.raisec-circle {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.raisec-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    z-index: 10;
+}
+
+.raisec-quadrant {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.raisec-quadrant:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.raisec-quadrant[data-quadrant="realistic"] {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.raisec-quadrant[data-quadrant="artistic"] {
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+.raisec-quadrant[data-quadrant="investigative"] {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.raisec-quadrant[data-quadrant="social"] {
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+}
+
+.raisec-quadrant[data-quadrant="enterprising"] {
+    top: 30%;
+    right: 30%;
+    transform: translate(50%, -50%);
+}
+
+.raisec-quadrant[data-quadrant="conventional"] {
+    bottom: 30%;
+    left: 30%;
+    transform: translate(-50%, 50%);
+}
+
+.raisec-quadrant i {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
 /* Scientific Background */
 .scientific-background {
     margin-bottom: 40px;
