@@ -153,6 +153,50 @@
                     </div>
                 </div>
 
+                <!-- RAISEC-Modell -->
+                <div class="method-card" onclick="startMethod('raisec')" data-category="analysis">
+                    <div class="method-header">
+                        <div class="method-icon raisec">
+                            <i class="fas fa-chart-radar"></i>
+                        </div>
+                        <div class="method-info">
+                            <h3>RAISEC-Modell</h3>
+                            <p>Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell nach Holland. Identifiziere deinen Persönlichkeitstyp und finde passende Berufsfelder.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="method-tags">
+                        <span class="method-tag">Berufsorientierung</span>
+                        <span class="method-tag">Persönlichkeitstyp</span>
+                        <span class="method-tag">Karriereplanung</span>
+                        <span class="method-tag">Interessentest</span>
+                    </div>
+                    
+                    <div class="method-stats">
+                        <div class="stat">
+                            <i class="fas fa-clock"></i>
+                            <span>5 Min</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-question-circle"></i>
+                            <span>30 Fragen</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>6 Typen</span>
+                        </div>
+                    </div>
+                    
+                    <div class="method-actions">
+                        <button class="btn btn-primary" onclick="startMethod('raisec')">
+                            <i class="fas fa-play"></i> Assessment starten
+                        </button>
+                        <button class="btn btn-outline" onclick="previewMethod('raisec')">
+                            <i class="fas fa-eye"></i> Vorschau
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Werte-Klärung -->
                 <div class="method-card" onclick="startMethod('values-clarification')" data-category="self-discovery">
         <div class="method-header">
@@ -1687,6 +1731,7 @@
         // Route zu den entsprechenden Methoden-Seiten
         const methodRoutes = {
             'ikigai': 'persoenlichkeitsentwicklung.html',
+            'raisec': 'raisec-persoenlichkeitsentwicklung.html',
             'values-clarification': 'methods/values-clarification/values-clarification.html',
             'strengths-analysis': 'methods/strengths-finder/strengths-finder.html',
             'goal-setting': 'methods/goal-setting/goal-setting.html',
