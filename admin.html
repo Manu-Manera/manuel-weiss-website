@@ -2400,6 +2400,12 @@
                                         <span>Ikigai-Workflow</span>
                                     </a>
                                 </li>
+                                <li class="nav-item" data-section="raisec">
+                                    <a href="#raisec">
+                                        <i class="fas fa-circle"></i>
+                                        <span>RAISEC-Modell</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item" data-section="values-clarification">
                                     <a href="#values-clarification">
                                         <i class="fas fa-circle"></i>
@@ -5132,6 +5138,412 @@
                         </div>
                         <div class="media-gallery" id="mediaGallery">
                             <!-- Media items will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RAISEC Model Section -->
+                <section id="raisec" class="admin-section">
+                    <div class="raisec-admin-container">
+                        <div class="raisec-admin-header">
+                            <h2>RAISEC-Modell Verwaltung</h2>
+                            <p>Verwalte das RAISEC-Modell nach Holland für Berufsorientierung und Persönlichkeitsanalyse</p>
+                        </div>
+
+                        <!-- RAISEC Types Management -->
+                        <div class="raisec-types-management">
+                            <h3>🎯 RAISEC-Typen verwalten</h3>
+                            <div class="raisec-types-grid">
+                                <div class="raisec-type-card" data-type="R">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-tools"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>R - Realistisch</h4>
+                                            <p>Praktisch, handwerklich, technisch orientiert</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="R">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="raisec-type-card" data-type="A">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>A - Analytisch</h4>
+                                            <p>Analytisch, wissenschaftlich, intellektuell</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="A">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="raisec-type-card" data-type="I">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-palette"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>I - Künstlerisch</h4>
+                                            <p>Kreativ, expressiv, unkonventionell</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="I">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="raisec-type-card" data-type="S">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>S - Sozial</h4>
+                                            <p>Hilfsbereit, empathisch, kommunikativ</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="S">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="raisec-type-card" data-type="E">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-briefcase"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>E - Unternehmerisch</h4>
+                                            <p>Führungsstark, überzeugend, ehrgeizig</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="E">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="raisec-type-card" data-type="C">
+                                    <div class="raisec-type-header">
+                                        <div class="raisec-type-icon">
+                                            <i class="fas fa-calculator"></i>
+                                        </div>
+                                        <div class="raisec-type-info">
+                                            <h4>C - Konventionell</h4>
+                                            <p>Organisiert, strukturiert, detailorientiert</p>
+                                        </div>
+                                        <button class="raisec-edit-btn" data-type="C">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div class="raisec-type-stats">
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-users"></i>
+                                            <span>0 Teilnehmer</span>
+                                        </div>
+                                        <div class="raisec-stat">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>0% Durchschnitt</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Assessment Questions Management -->
+                        <div class="assessment-questions-management">
+                            <h3>❓ Assessment-Fragen verwalten</h3>
+                            <div class="questions-overview">
+                                <div class="questions-stats">
+                                    <div class="question-stat">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span>30 Fragen</span>
+                                    </div>
+                                    <div class="question-stat">
+                                        <i class="fas fa-clock"></i>
+                                        <span>5 Min Dauer</span>
+                                    </div>
+                                    <div class="question-stat">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <span>6 Kategorien</span>
+                                    </div>
+                                </div>
+                                <div class="questions-actions">
+                                    <button class="btn btn-primary" data-action="add-question">
+                                        <i class="fas fa-plus"></i> Frage hinzufügen
+                                    </button>
+                                    <button class="btn btn-outline" data-action="edit-questions">
+                                        <i class="fas fa-edit"></i> Fragen bearbeiten
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Career Recommendations Management -->
+                        <div class="career-recommendations-management">
+                            <h3>💼 Berufsempfehlungen verwalten</h3>
+                            <div class="career-recommendations-grid">
+                                <div class="career-category-card" data-category="R">
+                                    <h4>Realistische Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Ingenieur</span>
+                                            <button class="career-edit-btn" data-career="engineer">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Mechaniker</span>
+                                            <button class="career-edit-btn" data-career="mechanic">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Techniker</span>
+                                            <button class="career-edit-btn" data-career="technician">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="R">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+
+                                <div class="career-category-card" data-category="A">
+                                    <h4>Analytische Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Wissenschaftler</span>
+                                            <button class="career-edit-btn" data-career="scientist">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Forscher</span>
+                                            <button class="career-edit-btn" data-career="researcher">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Programmierer</span>
+                                            <button class="career-edit-btn" data-career="programmer">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="A">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+
+                                <div class="career-category-card" data-category="I">
+                                    <h4>Künstlerische Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Künstler</span>
+                                            <button class="career-edit-btn" data-career="artist">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Designer</span>
+                                            <button class="career-edit-btn" data-career="designer">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Musiker</span>
+                                            <button class="career-edit-btn" data-career="musician">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="I">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+
+                                <div class="career-category-card" data-category="S">
+                                    <h4>Soziale Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Lehrer</span>
+                                            <button class="career-edit-btn" data-career="teacher">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Sozialarbeiter</span>
+                                            <button class="career-edit-btn" data-career="social-worker">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Therapeut</span>
+                                            <button class="career-edit-btn" data-career="therapist">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="S">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+
+                                <div class="career-category-card" data-category="E">
+                                    <h4>Unternehmerische Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Manager</span>
+                                            <button class="career-edit-btn" data-career="manager">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Verkäufer</span>
+                                            <button class="career-edit-btn" data-career="salesperson">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Unternehmer</span>
+                                            <button class="career-edit-btn" data-career="entrepreneur">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="E">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+
+                                <div class="career-category-card" data-category="C">
+                                    <h4>Konventionelle Berufe</h4>
+                                    <div class="career-list">
+                                        <div class="career-item">
+                                            <span>Buchhalter</span>
+                                            <button class="career-edit-btn" data-career="accountant">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Sekretär</span>
+                                            <button class="career-edit-btn" data-career="secretary">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="career-item">
+                                            <span>Banker</span>
+                                            <button class="career-edit-btn" data-career="banker">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" data-action="add-career" data-category="C">
+                                        <i class="fas fa-plus"></i> Beruf hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="raisec-statistics">
+                            <h3>📊 RAISEC-Statistiken</h3>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="raisec-completions">0</h4>
+                                        <p>Assessments abgeschlossen</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="raisec-distribution">-</h4>
+                                        <p>Typ-Verteilung</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="raisec-satisfaction">-</h4>
+                                        <p>Zufriedenheit</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4 id="raisec-trend">-</h4>
+                                        <p>Trend</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
