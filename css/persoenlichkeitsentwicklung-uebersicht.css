@@ -487,6 +487,7 @@
 .method-icon.competence { background: linear-gradient(135deg, #ff7675, #d63031); }
 .method-icon.moment { background: linear-gradient(135deg, #a8e6cf, #00b894); }
 .method-icon.resource { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.raisec { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
 
 .method-info h3 {
     font-size: 1.3rem;
