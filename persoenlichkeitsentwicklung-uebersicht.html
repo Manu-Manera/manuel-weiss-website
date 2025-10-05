@@ -80,7 +80,7 @@
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="methodSearch" class="search-input" placeholder="Suche nach Methoden, Kategorien oder Schlagwörtern...">
+                        <input type="text" id="methodSearch" class="search-input" placeholder="Suche nach Methoden, Kategorien oder Schlagwörtern..." onkeypress="handleSearchKeypress(event)">
                         <button class="search-clear" id="clearSearch" style="display: none;">
                             <i class="fas fa-times"></i>
                         </button>
@@ -2053,21 +2053,217 @@
         document.querySelector(`[data-filter="${category}"]`).classList.add('active');
     }
     
-    // Search function
+    // Enhanced Search function with similarity matching
     function searchMethods() {
-        const searchTerm = document.getElementById('methodSearch').value.toLowerCase();
+        const searchTerm = document.getElementById('methodSearch').value.toLowerCase().trim();
         const cards = document.querySelectorAll('.method-card');
+        
+        if (searchTerm === '') {
+            // Show all cards if search is empty
+            cards.forEach(card => {
+                card.style.display = 'block';
+                card.classList.remove('search-highlight');
+            });
+            return;
+        }
+        
+        // Create search results with similarity scores
+        const searchResults = [];
         
         cards.forEach(card => {
             const title = card.querySelector('h3').textContent.toLowerCase();
             const description = card.querySelector('p').textContent.toLowerCase();
+            const tags = Array.from(card.querySelectorAll('.method-tag')).map(tag => tag.textContent.toLowerCase());
+            const category = card.getAttribute('data-category') || '';
             
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            // Calculate similarity score
+            const similarityScore = calculateSimilarity(searchTerm, {
+                title: title,
+                description: description,
+                tags: tags,
+                category: category
+            });
+            
+            searchResults.push({
+                card: card,
+                score: similarityScore
+            });
+        });
+        
+        // Sort by similarity score (highest first)
+        searchResults.sort((a, b) => b.score - a.score);
+        
+        // Show results
+        searchResults.forEach((result, index) => {
+            const card = result.card;
+            const score = result.score;
+            
+            if (score > 0) {
                 card.style.display = 'block';
-                } else {
+                card.classList.add('search-highlight');
+                
+                // Add similarity indicator
+                if (!card.querySelector('.similarity-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'similarity-indicator';
+                    indicator.innerHTML = `<span class="similarity-score">${Math.round(score * 100)}% Übereinstimmung</span>`;
+                    card.appendChild(indicator);
+                }
+                
+                // Order by similarity (most similar first)
+                card.style.order = index;
+            } else {
                 card.style.display = 'none';
+                card.classList.remove('search-highlight');
+                const indicator = card.querySelector('.similarity-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
             }
         });
+        
+        // Show "No results" message if no matches
+        showNoResultsMessage(searchResults.filter(r => r.score > 0).length === 0);
+    }
+    
+    // Calculate similarity between search term and content
+    function calculateSimilarity(searchTerm, content) {
+        let score = 0;
+        const searchWords = searchTerm.split(' ').filter(word => word.length > 0);
+        
+        // Title matching (highest weight)
+        searchWords.forEach(word => {
+            if (content.title.includes(word)) {
+                score += 0.4;
+            }
+            // Partial word matching
+            if (content.title.includes(word.substring(0, Math.max(3, word.length - 1)))) {
+                score += 0.2;
+            }
+        });
+        
+        // Description matching
+        searchWords.forEach(word => {
+            if (content.description.includes(word)) {
+                score += 0.3;
+            }
+        });
+        
+        // Tags matching
+        content.tags.forEach(tag => {
+            searchWords.forEach(word => {
+                if (tag.includes(word)) {
+                    score += 0.2;
+                }
+            });
+        });
+        
+        // Category matching
+        if (content.category.includes(searchTerm)) {
+            score += 0.1;
+        }
+        
+        // Fuzzy matching for typos
+        searchWords.forEach(word => {
+            if (word.length > 3) {
+                const fuzzyMatches = findFuzzyMatches(word, [
+                    ...content.title.split(' '),
+                    ...content.description.split(' '),
+                    ...content.tags
+                ]);
+                score += fuzzyMatches * 0.1;
+            }
+        });
+        
+        return Math.min(score, 1); // Cap at 1.0
+    }
+    
+    // Simple fuzzy matching
+    function findFuzzyMatches(word, targets) {
+        let matches = 0;
+        targets.forEach(target => {
+            if (target.length > 2 && word.length > 2) {
+                const distance = levenshteinDistance(word, target);
+                const maxLength = Math.max(word.length, target.length);
+                const similarity = 1 - (distance / maxLength);
+                
+                if (similarity > 0.6) { // 60% similarity threshold
+                    matches += similarity;
+                }
+            }
+        });
+        return matches;
+    }
+    
+    // Levenshtein distance for fuzzy matching
+    function levenshteinDistance(str1, str2) {
+        const matrix = [];
+        
+        for (let i = 0; i <= str2.length; i++) {
+            matrix[i] = [i];
+        }
+        
+        for (let j = 0; j <= str1.length; j++) {
+            matrix[0][j] = j;
+        }
+        
+        for (let i = 1; i <= str2.length; i++) {
+            for (let j = 1; j <= str1.length; j++) {
+                if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+        
+        return matrix[str2.length][str1.length];
+    }
+    
+    // Handle Enter key press
+    function handleSearchKeypress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchMethods();
+        }
+    }
+    
+    // Show no results message
+    function showNoResultsMessage(show) {
+        let noResultsMsg = document.getElementById('noResultsMessage');
+        
+        if (show) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.id = 'noResultsMessage';
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.innerHTML = `
+                    <div class="no-results-content">
+                        <i class="fas fa-search"></i>
+                        <h3>Keine Ergebnisse gefunden</h3>
+                        <p>Versuchen Sie andere Suchbegriffe oder schauen Sie sich alle verfügbaren Methoden an.</p>
+                        <button onclick="clearSearch()" class="btn btn-primary">Alle Methoden anzeigen</button>
+                    </div>
+                `;
+                document.querySelector('.methods-grid').appendChild(noResultsMsg);
+            }
+            noResultsMsg.style.display = 'block';
+        } else {
+            if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+    }
+    
+    // Clear search function
+    function clearSearch() {
+        document.getElementById('methodSearch').value = '';
+        searchMethods();
+        document.getElementById('clearSearch').style.display = 'none';
     }
     
     // Language Switcher Function
@@ -2316,6 +2512,112 @@
         .method-card:hover, .icon-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        /* Enhanced Search Styles */
+        .search-highlight {
+            border: 2px solid #6366f1 !important;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2) !important;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        .similarity-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .similarity-score {
+            font-size: 0.75rem;
+        }
+        
+        .no-results-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 20px;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .no-results-content {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .no-results-content i {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        
+        .no-results-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        
+        .no-results-content p {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .no-results-content .btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .no-results-content .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Search input enhancements */
+        .search-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Methods grid with flexbox for ordering */
+        .methods-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .method-card {
+            transition: all 0.3s ease;
+        }
+        
+        /* Responsive search */
+        @media (max-width: 768px) {
+            .similarity-indicator {
+                position: static;
+                margin-top: 10px;
+                display: inline-block;
+            }
+            
+            .no-results-content {
+                padding: 0 20px;
+            }
         }
     </style>
 </body>
