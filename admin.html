@@ -16535,22 +16535,33 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // EINFACHE UPLOAD-LÖSUNG - FUNKTIONIERT GARANTIERT
-        function handleFileUpload(input) {
-            console.log('📸 UPLOAD: File selected');
+        // NEUE EINFACHE UPLOAD-LÖSUNG
+        function uploadImage() {
+            console.log('🚀 UPLOAD: Button clicked');
+            const fileInput = document.getElementById('image-upload');
+            if (fileInput) {
+                fileInput.click();
+                console.log('✅ UPLOAD: File dialog opened');
+            } else {
+                console.error('❌ UPLOAD: File input not found');
+                alert('Upload-Element nicht gefunden!');
+            }
+        }
+        
+        function processImage(input) {
+            console.log('📸 PROCESS: File selected');
             const file = input.files[0];
             if (!file) {
-                console.log('❌ UPLOAD: No file selected');
-                alert('❌ Keine Datei ausgewählt!');
+                console.log('❌ PROCESS: No file selected');
                 return;
             }
             
-            console.log('📸 UPLOAD: Processing file:', file.name, file.size, file.type);
+            console.log('📸 PROCESS: Processing file:', file.name, file.size, file.type);
             
             const reader = new FileReader();
             reader.onload = function(e) {
                 const imageUrl = e.target.result;
-                console.log('📸 UPLOAD: Image loaded, length:', imageUrl.length);
+                console.log('📸 PROCESS: Image loaded, length:', imageUrl.length);
                 
                 // Bild anzeigen
                 const img = document.getElementById('current-profile-image');
@@ -16559,25 +16570,25 @@ Bitte antworte im folgenden JSON-Format:
                 if (img) {
                     img.src = imageUrl;
                     img.style.display = 'block';
-                    console.log('✅ UPLOAD: Image updated');
+                    console.log('✅ PROCESS: Image displayed');
                 } else {
-                    console.error('❌ UPLOAD: Image element not found');
-                    alert('❌ Bild-Element nicht gefunden!');
+                    console.error('❌ PROCESS: Image element not found');
+                    alert('Bild-Element nicht gefunden!');
                     return;
                 }
                 
                 if (name) {
                     name.textContent = file.name;
-                    console.log('✅ UPLOAD: Name updated');
+                    console.log('✅ PROCESS: Name updated');
                 }
                 
                 // Speichern
                 try {
-                    // 1. localStorage speichern
+                    // localStorage speichern
                     localStorage.setItem('heroProfileImage', imageUrl);
-                    console.log('✅ UPLOAD: Saved to localStorage');
+                    console.log('💾 PROCESS: Saved to localStorage');
                     
-                    // 2. Hero-Daten sammeln und speichern
+                    // Hero-Daten sammeln
                     const heroData = {
                         name: document.getElementById('hero-name')?.value || 'Manuel Weiss',
                         title: document.getElementById('hero-title')?.value || 'HR Berater für AI & Transformation',
@@ -16588,25 +16599,25 @@ Bitte antworte im folgenden JSON-Format:
                     };
                     
                     localStorage.setItem('heroData', JSON.stringify(heroData));
-                    console.log('✅ UPLOAD: Hero data saved');
+                    console.log('💾 PROCESS: Hero data saved');
                     
-                    // 3. Website sofort aktualisieren
+                    // Website aktualisieren
                     window.dispatchEvent(new StorageEvent('storage', {
                         key: 'heroData',
                         newValue: JSON.stringify(heroData)
                     }));
-                    console.log('✅ UPLOAD: Website update triggered');
+                    console.log('🌐 PROCESS: Website update triggered');
                     
-                    alert('✅ Bild erfolgreich hochgeladen und gespeichert!');
+                    alert('✅ Bild erfolgreich hochgeladen!');
                 } catch (error) {
-                    console.error('❌ UPLOAD: Save failed:', error);
-                    alert('❌ Fehler beim Speichern: ' + error.message);
+                    console.error('❌ PROCESS: Save failed:', error);
+                    alert('Fehler beim Speichern: ' + error.message);
                 }
             };
             
             reader.onerror = function(error) {
-                console.error('❌ UPLOAD: FileReader error:', error);
-                alert('❌ Fehler beim Lesen der Datei!');
+                console.error('❌ PROCESS: FileReader error:', error);
+                alert('Fehler beim Lesen der Datei!');
             };
             
             reader.readAsDataURL(file);
