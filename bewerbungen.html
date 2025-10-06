@@ -4142,7 +4142,7 @@
                 <div class="quick-actions">
                     <h2>⚡ Quick Actions</h2>
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="document.getElementById('addModal').style.display='flex'">
+                        <button class="action-btn" onclick="document.getElementById('addModal').style.display='block'; document.getElementById('addModal').style.zIndex='9999'">
                             <i class="fas fa-plus"></i>
                             <span>Neue Bewerbung</span>
                         </button>
@@ -4716,11 +4716,11 @@
     </section>
 
     <!-- Add Application Modal -->
-    <div id="addModal" class="modal">
+    <div id="addModal" class="modal" onclick="if(event.target===this) this.style.display='none'">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Neue Bewerbung hinzufügen</h3>
-                <button class="close-btn" data-action="close-modal" data-param="addModal">&times;</button>
+                <button class="close-btn" onclick="document.getElementById('addModal').style.display='none'">&times;</button>
             </div>
             <form id="addApplicationForm">
                 <div class="form-group">
@@ -4746,7 +4746,7 @@
                     <textarea id="notes" name="notes" placeholder="Zusätzliche Informationen..."></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" data-action="close-modal" data-param="addModal">Abbrechen</button>
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('addModal').style.display='none'">Abbrechen</button>
                     <button type="submit" class="btn-primary">Speichern</button>
                 </div>
             </form>
