@@ -5523,6 +5523,93 @@
                 alert('Registrierungs-System nicht verfügbar. Bitte Seite neu laden.');
             }
         }
+        
+        // Application Management Functions
+        function openAddModal() {
+            const modal = document.getElementById('addModal');
+            if (modal) {
+                modal.style.display = 'block';
+            } else {
+                console.error('❌ Add Modal nicht gefunden');
+            }
+        }
+        
+        function exportApplications() {
+            try {
+                const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                if (applications.length === 0) {
+                    alert('❌ Keine Bewerbungen zum Exportieren vorhanden.');
+                    return;
+                }
+                
+                const csvContent = generateCSV(applications);
+                downloadCSV(csvContent, 'bewerbungen.csv');
+                showMessage('✅ Bewerbungen erfolgreich exportiert!', 'success');
+            } catch (error) {
+                console.error('❌ Export-Fehler:', error);
+                showMessage('Export fehlgeschlagen: ' + error.message, 'error');
+            }
+        }
+        
+        function generateCSV(applications) {
+            const headers = ['ID', 'Unternehmen', 'Position', 'Status', 'Datum', 'Anschreiben'];
+            const rows = applications.map(app => [
+                app.id,
+                app.company,
+                app.position,
+                app.status,
+                app.date,
+                app.coverLetter ? 'Ja' : 'Nein'
+            ]);
+            
+            return [headers, ...rows].map(row => 
+                row.map(field => `"${field}"`).join(',')
+            ).join('\n');
+        }
+        
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            
+            if (type === 'success') {
+                messageDiv.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            } else if (type === 'error') {
+                messageDiv.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            } else {
+                messageDiv.style.background = 'linear-gradient(135deg, #6366f1, #4f46e5)';
+            }
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -8935,11 +9022,31 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
             }
         });
         
-        // Event handler for workflow start buttons
+        // Event handler for all data-action buttons
         document.addEventListener('click', (e) => {
-            if (e.target.getAttribute('data-action') === 'start-intelligent-workflow') {
+            const action = e.target.getAttribute('data-action');
+            
+            if (action === 'start-intelligent-workflow') {
                 e.preventDefault();
                 startConsolidatedWorkflow();
+            } else if (action === 'open-add-modal') {
+                e.preventDefault();
+                openAddModal();
+            } else if (action === 'create-new-with-designer') {
+                e.preventDefault();
+                showSection('designer-section');
+            } else if (action === 'export-applications') {
+                e.preventDefault();
+                exportApplications();
+            } else if (action === 'close-modal') {
+                e.preventDefault();
+                const modalId = e.target.getAttribute('data-param');
+                if (modalId) {
+                    closeModal(modalId);
+                }
+            } else if (action === 'closest') {
+                e.preventDefault();
+                e.target.closest('.modal').remove();
             }
         });
         
