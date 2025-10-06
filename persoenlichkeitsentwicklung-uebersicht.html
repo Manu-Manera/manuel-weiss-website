@@ -31,7 +31,9 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <div class="nav-logo-container">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                </div>
                 <span class="nav-name">Manuel Weiss</span>
             </div>
             
@@ -42,26 +44,43 @@
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" nav.personality">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link" nav.contact">Kontakt</a>
                 
-                <!-- AWS User System - Nur auf Service-Unterseiten -->
-                <div class="user-system" id="userSystem">
-                    <div class="user-info" id="userInfo" style="display: none;">
-                        <div class="user-avatar">
-                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
-                        </div>
-                        <div class="user-details">
-                            <span class="user-name" id="userName">Benutzer</span>
-                            <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
-                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
+                <!-- Integrated User System -->
+                <div class="nav-user" id="navUser">
+                    <button class="nav-login-btn" id="navLoginBtn" onclick="toggleUserMenu()">
+                        <i class="fas fa-user"></i>
+                        <span>Anmelden</span>
+                    </button>
                     
-                    <div class="user-login" id="userLogin">
-                        <button class="btn-login" onclick="loginUser()">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Anmelden</span>
-                        </button>
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="user-dropdown-header">
+                            <div class="user-avatar-small">
+                                <img src="manuel-weiss-photo.svg" alt="User" class="user-avatar-img">
+                            </div>
+                            <div class="user-info-small">
+                                <div class="user-name-small">Manuel Weiss</div>
+                                <div class="user-email-small">manuel.weiss@example.com</div>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profil</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Einstellungen</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Fortschritt</span>
+                            </a>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" class="user-dropdown-item logout" onclick="logoutUser()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Abmelden</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 
@@ -1740,57 +1759,78 @@
         </div>
     </footer>
 
-<!-- Auth Modals -->
-<div id="authModalsContainer"></div>
-
 <!-- Scripts -->
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-<script src="js/aws-auth.js"></script>
 <script src="js/translation-manager.js"></script>
 <script src="js/persoenlichkeitsentwicklung-methods.js"></script>
 <script src="js/persoenlichkeitsentwicklung-search.js"></script>
     <script>
-    // Load auth modals
-    async function loadAuthModals() {
-        try {
-            const response = await fetch('components/auth-modals.html');
-            const html = await response.text();
-            document.getElementById('authModalsContainer').innerHTML = html;
-        } catch (error) {
-            console.error('Error loading auth modals:', error);
-        }
-    }
 
-    // AWS User System Functions
-    function loginUser() {
-        const modal = document.getElementById('loginModal');
-        if (modal) {
-            modal.style.display = 'flex';
+    // Integrated User System Functions
+    function toggleUserMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
+        
+        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+            dropdown.style.display = 'block';
+            loginBtn.innerHTML = '<i class="fas fa-user-circle"></i><span>Manuel Weiss</span>';
+            loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        } else {
+            dropdown.style.display = 'none';
+            loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
+            loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
         }
     }
 
     function logoutUser() {
-        if (window.awsAuth) {
-            window.awsAuth.signOut().then(() => {
-                console.log('Erfolgreich abgemeldet');
-            }).catch(error => {
-                console.error('Fehler beim Abmelden:', error);
+        const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
+        
+        dropdown.style.display = 'none';
+        loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
+        loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        
+        showNotification('Erfolgreich abgemeldet!', 'success');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const userSystem = document.getElementById('navUser');
+        const dropdown = document.getElementById('userDropdown');
+        
+        if (!userSystem.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Initialize system
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize PDF download handlers
+        initializePDFDownloads();
+        
+        // Initialize mobile navigation
+        initializeMobileNav();
+    });
+
+    function initializeMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                navToggle.classList.toggle('active');
+            });
+            
+            // Close menu when clicking on a link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('active');
+                });
             });
         }
     }
-
-    // Initialize auth system
-    document.addEventListener('DOMContentLoaded', async function() {
-        await loadAuthModals();
-        
-        // Check user status
-        if (window.awsAuth) {
-            window.awsAuth.checkUserStatus();
-        }
-        
-        // Initialize PDF download handlers
-        initializePDFDownloads();
-    });
 
     // PDF Download System
     function initializePDFDownloads() {
@@ -3272,112 +3312,149 @@
             }
         }
 
-        /* AWS User System Styles - Integrated in Navigation */
-        .user-system {
+        /* Integrated User System Styles */
+        .nav-user {
+            position: relative;
             display: flex;
             align-items: center;
-            margin-left: 20px;
         }
 
-        .user-info {
+        .nav-login-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .nav-login-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* User Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            min-width: 280px;
+            z-index: 1000;
+            margin-top: 8px;
+        }
+
+        .user-dropdown-header {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, #ffffff, #f8fafc);
-            padding: 8px 16px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px 12px 0 0;
         }
 
-        .user-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
 
-        .user-avatar-img {
+        .user-avatar-small .user-avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+        .user-info-small {
+            flex: 1;
         }
 
-        .user-name {
-            font-size: 0.8rem;
+        .user-name-small {
+            font-size: 0.9rem;
             font-weight: 700;
             color: #1e293b;
-            line-height: 1.2;
+            margin-bottom: 2px;
         }
 
-        .user-email {
-            font-size: 0.7rem;
+        .user-email-small {
+            font-size: 0.8rem;
             color: #64748b;
-            line-height: 1.2;
         }
 
-        .user-logout {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
+        .user-dropdown-content {
+            padding: 8px 0;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .user-dropdown-item:hover {
+            background: #f8fafc;
+            color: #6366f1;
+        }
+
+        .user-dropdown-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .user-dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 8px 0;
+        }
+
+        .user-dropdown-item.logout {
+            color: #ef4444;
+        }
+
+        .user-dropdown-item.logout:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* Logo Container */
+        .nav-logo-container {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            overflow: hidden;
+            border: 2px solid #6366f1;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
 
-        .user-logout:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .user-login {
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-login i {
-            font-size: 0.7rem;
+        .nav-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Responsive Design for User System */
