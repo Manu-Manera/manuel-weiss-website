@@ -7,6 +7,7 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/consolidated-workflow.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -4276,14 +4277,13 @@
                         <div class="document-list" id="cv-documents">
                             <!-- CV documents will be loaded here -->
                         </div>
-                        <div class="upload-area" onclick="document.getElementById('cv-upload').click()">
+                        <div class="upload-area" onclick="checkAuthAndUpload('cv')">
                             <div class="upload-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="upload-text">Lebenslauf hochladen</div>
                             <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
                         </div>
-                        <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('cv', this.files[0])">
                     </div>
 
                     <div class="document-category">
@@ -5090,10 +5090,9 @@
     <script src="js/cache-buster.js"></script>
     <!-- AWS UPLOAD SERVICE (AWS Integration) -->
     <script src="js/aws-upload-config.js"></script>
-    <!-- SIMPLE WORKING UPLOAD (Einfach & Funktional) -->
-    <script src="js/simple-working-upload.js"></script>
         <script src="js/smart-ai-analysis.js"></script>
         <script src="js/ai-sentence-generator.js"></script>
+        <script src="js/consolidated-workflow.js"></script>
         <script src="js/enhanced-workflow-integration.js"></script>
         <script src="js/workflow-document-display.js"></script>
         <script src="js/enhanced-sentence-generator.js"></script>
@@ -8734,6 +8733,31 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
                 e.target.style.display = 'none';
             }
         });
+        
+        // Event handler for workflow start buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.getAttribute('data-action') === 'start-intelligent-workflow') {
+                e.preventDefault();
+                startConsolidatedWorkflow();
+            }
+        });
+        
+        // Start consolidated workflow function
+        function startConsolidatedWorkflow() {
+            try {
+                // Initialize consolidated workflow
+                if (window.consolidatedWorkflow) {
+                    window.consolidatedWorkflow.render();
+                    console.log('✅ Konsolidierter Workflow gestartet');
+                } else {
+                    console.error('❌ Konsolidierter Workflow nicht verfügbar');
+                    alert('Workflow-System nicht verfügbar. Bitte Seite neu laden.');
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Starten des Workflows:', error);
+                alert('Fehler beim Starten des Workflows: ' + error.message);
+            }
+        }
 
         // Smart Templates & Snippets
         function initializeSmartTemplates() {
@@ -10491,5 +10515,8 @@ Manuel Weiss`;
         // Make test function globally available
         window.testNavigation = testNavigation;
     </script>
+    
+    <!-- Workflow Container -->
+    <div id="workflowContainer"></div>
 </body>
 </html>

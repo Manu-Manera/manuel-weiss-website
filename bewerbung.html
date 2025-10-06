@@ -7,6 +7,7 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/consolidated-workflow.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -1571,6 +1572,7 @@ Manuel Weiss`;
       </div>
     </section>
 
+    <script src="js/consolidated-workflow.js"></script>
     <script src="js/aws-upload-config.js"></script>
     <script src="js/smart-api-system.js"></script>
     <script type="module">
@@ -3721,6 +3723,34 @@ Alle wichtigen Daten wurden erkannt und verarbeitet.`;
           msg.style.display = 'none';
         }, 5000);
       }
+      
+      // Event handler for workflow start buttons
+      document.addEventListener('click', (e) => {
+          if (e.target.getAttribute('data-action') === 'start-intelligent-workflow') {
+              e.preventDefault();
+              startConsolidatedWorkflow();
+          }
+      });
+      
+      // Start consolidated workflow function
+      function startConsolidatedWorkflow() {
+          try {
+              // Initialize consolidated workflow
+              if (window.consolidatedWorkflow) {
+                  window.consolidatedWorkflow.render();
+                  console.log('✅ Konsolidierter Workflow gestartet');
+              } else {
+                  console.error('❌ Konsolidierter Workflow nicht verfügbar');
+                  alert('Workflow-System nicht verfügbar. Bitte Seite neu laden.');
+              }
+          } catch (error) {
+              console.error('❌ Fehler beim Starten des Workflows:', error);
+              alert('Fehler beim Starten des Workflows: ' + error.message);
+          }
+      }
     </script>
+    
+    <!-- Workflow Container -->
+    <div id="workflowContainer"></div>
 </body>
 </html>
