@@ -54,7 +54,7 @@ export class ManuelWeissWebsiteStack extends cdk.Stack {
       selfSignUpEnabled: true,
       signInAliases: {
         email: true,
-        username: true
+        username: false
       },
       standardAttributes: {
         email: {
@@ -75,9 +75,17 @@ export class ManuelWeissWebsiteStack extends cdk.Stack {
         requireLowercase: true,
         requireUppercase: true,
         requireDigits: true,
-        requireSymbols: true
+        requireSymbols: false
       },
-      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY
+      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+      autoVerify: {
+        email: true
+      },
+      userVerification: {
+        emailSubject: 'Bestätigen Sie Ihre E-Mail-Adresse',
+        emailBody: 'Hallo {username}, bitte bestätigen Sie Ihre E-Mail-Adresse mit dem Code: {####}',
+        emailStyle: cognito.VerificationEmailStyle.CODE
+      }
     });
 
     const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
