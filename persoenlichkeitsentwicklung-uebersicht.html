@@ -1788,25 +1788,590 @@
             window.awsAuth.checkUserStatus();
         }
         
-        // Add PDF download event listeners
-        addPDFDownloadListeners();
+        // Initialize PDF download handlers
+        initializePDFDownloads();
     });
 
-    function addPDFDownloadListeners() {
-        // Add event listeners to all PDF download buttons
+    // PDF Download System
+    function initializePDFDownloads() {
         const pdfButtons = document.querySelectorAll('[data-action="download-pdf"], [data-action="download-p-d-f"]');
         
         pdfButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation();
-                
-                const methodName = this.getAttribute('data-param');
-                if (methodName) {
-                    downloadPDF(methodName);
-                }
+                const methodId = this.getAttribute('data-param');
+                downloadMethodPDF(methodId);
             });
         });
+    }
+
+    function downloadMethodPDF(methodId) {
+        const methodData = getMethodData(methodId);
+        if (!methodData) {
+            console.error('Method data not found for:', methodId);
+            return;
+        }
+
+        const pdfContent = generatePDFContent(methodData);
+        downloadPDF(pdfContent, methodData.title);
+    }
+
+    function getMethodData(methodId) {
+        const methods = {
+            'ikigai': {
+                title: 'Ikigai-Workflow',
+                description: 'Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.',
+                steps: [
+                    '1. Was liebst du? - Deine Leidenschaften identifizieren',
+                    '2. Was kannst du gut? - Deine Talente und Fähigkeiten',
+                    '3. Wofür wirst du bezahlt? - Deine beruflichen Möglichkeiten',
+                    '4. Was braucht die Welt? - Deine Mission und Werte',
+                    '5. Die Schnittmenge finden - Dein Ikigai definieren',
+                    '6. Aktionsplan entwickeln - Konkrete Schritte planen',
+                    '7. Umsetzung und Reflexion - Kontinuierliche Weiterentwicklung'
+                ],
+                duration: '2-3 Stunden',
+                questions: '45+ Fragen',
+                benefits: [
+                    'Klarheit über deinen Lebenssinn',
+                    'Bessere Entscheidungsfindung',
+                    'Erhöhte Motivation und Zufriedenheit',
+                    'Ausrichtung auf deine Stärken'
+                ]
+            },
+            'raisec': {
+                title: 'RAISEC-Modell',
+                description: 'Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell nach Holland. Identifiziere deinen Persönlichkeitstyp und finde passende Berufsfelder.',
+                steps: [
+                    '1. Realistic (R) - Praktische, handwerkliche Tätigkeiten',
+                    '2. Investigative (I) - Forschende, analytische Tätigkeiten',
+                    '3. Artistic (A) - Kreative, künstlerische Tätigkeiten',
+                    '4. Social (S) - Soziale, helfende Tätigkeiten',
+                    '5. Enterprising (E) - Führungs-, verkaufsorientierte Tätigkeiten',
+                    '6. Conventional (C) - Organisatorische, strukturierte Tätigkeiten'
+                ],
+                duration: '5 Minuten',
+                questions: '30 Fragen',
+                benefits: [
+                    'Klare Berufsorientierung',
+                    'Passende Studien- und Berufswahl',
+                    'Bessere Karriereplanung',
+                    'Verständnis deiner Arbeitspräferenzen'
+                ]
+            },
+            'values-clarification': {
+                title: 'Werte-Klärung',
+                description: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.',
+                steps: [
+                    '1. Werte-Liste durchgehen - 30+ Werte bewerten',
+                    '2. Top 10 Werte auswählen - Die wichtigsten identifizieren',
+                    '3. Werte-Ranking erstellen - Prioritäten setzen',
+                    '4. Konflikt-Analyse - Widersprüche aufdecken',
+                    '5. Lebensbereiche zuordnen - Werte in Kontext setzen'
+                ],
+                duration: '1-2 Stunden',
+                questions: '30+ Werte',
+                benefits: [
+                    'Klarheit über deine Prioritäten',
+                    'Bessere Entscheidungsfindung',
+                    'Authentische Lebensführung',
+                    'Reduzierte innere Konflikte'
+                ]
+            },
+            'strengths-finder': {
+                title: 'Stärken-Analyse',
+                description: 'Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.',
+                steps: [
+                    '1. Gallup StrengthsFinder Test',
+                    '2. VIA Character Strengths Assessment',
+                    '3. Stärken-Mapping und Analyse',
+                    '4. Entwicklungsplan erstellen',
+                    '5. Stärken im Alltag anwenden'
+                ],
+                duration: '1-2 Stunden',
+                questions: '34 Stärken',
+                benefits: [
+                    'Erkenntnis deiner natürlichen Talente',
+                    'Bessere Performance durch Stärken-Fokus',
+                    'Erhöhte Selbstwirksamkeit',
+                    'Optimale Ressourcennutzung'
+                ]
+            },
+            'goal-setting': {
+                title: 'Ziel-Setting',
+                description: 'Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.',
+                steps: [
+                    '1. SMART-Ziele definieren',
+                    '2. Ziel-Hierarchie erstellen',
+                    '3. Meilensteine festlegen',
+                    '4. Aktionsplan entwickeln',
+                    '5. Tracking und Anpassung'
+                ],
+                duration: '1-2 Stunden',
+                questions: '5 SMART-Kriterien',
+                benefits: [
+                    'Klarheit über deine Ziele',
+                    'Erhöhte Motivation',
+                    'Bessere Erfolgswahrscheinlichkeit',
+                    'Strukturierte Herangehensweise'
+                ]
+            },
+            'mindfulness': {
+                title: 'Achtsamkeit & Meditation',
+                description: 'Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.',
+                steps: [
+                    '1. Grundlagen der Achtsamkeit',
+                    '2. Atemmeditation erlernen',
+                    '3. Body-Scan Übungen',
+                    '4. Gehmeditation praktizieren',
+                    '5. Integration in den Alltag'
+                ],
+                duration: '10min täglich',
+                questions: 'Geführte Übungen',
+                benefits: [
+                    'Reduzierter Stress',
+                    'Bessere Konzentration',
+                    'Emotionale Balance',
+                    'Erhöhte Selbstwahrnehmung'
+                ]
+            },
+            'emotional-intelligence': {
+                title: 'Emotionale Intelligenz',
+                description: 'Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.',
+                steps: [
+                    '1. EQ-Selbsttest durchführen',
+                    '2. Emotionale Selbstwahrnehmung',
+                    '3. Emotionsregulation üben',
+                    '4. Empathie entwickeln',
+                    '5. Soziale Kompetenzen stärken'
+                ],
+                duration: '1-2 Stunden',
+                questions: '4 EQ-Bereiche',
+                benefits: [
+                    'Bessere Beziehungen',
+                    'Erhöhte Selbstkontrolle',
+                    'Verbesserte Kommunikation',
+                    'Professioneller Erfolg'
+                ]
+            },
+            'habit-building': {
+                title: 'Gewohnheiten aufbauen',
+                description: 'Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.',
+                steps: [
+                    '1. Gewohnheits-Analyse',
+                    '2. Habit-Stacking Methode',
+                    '3. 21-Tage-Regel anwenden',
+                    '4. Umgebung optimieren',
+                    '5. Tracking und Anpassung'
+                ],
+                duration: '21 Tage',
+                questions: 'Gewohnheits-Tracking',
+                benefits: [
+                    'Nachhaltige Verhaltensänderung',
+                    'Erhöhte Produktivität',
+                    'Bessere Selbstdisziplin',
+                    'Langfristige Erfolge'
+                ]
+            },
+            'communication': {
+                title: 'Kommunikation',
+                description: 'Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.',
+                steps: [
+                    '1. Aktives Zuhören üben',
+                    '2. Nonverbale Kommunikation',
+                    '3. Konfliktlösung erlernen',
+                    '4. Feedback geben und nehmen',
+                    '5. Präsentationsfähigkeiten'
+                ],
+                duration: '2-3 Stunden',
+                questions: 'Kommunikations-Tests',
+                benefits: [
+                    'Bessere Beziehungen',
+                    'Erfolgreichere Verhandlungen',
+                    'Reduzierte Konflikte',
+                    'Professionelle Entwicklung'
+                ]
+            },
+            'time-management': {
+                title: 'Zeitmanagement',
+                description: 'Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten.',
+                steps: [
+                    '1. Zeitanalyse durchführen',
+                    '2. Prioritäten setzen',
+                    '3. Zeitblocking anwenden',
+                    '4. Störungen minimieren',
+                    '5. Pausen optimieren'
+                ],
+                duration: '1-2 Stunden',
+                questions: 'Zeitmanagement-Test',
+                benefits: [
+                    'Höhere Produktivität',
+                    'Bessere Work-Life-Balance',
+                    'Reduzierter Stress',
+                    'Mehr Freizeit'
+                ]
+            }
+        };
+
+        return methods[methodId] || null;
+    }
+
+    function generatePDFContent(methodData) {
+        const currentDate = new Date().toLocaleDateString('de-DE');
+        
+        return `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${methodData.title} - Methodenübersicht</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .pdf-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .pdf-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .pdf-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .pdf-header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pdf-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pdf-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .pdf-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pdf-content {
+            padding: 3rem 2rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #6366f1;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #64748b;
+            margin-bottom: 2rem;
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .steps-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6366f1;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .benefit-item {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .contact-section {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+        }
+        
+        .contact-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .footer {
+            background: #f8fafc;
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-date {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .pdf-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container">
+        <header class="pdf-header">
+            <div class="pdf-header-content">
+                <h1 class="pdf-title">${methodData.title}</h1>
+                <p class="pdf-subtitle">Methodenübersicht & Coaching-Informationen</p>
+                <div class="pdf-meta">
+                    <div class="meta-item">⏱️ ${methodData.duration}</div>
+                    <div class="meta-item">❓ ${methodData.questions}</div>
+                    <div class="meta-item">📅 ${currentDate}</div>
+                </div>
+            </div>
+        </header>
+        
+        <main class="pdf-content">
+            <section class="section">
+                <h2 class="section-title">Methodenbeschreibung</h2>
+                <p class="description">${methodData.description}</p>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">Schritt-für-Schritt Anleitung</h2>
+                <ol class="steps-list">
+                    ${methodData.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">Nutzen & Vorteile</h2>
+                <div class="benefits-grid">
+                    ${methodData.benefits.map(benefit => `
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle"></i>
+                            ${benefit}
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+            
+            <section class="contact-section">
+                <h2 class="contact-title">Coaching & Beratung</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-label">Name</div>
+                        <div class="contact-value">Manuel Weiss</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Spezialisierung</div>
+                        <div class="contact-value">HR Berater für AI & Transformation</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">E-Mail</div>
+                        <div class="contact-value">manuel.weiss@example.com</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Telefon</div>
+                        <div class="contact-value">+49 (0) 123 456 789</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Website</div>
+                        <div class="contact-value">www.manuel-weiss.de</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">LinkedIn</div>
+                        <div class="contact-value">linkedin.com/in/manuel-weiss</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p class="footer-text">Diese Methodenübersicht wurde von Manuel Weiss erstellt</p>
+            <p class="footer-date">Erstellt am ${currentDate} | Alle Rechte vorbehalten</p>
+        </footer>
+    </div>
+</body>
+</html>`;
+    }
+
+    function downloadPDF(htmlContent, filename) {
+        // Create a new window with the PDF content
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        printWindow.onload = function() {
+            printWindow.focus();
+            printWindow.print();
+        };
+        
+        // Show success message
+        showNotification('PDF wird vorbereitet...', 'success');
+    }
+
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     // Methoden-Funktionen
@@ -1867,553 +2432,14 @@
     function downloadPDF(methodName) {
         console.log('Downloading PDF for method:', methodName);
         
-        // PDF Content für verschiedene Methoden
-        const pdfContent = createMethodPDF(methodName);
-        downloadMethodPDF(pdfContent, methodName);
-    }
-
-    function createMethodPDF(methodName) {
-        const methodData = getMethodData(methodName);
-        
-        return `
-            <!DOCTYPE html>
-            <html lang="de">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${methodData.title} - Manuel Weiss Coaching</title>
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-                    
-                    * {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                    }
-                    
-                    body {
-                        font-family: 'Inter', sans-serif;
-                        line-height: 1.6;
-                        color: #1e293b;
-                        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                        padding: 40px;
-                        min-height: 100vh;
-                    }
-                    
-                    .pdf-container {
-                        max-width: 800px;
-                        margin: 0 auto;
-                        background: white;
-                        border-radius: 20px;
-                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-                        overflow: hidden;
-                    }
-                    
-                    .pdf-header {
-                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-                        color: white;
-                        padding: 40px;
-                        text-align: center;
-                        position: relative;
-                    }
-                    
-                    .pdf-header::before {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-                        opacity: 0.3;
-                    }
-                    
-                    .pdf-header * {
-                        position: relative;
-                        z-index: 1;
-                    }
-                    
-                    .method-icon {
-                        width: 80px;
-                        height: 80px;
-                        border-radius: 20px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 2.5rem;
-                        color: white;
-                        margin: 0 auto 20px;
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-                    }
-                    
-                    .method-title {
-                        font-size: 2.5rem;
-                        font-weight: 800;
-                        margin-bottom: 15px;
-                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-                    }
-                    
-                    .method-subtitle {
-                        font-size: 1.2rem;
-                        opacity: 0.9;
-                        margin-bottom: 30px;
-                    }
-                    
-                    .method-stats {
-                        display: flex;
-                        justify-content: center;
-                        gap: 30px;
-                        margin-top: 30px;
-                    }
-                    
-                    .stat-item {
-                        text-align: center;
-                        background: rgba(255, 255, 255, 0.2);
-                        padding: 15px 25px;
-                        border-radius: 15px;
-                        backdrop-filter: blur(10px);
-                    }
-                    
-                    .stat-number {
-                        font-size: 1.8rem;
-                        font-weight: 800;
-                        display: block;
-                        margin-bottom: 5px;
-                    }
-                    
-                    .stat-label {
-                        font-size: 0.9rem;
-                        opacity: 0.9;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                    }
-                    
-                    .pdf-content {
-                        padding: 40px;
-                    }
-                    
-                    .section {
-                        margin-bottom: 40px;
-                    }
-                    
-                    .section-title {
-                        font-size: 1.8rem;
-                        font-weight: 700;
-                        color: #6366f1;
-                        margin-bottom: 20px;
-                        padding-bottom: 10px;
-                        border-bottom: 3px solid #6366f1;
-                        display: inline-block;
-                    }
-                    
-                    .method-description {
-                        font-size: 1.1rem;
-                        line-height: 1.8;
-                        color: #64748b;
-                        margin-bottom: 30px;
-                    }
-                    
-                    .method-tags {
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 10px;
-                        margin-bottom: 30px;
-                    }
-                    
-                    .method-tag {
-                        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 20px;
-                        font-size: 0.9rem;
-                        font-weight: 600;
-                    }
-                    
-                    .method-steps {
-                        background: #f8fafc;
-                        padding: 30px;
-                        border-radius: 15px;
-                        border-left: 5px solid #6366f1;
-                    }
-                    
-                    .step {
-                        margin-bottom: 20px;
-                        padding-left: 30px;
-                        position: relative;
-                    }
-                    
-                    .step::before {
-                        content: counter(step-counter);
-                        counter-increment: step-counter;
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        background: #6366f1;
-                        color: white;
-                        width: 25px;
-                        height: 25px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        font-size: 0.9rem;
-                    }
-                    
-                    .method-steps {
-                        counter-reset: step-counter;
-                    }
-                    
-                    .step-title {
-                        font-weight: 700;
-                        color: #1e293b;
-                        margin-bottom: 8px;
-                    }
-                    
-                    .step-description {
-                        color: #64748b;
-                        line-height: 1.6;
-                    }
-                    
-                    .coaching-section {
-                        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-                        padding: 40px;
-                        border-radius: 20px;
-                        text-align: center;
-                        margin-top: 40px;
-                    }
-                    
-                    .coaching-title {
-                        font-size: 2rem;
-                        font-weight: 800;
-                        color: #1e293b;
-                        margin-bottom: 20px;
-                    }
-                    
-                    .coaching-description {
-                        font-size: 1.1rem;
-                        color: #64748b;
-                        margin-bottom: 30px;
-                        max-width: 600px;
-                        margin-left: auto;
-                        margin-right: auto;
-                    }
-                    
-                    .contact-info {
-                        background: white;
-                        padding: 30px;
-                        border-radius: 15px;
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                        margin-top: 30px;
-                    }
-                    
-                    .contact-item {
-                        display: flex;
-                        align-items: center;
-                        margin-bottom: 15px;
-                        font-size: 1.1rem;
-                    }
-                    
-                    .contact-icon {
-                        width: 40px;
-                        height: 40px;
-                        background: #6366f1;
-                        color: white;
-                        border-radius: 10px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin-right: 15px;
-                        font-size: 1.2rem;
-                    }
-                    
-                    .contact-label {
-                        font-weight: 600;
-                        color: #1e293b;
-                        margin-right: 10px;
-                    }
-                    
-                    .contact-value {
-                        color: #6366f1;
-                        font-weight: 500;
-                    }
-                    
-                    .pdf-footer {
-                        background: #1e293b;
-                        color: white;
-                        padding: 30px;
-                        text-align: center;
-                    }
-                    
-                    .footer-text {
-                        font-size: 0.9rem;
-                        opacity: 0.8;
-                    }
-                    
-                    @media print {
-                        body {
-                            background: white;
-                            padding: 0;
-                        }
-                        
-                        .pdf-container {
-                            box-shadow: none;
-                            border-radius: 0;
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="pdf-container">
-                    <div class="pdf-header">
-                        <div class="method-icon" style="background: ${methodData.iconBg};">
-                            <i class="${methodData.icon}"></i>
-                        </div>
-                        <h1 class="method-title">${methodData.title}</h1>
-                        <p class="method-subtitle">${methodData.subtitle}</p>
-                        
-                        <div class="method-stats">
-                            ${methodData.stats.map(stat => `
-                                <div class="stat-item">
-                                    <span class="stat-number">${stat.number}</span>
-                                    <span class="stat-label">${stat.label}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div class="pdf-content">
-                        <div class="section">
-                            <h2 class="section-title">Über diese Methode</h2>
-                            <p class="method-description">${methodData.description}</p>
-                            
-                            <div class="method-tags">
-                                ${methodData.tags.map(tag => `
-                                    <span class="method-tag">${tag}</span>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div class="section">
-                            <h2 class="section-title">So funktioniert es</h2>
-                            <div class="method-steps">
-                                ${methodData.steps.map(step => `
-                                    <div class="step">
-                                        <div class="step-title">${step.title}</div>
-                                        <div class="step-description">${step.description}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div class="coaching-section">
-                            <h2 class="coaching-title">Persönliches Coaching</h2>
-                            <p class="coaching-description">
-                                Möchten Sie diese Methode mit professioneller Begleitung durchführen? 
-                                Als erfahrener HR-Berater und Coach unterstütze ich Sie gerne bei der 
-                                Anwendung dieser Methode und begleite Sie auf Ihrem Entwicklungsweg.
-                            </p>
-                            
-                            <div class="contact-info">
-                                <div class="contact-item">
-                                    <div class="contact-icon">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <span class="contact-label">Coach:</span>
-                                    <span class="contact-value">Manuel Weiss</span>
-                                </div>
-                                
-                                <div class="contact-item">
-                                    <div class="contact-icon">
-                                        <i class="fas fa-envelope"></i>
-                                    </div>
-                                    <span class="contact-label">E-Mail:</span>
-                                    <span class="contact-value">manuel.weiss@example.com</span>
-                                </div>
-                                
-                                <div class="contact-item">
-                                    <div class="contact-icon">
-                                        <i class="fas fa-phone"></i>
-                                    </div>
-                                    <span class="contact-label">Telefon:</span>
-                                    <span class="contact-value">+49 (0) 123 456 789</span>
-                                </div>
-                                
-                                <div class="contact-item">
-                                    <div class="contact-icon">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
-                                    <span class="contact-label">Website:</span>
-                                    <span class="contact-value">www.manuel-weiss.de</span>
-                                </div>
-                                
-                                <div class="contact-item">
-                                    <div class="contact-icon">
-                                        <i class="fas fa-linkedin"></i>
-                                    </div>
-                                    <span class="contact-label">LinkedIn:</span>
-                                    <span class="contact-value">linkedin.com/in/manuel-weiss</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="pdf-footer">
-                        <p class="footer-text">
-                            © 2024 Manuel Weiss - HR Berater für AI & Transformation<br>
-                            Professionelle Begleitung für Ihre persönliche Entwicklung
-                        </p>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
-    }
-
-    function getMethodData(methodName) {
-        const methods = {
-            'ikigai': {
-                title: 'Ikigai-Workflow',
-                subtitle: 'Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns',
-                icon: 'fas fa-compass',
-                iconBg: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
-                description: 'Ikigai ist ein japanisches Konzept, das "Lebenssinn" oder "Grund zu leben" bedeutet. Diese Methode hilft Ihnen dabei, Ihre wahre Berufung zu finden, indem Sie vier zentrale Bereiche Ihres Lebens analysieren: Was Sie lieben, was die Welt braucht, wofür Sie bezahlt werden können und worin Sie gut sind.',
-                tags: ['Selbstfindung', 'Lebenssinn', 'Passion', 'Mission', 'Flow'],
-                stats: [
-                    { number: '7', label: 'Schritte' },
-                    { number: '2-3h', label: 'Dauer' },
-                    { number: '45+', label: 'Fragen' }
-                ],
-                steps: [
-                    {
-                        title: 'Selbstreflexion',
-                        description: 'Nehmen Sie sich Zeit für eine ehrliche Selbstreflexion über Ihre aktuellen Lebensbereiche.'
-                    },
-                    {
-                        title: 'Passion identifizieren',
-                        description: 'Finden Sie heraus, was Sie wirklich lieben und wofür Sie brennen.'
-                    },
-                    {
-                        title: 'Mission definieren',
-                        description: 'Bestimmen Sie, was die Welt braucht und wie Sie dazu beitragen können.'
-                    },
-                    {
-                        title: 'Berufung finden',
-                        description: 'Identifizieren Sie, wofür Sie bezahlt werden können und worin Sie gut sind.'
-                    },
-                    {
-                        title: 'Ikigai-Kreuz erstellen',
-                        description: 'Visualisieren Sie die Überschneidung aller vier Bereiche in einem Ikigai-Kreuz.'
-                    },
-                    {
-                        title: 'Aktionsplan entwickeln',
-                        description: 'Erstellen Sie konkrete Schritte, um Ihr Ikigai im Alltag zu leben.'
-                    },
-                    {
-                        title: 'Umsetzung und Anpassung',
-                        description: 'Setzen Sie Ihren Plan um und passen Sie ihn regelmäßig an.'
-                    }
-                ]
-            },
-            'raisec': {
-                title: 'RAISEC-Modell',
-                subtitle: 'Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell nach Holland',
-                icon: 'fas fa-chart-radar',
-                iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                description: 'Das RAISEC-Modell nach John Holland ist eines der bekanntesten und am besten erforschten Modelle der Berufsberatung. Es hilft Ihnen dabei, Ihre beruflichen Interessen zu identifizieren und passende Berufsfelder zu finden.',
-                tags: ['Berufsorientierung', 'Persönlichkeitstyp', 'Karriereplanung', 'Interessentest'],
-                stats: [
-                    { number: '5', label: 'Minuten' },
-                    { number: '30', label: 'Fragen' },
-                    { number: '6', label: 'Typen' }
-                ],
-                steps: [
-                    {
-                        title: 'Interessentest durchführen',
-                        description: 'Beantworten Sie 30 Fragen zu Ihren beruflichen Interessen und Vorlieben.'
-                    },
-                    {
-                        title: 'RAISEC-Typen verstehen',
-                        description: 'Lernen Sie die sechs Persönlichkeitstypen kennen: Realistisch, Investigativ, Künstlerisch, Sozial, Unternehmerisch, Konventionell.'
-                    },
-                    {
-                        title: 'Ergebnisse analysieren',
-                        description: 'Ihre Antworten werden ausgewertet und Sie erhalten Ihr persönliches RAISEC-Profil.'
-                    },
-                    {
-                        title: 'Berufsfelder erkunden',
-                        description: 'Entdecken Sie passende Berufsfelder basierend auf Ihrem RAISEC-Typ.'
-                    },
-                    {
-                        title: 'Karriereplanung',
-                        description: 'Entwickeln Sie einen Plan für Ihre berufliche Entwicklung.'
-                    }
-                ]
-            },
-            'values-clarification': {
-                title: 'Werte-Klärung',
-                subtitle: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist',
-                icon: 'fas fa-heart',
-                iconBg: 'linear-gradient(135deg, #fd79a8, #e84393)',
-                description: 'Werte sind die Grundprinzipien, die unser Handeln und unsere Entscheidungen leiten. Diese Methode hilft Ihnen dabei, Ihre persönlichen Werte zu identifizieren und zu priorisieren.',
-                tags: ['Werte-Ranking', 'Konflikt-Analyse', 'Lebensbereiche'],
-                stats: [
-                    { number: '30+', label: 'Werte' },
-                    { number: '1-2h', label: 'Dauer' },
-                    { number: '5', label: 'Bereiche' }
-                ],
-                steps: [
-                    {
-                        title: 'Werte-Liste erstellen',
-                        description: 'Durchsuchen Sie eine umfassende Liste von Werten und wählen Sie die aus, die für Sie wichtig sind.'
-                    },
-                    {
-                        title: 'Werte kategorisieren',
-                        description: 'Ordnen Sie Ihre Werte in verschiedene Lebensbereiche ein (Beruf, Familie, Gesundheit, etc.).'
-                    },
-                    {
-                        title: 'Priorisierung',
-                        description: 'Rangieren Sie Ihre Werte nach Wichtigkeit und identifizieren Sie Ihre Top-Werte.'
-                    },
-                    {
-                        title: 'Konflikt-Analyse',
-                        description: 'Analysieren Sie, wo Ihre Werte möglicherweise in Konflikt stehen.'
-                    },
-                    {
-                        title: 'Lebensbereiche bewerten',
-                        description: 'Bewerten Sie, wie gut Sie Ihre Werte in verschiedenen Lebensbereichen leben.'
-                    }
-                ]
-            }
-        };
-        
-        return methods[methodName] || {
-            title: 'Persönlichkeitsentwicklung',
-            subtitle: 'Entdecke dein Potenzial',
-            icon: 'fas fa-star',
-            iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            description: 'Eine bewährte Methode zur persönlichen Entwicklung.',
-            tags: ['Entwicklung', 'Selbstfindung'],
-            stats: [
-                { number: '1', label: 'Methode' },
-                { number: '30', label: 'Minuten' },
-                { number: '5', label: 'Schritte' }
-            ],
-            steps: [
-                {
-                    title: 'Vorbereitung',
-                    description: 'Bereiten Sie sich auf die Methode vor.'
-                },
-                {
-                    title: 'Durchführung',
-                    description: 'Führen Sie die Methode durch.'
-                },
-                {
-                    title: 'Auswertung',
-                    description: 'Werten Sie Ihre Ergebnisse aus.'
-                }
-            ]
-        };
+        if (methodName === 'raisec') {
+            // RAISEC PDF Download
+            const raisecPDFContent = createRAISECPDF();
+            downloadRAISECPDF(raisecPDFContent);
+        } else {
+            // Standard PDF Download für andere Methoden
+            alert('PDF für ' + methodName + ' wird heruntergeladen...');
+        }
     }
 
     function createRAISECPDF() {
@@ -2644,7 +2670,7 @@
         `;
     }
 
-    function downloadMethodPDF(content, methodName) {
+    function downloadRAISECPDF(content) {
         // Create a new window with the PDF content
         const printWindow = window.open('', '_blank');
         printWindow.document.write(content);
@@ -2657,11 +2683,6 @@
                 printWindow.close();
             }, 1000);
         };
-    }
-
-    function downloadRAISECPDF(content) {
-        // Legacy function for RAISEC - now uses downloadMethodPDF
-        downloadMethodPDF(content, 'raisec');
     }
     
     // Filter-Funktionen
@@ -2743,7 +2764,7 @@
                 
                 // Order by similarity (most similar first)
                 card.style.order = index;
-                } else {
+            } else {
                 card.style.display = 'none';
                 card.classList.remove('search-highlight');
                 const indicator = card.querySelector('.similarity-indicator');
@@ -3387,6 +3408,79 @@
                 padding: 6px 12px;
                 font-size: 0.7rem;
             }
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            z-index: 10000;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .notification-content i {
+            font-size: 1.2rem;
+        }
+
+        .notification-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification-success .notification-content i {
+            color: #10b981;
+        }
+
+        .notification-info {
+            border-left: 4px solid #6366f1;
+        }
+
+        .notification-info .notification-content i {
+            color: #6366f1;
+        }
+
+        .notification-content span {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* PDF Button Enhancement */
+        .btn[data-action="download-pdf"],
+        .btn[data-action="download-p-d-f"] {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn[data-action="download-pdf"]:hover,
+        .btn[data-action="download-p-d-f"]:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn[data-action="download-pdf"]:active,
+        .btn[data-action="download-p-d-f"]:active {
+            transform: translateY(0);
         }
     </style>
 </body>
