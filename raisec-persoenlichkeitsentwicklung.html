@@ -33,6 +33,29 @@
                 <a href="index.html" class="nav-link">Start</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
+                
+                <!-- AWS User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName">Benutzer</span>
+                            <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Anmelden</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="nav-toggle" id="navToggle">
                 <span></span>
@@ -512,6 +535,31 @@
             </div>
         </div>
     </footer>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal" style="display: none;">
+        <div class="login-modal-content">
+            <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+            <div class="login-modal-header">
+                <h2 class="login-modal-title">Anmelden</h2>
+                <p class="login-modal-subtitle">Melden Sie sich an, um Ihre Ergebnisse zu speichern</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail">E-Mail</label>
+                    <input type="email" id="loginEmail" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">Passwort</label>
+                    <input type="password" id="loginPassword" class="form-input" required>
+                </div>
+                <div class="login-actions">
+                    <button type="submit" class="btn-primary">Anmelden</button>
+                    <button type="button" class="btn-secondary" onclick="closeLoginModal()">Abbrechen</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script src="js/methods.js"></script>
@@ -1237,9 +1285,80 @@
             window.raisecAssessment = new RAISECAssessment();
         }
 
+        // AWS User System Functions
+        function loginUser() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function logoutUser() {
+            // Clear user data
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userProfile');
+            
+            // Update UI
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('userLogin').style.display = 'flex';
+            
+            // Show success message
+            alert('Erfolgreich abgemeldet!');
+        }
+
+        function showUserInfo(userData) {
+            document.getElementById('userName').textContent = userData.name || 'Benutzer';
+            document.getElementById('userEmail').textContent = userData.email || 'benutzer@example.com';
+            
+            if (userData.avatar) {
+                document.getElementById('userAvatar').src = userData.avatar;
+            }
+            
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userLogin').style.display = 'none';
+        }
+
+        function checkUserStatus() {
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                const parsedUserData = JSON.parse(userData);
+                showUserInfo(parsedUserData);
+            }
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simulate AWS authentication
+            if (email && password) {
+                const userData = {
+                    name: 'Manuel Weiss',
+                    email: email,
+                    avatar: 'manuel-weiss-photo.svg',
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('userData', JSON.stringify(userData));
+                showUserInfo(userData);
+                closeLoginModal();
+                
+                alert('Erfolgreich angemeldet!');
+            } else {
+                alert('Bitte füllen Sie alle Felder aus.');
+            }
+        });
+
         // Initialize assessment when page loads
         document.addEventListener('DOMContentLoaded', function() {
             window.raisecAssessment = new RAISECAssessment();
+            
+            // Check user status
+            checkUserStatus();
             
             // Mobile navigation toggle
             const navToggle = document.getElementById('navToggle');
