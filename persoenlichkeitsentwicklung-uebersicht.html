@@ -1787,7 +1787,27 @@
         if (window.awsAuth) {
             window.awsAuth.checkUserStatus();
         }
+        
+        // Add PDF download event listeners
+        addPDFDownloadListeners();
     });
+
+    function addPDFDownloadListeners() {
+        // Add event listeners to all PDF download buttons
+        const pdfButtons = document.querySelectorAll('[data-action="download-pdf"], [data-action="download-p-d-f"]');
+        
+        pdfButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const methodName = this.getAttribute('data-param');
+                if (methodName) {
+                    downloadPDF(methodName);
+                }
+            });
+        });
+    }
 
     // Methoden-Funktionen
     function startMethod(methodName) {
@@ -1847,14 +1867,553 @@
     function downloadPDF(methodName) {
         console.log('Downloading PDF for method:', methodName);
         
-        if (methodName === 'raisec') {
-            // RAISEC PDF Download
-            const raisecPDFContent = createRAISECPDF();
-            downloadRAISECPDF(raisecPDFContent);
-        } else {
-            // Standard PDF Download für andere Methoden
-            alert('PDF für ' + methodName + ' wird heruntergeladen...');
-        }
+        // PDF Content für verschiedene Methoden
+        const pdfContent = createMethodPDF(methodName);
+        downloadMethodPDF(pdfContent, methodName);
+    }
+
+    function createMethodPDF(methodName) {
+        const methodData = getMethodData(methodName);
+        
+        return `
+            <!DOCTYPE html>
+            <html lang="de">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${methodData.title} - Manuel Weiss Coaching</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+                    
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        line-height: 1.6;
+                        color: #1e293b;
+                        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                        padding: 40px;
+                        min-height: 100vh;
+                    }
+                    
+                    .pdf-container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                    }
+                    
+                    .pdf-header {
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        padding: 40px;
+                        text-align: center;
+                        position: relative;
+                    }
+                    
+                    .pdf-header::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                        opacity: 0.3;
+                    }
+                    
+                    .pdf-header * {
+                        position: relative;
+                        z-index: 1;
+                    }
+                    
+                    .method-icon {
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 2.5rem;
+                        color: white;
+                        margin: 0 auto 20px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    }
+                    
+                    .method-title {
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        margin-bottom: 15px;
+                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    }
+                    
+                    .method-subtitle {
+                        font-size: 1.2rem;
+                        opacity: 0.9;
+                        margin-bottom: 30px;
+                    }
+                    
+                    .method-stats {
+                        display: flex;
+                        justify-content: center;
+                        gap: 30px;
+                        margin-top: 30px;
+                    }
+                    
+                    .stat-item {
+                        text-align: center;
+                        background: rgba(255, 255, 255, 0.2);
+                        padding: 15px 25px;
+                        border-radius: 15px;
+                        backdrop-filter: blur(10px);
+                    }
+                    
+                    .stat-number {
+                        font-size: 1.8rem;
+                        font-weight: 800;
+                        display: block;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .stat-label {
+                        font-size: 0.9rem;
+                        opacity: 0.9;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .pdf-content {
+                        padding: 40px;
+                    }
+                    
+                    .section {
+                        margin-bottom: 40px;
+                    }
+                    
+                    .section-title {
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        color: #6366f1;
+                        margin-bottom: 20px;
+                        padding-bottom: 10px;
+                        border-bottom: 3px solid #6366f1;
+                        display: inline-block;
+                    }
+                    
+                    .method-description {
+                        font-size: 1.1rem;
+                        line-height: 1.8;
+                        color: #64748b;
+                        margin-bottom: 30px;
+                    }
+                    
+                    .method-tags {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        margin-bottom: 30px;
+                    }
+                    
+                    .method-tag {
+                        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                    }
+                    
+                    .method-steps {
+                        background: #f8fafc;
+                        padding: 30px;
+                        border-radius: 15px;
+                        border-left: 5px solid #6366f1;
+                    }
+                    
+                    .step {
+                        margin-bottom: 20px;
+                        padding-left: 30px;
+                        position: relative;
+                    }
+                    
+                    .step::before {
+                        content: counter(step-counter);
+                        counter-increment: step-counter;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        background: #6366f1;
+                        color: white;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .method-steps {
+                        counter-reset: step-counter;
+                    }
+                    
+                    .step-title {
+                        font-weight: 700;
+                        color: #1e293b;
+                        margin-bottom: 8px;
+                    }
+                    
+                    .step-description {
+                        color: #64748b;
+                        line-height: 1.6;
+                    }
+                    
+                    .coaching-section {
+                        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+                        padding: 40px;
+                        border-radius: 20px;
+                        text-align: center;
+                        margin-top: 40px;
+                    }
+                    
+                    .coaching-title {
+                        font-size: 2rem;
+                        font-weight: 800;
+                        color: #1e293b;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .coaching-description {
+                        font-size: 1.1rem;
+                        color: #64748b;
+                        margin-bottom: 30px;
+                        max-width: 600px;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                    
+                    .contact-info {
+                        background: white;
+                        padding: 30px;
+                        border-radius: 15px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                        margin-top: 30px;
+                    }
+                    
+                    .contact-item {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        font-size: 1.1rem;
+                    }
+                    
+                    .contact-icon {
+                        width: 40px;
+                        height: 40px;
+                        background: #6366f1;
+                        color: white;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 15px;
+                        font-size: 1.2rem;
+                    }
+                    
+                    .contact-label {
+                        font-weight: 600;
+                        color: #1e293b;
+                        margin-right: 10px;
+                    }
+                    
+                    .contact-value {
+                        color: #6366f1;
+                        font-weight: 500;
+                    }
+                    
+                    .pdf-footer {
+                        background: #1e293b;
+                        color: white;
+                        padding: 30px;
+                        text-align: center;
+                    }
+                    
+                    .footer-text {
+                        font-size: 0.9rem;
+                        opacity: 0.8;
+                    }
+                    
+                    @media print {
+                        body {
+                            background: white;
+                            padding: 0;
+                        }
+                        
+                        .pdf-container {
+                            box-shadow: none;
+                            border-radius: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="pdf-container">
+                    <div class="pdf-header">
+                        <div class="method-icon" style="background: ${methodData.iconBg};">
+                            <i class="${methodData.icon}"></i>
+                        </div>
+                        <h1 class="method-title">${methodData.title}</h1>
+                        <p class="method-subtitle">${methodData.subtitle}</p>
+                        
+                        <div class="method-stats">
+                            ${methodData.stats.map(stat => `
+                                <div class="stat-item">
+                                    <span class="stat-number">${stat.number}</span>
+                                    <span class="stat-label">${stat.label}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-content">
+                        <div class="section">
+                            <h2 class="section-title">Über diese Methode</h2>
+                            <p class="method-description">${methodData.description}</p>
+                            
+                            <div class="method-tags">
+                                ${methodData.tags.map(tag => `
+                                    <span class="method-tag">${tag}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h2 class="section-title">So funktioniert es</h2>
+                            <div class="method-steps">
+                                ${methodData.steps.map(step => `
+                                    <div class="step">
+                                        <div class="step-title">${step.title}</div>
+                                        <div class="step-description">${step.description}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="coaching-section">
+                            <h2 class="coaching-title">Persönliches Coaching</h2>
+                            <p class="coaching-description">
+                                Möchten Sie diese Methode mit professioneller Begleitung durchführen? 
+                                Als erfahrener HR-Berater und Coach unterstütze ich Sie gerne bei der 
+                                Anwendung dieser Methode und begleite Sie auf Ihrem Entwicklungsweg.
+                            </p>
+                            
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <span class="contact-label">Coach:</span>
+                                    <span class="contact-value">Manuel Weiss</span>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <span class="contact-label">E-Mail:</span>
+                                    <span class="contact-value">manuel.weiss@example.com</span>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <span class="contact-label">Telefon:</span>
+                                    <span class="contact-value">+49 (0) 123 456 789</span>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <span class="contact-label">Website:</span>
+                                    <span class="contact-value">www.manuel-weiss.de</span>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-linkedin"></i>
+                                    </div>
+                                    <span class="contact-label">LinkedIn:</span>
+                                    <span class="contact-value">linkedin.com/in/manuel-weiss</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-footer">
+                        <p class="footer-text">
+                            © 2024 Manuel Weiss - HR Berater für AI & Transformation<br>
+                            Professionelle Begleitung für Ihre persönliche Entwicklung
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+    }
+
+    function getMethodData(methodName) {
+        const methods = {
+            'ikigai': {
+                title: 'Ikigai-Workflow',
+                subtitle: 'Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns',
+                icon: 'fas fa-compass',
+                iconBg: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
+                description: 'Ikigai ist ein japanisches Konzept, das "Lebenssinn" oder "Grund zu leben" bedeutet. Diese Methode hilft Ihnen dabei, Ihre wahre Berufung zu finden, indem Sie vier zentrale Bereiche Ihres Lebens analysieren: Was Sie lieben, was die Welt braucht, wofür Sie bezahlt werden können und worin Sie gut sind.',
+                tags: ['Selbstfindung', 'Lebenssinn', 'Passion', 'Mission', 'Flow'],
+                stats: [
+                    { number: '7', label: 'Schritte' },
+                    { number: '2-3h', label: 'Dauer' },
+                    { number: '45+', label: 'Fragen' }
+                ],
+                steps: [
+                    {
+                        title: 'Selbstreflexion',
+                        description: 'Nehmen Sie sich Zeit für eine ehrliche Selbstreflexion über Ihre aktuellen Lebensbereiche.'
+                    },
+                    {
+                        title: 'Passion identifizieren',
+                        description: 'Finden Sie heraus, was Sie wirklich lieben und wofür Sie brennen.'
+                    },
+                    {
+                        title: 'Mission definieren',
+                        description: 'Bestimmen Sie, was die Welt braucht und wie Sie dazu beitragen können.'
+                    },
+                    {
+                        title: 'Berufung finden',
+                        description: 'Identifizieren Sie, wofür Sie bezahlt werden können und worin Sie gut sind.'
+                    },
+                    {
+                        title: 'Ikigai-Kreuz erstellen',
+                        description: 'Visualisieren Sie die Überschneidung aller vier Bereiche in einem Ikigai-Kreuz.'
+                    },
+                    {
+                        title: 'Aktionsplan entwickeln',
+                        description: 'Erstellen Sie konkrete Schritte, um Ihr Ikigai im Alltag zu leben.'
+                    },
+                    {
+                        title: 'Umsetzung und Anpassung',
+                        description: 'Setzen Sie Ihren Plan um und passen Sie ihn regelmäßig an.'
+                    }
+                ]
+            },
+            'raisec': {
+                title: 'RAISEC-Modell',
+                subtitle: 'Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell nach Holland',
+                icon: 'fas fa-chart-radar',
+                iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                description: 'Das RAISEC-Modell nach John Holland ist eines der bekanntesten und am besten erforschten Modelle der Berufsberatung. Es hilft Ihnen dabei, Ihre beruflichen Interessen zu identifizieren und passende Berufsfelder zu finden.',
+                tags: ['Berufsorientierung', 'Persönlichkeitstyp', 'Karriereplanung', 'Interessentest'],
+                stats: [
+                    { number: '5', label: 'Minuten' },
+                    { number: '30', label: 'Fragen' },
+                    { number: '6', label: 'Typen' }
+                ],
+                steps: [
+                    {
+                        title: 'Interessentest durchführen',
+                        description: 'Beantworten Sie 30 Fragen zu Ihren beruflichen Interessen und Vorlieben.'
+                    },
+                    {
+                        title: 'RAISEC-Typen verstehen',
+                        description: 'Lernen Sie die sechs Persönlichkeitstypen kennen: Realistisch, Investigativ, Künstlerisch, Sozial, Unternehmerisch, Konventionell.'
+                    },
+                    {
+                        title: 'Ergebnisse analysieren',
+                        description: 'Ihre Antworten werden ausgewertet und Sie erhalten Ihr persönliches RAISEC-Profil.'
+                    },
+                    {
+                        title: 'Berufsfelder erkunden',
+                        description: 'Entdecken Sie passende Berufsfelder basierend auf Ihrem RAISEC-Typ.'
+                    },
+                    {
+                        title: 'Karriereplanung',
+                        description: 'Entwickeln Sie einen Plan für Ihre berufliche Entwicklung.'
+                    }
+                ]
+            },
+            'values-clarification': {
+                title: 'Werte-Klärung',
+                subtitle: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist',
+                icon: 'fas fa-heart',
+                iconBg: 'linear-gradient(135deg, #fd79a8, #e84393)',
+                description: 'Werte sind die Grundprinzipien, die unser Handeln und unsere Entscheidungen leiten. Diese Methode hilft Ihnen dabei, Ihre persönlichen Werte zu identifizieren und zu priorisieren.',
+                tags: ['Werte-Ranking', 'Konflikt-Analyse', 'Lebensbereiche'],
+                stats: [
+                    { number: '30+', label: 'Werte' },
+                    { number: '1-2h', label: 'Dauer' },
+                    { number: '5', label: 'Bereiche' }
+                ],
+                steps: [
+                    {
+                        title: 'Werte-Liste erstellen',
+                        description: 'Durchsuchen Sie eine umfassende Liste von Werten und wählen Sie die aus, die für Sie wichtig sind.'
+                    },
+                    {
+                        title: 'Werte kategorisieren',
+                        description: 'Ordnen Sie Ihre Werte in verschiedene Lebensbereiche ein (Beruf, Familie, Gesundheit, etc.).'
+                    },
+                    {
+                        title: 'Priorisierung',
+                        description: 'Rangieren Sie Ihre Werte nach Wichtigkeit und identifizieren Sie Ihre Top-Werte.'
+                    },
+                    {
+                        title: 'Konflikt-Analyse',
+                        description: 'Analysieren Sie, wo Ihre Werte möglicherweise in Konflikt stehen.'
+                    },
+                    {
+                        title: 'Lebensbereiche bewerten',
+                        description: 'Bewerten Sie, wie gut Sie Ihre Werte in verschiedenen Lebensbereichen leben.'
+                    }
+                ]
+            }
+        };
+        
+        return methods[methodName] || {
+            title: 'Persönlichkeitsentwicklung',
+            subtitle: 'Entdecke dein Potenzial',
+            icon: 'fas fa-star',
+            iconBg: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            description: 'Eine bewährte Methode zur persönlichen Entwicklung.',
+            tags: ['Entwicklung', 'Selbstfindung'],
+            stats: [
+                { number: '1', label: 'Methode' },
+                { number: '30', label: 'Minuten' },
+                { number: '5', label: 'Schritte' }
+            ],
+            steps: [
+                {
+                    title: 'Vorbereitung',
+                    description: 'Bereiten Sie sich auf die Methode vor.'
+                },
+                {
+                    title: 'Durchführung',
+                    description: 'Führen Sie die Methode durch.'
+                },
+                {
+                    title: 'Auswertung',
+                    description: 'Werten Sie Ihre Ergebnisse aus.'
+                }
+            ]
+        };
     }
 
     function createRAISECPDF() {
@@ -2085,7 +2644,7 @@
         `;
     }
 
-    function downloadRAISECPDF(content) {
+    function downloadMethodPDF(content, methodName) {
         // Create a new window with the PDF content
         const printWindow = window.open('', '_blank');
         printWindow.document.write(content);
@@ -2098,6 +2657,11 @@
                 printWindow.close();
             }, 1000);
         };
+    }
+
+    function downloadRAISECPDF(content) {
+        // Legacy function for RAISEC - now uses downloadMethodPDF
+        downloadMethodPDF(content, 'raisec');
     }
     
     // Filter-Funktionen
@@ -2179,7 +2743,7 @@
                 
                 // Order by similarity (most similar first)
                 card.style.order = index;
-            } else {
+                } else {
                 card.style.display = 'none';
                 card.classList.remove('search-highlight');
                 const indicator = card.querySelector('.similarity-indicator');
