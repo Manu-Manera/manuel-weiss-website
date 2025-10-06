@@ -4142,10 +4142,10 @@
                 <div class="quick-actions">
                     <h2>⚡ Quick Actions</h2>
                     <div class="action-buttons">
-                        <a href="bewerbung.html" class="action-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                        <button class="action-btn" onclick="showNewApplicationModal()">
                             <i class="fas fa-plus"></i>
                             <span>Neue Bewerbung</span>
-                        </a>
+                        </button>
                         <button class="action-btn" onclick="document.getElementById('designer-section').style.display='block'; document.getElementById('applications-section').style.display='none'; document.getElementById('calendar-section').style.display='none'">
                             <i class="fas fa-palette"></i>
                             <span>Mit Designer erstellen</span>
@@ -5090,6 +5090,101 @@
         <script src="js/ai-sentence-generator.js"></script>
         <script src="js/consolidated-workflow.js"></script>
         <script src="js/enhanced-workflow-integration.js"></script>
+        
+        <script>
+        function showNewApplicationModal() {
+            // Erstelle Modal
+            var modal = document.createElement('div');
+            modal.id = 'newApplicationModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    max-width: 500px;
+                    width: 90%;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                ">
+                    <h3 style="margin: 0 0 1.5rem 0; color: #1f2937;">Neue Bewerbung hinzufügen</h3>
+                    <form id="newApplicationForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Unternehmen *</label>
+                            <input type="text" name="company" required style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 1rem;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Position *</label>
+                            <input type="text" name="position" required style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 1rem;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Status</label>
+                            <select name="status" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 1rem;">
+                                <option value="Beworben">Beworben</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Abgelehnt">Abgelehnt</option>
+                                <option value="Angebot">Angebot</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeNewApplicationModal()" style="
+                                padding: 0.75rem 1.5rem;
+                                background: #6b7280;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            ">Abbrechen</button>
+                            <button type="submit" style="
+                                padding: 0.75rem 1.5rem;
+                                background: #3b82f6;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            ">Speichern</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Click outside to close
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeNewApplicationModal();
+                }
+            };
+            
+            // Form submit handler
+            document.getElementById('newApplicationForm').onsubmit = function(e) {
+                e.preventDefault();
+                alert('Bewerbung wurde gespeichert!');
+                closeNewApplicationModal();
+            };
+        }
+        
+        function closeNewApplicationModal() {
+            var modal = document.getElementById('newApplicationModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        </script>
         <script src="js/workflow-document-display.js"></script>
         <script src="js/enhanced-sentence-generator.js"></script>
         <script src="js/workflow-step4-sentence-integration.js"></script>
