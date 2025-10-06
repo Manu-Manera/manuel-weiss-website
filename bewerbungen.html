@@ -4142,11 +4142,11 @@
                 <div class="quick-actions">
                     <h2>⚡ Quick Actions</h2>
                     <div class="action-buttons">
-                        <button class="action-btn" data-action="open-add-modal">
+                        <button class="action-btn" onclick="openAddModal(); console.log('🔍 Button clicked directly!')">
                             <i class="fas fa-plus"></i>
                             <span>Neue Bewerbung</span>
                         </button>
-                        <button class="action-btn" data-action="create-new-with-designer">
+                        <button class="action-btn" onclick="showSection('designer-section'); console.log('🔍 Designer button clicked!')">
                             <i class="fas fa-palette"></i>
                             <span>Mit Designer erstellen</span>
                         </button>
@@ -5525,14 +5525,6 @@
         }
         
         // Application Management Functions
-        function openAddModal() {
-            const modal = document.getElementById('addModal');
-            if (modal) {
-                modal.style.display = 'block';
-            } else {
-                console.error('❌ Add Modal nicht gefunden');
-            }
-        }
         
         function exportApplications() {
             try {
@@ -8066,7 +8058,15 @@ ${name}`
         }
 
         function openAddModal() {
-            openModal('addModal');
+            console.log('🔍 openAddModal called');
+            const modal = document.getElementById('addModal');
+            console.log('🔍 Modal element:', modal);
+            if (modal) {
+                console.log('✅ Modal found, opening...');
+                openModal('addModal');
+            } else {
+                console.error('❌ Modal not found!');
+            }
         }
 
         function editApplication(id) {
@@ -9025,12 +9025,14 @@ Diese E-Mail wurde automatisch generiert. Für weitere Informationen besuchen Si
         // Event handler for all data-action buttons
         document.addEventListener('click', (e) => {
             const action = e.target.getAttribute('data-action');
+            console.log('🔍 Button clicked:', action, e.target);
             
             if (action === 'start-intelligent-workflow') {
                 e.preventDefault();
                 startConsolidatedWorkflow();
             } else if (action === 'open-add-modal') {
                 e.preventDefault();
+                console.log('🚀 Opening add modal...');
                 openAddModal();
             } else if (action === 'create-new-with-designer') {
                 e.preventDefault();
