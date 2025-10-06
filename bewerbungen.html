@@ -5279,9 +5279,32 @@
             return documents.filter(doc => doc.category === category);
         }
 
-        function uploadDocument(category, file) {
-            if (!file) return;
+        // AWS Profile Upload with Authentication
+        function checkAuthAndUpload(category) {
+            // Check if user is authenticated
+            if (!window.awsAuth || !window.awsAuth.isAuthenticated()) {
+                showAuthModal();
+                return;
+            }
             
+            // User is authenticated, proceed with upload
+            startAWSProfileUpload(category);
+        }
+        
+        function startAWSProfileUpload(category) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadToAWSProfile(category, file);
+                }
+            };
+            input.click();
+        }
+        
+        function uploadToAWSProfile(category, file) {
             // Validate file size (10MB limit)
             if (file.size > 10 * 1024 * 1024) {
                 alert('❌ Datei ist zu groß. Maximum 10MB erlaubt.');
@@ -5296,27 +5319,209 @@
                 return;
             }
             
-            // Create document object
-            const document = {
-                id: Date.now().toString(),
-                name: file.name,
-                category: category,
-                size: formatFileSize(file.size),
-                uploadDate: new Date().toLocaleDateString('de-DE'),
-                file: file,
-                pages: estimatePages(file)
+            // Show upload progress
+            showUploadProgress();
+            
+            // Upload to AWS S3 with user profile
+            const userId = window.awsAuth.getCurrentUser().id;
+            const fileName = `${userId}/${category}/${Date.now()}_${file.name}`;
+            
+            // Use AWS SDK to upload
+            const upload = new AWS.S3.ManagedUpload({
+                params: {
+                    Bucket: 'manuel-weiss-documents',
+                    Key: fileName,
+                    Body: file,
+                    ContentType: file.type
+                }
+            });
+            
+            upload.promise()
+                .then((data) => {
+                    console.log('✅ Upload erfolgreich:', data.Location);
+                    showMessage('Dokument erfolgreich hochgeladen!', 'success');
+                    loadUserDocuments();
+                })
+                .catch((error) => {
+                    console.error('❌ Upload-Fehler:', error);
+                    showMessage('Upload fehlgeschlagen: ' + error.message, 'error');
+                });
+        }
+        
+        function showUploadProgress() {
+            // Show progress modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-body" style="text-align: center; padding: 2rem;">
+                        <div class="upload-progress">
+                            <i class="fas fa-cloud-upload-alt fa-3x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                            <h3>Dokument wird hochgeladen...</h3>
+                            <p>Bitte warten Sie, während Ihr Dokument zu Ihrem Profil hochgeladen wird.</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function loadUserDocuments() {
+            // Load documents from AWS S3 for current user
+            const userId = window.awsAuth.getCurrentUser().id;
+            
+            // Use AWS SDK to list objects
+            const s3 = new AWS.S3();
+            const params = {
+                Bucket: 'manuel-weiss-documents',
+                Prefix: `${userId}/`
             };
             
-            // Save to localStorage
-            const documents = JSON.parse(localStorage.getItem('documents') || '[]');
-            documents.push(document);
-            localStorage.setItem('documents', JSON.stringify(documents));
+            s3.listObjectsV2(params).promise()
+                .then((data) => {
+                    displayUserDocuments(data.Contents);
+                })
+                .catch((error) => {
+                    console.error('❌ Fehler beim Laden der Dokumente:', error);
+                });
+        }
+        
+        function displayUserDocuments(documents) {
+            // Display documents in UI
+            const categories = ['cv', 'cover', 'certificates', 'portfolio', 'references'];
             
-            // Reload documents for this category
-            loadDocumentsForCategory(category);
+            categories.forEach(category => {
+                const container = document.getElementById(`${category}-documents`);
+                if (container) {
+                    const categoryDocs = documents.filter(doc => doc.Key.includes(`/${category}/`));
+                    
+                    if (categoryDocs.length > 0) {
+                        container.innerHTML = categoryDocs.map(doc => `
+                            <div class="document-item">
+                                <div class="document-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="document-info">
+                                    <div class="document-name">${doc.Key.split('/').pop()}</div>
+                                    <div class="document-meta">${formatFileSize(doc.Size)} • ${new Date(doc.LastModified).toLocaleDateString('de-DE')}</div>
+                                </div>
+                                <div class="document-actions">
+                                    <button class="btn-small" onclick="downloadDocument('${doc.Key}')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" onclick="deleteDocument('${doc.Key}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div class="no-documents">Keine Dokumente vorhanden</div>';
+                    }
+                }
+            });
+        }
+        
+        function downloadDocument(key) {
+            // Download document from AWS S3
+            const s3 = new AWS.S3();
+            const params = {
+                Bucket: 'manuel-weiss-documents',
+                Key: key
+            };
             
-            // Show success message
-            alert(`✅ Dokument "${file.name}" erfolgreich hochgeladen!`);
+            s3.getObject(params).promise()
+                .then((data) => {
+                    const blob = new Blob([data.Body]);
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = key.split('/').pop();
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch((error) => {
+                    console.error('❌ Download-Fehler:', error);
+                    showMessage('Download fehlgeschlagen: ' + error.message, 'error');
+                });
+        }
+        
+        function deleteDocument(key) {
+            if (confirm('Möchten Sie dieses Dokument wirklich löschen?')) {
+                const s3 = new AWS.S3();
+                const params = {
+                    Bucket: 'manuel-weiss-documents',
+                    Key: key
+                };
+                
+                s3.deleteObject(params).promise()
+                    .then(() => {
+                        showMessage('Dokument erfolgreich gelöscht!', 'success');
+                        loadUserDocuments();
+                    })
+                    .catch((error) => {
+                        console.error('❌ Lösch-Fehler:', error);
+                        showMessage('Löschen fehlgeschlagen: ' + error.message, 'error');
+                    });
+            }
+        }
+        
+        function showAuthModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-lock"></i> Anmeldung erforderlich</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="auth-required">
+                            <i class="fas fa-user-lock fa-3x" style="color: #6366f1; margin-bottom: 1rem;"></i>
+                            <h4>Anmeldung erforderlich</h4>
+                            <p>Um Dokumente hochzuladen, müssen Sie sich zuerst anmelden oder ein Profil erstellen.</p>
+                            <div class="auth-actions">
+                                <button class="btn btn-primary" onclick="showLoginModal()">
+                                    <i class="fas fa-sign-in-alt"></i> Anmelden
+                                </button>
+                                <button class="btn btn-secondary" onclick="showSignupModal()">
+                                    <i class="fas fa-user-plus"></i> Profil erstellen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function showLoginModal() {
+            // Close current modal
+            document.querySelector('.modal').remove();
+            
+            // Show login modal
+            if (window.awsAuth && window.awsAuth.showLoginModal) {
+                window.awsAuth.showLoginModal();
+            } else {
+                alert('Anmelde-System nicht verfügbar. Bitte Seite neu laden.');
+            }
+        }
+        
+        function showSignupModal() {
+            // Close current modal
+            document.querySelector('.modal').remove();
+            
+            // Show signup modal
+            if (window.awsAuth && window.awsAuth.showSignupModal) {
+                window.awsAuth.showSignupModal();
+            } else {
+                alert('Registrierungs-System nicht verfügbar. Bitte Seite neu laden.');
+            }
         }
 
         function formatFileSize(bytes) {
