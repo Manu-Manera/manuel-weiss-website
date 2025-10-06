@@ -303,7 +303,7 @@
 /* Method Cards Grid - Ultra Modern like Ikigai */
 .methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 2.5rem;
     margin: 4rem 0;
     padding: 0 2rem;
@@ -312,6 +312,7 @@
     margin-right: auto;
     width: 100%;
     box-sizing: border-box;
+    align-items: stretch;
 }
 
 /* Desktop: 3 columns */
@@ -412,8 +413,9 @@
     border: 1px solid rgba(99, 102, 241, 0.1);
     position: relative;
     overflow: hidden;
-    height: fit-content;
-    min-height: 500px;
+    height: 100%;
+    min-height: 600px;
+    max-height: 600px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -453,6 +455,7 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
     flex-grow: 1;
+    min-height: 120px;
 }
 
 .method-title {
@@ -524,6 +527,9 @@
     margin: 0 0 1rem 0;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    min-height: 2.4rem;
+    display: flex;
+    align-items: center;
 }
 
 .method-info p {
@@ -532,6 +538,11 @@
     line-height: 1.7;
     margin: 0 0 1.5rem 0;
     font-weight: 400;
+    min-height: 4.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .method-tags {
@@ -541,6 +552,8 @@
     margin: 1.5rem 0 2rem 0;
     padding: 1rem 0;
     border-top: 1px solid #f1f5f9;
+    min-height: 80px;
+    align-items: flex-start;
 }
 
 .method-tag {
@@ -569,6 +582,8 @@
     border-radius: 16px;
     border: 1px solid rgba(99, 102, 241, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    min-height: 100px;
+    align-items: center;
 }
 
 .stat-item {
@@ -611,6 +626,8 @@
     margin-top: auto;
     padding-top: 2rem;
     border-top: 1px solid rgba(99, 102, 241, 0.1);
+    min-height: 80px;
+    justify-content: center;
 }
 
 .btn {
