@@ -4299,14 +4299,13 @@
                         <div class="document-list" id="cover-documents">
                             <!-- Cover letter documents will be loaded here -->
                         </div>
-                        <div class="upload-area" onclick="document.getElementById('cover-upload').click()">
+                        <div class="upload-area" onclick="checkAuthAndUpload('cover')">
                             <div class="upload-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="upload-text">Anschreiben hochladen</div>
                             <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
                         </div>
-                        <input type="file" id="cover-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('cover', this.files[0])">
                     </div>
 
                     <div class="document-category">
@@ -4322,14 +4321,13 @@
                         <div class="document-list" id="certificates-documents">
                             <!-- Certificate documents will be loaded here -->
                         </div>
-                        <div class="upload-area" onclick="document.getElementById('certificates-upload').click()">
+                        <div class="upload-area" onclick="checkAuthAndUpload('certificates')">
                             <div class="upload-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="upload-text">Zeugnis hochladen</div>
                             <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
                         </div>
-                        <input type="file" id="certificates-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('certificates', this.files[0])">
                     </div>
 
                     <div class="document-category">
@@ -4345,14 +4343,13 @@
                         <div class="document-list" id="portfolio-documents">
                             <!-- Portfolio documents will be loaded here -->
                         </div>
-                        <div class="upload-area" onclick="document.getElementById('portfolio-upload').click()">
+                        <div class="upload-area" onclick="checkAuthAndUpload('portfolio')">
                             <div class="upload-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="upload-text">Portfolio hochladen</div>
                             <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
                         </div>
-                        <input type="file" id="portfolio-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('portfolio', this.files[0])">
                     </div>
 
                     <div class="document-category">
@@ -4368,14 +4365,13 @@
                         <div class="document-list" id="references-documents">
                             <!-- Reference documents will be loaded here -->
                         </div>
-                        <div class="upload-area" onclick="document.getElementById('references-upload').click()">
+                        <div class="upload-area" onclick="checkAuthAndUpload('references')">
                             <div class="upload-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="upload-text">Referenz hochladen</div>
                             <div class="upload-hint">PDF, DOC, DOCX bis 10MB</div>
                         </div>
-                        <input type="file" id="references-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="uploadDocument('references', this.files[0])">
                     </div>
                 </div>
             </div>
