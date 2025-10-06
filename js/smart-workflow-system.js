@@ -90,6 +90,79 @@ class SmartWorkflowSystem {
                     </div>
                 </div>
 
+                <!-- Initiativbewerbung Felder -->
+                <div class="form-section ${this.applicationData.applicationType === 'initiative' ? '' : 'hidden'}" id="initiativeSection">
+                    <div class="initiative-header">
+                        <h4><i class="fas fa-lightbulb"></i> Initiativbewerbung - Firmeninformationen</h4>
+                        <p class="section-description">Geben Sie die Firmendaten ein, um ein personalisiertes Bewerbungspaket zu erstellen</p>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-building"></i> Firmenname
+                            </label>
+                            <input 
+                                type="text" 
+                                id="initiativeCompanyName" 
+                                class="form-input" 
+                                value="${this.applicationData.initiativeCompanyName || ''}"
+                                placeholder="z.B. ABC Consulting GmbH"
+                                oninput="window.smartWorkflow.checkInitiativeReadiness()"
+                            />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Firmenadresse
+                            </label>
+                            <textarea 
+                                id="initiativeCompanyAddress" 
+                                class="form-textarea" 
+                                placeholder="z.B. Musterstraße 123&#10;12345 Musterstadt"
+                                oninput="window.smartWorkflow.checkInitiativeReadiness()"
+                            >${this.applicationData.initiativeCompanyAddress || ''}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user-tie"></i> Ansprechpartner
+                            </label>
+                            <input 
+                                type="text" 
+                                id="initiativeContactPerson" 
+                                class="form-input" 
+                                value="${this.applicationData.initiativeContactPerson || ''}"
+                                placeholder="z.B. Frau Dr. Mustermann, HR-Leiterin"
+                                oninput="window.smartWorkflow.checkInitiativeReadiness()"
+                            />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-briefcase"></i> Gewünschte Position
+                            </label>
+                            <input 
+                                type="text" 
+                                id="initiativePosition" 
+                                class="form-input" 
+                                value="${this.applicationData.initiativePosition || ''}"
+                                placeholder="z.B. Senior HR Consultant"
+                                oninput="window.smartWorkflow.checkInitiativeReadiness()"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="initiative-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.smartWorkflow.saveCompanyPackage()">
+                            <i class="fas fa-save"></i> Als Bewerbungspaket speichern
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="window.smartWorkflow.loadCompanyPackage()">
+                            <i class="fas fa-folder-open"></i> Gespeichertes Paket laden
+                        </button>
+                    </div>
+                </div>
+
                 <div id="extractedInfo" class="extracted-info ${this.applicationData.company ? '' : 'hidden'}">
                     <div class="info-header">
                         <i class="fas fa-magic"></i> Extrahierte Informationen
@@ -3686,6 +3759,106 @@ Wichtig:
         
         this.saveData();
     }
+
+    // Neue Initiativbewerbung Funktionen
+    saveCompanyPackage() {
+        const packageData = {
+            companyName: document.getElementById('initiativeCompanyName')?.value,
+            companyAddress: document.getElementById('initiativeCompanyAddress')?.value,
+            contactPerson: document.getElementById('initiativeContactPerson')?.value,
+            position: document.getElementById('initiativePosition')?.value,
+            savedAt: new Date().toISOString()
+        };
+
+        if (!packageData.companyName) {
+            alert('Bitte geben Sie mindestens den Firmennamen ein.');
+            return;
+        }
+
+        // Speichere in localStorage
+        const savedPackages = JSON.parse(localStorage.getItem('companyPackages') || '[]');
+        savedPackages.push(packageData);
+        localStorage.setItem('companyPackages', JSON.stringify(savedPackages));
+
+        // Zeige Erfolgsmeldung
+        this.showNotification('Bewerbungspaket gespeichert!', 'success');
+    }
+
+    loadCompanyPackage() {
+        const savedPackages = JSON.parse(localStorage.getItem('companyPackages') || '[]');
+        
+        if (savedPackages.length === 0) {
+            alert('Keine gespeicherten Bewerbungspakete gefunden.');
+            return;
+        }
+
+        // Erstelle Auswahlmodal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-folder-open"></i> Bewerbungspaket laden</h3>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="package-list">
+                        ${savedPackages.map((pkg, index) => `
+                            <div class="package-item" onclick="window.smartWorkflow.selectCompanyPackage(${index})">
+                                <div class="package-company">${pkg.companyName}</div>
+                                <div class="package-position">${pkg.position || 'Keine Position'}</div>
+                                <div class="package-date">${new Date(pkg.savedAt).toLocaleDateString()}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    selectCompanyPackage(index) {
+        const savedPackages = JSON.parse(localStorage.getItem('companyPackages') || '[]');
+        const packageData = savedPackages[index];
+
+        if (packageData) {
+            // Fülle die Felder
+            document.getElementById('initiativeCompanyName').value = packageData.companyName || '';
+            document.getElementById('initiativeCompanyAddress').value = packageData.companyAddress || '';
+            document.getElementById('initiativeContactPerson').value = packageData.contactPerson || '';
+            document.getElementById('initiativePosition').value = packageData.position || '';
+
+            // Schließe Modal
+            document.querySelector('.modal').remove();
+
+            // Aktiviere Weiter-Button
+            this.checkInitiativeReadiness();
+
+            this.showNotification('Bewerbungspaket geladen!', 'success');
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
     
     checkInitiativeReadiness() {
         const companyInput = document.getElementById('companyName');
@@ -5430,3 +5603,6 @@ window.showWorkflowMessage = function(message, type = 'info') {
     }, 3000);
 };
 window.smartWorkflow.regenerateProfile = window.smartWorkflow.regenerateProfile.bind(window.smartWorkflow);
+window.smartWorkflow.saveCompanyPackage = window.smartWorkflow.saveCompanyPackage.bind(window.smartWorkflow);
+window.smartWorkflow.loadCompanyPackage = window.smartWorkflow.loadCompanyPackage.bind(window.smartWorkflow);
+window.smartWorkflow.selectCompanyPackage = window.smartWorkflow.selectCompanyPackage.bind(window.smartWorkflow);
