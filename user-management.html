@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Manuel Weiss</title>
+    <link rel="stylesheet" href="css/auth-modals.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .user-management-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .auth-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        .auth-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .auth-section p {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-auth {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-forgot {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-forgot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .user-info.active {
+            display: block;
+        }
+
+        .user-info h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .user-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-detail {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-detail strong {
+            color: #374151;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-profile {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #f0fdf4;
+            border: 1px solid #10b981;
+            color: #059669;
+        }
+
+        .status-message.error {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #dc2626;
+        }
+
+        .status-message.info {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            color: #1d4ed8;
+        }
+
+        @media (max-width: 768px) {
+            .user-management-container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .auth-section {
+                padding: 2rem 1rem;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+            }
+
+            .user-actions {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-management-container">
+        <div class="header">
+            <h1><i class="fas fa-users"></i> User Management</h1>
+            <p>Zentrale Benutzerverwaltung mit AWS Cognito</p>
+        </div>
+
+        <div class="auth-section">
+            <h2>Authentifizierung</h2>
+            <p>Melden Sie sich an oder registrieren Sie sich für ein neues Konto</p>
+            
+            <div class="auth-buttons">
+                <button class="btn-auth btn-login" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Anmelden
+                </button>
+                <button class="btn-auth btn-signup" onclick="showSignupModal()">
+                    <i class="fas fa-user-plus"></i>
+                    Registrieren
+                </button>
+                <button class="btn-auth btn-forgot" onclick="showForgotPasswordModal()">
+                    <i class="fas fa-key"></i>
+                    Passwort vergessen
+                </button>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <div class="user-info" id="userInfo">
+            <h3><i class="fas fa-user-circle"></i> Benutzerinformationen</h3>
+            <div class="user-details" id="userDetails">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+            <div class="user-actions">
+                <button class="btn-auth btn-profile" onclick="showUserProfileModal()">
+                    <i class="fas fa-cog"></i>
+                    Profil verwalten
+                </button>
+                <button class="btn-auth btn-logout" onclick="confirmSignOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Abmelden
+                </button>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Sichere Authentifizierung</h3>
+                <p>Verwenden Sie AWS Cognito für sichere Benutzerauthentifizierung mit modernen Sicherheitsstandards.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>E-Mail-Verifizierung</h3>
+                <p>Automatische E-Mail-Verifizierung für neue Konten und Passwort-Reset-Funktionalität.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3>Passwort-Management</h3>
+                <p>Sichere Passwort-Richtlinien und einfache Passwort-Reset-Funktionalität.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <h3>Profil-Verwaltung</h3>
+                <p>Verwalten Sie Ihre Kontoinformationen und Passwörter in einem sicheren Dashboard.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modals -->
+    <div id="authModalsContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-auth.js"></script>
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+
+        // Show status message
+        function showStatusMessage(message, type = 'info') {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show login modal
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Show signup modal
+        function showSignupModal() {
+            const modal = document.getElementById('signupModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Show forgot password modal
+        function showForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Show user profile modal
+        function showUserProfileModal() {
+            const modal = document.getElementById('userProfileModal');
+            if (modal) {
+                // Fill profile information
+                const user = window.awsAuth.getCurrentUser();
+                if (user) {
+                    document.getElementById('profileName').textContent = 
+                        `${user.given_name} ${user.family_name}`;
+                    document.getElementById('profileEmail').textContent = user.email;
+                }
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Confirm sign out
+        function confirmSignOut() {
+            if (confirm('Möchten Sie sich wirklich abmelden?')) {
+                window.awsAuth.signOut().then(() => {
+                    showStatusMessage('Erfolgreich abgemeldet!', 'success');
+                    updateUserInfo();
+                }).catch(error => {
+                    showStatusMessage('Fehler beim Abmelden: ' + error.message, 'error');
+                });
+            }
+        }
+
+        // Update user info display
+        function updateUserInfo() {
+            const userInfo = document.getElementById('userInfo');
+            const userDetails = document.getElementById('userDetails');
+            
+            if (window.awsAuth.isAuthenticated()) {
+                const user = window.awsAuth.getCurrentUser();
+                userDetails.innerHTML = `
+                    <div class="user-detail">
+                        <strong>Name:</strong>
+                        ${user.given_name} ${user.family_name}
+                    </div>
+                    <div class="user-detail">
+                        <strong>E-Mail:</strong>
+                        ${user.email}
+                    </div>
+                    <div class="user-detail">
+                        <strong>Status:</strong>
+                        Verifiziert
+                    </div>
+                    <div class="user-detail">
+                        <strong>Registriert:</strong>
+                        ${new Date(user.auth_time * 1000).toLocaleDateString('de-DE')}
+                    </div>
+                `;
+                userInfo.classList.add('active');
+            } else {
+                userInfo.classList.remove('active');
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadAuthModals();
+            updateUserInfo();
+            
+            // Listen for auth state changes
+            setInterval(updateUserInfo, 1000);
+        });
+    </script>
+</body>
+</html>
