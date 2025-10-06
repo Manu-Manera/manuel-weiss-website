@@ -10,6 +10,11 @@
     <meta name="keywords" content="Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Coaching, Selbstreflexion">
     <meta name="author" content="Manuel Weiss">
     
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Open Graph -->
     <meta property="og:title" content="Persönlichkeitsentwicklung - Manuel Weiss">
     <meta property="og:description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung">
@@ -19,7 +24,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
-    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20241206">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">                                 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">                                                    
     
@@ -1760,9 +1765,9 @@
     </footer>
 
 <!-- Scripts -->
-<script src="js/translation-manager.js"></script>
-<script src="js/persoenlichkeitsentwicklung-methods.js"></script>
-<script src="js/persoenlichkeitsentwicklung-search.js"></script>
+<script src="js/translation-manager.js?v=20241206"></script>
+<script src="js/persoenlichkeitsentwicklung-methods.js?v=20241206"></script>
+<script src="js/persoenlichkeitsentwicklung-search.js?v=20241206"></script>
     <script>
 
     // Integrated User System Functions
@@ -1804,11 +1809,25 @@
 
     // Initialize system
     document.addEventListener('DOMContentLoaded', function() {
+        // Force cache refresh
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
+        
         // Initialize PDF download handlers
         initializePDFDownloads();
         
         // Initialize mobile navigation
         initializeMobileNav();
+        
+        // Force reload if needed
+        if (performance.navigation.type === 1) {
+            console.log('Page was refreshed');
+        }
     });
 
     function initializeMobileNav() {
