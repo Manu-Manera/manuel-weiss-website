@@ -627,27 +627,30 @@ body {
 
 /* Ultra Modern Assessment Info */
 .assessment-info {
-    margin-bottom: 50px;
+    margin-bottom: 60px;
     position: relative;
     z-index: 2;
 }
 
 .info-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    margin-bottom: 50px;
 }
 
 .info-card {
     background: linear-gradient(135deg, #ffffff, #f8fafc);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(99, 102, 241, 0.1);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
 .info-card::before {
@@ -656,7 +659,52 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 5px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.info-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.info-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover .info-icon {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-card h4 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.info-card p {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.5;
     background: linear-gradient(90deg, #6366f1, #8b5cf6);
 }
 
@@ -736,14 +784,15 @@ body {
 /* Ultra Modern Question Card */
 .question-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    padding: 50px;
-    border-radius: 24px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
-    margin-bottom: 40px;
+    padding: 60px;
+    border-radius: 28px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+    margin-bottom: 50px;
     border: 1px solid rgba(99, 102, 241, 0.1);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .question-card::before {
@@ -782,34 +831,56 @@ body {
 .answer-options {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 .option {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    padding: 25px 30px;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.option:hover::before {
+    left: 100%;
 }
 
 .option:hover {
     border-color: #6366f1;
-    background: #f8fafc;
+    background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
 }
 
 .option input[type="radio"] {
-    margin-right: 15px;
-    width: 18px;
-    height: 18px;
+    margin-right: 20px;
+    width: 24px;
+    height: 24px;
     accent-color: #6366f1;
+    flex-shrink: 0;
 }
 
 .option input[type="radio"]:checked + .option-text {
     color: #6366f1;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .option:has(input:checked) {
@@ -1564,21 +1635,50 @@ body {
     transform: none !important;
 }
 
-/* Progress Bar Enhancement */
+/* Ultra Modern Progress Section */
 .assessment-progress {
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     position: relative;
     z-index: 2;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.progress-header h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.progress-percentage {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #6366f1;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .progress-bar {
     width: 100%;
-    height: 16px;
+    height: 20px;
     background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    margin-bottom: 15px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
