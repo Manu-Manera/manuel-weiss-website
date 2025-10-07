@@ -338,10 +338,6 @@
                     <i class="fas fa-tachometer-alt"></i>
                     Admin Dashboard
                 </a>
-                <button onclick="window.setApiKey()" class="nav-btn" style="background: none; border: 2px solid #667eea;">
-                    <i class="fas fa-key"></i>
-                    API Key
-                </button>
                 <a href="index.html" class="nav-btn">
                     <i class="fas fa-home"></i>
                     Zur Startseite
@@ -437,10 +433,6 @@
                 <div class="stat-item">
                     <div class="stat-value">A+</div>
                     <div class="stat-label">Code Quality</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="apiStatus">🔄</div>
-                    <div class="stat-label">KI-Status</div>
                 </div>
             </div>
         </section>
@@ -659,8 +651,6 @@
                     console.warn('⚠️ Workflow-Script nicht geladen, wird bei Button-Klick nachgeladen');
                 }
                 
-                // Check API Key status
-                checkApiKeyStatus();
             }, 1000);
             
             // Add click handlers as backup
@@ -698,50 +688,6 @@
         window.addEventListener('error', function(error) {
             console.error('🚨 JavaScript-Fehler auf der Seite:', error);
         });
-        
-        // API Key Status Check
-        function checkApiKeyStatus() {
-            const apiStatus = document.getElementById('apiStatus');
-            if (!apiStatus) return;
-            
-            const hasApiKey = localStorage.getItem('openai_api_key') || 
-                            localStorage.getItem('ai_api_key') ||
-                            sessionStorage.getItem('openai_api_key');
-            
-            if (hasApiKey) {
-                apiStatus.textContent = '✅';
-                apiStatus.title = 'API Key konfiguriert - KI-Analyse verfügbar';
-                apiStatus.style.color = '#10b981';
-            } else {
-                apiStatus.textContent = '⚠️';
-                apiStatus.title = 'Kein API Key - Klicken Sie auf "API Key" zum Konfigurieren';
-                apiStatus.style.color = '#f59e0b';
-                apiStatus.style.cursor = 'pointer';
-                apiStatus.onclick = () => window.setApiKey && window.setApiKey();
-            }
-        }
-        
-        // Enhanced setApiKey function with status update
-        window.setApiKey = function() {
-            const currentKey = localStorage.getItem('openai_api_key');
-            const message = currentKey 
-                ? '🔑 API Key bereits vorhanden. Neuen Key eingeben oder leer lassen für aktuellen Key:'
-                : '🤖 Geben Sie Ihren OpenAI API Key ein für die KI-Stellenanalyse:';
-                
-            const apiKey = prompt(message);
-            if (apiKey) {
-                localStorage.setItem('openai_api_key', apiKey);
-                alert('✅ API Key gespeichert! KI-Analyse ist jetzt verfügbar.');
-                checkApiKeyStatus(); // Update status
-                
-                // Update realAI if available
-                if (window.realAI) {
-                    window.realAI.apiKey = apiKey;
-                }
-            } else if (currentKey) {
-                alert('ℹ️ Bestehender API Key bleibt erhalten.');
-            }
-        };
         
         console.log('✅ Bewerbungsmanager mit API Key Management initialisiert');
     </script>

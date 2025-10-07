@@ -5094,21 +5094,36 @@ function displaySkillGapAnalysis(analysis) {
         `).join('');
 }
 
-// Add API Key management functions
-window.setApiKey = function() {
-    const apiKey = prompt('🤖 OpenAI API Key eingeben:');
-    if (apiKey) {
-        localStorage.setItem('openai_api_key', apiKey);
-        window.realAI.apiKey = apiKey;
-        alert('✅ API Key gespeichert!');
+// =================== API KEY MANAGEMENT ===================
+// Nutzt bestehende Admin Panel Verwaltung (KI-Einstellungen)
+// Siehe: https://mawps.netlify.app/admin#ai-settings
+
+// Test function - NUR für lokale Tests (NIEMALS API Keys hart codieren!)
+window.setTestApiKey = function() {
+    const testKey = prompt('🧪 Test-API Key eingeben (NUR für lokale Tests):');
+    if (testKey && testKey.startsWith('sk-')) {
+        localStorage.setItem('openai_api_key', testKey);
+        if (window.realAI) {
+            window.realAI.apiKey = testKey;
+        }
+        console.log('🧪 Test-API Key gesetzt (temporär)');
+        return testKey;
+    } else {
+        console.log('❌ Ungültiger API Key oder Eingabe abgebrochen');
+        return null;
     }
 };
 
-window.clearApiKey = function() {
-    if (confirm('API Key wirklich löschen?')) {
-        localStorage.removeItem('openai_api_key');
-        window.realAI.apiKey = null;
-        alert('🗑️ API Key gelöscht!');
+// Check if API key is available from Admin Panel
+window.checkAdminApiKey = function() {
+    const apiKey = localStorage.getItem('openai_api_key');
+    if (apiKey) {
+        console.log('✅ API Key verfügbar aus Admin Panel');
+        return true;
+    } else {
+        console.log('⚠️ Kein API Key - bitte über Admin Panel konfigurieren');
+        console.log('👉 Gehe zu: https://mawps.netlify.app/admin#ai-settings');
+        return false;
     }
 };
 

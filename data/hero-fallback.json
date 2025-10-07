@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-01-07T16:00:00Z",
+  "description": "Fallback-Daten für Hero-Bereich der Website (Aktuelle Konfiguration gespeichert)",
+  "heroData": {
+    "name": "Manuel Weiss",
+    "title": "HR Berater für AI & Transformation",
+    "subtitle": "Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen.",
+    "description": "Seit über 6 Jahren begleite ich Unternehmen bei der digitalen Transformation und der Optimierung ihrer HR-Prozesse.",
+    
+    "metaData": {
+      "pageTitle": "Manuel Weiss - HR Berater für AI & Transformation",
+      "metaDescription": "Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.",
+      "keywords": "HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen"
+    },
+    
+    "contact": {
+      "email": "weiss-manuel@gmx.de",
+      "phone": "+41 79 838 55 90",
+      "location": "Pilatusstrasse 40, 8330 Pfäffikon ZH",
+      "country": "Schweiz"
+    },
+    
+    "statistics": {
+      "stat1": {
+        "number": "5+",
+        "label": "Jahre Erfahrung"
+      },
+      "stat2": {
+        "number": "50+", 
+        "label": "Projekte"
+      },
+      "stat3": {
+        "number": "100%",
+        "label": "Zufriedenheit"
+      }
+    },
+    
+    "buttons": {
+      "primary": {
+        "text": "Services entdecken",
+        "link": "#services"
+      },
+      "secondary": {
+        "text": "Kontakt aufnehmen", 
+        "link": "#contact"
+      }
+    },
+    
+    "images": {
+      "logo": "manuel-weiss-photo.svg",
+      "portrait": "manuel-weiss-portrait.jpg",
+      "alt": "Manuel Weiss"
+    },
+    
+    "design": {
+      "gradientText": "AI & Transformation",
+      "backgroundColor1": "#667eea",
+      "backgroundColor2": "#764ba2",
+      "textColor": "#1f2937"
+    },
+    
+    "translations": {
+      "de": {
+        "title": "HR Berater für AI & Transformation",
+        "subtitle": "Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen.",
+        "primaryButton": "Services entdecken",
+        "secondaryButton": "Kontakt aufnehmen",
+        "contact": "Kontakt"
+      },
+      "en": {
+        "title": "HR Consultant for AI & Transformation", 
+        "subtitle": "Innovative solutions for modern companies. Digitalization, business processes and human resources.",
+        "primaryButton": "Discover Services",
+        "secondaryButton": "Get in Touch",
+        "contact": "Contact"
+      }
+    }
+  },
+  
+  "additionalData": {
+    "professionalTitle": "HR Consultant",
+    "expertise": [
+      "AI & Künstliche Intelligenz",
+      "HR Transformation",
+      "Digitalisierung",
+      "Geschäftsprozesse",
+      "Personalwesen",
+      "Change Management"
+    ],
+    "experience": "5+ Jahre in HR & AI Beratung",
+    "certifications": [],
+    "languages": ["Deutsch", "English"]
+  },
+  
+  "technicalInfo": {
+    "source": "index.html",
+    "extractedBy": "AI Assistant",
+    "purpose": "Fallback für Hero-Bereich Verwaltung",
+    "lastUpdate": "2025-01-07",
+    "version": "1.0"
+  }
+}
