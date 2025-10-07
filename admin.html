@@ -3885,10 +3885,24 @@
                                         <!-- Dashboard Widget -->
 
 
-                                        <div class="applications-dashboard" style="margin-bottom: 3rem;">
+                                        <div class="applications-modern-dashboard" style="margin-bottom: 3rem;">
+                                            
+                                            <!-- Migration CTA -->
+                                            <div class="migration-cta" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; text-align: center; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+                                                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                                                <h3 style="margin: 0 0 1rem 0; font-size: 1.5rem; font-weight: 700;">Upgrade auf modernste Bewerbungsarchitektur</h3>
+                                                <p style="margin: 0 0 1.5rem 0; opacity: 0.9;">KI-Integration, Real-time Analytics, Mobile-optimiert, Offline-fähig</p>
+                                                <a href="applications-modern.html" style="background: rgba(255,255,255,0.2); color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                    Jetzt upgraden
+                                                </a>
+                                            </div>
 
-
-                                            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                            <div class="legacy-dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; opacity: 0.6;">
+                                                <div class="legacy-notice" style="grid-column: 1 / -1; background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem;">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    <strong>Legacy-Version:</strong> Diese Statistiken werden in der neuen Architektur ersetzt
+                                                </div>
 
 
                                                 <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
@@ -3991,22 +4005,28 @@
                                         <!-- Aktuelle Bewerbungen Liste -->
 
 
-                                        <div class="current-applications" style="margin-bottom: 3rem;">
-
+                                        <div class="legacy-applications-section" style="margin-bottom: 3rem; position: relative;">
+                                            
+                                            <div class="section-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8); z-index: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; backdrop-filter: blur(2px);">
+                                                <div style="text-align: center; padding: 2rem;">
+                                                    <i class="fas fa-arrow-up" style="font-size: 2rem; color: #667eea; margin-bottom: 1rem;"></i>
+                                                    <h4 style="color: #1f2937; margin-bottom: 0.5rem;">Moderne Architektur verfügbar</h4>
+                                                    <p style="color: #6b7280; margin-bottom: 1.5rem;">Wechseln Sie zur neuen modularen Bewerbungsverwaltung</p>
+                                                    <a href="applications-modern.html" class="upgrade-btn" style="background: #667eea; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                                                        Jetzt wechseln
+                                                    </a>
+                                                </div>
+                                            </div>
 
                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                                <h3 style="color: #333; margin: 0; opacity: 0.6;">📋 Legacy Bewerbungen</h3>
 
 
-                                                <h3 style="color: #333; margin: 0;">📋 Aktuelle Bewerbungen</h3>
-
-
-                                                <button data-action="new-application" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-
-
-                                                    <i class="fas fa-plus"></i> Neue Bewerbung
-
-
-                                                </button>
+                                                <a href="applications-modern.html" class="btn-modern-app" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: all 0.3s ease;">
+                                                    <i class="fas fa-rocket"></i> 
+                                                    <span>Moderne Bewerbungsverwaltung</span>
+                                                    <div class="new-badge" style="background: #fbbf24; color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.7rem; margin-left: 0.5rem;">NEU</div>
+                                                </a>
 
 
                                     </div>
@@ -4327,12 +4347,15 @@
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
 
 
-                                            <h3 style="margin: 0;">Neue Bewerbung hinzufügen</h3>
+                                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                                <i class="fas fa-info-circle" style="color: #667eea; font-size: 1.5rem;"></i>
+                                                <div>
+                                                    <h3 style="margin: 0; color: #1f2937;">Bewerbungen verwalten</h3>
+                                                    <p style="margin: 0.25rem 0 0 0; color: #6b7280; font-size: 0.875rem;">Neue modulare Architektur verfügbar</p>
+                                                </div>
+                                            </div>
 
-
-                                            <button data-action="close-new-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-
-
+                                            <button data-action="close-new-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</button>
                                         </div>
                         
 
