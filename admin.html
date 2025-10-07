@@ -8543,8 +8543,10 @@
                             localStorage.setItem('heroProfileImage', profileImage.src);
                         }
                         
-                        // AWS-Speicherung für Persistenz
-                        await saveHeroDataToAWS(heroData);
+                        // AWS-Speicherung für Persistenz (async wrapper)
+                        saveHeroDataToAWS(heroData).catch(error => {
+                            console.error('AWS save failed:', error);
+                        });
                         
                         showHeroMessage('Hero-Bereich erfolgreich gespeichert!', 'success');
                         console.log('✅ HERO SETTINGS: Data saved:', heroData);
@@ -12529,10 +12531,17 @@ Bitte antworte im folgenden JSON-Format:
         jobAnalyzerScript.src = `js/job-requirement-analyzer.js?v=1.0&t=${timestamp}`;
         document.head.appendChild(jobAnalyzerScript);
         
-        // Load smart workflow steps
-        const smartWorkflowScript = document.createElement('script');
-        smartWorkflowScript.src = `js/smart-workflow-steps.js?v=1.0&t=${timestamp}`;
-        document.head.appendChild(smartWorkflowScript);
+        // Load modern workflow manager (replaces smart-workflow-steps.js)
+        const modernWorkflowScript = document.createElement('script');
+        modernWorkflowScript.src = `js/modern-workflow-manager.js?v=2.0&t=${timestamp}`;
+        modernWorkflowScript.onerror = function() {
+            console.error('❌ Failed to load modern workflow manager');
+            // Fallback: Load original smart-workflow-steps.js with error handling
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = `js/smart-workflow-steps.js?v=1.0&t=${timestamp}`;
+            document.head.appendChild(fallbackScript);
+        };
+        document.head.appendChild(modernWorkflowScript);
         
         // Load application learning system
         const learningSystemScript = document.createElement('script');
