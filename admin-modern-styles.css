@@ -1,0 +1,482 @@
+/* 🚀 Modern Admin Panel Styles - 2024/2025 Standards */
+
+/* 🎨 CSS Variables for Modern Admin Theme */
+:root {
+    --admin-primary: #667eea;
+    --admin-primary-dark: #5a67d8;
+    --admin-secondary: #764ba2;
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-error: #ef4444;
+    --admin-info: #3b82f6;
+    
+    /* Modern Gradients */
+    --admin-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --admin-gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --admin-gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    
+    /* Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-blur: blur(20px);
+    
+    /* Shadows */
+    --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.12);
+    --shadow-strong: 0 15px 35px rgba(0, 0, 0, 0.2);
+    
+    /* Transitions */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🏗️ Modern Container Enhancements */
+.modern-applications-container {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: var(--glass-blur);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-applications-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--admin-gradient-primary);
+}
+
+/* 📋 Modern Header Styling */
+.applications-modern-header {
+    margin-bottom: 2rem;
+}
+
+.applications-modern-header .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.applications-modern-header .header-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--admin-gradient-primary);
+}
+
+.applications-modern-header .header-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: var(--admin-gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.applications-modern-header .header-text h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    background: linear-gradient(135deg, #1f2937, #4b5563);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.applications-modern-header .header-text p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* 🔔 Migration Notice */
+.migration-notice {
+    margin-left: auto;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+}
+
+.migration-notice .notice-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--admin-info);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.migration-notice .notice-content i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* 🚀 Migration CTA Enhancements */
+.migration-cta {
+    position: relative;
+    overflow: hidden;
+}
+
+.migration-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1" fill="white" opacity="0.1"/></svg>');
+    opacity: 0.3;
+}
+
+.migration-cta h3 {
+    position: relative;
+    z-index: 1;
+}
+
+.migration-cta p {
+    position: relative;
+    z-index: 1;
+}
+
+.migration-cta a {
+    position: relative;
+    z-index: 1;
+}
+
+.migration-cta a:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* 🎭 Legacy Section Styling */
+.legacy-applications-section {
+    border: 2px solid #fbbf24;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    position: relative;
+}
+
+.section-overlay {
+    border-radius: 12px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.upgrade-btn {
+    transition: all var(--transition-base);
+}
+
+.upgrade-btn:hover {
+    background: var(--admin-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* 🎨 Modern Button Styling */
+.btn-modern-app {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern-app::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left var(--transition-slow);
+}
+
+.btn-modern-app:hover::after {
+    left: 100%;
+}
+
+.btn-modern-app:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.new-badge {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(251, 191, 36, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+    }
+}
+
+/* 📊 Legacy Dashboard Deprecation Styling */
+.legacy-dashboard-grid .stat-card {
+    position: relative;
+    opacity: 0.6;
+    filter: grayscale(0.3);
+    transition: all var(--transition-base);
+}
+
+.legacy-dashboard-grid .stat-card::after {
+    content: 'LEGACY';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 700;
+}
+
+.legacy-dashboard-grid .stat-card:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+.legacy-notice {
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 🔧 Modern Sidebar Toggle */
+.sidebar-toggle.modern-toggle {
+    background: var(--admin-gradient-primary);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 1rem;
+    box-shadow: var(--shadow-medium);
+    transition: all var(--transition-base);
+}
+
+.sidebar-toggle.modern-toggle:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: var(--shadow-strong);
+}
+
+.sidebar-toggle.modern-toggle i {
+    font-size: 1.25rem;
+}
+
+/* 📱 Mobile-First Responsive Enhancements */
+@media (max-width: 768px) {
+    .modern-applications-container {
+        padding: 1rem;
+        border-radius: 16px;
+    }
+    
+    .applications-modern-header .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .migration-notice {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .legacy-applications-section .section-overlay {
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+    }
+}
+
+@media (max-width: 480px) {
+    .migration-cta {
+        padding: 1.5rem;
+    }
+    
+    .migration-cta h3 {
+        font-size: 1.25rem;
+    }
+    
+    .btn-modern-app span {
+        display: none;
+    }
+    
+    .btn-modern-app {
+        justify-content: center;
+        min-width: 48px;
+    }
+}
+
+/* 🎯 Focus States for Accessibility */
+.btn-modern-app:focus,
+.upgrade-btn:focus,
+.sidebar-toggle:focus {
+    outline: 2px solid var(--admin-primary);
+    outline-offset: 2px;
+}
+
+/* 🌙 Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .modern-applications-container {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .applications-modern-header .header-content {
+        background: #1e293b;
+        border-color: #374151;
+    }
+    
+    .applications-modern-header .header-text h2 {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .legacy-notice {
+        background: #451a03;
+        color: #fbbf24;
+    }
+    
+    .section-overlay {
+        background: rgba(15, 23, 42, 0.8);
+    }
+}
+
+/* 🎪 Advanced Micro-Interactions */
+.migration-cta {
+    transition: all var(--transition-base);
+}
+
+.migration-cta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+}
+
+/* 🔮 Future-Proof Experimental Features */
+@supports (container-type: inline-size) {
+    .modern-applications-container {
+        container-type: inline-size;
+        container-name: admin-applications;
+    }
+    
+    @container admin-applications (max-width: 600px) {
+        .applications-modern-header .header-content {
+            flex-direction: column;
+        }
+        
+        .migration-notice {
+            margin-top: 1rem;
+            margin-left: 0;
+        }
+    }
+}
+
+@supports (backdrop-filter: blur(10px)) {
+    .glass-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: var(--glass-blur);
+    }
+}
+
+/* ⚡ Performance Optimizations */
+.modern-applications-container {
+    contain: layout style paint;
+}
+
+.migration-cta {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* 🎨 Advanced Animation Library */
+.slide-up-enter {
+    animation: slideUpEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideUpEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.scale-hover:hover {
+    animation: scaleHover 0.3s ease-out;
+}
+
+@keyframes scaleHover {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1.02); }
+}
+
+/* 🎯 Utility Classes */
+.gradient-text {
+    background: var(--admin-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass-effect {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+}
+
+.shadow-glow {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+.shadow-glow:hover {
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+}

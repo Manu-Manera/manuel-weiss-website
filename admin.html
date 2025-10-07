@@ -7,6 +7,7 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="admin-modern-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -4083,13 +4084,16 @@
                                             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center;">
 
 
-                                                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem;">
-                                                    🚀 Smart Bewerbungs-Workflow
+                                                <div style="display: inline-flex; align-items: center; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 25px; margin-bottom: 1rem; backdrop-filter: blur(10px);">
+                                                    <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+                                                    <span style="font-size: 0.875rem; font-weight: 600;">LEGACY VERSION</span>
+                                                </div>
+                                                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem; opacity: 0.8;">
+                                                    🚀 Smart Bewerbungs-Workflow (Alt)
                                                 </h3>
 
-
-                                                <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; font-size: 1.1rem;">
-                                                    Erstelle professionelle Bewerbungen mit KI-Unterstützung
+                                                <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem; font-size: 1.1rem;">
+                                                    Upgrade zur neuen modularen Architektur empfohlen
                                                 </p>
 
 
@@ -17093,6 +17097,151 @@ Bitte antworte im folgenden JSON-Format:
             console.log('🚀 PAGE: Page loaded - upload system ready');
             setTimeout(loadStoredImage, 1000);
         });
+    </script>
+    <!-- 🧹 Admin Cleanup & Modernization -->
+    <script src="admin-cleanup-script.js"></script>
+    
+    <!-- 🚀 Modern Admin Panel Enhancements -->
+    <script type="module">
+        // Initialize modern admin features
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply modern enhancements
+            if (window.adminCleanup) {
+                window.adminCleanup.initializeModernAdmin();
+            }
+            
+            // Track admin panel usage
+            if (window.unifiedAnalytics) {
+                window.unifiedAnalytics.track('admin', 'panel_loaded', 'modern_version', 1);
+            }
+            
+            console.log('🎛️ Modern Admin Panel loaded');
+        });
+        
+        // Enhanced admin functionality
+        class ModernAdminOptimizer {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.optimizeSidebar();
+                this.enhanceStatCards();
+                this.modernizeModals();
+                this.setupKeyboardShortcuts();
+                this.addModernInteractions();
+            }
+            
+            optimizeSidebar() {
+                const sidebar = document.querySelector('.admin-sidebar');
+                if (sidebar) {
+                    sidebar.style.contain = 'layout style';
+                    sidebar.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+            }
+            
+            enhanceStatCards() {
+                const statCards = document.querySelectorAll('.stat-card');
+                statCards.forEach(card => {
+                    // Add modern hover effects
+                    card.addEventListener('mouseenter', () => {
+                        card.style.transform = 'translateY(-4px) scale(1.02)';
+                        card.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+                        card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'translateY(0) scale(1)';
+                        card.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                    });
+                });
+            }
+            
+            modernizeModals() {
+                const modals = document.querySelectorAll('[id*="Modal"]');
+                modals.forEach(modal => {
+                    modal.style.backdropFilter = 'blur(8px)';
+                    modal.style.transition = 'all 0.3s ease';
+                    
+                    // Modern modal styling
+                    const modalContent = modal.querySelector('div[style*="background: white"]');
+                    if (modalContent) {
+                        modalContent.style.borderRadius = '20px';
+                        modalContent.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.25)';
+                        modalContent.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                    }
+                });
+            }
+            
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        switch(e.key) {
+                            case 'b':
+                                e.preventDefault();
+                                window.open('applications-modern.html', '_blank');
+                                break;
+                            case 'm':
+                                e.preventDefault();
+                                if (window.modernAdminFunctions?.showApplicationMigration) {
+                                    window.modernAdminFunctions.showApplicationMigration();
+                                }
+                                break;
+                        }
+                    }
+                });
+                
+                console.log('⌨️ Admin shortcuts: Ctrl+B (Modern Apps), Ctrl+M (Migration)');
+            }
+            
+            addModernInteractions() {
+                // Add ripple effects to buttons
+                const buttons = document.querySelectorAll('button, .btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const ripple = document.createElement('span');
+                        const rect = button.getBoundingClientRect();
+                        const size = Math.max(rect.width, rect.height);
+                        const x = e.clientX - rect.left - size / 2;
+                        const y = e.clientY - rect.top - size / 2;
+                        
+                        ripple.style.cssText = `
+                            position: absolute;
+                            border-radius: 50%;
+                            transform: scale(0);
+                            animation: ripple 0.6s linear;
+                            background: rgba(255, 255, 255, 0.5);
+                            width: ${size}px;
+                            height: ${size}px;
+                            left: ${x}px;
+                            top: ${y}px;
+                            pointer-events: none;
+                        `;
+                        
+                        button.style.position = 'relative';
+                        button.style.overflow = 'hidden';
+                        button.appendChild(ripple);
+                        
+                        setTimeout(() => ripple.remove(), 600);
+                    });
+                });
+                
+                // Add CSS for ripple animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes ripple {
+                        to {
+                            transform: scale(4);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Initialize modern admin optimizer
+        new ModernAdminOptimizer();
     </script>
 </body>
 </html>
