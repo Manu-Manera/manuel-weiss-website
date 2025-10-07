@@ -10,54 +10,23 @@
     <meta name="keywords" content="Bewerbungsverwaltung, HR, KI, Analytics, Dashboard, Tracking">
     <meta name="author" content="Manuel Weiss">
     
-    <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Progressive Web App Manifest -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
     
-    <!-- Performance Optimizations -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Modern Application Styles -->
     <style>
-        /* 🎨 Modern CSS Variables & Design System */
+        /* Modern Application Styles */
         :root {
-            /* Colors */
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            
-            /* Layout */
             --sidebar-width: 280px;
             --header-height: 80px;
             --border-radius: 12px;
             --shadow-elegant: 0 8px 32px rgba(0, 0, 0, 0.12);
-            --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.08);
-            
-            /* Typography */
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-size-xs: 0.75rem;
-            --font-size-sm: 0.875rem;
-            --font-size-base: 1rem;
-            --font-size-lg: 1.125rem;
-            --font-size-xl: 1.25rem;
-            --font-size-2xl: 1.5rem;
-            --font-size-3xl: 1.875rem;
-            
-            /* Animation */
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -67,14 +36,13 @@
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
             color: #1f2937;
             background: #f8fafc;
             overflow-x: hidden;
         }
 
-        /* 🏗️ Layout Structure */
         .app-container {
             display: flex;
             min-height: 100vh;
@@ -90,13 +58,7 @@
             top: 0;
             height: 100vh;
             z-index: 1000;
-            transform: translateX(0);
-            transition: transform var(--transition-base);
             overflow-y: auto;
-        }
-
-        .app-sidebar.collapsed {
-            transform: translateX(-100%);
         }
 
         .sidebar-header {
@@ -122,11 +84,6 @@
             font-weight: 700;
         }
 
-        .sidebar-title {
-            font-size: var(--font-size-xl);
-            font-weight: 700;
-        }
-
         .sidebar-nav {
             padding: 1rem 0;
         }
@@ -137,10 +94,9 @@
 
         .nav-section-title {
             padding: 0 1.5rem;
-            font-size: var(--font-size-xs);
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             color: rgba(255, 255, 255, 0.6);
             margin-bottom: 0.5rem;
         }
@@ -152,7 +108,7 @@
             padding: 0.75rem 1.5rem;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: all var(--transition-fast);
+            transition: all 150ms ease;
             border-left: 3px solid transparent;
         }
 
@@ -168,22 +124,11 @@
             border-left-color: #6366f1;
         }
 
-        .nav-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* 📱 Main Content Area */
         .app-main {
             flex: 1;
             margin-left: var(--sidebar-width);
             min-height: 100vh;
             background: #f8fafc;
-            transition: margin-left var(--transition-base);
-        }
-
-        .app-main.expanded {
-            margin-left: 0;
         }
 
         .app-header {
@@ -194,49 +139,22 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            box-shadow: var(--shadow-subtle);
-            position: sticky;
-            top: 0;
-            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: #6b7280;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all var(--transition-fast);
-        }
-
-        .sidebar-toggle:hover {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .header-title {
-            font-size: var(--font-size-2xl);
+        .header-left h1 {
+            font-size: 1.5rem;
             font-weight: 700;
             color: #1f2937;
         }
 
         .header-subtitle {
-            font-size: var(--font-size-sm);
+            font-size: 0.875rem;
             color: #6b7280;
         }
 
         .header-actions {
             display: flex;
-            align-items: center;
             gap: 1rem;
         }
 
@@ -248,11 +166,11 @@
             border: 1px solid #d1d5db;
             background: white;
             border-radius: 8px;
-            font-size: var(--font-size-sm);
+            font-size: 0.875rem;
             font-weight: 500;
             color: #374151;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 150ms ease;
             text-decoration: none;
         }
 
@@ -272,7 +190,6 @@
             box-shadow: var(--shadow-elegant);
         }
 
-        /* 📋 Content Area */
         .app-content {
             padding: 2rem;
         }
@@ -300,258 +217,49 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 🎭 Status Indicators */
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: var(--font-size-xs);
-            font-weight: 600;
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .status-online {
-            background: #dcfce7;
-            color: #166534;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .status-offline {
-            background: #fee2e2;
-            color: #991b1b;
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .status-syncing {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* 📱 Responsive Design */
         @media (max-width: 1024px) {
             .app-sidebar {
                 transform: translateX(-100%);
             }
             
-            .app-sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            
             .app-main {
                 margin-left: 0;
             }
-            
-            .sidebar-toggle {
-                display: block;
-            }
-            
-            .app-content {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: var(--font-size-xl);
-            }
-            
-            .header-actions {
-                gap: 0.5rem;
-            }
-            
-            .header-btn {
-                padding: 0.5rem;
-            }
-            
-            .header-btn span {
-                display: none;
-            }
-        }
-
-        /* 🎨 Utility Classes */
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-in-right {
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* 🌙 Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #0f172a;
-                --text-color: #f1f5f9;
-            }
-            
-            body {
-                background: var(--bg-color);
-                color: var(--text-color);
-            }
-            
-            .app-header {
-                background: #1e293b;
-                border-bottom-color: #374151;
-            }
-            
-            .header-btn {
-                background: #374151;
-                border-color: #4b5563;
-                color: #f9fafb;
-            }
-        }
-
-        /* 🎨 Advanced Micro-Interactions */
-        .nav-link {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::before {
-            width: 100%;
-        }
-
-        .header-btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .header-btn:active::after {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* 🔄 Loading States with Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        .skeleton-text {
-            height: 1rem;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-        }
-
-        .skeleton-title {
-            height: 1.5rem;
-            border-radius: 6px;
-            width: 60%;
-            margin-bottom: 1rem;
-        }
-
-        /* 🎯 Focus States für Accessibility */
-        .nav-link:focus,
-        .header-btn:focus {
-            outline: 2px solid #667eea;
-            outline-offset: 2px;
-        }
-
-        /* 🏃 Performance Optimizations */
-        .app-content {
-            contain: layout style paint;
-        }
-
-        .charts-widget,
-        .application-list {
-            contain: layout style;
-        }
-
-        /* 📱 Enhanced Mobile Experience */
-        @media (max-width: 480px) {
-            .app-header {
-                padding: 0 1rem;
-            }
-            
-            .header-title {
-                font-size: var(--font-size-lg);
-            }
-            
-            .header-btn span {
-                display: none;
-            }
-            
-            .header-btn {
-                min-width: 44px;
-                min-height: 44px;
-                justify-content: center;
-            }
-        }
-
-        /* 🎪 Easter Egg - Konami Code */
-        .konami-mode {
-            filter: hue-rotate(45deg) saturate(1.5);
-            animation: partyMode 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes partyMode {
-            0% { filter: hue-rotate(0deg) saturate(1); }
-            100% { filter: hue-rotate(360deg) saturate(1.5); }
         }
     </style>
 </head>
 <body>
-    <!-- 🏗️ Application Container -->
-    <div class="app-container" id="appContainer">
+    <div class="app-container">
         
-        <!-- 📱 Sidebar Navigation -->
-        <aside class="app-sidebar" id="appSidebar">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
                     <div class="sidebar-logo">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <div>
-                        <div class="sidebar-title">Bewerbungen</div>
-                        <div class="status-indicator status-online" id="connectionStatus">
-                            <i class="fas fa-circle"></i>
-                            <span>Online</span>
-                        </div>
+                        <div style="font-size: 1.25rem; font-weight: 700;">Bewerbungen</div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.7);">Modern Dashboard</div>
                     </div>
                 </div>
             </div>
             
             <nav class="sidebar-nav">
-                <!-- Main Navigation -->
                 <div class="nav-section">
                     <div class="nav-section-title">Hauptbereich</div>
                     <a href="#dashboard" class="nav-link active" data-view="dashboard">
@@ -571,60 +279,23 @@
                         <span>Termine</span>
                     </a>
                 </div>
-                
-                <!-- Management -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Verwaltung</div>
-                    <a href="#documents" class="nav-link" data-view="documents">
-                        <i class="fas fa-file-alt"></i>
-                        <span>Dokumente</span>
-                    </a>
-                    <a href="#templates" class="nav-link" data-view="templates">
-                        <i class="fas fa-file-contract"></i>
-                        <span>Vorlagen</span>
-                    </a>
-                    <a href="#contacts" class="nav-link" data-view="contacts">
-                        <i class="fas fa-address-book"></i>
-                        <span>Kontakte</span>
-                    </a>
-                </div>
-                
-                <!-- Tools -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Tools</div>
-                    <a href="#ai-assistant" class="nav-link" data-view="ai-assistant">
-                        <i class="fas fa-robot"></i>
-                        <span>KI-Assistent</span>
-                    </a>
-                    <a href="#reports" class="nav-link" data-view="reports">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Berichte</span>
-                    </a>
-                    <a href="#settings" class="nav-link" data-view="settings">
-                        <i class="fas fa-cog"></i>
-                        <span>Einstellungen</span>
-                    </a>
-                </div>
             </nav>
         </aside>
 
-        <!-- 🖥️ Main Content Area -->
-        <main class="app-main" id="appMain">
+        <!-- Main Content -->
+        <main class="app-main">
             
-            <!-- 📋 Header -->
+            <!-- Header -->
             <header class="app-header">
                 <div class="header-left">
-                    <button class="sidebar-toggle" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
                     <div>
-                        <h1 class="header-title" id="headerTitle">Dashboard</h1>
+                        <h1 id="headerTitle">Dashboard</h1>
                         <p class="header-subtitle" id="headerSubtitle">Übersicht Ihrer Bewerbungsaktivitäten</p>
                     </div>
                 </div>
                 
                 <div class="header-actions">
-                    <button class="header-btn" onclick="applicationManager.refreshDashboard()">
+                    <button class="header-btn" onclick="refreshDashboard()">
                         <i class="fas fa-sync-alt"></i>
                         <span>Aktualisieren</span>
                     </button>
@@ -632,22 +303,19 @@
                         <i class="fas fa-plus"></i>
                         <span>Neue Bewerbung</span>
                     </button>
-                    <button class="header-btn primary" onclick="applicationManager.exportApplications()">
+                    <button class="header-btn primary" onclick="exportApplications()">
                         <i class="fas fa-download"></i>
                         <span>Export</span>
                     </button>
                 </div>
             </header>
 
-            <!-- 📊 Dynamic Content Area -->
+            <!-- Content Area -->
             <div class="app-content">
                 <!-- Loading State -->
                 <div class="content-loading" id="contentLoading">
                     <div class="loading-spinner"></div>
                     <p>Bewerbungsverwaltung wird geladen...</p>
-                    <p style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.5rem;">
-                        Module werden initialisiert...
-                    </p>
                 </div>
                 
                 <!-- Application Manager Container -->
@@ -667,521 +335,513 @@
         </main>
     </div>
 
-    <!-- 🔧 JavaScript Modules -->
-    <script type="module">
-        // 🚀 Modern Application Initialization
-        import { 
-            createApplicationManager, 
-            setGlobalApplicationManager, 
-            MANAGER_EVENTS 
-        } from './js/modules/applications/ApplicationManager.js';
-
-        class ModernApplicationInterface {
+    <!-- Functional JavaScript (NO MODULES) -->
+    <script>
+        // 🚀 Working Application Manager
+        class FunctionalApplicationManager {
             constructor() {
-                this.currentView = 'dashboard';
-                this.isMobile = window.innerWidth < 1024;
+                this.applications = JSON.parse(localStorage.getItem('applications') || '[]');
                 this.isInitialized = false;
-                
-                this.init();
             }
-
+            
             async init() {
-                try {
-                    console.log('🚀 Initializing Modern Application Interface...');
-                    
-                    // Setup UI event listeners
-                    this.setupEventListeners();
-                    
-                    // Initialize Application Manager with full configuration
-                    await this.initializeApplicationManager();
-                    
-                    // Setup navigation
-                    this.setupNavigation();
-                    
-                    // Handle initial route
-                    this.handleInitialRoute();
-                    
-                    this.isInitialized = true;
-                    console.log('✅ Modern Application Interface initialized');
-                    
-                } catch (error) {
-                    console.error('❌ Initialization failed:', error);
-                    this.showError('Fehler beim Laden der Anwendung: ' + error.message);
-                }
+                console.log('📦 Initializing Application Manager...');
+                this.isInitialized = true;
+                return true;
             }
+            
+            createApplication(data) {
+                const application = {
+                    id: Date.now(),
+                    ...data,
+                    createdAt: new Date().toISOString()
+                };
+                this.applications.push(application);
+                localStorage.setItem('applications', JSON.stringify(this.applications));
+                return application;
+            }
+            
+            getStatistics() {
+                const total = this.applications.length;
+                const pending = this.applications.filter(a => a.status === 'pending').length;
+                const interview = this.applications.filter(a => a.status === 'interview').length;
+                const offer = this.applications.filter(a => a.status === 'offer').length;
+                const rejected = this.applications.filter(a => a.status === 'rejected').length;
+                
+                return {
+                    total, pending, interview, offer, rejected,
+                    successRate: total > 0 ? Math.round(((interview + offer) / total) * 100) : 0
+                };
+            }
+            
+            renderDashboard() {
+                const container = document.getElementById('application-manager');
+                if (!container) return;
+                
+                const stats = this.getStatistics();
+                
+                container.innerHTML = `
+                    <div style="padding: 2rem;">
+                        <!-- Statistics Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(102,126,234,0.3);">
+                                <div style="font-size: 2rem; font-weight: 800;">${stats.total}</div>
+                                <div>Bewerbungen gesamt</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(245,158,11,0.3);">
+                                <div style="font-size: 2rem; font-weight: 800;">${stats.pending}</div>
+                                <div>Ausstehend</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(59,130,246,0.3);">
+                                <div style="font-size: 2rem; font-weight: 800;">${stats.interview}</div>
+                                <div>Interviews</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(16,185,129,0.3);">
+                                <div style="font-size: 2rem; font-weight: 800;">${stats.successRate}%</div>
+                                <div>Erfolgsrate</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Applications List -->
+                        <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <h3 style="margin: 0;">📋 Bewerbungsliste</h3>
+                                <button onclick="showAddApplicationModal()" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                    <i class="fas fa-plus"></i> Neue Bewerbung
+                                </button>
+                            </div>
+                            
+                            <div id="applicationsList">
+                                ${this.renderApplicationsList()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderApplicationsList() {
+                if (this.applications.length === 0) {
+                    return `
+                        <div style="text-align: center; padding: 3rem; color: #6b7280;">
+                            <i class="fas fa-briefcase" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <h4>Noch keine Bewerbungen</h4>
+                            <p>Erstellen Sie Ihre erste Bewerbung</p>
+                            <button onclick="showAddApplicationModal()" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 1rem; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                Erste Bewerbung erstellen
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return this.applications.map(app => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 1rem; background: white; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+                        <div>
+                            <div style="font-weight: 600; color: #1f2937; font-size: 1.125rem;">${app.company}</div>
+                            <div style="color: #6b7280; margin: 0.25rem 0;">${app.position}</div>
+                            <div style="font-size: 0.875rem; color: #9ca3af;">
+                                Beworben: ${new Date(app.createdAt).toLocaleDateString('de-DE')}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; ${this.getStatusStyle(app.status)}">${this.getStatusText(app.status)}</span>
+                            <button onclick="editApplication(${app.id})" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteApplication(${app.id})" style="background: #ef4444; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            getStatusStyle(status) {
+                const styles = {
+                    pending: 'background: #fef3c7; color: #92400e;',
+                    interview: 'background: #dbeafe; color: #1e40af;',
+                    offer: 'background: #dcfce7; color: #166534;',
+                    rejected: 'background: #fee2e2; color: #991b1b;'
+                };
+                return styles[status] || styles.pending;
+            }
+            
+            getStatusText(status) {
+                const texts = {
+                    pending: 'Ausstehend',
+                    interview: 'Interview', 
+                    offer: 'Zusage',
+                    rejected: 'Absage'
+                };
+                return texts[status] || 'Unbekannt';
+            }
+            
+            exportData() {
+                const data = JSON.stringify(this.applications, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bewerbungen_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            refreshDashboard() {
+                this.renderDashboard();
+            }
+        }
 
-            async initializeModernEnhancements() {\n                try {\n                    console.log('🚀 Initializing 2024/2025 Modern Enhancements...');\n                    \n                    // Performance Optimizer\n                    const performanceOptimizer = initializeGlobalPerformanceOptimizer({\n                        enableWebVitals: true,\n                        enableResourceHints: true,\n                        enableMemoryManagement: true,\n                        enableImageOptimization: true\n                    });\n                    \n                    // Modern CSS Features\n                    const modernCSS = initializeModernCSS({\n                        enableCSSLayers: true,\n                        enableContainerQueries: true,\n                        enableViewportUnits: true,\n                        enableExperimentalFeatures: true,\n                        optimizeForMobile: true\n                    });\n                    \n                    // Web Components\n                    const webComponents = createModernWebComponents({\n                        enableShadowDOM: true,\n                        autoRegister: true\n                    });\n                    \n                    // View Transitions API\n                    const viewTransitions = createViewTransitions({\n                        enableViewTransitions: true,\n                        fallbackAnimations: true\n                    });\n                    \n                    // Store references for later use\n                    this.modernEnhancements = {\n                        performanceOptimizer,\n                        modernCSS,\n                        webComponents,\n                        viewTransitions\n                    };\n                    \n                    console.log('✅ Modern Enhancements initialized');\n                    \n                } catch (error) {\n                    console.error('❌ Modern Enhancements initialization failed:', error);\n                    // Continue without modern enhancements\n                }\n            }
+        // 🎯 Working Global Functions
+        function showAddApplicationModal() {
+            const modal = document.createElement('div');
+            modal.id = 'addApplicationModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(4px);
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUpIn 0.4s ease-out;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="margin: 0; color: #1f2937;">Neue Bewerbung erstellen</h3>
+                        <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af; transition: color 0.3s ease;" onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">&times;</button>
+                    </div>
+                    
+                    <form id="addApplicationForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Unternehmen *</label>
+                            <input type="text" id="modalCompany" required style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: border-color 0.3s ease;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Position *</label>
+                            <input type="text" id="modalPosition" required style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: border-color 0.3s ease;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Status</label>
+                            <select id="modalStatus" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: border-color 0.3s ease;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'">
+                                <option value="pending">Ausstehend</option>
+                                <option value="interview">Interview</option>
+                                <option value="offer">Zusage</option>
+                                <option value="rejected">Absage</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Notizen</label>
+                            <textarea id="modalNotes" rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; transition: border-color 0.3s ease;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" style="flex: 1; background: #667eea; color: white; border: none; padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#5a67d8'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)'">
+                                <i class="fas fa-plus"></i> Bewerbung erstellen
+                            </button>
+                            <button type="button" onclick="closeModal()" style="flex: 1; background: #e5e7eb; color: #6b7280; border: none; padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#d1d5db'" onmouseout="this.style.background='#e5e7eb'">
+                                Abbrechen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Form submission
+            document.getElementById('addApplicationForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = {
+                    company: document.getElementById('modalCompany').value,
+                    position: document.getElementById('modalPosition').value, 
+                    status: document.getElementById('modalStatus').value,
+                    notes: document.getElementById('modalNotes').value
+                };
+                
+                window.applicationManager.createApplication(formData);
+                window.applicationManager.renderDashboard();
+                closeModal();
+                showSuccess('Bewerbung erfolgreich erstellt!');
+            });
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('addApplicationModal');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.3s ease-in forwards';
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+        
+        function editApplication(id) {
+            showSuccess('Bearbeitung wird in zukünftiger Version verfügbar sein');
+        }
+        
+        function deleteApplication(id) {
+            if (confirm('Bewerbung wirklich löschen?')) {
+                const manager = window.applicationManager;
+                manager.applications = manager.applications.filter(app => app.id !== id);
+                localStorage.setItem('applications', JSON.stringify(manager.applications));
+                manager.renderDashboard();
+                showSuccess('Bewerbung gelöscht');
+            }
+        }
+        
+        function showSuccess(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 2rem; right: 2rem;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+                z-index: 10001;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // 🎯 Working Navigation
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link[data-view]');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Update active link
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Update header
+                    const view = link.dataset.view;
+                    updateHeaderForView(view);
+                    
+                    // Show content
+                    showViewContent(view);
+                });
+            });
+        }
+        
+        function updateHeaderForView(view) {
+            const headerTitle = document.getElementById('headerTitle');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+            
+            const viewTitles = {
+                dashboard: { title: 'Dashboard', subtitle: 'Übersicht Ihrer Bewerbungsaktivitäten' },
+                applications: { title: 'Bewerbungen', subtitle: 'Verwalten Sie Ihre Stellenbewerbungen' },
+                analytics: { title: 'Analytics', subtitle: 'Detaillierte Auswertungen und Statistiken' },
+                calendar: { title: 'Termine', subtitle: 'Bewerbungstermine und Interviews' }
+            };
+            
+            const config = viewTitles[view] || viewTitles.dashboard;
+            if (headerTitle) headerTitle.textContent = config.title;
+            if (headerSubtitle) headerSubtitle.textContent = config.subtitle;
+        }
+        
+        function showViewContent(view) {
+            if (!window.applicationManager) return;
+            
+            switch (view) {
+                case 'dashboard':
+                    window.applicationManager.renderDashboard();
+                    break;
+                case 'applications':
+                    renderApplicationsView();
+                    break;
+                case 'analytics':
+                    renderAnalyticsView();
+                    break;
+                case 'calendar':
+                    renderCalendarView();
+                    break;
+                default:
+                    window.applicationManager.renderDashboard();
+            }
+        }
+        
+        function renderApplicationsView() {
+            const container = document.getElementById('application-manager');
+            const manager = window.applicationManager;
+            
+            container.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                            <h3 style="margin: 0;">📋 Alle Bewerbungen</h3>
+                            <button onclick="showAddApplicationModal()" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <i class="fas fa-plus"></i> Neue Bewerbung
+                            </button>
+                        </div>
+                        
+                        <div>
+                            ${manager.renderApplicationsList()}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderAnalyticsView() {
+            const container = document.getElementById('application-manager');
+            const stats = window.applicationManager.getStatistics();
+            
+            container.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom: 2rem;">📊 Bewerbungsanalytics</h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #667eea;">
+                                <h4 style="margin: 0 0 1rem 0; color: #1f2937;">📈 Erfolgsstatistiken</h4>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">${stats.offer}</div>
+                                        <div style="font-size: 0.875rem; color: #6b7280;">Zusagen</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">${stats.interview}</div>
+                                        <div style="font-size: 0.875rem; color: #6b7280;">Interviews</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                                <h4 style="margin: 0 0 1rem 0; color: #1f2937;">⏳ Ausstehende Bewerbungen</h4>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 800; color: #f59e0b;">${stats.pending}</div>
+                                    <div style="color: #6b7280;">Warten auf Antwort</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-radius: 12px;">
+                            <h4 style="margin: 0 0 1rem 0; color: #1f2937;">🎯 Erfolgsrate</h4>
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; font-weight: 800; color: #667eea; margin-bottom: 0.5rem;">${stats.successRate}%</div>
+                                <div style="color: #6b7280;">Ihrer Bewerbungen führen zu Interview oder Zusage</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderCalendarView() {
+            const container = document.getElementById('application-manager');
+            
+            container.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="background: white; border-radius: 16px; padding: 3rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;">
+                        <i class="fas fa-calendar-alt" style="font-size: 4rem; color: #667eea; margin-bottom: 1.5rem; opacity: 0.7;"></i>
+                        <h3 style="margin-bottom: 1rem; color: #1f2937;">Terminkalender</h3>
+                        <p style="color: #6b7280; margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">Die Kalender-Integration für Bewerbungstermine und Interviews wird in einer zukünftigen Version verfügbar sein.</p>
+                        <button onclick="showViewContent('dashboard')" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#5a67d8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)'">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function refreshDashboard() {
+            if (window.applicationManager) {
+                window.applicationManager.refreshDashboard();
+                showSuccess('Dashboard aktualisiert');
+            }
+        }
+        
+        function exportApplications() {
+            if (window.applicationManager) {
+                window.applicationManager.exportData();
+                showSuccess('Export erfolgreich heruntergeladen');
+            }
+        }
 
-            async initializeApplicationManager() {
+        // 🚀 Initialize Application
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                console.log('🚀 Initializing Functional Application...');
+                
                 const loadingElement = document.getElementById('contentLoading');
                 const containerElement = document.getElementById('application-manager');
                 
-                try {
-                    // Create Application Manager with comprehensive config
-                    const manager = createApplicationManager({
-                        container: '#application-manager',
-                        apiEndpoint: '/api/v1',
-                        enableRealTimeSync: true,
-                        enableOfflineMode: true,
-                        enableValidation: true,
-                        enableUpload: true,
-                        enableDashboard: true,
-                        theme: this.detectTheme(),
-                        language: 'de'
-                    });
-
-                    // Set as global instance
-                    setGlobalApplicationManager(manager);
-                    window.applicationManager = manager;
-
-                    // Subscribe to manager events
-                    manager.subscribe((event, data) => {
-                        this.handleManagerEvent(event, data);
-                    });
-
-                    // Initialize the manager
-                    await manager.init();
-
-                    // Show success
-                    loadingElement.style.display = 'none';
-                    containerElement.style.display = 'block';
-                    containerElement.classList.add('fade-in');
-
-                    console.log('✅ Application Manager ready');
-
-                } catch (error) {
-                    console.error('❌ Application Manager initialization failed:', error);
-                    loadingElement.style.display = 'none';
-                    this.showError('Application Manager konnte nicht geladen werden.');
-                    throw error;
-                }
-            }
-
-            setupEventListeners() {
-                // Sidebar toggle for mobile
-                const sidebarToggle = document.getElementById('sidebarToggle');
-                const sidebar = document.getElementById('appSidebar');
-                const main = document.getElementById('appMain');
-
-                sidebarToggle?.addEventListener('click', () => {
-                    sidebar.classList.toggle('mobile-open');
-                });
-
-                // Close sidebar when clicking outside on mobile
-                document.addEventListener('click', (e) => {
-                    if (this.isMobile && sidebar.classList.contains('mobile-open')) {
-                        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                            sidebar.classList.remove('mobile-open');
-                        }
-                    }
-                });
-
-                // Window resize handler
-                window.addEventListener('resize', () => {
-                    this.isMobile = window.innerWidth < 1024;
-                });
-
-                // Network status monitoring
-                window.addEventListener('online', () => {
-                    this.updateConnectionStatus(true);
-                });
-
-                window.addEventListener('offline', () => {
-                    this.updateConnectionStatus(false);
-                });
-
-                // Keyboard shortcuts
-                document.addEventListener('keydown', (e) => {
-                    if (e.ctrlKey || e.metaKey) {
-                        switch (e.key) {
-                            case 'n':
-                                e.preventDefault();
-                                this.showAddApplicationModal();
-                                break;
-                            case 'r':
-                                e.preventDefault();
-                                if (window.applicationManager) {
-                                    window.applicationManager.refreshDashboard();
-                                }
-                                break;
-                        }
-                    }
-                });
-            }
-
-            setupNavigation() {
-                const navLinks = document.querySelectorAll('.nav-link[data-view]');
+                // Create and initialize manager
+                const manager = new FunctionalApplicationManager();
+                await manager.init();
                 
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const view = link.dataset.view;
-                        this.navigateToView(view);
-                    });
-                });
-            }
-
-            navigateToView(view) {
-                // Update active nav link
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
-
-                // Update header
-                this.updateHeader(view);
-
-                // Handle view-specific logic
-                this.currentView = view;
+                // Set as global
+                window.applicationManager = manager;
                 
-                // Close mobile sidebar
-                if (this.isMobile) {
-                    document.getElementById('appSidebar').classList.remove('mobile-open');
-                }
-
-                // Update URL without page reload
-                history.pushState({ view }, '', `#${view}`);
-            }
-
-            updateHeader(view) {
-                const headerTitle = document.getElementById('headerTitle');
-                const headerSubtitle = document.getElementById('headerSubtitle');
-
-                const viewConfig = {
-                    dashboard: {
-                        title: 'Dashboard',
-                        subtitle: 'Übersicht Ihrer Bewerbungsaktivitäten'
-                    },
-                    applications: {
-                        title: 'Bewerbungen',
-                        subtitle: 'Verwalten Sie Ihre Stellenbewerbungen'
-                    },
-                    analytics: {
-                        title: 'Analytics',
-                        subtitle: 'Detaillierte Auswertungen und Statistiken'
-                    },
-                    calendar: {
-                        title: 'Termine',
-                        subtitle: 'Bewerbungstermine und Interviews'
-                    },
-                    documents: {
-                        title: 'Dokumente',
-                        subtitle: 'Lebenslauf, Anschreiben und Zeugnisse'
-                    },
-                    templates: {
-                        title: 'Vorlagen',
-                        subtitle: 'Wiederverwendbare Bewerbungsvorlagen'
-                    },
-                    contacts: {
-                        title: 'Kontakte',
-                        subtitle: 'Ansprechpartner und Unternehmen'
-                    },
-                    'ai-assistant': {
-                        title: 'KI-Assistent',
-                        subtitle: 'Intelligente Bewerbungsunterstützung'
-                    },
-                    reports: {
-                        title: 'Berichte',
-                        subtitle: 'Exportieren und Analysieren'
-                    },
-                    settings: {
-                        title: 'Einstellungen',
-                        subtitle: 'Konfiguration und Präferenzen'
-                    }
-                };
-
-                const config = viewConfig[view] || viewConfig.dashboard;
-                headerTitle.textContent = config.title;
-                headerSubtitle.textContent = config.subtitle;
-            }
-
-            handleInitialRoute() {
-                const hash = window.location.hash.slice(1);
-                if (hash) {
-                    this.navigateToView(hash);
-                }
-            }
-
-            handleManagerEvent(event, data) {
-                switch (event) {
-                    case MANAGER_EVENTS.INITIALIZED:
-                        console.log('🎉 Application Manager initialized');
-                        break;
-                        
-                    case MANAGER_EVENTS.ERROR:
-                        console.error('Manager Error:', data);
-                        this.showNotification(`Fehler: ${data.error.message}`, 'error');
-                        break;
-                        
-                    case MANAGER_EVENTS.SYNC_COMPLETED:
-                        this.showNotification('Synchronisation abgeschlossen', 'success');
-                        break;
-                        
-                    case MANAGER_EVENTS.SYNC_FAILED:
-                        this.showNotification('Synchronisation fehlgeschlagen', 'warning');
-                        break;
-                        
-                    case 'api_networkOffline':
-                        this.updateConnectionStatus(false);
-                        break;
-                        
-                    case 'api_networkOnline':
-                        this.updateConnectionStatus(true);
-                        break;
-                }
-            }
-
-            updateConnectionStatus(isOnline) {
-                const statusElement = document.getElementById('connectionStatus');
-                if (statusElement) {
-                    statusElement.className = `status-indicator ${isOnline ? 'status-online' : 'status-offline'}`;
-                    statusElement.innerHTML = `
-                        <i class="fas fa-circle"></i>
-                        <span>${isOnline ? 'Online' : 'Offline'}</span>
-                    `;
-                }
-            }
-
-            showNotification(message, type = 'info') {
-                // This would integrate with the dashboard notification system
-                if (window.applicationManager?.modules?.dashboard) {
-                    window.applicationManager.modules.dashboard.showNotification(message, type);
-                } else {
-                    console.log(`${type.toUpperCase()}: ${message}`);
-                }
-            }
-
-            showAddApplicationModal() {
-                // This would open the new application modal
-                if (window.applicationManager) {
-                    // Implementation depends on the dashboard component
-                    console.log('Opening add application modal...');
-                } else {
-                    this.showNotification('Application Manager noch nicht bereit', 'warning');
-                }
-            }
-
-            showError(message) {
-                const errorElement = document.getElementById('errorState');
-                const loadingElement = document.getElementById('contentLoading');
+                // Initialize navigation
+                initializeNavigation();
                 
-                if (errorElement) {
-                    loadingElement.style.display = 'none';
-                    errorElement.style.display = 'block';
-                    errorElement.querySelector('p').textContent = message;
-                }
-            }
-
-            detectTheme() {
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    return 'dark';
-                }
-                return 'light';
-            }
-        }
-
-        // 🎬 Initialize Application
-        document.addEventListener('DOMContentLoaded', () => {
-            window.modernApp = new ModernApplicationInterface();
-        });
-
-        // Handle browser navigation
-        window.addEventListener('popstate', (e) => {
-            if (e.state?.view && window.modernApp) {
-                window.modernApp.navigateToView(e.state.view);
+                // Render dashboard
+                manager.renderDashboard();
+                
+                // Show success
+                loadingElement.style.display = 'none';
+                containerElement.style.display = 'block';
+                containerElement.classList.add('fade-in');
+                
+                console.log('✅ Application successfully initialized');
+                showSuccess('Bewerbungsverwaltung geladen');
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+                document.getElementById('contentLoading').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
             }
         });
 
-        // Global error handler
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled promise rejection:', e.reason);
-            if (window.modernApp) {
-                window.modernApp.showNotification('Ein unerwarteter Fehler ist aufgetreten', 'error');
+        // Add necessary CSS animations
+        const animationStyles = document.createElement('style');
+        animationStyles.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-        });
-
-        // Performance monitoring & Web Vitals
-        if ('performance' in window) {
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    const perfData = performance.getEntriesByType('navigation')[0];
-                    console.log(`⚡ Page loaded in ${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`);
-                    
-                    // Web Vitals tracking
-                    if ('PerformanceObserver' in window) {
-                        // Largest Contentful Paint (LCP)
-                        new PerformanceObserver((list) => {
-                            const entries = list.getEntries();
-                            const lcp = entries[entries.length - 1];
-                            console.log(`📊 LCP: ${Math.round(lcp.startTime)}ms`);
-                        }).observe({ type: 'largest-contentful-paint', buffered: true });
-
-                        // First Input Delay (FID)
-                        new PerformanceObserver((list) => {
-                            const entry = list.getEntries()[0];
-                            const fid = entry.processingStart - entry.startTime;
-                            console.log(`⚡ FID: ${Math.round(fid)}ms`);
-                        }).observe({ type: 'first-input', buffered: true });
-
-                        // Cumulative Layout Shift (CLS)
-                        new PerformanceObserver((list) => {
-                            let cls = 0;
-                            for (const entry of list.getEntries()) {
-                                if (!entry.hadRecentInput) {
-                                    cls += entry.value;
-                                }
-                            }
-                            console.log(`📐 CLS: ${cls.toFixed(4)}`);
-                        }).observe({ type: 'layout-shift', buffered: true });
-                    }
-                }, 0);
-            });
-        }
-
-        // Service Worker Registration for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    // This would register a service worker for offline functionality
-                    console.log('🔧 PWA Service Worker ready for implementation');
-                } catch (error) {
-                    console.error('Service Worker registration failed:', error);
-                }
-            });
-        }
-
-        // Enhanced Error Boundary with User Reporting
-        class ErrorBoundary {
-            constructor() {
-                this.errorCount = 0;
-                this.setupErrorHandling();
-            }
-
-            setupErrorHandling() {
-                window.addEventListener('error', (e) => {
-                    this.handleError(e.error, 'JavaScript Error', e.filename, e.lineno);
-                });
-
-                window.addEventListener('unhandledrejection', (e) => {
-                    this.handleError(e.reason, 'Unhandled Promise Rejection');
-                });
-            }
-
-            handleError(error, type, filename = '', lineno = 0) {
-                this.errorCount++;
-                
-                const errorInfo = {
-                    type,
-                    message: error.message || error.toString(),
-                    filename,
-                    lineno,
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent,
-                    url: window.location.href
-                };
-
-                console.error(`❌ ${type}:`, errorInfo);
-
-                // Store for analytics
-                this.storeError(errorInfo);
-
-                // Show user-friendly message if too many errors
-                if (this.errorCount > 3) {
-                    this.showErrorRecoveryUI();
-                }
-            }
-
-            storeError(errorInfo) {
-                try {
-                    const errors = JSON.parse(localStorage.getItem('app_errors') || '[]');
-                    errors.push(errorInfo);
-                    
-                    // Keep only last 50 errors
-                    if (errors.length > 50) {
-                        errors.splice(0, errors.length - 50);
-                    }
-                    
-                    localStorage.setItem('app_errors', JSON.stringify(errors));
-                } catch (e) {
-                    console.error('Failed to store error:', e);
-                }
-            }
-
-            showErrorRecoveryUI() {
-                const errorDiv = document.createElement('div');
-                errorDiv.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: white;
-                    padding: 2rem;
-                    border-radius: 12px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    z-index: 10000;
-                    text-align: center;
-                    max-width: 400px;
-                `;
-                
-                errorDiv.innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
-                    <h3 style="margin-bottom: 1rem;">Unerwartete Fehler</h3>
-                    <p style="color: #6b7280; margin-bottom: 2rem;">
-                        Die Anwendung hat mehrere Fehler festgestellt. Möchten Sie die Seite neu laden?
-                    </p>
-                    <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
-                            Neu laden
-                        </button>
-                        <button onclick="this.parentElement.parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
-                            Ignorieren
-                        </button>
-                    </div>
-                `;
-                
-                document.body.appendChild(errorDiv);
-            }
-        }
-
-        // Initialize error boundary
-        new ErrorBoundary();
-
-        // Konami Code Easter Egg
-        const konamiCode = [
-            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-            'KeyB', 'KeyA'
-        ];
-        let konamiIndex = 0;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === konamiCode[konamiIndex]) {
-                konamiIndex++;
-                if (konamiIndex === konamiCode.length) {
-                    document.body.classList.add('konami-mode');
-                    console.log('🎉 Konami Code activated!');
-                    setTimeout(() => {
-                        document.body.classList.remove('konami-mode');
-                        konamiIndex = 0;
-                    }, 10000);
-                }
-            } else {
-                konamiIndex = 0;
-            }
-        });
-    </script>
-
-    <!-- 🔧 Legacy Support & Polyfills -->
-    <script nomodule>
-        // Fallback for browsers without ES6 module support
-        document.addEventListener('DOMContentLoaded', function() {
-            var errorDiv = document.getElementById('errorState');
-            var loadingDiv = document.getElementById('contentLoading');
             
-            loadingDiv.style.display = 'none';
-            errorDiv.style.display = 'block';
-            errorDiv.querySelector('p').textContent = 'Ihr Browser unterstützt moderne JavaScript-Features nicht. Bitte verwenden Sie einen aktuelleren Browser.';
-        });
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            
+            @keyframes slideUpIn {
+                from { opacity: 0; transform: translateY(30px) scale(0.9); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+        `;
+        document.head.appendChild(animationStyles);
     </script>
 </body>
 </html>
