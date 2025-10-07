@@ -488,40 +488,133 @@
     
     <!-- Backup: Static Script Loading für Zuverlässigkeit -->
     <!-- MODULARER WORKFLOW LOADER - Lädt alle Step-Module automatisch -->
-    <script src="js/workflow-steps/workflow-loader.js"></script>
+    <script src="js/workflow-steps/workflow-loader.js" async></script>
     
     <script>
         // Global flag to track workflow status
         window.workflowStarted = false;
         
+        // Wait for modules to load before allowing workflow start
+        let modulesReady = false;
+        let moduleCheckInterval;
+        
+        function checkModulesReady() {
+            const requiredFunctions = [
+                'window.generateStep0',
+                'window.generateStep1', 
+                'window.nextWorkflowStep',
+                'window.startSmartBewerbungsWorkflow'
+            ];
+            
+            const allReady = requiredFunctions.every(func => {
+                const parts = func.split('.');
+                let obj = window;
+                for (let part of parts) {
+                    if (typeof obj[part] === 'undefined') return false;
+                    obj = obj[part];
+                }
+                return typeof obj === 'function';
+            });
+            
+            if (allReady) {
+                modulesReady = true;
+                clearInterval(moduleCheckInterval);
+                console.log('✅ Alle Workflow-Module sind bereit!');
+            }
+        }
+        
+        // Check every 100ms for module readiness
+        moduleCheckInterval = setInterval(checkModulesReady, 100);
+        
+        // Stop checking after 10 seconds
+        setTimeout(() => {
+            clearInterval(moduleCheckInterval);
+            if (!modulesReady) {
+                console.warn('⚠️ Module-Loading Timeout - Workflow möglicherweise nicht vollständig funktionsfähig');
+                console.log('🔍 Verfügbare Funktionen:', {
+                    generateStep0: typeof window.generateStep0,
+                    generateStep1: typeof window.generateStep1,
+                    nextWorkflowStep: typeof window.nextWorkflowStep,
+                    showSmartWorkflowModal: typeof window.showSmartWorkflowModal
+                });
+            }
+        }, 10000);
+        
+        // Debug-Funktion für manuelle Prüfung
+        window.debugWorkflowModules = function() {
+            console.log('🔍 WORKFLOW MODULE DEBUG:');
+            console.log('├── generateStep0:', typeof window.generateStep0);
+            console.log('├── generateStep1:', typeof window.generateStep1);
+            console.log('├── nextWorkflowStep:', typeof window.nextWorkflowStep);
+            console.log('├── showSmartWorkflowModal:', typeof window.showSmartWorkflowModal);
+            console.log('├── modulesReady:', modulesReady);
+            console.log('└── workflowData:', window.workflowData);
+        };
+        
         // FUNKTIONIERENDE DIREKTE WORKFLOW-START FUNKTION 
         function direktWorkflowStarten() {
             console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
+            
+            if (!modulesReady) {
+                console.log('⏳ Warte auf Module...');
+                const waitForModules = () => {
+                    if (modulesReady) {
+                        startWorkflowNow();
+                    } else {
+                        setTimeout(waitForModules, 100);
+                    }
+                };
+                waitForModules();
+                return;
+            }
+            
+            startWorkflowNow();
+        }
+        
+        function startWorkflowNow() {
+            console.log('🎯 Starte Workflow jetzt...');
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
             if (loadingSection) loadingSection.classList.remove('active');
             
-            // Sofort Modal anzeigen und Workflow starten
-            if (typeof window.showSmartWorkflowModal === 'function') {
+            // Prüfe alle benötigten Funktionen
+            const requiredFunctions = [
+                'window.showSmartWorkflowModal',
+                'window.generateStep0',
+                'window.nextWorkflowStep'
+            ];
+            
+            const missingFunctions = requiredFunctions.filter(func => {
+                const parts = func.split('.');
+                let obj = window;
+                for (let part of parts) {
+                    if (typeof obj[part] === 'undefined') return true;
+                    obj = obj[part];
+                }
+                return typeof obj !== 'function';
+            });
+            
+            if (missingFunctions.length > 0) {
+                console.error('❌ Fehlende Funktionen:', missingFunctions);
+                alert('❌ Workflow-Module nicht vollständig geladen. Bitte Seite neu laden.');
+                return;
+            }
+            
+            try {
+                // Zeige Modal
                 const modal = window.showSmartWorkflowModal();
+                console.log('✅ Modal angezeigt');
                 
-                // Warte kurz und starte dann Step 0
+                // Starte Step 0
                 setTimeout(() => {
-                    if (typeof window.generateStep0 === 'function') {
-                        const content = window.generateStep0();
-                        const workflowContent = document.getElementById('workflowContent');
-                        if (workflowContent) {
-                            workflowContent.innerHTML = content;
-                        }
-                    }
-                }, 100);
+                    console.log('🚀 Starte Step 0...');
+                    window.nextWorkflowStep(0);
+                }, 200);
                 
-            } else {
-                // Fallback - warte auf Module
-                setTimeout(() => {
-                    direktWorkflowStarten();
-                }, 300);
+            } catch (error) {
+                console.error('❌ Fehler beim Starten:', error);
+                alert('❌ Fehler beim Starten des Workflows: ' + error.message);
             }
         }
         

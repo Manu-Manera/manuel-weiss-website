@@ -116,37 +116,76 @@ class WorkflowModuleLoader {
             // Route to appropriate step generator
             switch(step) {
                 case 0:
-                    content = window.generateStep0(); // Application type selection
+                    if (typeof window.generateStep0 === 'function') {
+                        content = window.generateStep0(); // Application type selection
+                    } else {
+                        console.error('❌ generateStep0 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 0 Modul nicht geladen</div>';
+                    }
                     break;
                 case 1:
-                    content = window.generateStep1();
+                    if (typeof window.generateStep1 === 'function') {
+                        content = window.generateStep1();
+                    } else {
+                        console.error('❌ generateStep1 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 1 Modul nicht geladen</div>';
+                    }
                     break;
                 case 2:
-                    content = window.generateStep2();
+                    if (typeof window.generateStep2 === 'function') {
+                        content = window.generateStep2();
+                    } else {
+                        console.error('❌ generateStep2 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 2 Modul nicht geladen</div>';
+                    }
                     break;
                 case 3:
-                    content = window.generateStep3();
-                    // Initialize greeting and closing options
-                    setTimeout(() => {
-                        if (typeof initializeGreetingOptions === 'function') {
-                            initializeGreetingOptions();
-                        }
-                        if (typeof initializeClosingOptions === 'function') {
-                            initializeClosingOptions();
-                        }
-                    }, 100);
+                    if (typeof window.generateStep3 === 'function') {
+                        content = window.generateStep3();
+                        // Initialize greeting and closing options
+                        setTimeout(() => {
+                            if (typeof initializeGreetingOptions === 'function') {
+                                initializeGreetingOptions();
+                            }
+                            if (typeof initializeClosingOptions === 'function') {
+                                initializeClosingOptions();
+                            }
+                        }, 100);
+                    } else {
+                        console.error('❌ generateStep3 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 3 Modul nicht geladen</div>';
+                    }
                     break;
                 case 4:
-                    content = window.generateStep4();
+                    if (typeof window.generateStep4 === 'function') {
+                        content = window.generateStep4();
+                    } else {
+                        console.error('❌ generateStep4 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 4 Modul nicht geladen</div>';
+                    }
                     break;
                 case 5:
-                    content = window.generateStep5();
+                    if (typeof window.generateStep5 === 'function') {
+                        content = window.generateStep5();
+                    } else {
+                        console.error('❌ generateStep5 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 5 Modul nicht geladen</div>';
+                    }
                     break;
                 case 6:
-                    content = window.generateStep6();
+                    if (typeof window.generateStep6 === 'function') {
+                        content = window.generateStep6();
+                    } else {
+                        console.error('❌ generateStep6 nicht verfügbar');
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Step 6 Modul nicht geladen</div>';
+                    }
                     break;
                 default:
-                    content = window.generateStep1();
+                    if (typeof window.generateStep1 === 'function') {
+                        content = window.generateStep1();
+                    } else {
+                        content = '<div style="text-align: center; padding: 2rem; color: #ef4444;">❌ Workflow-Module nicht geladen</div>';
+                    }
             }
             
             contentDiv.innerHTML = content;
