@@ -116,10 +116,10 @@ class WorkflowModuleLoader {
             // Route to appropriate step generator
             switch(step) {
                 case 0:
-                    content = generateStep0(); // Application type selection
+                    content = window.generateStep0(); // Application type selection
                     break;
                 case 1:
-                    content = generateStep1();
+                    content = window.generateStep1();
                     break;
                 case 2:
                     content = window.generateStep2();
@@ -137,16 +137,16 @@ class WorkflowModuleLoader {
                     }, 100);
                     break;
                 case 4:
-                    content = generateStep4();
+                    content = window.generateStep4();
                     break;
                 case 5:
-                    content = generateStep5();
+                    content = window.generateStep5();
                     break;
                 case 6:
-                    content = generateStep6();
+                    content = window.generateStep6();
                     break;
                 default:
-                    content = generateStep1();
+                    content = window.generateStep1();
             }
             
             contentDiv.innerHTML = content;
