@@ -5114,29 +5114,85 @@ Bitte analysiere und gib eine JSON-Antwort zurück mit:
 // Initialize AI Analyzer with Admin Panel Integration
 window.realAI = new RealAIAnalyzer();
 
-// Enhance RealAIAnalyzer with automatic Admin Panel integration
-if (window.adminPanelIntegration) {
-    // Override getApiKey method to use Admin Panel Integration
-    window.realAI.getApiKey = function() {
-        return window.adminPanelIntegration.getApiKey();
-    };
-    
-    // Add listener for API Key updates
-    window.adminPanelIntegration.addListener((event, data) => {
-        if (event === 'api_key_available' && window.realAI) {
-            window.realAI.apiKey = data;
-            console.log('🔄 RealAI API Key automatisch aktualisiert');
+// Enhanced initialization with retry logic for Admin Panel Integration
+function initRealAIWithAdminPanel() {
+    if (window.adminPanelIntegration) {
+        // Override getApiKey method to use Admin Panel Integration
+        window.realAI.getApiKey = function() {
+            const apiKey = window.adminPanelIntegration.getApiKey();
+            console.log('🔑 Admin Panel API Key retrieved:', apiKey ? 'verfügbar' : 'nicht verfügbar');
+            return apiKey;
+        };
+        
+        // Update current API key
+        window.realAI.apiKey = window.adminPanelIntegration.getApiKey();
+        
+        // Add listener for API Key updates
+        window.adminPanelIntegration.addListener((event, data) => {
+            if (event === 'api_key_available' && window.realAI) {
+                window.realAI.apiKey = data;
+                console.log('🔄 RealAI API Key automatisch aktualisiert:', data ? data.substring(0, 10) + '...' : 'entfernt');
+            }
+        });
+        
+        console.log('✅ RealAI Analyzer mit Admin Panel Integration verknüpft');
+        return true;
+    } else {
+        console.log('⚠️ Admin Panel Integration noch nicht verfügbar, versuche später...');
+        return false;
+    }
+}
+
+// Try immediate initialization
+if (!initRealAIWithAdminPanel()) {
+    // Retry after a short delay if Admin Panel Integration isn't ready yet
+    setTimeout(() => {
+        if (!initRealAIWithAdminPanel()) {
+            console.warn('⚠️ Admin Panel Integration nach Retry immer noch nicht verfügbar');
+            console.log('💡 RealAI verwendet Fallback localStorage-Zugriff');
         }
-    });
-    
-    console.log('✅ RealAI Analyzer mit Admin Panel Integration verknüpft');
+    }, 1000);
 }
 
 // =================== ECHTE KI-FUNKTIONEN FÜR WORKFLOW ===================
 
+// Debug function for testing AI integration
+window.debugAIIntegration = function() {
+    console.log('🔍 === KI-INTEGRATION DIAGNOSE ===');
+    console.log('Admin Panel Integration:', !!window.adminPanelIntegration);
+    console.log('RealAI Instance:', !!window.realAI);
+    
+    if (window.adminPanelIntegration) {
+        const diagnostics = window.adminPanelIntegration.getDiagnostics();
+        console.table(diagnostics);
+    }
+    
+    if (window.realAI) {
+        console.log('RealAI API Key:', window.realAI.apiKey ? window.realAI.apiKey.substring(0, 10) + '...' : 'nicht verfügbar');
+        console.log('RealAI getApiKey method:', typeof window.realAI.getApiKey);
+        
+        // Test API Key retrieval
+        try {
+            const retrievedKey = window.realAI.getApiKey();
+            console.log('Retrieved API Key:', retrievedKey ? retrievedKey.substring(0, 10) + '...' : 'leer');
+        } catch (error) {
+            console.error('Fehler beim API Key Abruf:', error);
+        }
+    }
+    
+    return {
+        adminPanelIntegration: !!window.adminPanelIntegration,
+        realAI: !!window.realAI,
+        apiKeyAvailable: window.adminPanelIntegration?.isApiKeyAvailable() || false
+    };
+};
+
 // Replace mock analysis functions with real AI calls
 window.startAdvancedAnalysis = async function(mode = 'ai-full') {
     console.log('🚀 Starte echte KI-Analyse...', mode);
+    
+    // Debug information
+    window.debugAIIntegration();
     
     const jobDescription = window.workflowData?.jobDescription || '';
     const company = window.workflowData?.company || '';
@@ -5145,6 +5201,13 @@ window.startAdvancedAnalysis = async function(mode = 'ai-full') {
     if (!jobDescription.trim()) {
         alert('❌ Keine Stellenausschreibung zum Analysieren vorhanden.');
         return;
+    }
+    
+    // Additional API Key check
+    if (!window.realAI.apiKey && window.adminPanelIntegration) {
+        // Force refresh API key
+        window.realAI.apiKey = window.adminPanelIntegration.getApiKey();
+        console.log('🔄 API Key forciert aktualisiert:', window.realAI.apiKey ? 'verfügbar' : 'nicht verfügbar');
     }
     
     // Show loading state
