@@ -15,29 +15,25 @@
 // Siehe: https://mawps.netlify.app/admin#ai-settings
 
 /**
- * Get API Key from existing Admin Panel system (Moderne Integration)
+ * Get API Key from existing Admin Panel system (ECHTE Integration - KEIN FALLBACK)
  */
 function getAdminPanelApiKey() {
-    // Verwende neue Admin Panel Integration falls verfügbar
-    if (window.adminPanelIntegration) {
-        const apiKey = window.adminPanelIntegration.getApiKey();
-        if (!apiKey) {
-            console.warn('⚠️ Kein API Key im Admin Panel Integration System');
-            console.log('👉 Admin Panel: https://mawps.netlify.app/admin#ai-settings');
-        }
-        return apiKey;
-    }
-    
-    // Fallback: Direkte localStorage Abfrage
+    // ECHTE Implementation - direkt aus localStorage wie Admin Panel es speichert
     const apiKey = localStorage.getItem('openai_api_key');
     
     if (!apiKey) {
-        console.warn('⚠️ Kein API Key gefunden (Fallback)');
-        console.log('👉 Bitte konfigurieren Sie den API Key über das Admin Panel:');
-        console.log('   https://mawps.netlify.app/admin#ai-settings');
-        return null;
+        console.error('❌ KRITISCH: Kein API Key gefunden in localStorage');
+        console.error('👉 Admin Panel Key Status:', !!localStorage.getItem('openai_api_key'));
+        console.error('👉 localStorage Keys:', Object.keys(localStorage));
+        throw new Error('API Key nicht verfügbar. Admin Panel Konfiguration erforderlich.');
     }
     
+    if (!apiKey.startsWith('sk-')) {
+        console.error('❌ KRITISCH: API Key Format ungültig:', apiKey.substring(0, 10) + '...');
+        throw new Error('API Key Format ungültig. Muss mit "sk-" beginnen.');
+    }
+    
+    console.log('✅ API Key erfolgreich geladen:', apiKey.substring(0, 10) + '...');
     return apiKey;
 }
 

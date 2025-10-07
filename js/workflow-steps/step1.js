@@ -1,5 +1,343 @@
 // =================== STEP 1: STELLENAUSSCHREIBUNG ANALYSIEREN ===================
 // Modul für Schritt 1 des Smart Bewerbungs-Workflows
+// LIVE-ANALYSE FUNKTIONEN - ECHTE IMPLEMENTIERUNG
+
+// =================== LIVE ANALYSE FUNKTIONEN ===================
+
+// Live Job Description Analysis - HAUPTFUNKTION
+window.analyzeJobDescriptionLive = async function() {
+    console.log('🔍 Starte Live-Analyse der Stellenausschreibung...');
+    
+    const jobDescription = document.getElementById('jobDescriptionInput').value.trim();
+    
+    if (!jobDescription) {
+        alert('⚠️ Bitte fügen Sie zuerst eine Stellenausschreibung ein.');
+        return;
+    }
+    
+    if (jobDescription.length < 100) {
+        alert('⚠️ Die Stellenausschreibung ist zu kurz für eine aussagekräftige Analyse. Bitte fügen Sie mehr Text hinzu.');
+        return;
+    }
+    
+    try {
+        // ECHTE API KEY ÜBERPRÜFUNG - KEIN FALLBACK
+        const apiKey = getAdminPanelApiKey(); // Wirft Fehler wenn nicht verfügbar
+        
+        // Show live analysis panel
+        const liveAnalysisPanel = document.getElementById('liveAnalysisPanel');
+        if (liveAnalysisPanel) {
+            liveAnalysisPanel.style.display = 'block';
+            showLoadingState(liveAnalysisPanel);
+        }
+        
+        // ECHTE KI-ANALYSE
+        const analysis = await performLiveJobAnalysis(jobDescription, apiKey);
+        
+        // Display results
+        displayLiveAnalysisResults(analysis, liveAnalysisPanel);
+        
+        console.log('✅ Live-Analyse erfolgreich abgeschlossen');
+        
+    } catch (error) {
+        console.error('❌ Fehler bei Live-Analyse:', error);
+        alert('❌ FEHLER: ' + error.message);
+    }
+};
+
+// Perform live job analysis using DIRECT OpenAI API
+async function performLiveJobAnalysis(jobDescription, apiKey) {
+    console.log('🤖 Starte OpenAI API Aufruf...');
+    
+    const prompt = `Analysiere diese Stellenausschreibung und extrahiere die wichtigsten Anforderungen:
+
+STELLENAUSSCHREIBUNG:
+${jobDescription}
+
+Bitte gib eine strukturierte JSON-Antwort zurück mit:
+{
+  "mainRequirements": [
+    {
+      "requirement": "Konkrete Anforderung",
+      "category": "Muss-Qualifikation|Kann-Qualifikation|Soft Skills|Technische Skills",
+      "importance": "hoch|mittel|niedrig"
+    }
+  ],
+  "company": "Firmenname falls erkennbar",
+  "position": "Position falls erkennbar", 
+  "keySkills": ["Skill 1", "Skill 2", "Skill 3"],
+  "summary": "Kurze Zusammenfassung der wichtigsten Punkte"
+}
+
+Extrahiere maximal 8-10 der wichtigsten Anforderungen.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: 'gpt-4',
+            messages: [
+                {
+                    role: 'system', 
+                    content: 'Du bist ein HR-Experte und analysierst Stellenausschreibungen. Antworte immer mit strukturiertem JSON.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            max_tokens: 1500,
+            temperature: 0.3
+        })
+    });
+    
+    if (!response.ok) {
+        if (response.status === 401) {
+            throw new Error('API Key ungültig. Bitte überprüfen Sie Ihren OpenAI API Key im Admin Panel.');
+        }
+        if (response.status === 429) {
+            throw new Error('API Rate Limit erreicht. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        }
+        throw new Error(`OpenAI API Fehler: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
+    
+    console.log('🎯 OpenAI Antwort erhalten:', aiResponse.substring(0, 100) + '...');
+    
+    try {
+        return JSON.parse(aiResponse);
+    } catch (parseError) {
+        console.error('JSON Parse Error:', parseError, 'Raw response:', aiResponse);
+        throw new Error('KI-Antwort konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut.');
+    }
+}
+
+// Show loading state in analysis panel
+function showLoadingState(panel) {
+    panel.innerHTML = `
+        <div class="analysis-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+            <span style="font-weight: 600; color: #1e40af;">
+                <i class="fas fa-brain"></i> Live-Analyse läuft...
+            </span>
+            <div class="spinner" style="animation: spin 1s linear infinite;">
+                <i class="fas fa-spinner"></i>
+            </div>
+        </div>
+        <div class="analysis-content" style="text-align: center; padding: 2rem; color: #6b7280;">
+            <i class="fas fa-robot fa-2x" style="margin-bottom: 1rem; color: #3b82f6;"></i>
+            <p>KI analysiert die Stellenausschreibung...</p>
+            <p style="font-size: 0.875rem;">Identifiziere Hauptanforderungen und Skills</p>
+            <div class="loading-dots" style="margin-top: 1rem;">
+                <span style="animation: blink 1.4s infinite both; animation-delay: 0s;">●</span>
+                <span style="animation: blink 1.4s infinite both; animation-delay: 0.2s;">●</span>
+                <span style="animation: blink 1.4s infinite both; animation-delay: 0.4s;">●</span>
+            </div>
+        </div>
+    `;
+    
+    // Add loading animations if not exists
+    if (!document.head.querySelector('style[data-live-analysis]')) {
+        const style = document.createElement('style');
+        style.setAttribute('data-live-analysis', 'true');
+        style.textContent = `
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @keyframes blink { 
+                0%, 80%, 100% { opacity: 0; }
+                40% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Display live analysis results
+function displayLiveAnalysisResults(analysis, panel) {
+    panel.innerHTML = `
+        <div class="analysis-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+            <span style="font-weight: 600; color: #1e40af;">
+                <i class="fas fa-check-circle"></i> Live-Analyse abgeschlossen
+            </span>
+            <button onclick="hideLiveAnalysis()" style="background: none; border: none; color: #6b7280; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="analysis-results" style="display: grid; gap: 1rem;">
+            <!-- Summary -->
+            ${analysis.summary ? `
+                <div class="summary-section" style="background: #fef3c7; padding: 1rem; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                    <h5 style="margin: 0 0 0.5rem; color: #92400e;">📋 Zusammenfassung</h5>
+                    <p style="margin: 0; color: #92400e; font-size: 0.9rem;">${analysis.summary}</p>
+                </div>
+            ` : ''}
+            
+            <!-- Key Skills -->
+            ${analysis.keySkills && analysis.keySkills.length > 0 ? `
+                <div class="skills-section" style="background: #f0fdf4; padding: 1rem; border-radius: 6px; border-left: 4px solid #10b981;">
+                    <h5 style="margin: 0 0 0.75rem; color: #047857;">🔧 Wichtige Skills</h5>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${analysis.keySkills.map(skill => `
+                            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem;">${skill}</span>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            <!-- Main Requirements -->
+            <div class="requirements-section">
+                <h5 style="margin: 0 0 1rem; color: #374151;">🎯 Hauptanforderungen (${analysis.mainRequirements?.length || 0})</h5>
+                <div class="requirements-grid" style="display: grid; gap: 0.75rem;">
+                    ${analysis.mainRequirements?.map((req, index) => `
+                        <div class="requirement-item" style="
+                            background: white; 
+                            padding: 1rem; 
+                            border-radius: 6px; 
+                            border-left: 4px solid ${getRequirementColor(req.category)}; 
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                <span style="
+                                    background: ${getRequirementColor(req.category)}; 
+                                    color: white; 
+                                    padding: 0.25rem 0.5rem; 
+                                    border-radius: 4px; 
+                                    font-size: 0.75rem; 
+                                    font-weight: 600;
+                                ">${req.category}</span>
+                                <span style="
+                                    background: ${req.importance === 'hoch' ? '#dc2626' : req.importance === 'mittel' ? '#f59e0b' : '#6b7280'}; 
+                                    color: white; 
+                                    padding: 0.25rem 0.5rem; 
+                                    border-radius: 4px; 
+                                    font-size: 0.75rem;
+                                ">${req.importance}</span>
+                            </div>
+                            <p style="margin: 0; color: #374151; font-size: 0.9rem; line-height: 1.4;">${req.requirement}</p>
+                        </div>
+                    `).join('') || '<p style="color: #6b7280; text-align: center; padding: 2rem;">Keine Anforderungen erkannt</p>'}
+                </div>
+            </div>
+        </div>
+        
+        <div class="analysis-actions" style="margin-top: 1.5rem; text-align: center; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+            <button onclick="useAnalysisForStep2()" style="
+                background: #3b82f6; 
+                color: white; 
+                border: none; 
+                padding: 0.75rem 1.5rem; 
+                border-radius: 6px; 
+                cursor: pointer; 
+                font-weight: 600;
+                margin-right: 0.5rem;
+            ">
+                <i class="fas fa-arrow-right"></i> Für Step 2 übernehmen
+            </button>
+            <button onclick="hideLiveAnalysis()" style="
+                background: #6b7280; 
+                color: white; 
+                border: none; 
+                padding: 0.75rem 1.5rem; 
+                border-radius: 6px; 
+                cursor: pointer;
+            ">
+                Schließen
+            </button>
+        </div>
+    `;
+    
+    // Auto-fill company and position if detected
+    if (analysis.company) {
+        const companyInput = document.getElementById('companyInput');
+        if (companyInput && !companyInput.value) {
+            companyInput.value = analysis.company;
+        }
+    }
+    
+    if (analysis.position) {
+        const positionInput = document.getElementById('positionInput');
+        if (positionInput && !positionInput.value) {
+            positionInput.value = analysis.position;
+        }
+    }
+}
+
+// Helper function to get requirement colors
+function getRequirementColor(category) {
+    const colors = {
+        'Muss-Qualifikation': '#dc2626',
+        'Kann-Qualifikation': '#f59e0b', 
+        'Soft Skills': '#10b981',
+        'Technische Skills': '#3b82f6',
+        'Sonstiges': '#6b7280'
+    };
+    return colors[category] || '#6b7280';
+}
+
+// Hide live analysis panel
+window.hideLiveAnalysis = function() {
+    const liveAnalysisPanel = document.getElementById('liveAnalysisPanel');
+    if (liveAnalysisPanel) {
+        liveAnalysisPanel.style.display = 'none';
+    }
+};
+
+// Use analysis results for Step 2
+window.useAnalysisForStep2 = function() {
+    if (window.workflowData) {
+        window.workflowData.liveAnalysisResults = true;
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            z-index: 10001;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        `;
+        successMsg.innerHTML = '<i class="fas fa-check"></i> Analyse für Step 2 gespeichert!';
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            if (successMsg.parentNode) {
+                successMsg.remove();
+            }
+        }, 3000);
+        
+        hideLiveAnalysis();
+    }
+};
+
+// DEBUG FUNKTIONEN
+window.testLiveAnalysis = function() {
+    console.log('🧪 Teste Live-Analyse mit Beispieldaten...');
+    
+    const jobDescTextarea = document.getElementById('jobDescriptionInput');
+    if (jobDescTextarea) {
+        jobDescTextarea.value = `Software Entwickler (m/w/d) - Frontend
+
+Beispiel-Firma GmbH sucht einen erfahrenen Frontend-Entwickler.
+
+Anforderungen:
+- 3+ Jahre Erfahrung mit JavaScript
+- React, HTML5, CSS3 Kenntnisse
+- Git und agile Methoden
+- Teamfähigkeit`;
+        
+        setTimeout(() => {
+            window.analyzeJobDescriptionLive();
+        }, 500);
+    }
+};
 
 // Step 1 Main Generator Function
 window.generateStep1 = function() {
@@ -111,7 +449,7 @@ window.generateStep1 = function() {
                             <i class="fas fa-align-left"></i>
                             <span>Formatieren</span>
                         </button>
-                        <button type="button" onclick="performLiveAnalysis()" class="toolbar-action ai-action" title="Live KI-Analyse">
+                        <button type="button" onclick="window.analyzeJobDescriptionLive()" class="toolbar-action ai-action" title="ECHTE Live KI-Analyse">
                             <i class="fas fa-brain"></i>
                             <span>Analysieren</span>
                         </button>
@@ -470,24 +808,14 @@ window.updateCharCounter = function(text) {
     }
 };
 
-window.performLiveAnalysis = function() {
-    const jobDesc = document.getElementById('jobDescriptionInput')?.value || '';
-    if (jobDesc.length < 50) return;
-    
-    // Show analysis panel
-    const panel = document.getElementById('liveAnalysisPanel');
-    if (panel) panel.style.display = 'block';
-    
-    // Simulate analysis (in real app, this would call actual AI)
-    setTimeout(() => {
-        const mockResults = analyzeJobText(jobDesc);
-        updateAnalysisContent(mockResults);
-    }, 500);
-};
+// ALTE MOCK IMPLEMENTIERUNG ENTFERNT - JETZT ECHTE KI-ANALYSE  
+// Siehe: window.analyzeJobDescriptionLive() oben für echte Implementierung
 
-function analyzeJobText(text) {
-    // Mock analysis - in real implementation this would use AI
-    const words = text.toLowerCase().split(/\s+/);
+// BACKUP: Old performLiveAnalysis redirects to new function
+window.performLiveAnalysis = function() {
+    console.log('⚠️ Alte performLiveAnalysis aufgerufen - weiterleitung zu echter Implementierung');
+    window.analyzeJobDescriptionLive();
+};
     
     return {
         company: extractCompanyFromText(text),
