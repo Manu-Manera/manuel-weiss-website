@@ -829,6 +829,60 @@
             margin: 0 !important;
         }
         
+        /* RESPONSIVE FIXES FÜR BEWERBUNGSMANAGER */
+        @media (max-width: 768px) {
+            .smart-workflow-section {
+                margin-left: -1rem !important;
+                margin-right: -1rem !important;
+                padding: 0 1rem !important;
+            }
+            
+            .smart-workflow-section > div {
+                padding: 1rem !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .smart-workflow-section h3 {
+                font-size: 1.4rem !important;
+            }
+            
+            .smart-workflow-section button {
+                padding: 0.75rem 1.5rem !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .smart-workflow-section .fa-rocket {
+                font-size: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .smart-workflow-section {
+                margin-left: -0.5rem !important;
+                margin-right: -0.5rem !important;
+            }
+            
+            .smart-workflow-section > div {
+                padding: 0.75rem !important;
+            }
+            
+            .smart-workflow-section button {
+                width: 100% !important;
+                max-width: 100% !important;
+                justify-content: center !important;
+            }
+            
+            .smart-workflow-section div[style*="display: flex"] {
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+            }
+            
+            .smart-workflow-section div[style*="display: flex"] button {
+                max-width: 100% !important;
+                min-width: auto !important;
+            }
+        }
+        
         /* MODERNE TOPBAR */
         .admin-topbar {
             flex-shrink: 0;
@@ -3994,15 +4048,8 @@
 
                                          <div class="current-applications" style="margin-bottom: 3rem;">
 
-                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                            <div style="margin-bottom: 1.5rem;">
                                                  <h3 style="color: #333; margin: 0;">📋 Aktuelle Bewerbungen</h3>
-
-
-                                                 <button data-action="new-application" class="btn btn-primary" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                                                     <i class="fas fa-plus"></i> Neue Bewerbung
-                                                 </button>
-
-
                                     </div>
                             
 
@@ -4051,10 +4098,10 @@
                                         <!-- Smart Workflow Button -->
 
 
-                                        <div class="smart-workflow-section" style="margin-bottom: 3rem;">
+                                        <div class="smart-workflow-section" style="margin-bottom: 3rem; max-width: 100%; overflow: hidden;">
 
 
-                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; max-width: 100%; box-sizing: border-box;">
 
 
                                                  <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem;">
@@ -4065,35 +4112,35 @@
                                                      Erstelle professionelle Bewerbungen mit KI-Unterstützung
                                                  </p>
                                                  
-                                                 <div style="display: flex; justify-content: space-around; margin-bottom: 2rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
-                                                     <div style="text-align: center;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.2rem;">6</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Schritte</div>
+                                                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; max-width: 100%;">
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">6</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Schritte</div>
                                                      </div>
-                                                     <div style="text-align: center;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.2rem;">60+</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Features</div>
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">60+</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Features</div>
                                                      </div>
-                                                     <div style="text-align: center;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.2rem;">98%</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">ATS-Ready</div>
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">98%</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">ATS-Ready</div>
                                                      </div>
                                                  </div>
 
 
-                                     <button id="smartWorkflowButton" onclick="openBewerbungsmanager()" style="padding: 1.5rem 3rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.2rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem;">
-                                         <i class="fas fa-rocket" style="font-size: 1.5rem;"></i>
-                                         Bewerbungsmanager öffnen
+                                     <button id="smartWorkflowButton" onclick="if(typeof openBewerbungsmanager === 'function') { openBewerbungsmanager(); } else { window.location.href = 'bewerbungsmanager.html'; }" style="padding: 1rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem; width: auto; max-width: 100%;">
+                                         <i class="fas fa-rocket" style="font-size: 1.2rem;"></i>
+                                         <span>Bewerbungsmanager öffnen</span>
                                      </button>
                                      
-                                     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                                         <button onclick="openBewerbungsmanager()" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                     <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; max-width: 100%;">
+                                         <button onclick="if(typeof openBewerbungsmanager === 'function') { openBewerbungsmanager(); } else { window.location.href = 'bewerbungsmanager.html'; }" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
                                              <i class="fas fa-list"></i>
-                                             Bewerbungen verwalten
+                                             <span>Verwalten</span>
                                          </button>
-                                         <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                         <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
                                              <i class="fas fa-external-link-alt"></i>
-                                             Neues Fenster
+                                             <span>Neues Tab</span>
                                          </button>
                                      </div>
                                 </div>
