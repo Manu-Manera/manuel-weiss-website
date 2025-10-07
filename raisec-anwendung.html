@@ -29,6 +29,30 @@
                 <a href="index.html" class="nav-link">Start</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
+            
+                <!-- AWS User System - Nur auf Service-Unterseiten -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName">Benutzer</span>
+                            <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Anmelden</span>
+                        </button>
+                    </div>
+                </div>
+                
             </div>
             <div class="nav-toggle" id="navToggle">
                 <span></span>
@@ -536,7 +560,11 @@
         </div>
     </footer>
 
-    <script>
+    
+<!-- Auth Modals -->
+<div id="authModalsContainer"></div>
+
+<script>
         // Mobile navigation toggle
         document.addEventListener('DOMContentLoaded', function() {
             const navToggle = document.getElementById('navToggle');
