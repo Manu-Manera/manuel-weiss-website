@@ -64,31 +64,31 @@ export class DashboardCore {
         }
     }
 
-    // 🎨 Component Registration
+    // 🎨 Component Registration with Dynamic Loading
     registerComponents() {
         // Statistics Panel
-        this.registerComponent('statistics', StatisticsPanel);
+        this.registerComponent('statistics', 'StatisticsPanel');
         
-        // Application List
-        this.registerComponent('applicationList', ApplicationList);
+        // Application List  
+        this.registerComponent('applicationList', 'ApplicationList');
         
         // Quick Actions
-        this.registerComponent('quickActions', QuickActions);
+        this.registerComponent('quickActions', 'QuickActions');
         
         // Charts & Analytics
-        this.registerComponent('charts', ChartsWidget);
+        this.registerComponent('charts', 'ChartsWidget');
         
         // Recent Activity
-        this.registerComponent('recentActivity', RecentActivity);
+        this.registerComponent('recentActivity', 'RecentActivity');
         
         // Performance Metrics
-        this.registerComponent('performance', PerformanceMetrics);
+        this.registerComponent('performance', 'PerformanceMetrics');
         
         // Calendar Integration
-        this.registerComponent('calendar', CalendarWidget);
+        this.registerComponent('calendar', 'CalendarWidget');
         
         // Notifications
-        this.registerComponent('notifications', NotificationCenter);
+        this.registerComponent('notifications', 'NotificationCenter');
     }
 
     registerComponent(name, ComponentClass, options = {}) {
@@ -214,7 +214,25 @@ export class DashboardCore {
                 return;
             }
 
-            const instance = new component.ComponentClass(this.applicationCore, {
+            // Dynamic import of component
+            let ComponentClass;
+            if (typeof component.ComponentClass === 'string') {
+                const moduleLoader = componentLoaders[component.ComponentClass];
+                if (moduleLoader) {
+                    const module = await moduleLoader();
+                    ComponentClass = module[component.ComponentClass];
+                } else {
+                    throw new Error(`Component loader not found: ${component.ComponentClass}`);
+                }
+            } else {
+                ComponentClass = component.ComponentClass;
+            }
+
+            if (!ComponentClass) {
+                throw new Error(`Component class not found: ${component.ComponentClass}`);
+            }
+
+            const instance = new ComponentClass(this.applicationCore, {
                 container,
                 dashboard: this,
                 ...component.options
@@ -755,12 +773,14 @@ export function createDashboard(applicationCore, options) {
     return new DashboardCore(applicationCore, options);
 }
 
-// Import component classes (to be created separately)
-import { StatisticsPanel } from './components/StatisticsPanel.js';
-import { ApplicationList } from './components/ApplicationList.js';
-import { QuickActions } from './components/QuickActions.js';
-import { ChartsWidget } from './components/ChartsWidget.js';
-import { RecentActivity } from './components/RecentActivity.js';
-import { PerformanceMetrics } from './components/PerformanceMetrics.js';
-import { CalendarWidget } from './components/CalendarWidget.js';
-import { NotificationCenter } from './components/NotificationCenter.js';
+// Dynamic component imports - loaded on demand for better performance
+const componentLoaders = {
+    StatisticsPanel: () => import('./components/StatisticsPanel.js'),
+    ApplicationList: () => import('./components/ApplicationList.js'), 
+    QuickActions: () => import('./components/QuickActions.js'),
+    ChartsWidget: () => import('./components/ChartsWidget.js'),
+    RecentActivity: () => import('./components/RecentActivity.js'),
+    PerformanceMetrics: () => import('./components/PerformanceMetrics.js'),
+    CalendarWidget: () => import('./components/CalendarWidget.js'),
+    NotificationCenter: () => import('./components/NotificationCenter.js')
+};
