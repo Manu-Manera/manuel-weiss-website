@@ -483,6 +483,9 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Backup: Static Script Loading für Zuverlässigkeit -->
+    <script src="js/smart-workflow-steps.js" async></script>
+    
     <script>
         // Hauptfunktion zum Starten des Bewerbungsprozesses
         function startBewerbungsprozess() {
@@ -501,12 +504,9 @@
             try {
                 console.log('📦 Lade Bewerbungs-Module...');
                 
-                // Load core system
-                await loadScript('js/bewerbung-core.js');
-                
-                // Load step styles
-                await loadScript('js/bewerbung-steps/bewerbung-step1-styles.js');
-                await loadScript('js/bewerbung-steps/bewerbung-step2-styles.js');
+                // Simple and reliable approach: Load legacy system directly
+                console.log('🔄 Lade bewährtes Workflow-System...');
+                await loadScript('js/smart-workflow-steps.js');
                 
                 // Hide loading
                 document.getElementById('loadingSection').classList.remove('active');
@@ -514,22 +514,24 @@
                 // Start workflow
                 if (window.startSmartBewerbungsWorkflow) {
                     console.log('✅ System geladen, starte Workflow...');
-                    window.startSmartBewerbungsWorkflow();
-                } else {
-                    console.log('⚠️ Fallback zu Legacy-System...');
-                    // Fallback to legacy system
-                    await loadScript('js/smart-workflow-steps.js');
-                    if (window.startSmartBewerbungsWorkflow) {
+                    setTimeout(() => {
                         window.startSmartBewerbungsWorkflow();
-                    } else {
-                        alert('❌ Fehler beim Laden des Bewerbungssystems. Bitte laden Sie die Seite neu.');
-                    }
+                    }, 100);
+                } else {
+                    console.error('❌ startSmartBewerbungsWorkflow Funktion nicht verfügbar');
+                    alert('❌ Workflow-System konnte nicht geladen werden. Bitte versuchen Sie es erneut.');
                 }
                 
             } catch (error) {
                 console.error('❌ Fehler beim Laden:', error);
                 document.getElementById('loadingSection').classList.remove('active');
-                alert('❌ Fehler beim Laden des Bewerbungssystems. Bitte versuchen Sie es erneut.');
+                
+                // Emergency fallback: Direct navigation
+                console.log('🚨 Notfall-Fallback: Direkte Navigation');
+                alert('Das Bewerbungssystem wird geladen. Sie werden zur Bewerbungsseite weitergeleitet...');
+                setTimeout(() => {
+                    window.location.href = 'bewerbungen.html';
+                }, 1000);
             }
         }
         

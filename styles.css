@@ -1689,6 +1689,29 @@ a:hover {
     box-shadow: 0 30px 60px rgba(102, 126, 234, 0.4);
 }
 
+.service-card.modern-highlight:hover h3 {
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 
+                 0 0 30px rgba(255, 255, 255, 0.6), 
+                 0 0 40px rgba(255, 255, 255, 0.4);
+    animation: titleGlowPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlowPulse {
+    0% { 
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 
+                     0 0 30px rgba(255, 255, 255, 0.6), 
+                     0 0 40px rgba(255, 255, 255, 0.4);
+        transform: scale(1);
+    }
+    100% { 
+        text-shadow: 0 0 25px rgba(255, 255, 255, 1), 
+                     0 0 35px rgba(255, 255, 255, 0.8), 
+                     0 0 45px rgba(255, 255, 255, 0.6);
+        transform: scale(1.02);
+    }
+}
+
 .service-card.modern-highlight .service-icon {
     background: rgba(255, 255, 255, 0.2);
     color: white;
