@@ -148,13 +148,34 @@ window.showSmartWorkflowModal = function() {
             <div class="modal-overlay" onclick="event.target === this && closeSmartWorkflow()">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2>Smart Bewerbungsmanager</h2>
-                        <div class="step-indicator">
-                            Schritt <span id="stepCounter">1</span>
+                        <div class="header-content">
+                            <div class="header-left">
+                                <h2><i class="fas fa-briefcase"></i> Smart Bewerbungsmanager</h2>
+                                <div class="step-subtitle">KI-gestützte Bewerbungserstellung</div>
+                            </div>
+                            <div class="header-right">
+                                <div class="step-indicator-modern">
+                                    <div class="step-progress-bar">
+                                        <div class="step-progress-fill" id="progressFill"></div>
+                                    </div>
+                                    <div class="step-info">
+                                        <span id="stepCounter">Schritt 1</span>
+                                        <div class="step-dots">
+                                            <div class="step-dot active" data-step="0"></div>
+                                            <div class="step-dot" data-step="1"></div>
+                                            <div class="step-dot" data-step="2"></div>
+                                            <div class="step-dot" data-step="3"></div>
+                                            <div class="step-dot" data-step="4"></div>
+                                            <div class="step-dot" data-step="5"></div>
+                                            <div class="step-dot" data-step="6"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="close-btn" onclick="closeSmartWorkflow()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button class="close-btn" onclick="closeSmartWorkflow()">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <div id="workflowContent"></div>
@@ -197,28 +218,99 @@ window.showSmartWorkflowModal = function() {
                 }
                 
                 #smartWorkflowModal .modal-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 1.5rem 2rem;
+                    padding: 2rem;
                     border-bottom: 1px solid #e5e7eb;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     color: white;
                     border-radius: 20px 20px 0 0;
                 }
                 
-                #smartWorkflowModal .modal-header h2 {
-                    margin: 0;
-                    font-size: 1.5rem;
-                    font-weight: 700;
+                #smartWorkflowModal .header-content {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    gap: 2rem;
                 }
                 
-                #smartWorkflowModal .step-indicator {
-                    background: rgba(255, 255, 255, 0.2);
-                    padding: 0.5rem 1rem;
-                    border-radius: 12px;
-                    font-size: 0.875rem;
+                #smartWorkflowModal .header-left h2 {
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                }
+                
+                #smartWorkflowModal .step-subtitle {
+                    font-size: 0.9rem;
+                    opacity: 0.9;
+                    font-weight: 400;
+                }
+                
+                #smartWorkflowModal .header-right {
+                    display: flex;
+                    align-items: center;
+                    gap: 1.5rem;
+                }
+                
+                #smartWorkflowModal .step-indicator-modern {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    gap: 0.75rem;
+                }
+                
+                #smartWorkflowModal .step-progress-bar {
+                    width: 200px;
+                    height: 6px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 3px;
+                    overflow: hidden;
+                }
+                
+                #smartWorkflowModal .step-progress-fill {
+                    height: 100%;
+                    background: white;
+                    border-radius: 3px;
+                    transition: width 0.5s ease;
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                }
+                
+                #smartWorkflowModal .step-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                
+                #smartWorkflowModal .step-info #stepCounter {
+                    font-size: 0.9rem;
                     font-weight: 600;
+                    white-space: nowrap;
+                }
+                
+                #smartWorkflowModal .step-dots {
+                    display: flex;
+                    gap: 0.5rem;
+                }
+                
+                #smartWorkflowModal .step-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.4);
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                }
+                
+                #smartWorkflowModal .step-dot.active {
+                    background: white;
+                    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+                    transform: scale(1.2);
+                }
+                
+                #smartWorkflowModal .step-dot.completed {
+                    background: #10b981;
+                    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
                 }
                 
                 #smartWorkflowModal .close-btn {
@@ -395,4 +487,73 @@ window.throttle = function(func, limit) {
     };
 };
 
-console.log('✅ Shared Functions Module geladen');
+// =================== MODERNE STEP INDICATOR FUNCTIONS ===================
+
+/**
+ * Update modern step indicator
+ */
+window.updateModernStepIndicator = function(currentStep) {
+    // Update step counter text
+    const stepCounter = document.getElementById('stepCounter');
+    if (stepCounter) {
+        const stepNames = [
+            'Bewerbungsart auswählen',
+            'Stellenausschreibung eingeben', 
+            'KI-Analyse & Anforderungen',
+            'Anschreiben erstellen',
+            'Überarbeitung & Optimierung',
+            'Finalisierung & Design',
+            'Export & Versand'
+        ];
+        
+        if (currentStep === 0) {
+            stepCounter.textContent = 'Auswahl';
+        } else {
+            stepCounter.textContent = `Schritt ${currentStep} von 6`;
+        }
+    }
+    
+    // Update progress bar
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+        const totalSteps = 6;
+        const progressPercent = currentStep === 0 ? 5 : (currentStep / totalSteps) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+    }
+    
+    // Update step dots
+    const stepDots = document.querySelectorAll('.step-dot');
+    stepDots.forEach((dot, index) => {
+        dot.classList.remove('active', 'completed');
+        
+        if (index === currentStep) {
+            dot.classList.add('active');
+        } else if (index < currentStep) {
+            dot.classList.add('completed');
+        }
+    });
+    
+    console.log(`✅ Modern Step Indicator aktualisiert: Schritt ${currentStep}`);
+};
+
+/**
+ * Enhanced step navigation with modern indicator
+ */
+window.navigateToStep = function(targetStep) {
+    // Update workflow data
+    if (window.workflowData) {
+        window.workflowData.currentStep = targetStep;
+    }
+    
+    // Update modern indicator
+    window.updateModernStepIndicator(targetStep);
+    
+    // Navigate to step
+    if (typeof nextWorkflowStep === 'function') {
+        nextWorkflowStep(targetStep);
+    }
+    
+    console.log(`🚀 Navigiert zu Schritt ${targetStep} mit modernem Indicator`);
+};
+
+console.log('✅ Shared Functions Module mit moderner Step-Anzeige geladen');

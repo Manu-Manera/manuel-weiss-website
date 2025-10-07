@@ -167,16 +167,18 @@ function nextWorkflowStep(step) {
         return;
     }
     
-    // Update step counter
-    const stepCounter = document.getElementById('currentStep');
-    const stepLabel = document.getElementById('stepLabel');
-    if (stepCounter && stepLabel) {
+    // Update modern step indicator
+    if (typeof window.updateModernStepIndicator === 'function') {
+        window.updateModernStepIndicator(step);
+    }
+    
+    // Legacy fallback for old step counter (if exists)
+    const stepCounter = document.getElementById('stepCounter');
+    if (stepCounter) {
         if (step === 0) {
             stepCounter.textContent = 'Auswahl';
-            stepLabel.innerHTML = '<span id="currentStep">Auswahl</span> - Bewerbungsart wählen';
         } else {
-            stepCounter.textContent = step;
-            stepLabel.innerHTML = `Schritt <span id="currentStep">${step}</span> von 6`;
+            stepCounter.textContent = `Schritt ${step} von 6`;
         }
     }
     
@@ -513,18 +515,42 @@ function generateStep1() {
             <!-- OPTIMIZATION 5: Advanced Job Description Editor -->
             <div class="form-group enhanced" style="margin-bottom: 1.5rem;">
                 <label class="enhanced-label" for="jobDescription">
-                    <span class="label-text">Stellenbeschreibung</span>
+                    <span class="label-text">Stellenausschreibung</span>
                     <span class="char-counter">
                         <span id="charCount">0</span> / 5000 Zeichen
                     </span>
                 </label>
+                
+                <!-- Extraction Status Display -->
+                <div id="extractionStatus" class="extraction-status" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #bfdbfe;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-magic" style="color: #3b82f6;"></i>
+                        <span style="font-weight: 600; color: #1e40af;">Automatische Extraktion</span>
+                    </div>
+                    <div id="extractedData" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+                        <div>
+                            <strong>Unternehmen:</strong> <span id="extractedCompany" style="color: #059669;">Wird erkannt...</span>
+                        </div>
+                        <div>
+                            <strong>Position:</strong> <span id="extractedPosition" style="color: #059669;">Wird erkannt...</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.75rem;">
+                        <button onclick="applyExtractedData()" class="btn-small" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-check"></i> Übernehmen
+                        </button>
+                        <button onclick="hideExtractionStatus()" class="btn-small" style="background: #6b7280; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.875rem; margin-left: 0.5rem;">
+                            <i class="fas fa-times"></i> Verwerfen
+                        </button>
+                    </div>
+                </div>
                 <div class="textarea-container">
                     <div class="textarea-toolbar">
                         <button type="button" onclick="pasteFromClipboard()" class="toolbar-btn" title="Aus Zwischenablage einfügen">
                             <i class="fas fa-clipboard"></i> Einfügen
                         </button>
-                        <button type="button" onclick="formatJobDescription()" class="toolbar-btn" title="Text formatieren">
-                            <i class="fas fa-magic"></i> Format
+                        <button type="button" onclick="extractCompanyAndPosition()" class="toolbar-btn" title="Unternehmen & Position automatisch erkennen">
+                            <i class="fas fa-magic"></i> Extrahieren
                         </button>
                         <button type="button" onclick="analyzeJobDescriptionLive()" class="toolbar-btn" title="Live-Analyse">
                             <i class="fas fa-search"></i> Analysieren
@@ -645,6 +671,190 @@ function generateStep1() {
     `;
 }
 
+// =================== AUTOMATISCHE EXTRAKTION FUNKTIONEN ===================
+
+// Extract Company and Position from Job Description
+window.extractCompanyAndPosition = function() {
+    const jobDescription = document.getElementById('jobDescription').value.trim();
+    
+    if (!jobDescription) {
+        alert('⚠️ Bitte fügen Sie zuerst eine Stellenausschreibung ein.');
+        return;
+    }
+    
+    console.log('🔍 Starte automatische Extraktion...');
+    
+    // Show extraction status
+    const extractionStatus = document.getElementById('extractionStatus');
+    if (extractionStatus) {
+        extractionStatus.style.display = 'block';
+        document.getElementById('extractedCompany').textContent = 'Wird analysiert...';
+        document.getElementById('extractedPosition').textContent = 'Wird analysiert...';
+    }
+    
+    // Smart extraction logic
+    const extractedData = smartExtractCompanyAndPosition(jobDescription);
+    
+    // Update UI with results
+    setTimeout(() => {
+        if (extractedData.company) {
+            document.getElementById('extractedCompany').textContent = extractedData.company;
+        } else {
+            document.getElementById('extractedCompany').textContent = 'Nicht gefunden';
+        }
+        
+        if (extractedData.position) {
+            document.getElementById('extractedPosition').textContent = extractedData.position;
+        } else {
+            document.getElementById('extractedPosition').textContent = 'Nicht gefunden';
+        }
+        
+        // Store for later use
+        window.extractedJobData = extractedData;
+        
+    }, 1000);
+};
+
+// Smart extraction algorithm
+function smartExtractCompanyAndPosition(text) {
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    let company = '';
+    let position = '';
+    
+    // Common patterns for company extraction
+    const companyPatterns = [
+        /(?:bei|für|von|Unternehmen|Firma|Company|AG|GmbH|Ltd|Inc)\s*:?\s*([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s&.-]{2,40}(?:AG|GmbH|Ltd|Inc|Corp|SE|KG|OHG|e\.V\.|mbH)?)/gi,
+        /^([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s&.-]{2,40}(?:AG|GmbH|Ltd|Inc|Corp|SE|KG|OHG|e\.V\.|mbH))\s*$/gm,
+        /Wir sind\s*([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s&.-]{2,40})/gi
+    ];
+    
+    // Common patterns for position extraction
+    const positionPatterns = [
+        /(?:Stelle|Position|Job|Beruf|als|für)\s*:?\s*([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s\/-]{5,60})/gi,
+        /(?:suchen|Suchen)\s*(?:wir)?\s*(?:eine?n?)?\s*([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s\/-]{5,60})/gi,
+        /^([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s\/-]{5,60})\s*\([mwd]\)?\s*$/gm
+    ];
+    
+    // Extract company
+    for (const pattern of companyPatterns) {
+        const matches = text.match(pattern);
+        if (matches) {
+            company = matches[0].replace(/^(?:bei|für|von|Unternehmen|Firma|Company|Wir sind)\s*:?\s*/gi, '').trim();
+            company = company.replace(/\s*(sucht|stellt ein|hiring).*$/gi, '').trim();
+            if (company.length > 2 && company.length < 50) break;
+        }
+    }
+    
+    // Extract position from first few lines (most likely)
+    const firstLines = lines.slice(0, 5).join(' ');
+    for (const pattern of positionPatterns) {
+        const matches = firstLines.match(pattern);
+        if (matches) {
+            position = matches[0].replace(/^(?:Stelle|Position|Job|Beruf|als|für|suchen|Suchen)\s*(?:wir)?\s*(?:eine?n?)?\s*:?\s*/gi, '').trim();
+            position = position.replace(/\s*\([mwd]\)?\s*$/gi, '').trim();
+            if (position.length > 4 && position.length < 80) break;
+        }
+    }
+    
+    // Fallback: try to find company in first 3 lines
+    if (!company) {
+        for (let i = 0; i < Math.min(3, lines.length); i++) {
+            const line = lines[i];
+            if (line.length > 5 && line.length < 60 && /[A-ZÄÖÜ]/.test(line[0])) {
+                // Check if it looks like a company name
+                if (/(GmbH|AG|Ltd|Inc|Corp|SE|KG|OHG|e\.V\.)/.test(line) || 
+                    (/^[A-ZÄÖÜ][A-Za-zÄÖÜäöüß\s&.-]{5,40}$/.test(line) && !/(?:sucht|stellt|bewirbt|Stelle|Position)/.test(line))) {
+                    company = line.trim();
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Fallback: try to find position in first line
+    if (!position && lines.length > 0) {
+        const firstLine = lines[0];
+        if (firstLine.length > 10 && firstLine.length < 100 && 
+            /(manager|entwickler|analyst|berater|spezialist|leiter|koordinator|assistant)/i.test(firstLine)) {
+            position = firstLine.trim();
+        }
+    }
+    
+    console.log('🔍 Extraction results:', { company, position });
+    
+    return {
+        company: company || '',
+        position: position || ''
+    };
+}
+
+// Apply extracted data to form fields
+window.applyExtractedData = function() {
+    if (window.extractedJobData) {
+        const companyField = document.getElementById('company');
+        const positionField = document.getElementById('position');
+        
+        if (window.extractedJobData.company && companyField) {
+            companyField.value = window.extractedJobData.company;
+            window.workflowData.company = window.extractedJobData.company;
+        }
+        
+        if (window.extractedJobData.position && positionField) {
+            positionField.value = window.extractedJobData.position;
+            window.workflowData.position = window.extractedJobData.position;
+        }
+        
+        // Hide extraction status
+        hideExtractionStatus();
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            z-index: 10001;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        `;
+        successMsg.innerHTML = '<i class="fas fa-check"></i> Daten erfolgreich übernommen!';
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            if (successMsg.parentNode) {
+                successMsg.remove();
+            }
+        }, 3000);
+        
+        console.log('✅ Extracted data applied to form fields');
+    }
+};
+
+// Hide extraction status
+window.hideExtractionStatus = function() {
+    const extractionStatus = document.getElementById('extractionStatus');
+    if (extractionStatus) {
+        extractionStatus.style.display = 'none';
+    }
+};
+
+// Enhanced paste handler with auto-extraction
+window.handlePasteEvent = function(event) {
+    setTimeout(() => {
+        const text = event.target.value;
+        if (text.length > 50) {
+            // Auto-extract after paste
+            setTimeout(() => {
+                window.extractCompanyAndPosition();
+            }, 500);
+        }
+    }, 100);
+};
+
 // Save Step 1 and Continue
 function saveStep1AndContinue() {
     // Validate required fields
@@ -653,13 +863,13 @@ function saveStep1AndContinue() {
     const jobDescription = document.getElementById('jobDescription').value.trim();
     
     if (!company) {
-        alert('Bitte geben Sie ein Unternehmen ein.');
+        alert('Bitte geben Sie ein Unternehmen ein oder verwenden Sie die automatische Extraktion.');
         document.getElementById('company').focus();
         return;
     }
     
     if (!position) {
-        alert('Bitte geben Sie eine Position ein.');
+        alert('Bitte geben Sie eine Position ein oder verwenden Sie die automatische Extraktion.');
         document.getElementById('position').focus();
         return;
     }
