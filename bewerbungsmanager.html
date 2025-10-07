@@ -574,7 +574,8 @@
                 
                 // Load dynamically if not already available
                 console.log('🔄 Lade Workflow-System dynamisch...');
-                await loadScript('js/smart-workflow-steps.js');
+                // MODULARES SYSTEM - Lädt automatisch über workflow-loader.js
+                console.log('✅ Modulares Workflow-System wird verwendet');
                 
                 // Wait a moment for script execution
                 await new Promise(resolve => setTimeout(resolve, 200));
