@@ -4940,7 +4940,7 @@
     </div>
     
     <!-- ERROR PREVENTION (Verhindert JS-Fehler) -->
-    <script src="js/error-prevention.js"></script>
+<script src="js/error-prevention.js"></script>
     <!-- CACHE BUSTER (Löst Cache-Probleme) -->
     <script src="js/cache-buster.js"></script>
     <!-- AWS UPLOAD SERVICE (AWS Integration) -->
@@ -4957,7 +4957,7 @@
     <!-- Scripts -->
     <script>
         // Navigation Management
-        function showSection(sectionName) {
+    function showSection(sectionName) {
             console.log('Switching to section:', sectionName); // Debug log
             
             // Hide all sections
@@ -10305,7 +10305,14 @@ Manuel Weiss`;
 
         // Make test function globally available
         window.testNavigation = testNavigation;
-        <script src="js/smart-workflow-steps.js"></script>
     </script>
+    
+    <!-- Neues modulares Workflow-System -->
+    <script src="js/workflow-core.js"></script>
+    <script src="js/workflow-steps/step1-styles.js"></script>
+    <script src="js/workflow-steps/step2-styles.js"></script>
+    
+    <!-- Legacy-Support -->
+    <script src="js/smart-workflow-steps.js"></script>
 </body>
 </html>
