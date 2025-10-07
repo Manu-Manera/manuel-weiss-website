@@ -2138,15 +2138,7 @@
         }
     }
 
-    // Initialize auth system
-    document.addEventListener('DOMContentLoaded', async function() {
-        await loadAuthModals();
-        
-        // Check user status
-        if (window.awsAuth) {
-            window.awsAuth.checkUserStatus();
-        }
-    });
+    // Initialize auth system (integrated into main DOMContentLoaded)
 
     function updateProgress() {
             // Update progress indicators
@@ -2267,36 +2259,176 @@
             
             document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div style="margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px; border-left: 3px solid #667eea;">${step}</div>`).join('');
             
-            // Add value summary
-            const valueElements = document.querySelectorAll('#recruitingQuality, #onboardingSpeed, #costSavings, #timeSavings');
-            let valueText = 'Erwartete Verbesserungen: ';
-            const values = [];
-            if (document.getElementById('recruitingQuality')?.value) values.push(`Recruiting +${document.getElementById('recruitingQuality').value}%`);
-            if (document.getElementById('costSavings')?.value) values.push(`€${document.getElementById('costSavings').value} Einsparung`);
-            document.getElementById('summaryValue').textContent = values.length > 0 ? values.join(', ') : 'Werte noch nicht definiert';
+            // Enhanced value summary with calculations
+            updateExecutiveSummary();
+            generateValueSummary();
+            
+            // Update maturity level display
+            const maturityLevelTexts = {
+                1: 'KI-Einsteiger',
+                2: 'KI-Lernender', 
+                3: 'KI-Anwender',
+                4: 'KI-Integrator',
+                5: 'KI-Führer'
+            };
+            
+            const level = Math.ceil(overallMaturity);
+            document.getElementById('summaryMaturityLevel').textContent = maturityLevelTexts[level] || 'KI-Einsteiger';
         }
         
-        // Enhanced initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load saved progress
-            loadProgress();
+        function updateExecutiveSummary() {
+            // Dynamic calculations for executive summary
+            document.getElementById('summaryMaturityScore').textContent = overallMaturity;
             
-            // Initialize displays
+            // Calculate timeframe based on maturity and goals
+            const timeframe = calculateTimeframe();
+            document.getElementById('summaryTimeframe').textContent = timeframe;
+            
+            // Calculate investment based on company size and maturity
+            const investment = calculateInvestment();
+            document.getElementById('summaryInvestment').textContent = investment;
+            
+            // Calculate expected ROI
+            const roi = calculateROI();
+            document.getElementById('summaryROI').textContent = roi;
+        }
+        
+        function calculateTimeframe() {
+            const selectedGoalsCount = document.querySelectorAll('input[id^="goal"]:checked').length;
+            const baseTime = overallMaturity <= 2 ? 18 : overallMaturity <= 3.5 ? 12 : 9;
+            const additionalTime = selectedGoalsCount * 2;
+            return `${baseTime}-${baseTime + additionalTime}`;
+        }
+        
+        function calculateInvestment() {
+            const employeeCount = document.getElementById('employeeCount')?.value;
+            const baseInvestment = {
+                '1-50': 25000,
+                '51-200': 75000,
+                '201-500': 150000,
+                '501-1000': 300000,
+                '1000+': 500000
+            }[employeeCount] || 100000;
+            
+            const maturityMultiplier = overallMaturity <= 2 ? 0.6 : overallMaturity <= 3.5 ? 1.0 : 1.5;
+            const totalInvestment = Math.round(baseInvestment * maturityMultiplier);
+            
+            return totalInvestment >= 1000000 
+                ? `€${(totalInvestment / 1000000).toFixed(1)}M`
+                : `€${(totalInvestment / 1000).toFixed(0)}k`;
+        }
+        
+        function calculateROI() {
+            const selectedGoalsCount = document.querySelectorAll('input[id^="goal"]:checked').length;
+            const baseROI = overallMaturity <= 2 ? 200 : overallMaturity <= 3.5 ? 300 : 500;
+            const goalMultiplier = Math.max(0.5, selectedGoalsCount * 0.3);
+            return `${Math.round(baseROI * goalMultiplier)}%`;
+        }
+        
+        function generateValueSummary() {
+            const values = [];
+            
+            // Collect KPI improvements
+            const recruitingQuality = document.getElementById('recruitingQuality')?.value;
+            const costSavings = document.getElementById('costSavings')?.value;
+            const timeSavings = document.getElementById('timeSavings')?.value;
+            
+            if (recruitingQuality) values.push(`Recruiting-Qualität +${recruitingQuality}%`);
+            if (costSavings) values.push(`€${costSavings} Kosteneinsparung`);
+            if (timeSavings) values.push(`${timeSavings}h/Monat Zeitersparnis`);
+            
+            // Add default values if none provided
+            if (values.length === 0) {
+                const defaultValues = calculateDefaultValue();
+                values.push(...defaultValues);
+            }
+            
+            document.getElementById('summaryValue').textContent = values.join(' • ');
+            
+            // Update KPIs section
+            updateKPIsSection(values);
+        }
+        
+        function calculateDefaultValue() {
+            const industry = document.getElementById('industry')?.value;
+            const maturity = overallMaturity;
+            
+            const industryDefaults = {
+                'technology': [`${Math.round(30 * maturity)}% schnelleres Hiring`, `€${Math.round(50000 * maturity)} Einsparung/Jahr`],
+                'finance': [`${Math.round(25 * maturity)}% bessere Compliance`, `${Math.round(40 * maturity)}% Prozesseffizienz`],
+                'healthcare': [`${Math.round(20 * maturity)}% bessere Candidate Experience`, `${Math.round(35 * maturity)}% weniger Admin-Aufwand`],
+                'default': [`${Math.round(25 * maturity)}% Effizienzsteigerung`, `€${Math.round(25000 * maturity)} ROI/Jahr`]
+            };
+            
+            return industryDefaults[industry] || industryDefaults['default'];
+        }
+        
+        function updateKPIsSection(values) {
+            const kpisElement = document.getElementById('summaryKPIs');
+            if (kpisElement) {
+                kpisElement.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        ${values.map(value => `
+                            <div style="padding: 1rem; background: #f0f4ff; border-radius: 8px; text-align: center; border: 1px solid #e0e7ff;">
+                                <div style="font-weight: 600; color: #667eea;">${value}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+        
+        // Comprehensive initialization
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Initialize auth system first
+                await loadAuthModals();
+                
+                // Check user status
+                if (window.awsAuth) {
+                    window.awsAuth.checkUserStatus();
+                }
+                
+                // Load saved progress
+                loadProgress();
+                
+                // Initialize displays
         updateProgress();
-            updateMaturityDisplay();
-            
-            // Setup real-time validation
+                updateMaturityDisplay();
+                
+                // Setup smart suggestions
+                setupSmartSuggestions();
+                
+                // Setup form validation
+                setupFormValidation();
+                
+                // Setup enhanced interactions
+                setupEnhancedInteractions();
+                
+                // Setup auto-save
+                setupAutoSave();
+                
+                console.log('✅ Smart KI-Strategy Workflow initialized successfully');
+                
+            } catch (error) {
+                console.error('❌ Error initializing workflow:', error);
+            }
+        });
+        
+        function setupFormValidation() {
             document.querySelectorAll('input, textarea, select').forEach(field => {
                 field.addEventListener('input', function() {
                     validateField(this);
+                    updateRecommendations();
                 });
                 
                 field.addEventListener('blur', function() {
                     validateField(this);
                 });
             });
-            
-            // Enhanced checkbox interactions
+        }
+        
+        function setupEnhancedInteractions() {
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const item = this.closest('.checkbox-item');
@@ -2310,16 +2442,26 @@
                 } else {
                     item.classList.remove('checked');
                 }
+                    
+                    // Update recommendations when selections change
+                    updateRecommendations();
             });
         });
-            
+        }
+        
+        function setupAutoSave() {
             // Auto-save every 30 seconds
             setInterval(() => {
                 if (currentStep > 0) {
                     saveProgress();
                 }
             }, 30000);
-        });
+            
+            // Save on page unload
+            window.addEventListener('beforeunload', function() {
+                saveProgress();
+            });
+        }
         
         function validateField(field) {
             const validation = document.getElementById(field.id + 'Validation');
@@ -2392,16 +2534,243 @@
             window.location.href = `mailto:manuel.weiss@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
         
-        // Smart auto-completion and suggestions
+        // Enhanced smart suggestions system
         function setupSmartSuggestions() {
             const industryField = document.getElementById('industry');
             const companyField = document.getElementById('companyName');
+            const employeeField = document.getElementById('employeeCount');
             
-            if (industryField && companyField) {
+            // Add recommendation container to first step if not exists
+            const firstStep = document.querySelector('[data-step="1"] .step-content');
+            if (firstStep && !document.getElementById('smartRecommendations')) {
+                const recContainer = document.createElement('div');
+                recContainer.id = 'smartRecommendations';
+                recContainer.style.display = 'none';
+                firstStep.appendChild(recContainer);
+            }
+            
+            if (industryField) {
                 industryField.addEventListener('change', function() {
-                    const suggestions = generateSmartRecommendations(this.value, document.getElementById('employeeCount')?.value, overallMaturity);
-                    // Display suggestions...
+                    updateRecommendations();
+                    generateIndustrySpecificGoals(this.value);
                 });
+            }
+            
+            if (employeeField) {
+                employeeField.addEventListener('change', function() {
+                    updateRecommendations();
+                    updateInvestmentEstimate(this.value);
+                });
+            }
+            
+            if (companyField) {
+                companyField.addEventListener('input', function() {
+                    // Auto-detect industry from company name if possible
+                    detectIndustryFromName(this.value);
+                });
+            }
+        }
+        
+        function generateSmartRecommendations(industry, employeeCount, maturityLevel) {
+            const recommendations = [];
+            
+            // Industry-specific recommendations with 2024 insights
+            const industryRecommendations = {
+                'technology': [
+                    'Tech-Industrie: Fokus auf Developer Experience und Technical Recruiting KI',
+                    'GitHub Copilot für HR-Prozesse evaluieren',
+                    'API-first HR-Architektur für maximale Integration'
+                ],
+                'finance': [
+                    'Finance: Compliance-first Ansatz mit erklärbarer KI',
+                    'Regulatory-konformes AI Governance Framework',
+                    'Bias-Detection für faire Kreditentscheidungen'
+                ],
+                'healthcare': [
+                    'Healthcare: Privacy-by-Design mit lokaler Datenverarbeitung',
+                    'HIPAA-konforme AI-Lösungen priorisieren',
+                    'Federated Learning für Datenschutz'
+                ],
+                'manufacturing': [
+                    'Manufacturing: Fokus auf Safety und Compliance',
+                    'Blue-collar Worker Experience optimieren',
+                    'Predictive Workforce Planning'
+                ],
+                'retail': [
+                    'Retail: Seasonal Workforce Management',
+                    'Customer-centric HR-Metriken',
+                    'Omnichannel Employee Experience'
+                ]
+            };
+            
+            recommendations.push(...(industryRecommendations[industry] || industryRecommendations['technology']));
+            
+            // Size-specific recommendations
+            const sizeRecommendations = {
+                '1-50': [
+                    'Startup: SaaS-Lösungen mit geringem Setup-Aufwand',
+                    'All-in-One HR-Plattformen bevorzugen',
+                    'Agile Implementierung in 30-Tage-Sprints'
+                ],
+                '51-200': [
+                    'Scale-up: Modulare Lösungsarchitektur',
+                    'HR-Analytics Dashboard als erste Priorität',
+                    'Change Management für Wachstum'
+                ],
+                '201-500': [
+                    'Mid-size: Hybrid Cloud-Strategie',
+                    'Department-spezifische Use Cases',
+                    'Center of Excellence aufbauen'
+                ],
+                '501-1000': [
+                    'Large Enterprise: Multi-tenant Architektur',
+                    'Global Compliance Framework',
+                    'Advanced People Analytics'
+                ],
+                '1000+': [
+                    'Enterprise: Custom AI Models entwickeln',
+                    'Multi-regional Deployment-Strategie',
+                    'Innovation Lab für disruptive HR-KI'
+                ]
+            };
+            
+            recommendations.push(...(sizeRecommendations[employeeCount] || sizeRecommendations['51-200']));
+            
+            // Maturity-specific recommendations
+            if (maturityLevel <= 2) {
+                recommendations.push(
+                    'Foundation-Building: Data Governance als Priorität #1',
+                    'Quick Wins: Chatbots und einfache Automatisierung',
+                    'Skills Development: Data Literacy für HR-Team'
+                );
+            } else if (maturityLevel <= 3.5) {
+                recommendations.push(
+                    'Scaling Phase: Pilot-Projekte systematisch ausweiten',
+                    'Integration: bestehende HR-Systeme verknüpfen',
+                    'Governance: Ethics Board für AI-Entscheidungen'
+                );
+            } else {
+                recommendations.push(
+                    'Innovation Leader: Thought Leadership übernehmen',
+                    'R&D: Next-Gen Technologies evaluieren (GPT-5, Quantum ML)',
+                    'Ecosystem: Strategic Partnerships mit AI-Startups'
+                );
+            }
+            
+            return recommendations;
+        }
+        
+        function updateRecommendations() {
+            const industry = document.getElementById('industry')?.value;
+            const employeeCount = document.getElementById('employeeCount')?.value;
+            
+            if (industry && employeeCount) {
+                const recommendations = generateSmartRecommendations(industry, employeeCount, overallMaturity);
+                displayRecommendations(recommendations);
+            }
+        }
+        
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('smartRecommendations');
+            if (container && recommendations.length > 0) {
+                container.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border-left: 4px solid #667eea;">
+                        <h4 style="color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-lightbulb" style="color: #667eea;"></i>
+                            Smart Empfehlungen für Sie
+                        </h4>
+                        <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
+                            ${recommendations.slice(0, 4).map(rec => `<li style="margin: 0.5rem 0; color: #374151; font-size: 0.9rem;">${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                container.style.display = 'block';
+            }
+        }
+        
+        function generateIndustrySpecificGoals(industry) {
+            // Highlight relevant goals based on industry
+            const goalRelevance = {
+                'technology': ['goal1', 'goal2', 'goal6'], // Talent, Development, Analytics
+                'finance': ['goal1', 'goal4', 'goal5'], // Talent, Retention, Performance
+                'healthcare': ['goal4', 'goal3', 'goal5'], // Retention, Engagement, Performance
+                'manufacturing': ['goal1', 'goal4', 'goal6'], // Talent, Retention, Analytics
+                'retail': ['goal1', 'goal3', 'goal4'] // Talent, Engagement, Retention
+            };
+            
+            const relevantGoals = goalRelevance[industry] || [];
+            
+            // Add visual indicators to relevant goals
+            document.querySelectorAll('.checkbox-item input[id^="goal"]').forEach(goal => {
+                const item = goal.closest('.checkbox-item');
+                if (relevantGoals.includes(goal.id)) {
+                    item.style.border = '2px solid #667eea';
+                    item.style.background = '#f0f4ff';
+                    // Add "Empfohlen" badge
+                    if (!item.querySelector('.recommended-badge')) {
+                        const badge = document.createElement('div');
+                        badge.className = 'recommended-badge';
+                        badge.innerHTML = '<i class="fas fa-star" style="color: #fbbf24; margin-right: 0.25rem;"></i>Empfohlen';
+                        badge.style.cssText = 'position: absolute; top: 0.5rem; right: 0.5rem; background: #fff; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #667eea; border: 1px solid #e0e7ff;';
+                        item.style.position = 'relative';
+                        item.appendChild(badge);
+                    }
+                } else {
+                    item.style.border = '2px solid #e5e7eb';
+                    item.style.background = '#fafbfc';
+                    const badge = item.querySelector('.recommended-badge');
+                    if (badge) badge.remove();
+                }
+            });
+        }
+        
+        function detectIndustryFromName(companyName) {
+            const industryKeywords = {
+                'technology': ['tech', 'software', 'digital', 'IT', 'app', 'web', 'cloud', 'data'],
+                'finance': ['bank', 'finance', 'insurance', 'invest', 'capital', 'trading', 'fintech'],
+                'healthcare': ['health', 'medical', 'pharma', 'hospital', 'clinic', 'biotech'],
+                'manufacturing': ['manufacturing', 'automotive', 'industrial', 'production', 'factory'],
+                'retail': ['retail', 'shop', 'store', 'commerce', 'fashion', 'market']
+            };
+            
+            const lowerName = companyName.toLowerCase();
+            
+            for (const [industry, keywords] of Object.entries(industryKeywords)) {
+                if (keywords.some(keyword => lowerName.includes(keyword))) {
+                    const industryField = document.getElementById('industry');
+                    if (industryField && !industryField.value) {
+                        industryField.value = industry;
+                        updateRecommendations();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function updateInvestmentEstimate(employeeCount) {
+            // Show investment estimate preview
+            const estimate = calculateInvestment();
+            
+            // Add visual feedback
+            const employeeField = document.getElementById('employeeCount');
+            if (employeeField && estimate) {
+                const parent = employeeField.closest('.form-group');
+                let preview = parent.querySelector('.investment-preview');
+                
+                if (!preview) {
+                    preview = document.createElement('div');
+                    preview.className = 'investment-preview';
+                    preview.style.cssText = 'margin-top: 0.5rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9; font-size: 0.875rem; color: #0c4a6e;';
+                    parent.appendChild(preview);
+                }
+                
+                preview.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-calculator" style="color: #0ea5e9;"></i>
+                        <strong>Geschätztes Investment Jahr 1: ${estimate}</strong>
+                    </div>
+                    <div style="font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.8;">Basierend auf Unternehmensgröße und Reifegrad</div>
+                `;
             }
         }
     </script>
