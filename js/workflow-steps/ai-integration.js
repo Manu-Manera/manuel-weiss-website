@@ -15,14 +15,24 @@
 // Siehe: https://mawps.netlify.app/admin#ai-settings
 
 /**
- * Get API Key from existing Admin Panel system
+ * Get API Key from existing Admin Panel system (Moderne Integration)
  */
 function getAdminPanelApiKey() {
-    // Admin Panel speichert API Keys in localStorage unter 'openai_api_key'
+    // Verwende neue Admin Panel Integration falls verfügbar
+    if (window.adminPanelIntegration) {
+        const apiKey = window.adminPanelIntegration.getApiKey();
+        if (!apiKey) {
+            console.warn('⚠️ Kein API Key im Admin Panel Integration System');
+            console.log('👉 Admin Panel: https://mawps.netlify.app/admin#ai-settings');
+        }
+        return apiKey;
+    }
+    
+    // Fallback: Direkte localStorage Abfrage
     const apiKey = localStorage.getItem('openai_api_key');
     
     if (!apiKey) {
-        console.warn('⚠️ Kein API Key gefunden');
+        console.warn('⚠️ Kein API Key gefunden (Fallback)');
         console.log('👉 Bitte konfigurieren Sie den API Key über das Admin Panel:');
         console.log('   https://mawps.netlify.app/admin#ai-settings');
         return null;
@@ -81,44 +91,81 @@ window.startAdvancedAnalysis = function(mode = 'ai-full') {
 };
 
 /**
- * Test API Key availability (for debugging)
+ * Test API Key availability (Moderne Integration mit Diagnostics)
  */
 window.testAdminApiKey = function() {
-    const apiKey = getAdminPanelApiKey();
-    const isValid = validateApiKey(apiKey);
+    console.log('🧪 Admin Panel API Key Test (Moderne Integration)');
     
-    console.log('🧪 API Key Test:');
-    console.log('   Verfügbar:', !!apiKey);
-    console.log('   Valid Format:', isValid);
-    console.log('   Länge:', apiKey ? apiKey.length : 0);
-    console.log('   Prefix:', apiKey ? apiKey.substring(0, 10) + '...' : 'N/A');
-    
-    return !!apiKey && isValid;
+    if (window.adminPanelIntegration) {
+        const diagnostics = window.adminPanelIntegration.getDiagnostics();
+        console.table(diagnostics);
+        
+        const apiKey = window.adminPanelIntegration.getApiKey();
+        const isValid = validateApiKey(apiKey);
+        
+        console.log('📊 Test-Ergebnis:');
+        console.log('   Integration aktiv: ✅');
+        console.log('   API Key verfügbar:', diagnostics.apiKeyAvailable ? '✅' : '❌');
+        console.log('   Format valid:', isValid ? '✅' : '❌');
+        console.log('   Monitoring aktiv: ✅');
+        
+        return diagnostics.apiKeyAvailable && isValid;
+    } else {
+        // Fallback Test
+        const apiKey = getAdminPanelApiKey();
+        const isValid = validateApiKey(apiKey);
+        
+        console.log('🔄 Fallback Test:');
+        console.log('   Verfügbar:', !!apiKey);
+        console.log('   Valid Format:', isValid);
+        console.log('   Länge:', apiKey ? apiKey.length : 0);
+        console.log('   Prefix:', apiKey ? apiKey.substring(0, 10) + '...' : 'N/A');
+        console.warn('⚠️ Admin Panel Integration nicht verfügbar - Fallback verwendet');
+        
+        return !!apiKey && isValid;
+    }
 };
 
 // =================== DEVELOPMENT/TEST FUNCTIONS ===================
 
 /**
- * Set test API key (NUR für lokale Tests - NIEMALS hart codierte Keys!)
+ * Set test API key - VERALTET (Verwenden Sie das Admin Panel!)
  */
 window.setTestApiKeyForDevelopment = function() {
-    const testApiKey = prompt('🧪 API Key für Tests eingeben (wird NICHT gespeichert):');
+    console.warn('⚠️ VERALTETE FUNKTION - Verwenden Sie das Admin Panel!');
+    console.log('👉 Automatische Admin Panel Integration ist jetzt aktiv');
+    console.log('👉 Gehen Sie zu: admin.html#ai-settings');
     
-    if (!testApiKey || !testApiKey.startsWith('sk-')) {
-        console.log('❌ Ungültiger API Key oder Eingabe abgebrochen');
-        return false;
+    const useAdminPanel = confirm('Diese Funktion ist veraltet!\n\nDas neue Admin Panel Integration System ist aktiv und eliminiert manuelle API Key Eingaben.\n\nMöchten Sie das Admin Panel öffnen?');
+    
+    if (useAdminPanel) {
+        window.open('admin.html#ai-settings', '_blank');
+        return true;
     }
     
-    console.log('🧪 Setting test API key (development only)...');
-    localStorage.setItem('openai_api_key', testApiKey);
+    const forceDebug = confirm('Trotzdem Debug-Modus für Tests verwenden?\n(Nicht empfohlen - verwenden Sie das Admin Panel)');
     
-    // Update RealAI instance if available
-    if (window.realAI) {
-        window.realAI.apiKey = testApiKey;
+    if (forceDebug) {
+        const testApiKey = prompt('🧪 Debug API Key eingeben:');
+        
+        if (!testApiKey || !testApiKey.startsWith('sk-')) {
+            console.log('❌ Ungültiger API Key oder Eingabe abgebrochen');
+            return false;
+        }
+        
+        console.log('🧪 Debug API Key gesetzt (verwenden Sie in Zukunft das Admin Panel)');
+        localStorage.setItem('openai_api_key', testApiKey);
+        
+        // Update Admin Panel Integration if available
+        if (window.adminPanelIntegration) {
+            window.adminPanelIntegration.checkApiKey();
+        }
+        
+        return true;
     }
     
-    console.log('✅ Test API Key gesetzt - bereit für KI-Tests');
-    return true;
+    console.log('💡 Verwenden Sie das Admin Panel für sichere API Key Verwaltung');
+    return false;
 };
 
 console.log('✅ AI Integration Module geladen (mit Admin Panel Integration)');

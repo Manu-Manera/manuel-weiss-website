@@ -4533,18 +4533,16 @@ class RealAIAnalyzer {
     }
     
     getApiKey() {
-        // Try multiple storage methods
-        let apiKey = localStorage.getItem('openai_api_key') || 
-                    localStorage.getItem('ai_api_key') ||
-                    sessionStorage.getItem('openai_api_key');
-                    
+        // Automatische Integration mit Admin Panel API Key System
+        const apiKey = localStorage.getItem('openai_api_key') || 
+                      localStorage.getItem('ai_api_key') ||
+                      sessionStorage.getItem('openai_api_key');
+                      
         if (!apiKey) {
-            // Prompt user to set API key
-            apiKey = prompt('🤖 Für die KI-Stellenanalyse wird ein OpenAI API Key benötigt.\n\nBitte geben Sie Ihren OpenAI API Key ein:');
-            if (apiKey) {
-                localStorage.setItem('openai_api_key', apiKey);
-                console.log('✅ API Key gespeichert');
-            }
+            console.warn('⚠️ Kein API Key konfiguriert - bitte Admin Panel (KI-Einstellungen) verwenden');
+            console.log('👉 Admin Panel: https://mawps.netlify.app/admin#ai-settings');
+        } else {
+            console.log('✅ API Key aus Admin Panel geladen');
         }
         
         return apiKey;
@@ -4552,7 +4550,8 @@ class RealAIAnalyzer {
     
     async analyzeJobDescription(jobDescription, company = '', position = '') {
         if (!this.apiKey) {
-            console.error('❌ Kein API Key verfügbar');
+            console.error('❌ Kein API Key verfügbar - Admin Panel Konfiguration erforderlich');
+            this.showApiKeyMissingError();
             return this.getFallbackAnalysis(jobDescription, company, position);
         }
         
@@ -4817,10 +4816,111 @@ Bitte analysiere und gib eine JSON-Antwort zurück mit:
             }
         }, 8000);
     }
+    
+    showApiKeyMissingError() {
+        // Show user-friendly API Key missing error with Admin Panel link
+        const errorModal = document.createElement('div');
+        errorModal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            backdrop-filter: blur(5px);
+        `;
+        
+        errorModal.innerHTML = `
+            <div style="
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                max-width: 500px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            ">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔑</div>
+                <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">API Key erforderlich</h3>
+                <p style="color: #374151; margin-bottom: 1.5rem; line-height: 1.6;">
+                    Für die KI-Stellenanalyse ist ein <strong>OpenAI API Key</strong> erforderlich.<br><br>
+                    Bitte konfigurieren Sie Ihren API Key im <strong>Admin Panel</strong> unter "KI-Einstellungen".
+                </p>
+                
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left;">
+                    <div style="font-size: 0.875rem; color: #1e40af;">
+                        <strong>📋 So geht's:</strong><br>
+                        1. Admin Panel öffnen → KI-Einstellungen<br>
+                        2. OpenAI API Key eingeben<br>
+                        3. "Einstellungen speichern" klicken<br>
+                        4. Workflow erneut starten
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="window.open('admin.html#ai-settings', '_blank')" style="
+                        background: #dc2626;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                    ">
+                        <i class="fas fa-cog"></i> Admin Panel öffnen
+                    </button>
+                    <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="
+                        background: #6b7280;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                    ">
+                        Schließen
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(errorModal);
+        
+        // Auto-close after 15 seconds
+        setTimeout(() => {
+            if (errorModal.parentNode) {
+                errorModal.remove();
+            }
+        }, 15000);
+        
+        console.log('🔑 API Key Modal angezeigt - Admin Panel Integration erforderlich');
+    }
 }
 
-// Initialize AI Analyzer
+// Initialize AI Analyzer with Admin Panel Integration
 window.realAI = new RealAIAnalyzer();
+
+// Enhance RealAIAnalyzer with automatic Admin Panel integration
+if (window.adminPanelIntegration) {
+    // Override getApiKey method to use Admin Panel Integration
+    window.realAI.getApiKey = function() {
+        return window.adminPanelIntegration.getApiKey();
+    };
+    
+    // Add listener for API Key updates
+    window.adminPanelIntegration.addListener((event, data) => {
+        if (event === 'api_key_available' && window.realAI) {
+            window.realAI.apiKey = data;
+            console.log('🔄 RealAI API Key automatisch aktualisiert');
+        }
+    });
+    
+    console.log('✅ RealAI Analyzer mit Admin Panel Integration verknüpft');
+}
 
 // =================== ECHTE KI-FUNKTIONEN FÜR WORKFLOW ===================
 
@@ -5098,32 +5198,52 @@ function displaySkillGapAnalysis(analysis) {
 // Nutzt bestehende Admin Panel Verwaltung (KI-Einstellungen)
 // Siehe: https://mawps.netlify.app/admin#ai-settings
 
-// Test function - NUR für lokale Tests (NIEMALS API Keys hart codieren!)
-window.setTestApiKey = function() {
-    const testKey = prompt('🧪 Test-API Key eingeben (NUR für lokale Tests):');
-    if (testKey && testKey.startsWith('sk-')) {
-        localStorage.setItem('openai_api_key', testKey);
-        if (window.realAI) {
-            window.realAI.apiKey = testKey;
+// ENTWICKLER-FUNKTIONEN (Optional - nicht mehr erforderlich)
+// Das Admin Panel Integration System macht diese Funktionen überflüssig
+
+// Test function - NUR für Entwickler/Debugging (NICHT für normale Nutzung!)
+window.setTestApiKeyForDevelopers = function() {
+    console.warn('⚠️ Diese Funktion ist veraltet - verwenden Sie das Admin Panel!');
+    console.log('👉 Gehen Sie zu: admin.html#ai-settings');
+    
+    const confirm = prompt('⚠️ Veraltete Funktion!\n\nVerwenden Sie das Admin Panel für API Key Verwaltung.\nTrotzdem fortfahren für Debugging? (ja/nein)');
+    
+    if (confirm?.toLowerCase() === 'ja') {
+        const testKey = prompt('🧪 Test-API Key eingeben (NUR für Debugging):');
+        if (testKey && testKey.startsWith('sk-')) {
+            localStorage.setItem('openai_api_key', testKey);
+            if (window.realAI) {
+                window.realAI.apiKey = testKey;
+            }
+            console.log('🧪 Debug-API Key gesetzt (temporär)');
+            return testKey;
         }
-        console.log('🧪 Test-API Key gesetzt (temporär)');
-        return testKey;
-    } else {
-        console.log('❌ Ungültiger API Key oder Eingabe abgebrochen');
-        return null;
     }
+    
+    console.log('❌ Verwenden Sie stattdessen das Admin Panel');
+    return null;
 };
 
-// Check if API key is available from Admin Panel
+// Check if API key is available from Admin Panel (Moderne Integration)
 window.checkAdminApiKey = function() {
-    const apiKey = localStorage.getItem('openai_api_key');
-    if (apiKey) {
-        console.log('✅ API Key verfügbar aus Admin Panel');
-        return true;
+    if (window.adminPanelIntegration) {
+        const isAvailable = window.adminPanelIntegration.isApiKeyAvailable();
+        const diagnostics = window.adminPanelIntegration.getDiagnostics();
+        
+        console.log('🔍 Admin Panel API Key Status:', isAvailable ? '✅ Verfügbar' : '❌ Nicht verfügbar');
+        console.table(diagnostics);
+        
+        if (!isAvailable) {
+            console.log('👉 Admin Panel: https://mawps.netlify.app/admin#ai-settings');
+            window.adminPanelIntegration.showConfigurationHint();
+        }
+        
+        return isAvailable;
     } else {
-        console.log('⚠️ Kein API Key - bitte über Admin Panel konfigurieren');
-        console.log('👉 Gehe zu: https://mawps.netlify.app/admin#ai-settings');
-        return false;
+        // Fallback für direkten localStorage check
+        const apiKey = localStorage.getItem('openai_api_key');
+        console.log('🔄 Fallback Check:', apiKey ? '✅ API Key vorhanden' : '❌ Kein API Key');
+        return !!apiKey;
     }
 };
 
