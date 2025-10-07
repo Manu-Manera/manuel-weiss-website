@@ -1297,6 +1297,58 @@ window.generateStep3 = function() {
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
                     </button>
+                </div>
+            </div>
+
+            <!-- NEW: DACH-spezifische Anforderungsübersicht -->
+            <div class="requirements-overview-section" style="margin-bottom: 2rem;">
+                <div class="requirements-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: #374151; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-list-check"></i>
+                        Ausgewählte Anforderungen für das Anschreiben
+                    </h4>
+                    <button onclick="editRequirements()" style="background: none; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; color: #6b7280; font-size: 0.875rem;">
+                        <i class="fas fa-edit"></i> Bearbeiten
+                    </button>
+                </div>
+                
+                <div id="selectedRequirementsDisplay" class="selected-requirements-grid" style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                    <!-- Will be populated dynamically -->
+                </div>
+                
+                <!-- DACH Best Practices Info -->
+                <div class="dach-best-practices" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #16a34a;">
+                    <h5 style="color: #15803d; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-award"></i>
+                        DACH-Region Best Practices
+                    </h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; font-size: 0.875rem; color: #15803d;">
+                        <div>
+                            <strong>🇩🇪 Deutschland:</strong>
+                            <ul style="margin: 0.5rem 0 0; padding-left: 1rem; line-height: 1.5;">
+                                <li>Formelle Anrede: "Sehr geehrte/r..."</li>
+                                <li>Strukturiert: Motivation → Qualifikation → Interesse</li>
+                                <li>Max. 1 Seite, präzise Formulierungen</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong>🇦🇹 Österreich:</strong>
+                            <ul style="margin: 0.5rem 0 0; padding-left: 1rem; line-height: 1.5;">
+                                <li>Höfliche, respektvolle Ansprache</li>
+                                <li>Bezug auf Unternehmenskultur</li>
+                                <li>Regionale Verbundenheit erwähnen</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong>🇨🇭 Schweiz:</strong>
+                            <ul style="margin: 0.5rem 0 0; padding-left: 1rem; line-height: 1.5;">
+                                <li>Konservativ und seriös</li>
+                                <li>Qualität vor Quantität</li>
+                                <li>Präzision in der Argumentation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                     <div class="generation-options" style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
                         <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
                             <input type="checkbox" id="includeMotivation" checked style="margin: 0;">
@@ -4470,3 +4522,948 @@ function openAssistedEditor() {
 function openTemplateAssistant() {
     alert('Template-Assistent wird geöffnet... 🎨');
 }
+
+// =================== ECHTE KI-INTEGRATION FÜR STELLENANALYSE ===================
+
+class RealAIAnalyzer {
+    constructor() {
+        this.apiKey = this.getApiKey();
+        this.baseURL = 'https://api.openai.com/v1/chat/completions';
+        this.model = 'gpt-4';
+    }
+    
+    getApiKey() {
+        // Try multiple storage methods
+        let apiKey = localStorage.getItem('openai_api_key') || 
+                    localStorage.getItem('ai_api_key') ||
+                    sessionStorage.getItem('openai_api_key');
+                    
+        if (!apiKey) {
+            // Prompt user to set API key
+            apiKey = prompt('🤖 Für die KI-Stellenanalyse wird ein OpenAI API Key benötigt.\n\nBitte geben Sie Ihren OpenAI API Key ein:');
+            if (apiKey) {
+                localStorage.setItem('openai_api_key', apiKey);
+                console.log('✅ API Key gespeichert');
+            }
+        }
+        
+        return apiKey;
+    }
+    
+    async analyzeJobDescription(jobDescription, company = '', position = '') {
+        if (!this.apiKey) {
+            console.error('❌ Kein API Key verfügbar');
+            return this.getFallbackAnalysis(jobDescription, company, position);
+        }
+        
+        const prompt = `Als HR-Experte analysiere die folgende Stellenausschreibung und extrahiere strukturierte Informationen:
+
+UNTERNEHMEN: ${company}
+POSITION: ${position}
+
+STELLENAUSSCHREIBUNG:
+${jobDescription}
+
+Bitte analysiere und gib eine JSON-Antwort zurück mit:
+{
+  "requirements": [
+    {
+      "category": "Muss-Qualifikation|Kann-Qualifikation|Soft Skills|Technische Skills",
+      "text": "Konkrete Anforderung",
+      "priority": "hoch|mittel|niedrig",
+      "matchable": true/false
+    }
+  ],
+  "company_info": {
+    "industry": "Branche",
+    "size": "Unternehmensgröße",
+    "culture": "Unternehmenskultur"
+  },
+  "position_details": {
+    "level": "Junior|Mid|Senior|Lead",
+    "department": "Abteilung",
+    "key_responsibilities": ["Hauptaufgabe 1", "Hauptaufgabe 2"]
+  },
+  "salary_info": {
+    "mentioned": true/false,
+    "range": "falls erwähnt",
+    "benefits": ["Benefit 1", "Benefit 2"]
+  }
+}`;
+
+        try {
+            console.log('🔄 Sende KI-Anfrage für Stellenanalyse...');
+            
+            const response = await fetch(this.baseURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für HR und Stellenanalyse. Analysiere Stellenausschreibungen präzise und strukturiert.'
+                        },
+                        {
+                            role: 'user', 
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 2000
+                })
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.error('❌ API Key ungültig');
+                    localStorage.removeItem('openai_api_key');
+                    throw new Error('Ungültiger API Key');
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            
+            // Try to parse JSON response
+            try {
+                const analysis = JSON.parse(aiResponse);
+                console.log('✅ KI-Analyse erfolgreich:', analysis);
+                return analysis;
+            } catch (parseError) {
+                console.error('❌ JSON Parse Fehler:', parseError);
+                return this.parseUnstructuredResponse(aiResponse, jobDescription, company, position);
+            }
+            
+        } catch (error) {
+            console.error('❌ KI-API Fehler:', error);
+            
+            // Show user-friendly error
+            const errorMessage = error.message.includes('API Key') 
+                ? 'API Key Problem. Bitte überprüfen Sie Ihren OpenAI API Key.'
+                : 'KI-Service temporär nicht verfügbar. Fallback-Analyse wird verwendet.';
+                
+            this.showAnalysisError(errorMessage);
+            return this.getFallbackAnalysis(jobDescription, company, position);
+        }
+    }
+    
+    parseUnstructuredResponse(response, jobDescription, company, position) {
+        console.log('🔄 Parse unstrukturierte KI-Antwort...');
+        
+        // Extract requirements using regex and keywords
+        const requirements = [];
+        const lines = response.split('\n');
+        
+        const requirementKeywords = [
+            'erfahrung', 'kenntnisse', 'qualifikation', 'skills', 'fähigkeiten',
+            'studium', 'ausbildung', 'zertifikat', 'sprache', 'software'
+        ];
+        
+        for (const line of lines) {
+            const cleanLine = line.trim().toLowerCase();
+            if (requirementKeywords.some(keyword => cleanLine.includes(keyword)) && line.length > 10) {
+                requirements.push({
+                    category: this.categorizeRequirement(line),
+                    text: line.trim(),
+                    priority: 'mittel',
+                    matchable: true
+                });
+            }
+        }
+        
+        return {
+            requirements: requirements.slice(0, 8), // Limit to top 8
+            company_info: {
+                industry: 'Nicht spezifiziert',
+                size: 'Nicht angegeben',
+                culture: 'Wird analysiert'
+            },
+            position_details: {
+                level: this.determineLevel(jobDescription),
+                department: this.determineDepartment(jobDescription),
+                key_responsibilities: ['Basierend auf Stellenausschreibung']
+            },
+            salary_info: {
+                mentioned: jobDescription.toLowerCase().includes('gehalt') || jobDescription.toLowerCase().includes('salary'),
+                range: 'Siehe Stellenausschreibung',
+                benefits: ['Nach Vereinbarung']
+            }
+        };
+    }
+    
+    categorizeRequirement(requirement) {
+        const req = requirement.toLowerCase();
+        
+        if (req.includes('muss') || req.includes('erforderlich') || req.includes('voraussetzung')) {
+            return 'Muss-Qualifikation';
+        } else if (req.includes('wünschenswert') || req.includes('idealerweise') || req.includes('von vorteil')) {
+            return 'Kann-Qualifikation';
+        } else if (req.includes('kommunikation') || req.includes('teamfähig') || req.includes('selbständig')) {
+            return 'Soft Skills';
+        } else if (req.includes('software') || req.includes('programmier') || req.includes('technisch')) {
+            return 'Technische Skills';
+        }
+        
+        return 'Allgemeine Qualifikation';
+    }
+    
+    determineLevel(jobDescription) {
+        const desc = jobDescription.toLowerCase();
+        
+        if (desc.includes('senior') || desc.includes('lead') || desc.includes('expert')) return 'Senior';
+        if (desc.includes('junior') || desc.includes('trainee') || desc.includes('entry')) return 'Junior';
+        if (desc.includes('mid-level') || desc.includes('experienced')) return 'Mid';
+        
+        return 'Mid'; // Default
+    }
+    
+    determineDepartment(jobDescription) {
+        const desc = jobDescription.toLowerCase();
+        
+        if (desc.includes('hr') || desc.includes('personal')) return 'HR/Personal';
+        if (desc.includes('marketing') || desc.includes('vertrieb')) return 'Marketing/Vertrieb';
+        if (desc.includes('it') || desc.includes('software') || desc.includes('entwickl')) return 'IT/Entwicklung';
+        if (desc.includes('finanz') || desc.includes('controlling')) return 'Finanzen';
+        
+        return 'Allgemein';
+    }
+    
+    getFallbackAnalysis(jobDescription, company, position) {
+        console.log('🔄 Verwende Fallback-Analyse...');
+        
+        // Basic keyword extraction
+        const keywords = this.extractKeywords(jobDescription);
+        const requirements = keywords.map((keyword, index) => ({
+            category: index < 2 ? 'Muss-Qualifikation' : 'Kann-Qualifikation',
+            text: keyword,
+            priority: index < 3 ? 'hoch' : 'mittel',
+            matchable: true
+        }));
+        
+        return {
+            requirements: requirements,
+            company_info: {
+                industry: 'Wird analysiert',
+                size: 'Mittelstand',
+                culture: 'Teamorientiert'
+            },
+            position_details: {
+                level: this.determineLevel(jobDescription),
+                department: this.determineDepartment(jobDescription),
+                key_responsibilities: ['Basierend auf Stellenbeschreibung']
+            },
+            salary_info: {
+                mentioned: false,
+                range: 'Nach Vereinbarung',
+                benefits: ['Flexible Arbeitszeiten', 'Weiterbildungsmöglichkeiten']
+            }
+        };
+    }
+    
+    extractKeywords(text) {
+        const keywords = [];
+        const commonRequirements = [
+            'Berufserfahrung in relevanten Bereichen',
+            'Sehr gute Kommunikationsfähigkeiten',
+            'Teamfähigkeit und Eigeninitiative',
+            'Analytisches Denkvermögen',
+            'Strukturierte Arbeitsweise',
+            'MS Office Kenntnisse',
+            'Deutsch in Wort und Schrift',
+            'Belastbarkeit und Flexibilität'
+        ];
+        
+        // Use predefined requirements as fallback
+        return commonRequirements.slice(0, 6);
+    }
+    
+    showAnalysisError(message) {
+        // Show user-friendly error in UI
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 300px;
+            z-index: 10001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        errorDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <strong>⚠️ KI-Analyse Hinweis</strong>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.875rem;">${message}</p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #dc2626;">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        // Auto remove after 8 seconds
+        setTimeout(() => {
+            if (errorDiv.parentElement) {
+                errorDiv.remove();
+            }
+        }, 8000);
+    }
+}
+
+// Initialize AI Analyzer
+window.realAI = new RealAIAnalyzer();
+
+// =================== ECHTE KI-FUNKTIONEN FÜR WORKFLOW ===================
+
+// Replace mock analysis functions with real AI calls
+window.startAdvancedAnalysis = async function(mode = 'ai-full') {
+    console.log('🚀 Starte echte KI-Analyse...', mode);
+    
+    const jobDescription = window.workflowData?.jobDescription || '';
+    const company = window.workflowData?.company || '';
+    const position = window.workflowData?.position || '';
+    
+    if (!jobDescription.trim()) {
+        alert('❌ Keine Stellenausschreibung zum Analysieren vorhanden.');
+        return;
+    }
+    
+    // Show loading state
+    const analyzeButton = document.querySelector('[onclick*="startAdvancedAnalysis"]');
+    if (analyzeButton) {
+        const originalText = analyzeButton.textContent;
+        analyzeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI analysiert...';
+        analyzeButton.disabled = true;
+    }
+    
+    // Update dashboard metrics with loading state
+    updateDashboardMetrics('analyzing', '-', '-', '-');
+    
+    try {
+        // Real AI analysis
+        const analysis = await window.realAI.analyzeJobDescription(jobDescription, company, position);
+        
+        // Store analysis results
+        window.workflowData.aiAnalysisResult = analysis;
+        window.workflowData.requirements = analysis.requirements;
+        
+        // Update UI with results
+        displayAnalysisResults(analysis);
+        updateDashboardMetrics('completed', 
+            analysis.requirements.length, 
+            analysis.requirements.filter(r => r.matchable).length,
+            Math.round((analysis.requirements.filter(r => r.matchable).length / analysis.requirements.length) * 100)
+        );
+        
+        // Show proceed button
+        const proceedBtn = document.getElementById('proceedButton');
+        if (proceedBtn) {
+            proceedBtn.style.display = 'inline-flex';
+        }
+        
+        console.log('✅ KI-Analyse abgeschlossen:', analysis);
+        
+    } catch (error) {
+        console.error('❌ Fehler bei KI-Analyse:', error);
+        
+        // Fallback analysis
+        const fallbackAnalysis = window.realAI.getFallbackAnalysis(jobDescription, company, position);
+        window.workflowData.aiAnalysisResult = fallbackAnalysis;
+        window.workflowData.requirements = fallbackAnalysis.requirements;
+        
+        displayAnalysisResults(fallbackAnalysis);
+        updateDashboardMetrics('fallback', 
+            fallbackAnalysis.requirements.length, 
+            fallbackAnalysis.requirements.filter(r => r.matchable).length, 
+            75
+        );
+        
+    } finally {
+        // Reset button
+        if (analyzeButton) {
+            analyzeButton.innerHTML = '<i class="fas fa-robot"></i> Analyse starten';
+            analyzeButton.disabled = false;
+        }
+    }
+};
+
+// Helper functions for UI updates
+function updateDashboardMetrics(state, requirements, matches, percentage) {
+    const reqElement = document.getElementById('requirementsFound');
+    const matchElement = document.getElementById('skillMatches');
+    
+    if (reqElement) {
+        reqElement.textContent = state === 'analyzing' ? '...' : requirements;
+        reqElement.style.color = state === 'fallback' ? '#f59e0b' : '#6366f1';
+    }
+    
+    if (matchElement) {
+        matchElement.textContent = state === 'analyzing' ? '...' : matches;
+        matchElement.style.color = state === 'fallback' ? '#f59e0b' : '#10b981';
+    }
+    
+    // Update percentage display if exists
+    const percentageElements = document.querySelectorAll('[id*="percentage"], [id*="match-rate"]');
+    percentageElements.forEach(element => {
+        if (element) {
+            element.textContent = state === 'analyzing' ? '...' : `${percentage}%`;
+        }
+    });
+}
+
+function displayAnalysisResults(analysis) {
+    const resultsContainer = document.getElementById('requirementsAnalysis');
+    if (!resultsContainer) return;
+    
+    resultsContainer.style.display = 'block';
+    resultsContainer.innerHTML = `
+        <h4 style="margin-bottom: 1.5rem; color: #374151; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-list-check"></i>
+            Analysierte Anforderungen (${analysis.requirements.length})
+        </h4>
+        
+        <div class="requirements-grid" style="display: grid; gap: 1rem;">
+            ${analysis.requirements.map((req, index) => `
+                <div class="requirement-card" style="
+                    background: white;
+                    border: 2px solid ${getRequirementColor(req.category)};
+                    border-radius: 12px;
+                    padding: 1rem;
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                " onclick="toggleRequirement(${index})">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <span class="requirement-category" style="
+                            background: ${getRequirementColor(req.category)};
+                            color: white;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 12px;
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                        ">${req.category}</span>
+                        <div class="priority-indicator" style="
+                            background: ${getPriorityColor(req.priority)};
+                            width: 0.75rem;
+                            height: 0.75rem;
+                            border-radius: 50%;
+                        " title="Priorität: ${req.priority}"></div>
+                    </div>
+                    <p style="margin: 0; color: #374151; line-height: 1.4;">${req.text}</p>
+                    <div class="requirement-actions" style="margin-top: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+                            <input type="checkbox" id="req_${index}" checked style="margin-right: 0.5rem;">
+                            <label for="req_${index}" style="font-size: 0.875rem; color: #6b7280;">In Anschreiben verwenden</label>
+                        </div>
+                        
+                        <div class="requirement-detail-options" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                                <input type="radio" name="req_${index}_mode" value="brief" checked style="margin: 0;" onchange="updateRequirementMode(${index})">
+                                Kurz erwähnen
+                            </label>
+                            <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                                <input type="radio" name="req_${index}_mode" value="detailed" style="margin: 0;" onchange="updateRequirementMode(${index})">
+                                Detailliert eingehen
+                            </label>
+                            <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                                <input type="radio" name="req_${index}_mode" value="example" style="margin: 0;" onchange="updateRequirementMode(${index})">
+                                Mit Beispiel
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 12px; border-left: 4px solid #3b82f6;">
+            <h5 style="margin: 0 0 1rem; color: #1e40af; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-info-circle"></i>
+                Zusammenfassung der KI-Analyse
+            </h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.875rem;">
+                <div>
+                    <strong>Position:</strong> ${analysis.position_details.level} ${analysis.position_details.department}
+                </div>
+                <div>
+                    <strong>Branche:</strong> ${analysis.company_info.industry}
+                </div>
+                <div>
+                    <strong>Muss-Qualifikationen:</strong> ${analysis.requirements.filter(r => r.category.includes('Muss')).length}
+                </div>
+                <div>
+                    <strong>Kann-Qualifikationen:</strong> ${analysis.requirements.filter(r => r.category.includes('Kann')).length}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Show skill gap analysis if available
+    displaySkillGapAnalysis(analysis);
+}
+
+function getRequirementColor(category) {
+    switch (category) {
+        case 'Muss-Qualifikation': return '#dc2626';
+        case 'Kann-Qualifikation': return '#f59e0b';
+        case 'Soft Skills': return '#10b981';
+        case 'Technische Skills': return '#3b82f6';
+        default: return '#6b7280';
+    }
+}
+
+function getPriorityColor(priority) {
+    switch (priority) {
+        case 'hoch': return '#dc2626';
+        case 'mittel': return '#f59e0b';
+        case 'niedrig': return '#10b981';
+        default: return '#6b7280';
+    }
+}
+
+function toggleRequirement(index) {
+    const checkbox = document.getElementById(`req_${index}`);
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        
+        // Update workflowData with selection and detail mode
+        if (window.workflowData.requirements[index]) {
+            window.workflowData.requirements[index].selected = checkbox.checked;
+            
+            // Get selected detail mode
+            const detailModes = document.querySelectorAll(`input[name="req_${index}_mode"]`);
+            for (const mode of detailModes) {
+                if (mode.checked) {
+                    window.workflowData.requirements[index].detailMode = mode.value;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// Function to update requirement detail mode
+function updateRequirementMode(index) {
+    const detailModes = document.querySelectorAll(`input[name="req_${index}_mode"]`);
+    for (const mode of detailModes) {
+        if (mode.checked && window.workflowData.requirements[index]) {
+            window.workflowData.requirements[index].detailMode = mode.value;
+            console.log(`📝 Anforderung ${index}: ${mode.value} Modus gewählt`);
+            break;
+        }
+    }
+}
+
+function displaySkillGapAnalysis(analysis) {
+    const skillGapContainer = document.getElementById('skillGapAnalysis');
+    if (!skillGapContainer) return;
+    
+    skillGapContainer.style.display = 'block';
+    
+    // Simple skill matching logic (can be enhanced with real user profile)
+    const userSkills = ['Kommunikation', 'Teamarbeit', 'MS Office', 'Projektmanagement']; // Mock user skills
+    const requiredSkills = analysis.requirements.map(r => r.text);
+    
+    const matchingSkills = userSkills.filter(skill => 
+        requiredSkills.some(req => req.toLowerCase().includes(skill.toLowerCase()))
+    );
+    
+    const missingSkills = analysis.requirements
+        .filter(req => !userSkills.some(skill => req.text.toLowerCase().includes(skill.toLowerCase())))
+        .slice(0, 4); // Show top 4 missing skills
+    
+    document.getElementById('matchingSkillsList').innerHTML = 
+        matchingSkills.map(skill => `
+            <div style="background: #dcfce7; color: #15803d; padding: 0.5rem 1rem; border-radius: 6px; margin-bottom: 0.5rem;">
+                <i class="fas fa-check"></i> ${skill}
+            </div>
+        `).join('');
+    
+    document.getElementById('missingSkillsList').innerHTML = 
+        missingSkills.map(skill => `
+            <div style="background: #fef3c7; color: #92400e; padding: 0.5rem 1rem; border-radius: 6px; margin-bottom: 0.5rem;">
+                <i class="fas fa-plus"></i> ${skill.text}
+            </div>
+        `).join('');
+}
+
+// Add API Key management functions
+window.setApiKey = function() {
+    const apiKey = prompt('🤖 OpenAI API Key eingeben:');
+    if (apiKey) {
+        localStorage.setItem('openai_api_key', apiKey);
+        window.realAI.apiKey = apiKey;
+        alert('✅ API Key gespeichert!');
+    }
+};
+
+window.clearApiKey = function() {
+    if (confirm('API Key wirklich löschen?')) {
+        localStorage.removeItem('openai_api_key');
+        window.realAI.apiKey = null;
+        alert('🗑️ API Key gelöscht!');
+    }
+};
+
+// =================== ANFORDERUNGS-MANAGEMENT FÜR ANSCHREIBEN ===================
+
+// Function to display selected requirements in Step 3
+function displaySelectedRequirements() {
+    const container = document.getElementById('selectedRequirementsDisplay');
+    if (!container || !window.workflowData?.requirements) return;
+    
+    const selectedRequirements = window.workflowData.requirements.filter(req => req.selected !== false);
+    
+    if (selectedRequirements.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; background: #f9fafb; border-radius: 8px; color: #6b7280;">
+                <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin: 0;">Keine Anforderungen ausgewählt. Gehen Sie zurück zu Schritt 2, um Anforderungen auszuwählen.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = selectedRequirements.map((req, index) => `
+        <div class="selected-requirement-card" style="
+            background: white; 
+            border-left: 4px solid ${getRequirementColor(req.category)}; 
+            padding: 1rem; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        ">
+            <div style="display: flex; justify-content: between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <span style="
+                    background: ${getRequirementColor(req.category)}; 
+                    color: white; 
+                    padding: 0.25rem 0.75rem; 
+                    border-radius: 12px; 
+                    font-size: 0.75rem; 
+                    font-weight: 600;
+                ">${req.category}</span>
+                <div class="requirement-controls" style="margin-left: auto; display: flex; gap: 0.5rem;">
+                    <span style="
+                        background: ${getDetailModeColor(req.detailMode || 'brief')}; 
+                        color: white; 
+                        padding: 0.25rem 0.5rem; 
+                        border-radius: 6px; 
+                        font-size: 0.7rem;
+                    ">${getDetailModeLabel(req.detailMode || 'brief')}</span>
+                </div>
+            </div>
+            
+            <p style="margin: 0 0 1rem; color: #374151; line-height: 1.4; font-size: 0.9rem;">${req.text}</p>
+            
+            <div class="requirement-actions" style="display: flex; justify-content: between; align-items: center; gap: 1rem;">
+                <div class="detail-mode-selector" style="display: flex; gap: 0.5rem;">
+                    <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                        <input type="radio" name="step3_req_${index}_mode" value="brief" ${(req.detailMode || 'brief') === 'brief' ? 'checked' : ''} onchange="updateStep3RequirementMode(${index}, this.value)">
+                        Kurz
+                    </label>
+                    <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                        <input type="radio" name="step3_req_${index}_mode" value="detailed" ${req.detailMode === 'detailed' ? 'checked' : ''} onchange="updateStep3RequirementMode(${index}, this.value)">
+                        Detailliert
+                    </label>
+                    <label style="font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">
+                        <input type="radio" name="step3_req_${index}_mode" value="example" ${req.detailMode === 'example' ? 'checked' : ''} onchange="updateStep3RequirementMode(${index}, this.value)">
+                        Mit Beispiel
+                    </label>
+                </div>
+                
+                <div class="requirement-generation" style="display: flex; gap: 0.5rem;">
+                    <button onclick="generateRequirementText(${index})" style="
+                        background: #3b82f6; 
+                        color: white; 
+                        border: none; 
+                        padding: 0.25rem 0.75rem; 
+                        border-radius: 4px; 
+                        cursor: pointer; 
+                        font-size: 0.75rem;
+                        display: flex; 
+                        align-items: center; 
+                        gap: 0.25rem;
+                    ">
+                        <i class="fas fa-magic"></i>
+                        KI-Text generieren
+                    </button>
+                    <button onclick="removeRequirement(${index})" style="
+                        background: #ef4444; 
+                        color: white; 
+                        border: none; 
+                        padding: 0.25rem 0.5rem; 
+                        border-radius: 4px; 
+                        cursor: pointer; 
+                        font-size: 0.75rem;
+                    ">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Generated text preview area -->
+            <div id="req_text_${index}" class="generated-text-preview" style="display: none; margin-top: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                <div style="font-size: 0.75rem; color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;">
+                    <i class="fas fa-robot"></i> KI-generierter Text:
+                </div>
+                <div class="generated-content" style="font-size: 0.875rem; line-height: 1.5; color: #1e40af;"></div>
+                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                    <button onclick="acceptGeneratedText(${index})" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+                        <i class="fas fa-check"></i> Übernehmen
+                    </button>
+                    <button onclick="regenerateText(${index})" style="background: #f59e0b; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+                        <i class="fas fa-redo"></i> Neu generieren
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Helper functions for requirement display
+function getDetailModeColor(mode) {
+    switch (mode) {
+        case 'brief': return '#6b7280';
+        case 'detailed': return '#f59e0b';
+        case 'example': return '#10b981';
+        default: return '#6b7280';
+    }
+}
+
+function getDetailModeLabel(mode) {
+    switch (mode) {
+        case 'brief': return 'Kurz';
+        case 'detailed': return 'Detailliert';
+        case 'example': return 'Mit Beispiel';
+        default: return 'Kurz';
+    }
+}
+
+// Function to update requirement detail mode in Step 3
+function updateStep3RequirementMode(reqIndex, mode) {
+    if (window.workflowData?.requirements) {
+        const selectedReqs = window.workflowData.requirements.filter(req => req.selected !== false);
+        if (selectedReqs[reqIndex]) {
+            selectedReqs[reqIndex].detailMode = mode;
+            console.log(`📝 Anforderung ${reqIndex} auf ${mode} Modus geändert`);
+            
+            // Update the mode badge
+            const card = document.querySelector(`[onclick*="generateRequirementText(${reqIndex})"]`).closest('.selected-requirement-card');
+            const badge = card.querySelector('.requirement-controls span');
+            if (badge) {
+                badge.style.background = getDetailModeColor(mode);
+                badge.textContent = getDetailModeLabel(mode);
+            }
+        }
+    }
+}
+
+// Function to generate AI text for specific requirement with DACH best practices
+async function generateRequirementText(reqIndex) {
+    const selectedReqs = window.workflowData?.requirements?.filter(req => req.selected !== false);
+    if (!selectedReqs || !selectedReqs[reqIndex]) return;
+    
+    const requirement = selectedReqs[reqIndex];
+    const company = window.workflowData?.company || '';
+    const position = window.workflowData?.position || '';
+    const detailMode = requirement.detailMode || 'brief';
+    
+    // Show loading state
+    const button = document.querySelector(`[onclick*="generateRequirementText(${reqIndex})"]`);
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generiere...';
+    button.disabled = true;
+    
+    try {
+        // DACH-specific prompting
+        const dachPrompt = `Als Experte für DACH-Bewerbungen schreibe einen ${detailMode === 'brief' ? 'kurzen (1-2 Sätze)' : detailMode === 'detailed' ? 'detaillierten (3-4 Sätze)' : 'beispielbasierten (2-3 Sätze mit konkretem Beispiel)'} Anschreiben-Abschnitt für folgende Stellenanforderung:
+
+UNTERNEHMEN: ${company}
+POSITION: ${position}
+ANFORDERUNG: ${requirement.text}
+KATEGORIE: ${requirement.category}
+
+Berücksichtige DACH-spezifische Bewerbungsstandards:
+- Formelle, respektvolle Anrede
+- Strukturierte Argumentation
+- Konkrete Qualifikationen hervorheben
+- Unternehmens-/Positionsbezug herstellen
+- Professional und präzise formuliert
+
+Schreibe KEINEN vollständigen Brief, sondern nur den relevanten Abschnitt für diese eine Anforderung.`;
+
+        let generatedText = '';
+        
+        if (window.realAI && window.realAI.apiKey) {
+            // Use real AI if available
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${window.realAI.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für professionelle Bewerbungen im DACH-Raum. Schreibe präzise, formelle und überzeugende Anschreiben-Abschnitte.'
+                        },
+                        {
+                            role: 'user',
+                            content: dachPrompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 300
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                generatedText = data.choices[0].message.content.trim();
+            } else {
+                throw new Error('API-Fehler');
+            }
+        } else {
+            // Fallback templates based on DACH best practices
+            generatedText = generateDACHFallbackText(requirement, detailMode, company, position);
+        }
+        
+        // Display generated text
+        const previewDiv = document.getElementById(`req_text_${reqIndex}`);
+        if (previewDiv) {
+            const contentDiv = previewDiv.querySelector('.generated-content');
+            contentDiv.textContent = generatedText;
+            previewDiv.style.display = 'block';
+            
+            // Store generated text
+            requirement.generatedText = generatedText;
+        }
+        
+    } catch (error) {
+        console.error('❌ Fehler bei Text-Generierung:', error);
+        
+        // Show fallback
+        const fallbackText = generateDACHFallbackText(requirement, detailMode, company, position);
+        const previewDiv = document.getElementById(`req_text_${reqIndex}`);
+        if (previewDiv) {
+            const contentDiv = previewDiv.querySelector('.generated-content');
+            contentDiv.textContent = fallbackText;
+            previewDiv.style.display = 'block';
+            requirement.generatedText = fallbackText;
+        }
+        
+    } finally {
+        // Reset button
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+}
+
+// DACH-specific fallback text generation
+function generateDACHFallbackText(requirement, detailMode, company, position) {
+    const category = requirement.category.toLowerCase();
+    const reqText = requirement.text.toLowerCase();
+    
+    // Template patterns based on DACH standards
+    const templates = {
+        brief: {
+            'muss-qualifikation': `Meine Erfahrung in ${extractKeySkill(reqText)} entspricht genau Ihren Anforderungen für die Position als ${position}.`,
+            'kann-qualifikation': `Zusätzlich bringe ich wertvolle Kenntnisse in ${extractKeySkill(reqText)} mit, die zur erfolgreichen Umsetzung Ihrer Projekte beitragen.`,
+            'soft skills': `Durch meine ausgeprägte ${extractKeySkill(reqText)} bin ich in der Lage, erfolgreich in Ihrem Team bei ${company} zu arbeiten.`,
+            'technische skills': `Meine fundierten Kenntnisse in ${extractKeySkill(reqText)} qualifizieren mich optimal für diese technische Position.`
+        },
+        detailed: {
+            'muss-qualifikation': `In meiner bisherigen Laufbahn habe ich umfangreiche Erfahrungen in ${extractKeySkill(reqText)} gesammelt, die exakt den Anforderungen Ihrer ausgeschriebenen Position entsprechen. Durch meine praktische Anwendung dieser Qualifikation konnte ich bereits messbare Erfolge erzielen und bin überzeugt, diese Expertise gewinnbringend bei ${company} einsetzen zu können.`,
+            'kann-qualifikation': `Über die Grundanforderungen hinaus verfüge ich über zusätzliche Qualifikationen in ${extractKeySkill(reqText)}, die einen deutlichen Mehrwert für Ihre Organisation darstellen. Diese Kenntnisse ermöglichen es mir, vielseitig einsetzbar zu sein und innovative Lösungsansätze zu entwickeln.`,
+            'soft skills': `Meine stark ausgeprägte ${extractKeySkill(reqText)} hat sich in verschiedenen beruflichen Kontexten bewährt und ermöglicht es mir, effektiv mit Kollegen zusammenzuarbeiten und Herausforderungen konstruktiv anzugehen. Diese Eigenschaft betrachte ich als besonderen Vorteil für die Teamdynamik bei ${company}.`,
+            'technische skills': `Durch meine fundierte Ausbildung und praktische Erfahrung in ${extractKeySkill(reqText)} bringe ich die notwendige technische Kompetenz mit, um die anspruchsvollen Aufgaben in dieser Position erfolgreich zu bewältigen. Meine kontinuierliche Weiterbildung in diesem Bereich gewährleistet dabei stets aktuelle Kenntnisse.`
+        },
+        example: {
+            'muss-qualifikation': `Ein konkretes Beispiel meiner Expertise in ${extractKeySkill(reqText)}: In meiner vorherigen Position konnte ich durch die Anwendung dieser Qualifikation ein Projekt erfolgreich abschließen, was zu einer 20%igen Effizienzsteigerung führte. Diese Erfahrung möchte ich gerne bei ${company} einbringen.`,
+            'kann-qualifikation': `Zur Veranschaulichung meiner zusätzlichen Qualifikationen in ${extractKeySkill(reqText)}: Kürzlich habe ich ein innovatives Projekt geleitet, bei dem diese Kenntnisse entscheidend zum Erfolg beitrugen. Solche praxisnahen Lösungsansätze würde ich gerne auch für ${company} entwickeln.`,
+            'soft skills': `Meine ${extractKeySkill(reqText)} zeigte sich beispielsweise in einer herausfordernden Teamsituation, in der ich erfolgreich zwischen verschiedenen Interessensgruppen vermitteln und ein produktives Arbeitsklima schaffen konnte. Diese Fähigkeit würde ich gerne in Ihr Team bei ${company} einbringen.`,
+            'technische skills': `Ein praktisches Beispiel meiner ${extractKeySkill(reqText)}: Bei der Implementierung einer komplexen technischen Lösung konnte ich durch meine Kenntnisse nicht nur die Anforderungen erfüllen, sondern auch zusätzliche Optimierungen realisieren. Solche technischen Erfolge möchte ich auch für ${company} erzielen.`
+        }
+    };
+    
+    const categoryKey = Object.keys(templates.brief).find(key => category.includes(key.split('-')[0])) || 'muss-qualifikation';
+    return templates[detailMode][categoryKey] || templates.brief[categoryKey];
+}
+
+// Helper to extract key skills from requirement text
+function extractKeySkill(reqText) {
+    // Simple keyword extraction - could be enhanced with NLP
+    const skills = ['kommunikation', 'teamarbeit', 'projektmanagement', 'führung', 'analytisches denken', 'problemlösung', 'organisation'];
+    const found = skills.find(skill => reqText.includes(skill));
+    return found || 'den genannten Bereichen';
+}
+
+// Function to accept generated text
+function acceptGeneratedText(reqIndex) {
+    const selectedReqs = window.workflowData?.requirements?.filter(req => req.selected !== false);
+    if (!selectedReqs || !selectedReqs[reqIndex]) return;
+    
+    const requirement = selectedReqs[reqIndex];
+    const previewDiv = document.getElementById(`req_text_${reqIndex}`);
+    
+    if (previewDiv && requirement.generatedText) {
+        // Store as accepted text
+        requirement.acceptedText = requirement.generatedText;
+        
+        // Visual feedback
+        previewDiv.style.background = '#dcfce7';
+        previewDiv.style.borderLeftColor = '#16a34a';
+        const headerDiv = previewDiv.querySelector('[style*="color: #1e40af"]');
+        if (headerDiv) {
+            headerDiv.innerHTML = '<i class="fas fa-check"></i> Text übernommen:';
+            headerDiv.style.color = '#15803d';
+        }
+        
+        console.log(`✅ Text für Anforderung ${reqIndex} übernommen`);
+    }
+}
+
+// Function to regenerate text
+function regenerateText(reqIndex) {
+    generateRequirementText(reqIndex);
+}
+
+// Function to remove requirement
+function removeRequirement(reqIndex) {
+    const selectedReqs = window.workflowData?.requirements?.filter(req => req.selected !== false);
+    if (!selectedReqs || !selectedReqs[reqIndex]) return;
+    
+    if (confirm('Diese Anforderung aus dem Anschreiben entfernen?')) {
+        selectedReqs[reqIndex].selected = false;
+        displaySelectedRequirements(); // Refresh display
+        console.log(`🗑️ Anforderung ${reqIndex} entfernt`);
+    }
+}
+
+// Function to edit requirements (go back to step 2)
+function editRequirements() {
+    if (confirm('Zurück zu Schritt 2, um Anforderungen zu bearbeiten? Ungespeicherte Änderungen gehen verloren.')) {
+        previousWorkflowStep(2);
+    }
+}
+
+// Call displaySelectedRequirements when step 3 loads
+const originalGenerateStep3 = window.generateStep3;
+window.generateStep3 = function() {
+    const result = originalGenerateStep3();
+    // Schedule requirements display after DOM update
+    setTimeout(() => {
+        displaySelectedRequirements();
+    }, 100);
+    return result;
+};
+
+console.log('✅ Bewerbungsmanager mit echter KI-Integration und DACH-Anforderungsmanagement initialisiert');
