@@ -6305,11 +6305,11 @@ ${name}`
                             <i class="fas fa-search"></i>
                             Stellen suchen
                         </button>
-                        <button class="btn btn-primary" data-action="start-intelligent-workflow" id="startWorkflowBtn" disabled style="display: none;">
+                        <button class="btn btn-primary" onclick="startSmartBewerbungsWorkflow()" id="startWorkflowBtn">
                             <i class="fas fa-rocket"></i>
                             Workflow starten
                         </button>
-                        <button class="btn btn-success" data-action="start-intelligent-workflow" id="continueWorkflowBtn">
+                        <button class="btn btn-success" onclick="startSmartBewerbungsWorkflow()" id="continueWorkflowBtn">
                             <i class="fas fa-arrow-right"></i>
                             Weiter
                         </button>
@@ -10305,6 +10305,7 @@ Manuel Weiss`;
 
         // Make test function globally available
         window.testNavigation = testNavigation;
+        <script src="js/smart-workflow-steps.js"></script>
     </script>
 </body>
 </html>
