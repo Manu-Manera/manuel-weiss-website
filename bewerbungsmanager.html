@@ -494,54 +494,49 @@
         // Global flag to track workflow status
         window.workflowStarted = false;
         
-        // Hauptfunktion zum Starten des Bewerbungsprozesses
+        // DIREKTE WORKFLOW-START FUNKTION - KEINE UMWEGE!
         function startBewerbungsprozess() {
-            console.log('🚀 Bewerbungsprozess wird gestartet...');
+            console.log('🚀 Starte Workflow DIREKT...');
             
             // Prevent multiple calls
             if (window.workflowStarted) {
-                console.log('⚠️ Workflow bereits gestartet, überspringe...');
+                console.log('⚠️ Workflow bereits gestartet');
                 return;
             }
             
             window.workflowStarted = true;
             
+            // SOFORTIGER START - KEINE LOADING SCREENS!
             try {
-                // Show loading
-                const loadingSection = document.getElementById('loadingSection');
-                if (loadingSection) {
-                    loadingSection.classList.add('active');
-                    console.log('✅ Loading-Animation gestartet');
-                } else {
-                    console.warn('⚠️ loadingSection Element nicht gefunden');
-                }
-                
-                // Check if workflow is already loaded
-                if (window.startSmartBewerbungsWorkflow && typeof window.startSmartBewerbungsWorkflow === 'function') {
-                    console.log('✅ Workflow bereits geladen, starte direkt...');
-                    if (loadingSection) loadingSection.classList.remove('active');
-                    
-                    // Small delay for better UX
-                    setTimeout(() => {
-                        window.startSmartBewerbungsWorkflow();
-                    }, 300);
-                    return;
-                }
-                
-                // Initialize workflow system
-                setTimeout(() => {
-                    loadBewerbungsSystem();
-                }, 500);
-                
-            } catch (error) {
-                console.error('❌ Fehler in startBewerbungsprozess:', error);
-                window.workflowStarted = false; // Reset flag on error
-                
+                // Verstecke Loading falls sichtbar
                 const loadingSection = document.getElementById('loadingSection');
                 if (loadingSection) loadingSection.classList.remove('active');
                 
-                // Direct fallback to legacy system
-                emergencyWorkflowStart();
+                // DIREKT WORKFLOW STARTEN
+                setTimeout(() => {
+                    if (window.startSmartBewerbungsWorkflow) {
+                        console.log('✅ Starte über startSmartBewerbungsWorkflow');
+                        window.startSmartBewerbungsWorkflow();
+                    } else if (window.generateStep0) {
+                        console.log('✅ Starte über generateStep0');
+                        window.generateStep0();
+                    } else {
+                        console.log('⏳ Module noch nicht geladen, kurz warten...');
+                        setTimeout(() => {
+                            if (window.startSmartBewerbungsWorkflow) {
+                                window.startSmartBewerbungsWorkflow();
+                            } else if (window.generateStep0) {
+                                window.generateStep0();
+                            } else {
+                                console.error('❌ Modulares System nicht verfügbar');
+                            }
+                        }, 200);
+                    }
+                }, 50);
+                
+            } catch (error) {
+                console.error('❌ Fehler:', error);
+                window.workflowStarted = false;
             }
         }
         
