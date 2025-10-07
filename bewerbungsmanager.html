@@ -488,15 +488,15 @@
     
     <!-- Backup: Static Script Loading für Zuverlässigkeit -->
     <!-- MODULARER WORKFLOW LOADER - Lädt alle Step-Module automatisch -->
-    <script src="js/workflow-steps/workflow-loader.js" async></script>
+    <script src="js/workflow-steps/workflow-loader.js"></script>
     
     <script>
         // Global flag to track workflow status
         window.workflowStarted = false;
         
-        // DIREKTE WORKFLOW-START FUNKTION - KEINE UMWEGE!
+        // DIREKTE WORKFLOW-START FUNKTION - REPARIERT!
         function startBewerbungsprozess() {
-            console.log('🚀 Starte Workflow DIREKT...');
+            console.log('🚀 Starte Workflow SOFORT...');
             
             // Prevent multiple calls
             if (window.workflowStarted) {
@@ -506,37 +506,56 @@
             
             window.workflowStarted = true;
             
-            // SOFORTIGER START - KEINE LOADING SCREENS!
             try {
                 // Verstecke Loading falls sichtbar
                 const loadingSection = document.getElementById('loadingSection');
                 if (loadingSection) loadingSection.classList.remove('active');
                 
-                // DIREKT WORKFLOW STARTEN
-                setTimeout(() => {
-                    if (window.startSmartBewerbungsWorkflow) {
-                        console.log('✅ Starte über startSmartBewerbungsWorkflow');
-                        window.startSmartBewerbungsWorkflow();
-                    } else if (window.generateStep0) {
-                        console.log('✅ Starte über generateStep0');
-                        window.generateStep0();
-                    } else {
-                        console.log('⏳ Module noch nicht geladen, kurz warten...');
-                        setTimeout(() => {
+                // PRÜFE UND STARTE WORKFLOW
+                console.log('🔍 Verfügbare Funktionen:', {
+                    startSmartBewerbungsWorkflow: !!window.startSmartBewerbungsWorkflow,
+                    generateStep0: !!window.generateStep0,
+                    WorkflowModuleLoader: !!window.WorkflowModuleLoader
+                });
+                
+                if (window.startSmartBewerbungsWorkflow) {
+                    console.log('✅ Starte über startSmartBewerbungsWorkflow');
+                    window.startSmartBewerbungsWorkflow();
+                } else if (window.generateStep0) {
+                    console.log('✅ Starte über generateStep0');  
+                    window.generateStep0();
+                } else {
+                    // Falls Module noch nicht geladen - force reload
+                    console.log('🔄 Module noch nicht verfügbar - initialisiere manuell...');
+                    
+                    if (window.WorkflowModuleLoader) {
+                        const loader = new window.WorkflowModuleLoader();
+                        loader.loadAllModules().then(() => {
+                            console.log('✅ Module nachgeladen');
                             if (window.startSmartBewerbungsWorkflow) {
                                 window.startSmartBewerbungsWorkflow();
                             } else if (window.generateStep0) {
                                 window.generateStep0();
-                            } else {
-                                console.error('❌ Modulares System nicht verfügbar');
                             }
-                        }, 200);
+                        });
+                    } else {
+                        // Fallback - warte kurz und versuche nochmal
+                        setTimeout(() => {
+                            if (window.startSmartBewerbungsWorkflow) {
+                                window.startSmartBewerbungsWorkflow();
+                            } else {
+                                console.error('❌ KRITISCH: Workflow nicht verfügbar');
+                                alert('❌ Workflow konnte nicht gestartet werden. Bitte Seite neu laden.');
+                                window.workflowStarted = false;
+                            }
+                        }, 500);
                     }
-                }, 50);
+                }
                 
             } catch (error) {
-                console.error('❌ Fehler:', error);
+                console.error('❌ Fehler beim Workflow-Start:', error);
                 window.workflowStarted = false;
+                alert('❌ Workflow-Fehler: ' + error.message);
             }
         }
         
