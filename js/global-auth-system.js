@@ -225,73 +225,20 @@ class GlobalAuthSystem {
     
     // UI Management
     addAuthUI() {
-        // Check if auth UI already exists
-        if (document.getElementById('global-auth-ui')) return;
-        
-        const authUI = document.createElement('div');
-        authUI.id = 'global-auth-ui';
-        authUI.innerHTML = this.getAuthUIHTML();
-        
-        // Add to top of body
-        document.body.insertBefore(authUI, document.body.firstChild);
-        
-        // Add event listeners
-        this.setupAuthUIEvents();
+        // DISABLED: Remove overlapping auth UI
+        // This was causing the overlapping "Multi-User System" element
+        console.log('🔧 Auth UI disabled to prevent overlap');
+        return;
     }
     
     getAuthUIHTML() {
-        const isAuth = this.isAuthenticated();
-        const loginUrl = this.getLoginURL();
-        const logoutUrl = this.getLogoutURL();
-        
-        return `
-            <div style="
-                position: fixed; top: 0; right: 0; z-index: 10000;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white; padding: 0.75rem 1.5rem;
-                border-bottom-left-radius: 12px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                font-size: 0.875rem;
-                transition: all 0.3s ease;
-            " onmouseover="this.style.transform='translateY(0px)'" onmouseout="this.style.transform='translateY(-2px)'">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.2rem;">${isAuth ? '🔓' : '🔒'}</span>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.75rem; opacity: 0.9;">
-                                ${isAuth ? 'Angemeldet' : 'Multi-User System'}
-                            </div>
-                            <div style="font-size: 0.7rem; opacity: 0.8;" id="auth-user-info">
-                                ${isAuth ? (this.currentUser?.email || 'User') : 'Klicken zum Anmelden'}
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <button id="global-auth-btn" style="
-                            background: rgba(255,255,255,0.2);
-                            border: 1px solid rgba(255,255,255,0.3);
-                            color: white; padding: 0.4rem 0.8rem;
-                            border-radius: 6px; cursor: pointer;
-                            font-size: 0.75rem; font-weight: 500;
-                            transition: all 0.2s ease;
-                        " onmouseover="this.style.background='rgba(255,255,255,0.3)'"
-                           onmouseout="this.style.background='rgba(255,255,255,0.2)'"
-                        >
-                            ${isAuth ? 'Abmelden' : 'Anmelden'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
+        // DISABLED: Return empty string to prevent overlapping UI
+        return '';
     }
     
     updateAuthUI() {
-        const authUI = document.getElementById('global-auth-ui');
-        if (authUI) {
-            authUI.innerHTML = this.getAuthUIHTML();
-            this.setupAuthUIEvents();
-        }
+        // DISABLED: No UI updates to prevent overlap
+        return;
     }
     
     setupAuthUIEvents() {

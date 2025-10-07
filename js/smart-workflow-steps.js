@@ -46,14 +46,44 @@ async function initializeJobAnalyzer() {
     }
 }
 
-// Override generateStep2 with new requirement analysis
+// Initialize workflowData if not exists - FIXES "Cannot access uninitialized variable"
+if (typeof workflowData === 'undefined') {
+    window.workflowData = {
+        company: 'Unternehmen nicht angegeben',
+        position: 'Position nicht angegeben',
+        jobDescription: '',
+        requirements: [],
+        selectedRequirements: [],
+        currentStep: 1,
+        skipRequirements: false,
+        aiAnalysisResult: null
+    };
+    console.log('🔧 FIXED: workflowData initialized to prevent "Cannot access uninitialized variable" error');
+}
+
+// Safe generateStep2 with error handling
 window.generateStep2 = function() {
+    // Ensure workflowData exists and has required properties
+    const safeWorkflowData = window.workflowData || {
+        company: 'Unternehmen nicht angegeben',
+        position: 'Position nicht angegeben',
+        jobDescription: ''
+    };
+    
     return `
+        <div class="workflow-error-notice" style="background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Legacy Workflow - Upgrade empfohlen</strong>
+            </div>
+            <p style="margin: 0.5rem 0 0;">Diese Version kann Fehler verursachen. Verwenden Sie die <a href="applications-modern.html" style="color: #92400e; font-weight: 600;">neue Architektur</a>.</p>
+        </div>
+        
         <h3 style="margin-bottom: 1.5rem;">Schritt 2: Anforderungsanalyse & Matching</h3>
         
         <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
-            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${safeWorkflowData.company || 'Nicht angegeben'}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${safeWorkflowData.position || 'Nicht angegeben'}</p>
         </div>
         
         <div style="margin-bottom: 2rem;">
@@ -90,8 +120,8 @@ window.generateStep3 = function() {
         <h3 style="margin-bottom: 1.5rem;">Schritt 3: Anschreiben erstellen</h3>
         
         <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p style="margin: 0;"><strong>Unternehmen:</strong> ${workflowData.company}</p>
-            <p style="margin: 0;"><strong>Position:</strong> ${workflowData.position}</p>
+            <p style="margin: 0;"><strong>Unternehmen:</strong> ${safeWorkflowData.company || 'Nicht angegeben'}</p>
+            <p style="margin: 0;"><strong>Position:</strong> ${safeWorkflowData.position || 'Nicht angegeben'}</p>
         </div>
         
         <!-- Source Selection -->
@@ -198,9 +228,9 @@ async function analyzeRequirements() {
         try {
             // KI-basierte Analyse verwenden
             console.log('🔍 Starte KI-Analyse der Stellenbeschreibung...');
-            console.log('📄 Stellenbeschreibung Vorschau:', workflowData.jobDescription.substring(0, 200) + '...');
+            console.log('📄 Stellenbeschreibung Vorschau:', window.workflowData.jobDescription.substring(0, 200) + '...');
             
-            const aiResult = await window.globalAI.analyzeJobPosting(workflowData.jobDescription);
+            const aiResult = await window.globalAI.analyzeJobPosting(window.workflowData.jobDescription);
             console.log('🤖 KI-Analyse erfolgreich abgeschlossen:', aiResult);
             
             // Verwende die KI-analysierten Anforderungen
@@ -227,8 +257,8 @@ async function analyzeRequirements() {
             
             console.log('✅ Speichere KI-Anforderungen in Workflow-Daten...');
     // Store requirements in workflow data
-    workflowData.requirements = requirements;
-            workflowData.aiAnalysisResult = aiResult; // Speichere vollständiges KI-Ergebnis
+    window.workflowData.requirements = requirements;
+            window.workflowData.aiAnalysisResult = aiResult; // Speichere vollständiges KI-Ergebnis
             
             // Zeige KI-Anforderungen in der UI an
             await displayAIRequirements(aiResult, requirements);
@@ -439,7 +469,7 @@ async function displayAIRequirements(aiResult, requirements) {
 
 // Regenerate suggestions for a requirement
 async function regenerateSuggestions(reqId) {
-    const req = workflowData.requirements.find(r => r.id === reqId);
+    const req = (window.workflowData.requirements || []).find(r => r.id === reqId);
     if (!req) return;
     
     // Generate new suggestions
@@ -472,7 +502,7 @@ async function regenerateSuggestions(reqId) {
 
 // Skip to manual writing
 function skipToManualWriting() {
-    workflowData.skipRequirements = true;
+    window.workflowData.skipRequirements = true;
     nextWorkflowStep(3);
 }
 
@@ -481,7 +511,7 @@ function proceedWithRequirements() {
     // Collect selected requirements and their responses
     const selectedRequirements = [];
     
-    workflowData.requirements.forEach(req => {
+    (window.workflowData.requirements || []).forEach(req => {
         const checkbox = document.getElementById(`req-${req.id}`);
         if (checkbox && checkbox.checked) {
             const selectedRadio = document.querySelector(`input[name="suggestion-${req.id}"]:checked`);
@@ -495,7 +525,7 @@ function proceedWithRequirements() {
         }
     });
     
-    workflowData.selectedRequirements = selectedRequirements;
+    window.workflowData.selectedRequirements = selectedRequirements;
     nextWorkflowStep(3);
 }
 
@@ -557,8 +587,8 @@ function previewFullLetter() {
     
     // Build content from selected requirements
     let mainContent = '';
-    if (workflowData.selectedRequirements) {
-        mainContent = workflowData.selectedRequirements
+    if (window.workflowData.selectedRequirements) {
+        mainContent = window.workflowData.selectedRequirements
             .map(item => `<p>${item.response}</p>`)
             .join('\n');
     }
@@ -596,7 +626,7 @@ function previewFullLetter() {
     document.body.appendChild(modal);
     
     // Save to workflow data
-    workflowData.coverLetter = fullLetter;
+    window.workflowData.coverLetter = fullLetter;
 }
 
 // Override the original generateSmartCoverLetter
@@ -610,8 +640,8 @@ window.generateSmartCoverLetter = async function() {
         
         // Load selected requirements into main content
         const contentDiv = document.getElementById('coverLetterContent');
-        if (contentDiv && workflowData.selectedRequirements) {
-            contentDiv.innerHTML = workflowData.selectedRequirements
+        if (contentDiv && window.workflowData.selectedRequirements) {
+            contentDiv.innerHTML = window.workflowData.selectedRequirements
                 .map((item, idx) => `
                     <div style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 6px;">
                         <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #666;">

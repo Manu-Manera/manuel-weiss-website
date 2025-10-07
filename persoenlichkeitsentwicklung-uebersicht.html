@@ -10,6 +10,11 @@
     <meta name="keywords" content="Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Coaching, Selbstreflexion">
     <meta name="author" content="Manuel Weiss">
     
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Open Graph -->
     <meta property="og:title" content="Persönlichkeitsentwicklung - Manuel Weiss">
     <meta property="og:description" content="Entdecke verschiedene bewährte Methoden für deine persönliche Entwicklung">
@@ -19,7 +24,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
-    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20241206">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">                                 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">                                                    
     
@@ -31,7 +36,9 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <div class="nav-logo-container">
+                    <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                </div>
                 <span class="nav-name">Manuel Weiss</span>
             </div>
             
@@ -41,6 +48,46 @@
                 <a href="index.html#about" class="nav-link" nav.about">Über mich</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" nav.personality">Persönlichkeitsentwicklung</a>
                 <a href="index.html#contact" class="nav-link" nav.contact">Kontakt</a>
+                
+                <!-- Integrated User System -->
+                <div class="nav-user" id="navUser">
+                    <button class="nav-login-btn" id="navLoginBtn" onclick="toggleUserMenu()">
+                        <i class="fas fa-user"></i>
+                        <span>Anmelden</span>
+                    </button>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="user-dropdown-header">
+                            <div class="user-avatar-small">
+                                <img src="manuel-weiss-photo.svg" alt="User" class="user-avatar-img">
+                            </div>
+                            <div class="user-info-small">
+                                <div class="user-name-small">Manuel Weiss</div>
+                                <div class="user-email-small">manuel.weiss@example.com</div>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profil</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Einstellungen</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Fortschritt</span>
+                            </a>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" class="user-dropdown-item logout" onclick="logoutUser()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Abmelden</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="language-switcher">
                     <a href="index.html" class="lang-link">🇩🇪 DE</a>
@@ -1718,10 +1765,674 @@
     </footer>
 
 <!-- Scripts -->
-<script src="js/translation-manager.js"></script>
-<script src="js/persoenlichkeitsentwicklung-methods.js"></script>
-<script src="js/persoenlichkeitsentwicklung-search.js"></script>
+<script src="js/translation-manager.js?v=20241206"></script>
+<script src="js/persoenlichkeitsentwicklung-methods.js?v=20241206"></script>
+<script src="js/persoenlichkeitsentwicklung-search.js?v=20241206"></script>
     <script>
+
+    // Integrated User System Functions
+    function toggleUserMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
+        
+        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+            dropdown.style.display = 'block';
+            loginBtn.innerHTML = '<i class="fas fa-user-circle"></i><span>Manuel Weiss</span>';
+            loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        } else {
+            dropdown.style.display = 'none';
+            loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
+            loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        }
+    }
+
+    function logoutUser() {
+        const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
+        
+        dropdown.style.display = 'none';
+        loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
+        loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        
+        showNotification('Erfolgreich abgemeldet!', 'success');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const userSystem = document.getElementById('navUser');
+        const dropdown = document.getElementById('userDropdown');
+        
+        if (!userSystem.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Initialize system
+    document.addEventListener('DOMContentLoaded', function() {
+        // Force cache refresh
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
+        
+        // Initialize PDF download handlers
+        initializePDFDownloads();
+        
+        // Initialize mobile navigation
+        initializeMobileNav();
+        
+        // Force reload if needed
+        if (performance.navigation.type === 1) {
+            console.log('Page was refreshed');
+        }
+    });
+
+    function initializeMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                navToggle.classList.toggle('active');
+            });
+            
+            // Close menu when clicking on a link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('active');
+                });
+            });
+        }
+    }
+
+    // PDF Download System
+    function initializePDFDownloads() {
+        const pdfButtons = document.querySelectorAll('[data-action="download-pdf"], [data-action="download-p-d-f"]');
+        
+        pdfButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const methodId = this.getAttribute('data-param');
+                downloadMethodPDF(methodId);
+            });
+        });
+    }
+
+    function downloadMethodPDF(methodId) {
+        const methodData = getMethodData(methodId);
+        if (!methodData) {
+            console.error('Method data not found for:', methodId);
+            return;
+        }
+
+        const pdfContent = generatePDFContent(methodData);
+        downloadPDF(pdfContent, methodData.title);
+    }
+
+    function getMethodData(methodId) {
+        const methods = {
+            'ikigai': {
+                title: 'Ikigai-Workflow',
+                description: 'Der umfassende 7-Schritte-Prozess zur Entdeckung deines Lebenssinns. Finde heraus, was du liebst, was die Welt braucht, wofür du bezahlt wirst und worin du gut bist.',
+                steps: [
+                    '1. Was liebst du? - Deine Leidenschaften identifizieren',
+                    '2. Was kannst du gut? - Deine Talente und Fähigkeiten',
+                    '3. Wofür wirst du bezahlt? - Deine beruflichen Möglichkeiten',
+                    '4. Was braucht die Welt? - Deine Mission und Werte',
+                    '5. Die Schnittmenge finden - Dein Ikigai definieren',
+                    '6. Aktionsplan entwickeln - Konkrete Schritte planen',
+                    '7. Umsetzung und Reflexion - Kontinuierliche Weiterentwicklung'
+                ],
+                duration: '2-3 Stunden',
+                questions: '45+ Fragen',
+                benefits: [
+                    'Klarheit über deinen Lebenssinn',
+                    'Bessere Entscheidungsfindung',
+                    'Erhöhte Motivation und Zufriedenheit',
+                    'Ausrichtung auf deine Stärken'
+                ]
+            },
+            'raisec': {
+                title: 'RAISEC-Modell',
+                description: 'Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell nach Holland. Identifiziere deinen Persönlichkeitstyp und finde passende Berufsfelder.',
+                steps: [
+                    '1. Realistic (R) - Praktische, handwerkliche Tätigkeiten',
+                    '2. Investigative (I) - Forschende, analytische Tätigkeiten',
+                    '3. Artistic (A) - Kreative, künstlerische Tätigkeiten',
+                    '4. Social (S) - Soziale, helfende Tätigkeiten',
+                    '5. Enterprising (E) - Führungs-, verkaufsorientierte Tätigkeiten',
+                    '6. Conventional (C) - Organisatorische, strukturierte Tätigkeiten'
+                ],
+                duration: '5 Minuten',
+                questions: '30 Fragen',
+                benefits: [
+                    'Klare Berufsorientierung',
+                    'Passende Studien- und Berufswahl',
+                    'Bessere Karriereplanung',
+                    'Verständnis deiner Arbeitspräferenzen'
+                ]
+            },
+            'values-clarification': {
+                title: 'Werte-Klärung',
+                description: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.',
+                steps: [
+                    '1. Werte-Liste durchgehen - 30+ Werte bewerten',
+                    '2. Top 10 Werte auswählen - Die wichtigsten identifizieren',
+                    '3. Werte-Ranking erstellen - Prioritäten setzen',
+                    '4. Konflikt-Analyse - Widersprüche aufdecken',
+                    '5. Lebensbereiche zuordnen - Werte in Kontext setzen'
+                ],
+                duration: '1-2 Stunden',
+                questions: '30+ Werte',
+                benefits: [
+                    'Klarheit über deine Prioritäten',
+                    'Bessere Entscheidungsfindung',
+                    'Authentische Lebensführung',
+                    'Reduzierte innere Konflikte'
+                ]
+            },
+            'strengths-finder': {
+                title: 'Stärken-Analyse',
+                description: 'Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.',
+                steps: [
+                    '1. Gallup StrengthsFinder Test',
+                    '2. VIA Character Strengths Assessment',
+                    '3. Stärken-Mapping und Analyse',
+                    '4. Entwicklungsplan erstellen',
+                    '5. Stärken im Alltag anwenden'
+                ],
+                duration: '1-2 Stunden',
+                questions: '34 Stärken',
+                benefits: [
+                    'Erkenntnis deiner natürlichen Talente',
+                    'Bessere Performance durch Stärken-Fokus',
+                    'Erhöhte Selbstwirksamkeit',
+                    'Optimale Ressourcennutzung'
+                ]
+            },
+            'goal-setting': {
+                title: 'Ziel-Setting',
+                description: 'Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.',
+                steps: [
+                    '1. SMART-Ziele definieren',
+                    '2. Ziel-Hierarchie erstellen',
+                    '3. Meilensteine festlegen',
+                    '4. Aktionsplan entwickeln',
+                    '5. Tracking und Anpassung'
+                ],
+                duration: '1-2 Stunden',
+                questions: '5 SMART-Kriterien',
+                benefits: [
+                    'Klarheit über deine Ziele',
+                    'Erhöhte Motivation',
+                    'Bessere Erfolgswahrscheinlichkeit',
+                    'Strukturierte Herangehensweise'
+                ]
+            },
+            'mindfulness': {
+                title: 'Achtsamkeit & Meditation',
+                description: 'Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.',
+                steps: [
+                    '1. Grundlagen der Achtsamkeit',
+                    '2. Atemmeditation erlernen',
+                    '3. Body-Scan Übungen',
+                    '4. Gehmeditation praktizieren',
+                    '5. Integration in den Alltag'
+                ],
+                duration: '10min täglich',
+                questions: 'Geführte Übungen',
+                benefits: [
+                    'Reduzierter Stress',
+                    'Bessere Konzentration',
+                    'Emotionale Balance',
+                    'Erhöhte Selbstwahrnehmung'
+                ]
+            },
+            'emotional-intelligence': {
+                title: 'Emotionale Intelligenz',
+                description: 'Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.',
+                steps: [
+                    '1. EQ-Selbsttest durchführen',
+                    '2. Emotionale Selbstwahrnehmung',
+                    '3. Emotionsregulation üben',
+                    '4. Empathie entwickeln',
+                    '5. Soziale Kompetenzen stärken'
+                ],
+                duration: '1-2 Stunden',
+                questions: '4 EQ-Bereiche',
+                benefits: [
+                    'Bessere Beziehungen',
+                    'Erhöhte Selbstkontrolle',
+                    'Verbesserte Kommunikation',
+                    'Professioneller Erfolg'
+                ]
+            },
+            'habit-building': {
+                title: 'Gewohnheiten aufbauen',
+                description: 'Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.',
+                steps: [
+                    '1. Gewohnheits-Analyse',
+                    '2. Habit-Stacking Methode',
+                    '3. 21-Tage-Regel anwenden',
+                    '4. Umgebung optimieren',
+                    '5. Tracking und Anpassung'
+                ],
+                duration: '21 Tage',
+                questions: 'Gewohnheits-Tracking',
+                benefits: [
+                    'Nachhaltige Verhaltensänderung',
+                    'Erhöhte Produktivität',
+                    'Bessere Selbstdisziplin',
+                    'Langfristige Erfolge'
+                ]
+            },
+            'communication': {
+                title: 'Kommunikation',
+                description: 'Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.',
+                steps: [
+                    '1. Aktives Zuhören üben',
+                    '2. Nonverbale Kommunikation',
+                    '3. Konfliktlösung erlernen',
+                    '4. Feedback geben und nehmen',
+                    '5. Präsentationsfähigkeiten'
+                ],
+                duration: '2-3 Stunden',
+                questions: 'Kommunikations-Tests',
+                benefits: [
+                    'Bessere Beziehungen',
+                    'Erfolgreichere Verhandlungen',
+                    'Reduzierte Konflikte',
+                    'Professionelle Entwicklung'
+                ]
+            },
+            'time-management': {
+                title: 'Zeitmanagement',
+                description: 'Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten.',
+                steps: [
+                    '1. Zeitanalyse durchführen',
+                    '2. Prioritäten setzen',
+                    '3. Zeitblocking anwenden',
+                    '4. Störungen minimieren',
+                    '5. Pausen optimieren'
+                ],
+                duration: '1-2 Stunden',
+                questions: 'Zeitmanagement-Test',
+                benefits: [
+                    'Höhere Produktivität',
+                    'Bessere Work-Life-Balance',
+                    'Reduzierter Stress',
+                    'Mehr Freizeit'
+                ]
+            }
+        };
+
+        return methods[methodId] || null;
+    }
+
+    function generatePDFContent(methodData) {
+        const currentDate = new Date().toLocaleDateString('de-DE');
+        
+        return `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${methodData.title} - Methodenübersicht</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .pdf-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .pdf-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .pdf-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .pdf-header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pdf-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pdf-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .pdf-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pdf-content {
+            padding: 3rem 2rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #6366f1;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #64748b;
+            margin-bottom: 2rem;
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .steps-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6366f1;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .benefit-item {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .contact-section {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+        }
+        
+        .contact-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .footer {
+            background: #f8fafc;
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-date {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .pdf-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container">
+        <header class="pdf-header">
+            <div class="pdf-header-content">
+                <h1 class="pdf-title">${methodData.title}</h1>
+                <p class="pdf-subtitle">Methodenübersicht & Coaching-Informationen</p>
+                <div class="pdf-meta">
+                    <div class="meta-item">⏱️ ${methodData.duration}</div>
+                    <div class="meta-item">❓ ${methodData.questions}</div>
+                    <div class="meta-item">📅 ${currentDate}</div>
+                </div>
+            </div>
+        </header>
+        
+        <main class="pdf-content">
+            <section class="section">
+                <h2 class="section-title">Methodenbeschreibung</h2>
+                <p class="description">${methodData.description}</p>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">Schritt-für-Schritt Anleitung</h2>
+                <ol class="steps-list">
+                    ${methodData.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+            </section>
+            
+            <section class="section">
+                <h2 class="section-title">Nutzen & Vorteile</h2>
+                <div class="benefits-grid">
+                    ${methodData.benefits.map(benefit => `
+                        <div class="benefit-item">
+                            <i class="fas fa-check-circle"></i>
+                            ${benefit}
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+            
+            <section class="contact-section">
+                <h2 class="contact-title">Coaching & Beratung</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-label">Name</div>
+                        <div class="contact-value">Manuel Weiss</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Spezialisierung</div>
+                        <div class="contact-value">HR Berater für AI & Transformation</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">E-Mail</div>
+                        <div class="contact-value">manuel.weiss@example.com</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Telefon</div>
+                        <div class="contact-value">+49 (0) 123 456 789</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Website</div>
+                        <div class="contact-value">www.manuel-weiss.de</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">LinkedIn</div>
+                        <div class="contact-value">linkedin.com/in/manuel-weiss</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p class="footer-text">Diese Methodenübersicht wurde von Manuel Weiss erstellt</p>
+            <p class="footer-date">Erstellt am ${currentDate} | Alle Rechte vorbehalten</p>
+        </footer>
+    </div>
+</body>
+</html>`;
+    }
+
+    function downloadPDF(htmlContent, filename) {
+        // Create a new window with the PDF content
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        printWindow.onload = function() {
+            printWindow.focus();
+            printWindow.print();
+        };
+        
+        // Show success message
+        showNotification('PDF wird vorbereitet...', 'success');
+    }
+
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
     // Methoden-Funktionen
     function startMethod(methodName) {
         console.log('Starting method:', methodName);
@@ -1786,7 +2497,7 @@
             downloadRAISECPDF(raisecPDFContent);
         } else {
             // Standard PDF Download für andere Methoden
-            alert('PDF für ' + methodName + ' wird heruntergeladen...');
+        alert('PDF für ' + methodName + ' wird heruntergeladen...');
         }
     }
 
@@ -2060,7 +2771,7 @@
         
         if (searchTerm === '') {
             // Show all cards if search is empty
-            cards.forEach(card => {
+        cards.forEach(card => {
                 card.style.display = 'block';
                 card.classList.remove('search-highlight');
             });
@@ -2292,333 +3003,7 @@
         }
         });
     </script>
-
-    <!-- Multi-User System Integration -->
-    <script src="./js/base-logger.js"></script>
-    <script type="module">
-        import './js/global-auth-system.js';
-        import './js/user-progress-tracker.js';
-        
-        // Wait for systems to initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initMultiUserFeatures, 1000);
-        });
-        
-        function initMultiUserFeatures() {
-            console.log('🚀 Initializing Multi-User Features for Personality Development');
-            
-            // Add progress dashboard to header
-            addProgressDashboard();
-            
-            // Enhance method cards with progress tracking
-            enhanceMethodCards();
-            
-            // Setup auth change listeners
-            if (window.GlobalAuth) {
-                window.GlobalAuth.onAuthChange({
-                    onLogin: (user) => {
-                        console.log('👤 User logged in:', user.email);
-                        refreshUserSpecificContent();
-                    },
-                    onLogout: () => {
-                        console.log('👤 User logged out');
-                        clearUserSpecificContent();
-                    }
-                });
-                
-                // Initial setup if already logged in
-                if (window.GlobalAuth.isAuthenticated()) {
-                    refreshUserSpecificContent();
-                }
-            }
-        }
-        
-        function addProgressDashboard() {
-            const heroSection = document.querySelector('.hero-section');
-            if (!heroSection || !window.ProgressTracker) return;
-            
-            const progressDashboard = document.createElement('div');
-            progressDashboard.id = 'user-progress-dashboard';
-            progressDashboard.innerHTML = window.ProgressTracker.createProgressDashboard();
-            
-            // Insert after hero section
-            heroSection.parentNode.insertBefore(progressDashboard, heroSection.nextSibling);
-        }
-        
-        function enhanceMethodCards() {
-            const methodCards = document.querySelectorAll('.method-card, .icon-card');
-            
-            methodCards.forEach(card => {
-                const button = card.querySelector('button');
-                if (!button) return;
-                
-                // Extract method ID from onclick or data attributes
-                const methodId = extractMethodId(card, button);
-                if (!methodId) return;
-                
-                // Add progress indicator
-                addProgressIndicator(card, methodId);
-                
-                // Enhance button click
-                enhanceMethodButton(button, methodId);
-            });
-        }
-        
-        function extractMethodId(card, button) {
-            // Try to extract from onclick
-            const onclick = button.getAttribute('onclick') || '';
-            
-            // Common patterns
-            if (onclick.includes('johari')) return 'johari-window';
-            if (onclick.includes('swot')) return 'swot-analysis';
-            if (onclick.includes('values')) return 'values-clarification';
-            if (onclick.includes('goal')) return 'goal-setting';
-            if (onclick.includes('wheel')) return 'wheel-of-life';
-            if (onclick.includes('strength')) return 'strengths-finder';
-            if (onclick.includes('emotional')) return 'emotional-intelligence';
-            if (onclick.includes('mindful')) return 'mindfulness';
-            if (onclick.includes('habit')) return 'habit-building';
-            if (onclick.includes('time')) return 'time-management';
-            
-            // Try to extract from href or other attributes
-            const href = button.getAttribute('href') || card.getAttribute('data-method') || '';
-            const match = href.match(/methods\/([^\/]+)/);
-            return match ? match[1] : null;
-        }
-        
-        function addProgressIndicator(card, methodId) {
-            if (!window.ProgressTracker) return;
-            
-            const progress = window.ProgressTracker.getMethodProgress(methodId);
-            
-            // Create progress indicator
-            const indicator = document.createElement('div');
-            indicator.className = 'method-progress-indicator';
-            indicator.style.cssText = `
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background: ${progress ? (progress.status === 'completed' ? '#10b981' : '#f59e0b') : '#e5e7eb'};
-                color: white;
-                padding: 0.25rem 0.5rem;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                z-index: 10;
-            `;
-            
-            if (progress) {
-                if (progress.status === 'completed') {
-                    indicator.innerHTML = '✅ Abgeschlossen';
-                } else {
-                    indicator.innerHTML = `📊 ${progress.currentStep}/${progress.totalSteps}`;
-                }
-            } else {
-                indicator.innerHTML = '⭐ Neu';
-                indicator.style.background = '#6366f1';
-            }
-            
-            // Make card relative positioned
-            card.style.position = 'relative';
-            card.appendChild(indicator);
-        }
-        
-        function enhanceMethodButton(button, methodId) {
-            const originalOnClick = button.onclick;
-            
-            button.onclick = function(e) {
-                if (!window.GlobalAuth?.requireAuth()) {
-                    e.preventDefault();
-                    return false;
-                }
-                
-                // Track method start
-                if (window.ProgressTracker && window.GlobalAuth.isAuthenticated()) {
-                    window.ProgressTracker.completeMethodStep(methodId, 'started', {
-                        totalSteps: 3, // Default, will be updated by specific method
-                        startedFrom: 'overview_page'
-                    });
-                }
-                
-                // Call original handler
-                if (originalOnClick) {
-                    return originalOnClick.call(this, e);
-                }
-            };
-        }
-        
-        function refreshUserSpecificContent() {
-            // Refresh progress dashboard
-            const dashboard = document.getElementById('user-progress-dashboard');
-            if (dashboard && window.ProgressTracker) {
-                dashboard.innerHTML = window.ProgressTracker.createProgressDashboard();
-            }
-            
-            // Refresh all progress indicators
-            document.querySelectorAll('.method-progress-indicator').forEach(indicator => {
-                indicator.remove();
-            });
-            enhanceMethodCards();
-            
-            // Show welcome message
-            if (window.GlobalAuth?.getCurrentUser()) {
-                const user = window.GlobalAuth.getCurrentUser();
-                window.GlobalAuth.showNotification(`Willkommen zurück! Ihre Fortschritte wurden geladen.`, 'success');
-            }
-        }
-        
-        function clearUserSpecificContent() {
-            // Hide progress dashboard
-            const dashboard = document.getElementById('user-progress-dashboard');
-            if (dashboard) {
-                dashboard.style.display = 'none';
-            }
-            
-            // Reset progress indicators
-            document.querySelectorAll('.method-progress-indicator').forEach(indicator => {
-                indicator.innerHTML = '🔒 Anmeldung erforderlich';
-                indicator.style.background = '#6b7280';
-            });
-        }
-    </script>
-
-    <!-- Enhanced CSS for Multi-User Features -->
-    <style>
-        .method-progress-indicator {
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .method-progress-indicator:hover {
-            transform: scale(1.05);
-        }
-        
-        #user-progress-dashboard {
-            margin: 2rem auto;
-            max-width: 1200px;
-            padding: 0 1rem;
-        }
-        
-        /* Hide progress dashboard initially for non-logged users */
-        #user-progress-dashboard:empty {
-            display: none;
-        }
-        
-        /* Enhance method cards for better progress visibility */
-        .method-card, .icon-card {
-            transition: all 0.3s ease;
-        }
-        
-        .method-card:hover, .icon-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        /* Enhanced Search Styles */
-        .search-highlight {
-            border: 2px solid #6366f1 !important;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2) !important;
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
-        }
-        
-        .similarity-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        
-        .similarity-score {
-            font-size: 0.75rem;
-        }
-        
-        .no-results-message {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            border-radius: 20px;
-            border: 2px dashed #cbd5e1;
-        }
-        
-        .no-results-content {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .no-results-content i {
-            font-size: 3rem;
-            color: #94a3b8;
-            margin-bottom: 20px;
-        }
-        
-        .no-results-content h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 15px;
-        }
-        
-        .no-results-content p {
-            color: #64748b;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-        
-        .no-results-content .btn {
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .no-results-content .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-        }
-        
-        /* Search input enhancements */
-        .search-input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        /* Methods grid with flexbox for ordering */
-        .methods-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .method-card {
-            transition: all 0.3s ease;
-        }
-        
-        /* Responsive search */
-        @media (max-width: 768px) {
-            .similarity-indicator {
-                position: static;
-                margin-top: 10px;
-                display: inline-block;
-            }
-            
-            .no-results-content {
-                padding: 0 20px;
-            }
-        }
-    </style>
 </body>
 </html>
+
+        
