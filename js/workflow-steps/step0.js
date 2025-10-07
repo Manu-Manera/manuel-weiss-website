@@ -128,6 +128,8 @@ function generateStep0() {
 // Application type selection handler
 function selectApplicationType(type) {
     console.log('🎯 Bewerbungsart ausgewählt:', type);
+    console.log('🔍 nextWorkflowStep verfügbar?', typeof window.nextWorkflowStep);
+    console.log('🔍 window.workflowData:', window.workflowData);
     
     // Store selection in workflow data
     window.workflowData.applicationType = type;
@@ -183,13 +185,20 @@ function selectApplicationType(type) {
     
     // Auto-proceed after short delay
     setTimeout(() => {
-        if (type === 'job-posting') {
-            // Normal workflow with job posting analysis
-            nextWorkflowStep(1);
+        if (typeof window.nextWorkflowStep === 'function') {
+            if (type === 'job-posting') {
+                // Normal workflow with job posting analysis
+                console.log('🚀 Navigiere zu Step 1 (Stellenausschreibung)');
+                window.nextWorkflowStep(1);
+            } else {
+                // Skip to step 2 for initiative applications (no job posting to analyze)
+                console.log('🚀 Navigiere zu Step 2 (Initiativbewerbung)');
+                window.workflowData.skipJobAnalysis = true;
+                window.nextWorkflowStep(2);
+            }
         } else {
-            // Skip to step 2 for initiative applications (no job posting to analyze)
-            window.workflowData.skipJobAnalysis = true;
-            nextWorkflowStep(2);
+            console.error('❌ nextWorkflowStep Funktion nicht verfügbar!');
+            alert('❌ Navigation nicht verfügbar. Module wurden möglicherweise nicht korrekt geladen.');
         }
     }, 1500);
 }
