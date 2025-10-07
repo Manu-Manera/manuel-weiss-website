@@ -76,7 +76,7 @@ function showSmartWorkflowModal() {
                 align-items: center;
             ">
                 <div style="color: #6b7280; font-size: 0.875rem;">
-                    Schritt <span id="currentStep">1</span> von 6
+                    <span id="stepLabel">Schritt <span id="currentStep">Auswahl</span> von 6</span>
                 </div>
                 <button onclick="closeSmartWorkflow()" style="
                     padding: 0.5rem 1rem;
@@ -94,8 +94,8 @@ function showSmartWorkflowModal() {
     
     document.body.appendChild(modal);
     
-    // Start with step 1
-    nextWorkflowStep(1);
+    // Start with application type selection (step 0)
+    nextWorkflowStep(0);
 };
 
 // Initialize job analyzer when needed
@@ -141,8 +141,10 @@ if (typeof workflowData === 'undefined') {
         jobDescription: '',
         requirements: [],
         selectedRequirements: [],
-        currentStep: 1,
+        currentStep: 0,
         skipRequirements: false,
+        applicationType: null, // 'job-posting' or 'initiative'
+        skipJobAnalysis: false,
         aiAnalysisResult: null,
         coverLetter: '',
         cv: null,
@@ -167,13 +169,23 @@ function nextWorkflowStep(step) {
     
     // Update step counter
     const stepCounter = document.getElementById('currentStep');
-    if (stepCounter) {
-        stepCounter.textContent = step;
+    const stepLabel = document.getElementById('stepLabel');
+    if (stepCounter && stepLabel) {
+        if (step === 0) {
+            stepCounter.textContent = 'Auswahl';
+            stepLabel.innerHTML = '<span id="currentStep">Auswahl</span> - Bewerbungsart wählen';
+        } else {
+            stepCounter.textContent = step;
+            stepLabel.innerHTML = `Schritt <span id="currentStep">${step}</span> von 6`;
+        }
     }
     
     let content = '';
     
     switch(step) {
+        case 0:
+            content = generateStep0(); // Application type selection
+            break;
         case 1:
             content = generateStep1();
             break;
@@ -215,6 +227,191 @@ function nextWorkflowStep(step) {
 
 function previousWorkflowStep(step) {
     nextWorkflowStep(step);
+}
+
+// ====== SCHRITT 0: BEWERBUNGSART AUSWAHL ======
+function generateStep0() {
+    return `
+        <div class="workflow-step-container application-type-selection" data-step="0">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: #1f2937; font-size: 2rem; margin-bottom: 1rem; font-weight: 700;">
+                    🚀 Bewerbungsart wählen
+                </h2>
+                <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Wählen Sie, ob Sie sich auf eine konkrete Stellenausschreibung bewerben möchten oder eine Initiativbewerbung erstellen wollen.
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto;">
+                <!-- Stellenausschreibung Option -->
+                <div class="application-type-card" onclick="selectApplicationType('job-posting')" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+                    border: 3px solid transparent;
+                " onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 20px 40px rgba(102, 126, 234, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(102, 126, 234, 0.3)'">
+                    
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                    <h3 style="margin: 0 0 1rem; font-size: 1.5rem; font-weight: 700;">
+                        Stellenausschreibung
+                    </h3>
+                    <p style="margin: 0 0 1.5rem; opacity: 0.9; line-height: 1.5;">
+                        Bewerben Sie sich auf eine konkrete Stelle mit KI-basierter Analyse der Stellenausschreibung
+                    </p>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">✨ Enthält:</div>
+                        <ul style="text-align: left; margin: 0; padding-left: 1rem; font-size: 0.85rem; line-height: 1.4;">
+                            <li>🤖 KI-Analyse der Stellenausschreibung</li>
+                            <li>🎯 Automatische Anforderungserfassung</li>
+                            <li>📊 Skill-Gap Analyse</li>
+                            <li>✍️ Maßgeschneidertes Anschreiben</li>
+                        </ul>
+                    </div>
+                    
+                    <button style="
+                        background: white;
+                        color: #667eea;
+                        border: none;
+                        padding: 0.75rem 2rem;
+                        border-radius: 8px;
+                        font-weight: 700;
+                        cursor: pointer;
+                        width: 100%;
+                        font-size: 1rem;
+                    ">
+                        <i class="fas fa-search"></i> Stelle analysieren
+                    </button>
+                </div>
+
+                <!-- Initiativbewerbung Option -->
+                <div class="application-type-card" onclick="selectApplicationType('initiative')" style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+                    border: 3px solid transparent;
+                " onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 20px 40px rgba(16, 185, 129, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(16, 185, 129, 0.3)'">
+                    
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💡</div>
+                    <h3 style="margin: 0 0 1rem; font-size: 1.5rem; font-weight: 700;">
+                        Initiativbewerbung
+                    </h3>
+                    <p style="margin: 0 0 1.5rem; opacity: 0.9; line-height: 1.5;">
+                        Erstellen Sie eine überzeugende Bewerbung ohne konkreten Stellenbezug
+                    </p>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">✨ Enthält:</div>
+                        <ul style="text-align: left; margin: 0; padding-left: 1rem; font-size: 0.85rem; line-height: 1.4;">
+                            <li>🎯 Unternehmensfokussierte Bewerbung</li>
+                            <li>💼 Ihre Stärken im Mittelpunkt</li>
+                            <li>🚀 Proaktive Positionierung</li>
+                            <li>✍️ Überzeugendes Motivationsschreiben</li>
+                        </ul>
+                    </div>
+                    
+                    <button style="
+                        background: white;
+                        color: #10b981;
+                        border: none;
+                        padding: 0.75rem 2rem;
+                        border-radius: 8px;
+                        font-weight: 700;
+                        cursor: pointer;
+                        width: 100%;
+                        font-size: 1rem;
+                    ">
+                        <i class="fas fa-lightbulb"></i> Initiativ bewerben
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.9rem;">
+                💡 <strong>Tipp:</strong> Bei einer Initiativbewerbung liegt der Fokus auf Ihren Qualifikationen und der Motivation, für das Unternehmen zu arbeiten.
+            </div>
+        </div>
+    `;
+}
+
+// Application type selection handler
+function selectApplicationType(type) {
+    console.log('🎯 Bewerbungsart ausgewählt:', type);
+    
+    // Store selection in workflow data
+    window.workflowData.applicationType = type;
+    
+    // Show selection feedback
+    const cards = document.querySelectorAll('.application-type-card');
+    cards.forEach(card => {
+        card.style.opacity = '0.6';
+        card.style.transform = 'scale(0.95)';
+    });
+    
+    // Highlight selected card
+    const selectedCard = event.currentTarget;
+    selectedCard.style.opacity = '1';
+    selectedCard.style.transform = 'scale(1.05)';
+    selectedCard.style.borderColor = '#f59e0b';
+    selectedCard.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3)';
+    
+    // Add checkmark
+    if (!selectedCard.querySelector('.selection-checkmark')) {
+        const checkmark = document.createElement('div');
+        checkmark.className = 'selection-checkmark';
+        checkmark.style.cssText = `
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #f59e0b;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            animation: checkmarkPop 0.3s ease-out;
+        `;
+        checkmark.innerHTML = '✓';
+        selectedCard.style.position = 'relative';
+        selectedCard.appendChild(checkmark);
+    }
+    
+    // Add animation keyframe
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes checkmarkPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Auto-proceed after short delay
+    setTimeout(() => {
+        if (type === 'job-posting') {
+            // Normal workflow with job posting analysis
+            nextWorkflowStep(1);
+        } else {
+            // Skip to step 2 for initiative applications (no job posting to analyze)
+            window.workflowData.skipJobAnalysis = true;
+            nextWorkflowStep(2);
+        }
+    }, 1500);
 }
 
 // ====== SCHRITT 1 MIT 10 UMFANGREICHEN OPTIMIERUNGEN ======
@@ -486,8 +683,16 @@ window.generateStep2 = function() {
     const safeWorkflowData = window.workflowData || {
         company: 'Unternehmen nicht angegeben',
         position: 'Position nicht angegeben',
-        jobDescription: ''
+        jobDescription: '',
+        applicationType: null
     };
+    
+    // Check if this is an initiative application
+    const isInitiativeApplication = safeWorkflowData.applicationType === 'initiative';
+    
+    if (isInitiativeApplication) {
+        return generateInitiativeStep2();
+    }
     
     return `
         <div class="workflow-step-container step2-optimized" data-step="2">
@@ -516,8 +721,8 @@ window.generateStep2 = function() {
                     </button>
                 </h3>
                 <p style="color: #6b7280; margin-bottom: 2rem;">Intelligente Analyse der Stellenanforderungen mit personalisierten Matching-Algorithmen</p>
-            </div>
-            
+        </div>
+        
             <!-- Company/Position Summary with AI Insights -->
             <div class="company-summary-enhanced" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid #bae6fd;">
                 <div class="summary-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -579,20 +784,20 @@ window.generateStep2 = function() {
                     <h4 style="margin: 0; color: #374151;">📊 Live-Analyse Dashboard</h4>
                     <button onclick="refreshAnalysis()" class="refresh-btn" style="background: none; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; color: #6b7280;">
                         <i class="fas fa-sync"></i> Aktualisieren
-                    </button>
+            </button>
                 </div>
                 
                 <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                     <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
                         <div class="metric-value" id="requirementsFound" style="font-size: 2rem; font-weight: 800; color: #6366f1; margin-bottom: 0.5rem;">-</div>
                         <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Anforderungen erkannt</div>
-                    </div>
+            </div>
                     
                     <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
                         <div class="metric-value" id="skillMatches" style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">-</div>
                         <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Skill-Übereinstimmungen</div>
-                    </div>
-                    
+        </div>
+        
                     <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
                         <div class="metric-value" id="matchingScore" style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin-bottom: 0.5rem;">-</div>
                         <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Matching-Score</div>
@@ -615,7 +820,7 @@ window.generateStep2 = function() {
                         <div class="btn-spinner" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
-                    </button>
+            </button>
                     <div class="analysis-options" style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
                         <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
                             <input type="checkbox" id="deepAnalysis" checked style="margin: 0;">
@@ -631,8 +836,8 @@ window.generateStep2 = function() {
                         </label>
                     </div>
                 </div>
-            </div>
-
+        </div>
+        
             <!-- OPTIMIZATION 6: Interactive Requirements Display -->
             <div id="requirementsAnalysis" class="requirements-analysis-modern" style="display: none;">
                 <!-- Advanced analysis results will be loaded here -->
@@ -661,7 +866,7 @@ window.generateStep2 = function() {
                         <button type="button" onclick="skipWithTemplate()" class="skip-btn" title="Mit Vorlage überspringen">
                             <i class="fas fa-fast-forward"></i>
                             Mit Vorlage
-                        </button>
+            </button>
                         <button type="button" onclick="skipToManualWriting()" class="skip-btn" title="Komplett überspringen">
                             <i class="fas fa-edit"></i>
                             Manuell schreiben
@@ -669,7 +874,7 @@ window.generateStep2 = function() {
                         <button type="button" onclick="saveAndContinueLater()" class="skip-btn" title="Später fortfahren">
                             <i class="fas fa-bookmark"></i>
                             Später
-                        </button>
+            </button>
                     </div>
                 </div>
 
@@ -705,6 +910,245 @@ window.generateStep2 = function() {
         </div>
     `;
 };
+
+// ====== SCHRITT 2 FÜR INITIATIVBEWERBUNGEN ======
+function generateInitiativeStep2() {
+    return `
+        <div class="workflow-step-container step2-initiative-optimized" data-step="2">
+            <!-- Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33.33%"></div>
+                </div>
+                <div class="step-circles">
+                    <div class="circle completed">0</div>
+                    <div class="circle active">2</div>
+                    <div class="circle">3</div>
+                    <div class="circle">4</div>
+                    <div class="circle">5</div>
+                    <div class="circle">6</div>
+                </div>
+            </div>
+
+            <div class="step-header">
+                <h3 style="margin-bottom: 1.5rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="step-number-enhanced" style="background: linear-gradient(135deg, #10b981, #059669); color: white; width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">💡</span>
+                    Initiativbewerbung - Unternehmensprofil & Motivation
+                </h3>
+                <p style="color: #6b7280; font-size: 1rem; line-height: 1.6;">
+                    Da Sie sich initiativ bewerben, konzentrieren wir uns auf das Unternehmen und Ihre Motivation. 
+                    Definieren Sie Ihre Ziele und was Sie zum Unternehmen beiträgt.
+                </p>
+            </div>
+
+            <!-- Company Research Section -->
+            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #0ea5e9;">
+                <h4 style="color: #0c4a6e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-building"></i>
+                    Unternehmensinformationen
+                </h4>
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="initiativeCompany" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Unternehmen *
+                    </label>
+                    <input type="text" 
+                           id="initiativeCompany" 
+                           placeholder="Firmenname eingeben..."
+                           style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                           value="${window.workflowData?.company || ''}"
+                           onchange="window.workflowData.company = this.value">
+                </div>
+                
+                <div class="form-group">
+                    <label for="desiredDepartment" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Gewünschter Bereich / Abteilung
+                    </label>
+                    <select id="desiredDepartment" 
+                            style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                            onchange="window.workflowData.desiredDepartment = this.value">
+                        <option value="">Bereich auswählen...</option>
+                        <option value="HR / Personal">HR / Personal</option>
+                        <option value="Marketing / Vertrieb">Marketing / Vertrieb</option>
+                        <option value="IT / Technik">IT / Technik</option>
+                        <option value="Finanzen / Controlling">Finanzen / Controlling</option>
+                        <option value="Operations / Produktion">Operations / Produktion</option>
+                        <option value="Consulting / Beratung">Consulting / Beratung</option>
+                        <option value="Management / Führung">Management / Führung</option>
+                        <option value="Kundenservice">Kundenservice</option>
+                        <option value="Forschung & Entwicklung">Forschung & Entwicklung</option>
+                        <option value="Andere">Andere</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Motivation & Goals Section -->
+            <div style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #f59e0b;">
+                <h4 style="color: #92400e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-heart"></i>
+                    Ihre Motivation
+                </h4>
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="whyThisCompany" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Warum dieses Unternehmen? *
+                    </label>
+                    <textarea id="whyThisCompany" 
+                              rows="3"
+                              placeholder="Was interessiert Sie besonders an diesem Unternehmen? (z.B. Unternehmenswerte, Produkte, Reputation, Wachstum...)"
+                              style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                              onchange="window.workflowData.whyThisCompany = this.value">${window.workflowData?.whyThisCompany || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="whatYouOffer" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Was bringen Sie mit? *
+                    </label>
+                    <textarea id="whatYouOffer" 
+                              rows="3"
+                              placeholder="Welche besonderen Qualifikationen, Erfahrungen oder Fähigkeiten machen Sie wertvoll für das Unternehmen?"
+                              style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                              onchange="window.workflowData.whatYouOffer = this.value">${window.workflowData?.whatYouOffer || ''}</textarea>
+                </div>
+            </div>
+
+            <!-- Career Goals Section -->
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #16a34a;">
+                <h4 style="color: #15803d; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-target"></i>
+                    Ihre Ziele
+                </h4>
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="careerGoals" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Berufliche Ziele
+                    </label>
+                    <textarea id="careerGoals" 
+                              rows="2"
+                              placeholder="Welche beruflichen Ziele verfolgen Sie? Wie stellen Sie sich Ihre Rolle im Unternehmen vor?"
+                              style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                              onchange="window.workflowData.careerGoals = this.value">${window.workflowData?.careerGoals || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="availabilityStart" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Verfügbarkeit
+                    </label>
+                    <input type="text" 
+                           id="availabilityStart" 
+                           placeholder="z.B. sofort, ab 01.01.2024, nach Absprache..."
+                           style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                           value="${window.workflowData?.availabilityStart || ''}"
+                           onchange="window.workflowData.availabilityStart = this.value">
+                </div>
+            </div>
+
+            <!-- Previous Experience (optional) -->
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #64748b;">
+                <h4 style="color: #475569; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-briefcase"></i>
+                    Relevante Erfahrung (optional)
+                </h4>
+                
+                <div class="form-group">
+                    <label for="relevantExperience" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        Kurze Zusammenfassung Ihrer relevanten Berufserfahrung
+                    </label>
+                    <textarea id="relevantExperience" 
+                              rows="2"
+                              placeholder="Wichtigste Stationen und Erfolge, die für eine Initiativbewerbung relevant sind..."
+                              style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                              onchange="window.workflowData.relevantExperience = this.value">${window.workflowData?.relevantExperience || ''}</textarea>
+                </div>
+            </div>
+
+            <!-- Tips for Initiative Applications -->
+            <div style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #ec4899;">
+                <h5 style="color: #be185d; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-lightbulb"></i>
+                    💡 Tipps für eine erfolgreiche Initiativbewerbung
+                </h5>
+                <ul style="color: #7c2d12; margin: 0; padding-left: 1.2rem; line-height: 1.6;">
+                    <li><strong>Recherche ist key:</strong> Zeigen Sie, dass Sie das Unternehmen kennen</li>
+                    <li><strong>Mehrwert kommunizieren:</strong> Was haben Sie, was andere nicht haben?</li>
+                    <li><strong>Proaktiv denken:</strong> Schlagen Sie vor, wie Sie helfen können</li>
+                    <li><strong>Zeitpunkt beachten:</strong> Erwähnen Sie Ihre Flexibilität beim Starttermin</li>
+                </ul>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+                <button onclick="previousWorkflowStep(0)" 
+                        style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-arrow-left"></i> 
+                    Zurück zur Auswahl
+                </button>
+                <button onclick="proceedWithInitiativeData()" 
+                        id="continueInitiativeBtn"
+                        style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                    Weiter zum Anschreiben
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Handle initiative application data
+function proceedWithInitiativeData() {
+    // Validate required fields
+    const company = document.getElementById('initiativeCompany').value.trim();
+    const whyThisCompany = document.getElementById('whyThisCompany').value.trim();
+    const whatYouOffer = document.getElementById('whatYouOffer').value.trim();
+    
+    if (!company) {
+        alert('Bitte geben Sie den Unternehmensnamen ein.');
+        document.getElementById('initiativeCompany').focus();
+        return;
+    }
+    
+    if (!whyThisCompany) {
+        alert('Bitte erklären Sie, warum Sie sich für dieses Unternehmen interessieren.');
+        document.getElementById('whyThisCompany').focus();
+        return;
+    }
+    
+    if (!whatYouOffer) {
+        alert('Bitte beschreiben Sie, was Sie dem Unternehmen bieten können.');
+        document.getElementById('whatYouOffer').focus();
+        return;
+    }
+    
+    // Save all form data to workflowData
+    window.workflowData.company = company;
+    window.workflowData.whyThisCompany = whyThisCompany;
+    window.workflowData.whatYouOffer = whatYouOffer;
+    window.workflowData.desiredDepartment = document.getElementById('desiredDepartment').value;
+    window.workflowData.careerGoals = document.getElementById('careerGoals').value;
+    window.workflowData.availabilityStart = document.getElementById('availabilityStart').value;
+    window.workflowData.relevantExperience = document.getElementById('relevantExperience').value;
+    
+    // For initiative applications, we create a mock "job description" based on their input
+    window.workflowData.jobDescription = `Initiativbewerbung bei ${company}
+Gewünschter Bereich: ${window.workflowData.desiredDepartment || 'Verschiedene Bereiche'}
+
+Motivation für das Unternehmen:
+${whyThisCompany}
+
+Eigene Qualifikationen und Erfahrungen:
+${whatYouOffer}
+
+${window.workflowData.careerGoals ? 'Berufliche Ziele: ' + window.workflowData.careerGoals : ''}
+${window.workflowData.relevantExperience ? 'Relevante Erfahrung: ' + window.workflowData.relevantExperience : ''}`;
+    
+    console.log('✅ Initiative application data saved:', window.workflowData);
+    
+    // Mark as initiative application for step 3 customization
+    window.workflowData.isInitiativeApplication = true;
+    
+    // Proceed to step 3 (letter writing)
+    nextWorkflowStep(3);
+}
 
 // ====== SCHRITT 3 MIT 10 UMFANGREICHEN OPTIMIERUNGEN ======
 window.generateStep3 = function() {
@@ -743,8 +1187,8 @@ window.generateStep3 = function() {
                     </button>
                 </h3>
                 <p style="color: #6b7280; margin-bottom: 2rem;">Erstellen Sie ein personalisiertes Anschreiben mit KI-Unterstützung und Live-Optimierung</p>
-            </div>
-            
+        </div>
+        
             <!-- Company/Position Summary Enhanced -->
             <div class="application-summary-enhanced" style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid #f59e0b;">
                 <div class="summary-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -887,9 +1331,9 @@ window.generateStep3 = function() {
                                 <option value="indeed">Indeed</option>
                                 <option value="referral">Empfehlung</option>
                                 <option value="other">Sonstiges</option>
-                            </select>
-                        </div>
-                        
+            </select>
+        </div>
+        
                         <div class="editor-section">
                             <label style="display: block; margin-bottom: 0.75rem; font-weight: 500; color: #374151;">👋 Anrede-Stil</label>
                             <select id="greetingStyle" onchange="updateGreetingPreview()" class="enhanced-select" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease;">
@@ -899,9 +1343,9 @@ window.generateStep3 = function() {
                                 <option value="personal">Persönlich</option>
                             </select>
                         </div>
-                    </div>
-                </div>
-
+            </div>
+        </div>
+        
                 <!-- Main Letter Content -->
                 <div class="letter-content-editor" style="margin-bottom: 2rem;">
                     <div class="editor-toolbar" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px 8px 0 0; border: 1px solid #e5e7eb; border-bottom: none;">
@@ -924,23 +1368,23 @@ window.generateStep3 = function() {
                         <button onclick="checkGrammar()" class="toolbar-btn" title="Grammatik prüfen">
                             <i class="fas fa-spell-check"></i>
                         </button>
-                    </div>
+            </div>
                     
                     <div class="letter-editor-container" style="position: relative;">
                         <div id="letterContent" class="rich-text-editor" contenteditable="true" 
                              style="min-height: 400px; padding: 2rem; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; font-family: 'Times New Roman', serif; line-height: 1.8; font-size: 1.1rem; background: white;"
                              oninput="updateLetterMetrics()" onpaste="handleRichTextPaste(event)">
                             <p>Klicken Sie hier oder verwenden Sie die KI-Generierung um Ihr Anschreiben zu erstellen...</p>
-                        </div>
-                        
+        </div>
+        
                         <!-- Live AI Suggestions Panel -->
                         <div id="aiSuggestionsPanel" class="ai-suggestions-panel" style="position: absolute; right: -320px; top: 0; width: 300px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;">
                             <h6 style="margin: 0 0 1rem; color: #374151;">🤖 KI-Vorschläge</h6>
                             <div id="suggestionsList"></div>
                         </div>
-                    </div>
-                </div>
-
+            </div>
+        </div>
+        
                 <!-- Letter Structure Outline -->
                 <div class="letter-structure" style="margin-bottom: 2rem;">
                     <h5 style="margin-bottom: 1rem; color: #374151;">📋 Anschreiben-Struktur</h5>
@@ -990,13 +1434,13 @@ window.generateStep3 = function() {
                 <div class="preview-actions" style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
                     <button onclick="printPreview()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
                         <i class="fas fa-print"></i> Drucken
-                    </button>
+            </button>
                     <button onclick="copyToClipboard()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
                         <i class="fas fa-copy"></i> Kopieren
-                    </button>
+            </button>
                     <button onclick="downloadAsDocx()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
                         <i class="fas fa-download"></i> DOCX
-                    </button>
+            </button>
                 </div>
             </div>
 
@@ -1023,7 +1467,7 @@ window.generateStep3 = function() {
                         <i class="fas fa-envelope" style="font-size: 1.5rem;"></i>
                         <span style="font-weight: 600;">E-Mail senden</span>
                         <span style="font-size: 0.875rem; opacity: 0.9;">Direkt versenden</span>
-                    </button>
+            </button>
                 </div>
             </div>
 
@@ -1151,15 +1595,15 @@ function generateStep4() {
                         </button>
                     </div>
                 </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between;">
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
                 <button onclick="previousWorkflowStep(3)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                    <i class="fas fa-arrow-left"></i> Zurück
-                </button>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
                 <button onclick="nextWorkflowStep(5)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                    Weiter <i class="fas fa-arrow-right"></i>
-                </button>
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
             </div>
         </div>
     `;
