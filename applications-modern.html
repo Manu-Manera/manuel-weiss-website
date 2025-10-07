@@ -19,6 +19,14 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Progressive Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Modern Application Styles -->
     <style>
         /* 🎨 Modern CSS Variables & Design System */
@@ -400,6 +408,124 @@
                 border-color: #4b5563;
                 color: #f9fafb;
             }
+        }
+
+        /* 🎨 Advanced Micro-Interactions */
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .header-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .header-btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* 🔄 Loading States with Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-title {
+            height: 1.5rem;
+            border-radius: 6px;
+            width: 60%;
+            margin-bottom: 1rem;
+        }
+
+        /* 🎯 Focus States für Accessibility */
+        .nav-link:focus,
+        .header-btn:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* 🏃 Performance Optimizations */
+        .app-content {
+            contain: layout style paint;
+        }
+
+        .charts-widget,
+        .application-list {
+            contain: layout style;
+        }
+
+        /* 📱 Enhanced Mobile Experience */
+        @media (max-width: 480px) {
+            .app-header {
+                padding: 0 1rem;
+            }
+            
+            .header-title {
+                font-size: var(--font-size-lg);
+            }
+            
+            .header-btn span {
+                display: none;
+            }
+            
+            .header-btn {
+                min-width: 44px;
+                min-height: 44px;
+                justify-content: center;
+            }
+        }
+
+        /* 🎪 Easter Egg - Konami Code */
+        .konami-mode {
+            filter: hue-rotate(45deg) saturate(1.5);
+            animation: partyMode 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes partyMode {
+            0% { filter: hue-rotate(0deg) saturate(1); }
+            100% { filter: hue-rotate(360deg) saturate(1.5); }
         }
     </style>
 </head>
@@ -872,15 +998,175 @@
             }
         });
 
-        // Performance monitoring
+        // Performance monitoring & Web Vitals
         if ('performance' in window) {
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     const perfData = performance.getEntriesByType('navigation')[0];
                     console.log(`⚡ Page loaded in ${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`);
+                    
+                    // Web Vitals tracking
+                    if ('PerformanceObserver' in window) {
+                        // Largest Contentful Paint (LCP)
+                        new PerformanceObserver((list) => {
+                            const entries = list.getEntries();
+                            const lcp = entries[entries.length - 1];
+                            console.log(`📊 LCP: ${Math.round(lcp.startTime)}ms`);
+                        }).observe({ type: 'largest-contentful-paint', buffered: true });
+
+                        // First Input Delay (FID)
+                        new PerformanceObserver((list) => {
+                            const entry = list.getEntries()[0];
+                            const fid = entry.processingStart - entry.startTime;
+                            console.log(`⚡ FID: ${Math.round(fid)}ms`);
+                        }).observe({ type: 'first-input', buffered: true });
+
+                        // Cumulative Layout Shift (CLS)
+                        new PerformanceObserver((list) => {
+                            let cls = 0;
+                            for (const entry of list.getEntries()) {
+                                if (!entry.hadRecentInput) {
+                                    cls += entry.value;
+                                }
+                            }
+                            console.log(`📐 CLS: ${cls.toFixed(4)}`);
+                        }).observe({ type: 'layout-shift', buffered: true });
+                    }
                 }, 0);
             });
         }
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // This would register a service worker for offline functionality
+                    console.log('🔧 PWA Service Worker ready for implementation');
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Enhanced Error Boundary with User Reporting
+        class ErrorBoundary {
+            constructor() {
+                this.errorCount = 0;
+                this.setupErrorHandling();
+            }
+
+            setupErrorHandling() {
+                window.addEventListener('error', (e) => {
+                    this.handleError(e.error, 'JavaScript Error', e.filename, e.lineno);
+                });
+
+                window.addEventListener('unhandledrejection', (e) => {
+                    this.handleError(e.reason, 'Unhandled Promise Rejection');
+                });
+            }
+
+            handleError(error, type, filename = '', lineno = 0) {
+                this.errorCount++;
+                
+                const errorInfo = {
+                    type,
+                    message: error.message || error.toString(),
+                    filename,
+                    lineno,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+
+                console.error(`❌ ${type}:`, errorInfo);
+
+                // Store for analytics
+                this.storeError(errorInfo);
+
+                // Show user-friendly message if too many errors
+                if (this.errorCount > 3) {
+                    this.showErrorRecoveryUI();
+                }
+            }
+
+            storeError(errorInfo) {
+                try {
+                    const errors = JSON.parse(localStorage.getItem('app_errors') || '[]');
+                    errors.push(errorInfo);
+                    
+                    // Keep only last 50 errors
+                    if (errors.length > 50) {
+                        errors.splice(0, errors.length - 50);
+                    }
+                    
+                    localStorage.setItem('app_errors', JSON.stringify(errors));
+                } catch (e) {
+                    console.error('Failed to store error:', e);
+                }
+            }
+
+            showErrorRecoveryUI() {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    text-align: center;
+                    max-width: 400px;
+                `;
+                
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 1rem;">Unerwartete Fehler</h3>
+                    <p style="color: #6b7280; margin-bottom: 2rem;">
+                        Die Anwendung hat mehrere Fehler festgestellt. Möchten Sie die Seite neu laden?
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+                            Neu laden
+                        </button>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+                            Ignorieren
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(errorDiv);
+            }
+        }
+
+        // Initialize error boundary
+        new ErrorBoundary();
+
+        // Konami Code Easter Egg
+        const konamiCode = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyA'
+        ];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    document.body.classList.add('konami-mode');
+                    console.log('🎉 Konami Code activated!');
+                    setTimeout(() => {
+                        document.body.classList.remove('konami-mode');
+                        konamiIndex = 0;
+                    }, 10000);
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
     </script>
 
     <!-- 🔧 Legacy Support & Polyfills -->
