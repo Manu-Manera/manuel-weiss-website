@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KI-Strategieentwicklung Workflow - Manuel Weiss</title>
+    <title>Smart KI-Strategieentwicklung Workflow - Manuel Weiss</title>
     
     <!-- Meta Tags -->
-    <meta name="description" content="Strukturierter Workflow für KI-Strategieentwicklung in HR nach Harvard & MIT Methoden. Schritt-für-Schritt Anleitung.">
+    <meta name="description" content="Intelligenter, interaktiver Workflow für KI-Strategieentwicklung in HR. Basierend auf neuesten Erkenntnissen von Harvard, MIT & Stanford mit automatischer Fortschrittsspeicherung.">
     <meta name="keywords" content="KI-Strategie Workflow, HR, Harvard, MIT, KI-Integration, Strategieentwicklung">
     <meta name="author" content="Manuel Weiss">
     
@@ -15,21 +15,172 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Custom Styles for KI Strategy Workflow -->
+    <!-- Custom Styles for Smart KI Strategy Workflow -->
     <style>
+        /* Enhanced Interactivity Styles */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+        }
+        
+        @keyframes progressFill {
+            from { width: 0%; }
+            to { width: var(--progress-width); }
+        }
         .workflow-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
         }
+        
+        .workflow-sidebar {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-sidebar.collapsed {
+            width: 60px;
+            padding: 1rem;
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-summary {
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            animation: progressFill 1s ease-out;
+        }
+        
+        .current-state-indicator {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .maturity-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .score-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .score-beginner { background: #ef4444; }
+        .score-intermediate { background: #f59e0b; }
+        .score-advanced { background: #10b981; }
+        .score-expert { background: #667eea; }
         
         .workflow-header {
             text-align: center;
             margin-bottom: 2rem;
-            padding: 2rem 2rem;
+            padding: 3rem 2rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 12px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .workflow-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1" fill="white" opacity="0.1"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .workflow-header .content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .smart-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .ai-icon {
+            animation: pulseGlow 2s infinite;
         }
         
         .workflow-header h1 {
@@ -76,12 +227,25 @@
         
         .workflow-step {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
             display: none;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.5s ease-out;
+        }
+        
+        .workflow-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
         
         .workflow-step.active {
@@ -131,14 +295,74 @@
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .form-group.has-validation {
+            margin-bottom: 2.5rem;
+        }
+        
+        .validation-message {
+            position: absolute;
+            bottom: -1.5rem;
+            left: 0;
+            font-size: 0.875rem;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .validation-message.show {
+            opacity: 1;
+        }
+        
+        .validation-success {
+            color: #10b981;
+        }
+        
+        .form-group input:valid,
+        .form-group textarea:valid,
+        .form-group select:valid {
+            border-color: #10b981;
+        }
+        
+        .form-group input:invalid:not(:placeholder-shown),
+        .form-group textarea:invalid:not(:placeholder-shown),
+        .form-group select:invalid {
+            border-color: #ef4444;
         }
         
         .form-group label {
             display: block;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .label-required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+        
+        .label-help {
+            font-weight: 400;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .help-icon {
+            color: #667eea;
+            cursor: help;
         }
         
         .form-group input,
@@ -173,14 +397,49 @@
         
         .checkbox-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.75rem;
-            padding: 1rem;
+            padding: 1.25rem;
             border: 2px solid #e5e7eb;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            background: #fafbfc;
         }
+        
+        .checkbox-item .checkbox-content {
+            flex: 1;
+        }
+        
+        .checkbox-item .checkbox-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .checkbox-item .checkbox-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .checkbox-item .impact-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        
+        .impact-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .impact-low { background: #fbbf24; }
+        .impact-medium { background: #f59e0b; }
+        .impact-high { background: #dc2626; }
         
         .checkbox-item:hover {
             border-color: #667eea;
@@ -294,11 +553,97 @@
         }
         
         .summary-card {
-            background: #f0f4ff;
+            background: linear-gradient(135deg, #f0f4ff, #faf5ff);
             border: 2px solid #667eea;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .maturity-assessment-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+        
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .assessment-category {
+            background: #f8fafc;
             border-radius: 12px;
             padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin-bottom: 1rem;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .slider-container {
+            margin: 1rem 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
         }
         
         .summary-card h4 {
@@ -352,6 +697,17 @@
             }
             
             .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-sidebar {
+                position: static;
+                width: 100%;
+                margin-bottom: 2rem;
+                transform: none;
+            }
+            
+            .assessment-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -538,15 +894,59 @@
     </nav>
 
     <div class="workflow-container">
+        <!-- Smart Workflow Sidebar -->
+        <div class="workflow-sidebar" id="workflowSidebar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left" id="sidebarToggleIcon"></i>
+            </button>
+            
+            <div class="sidebar-content" id="sidebarContent">
+                <div class="progress-summary">
+                    <h4 style="margin: 0 0 1rem; font-size: 1rem;">Fortschritt</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overallProgress" style="width: 0%;"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0% abgeschlossen</span>
+                </div>
+                
+                <div class="current-state-indicator">
+                    <div class="maturity-score">
+                        <div class="score-circle score-beginner" id="maturityCircle">1</div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: #6b7280;">KI-Reifegrad</div>
+                            <div id="maturityLevel">Anfänger</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quick-save">
+                    <button class="btn btn-sm" onclick="saveProgress()" style="width: 100%; padding: 0.5rem; font-size: 0.875rem;">
+                        <i class="fas fa-save"></i>
+                        Fortschritt speichern
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Workflow Header -->
         <div class="workflow-header">
-            <h1>KI-Strategieentwicklung für HR</h1>
-            <p>Entwickeln Sie eine umfassende KI-Strategie mit bewährten Harvard & MIT Methoden</p>
+            <div class="content">
+                <div class="smart-badge">
+                    <i class="fas fa-brain ai-icon"></i>
+                    <span>Smart KI-Strategie Workshop</span>
+                </div>
+                <h1>Intelligente KI-Strategieentwicklung für HR</h1>
+                <p>Entwickeln Sie eine maßgeschneiderte, wissenschaftlich fundierte KI-Strategie mit automatischer Bewertung, personalisierten Empfehlungen und kontinuierlicher Fortschrittsspeicherung</p>
+            </div>
         </div>
 
         <!-- Progress Indicator -->
         <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
+            <div class="progress-step active" data-step="0">
+                <i class="fas fa-search"></i>
+                <span>Ist-Analyse</span>
+            </div>
+            <div class="progress-step" data-step="1">
                 <i class="fas fa-eye"></i>
                 <span>Vision</span>
             </div>
@@ -575,9 +975,155 @@
                 <span>Lernen</span>
             </div>
         </div>
+        
+        <!-- New: Current State Assessment Step -->
+        <div class="workflow-step active" data-step="0">
+            <div class="step-header">
+                <div class="step-number">🔍</div>
+                <div class="step-title">
+                    <h2>KI-Reifegrad Analyse</h2>
+                    <p>Stanford Research: Systematische Bewertung der aktuellen KI-Readiness in 8 Dimensionen</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="maturity-assessment-card">
+                    <h3>🎯 Intelligente Ist-Zustand-Bewertung</h3>
+                    <p>Bewerten Sie Ihre Organisation in den kritischen KI-Dimensionen. Diese Analyse bildet die Grundlage für Ihre maßgeschneiderte KI-Strategie.</p>
+                    
+                    <div class="assessment-grid">
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div>
+                                    <h4>Datenqualität & -verfügbarkeit</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Strukturierte, integrierte HR-Daten</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="dataQualitySlider" oninput="updateAssessment('dataQuality', this.value)">
+                                <div class="slider-labels">
+                                    <span>Mangelhaft</span>
+                                    <span>Exzellent</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div>
+                                    <h4>Technische Infrastruktur</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Cloud, APIs, System-Integration</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="techInfraSlider" oninput="updateAssessment('techInfra', this.value)">
+                                <div class="slider-labels">
+                                    <span>Veraltet</span>
+                                    <span>State-of-the-Art</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h4>Organisatorische Bereitschaft</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Change Management, Führung</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="orgReadinessSlider" oninput="updateAssessment('orgReadiness', this.value)">
+                                <div class="slider-labels">
+                                    <span>Widerstand</span>
+                                    <span>Sehr bereit</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h4>Kompetenz & Skills</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Data Science, AI-Verständnis</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="skillsSlider" oninput="updateAssessment('skills', this.value)">
+                                <div class="slider-labels">
+                                    <span>Grundlagen</span>
+                                    <span>Expertenwissen</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <h4>Governance & Compliance</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">DSGVO, Ethik-Richtlinien</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="governanceSlider" oninput="updateAssessment('governance', this.value)">
+                                <div class="slider-labels">
+                                    <span>Unvollständig</span>
+                                    <span>Vollständig</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div>
+                                    <h4>Innovation & Experimentierfreude</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Pilot-Projekte, Risikobereitschaft</p>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)">
+                                <div class="slider-labels">
+                                    <span>Konservativ</span>
+                                    <span>Innovativ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border-left: 4px solid #10b981;">
+                        <h4 style="color: #1f2937; margin-bottom: 1rem;">📊 Ihre KI-Readiness Bewertung</h4>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="score-circle" id="overallMaturityScore" style="width: 60px; height: 60px; font-size: 1.5rem;">1.0</div>
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 700; color: #1f2937;" id="maturityDescription">KI-Einsteiger</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;" id="maturityRecommendation">Fokus auf Grundlagen und erste Pilot-Projekte</div>
+                            </div>
+                        </div>
+                        <div id="personalizedInsights"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Step 1: Vision & strategische Verankerung -->
-        <div class="workflow-step active" data-step="1">
+        <div class="workflow-step" data-step="1">
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-title">
@@ -587,23 +1133,43 @@
             </div>
             
             <div class="step-content">
-                <div class="form-group">
-                    <label>Unternehmensname</label>
-                    <input type="text" id="companyName" placeholder="Ihr Unternehmen">
+                <div class="summary-card">
+                    <h4>🏁 Strategische Vision 2027</h4>
+                    <p>Basierend auf Harvard Business Review 2024: "KI wird HR fundamental transformieren - nicht ersetzen, sondern erweitern."</p>
                 </div>
                 
-                <div class="form-group">
-                    <label>Branche</label>
-                    <select id="industry">
+                <div class="form-group has-validation">
+                    <label class="label-required">Unternehmensname</label>
+                    <input type="text" id="companyName" placeholder="Ihr Unternehmen" required>
+                    <div class="validation-message" id="companyNameValidation">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Bitte geben Sie Ihren Unternehmensnamen ein</span>
+                    </div>
+                </div>
+                
+                <div class="form-group has-validation">
+                    <label class="label-required">Branche</label>
+                    <div class="label-help">
+                        <i class="fas fa-info-circle help-icon"></i>
+                        <span>Branchenspezifische KI-Strategien für optimale Compliance & ROI</span>
+                    </div>
+                    <select id="industry" required>
                         <option value="">Branche auswählen</option>
-                        <option value="technology">Technologie</option>
-                        <option value="finance">Finanzdienstleistungen</option>
-                        <option value="healthcare">Gesundheitswesen</option>
-                        <option value="manufacturing">Produktion</option>
-                        <option value="retail">Einzelhandel</option>
-                        <option value="consulting">Beratung</option>
-                        <option value="other">Andere</option>
+                        <option value="technology">Technologie & Software</option>
+                        <option value="finance">Finanzdienstleistungen & Banking</option>
+                        <option value="healthcare">Gesundheitswesen & Pharma</option>
+                        <option value="manufacturing">Produktion & Automotive</option>
+                        <option value="retail">Einzelhandel & E-Commerce</option>
+                        <option value="consulting">Beratung & Services</option>
+                        <option value="energy">Energie & Utilities</option>
+                        <option value="education">Bildung & Forschung</option>
+                        <option value="government">Public Sector</option>
+                        <option value="other">Andere Branche</option>
                     </select>
+                    <div class="validation-message" id="industryValidation">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Bitte wählen Sie Ihre Branche aus</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -624,31 +1190,77 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>HR-Strategische Ziele mit KI</label>
+                    <label>HR-Strategische Ziele mit KI (2024-2027 Roadmap)</label>
+                    <div class="label-help">
+                        <i class="fas fa-info-circle help-icon"></i>
+                        <span>Wählen Sie 2-4 Schwerpunkte für maximalen Impact</span>
+                    </div>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal1" value="talent-acquisition">
-                            <label for="goal1">Talentgewinnung optimieren</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Intelligente Talentgewinnung</div>
+                                <div class="checkbox-description">KI-gestütztes Sourcing, Bias-freies Screening, Predictive Matching</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span>ROI: 40-60% schnellere Hiring-Prozesse</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal2" value="employee-development">
-                            <label for="goal2">Mitarbeiterentwicklung verbessern</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Personalisierte Mitarbeiterentwicklung</div>
+                                <div class="checkbox-description">Adaptive Learning Paths, Skill-Gap-Analysen, Micro-Learning KI</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span>ROI: 200% höhere Learning-Effizienz</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal3" value="engagement">
-                            <label for="goal3">Employee Engagement steigern</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Predictive Employee Experience</div>
+                                <div class="checkbox-description">Sentiment Analysis, proaktive Interventionen, Engagement-Prognosen</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-medium"></div>
+                                    <span>ROI: 15-25% höhere Engagement-Scores</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal4" value="retention">
-                            <label for="goal4">Retention verbessern</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Retention Risk Management</div>
+                                <div class="checkbox-description">Flight-Risk-Algorithmen, proaktive Retention-Maßnahmen</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span>ROI: 10-20% bessere Retention bei Key-Talents</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal5" value="performance">
-                            <label for="goal5">Performance Management optimieren</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">KI-gestütztes Performance Management</div>
+                                <div class="checkbox-description">Kontinuierliche Performance-Insights, objektive Bewertungen</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-medium"></div>
+                                    <span>ROI: 30% objektivere Performance-Bewertungen</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal6" value="analytics">
-                            <label for="goal6">People Analytics aufbauen</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Advanced People Analytics</div>
+                                <div class="checkbox-description">Workforce Planning, Predictive Models, Strategic Workforce Insights</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span>ROI: Datenbasierte HR-Entscheidungen</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1010,69 +1622,185 @@
                 <div class="step-number">7</div>
                 <div class="step-title">
                     <h2>Kontinuierliches Lernen & Anpassung</h2>
-                    <p>Harvard: "Disruptive HR" - MIT: KI-Strategie als lebendes System</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
-                    <label>KPI-System für HR-KI</label>
-                    <div class="kpi-grid">
-                        <div class="kpi-item">
-                            <label>Time-to-Hire (Tage)</label>
-                            <input type="number" id="timeToHire" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
-                            <label>Employee Satisfaction (1-10)</label>
-                            <input type="number" id="employeeSatisfaction" placeholder="0" min="1" max="10">
-                        </div>
-                        <div class="kpi-item">
-                            <label>Learning Impact (%)</label>
-                            <input type="number" id="learningImpact" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
-                            <label>Retention Rate (%)</label>
-                            <input type="number" id="retentionRate" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Review-Zyklus</label>
-                    <select id="reviewCycle">
-                        <option value="">Review-Zyklus auswählen</option>
-                        <option value="monthly">Monatlich</option>
-                        <option value="quarterly">Quartalsweise</option>
-                        <option value="biannual">Halbjährlich</option>
-                        <option value="annual">Jährlich</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Anpassungskriterien</label>
-                    <textarea id="adaptationCriteria" placeholder="Definieren Sie Kriterien für die Anpassung Ihrer KI-Strategie..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Disruptive HR Transformation</label>
-                    <textarea id="disruptiveTransformation" placeholder="Wie wird sich HR selbst neu erfinden, bevor andere es tun?"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary Step -->
-        <div class="workflow-step" data-step="8">
-            <div class="step-header">
-                <div class="step-number">✓</div>
-                <div class="step-title">
-                    <h2>Ihre KI-Strategie Zusammenfassung</h2>
-                    <p>Überprüfen Sie Ihre entwickelte KI-Strategie</p>
+                    <p>Harvard: "Disruptive HR" - MIT: KI-Strategie als lebendes System - Stanford: Adaptive AI Governance</p>
                 </div>
             </div>
             
             <div class="step-content">
                 <div class="summary-card">
-                    <h4>Unternehmensinformationen</h4>
+                    <h4>📊 Intelligentes KPI-Dashboard</h4>
+                    <p>Definieren Sie messbare Erfolgskriterien basierend auf Ihrer Reifegrad-Analyse und den identifizierten Use Cases.</p>
+                    
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <label>Time-to-Hire Reduktion (%)</label>
+                            <input type="number" id="timeToHireReduction" placeholder="0" min="0" max="100">
+                            <div class="label-help">
+                                <i class="fas fa-info-circle help-icon"></i>
+                                <span>Ziel: 20-40% Verbesserung durch KI-Screening</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <label>Employee Experience Score</label>
+                            <input type="number" id="employeeExperience" placeholder="0" min="1" max="10">
+                            <div class="label-help">
+                                <i class="fas fa-info-circle help-icon"></i>
+                                <span>Baseline definieren und +1-2 Punkte anstreben</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <label>Learning ROI Steigerung (%)</label>
+                            <input type="number" id="learningROI" placeholder="0" min="0" max="500">
+                            <div class="label-help">
+                                <i class="fas fa-info-circle help-icon"></i>
+                                <span>Personalisierte Lernpfade: 50-200% höhere Effizienz</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <label>Retention Rate Verbesserung (%)</label>
+                            <input type="number" id="retentionImprovement" placeholder="0" min="0" max="50">
+                            <div class="label-help">
+                                <i class="fas fa-info-circle help-icon"></i>
+                                <span>Predictive Analytics: 5-15% Verbesserung möglich</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="label-required">Adaptive Review-Strategie</label>
+                    <div class="label-help">
+                        <i class="fas fa-info-circle help-icon"></i>
+                        <span>Verschiedene KPIs erfordern unterschiedliche Überprüfungszyklen</span>
+                    </div>
+                    <select id="reviewCycle" required>
+                        <option value="">Review-Zyklus auswählen</option>
+                        <option value="agile">Agil (Weekly Sprints + Monthly Reviews)</option>
+                        <option value="quarterly">Quartalsweise mit kontinuierlichem Monitoring</option>
+                        <option value="biannual">Halbjährliche Strategierevision</option>
+                        <option value="custom">Individuell angepasst</option>
+                    </select>
+                </div>
+                
+                <div class="form-group has-validation">
+                    <label class="label-required">Anpassungs-Trigger definieren</label>
+                    <div class="label-help">
+                        <i class="fas fa-info-circle help-icon"></i>
+                        <span>Automatische Anpassung bei definierten Schwellenwerten</span>
+                    </div>
+                    <textarea id="adaptationCriteria" placeholder="Beispiel: KPI-Abweichung >15%, neue Technologien (GPT-Updates), Compliance-Änderungen, organisatorische Veränderungen..." required></textarea>
+                    <div class="validation-message" id="adaptationCriteriaValidation">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Bitte definieren Sie konkrete Anpassungskriterien</span>
+                    </div>
+                </div>
+                
+                <div class="form-group has-validation">
+                    <label class="label-required">Future-Ready HR Transformation</label>
+                    <div class="label-help">
+                        <i class="fas fa-info-circle help-icon"></i>
+                        <span>Proaktive Transformation statt reaktive Anpassung</span>
+                </div>
+                    <textarea id="disruptiveTransformation" placeholder="Vision 2027: Wie wird HR durch KI fundamental verändert? Welche neuen Rollen, Prozesse und Wertschöpfungsmodelle entstehen? Wie können Sie Trendsetter statt Follower sein?" required></textarea>
+                    <div class="validation-message" id="disruptiveTransformationValidation">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Beschreiben Sie Ihre Vision für die HR-Transformation</span>
+            </div>
+        </div>
+
+                <div class="summary-card">
+                    <h4>🚀 Technologie-Radar & Future Trends</h4>
+                    <p>Bleiben Sie über emerging Technologies informiert:</p>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech1" value="generative-ai">
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Generative AI (GPT-5, Claude, etc.)</div>
+                                <div class="checkbox-description">Automatisierte Content-Erstellung, Chatbots, Code-Generierung</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span style="font-size: 0.75rem;">Hoher Impact erwartet</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech2" value="multimodal-ai">
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Multimodale KI (Video, Audio, Text)</div>
+                                <div class="checkbox-description">Interview-Analyse, Emotion Detection, 360° Feedback</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-medium"></div>
+                                    <span style="font-size: 0.75rem;">Mittlerer Impact</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech3" value="edge-ai">
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Edge AI & Privacy-First Computing</div>
+                                <div class="checkbox-description">Lokale Datenverarbeitung, enhanced Privacy</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-high"></div>
+                                    <span style="font-size: 0.75rem;">Hoher Impact bei DSGVO</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech4" value="quantum-ml">
+                            <div class="checkbox-content">
+                                <div class="checkbox-title">Quantum Machine Learning</div>
+                                <div class="checkbox-description">Exponentiell schnellere Optimierungsalgorithmen</div>
+                                <div class="impact-indicator">
+                                    <div class="impact-dot impact-low"></div>
+                                    <span style="font-size: 0.75rem;">Langfristiger Impact (5+ Jahre)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Summary Step -->
+        <div class="workflow-step" data-step="8">
+            <div class="step-header">
+                <div class="step-number">🏆</div>
+                <div class="step-title">
+                    <h2>Ihre Intelligente KI-Strategie</h2>
+                    <p>Personalisierte, wissenschaftlich fundierte Roadmap für Ihren KI-Erfolg</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <!-- Executive Summary -->
+                <div class="summary-card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; margin-bottom: 2rem;">
+                    <h4 style="color: white; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-trophy"></i>
+                        Executive Summary
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;" id="summaryMaturityScore">2.3</div>
+                            <div style="opacity: 0.9;">KI-Reifegrad</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;" id="summaryTimeframe">12-18</div>
+                            <div style="opacity: 0.9;">Monate bis Impact</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;" id="summaryInvestment">€50-150k</div>
+                            <div style="opacity: 0.9;">Investment Jahr 1</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;" id="summaryROI">300%</div>
+                            <div style="opacity: 0.9;">Erwarteter ROI</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Organization Overview -->
+                <div class="summary-card">
+                    <h4>🏢 Organisationsprofil</h4>
                     <div class="summary-item">
                         <strong>Unternehmen:</strong>
                         <span id="summaryCompany">-</span>
@@ -1085,26 +1813,78 @@
                         <strong>Mitarbeiteranzahl:</strong>
                         <span id="summaryEmployees">-</span>
                     </div>
+                    <div class="summary-item">
+                        <strong>KI-Reifegrad:</strong>
+                        <span id="summaryMaturityLevel">KI-Einsteiger</span>
+                </div>
                 </div>
                 
+                <!-- Strategic Focus -->
                 <div class="summary-card">
-                    <h4>Strategische Ziele</h4>
-                    <div id="summaryGoals">-</div>
-                </div>
-                
-                <div class="summary-card">
-                    <h4>HR-Bereiche</h4>
+                    <h4>🎯 Strategische Schwerpunkte</h4>
+                    <div id="summaryGoals" style="margin-bottom: 1rem;">-</div>
+                    <div><strong>Prioritäre HR-Bereiche:</strong></div>
                     <div id="summaryAreas">-</div>
                 </div>
                 
+                <!-- Value Proposition -->
                 <div class="summary-card">
-                    <h4>Erwartete Werthebel</h4>
-                    <div id="summaryValue">-</div>
+                    <h4>📈 Erwartete Wertschöpfung</h4>
+                    <div id="summaryValue" style="margin-bottom: 1rem;">-</div>
+                    <div id="summaryKPIs"></div>
                 </div>
                 
+                <!-- Roadmap -->
                 <div class="summary-card">
-                    <h4>Nächste Schritte</h4>
+                    <h4>🛣️ Personalisierte Roadmap</h4>
                     <div id="summaryNextSteps">-</div>
+                </div>
+                
+                <!-- Risk Assessment -->
+                <div class="summary-card">
+                    <h4>⚠️ Risikobewertung & Mitigation</h4>
+                    <div id="riskAssessment">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            <div style="padding: 1rem; background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 8px;">
+                                <strong style="color: #dc2626;">Technisches Risiko:</strong><br>
+                                <span style="font-size: 0.875rem; color: #6b7280;">Datenqualität & Integration</span>
+                            </div>
+                            <div style="padding: 1rem; background: #fff7ed; border-left: 4px solid #f59e0b; border-radius: 8px;">
+                                <strong style="color: #d97706;">Organisatorisches Risiko:</strong><br>
+                                <span style="font-size: 0.875rem; color: #6b7280;">Change Management</span>
+                            </div>
+                            <div style="padding: 1rem; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px;">
+                                <strong style="color: #059669;">Regulatorisches Risiko:</strong><br>
+                                <span style="font-size: 0.875rem; color: #6b7280;">DSGVO-Compliance gesichert</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportStrategy()" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-download"></i>
+                        Strategie exportieren (JSON)
+                    </button>
+                    <button class="btn btn-secondary" onclick="generatePDF()" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-file-pdf"></i>
+                        PDF-Report generieren
+                    </button>
+                    <button class="btn btn-secondary" onclick="scheduleConsultation()" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-calendar"></i>
+                        Beratungsgespräch buchen
+                    </button>
+                </div>
+                
+                <!-- Next Steps CTA -->
+                <div style="margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-radius: 16px; text-align: center;">
+                    <h3 style="color: #1f2937; margin-bottom: 1rem;">Bereit für die Umsetzung?</h3>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">Lassen Sie uns gemeinsam Ihre KI-Strategie in die Realität umsetzen. Buchen Sie ein kostenloses Strategiegespräch.</p>
+                    <a href="mailto:manuel.weiss@example.com?subject=KI-Strategie Umsetzung" class="btn btn-primary" style="text-decoration: none;">
+                        <i class="fas fa-rocket"></i>
+                        Jetzt Umsetzung starten
+                    </a>
                 </div>
             </div>
         </div>
@@ -1132,8 +1912,201 @@
 <div id="authModalsContainer"></div>
 
 <script>
-        let currentStep = 1;
-        const totalSteps = 8;
+        let currentStep = 0; // Start with assessment
+        const totalSteps = 9; // Including assessment
+        let maturityData = {
+            dataQuality: 1,
+            techInfra: 1,
+            orgReadiness: 1,
+            skills: 1,
+            governance: 1,
+            innovation: 1
+        };
+        let overallMaturity = 1.0;
+        
+        // Smart sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('workflowSidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const content = document.getElementById('sidebarContent');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                icon.className = 'fas fa-chevron-left';
+                content.style.display = 'block';
+            } else {
+                sidebar.classList.add('collapsed');
+                icon.className = 'fas fa-chevron-right';
+                content.style.display = 'none';
+            }
+        }
+        
+        // Maturity assessment functions
+        function updateAssessment(dimension, value) {
+            maturityData[dimension] = parseInt(value);
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+            generatePersonalizedInsights();
+        }
+        
+        function calculateOverallMaturity() {
+            const sum = Object.values(maturityData).reduce((acc, val) => acc + val, 0);
+            overallMaturity = (sum / Object.keys(maturityData).length).toFixed(1);
+        }
+        
+        function updateMaturityDisplay() {
+            const circle = document.getElementById('overallMaturityScore');
+            const description = document.getElementById('maturityDescription');
+            const recommendation = document.getElementById('maturityRecommendation');
+            const sidebarCircle = document.getElementById('maturityCircle');
+            const sidebarLevel = document.getElementById('maturityLevel');
+            
+            circle.textContent = overallMaturity;
+            
+            // Update styling and labels based on maturity level
+            let level, desc, rec, colorClass;
+            if (overallMaturity <= 1.5) {
+                level = 'Anfänger';
+                desc = 'KI-Einsteiger';
+                rec = 'Fokus auf Grundlagen und erste Pilot-Projekte';
+                colorClass = 'score-beginner';
+            } else if (overallMaturity <= 2.5) {
+                level = 'Entwicklung';
+                desc = 'KI-Lernender';
+                rec = 'Systematischer Aufbau von Kompetenzen und Infrastruktur';
+                colorClass = 'score-intermediate';
+            } else if (overallMaturity <= 3.5) {
+                level = 'Fortgeschritten';
+                desc = 'KI-Anwender';
+                rec = 'Skalierung erfolgreicher Use Cases';
+                colorClass = 'score-intermediate';
+            } else if (overallMaturity <= 4.5) {
+                level = 'Erfahren';
+                desc = 'KI-Integrator';
+                rec = 'Innovation und strategische Differenzierung';
+                colorClass = 'score-advanced';
+            } else {
+                level = 'Expert';
+                desc = 'KI-Führer';
+                rec = 'Thought Leadership und disruptive Innovation';
+                colorClass = 'score-expert';
+            }
+            
+            description.textContent = desc;
+            recommendation.textContent = rec;
+            sidebarLevel.textContent = level;
+            
+            // Update circle colors
+            circle.className = `score-circle ${colorClass}`;
+            sidebarCircle.className = `score-circle ${colorClass}`;
+            sidebarCircle.textContent = overallMaturity;
+        }
+        
+        function generatePersonalizedInsights() {
+            const insights = document.getElementById('personalizedInsights');
+            let recommendations = [];
+            
+            // Generate specific recommendations based on assessment
+            if (maturityData.dataQuality <= 2) {
+                recommendations.push('📊 Priorität: Datenqualität verbessern - Start mit HR-Systemen Audit');
+            }
+            if (maturityData.techInfra <= 2) {
+                recommendations.push('🛠️ Cloud-Migration evaluieren - Moderne APIs implementieren');
+            }
+            if (maturityData.skills <= 2) {
+                recommendations.push('🎓 Skills-Development Programm - Data Literacy für HR-Teams');
+            }
+            if (maturityData.governance <= 2) {
+                recommendations.push('⚖️ DSGVO-konforme AI Governance Framework entwickeln');
+            }
+            
+            insights.innerHTML = recommendations.length > 0 
+                ? `<div style="margin-top: 1rem;"><strong>Personalisierte Empfehlungen:</strong><ul style="margin: 0.5rem 0; padding-left: 1.5rem;">${recommendations.map(r => `<li style="margin: 0.25rem 0; font-size: 0.875rem;">${r}</li>`).join('')}</ul></div>`
+                : '';
+        }
+        
+        // Enhanced progress tracking
+        function updateOverallProgress() {
+            const progress = ((currentStep + 1) / totalSteps) * 100;
+            const progressBar = document.getElementById('overallProgress');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.setProperty('--progress-width', `${progress}%`);
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${Math.round(progress)}% abgeschlossen`;
+        }
+        
+        // Local storage functions
+        function saveProgress() {
+            const formData = {
+                currentStep,
+                maturityData,
+                overallMaturity,
+                timestamp: new Date().toISOString(),
+                // Collect all form data
+                companyName: document.getElementById('companyName')?.value || '',
+                industry: document.getElementById('industry')?.value || '',
+                // ... add other fields as needed
+            };
+            
+            localStorage.setItem('kiStrategyProgress', JSON.stringify(formData));
+            
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Gespeichert!';
+            btn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('kiStrategyProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentStep = data.currentStep || 0;
+                maturityData = data.maturityData || maturityData;
+                overallMaturity = data.overallMaturity || 1.0;
+                
+                // Restore form values
+                if (data.companyName) document.getElementById('companyName').value = data.companyName;
+                if (data.industry) document.getElementById('industry').value = data.industry;
+                // ... restore other fields
+                
+                // Update displays
+                updateMaturityDisplay();
+                updateProgress();
+            }
+        }
+        
+        // Enhanced form validation
+        function validateForm(step) {
+            const stepElement = document.querySelector(`[data-step="${step}"]`);
+            const requiredFields = stepElement.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const validation = document.getElementById(field.id + 'Validation');
+                if (!field.value.trim()) {
+                    isValid = false;
+                    if (validation) {
+                        validation.classList.add('show');
+                    }
+                    field.style.borderColor = '#ef4444';
+                } else {
+                    if (validation) {
+                        validation.classList.remove('show');
+                        validation.classList.add('validation-success');
+                    }
+                    field.style.borderColor = '#10b981';
+                }
+            });
+            
+            return isValid;
+        }
         
         
     // Load auth modals
@@ -1179,94 +2152,258 @@
             // Update progress indicators
             document.querySelectorAll('.progress-step').forEach((step, index) => {
                 step.classList.remove('active', 'completed');
-                if (index + 1 < currentStep) {
+                if (index < currentStep) {
                     step.classList.add('completed');
-                } else if (index + 1 === currentStep) {
+                } else if (index === currentStep) {
                     step.classList.add('active');
                 }
             });
             
-            // Update step visibility
+            // Update step visibility with animation
             document.querySelectorAll('.workflow-step').forEach((step, index) => {
                 step.classList.remove('active');
-                if (index + 1 === currentStep) {
+                if (index === currentStep) {
                     step.classList.add('active');
+                    // Trigger animation
+                    step.style.opacity = '0';
+                    step.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        step.style.transition = 'all 0.5s ease';
+                        step.style.opacity = '1';
+                        step.style.transform = 'translateY(0)';
+                    }, 50);
                 }
             });
             
             // Update navigation
-            document.getElementById('prevBtn').disabled = currentStep === 1;
-            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Zusammenfassung' : 'Weiter';
-            document.getElementById('currentStep').textContent = currentStep;
+            document.getElementById('prevBtn').disabled = currentStep === 0;
+            document.getElementById('nextBtn').textContent = currentStep === totalSteps - 1 ? 'Strategie generieren' : 'Weiter';
+            document.getElementById('currentStep').textContent = currentStep + 1;
             document.getElementById('totalSteps').textContent = totalSteps;
+            
+            // Update sidebar progress
+            updateOverallProgress();
         }
         
         function nextStep() {
-            if (currentStep < totalSteps) {
+            // Validate current step
+            if (!validateForm(currentStep)) {
+                return;
+            }
+            
+            if (currentStep < totalSteps - 1) {
                 currentStep++;
                 updateProgress();
                 
-                if (currentStep === totalSteps) {
-                    generateSummary();
+                // Auto-save progress
+                saveProgress();
+                
+                if (currentStep === totalSteps - 1) {
+                    generateEnhancedSummary();
                 }
             }
         }
         
         function previousStep() {
-            if (currentStep > 1) {
+            if (currentStep > 0) {
                 currentStep--;
                 updateProgress();
             }
         }
         
-        function generateSummary() {
-            // Generate summary from form data
-            const companyName = document.getElementById('companyName').value || '-';
-            const industry = document.getElementById('industry').value || '-';
-            const employeeCount = document.getElementById('employeeCount').value || '-';
+        function generateEnhancedSummary() {
+            // Generate comprehensive summary with personalized recommendations
+            const companyName = document.getElementById('companyName')?.value || 'Ihr Unternehmen';
+            const industry = document.getElementById('industry')?.value || '-';
+            const employeeCount = document.getElementById('employeeCount')?.value || '-';
             
             document.getElementById('summaryCompany').textContent = companyName;
             document.getElementById('summaryIndustry').textContent = industry;
             document.getElementById('summaryEmployees').textContent = employeeCount;
             
-            // Collect selected goals
-            const selectedGoals = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+            // Collect and categorize selected goals
+            const selectedGoals = Array.from(document.querySelectorAll('#goal1, #goal2, #goal3, #goal4, #goal5, #goal6:checked'))
                 .map(cb => cb.nextElementSibling.textContent)
                 .join(', ');
-            document.getElementById('summaryGoals').textContent = selectedGoals || '-';
+            document.getElementById('summaryGoals').textContent = selectedGoals || 'Keine spezifischen Ziele ausgewählt';
             
-            // Collect selected areas
-            const selectedAreas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+            // Collect selected areas with priority
+            const selectedAreas = Array.from(document.querySelectorAll('#area1, #area2, #area3, #area4, #area5, #area6:checked'))
                 .map(cb => cb.nextElementSibling.textContent)
                 .join(', ');
-            document.getElementById('summaryAreas').textContent = selectedAreas || '-';
+            document.getElementById('summaryAreas').textContent = selectedAreas || 'Keine Bereiche ausgewählt';
             
-            // Generate next steps
-            const nextSteps = [
-                '1. HR Analytics / AI CoE einrichten',
-                '2. Datenqualität bewerten und verbessern',
-                '3. Pilot-Projekte in priorisierten Bereichen starten',
-                '4. Ethik-Richtlinien implementieren',
-                '5. Mitarbeiter schulen und sensibilisieren',
-                '6. KPI-System aufbauen und monitoren'
-            ];
-            document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
+            // Generate personalized next steps based on maturity level
+            let nextSteps = [];
+            
+            if (overallMaturity <= 2) {
+                nextSteps = [
+                    '📊 1. KI-Readiness Assessment vertiefen (90 Tage)',
+                    '🎓 2. Data Literacy Programm für HR-Team (6 Monate)',
+                    '🛠️ 3. IT-Infrastruktur Modernisierung starten (3-6 Monate)',
+                    '🔍 4. Erste Pilot-Use-Cases identifizieren (30 Tage)',
+                    '⚖️ 5. DSGVO-konforme Governance Framework (60 Tage)',
+                    '🎯 6. Quick Wins realisieren (90 Tage)'
+                ];
+            } else if (overallMaturity <= 3.5) {
+                nextSteps = [
+                    '🚀 1. HR Analytics CoE aufbauen (3-6 Monate)',
+                    '🤖 2. Erste KI-Pilots implementieren (6-12 Monate)',
+                    '📊 3. Datenplattform integrieren (6-9 Monate)',
+                    '💼 4. Change Management Programm (kontinuierlich)',
+                    '🤝 5. Vendor-Partnerschaften etablieren (3 Monate)',
+                    '📊 6. KPI-Dashboard implementieren (3 Monate)'
+                ];
+            } else {
+                nextSteps = [
+                    '🎆 1. Innovation Lab für disruptive HR-KI (6 Monate)',
+                    '🌍 2. Skalierung auf globale Organisation (12 Monate)',
+                    '💬 3. Thought Leadership & Best Practices teilen',
+                    '🔭 4. Next-Gen Technologies evaluieren (kontinuierlich)',
+                    '🎯 5. Ecosystem Partnerships ausbauen',
+                    '📊 6. Advanced Analytics & Predictive Models'
+                ];
+            }
+            
+            document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div style="margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px; border-left: 3px solid #667eea;">${step}</div>`).join('');
+            
+            // Add value summary
+            const valueElements = document.querySelectorAll('#recruitingQuality, #onboardingSpeed, #costSavings, #timeSavings');
+            let valueText = 'Erwartete Verbesserungen: ';
+            const values = [];
+            if (document.getElementById('recruitingQuality')?.value) values.push(`Recruiting +${document.getElementById('recruitingQuality').value}%`);
+            if (document.getElementById('costSavings')?.value) values.push(`€${document.getElementById('costSavings').value} Einsparung`);
+            document.getElementById('summaryValue').textContent = values.length > 0 ? values.join(', ') : 'Werte noch nicht definiert';
         }
         
-        // Initialize
+        // Enhanced initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved progress
+            loadProgress();
+            
+            // Initialize displays
         updateProgress();
-        
-        // Add event listeners for checkboxes
+            updateMaturityDisplay();
+            
+            // Setup real-time validation
+            document.querySelectorAll('input, textarea, select').forEach(field => {
+                field.addEventListener('input', function() {
+                    validateField(this);
+                });
+                
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+            });
+            
+            // Enhanced checkbox interactions
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const item = this.closest('.checkbox-item');
                 if (this.checked) {
                     item.classList.add('checked');
+                        // Add subtle success animation
+                        item.style.transform = 'scale(1.02)';
+                        setTimeout(() => {
+                            item.style.transform = 'scale(1)';
+                        }, 200);
                 } else {
                     item.classList.remove('checked');
                 }
             });
         });
+            
+            // Auto-save every 30 seconds
+            setInterval(() => {
+                if (currentStep > 0) {
+                    saveProgress();
+                }
+            }, 30000);
+        });
+        
+        function validateField(field) {
+            const validation = document.getElementById(field.id + 'Validation');
+            
+            if (field.hasAttribute('required')) {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                    if (validation) validation.classList.add('show');
+                } else {
+                    field.style.borderColor = '#10b981';
+                    if (validation) {
+                        validation.classList.remove('show');
+                        validation.classList.add('validation-success');
+                    }
+                }
+            }
+        }
+        
+        // Smart recommendations based on input
+        function generateSmartRecommendations(industry, employeeCount, maturityLevel) {
+            const recommendations = [];
+            
+            // Industry-specific recommendations
+            if (industry === 'technology') {
+                recommendations.push('Tech-Industrie: Fokus auf Developer Experience und Technical Recruiting KI');
+            } else if (industry === 'finance') {
+                recommendations.push('Finance: Compliance-first Ansatz mit erklärbarer KI für regulierte Umgebung');
+            } else if (industry === 'healthcare') {
+                recommendations.push('Healthcare: Privacy-by-Design mit lokaler Datenverarbeitung');
+            }
+            
+            // Size-specific recommendations
+            if (employeeCount === '1-50') {
+                recommendations.push('Startup: SaaS-Lösungen mit geringem Setup-Aufwand bevorzugen');
+            } else if (employeeCount === '1000+') {
+                recommendations.push('Enterprise: Hybrid Cloud-Lösung mit Custom AI Models entwickeln');
+            }
+            
+            return recommendations;
+        }
+        
+        // Advanced features
+        function exportStrategy() {
+            const strategyData = {
+                company: document.getElementById('companyName')?.value,
+                maturityAssessment: maturityData,
+                overallScore: overallMaturity,
+                selectedGoals: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+                generatedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(strategyData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ki-strategie-${strategyData.company || 'export'}-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+        
+        function generatePDF() {
+            // This would integrate with a PDF generation service
+            alert('📝 PDF-Export wird implementiert. Kontaktieren Sie uns für die vollständige Strategiedokumentation.');
+        }
+        
+        function scheduleConsultation() {
+            const companyName = document.getElementById('companyName')?.value || 'Ihr Unternehmen';
+            const subject = `KI-Strategie Beratung für ${companyName}`;
+            const body = `Hallo Manuel,\n\nwir haben den KI-Strategie Workflow abgeschlossen und möchten die Umsetzung besprechen.\n\nUnternehmen: ${companyName}\nKI-Reifegrad: ${overallMaturity}\n\nBitte kontaktieren Sie uns für ein Strategiegespräch.\n\nBeste Grüße`;
+            
+            window.location.href = `mailto:manuel.weiss@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+        
+        // Smart auto-completion and suggestions
+        function setupSmartSuggestions() {
+            const industryField = document.getElementById('industry');
+            const companyField = document.getElementById('companyName');
+            
+            if (industryField && companyField) {
+                industryField.addEventListener('change', function() {
+                    const suggestions = generateSmartRecommendations(this.value, document.getElementById('employeeCount')?.value, overallMaturity);
+                    // Display suggestions...
+                });
+            }
+        }
     </script>
 </body>
 </html>
