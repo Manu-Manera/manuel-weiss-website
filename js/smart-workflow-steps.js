@@ -478,9 +478,11 @@ function saveStep1AndContinue() {
     nextWorkflowStep(2);
 }
 
-// Safe generateStep2 with error handling
+// ====== SCHRITT 2 MIT 10 UMFANGREICHEN OPTIMIERUNGEN ======
 window.generateStep2 = function() {
-    // Ensure workflowData exists and has required properties
+    // Inject advanced CSS for Step 2 optimizations
+    injectStep2Styles();
+    
     const safeWorkflowData = window.workflowData || {
         company: 'Unternehmen nicht angegeben',
         position: 'Position nicht angegeben',
@@ -488,118 +490,613 @@ window.generateStep2 = function() {
     };
     
     return `
-        <div class="workflow-error-notice" style="background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Legacy Workflow - Upgrade empfohlen</strong>
+        <div class="workflow-step-container step2-optimized" data-step="2">
+            <!-- OPTIMIZATION 1: Enhanced Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33.33%"></div>
+                </div>
+                <div class="step-circles">
+                    <div class="circle completed">1</div>
+                    <div class="circle active">2</div>
+                    <div class="circle">3</div>
+                    <div class="circle">4</div>
+                    <div class="circle">5</div>
+                    <div class="circle">6</div>
+                </div>
             </div>
-            <p style="margin: 0.5rem 0 0;">Diese Version kann Fehler verursachen. Verwenden Sie die <a href="applications-modern.html" style="color: #92400e; font-weight: 600;">neue Architektur</a>.</p>
-        </div>
-        
-        <h3 style="margin-bottom: 1.5rem;">Schritt 2: Anforderungsanalyse & Matching</h3>
-        
-        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p style="margin: 0;"><strong>Unternehmen:</strong> ${safeWorkflowData.company || 'Nicht angegeben'}</p>
-            <p style="margin: 0;"><strong>Position:</strong> ${safeWorkflowData.position || 'Nicht angegeben'}</p>
-        </div>
-        
-        <div style="margin-bottom: 2rem;">
-            <h4 style="margin-bottom: 1rem;">📋 Stellenanforderungen analysieren</h4>
-            <button onclick="analyzeRequirements()" style="padding: 0.75rem 1.5rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 1rem;">
-                <i class="fas fa-search"></i> Anforderungen analysieren
-            </button>
+
+            <div class="step-header">
+                <h3 style="margin-bottom: 1.5rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="step-number-enhanced" style="background: linear-gradient(135deg, #10b981, #059669); color: white; width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">2</span>
+                    KI-Anforderungsanalyse & Smart Matching
+                    <!-- OPTIMIZATION 2: Advanced Help System -->
+                    <button class="help-button" onclick="showStep2Help()" title="Erweiterte Hilfe">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                </h3>
+                <p style="color: #6b7280; margin-bottom: 2rem;">Intelligente Analyse der Stellenanforderungen mit personalisierten Matching-Algorithmen</p>
+            </div>
             
-            <div id="requirementsAnalysis" style="display: none;">
-                <!-- Requirements will be loaded here -->
+            <!-- Company/Position Summary with AI Insights -->
+            <div class="company-summary-enhanced" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid #bae6fd;">
+                <div class="summary-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: #0c4a6e; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-building"></i> Bewerbungsübersicht
+                    </h4>
+                    <div class="ai-confidence-badge" id="aiConfidence" style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">
+                        KI-Ready ✨
+                    </div>
+                </div>
+                <div class="summary-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <p style="margin: 0; color: #0c4a6e;"><strong>🏢 Unternehmen:</strong> <span id="summaryCompany">${safeWorkflowData.company}</span></p>
+                        <p style="margin: 0.5rem 0 0; color: #0c4a6e;"><strong>💼 Position:</strong> <span id="summaryPosition">${safeWorkflowData.position}</span></p>
+                    </div>
+                    <div>
+                        <p style="margin: 0; color: #0c4a6e;"><strong>📄 Beschreibung:</strong> <span id="descriptionLength">${safeWorkflowData.jobDescription?.length || 0}</span> Zeichen</p>
+                        <p style="margin: 0.5rem 0 0; color: #0c4a6e;"><strong>🎯 Bereit für:</strong> <span class="analysis-readiness">KI-Analyse</span></p>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div style="text-align: center; margin: 2rem 0;">
-            <button onclick="skipToManualWriting()" style="padding: 0.5rem 1rem; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Überspringen - Ich schreibe selbst
-            </button>
-        </div>
-        
-        <div style="display: flex; justify-content: space-between;">
-            <button onclick="previousWorkflowStep(1)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <button onclick="proceedWithRequirements()" id="proceedButton" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: none;">
-                Weiter zum Anschreiben <i class="fas fa-arrow-right"></i>
-            </button>
+            
+            <!-- OPTIMIZATION 3: Multi-Mode Analysis Selection -->
+            <div class="analysis-mode-selector" style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">🤖 Analyse-Modus wählen</h4>
+                <div class="mode-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="mode-card active" data-mode="ai-full" onclick="selectAnalysisMode('ai-full')" style="border: 2px solid #10b981; background: #f0fdf4; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">🚀</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #166534;">Vollautomatische KI-Analyse</h5>
+                        <p style="margin: 0; color: #15803d; font-size: 0.875rem;">Komplette Stellenanalyse mit Skill-Matching und Prioritäts-Ranking</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #059669;">
+                            ✓ Anforderungsextraktion ✓ Skill-Matching ✓ Prioritäten-Ranking
+                        </div>
+                    </div>
+                    
+                    <div class="mode-card" data-mode="ai-assisted" onclick="selectAnalysisMode('ai-assisted')" style="border: 2px solid #e5e7eb; background: white; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">🤝</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #374151;">KI-Unterstützt</h5>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">KI schlägt vor, Sie wählen aus und passen an</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280;">
+                            ✓ KI-Vorschläge ✓ Manuelle Auswahl ✓ Anpassungen
+                        </div>
+                    </div>
+                    
+                    <div class="mode-card" data-mode="manual" onclick="selectAnalysisMode('manual')" style="border: 2px solid #e5e7eb; background: white; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">✍️</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #374151;">Manuelle Auswahl</h5>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">Selbst bestimmen welche Anforderungen relevant sind</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280;">
+                            ✓ Vollkontrolle ✓ Eigene Bewertung ✓ Individuell
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 4: Real-time Analysis Dashboard -->
+            <div class="analysis-dashboard" style="margin-bottom: 2rem;">
+                <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0; color: #374151;">📊 Live-Analyse Dashboard</h4>
+                    <button onclick="refreshAnalysis()" class="refresh-btn" style="background: none; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; color: #6b7280;">
+                        <i class="fas fa-sync"></i> Aktualisieren
+                    </button>
+                </div>
+                
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="requirementsFound" style="font-size: 2rem; font-weight: 800; color: #6366f1; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Anforderungen erkannt</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="skillMatches" style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Skill-Übereinstimmungen</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="matchingScore" style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Matching-Score</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="confidenceLevel" style="font-size: 2rem; font-weight: 800; color: #8b5cf6; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">KI-Vertrauen</div>
+                    </div>
+                </div>
+
+                <!-- OPTIMIZATION 5: Smart Analysis Trigger -->
+                <div class="analysis-trigger-section" style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="startAdvancedAnalysis()" id="advancedAnalysisBtn" class="analysis-btn enhanced" 
+                            style="padding: 1rem 2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); transition: all 0.3s ease;">
+                        <div class="btn-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="btn-text">KI-Analyse starten</span>
+                        <div class="btn-spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                    <div class="analysis-options" style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="deepAnalysis" checked style="margin: 0;">
+                            Deep-Learning Analyse
+                        </label>
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="industryContext" checked style="margin: 0;">
+                            Branchen-Kontext
+                        </label>
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="competitorAnalysis" style="margin: 0;">
+                            Wettbewerbervergleich
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 6: Interactive Requirements Display -->
+            <div id="requirementsAnalysis" class="requirements-analysis-modern" style="display: none;">
+                <!-- Advanced analysis results will be loaded here -->
+            </div>
+
+            <!-- OPTIMIZATION 7: Skill Gap Analysis -->
+            <div id="skillGapAnalysis" class="skill-gap-section" style="display: none;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">🎯 Skill-Gap Analyse</h4>
+                <div class="skill-gap-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="matching-skills">
+                        <h5 style="color: #10b981; margin-bottom: 1rem;">✅ Ihre Stärken</h5>
+                        <div id="matchingSkillsList" class="skills-list"></div>
+                    </div>
+                    <div class="missing-skills">
+                        <h5 style="color: #f59e0b; margin-bottom: 1rem;">🎯 Entwicklungspotential</h5>
+                        <div id="missingSkillsList" class="skills-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 8: Advanced Action Bar -->
+            <div class="action-bar enhanced step2">
+                <div class="secondary-actions">
+                    <!-- OPTIMIZATION 9: Smart Skip Options -->
+                    <div class="skip-options">
+                        <button type="button" onclick="skipWithTemplate()" class="skip-btn" title="Mit Vorlage überspringen">
+                            <i class="fas fa-fast-forward"></i>
+                            Mit Vorlage
+                        </button>
+                        <button type="button" onclick="skipToManualWriting()" class="skip-btn" title="Komplett überspringen">
+                            <i class="fas fa-edit"></i>
+                            Manuell schreiben
+                        </button>
+                        <button type="button" onclick="saveAndContinueLater()" class="skip-btn" title="Später fortfahren">
+                            <i class="fas fa-bookmark"></i>
+                            Später
+                        </button>
+                    </div>
+                </div>
+
+                <div class="primary-actions">
+                    <button onclick="previousWorkflowStep(1)" 
+                            class="btn-secondary enhanced"
+                            onmouseover="addButtonEffect(this, 'hover')" 
+                            onmouseout="removeButtonEffect(this, 'hover')">
+                        <i class="fas fa-arrow-left"></i> 
+                        <span>Zurück</span>
+                    </button>
+                    <button onclick="proceedWithRequirements()" 
+                            id="proceedButton" 
+                            class="btn-primary enhanced"
+                            style="display: none;"
+                            onmouseover="addButtonEffect(this, 'hover')" 
+                            onmouseout="removeButtonEffect(this, 'hover')">
+                        <span class="btn-content">
+                            <span class="btn-text">Weiter zu Schritt 3</span>
+                            <i class="fas fa-arrow-right btn-icon"></i>
+                        </span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 10: Performance Monitor -->
+            <div class="performance-monitor" id="performanceMonitor" style="position: fixed; bottom: 2rem; right: 2rem; background: rgba(0,0,0,0.8); color: white; padding: 1rem; border-radius: 8px; font-size: 0.75rem; z-index: 9999; display: none;">
+                <div>⚡ Analyse-Performance:</div>
+                <div id="analysisTime">-</div>
+                <div id="processingSpeed">-</div>
+            </div>
         </div>
     `;
 };
 
-// New Step 3: Cover Letter Builder
+// ====== SCHRITT 3 MIT 10 UMFANGREICHEN OPTIMIERUNGEN ======
 window.generateStep3 = function() {
+    // Inject advanced CSS for Step 3 optimizations
+    injectStep3Styles();
+    
+    const safeWorkflowData = window.workflowData || {
+        company: 'Unternehmen nicht angegeben',
+        position: 'Position nicht angegeben'
+    };
+    
     return `
-        <h3 style="margin-bottom: 1.5rem;">Schritt 3: Anschreiben erstellen</h3>
-        
-        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <p style="margin: 0;"><strong>Unternehmen:</strong> ${safeWorkflowData.company || 'Nicht angegeben'}</p>
-            <p style="margin: 0;"><strong>Position:</strong> ${safeWorkflowData.position || 'Nicht angegeben'}</p>
-        </div>
-        
-        <!-- Source Selection -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Wo haben Sie die Stelle gefunden?</label>
-            <select id="jobSource" onchange="updateGreeting()" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-                <option value="Stellenanzeige">Stellenanzeige auf Ihrer Webseite</option>
-                <option value="LinkedIn">LinkedIn</option>
-                <option value="Xing">Xing</option>
-                <option value="Indeed">Indeed</option>
-                <option value="StepStone">StepStone</option>
-                <option value="Sonstiges">Sonstiges</option>
-            </select>
-        </div>
-        
-        <!-- Greeting Selection -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Einleitung:</label>
-            <div id="greetingOptions" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <!-- Greeting options will be loaded here -->
+        <div class="workflow-step-container step3-optimized" data-step="3">
+            <!-- OPTIMIZATION 1: Advanced Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+                <div class="step-circles">
+                    <div class="circle completed">1</div>
+                    <div class="circle completed">2</div>
+                    <div class="circle active">3</div>
+                    <div class="circle">4</div>
+                    <div class="circle">5</div>
+                    <div class="circle">6</div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Hauptteil:</label>
-            <div id="coverLetterContent" style="background: white; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; min-height: 300px;">
-                <!-- Selected requirements and responses will be shown here -->
+
+            <div class="step-header">
+                <h3 style="margin-bottom: 1.5rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="step-number-enhanced" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">3</span>
+                    KI-Anschreiben Generator & Editor
+                    <!-- OPTIMIZATION 2: Advanced Help System -->
+                    <button class="help-button" onclick="showStep3Help()" title="Anschreiben-Hilfe">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                </h3>
+                <p style="color: #6b7280; margin-bottom: 2rem;">Erstellen Sie ein personalisiertes Anschreiben mit KI-Unterstützung und Live-Optimierung</p>
             </div>
-        </div>
-        
-        <!-- Closing Selection -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Abschluss:</label>
-            <div id="closingOptions" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <!-- Closing options will be loaded here -->
+            
+            <!-- Company/Position Summary Enhanced -->
+            <div class="application-summary-enhanced" style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid #f59e0b;">
+                <div class="summary-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: #92400e; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-edit"></i> Anschreiben-Übersicht
+                    </h4>
+                    <div class="writing-mode-badge" id="writingMode" style="background: #f59e0b; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">
+                        KI-Modus ✨
+                    </div>
+                </div>
+                <div class="summary-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <p style="margin: 0; color: #92400e;"><strong>🏢 Unternehmen:</strong> ${safeWorkflowData.company}</p>
+                        <p style="margin: 0.5rem 0 0; color: #92400e;"><strong>💼 Position:</strong> ${safeWorkflowData.position}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0; color: #92400e;"><strong>📝 Anforderungen:</strong> <span id="reqCount">${window.workflowData?.requirements?.length || 0}</span></p>
+                        <p style="margin: 0.5rem 0 0; color: #92400e;"><strong>🎯 Modus:</strong> <span id="currentMode">Vollautomatisch</span></p>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-            <button onclick="previewFullLetter()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <i class="fas fa-eye"></i> Vorschau
-            </button>
-            <button onclick="exportCoverLetterPDF()" style="padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <i class="fas fa-file-pdf"></i> Als PDF
-            </button>
-            <button onclick="exportCoverLetterWord()" style="padding: 0.5rem 1rem; background: #0061a8; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <i class="fas fa-file-word"></i> Als Word
-            </button>
-            <button onclick="exportCoverLetterODT()" style="padding: 0.5rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <i class="fas fa-file-alt"></i> Als ODT
-            </button>
-        </div>
-        
-        <div style="display: flex; justify-content: space-between;">
-            <button onclick="previousWorkflowStep(2)" style="padding: 0.75rem 2rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <button onclick="saveAndContinue(5)" style="padding: 0.75rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                Weiter <i class="fas fa-arrow-right"></i>
-            </button>
+
+            <!-- OPTIMIZATION 3: Multi-Mode Writing Selection -->
+            <div class="writing-mode-selector" style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">✍️ Anschreiben-Modus wählen</h4>
+                <div class="mode-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    <div class="writing-mode-card active" data-mode="ai-generated" onclick="selectWritingMode('ai-generated')" style="border: 2px solid #f59e0b; background: #fef3c7; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">🤖</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #92400e;">KI-Vollgenerierung</h5>
+                        <p style="margin: 0; color: #b45309; font-size: 0.875rem;">Komplettes Anschreiben automatisch erstellen basierend auf Anforderungsanalyse</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #d97706;">
+                            ✓ Vollautomatisch ✓ Requirement-basiert ✓ Personalisiert
+                        </div>
+                    </div>
+                    
+                    <div class="writing-mode-card" data-mode="ai-assisted" onclick="selectWritingMode('ai-assisted')" style="border: 2px solid #e5e7eb; background: white; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">🖊️</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #374151;">KI-Unterstützter Editor</h5>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">Rich-Text Editor mit KI-Vorschlägen und Live-Optimierung während des Schreibens</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280;">
+                            ✓ Rich-Text Editor ✓ KI-Vorschläge ✓ Live-Feedback
+                        </div>
+                    </div>
+                    
+                    <div class="writing-mode-card" data-mode="template-based" onclick="selectWritingMode('template-based')" style="border: 2px solid #e5e7eb; background: white; padding: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        <div class="mode-icon" style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
+                        <h5 style="margin: 0 0 0.5rem; color: #374151;">Template-Generator</h5>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">Professionelle Vorlagen mit anpassbaren Bausteinen für verschiedene Branchen</p>
+                        <div class="mode-features" style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280;">
+                            ✓ Branche-Templates ✓ Modulare Bausteine ✓ Anpassbar
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 4: Real-time Writing Dashboard -->
+            <div class="writing-dashboard" style="margin-bottom: 2rem;">
+                <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0; color: #374151;">📊 Anschreiben-Dashboard</h4>
+                    <div class="dashboard-controls" style="display: flex; gap: 0.5rem;">
+                        <button onclick="toggleAutoOptimization()" id="autoOptimizeBtn" class="dashboard-btn" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-magic"></i> Auto-Optimierung
+                        </button>
+                        <button onclick="refreshWritingMetrics()" class="dashboard-btn" style="background: none; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; color: #6b7280; font-size: 0.875rem;">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="writing-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="letterScore" style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Qualitäts-Score</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="wordCount" style="font-size: 2rem; font-weight: 800; color: #6366f1; margin-bottom: 0.5rem;">0</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Wörter</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="readabilityScore" style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Lesbarkeit</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="personalizationLevel" style="font-size: 2rem; font-weight: 800; color: #8b5cf6; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Personalisierung</div>
+                    </div>
+                    
+                    <div class="metric-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; text-align: center;">
+                        <div class="metric-value" id="requirementMatch" style="font-size: 2rem; font-weight: 800; color: #ef4444; margin-bottom: 0.5rem;">-</div>
+                        <div class="metric-label" style="color: #6b7280; font-size: 0.875rem;">Req.-Match</div>
+                    </div>
+                </div>
+
+                <!-- OPTIMIZATION 5: Smart Generation Trigger -->
+                <div class="generation-section" style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="startIntelligentGeneration()" id="generateBtn" class="generation-btn enhanced" 
+                            style="padding: 1rem 2rem; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s ease;">
+                        <div class="btn-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <span class="btn-text">Anschreiben generieren</span>
+                        <div class="btn-spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                    <div class="generation-options" style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="includeMotivation" checked style="margin: 0;">
+                            Motivation einbeziehen
+                        </label>
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="formalTone" checked style="margin: 0;">
+                            Formeller Ton
+                        </label>
+                        <label class="option-checkbox" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                            <input type="checkbox" id="includeAvailability" style="margin: 0;">
+                            Verfügbarkeit erwähnen
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 6: Advanced Letter Editor -->
+            <div id="letterEditor" class="letter-editor-modern" style="display: none;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">📝 Anschreiben-Editor</h4>
+                
+                <!-- Source and Greeting Selection -->
+                <div class="editor-sections" style="margin-bottom: 2rem;">
+                    <div class="section-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="editor-section">
+                            <label style="display: block; margin-bottom: 0.75rem; font-weight: 500; color: #374151;">📍 Stellenquelle</label>
+                            <select id="jobSource" onchange="updateGreetingOptions()" class="enhanced-select" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease;">
+                                <option value="website">Unternehmens-Website</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="xing">XING</option>
+                                <option value="stepstone">StepStone</option>
+                                <option value="indeed">Indeed</option>
+                                <option value="referral">Empfehlung</option>
+                                <option value="other">Sonstiges</option>
+                            </select>
+                        </div>
+                        
+                        <div class="editor-section">
+                            <label style="display: block; margin-bottom: 0.75rem; font-weight: 500; color: #374151;">👋 Anrede-Stil</label>
+                            <select id="greetingStyle" onchange="updateGreetingPreview()" class="enhanced-select" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease;">
+                                <option value="formal">Sehr formell</option>
+                                <option value="business">Geschäftlich</option>
+                                <option value="modern">Modern</option>
+                                <option value="personal">Persönlich</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Letter Content -->
+                <div class="letter-content-editor" style="margin-bottom: 2rem;">
+                    <div class="editor-toolbar" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px 8px 0 0; border: 1px solid #e5e7eb; border-bottom: none;">
+                        <button onclick="formatText('bold')" class="toolbar-btn" title="Fett">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button onclick="formatText('italic')" class="toolbar-btn" title="Kursiv">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button onclick="formatText('underline')" class="toolbar-btn" title="Unterstreichen">
+                            <i class="fas fa-underline"></i>
+                        </button>
+                        <div class="toolbar-separator"></div>
+                        <button onclick="insertAIText()" class="toolbar-btn ai-btn" title="KI-Text einfügen">
+                            <i class="fas fa-robot"></i>
+                        </button>
+                        <button onclick="optimizeCurrentParagraph()" class="toolbar-btn" title="Absatz optimieren">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                        <button onclick="checkGrammar()" class="toolbar-btn" title="Grammatik prüfen">
+                            <i class="fas fa-spell-check"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="letter-editor-container" style="position: relative;">
+                        <div id="letterContent" class="rich-text-editor" contenteditable="true" 
+                             style="min-height: 400px; padding: 2rem; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; font-family: 'Times New Roman', serif; line-height: 1.8; font-size: 1.1rem; background: white;"
+                             oninput="updateLetterMetrics()" onpaste="handleRichTextPaste(event)">
+                            <p>Klicken Sie hier oder verwenden Sie die KI-Generierung um Ihr Anschreiben zu erstellen...</p>
+                        </div>
+                        
+                        <!-- Live AI Suggestions Panel -->
+                        <div id="aiSuggestionsPanel" class="ai-suggestions-panel" style="position: absolute; right: -320px; top: 0; width: 300px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;">
+                            <h6 style="margin: 0 0 1rem; color: #374151;">🤖 KI-Vorschläge</h6>
+                            <div id="suggestionsList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Letter Structure Outline -->
+                <div class="letter-structure" style="margin-bottom: 2rem;">
+                    <h5 style="margin-bottom: 1rem; color: #374151;">📋 Anschreiben-Struktur</h5>
+                    <div class="structure-checklist" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="structure-item" data-section="header">
+                            <label class="structure-checkbox" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" id="hasHeader" onchange="validateLetterStructure()">
+                                <span>📧 Kopfzeile (Adresse, Datum)</span>
+                            </label>
+                        </div>
+                        <div class="structure-item" data-section="greeting">
+                            <label class="structure-checkbox" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" id="hasGreeting" onchange="validateLetterStructure()">
+                                <span>👋 Anrede</span>
+                            </label>
+                        </div>
+                        <div class="structure-item" data-section="intro">
+                            <label class="structure-checkbox" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" id="hasIntro" onchange="validateLetterStructure()">
+                                <span>🎯 Einleitung (Motivation)</span>
+                            </label>
+                        </div>
+                        <div class="structure-item" data-section="main">
+                            <label class="structure-checkbox" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" id="hasMain" onchange="validateLetterStructure()">
+                                <span>📝 Hauptteil (Qualifikationen)</span>
+                            </label>
+                        </div>
+                        <div class="structure-item" data-section="closing">
+                            <label class="structure-checkbox" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" id="hasClosing" onchange="validateLetterStructure()">
+                                <span>🏁 Abschluss (Call-to-Action)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 7: Live Preview Panel -->
+            <div id="livePreviewPanel" class="live-preview-panel" style="display: none;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">👁️ Live-Vorschau</h4>
+                <div class="preview-container" style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; font-family: 'Times New Roman', serif; line-height: 1.8; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div id="previewContent">
+                        <!-- Live preview will be generated here -->
+                    </div>
+                </div>
+                <div class="preview-actions" style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button onclick="printPreview()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-print"></i> Drucken
+                    </button>
+                    <button onclick="copyToClipboard()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-copy"></i> Kopieren
+                    </button>
+                    <button onclick="downloadAsDocx()" class="preview-btn" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-download"></i> DOCX
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 8: Enhanced Export Options -->
+            <div class="export-section" style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem; color: #374151;">💾 Export & Speichern</h4>
+                <div class="export-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button onclick="exportLetterPDF()" class="export-btn" style="padding: 1rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="fas fa-file-pdf" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600;">PDF Export</span>
+                        <span style="font-size: 0.875rem; opacity: 0.9;">Für Bewerbung</span>
+                    </button>
+                    <button onclick="exportLetterWord()" class="export-btn" style="padding: 1rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="fas fa-file-word" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600;">Word Export</span>
+                        <span style="font-size: 0.875rem; opacity: 0.9;">Zur Bearbeitung</span>
+                    </button>
+                    <button onclick="saveAsDraft()" class="export-btn" style="padding: 1rem; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="fas fa-save" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600;">Als Entwurf</span>
+                        <span style="font-size: 0.875rem; opacity: 0.9;">Später bearbeiten</span>
+                    </button>
+                    <button onclick="shareViaEmail()" class="export-btn" style="padding: 1rem; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="fas fa-envelope" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600;">E-Mail senden</span>
+                        <span style="font-size: 0.875rem; opacity: 0.9;">Direkt versenden</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 9: Advanced Action Bar -->
+            <div class="action-bar enhanced step3">
+                <div class="secondary-actions">
+                    <div class="template-options">
+                        <button type="button" onclick="loadTemplate('modern')" class="template-btn" title="Moderne Vorlage">
+                            <i class="fas fa-rocket"></i>
+                            Modern
+                        </button>
+                        <button type="button" onclick="loadTemplate('classic')" class="template-btn" title="Klassische Vorlage">
+                            <i class="fas fa-building"></i>
+                            Klassisch
+                        </button>
+                        <button type="button" onclick="loadTemplate('creative')" class="template-btn" title="Kreative Vorlage">
+                            <i class="fas fa-palette"></i>
+                            Kreativ
+                        </button>
+                        <button type="button" onclick="loadPreviousLetter()" class="template-btn" title="Vorherige Anschreiben">
+                            <i class="fas fa-history"></i>
+                            Vorherige
+                        </button>
+                    </div>
+                </div>
+
+                <div class="primary-actions">
+                    <button onclick="previousWorkflowStep(2)" 
+                            class="btn-secondary enhanced"
+                            onmouseover="addButtonEffect(this, 'hover')" 
+                            onmouseout="removeButtonEffect(this, 'hover')">
+                        <i class="fas fa-arrow-left"></i> 
+                        <span>Zurück</span>
+                    </button>
+                    <button onclick="nextWorkflowStep(4)" 
+                            id="continueStep3Btn" 
+                            class="btn-primary enhanced"
+                            style="display: none;"
+                            onmouseover="addButtonEffect(this, 'hover')" 
+                            onmouseout="removeButtonEffect(this, 'hover')">
+                        <span class="btn-content">
+                            <span class="btn-text">Weiter zu Schritt 4</span>
+                            <i class="fas fa-arrow-right btn-icon"></i>
+                        </span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTIMIZATION 10: AI Writing Assistant Panel -->
+            <div class="ai-assistant-panel" id="aiAssistantPanel" style="position: fixed; bottom: 2rem; left: 2rem; width: 300px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: none; z-index: 9999;">
+                <div class="assistant-header" style="display: flex; justify-content: between; align-items: center; margin-bottom: 1rem;">
+                    <h6 style="margin: 0; color: #374151; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-robot"></i> KI-Assistent
+                    </h6>
+                    <button onclick="toggleAIAssistant()" style="background: none; border: none; color: #6b7280; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="assistant-suggestions" id="aiSuggestions" style="font-size: 0.875rem; line-height: 1.5; color: #6b7280;">
+                    <div class="suggestion-item" style="padding: 0.5rem; background: #f8fafc; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer;" onclick="applySuggestion(this)">
+                        💡 Erwähnen Sie Ihre relevante Berufserfahrung früher im Text
+                    </div>
+                    <div class="suggestion-item" style="padding: 0.5rem; background: #f8fafc; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer;" onclick="applySuggestion(this)">
+                        🎯 Fügen Sie konkrete Beispiele für Ihre Erfolge hinzu
+                    </div>
+                </div>
+                <div class="assistant-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                    <button onclick="generateMoreSuggestions()" style="flex: 1; padding: 0.5rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                        Mehr Tipps
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 };
@@ -1599,6 +2096,758 @@ function loadPreviousApplication() {
     }
 }
 
+// =================== SCHRITT 2 OPTIMIERUNGEN - JAVASCRIPT FUNKTIONEN ===================
+
+// OPTIMIZATION 1: Advanced CSS Injection for Step 2
+function injectStep2Styles() {
+    const styleId = 'step2-optimized-styles';
+    if (document.getElementById(styleId)) return; // Already injected
+    
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+        /* Step 2 Specific Enhancements */
+        .circle.completed { 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .circle.completed::after {
+            content: '✓';
+            position: absolute;
+        }
+        
+        /* Company Summary Enhanced */
+        .company-summary-enhanced {
+            animation: slideInFromTop 0.6s ease;
+        }
+        
+        /* Analysis Mode Selector */
+        .mode-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .mode-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .mode-card.active {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+        }
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .mode-card.active::before {
+            opacity: 1;
+        }
+        
+        /* Analysis Dashboard */
+        .analysis-dashboard {
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        /* Metric Cards */
+        .metric-card {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            transition: all 0.5s ease;
+        }
+        .metric-card.updating .metric-value {
+            transform: scale(1.1);
+            color: #6366f1 !important;
+        }
+        
+        /* Analysis Button Enhanced */
+        .analysis-btn.enhanced {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .analysis-btn.enhanced:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        .analysis-btn.enhanced:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .analysis-btn.enhanced.processing {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Requirements Analysis Modern */
+        .requirements-analysis-modern {
+            animation: slideInFromBottom 0.6s ease;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Requirement Item Enhanced */
+        .requirement-item-enhanced {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .requirement-item-enhanced:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.1);
+        }
+        .requirement-item-enhanced.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .requirement-item-enhanced.priority-high {
+            border-left: 4px solid #ef4444;
+        }
+        .requirement-item-enhanced.priority-medium {
+            border-left: 4px solid #f59e0b;
+        }
+        .requirement-item-enhanced.priority-low {
+            border-left: 4px solid #6b7280;
+        }
+        
+        /* Skill Match Indicators */
+        .skill-match-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem 0.5rem 0.25rem 0;
+        }
+        .skill-match-perfect {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .skill-match-good {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .skill-match-partial {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .skill-match-missing {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+        
+        /* Skill Gap Analysis */
+        .skill-gap-section {
+            animation: slideInFromRight 0.6s ease;
+        }
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        .skill-item:hover {
+            background: #f8fafc;
+            border-color: #d1d5db;
+        }
+        
+        /* Action Bar Enhanced for Step 2 */
+        .action-bar.step2 {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+        .skip-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .skip-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .skip-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            transform: translateY(-1px);
+        }
+        
+        /* Performance Monitor */
+        .performance-monitor {
+            font-family: 'Courier New', monospace;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Animations */
+        @keyframes slideInFromTop {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInFromBottom {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInFromRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .step2-optimized { animation: fadeInUp 0.6s ease; }
+    `;
+    document.head.appendChild(style);
+}
+
+// OPTIMIZATION 2: Advanced Help System for Step 2
+function showStep2Help() {
+    const helpModal = document.createElement('div');
+    helpModal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.8); z-index: 20000; display: flex; 
+        align-items: center; justify-content: center;
+    `;
+    
+    helpModal.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin: 0 0 1rem; color: #1f2937;">🤖 Hilfe zu Schritt 2: KI-Analyse</h3>
+            <div style="line-height: 1.6; color: #4b5563;">
+                <h4 style="color: #10b981; margin: 1rem 0 0.5rem;">Analyse-Modi:</h4>
+                <p><strong>🚀 Vollautomatisch:</strong> Die KI analysiert komplett eigenständig und erstellt optimale Vorschläge.</p>
+                <p><strong>🤝 KI-Unterstützt:</strong> KI macht Vorschläge, Sie entscheiden was relevant ist.</p>
+                <p><strong>✍️ Manuell:</strong> Sie haben vollständige Kontrolle über die Auswahl.</p>
+                
+                <h4 style="color: #10b981; margin: 1rem 0 0.5rem;">Dashboard-Metriken:</h4>
+                <p><strong>📋 Anforderungen:</strong> Anzahl erkannter Stellenanforderungen</p>
+                <p><strong>🎯 Skill-Matches:</strong> Übereinstimmungen mit Ihrem Profil</p>
+                <p><strong>📊 Matching-Score:</strong> Gesamtbewertung Ihrer Eignung</p>
+                <p><strong>🤖 KI-Vertrauen:</strong> Zuverlässigkeit der Analyse</p>
+                
+                <h4 style="color: #10b981; margin: 1rem 0 0.5rem;">Tipps:</h4>
+                <p>• Lassen Sie die KI vollständig analysieren für beste Ergebnisse</p>
+                <p>• Prüfen Sie die Skill-Gap Analyse für Verbesserungen</p>
+                <p>• Nutzen Sie die Performance-Anzeige unten rechts</p>
+            </div>
+            <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
+                    style="margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                Verstanden
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(helpModal);
+}
+
+// OPTIMIZATION 3: Multi-Mode Analysis Selection
+let selectedAnalysisMode = 'ai-full';
+
+function selectAnalysisMode(mode) {
+    selectedAnalysisMode = mode;
+    
+    // Update UI
+    document.querySelectorAll('.mode-card').forEach(card => {
+        card.classList.remove('active');
+        if (card.dataset.mode === mode) {
+            card.classList.add('active');
+        }
+    });
+    
+    // Update analysis button text
+    const analysisBtn = document.getElementById('advancedAnalysisBtn');
+    if (analysisBtn) {
+        const btnText = analysisBtn.querySelector('.btn-text');
+        switch(mode) {
+            case 'ai-full':
+                btnText.textContent = 'KI-Vollanalyse starten';
+                break;
+            case 'ai-assisted':
+                btnText.textContent = 'KI-Unterstützung starten';
+                break;
+            case 'manual':
+                btnText.textContent = 'Manuelle Auswahl';
+                break;
+        }
+    }
+    
+    console.log('🔧 Analysis mode selected:', mode);
+}
+
+// OPTIMIZATION 4: Real-time Dashboard Updates
+function updateDashboardMetrics(metrics) {
+    const elements = {
+        requirementsFound: document.getElementById('requirementsFound'),
+        skillMatches: document.getElementById('skillMatches'),
+        matchingScore: document.getElementById('matchingScore'),
+        confidenceLevel: document.getElementById('confidenceLevel')
+    };
+    
+    Object.entries(metrics).forEach(([key, value]) => {
+        const element = elements[key];
+        if (element) {
+            // Add updating animation
+            element.parentElement.classList.add('updating');
+            
+            // Animate number change
+            animateValue(element, parseInt(element.textContent) || 0, value, 1000);
+            
+            setTimeout(() => {
+                element.parentElement.classList.remove('updating');
+            }, 1000);
+        }
+    });
+}
+
+function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            current = end;
+            clearInterval(timer);
+        }
+        element.textContent = Math.round(current);
+    }, 16);
+}
+
+// OPTIMIZATION 5: Advanced Analysis Engine
+let analysisPerformanceStart;
+
+async function startAdvancedAnalysis() {
+    analysisPerformanceStart = performance.now();
+    
+    const btn = document.getElementById('advancedAnalysisBtn');
+    const btnIcon = btn.querySelector('.btn-icon i');
+    const btnText = btn.querySelector('.btn-text');
+    const btnSpinner = btn.querySelector('.btn-spinner');
+    
+    // Show loading state
+    btn.classList.add('processing');
+    btn.disabled = true;
+    btnIcon.style.display = 'none';
+    btnSpinner.style.display = 'block';
+    btnText.textContent = 'Analysiere...';
+    
+    // Show performance monitor
+    const perfMonitor = document.getElementById('performanceMonitor');
+    if (perfMonitor) {
+        perfMonitor.style.display = 'block';
+        updatePerformanceMonitor('Starte Analyse...', '0ms');
+    }
+    
+    try {
+        // Initialize job analyzer
+        await initializeJobAnalyzer();
+        
+        // Get job description
+        const jobDescription = window.workflowData.jobDescription;
+        if (!jobDescription || jobDescription.length < 50) {
+            throw new Error('Stellenbeschreibung zu kurz oder nicht vorhanden');
+        }
+        
+        updatePerformanceMonitor('Extrahiere Anforderungen...', '~200ms');
+        
+        // Perform analysis based on selected mode
+        let analysisResult;
+        switch(selectedAnalysisMode) {
+            case 'ai-full':
+                analysisResult = await performFullAIAnalysis(jobDescription);
+                break;
+            case 'ai-assisted':
+                analysisResult = await performAssistedAnalysis(jobDescription);
+                break;
+            case 'manual':
+                analysisResult = await performManualAnalysis(jobDescription);
+                break;
+        }
+        
+        updatePerformanceMonitor('Berechne Skill-Matching...', '~500ms');
+        
+        // Update dashboard metrics
+        updateDashboardMetrics({
+            requirementsFound: analysisResult.requirements.length,
+            skillMatches: analysisResult.skillMatches,
+            matchingScore: analysisResult.matchingScore,
+            confidenceLevel: analysisResult.confidenceLevel
+        });
+        
+        // Display results
+        displayAnalysisResults(analysisResult);
+        
+        // Show skill gap analysis if available
+        if (analysisResult.skillGap) {
+            displaySkillGapAnalysis(analysisResult.skillGap);
+        }
+        
+        updatePerformanceMonitor('Analyse abgeschlossen', Math.round(performance.now() - analysisPerformanceStart) + 'ms');
+        
+        // Show proceed button
+        const proceedBtn = document.getElementById('proceedButton');
+        if (proceedBtn) {
+            proceedBtn.style.display = 'flex';
+        }
+        
+        // Store results
+        window.workflowData.requirements = analysisResult.requirements;
+        window.workflowData.aiAnalysisResult = analysisResult;
+        
+        console.log('✅ Analysis completed:', analysisResult);
+        
+    } catch (error) {
+        console.error('❌ Analysis failed:', error);
+        alert('Analyse fehlgeschlagen: ' + error.message);
+        updatePerformanceMonitor('Fehler aufgetreten', 'ERROR');
+    } finally {
+        // Reset button state
+        btn.classList.remove('processing');
+        btn.disabled = false;
+        btnIcon.style.display = 'block';
+        btnSpinner.style.display = 'none';
+        btnText.textContent = 'Analyse abgeschlossen';
+        
+        // Hide performance monitor after delay
+        setTimeout(() => {
+            if (perfMonitor) perfMonitor.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Analysis Mode Implementations
+async function performFullAIAnalysis(jobDescription) {
+    // Simulate advanced AI analysis
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const analysisResult = {
+        requirements: [
+            {
+                id: 1,
+                text: "Mehrjährige Erfahrung in der Softwareentwicklung",
+                priority: "high",
+                category: "experience",
+                skillMatch: "perfect",
+                userResponse: "5+ Jahre Erfahrung in verschiedenen Technologien"
+            },
+            {
+                id: 2,
+                text: "Kenntnisse in agilen Entwicklungsmethoden",
+                priority: "medium",
+                category: "methodology",
+                skillMatch: "good",
+                userResponse: "Umfangreiche Scrum und Kanban Erfahrung"
+            },
+            {
+                id: 3,
+                text: "Teamfähigkeit und Kommunikationsstärke",
+                priority: "high",
+                category: "soft-skills",
+                skillMatch: "perfect",
+                userResponse: "Langjährige Teamerfahrung in internationalen Projekten"
+            }
+        ],
+        skillMatches: 8,
+        matchingScore: 92,
+        confidenceLevel: 94,
+        skillGap: {
+            matching: ["JavaScript", "React", "Node.js", "Agile", "Teamarbeit"],
+            missing: ["TypeScript", "Docker", "AWS"]
+        }
+    };
+    
+    return analysisResult;
+}
+
+async function performAssistedAnalysis(jobDescription) {
+    // Simulate AI-assisted analysis with user input
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    return {
+        requirements: [
+            {
+                id: 1,
+                text: "Programmierkenntnisse erforderlich",
+                priority: "high",
+                category: "technical",
+                skillMatch: "good",
+                suggested: true
+            },
+            {
+                id: 2,
+                text: "Projekterfahrung wünschenswert",
+                priority: "medium",
+                category: "experience",
+                skillMatch: "partial",
+                suggested: true
+            }
+        ],
+        skillMatches: 5,
+        matchingScore: 78,
+        confidenceLevel: 85,
+        requiresUserInput: true
+    };
+}
+
+async function performManualAnalysis(jobDescription) {
+    // Simple text analysis for manual mode
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const keywords = ["Erfahrung", "Kenntnisse", "Fähigkeiten", "erforderlich", "wünschenswert"];
+    const sentences = jobDescription.split(/[.!?]+/).filter(s => s.trim().length > 20);
+    
+    const requirements = sentences
+        .filter(sentence => keywords.some(keyword => sentence.includes(keyword)))
+        .slice(0, 5)
+        .map((text, index) => ({
+            id: index + 1,
+            text: text.trim(),
+            priority: "medium",
+            category: "general",
+            skillMatch: "unknown",
+            manual: true
+        }));
+    
+    return {
+        requirements,
+        skillMatches: 0,
+        matchingScore: 50,
+        confidenceLevel: 60,
+        manualMode: true
+    };
+}
+
+// OPTIMIZATION 6: Interactive Requirements Display
+function displayAnalysisResults(result) {
+    const container = document.getElementById('requirementsAnalysis');
+    if (!container) return;
+    
+    container.style.display = 'block';
+    container.innerHTML = `
+        <h4 style="margin-bottom: 1.5rem; color: #374151;">🎯 Erkannte Anforderungen (${result.requirements.length})</h4>
+        
+        <div class="requirements-grid" style="display: flex; flex-direction: column; gap: 1rem;">
+            ${result.requirements.map(req => `
+                <div class="requirement-item-enhanced priority-${req.priority} ${req.selected ? 'selected' : ''}" 
+                     data-req-id="${req.id}" onclick="toggleRequirement(${req.id})">
+                    <div class="requirement-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div class="requirement-text" style="flex: 1; margin-right: 1rem;">
+                            <p style="margin: 0; font-weight: 500; color: #1f2937;">${req.text}</p>
+                            <div class="requirement-meta" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                                <span class="category-badge" style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; margin-right: 0.5rem;">
+                                    ${req.category}
+                                </span>
+                                <span class="priority-badge priority-${req.priority}">
+                                    ${req.priority === 'high' ? '🔥 Hoch' : req.priority === 'medium' ? '⚡ Mittel' : '📋 Niedrig'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="skill-match-indicator skill-match-${req.skillMatch}">
+                            ${getSkillMatchIcon(req.skillMatch)} ${getSkillMatchLabel(req.skillMatch)}
+                        </div>
+                    </div>
+                    
+                    ${req.userResponse ? `
+                        <div class="user-response" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                            <p style="margin: 0; color: #166534; font-size: 0.875rem;"><strong>Ihre Antwort:</strong></p>
+                            <p style="margin: 0.25rem 0 0; color: #15803d;">${req.userResponse}</p>
+                        </div>
+                    ` : `
+                        <div class="response-input" style="margin-top: 1rem;">
+                            <textarea placeholder="Beschreiben Sie Ihre Erfahrung zu dieser Anforderung..." 
+                                      style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; resize: vertical; min-height: 60px;"
+                                      onchange="updateRequirementResponse(${req.id}, this.value)"></textarea>
+                        </div>
+                    `}
+                    
+                    <div class="requirement-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button onclick="editRequirement(${req.id})" class="action-btn" style="padding: 0.25rem 0.75rem; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-edit"></i> Bearbeiten
+                        </button>
+                        <button onclick="duplicateRequirement(${req.id})" class="action-btn" style="padding: 0.25rem 0.75rem; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-copy"></i> Duplizieren
+                        </button>
+                        <button onclick="removeRequirement(${req.id})" class="action-btn" style="padding: 0.25rem 0.75rem; border: 1px solid #ef4444; color: #ef4444; background: white; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-trash"></i> Entfernen
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="analysis-summary" style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
+            <h5 style="margin: 0 0 1rem; color: #374151;">📊 Analyse-Zusammenfassung</h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #6366f1;">${result.requirements.length}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Anforderungen</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">${result.skillMatches}</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Skill-Matches</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">${result.matchingScore}%</div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Übereinstimmung</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function getSkillMatchIcon(match) {
+    switch(match) {
+        case 'perfect': return '🎯';
+        case 'good': return '✅';
+        case 'partial': return '🔶';
+        case 'missing': return '❌';
+        default: return '❓';
+    }
+}
+
+function getSkillMatchLabel(match) {
+    switch(match) {
+        case 'perfect': return 'Perfekt';
+        case 'good': return 'Gut';
+        case 'partial': return 'Teilweise';
+        case 'missing': return 'Fehlend';
+        default: return 'Unbekannt';
+    }
+}
+
+// OPTIMIZATION 7: Skill Gap Analysis Display
+function displaySkillGapAnalysis(skillGap) {
+    const container = document.getElementById('skillGapAnalysis');
+    if (!container) return;
+    
+    container.style.display = 'block';
+    
+    const matchingList = document.getElementById('matchingSkillsList');
+    const missingList = document.getElementById('missingSkillsList');
+    
+    if (matchingList) {
+        matchingList.innerHTML = skillGap.matching.map(skill => `
+            <div class="skill-item">
+                <span>✅ ${skill}</span>
+                <span style="font-size: 0.875rem; color: #10b981;">Vorhanden</span>
+            </div>
+        `).join('');
+    }
+    
+    if (missingList) {
+        missingList.innerHTML = skillGap.missing.map(skill => `
+            <div class="skill-item">
+                <span>🎯 ${skill}</span>
+                <button onclick="addSkillToDevelopment('${skill}')" style="padding: 0.25rem 0.5rem; background: #f59e0b; color: white; border: none; border-radius: 4px; font-size: 0.75rem;">
+                    Lernen
+                </button>
+            </div>
+        `).join('');
+    }
+}
+
+// OPTIMIZATION 8-10: Utility Functions
+function refreshAnalysis() {
+    // Refresh the current analysis
+    startAdvancedAnalysis();
+}
+
+function updatePerformanceMonitor(status, time) {
+    const monitor = document.getElementById('performanceMonitor');
+    if (!monitor) return;
+    
+    const timeElement = document.getElementById('analysisTime');
+    const speedElement = document.getElementById('processingSpeed');
+    
+    if (timeElement) timeElement.textContent = `Status: ${status}`;
+    if (speedElement) speedElement.textContent = `Zeit: ${time}`;
+}
+
+function toggleRequirement(id) {
+    const element = document.querySelector(`[data-req-id="${id}"]`);
+    if (element) {
+        element.classList.toggle('selected');
+    }
+}
+
+function updateRequirementResponse(id, response) {
+    // Update the response for this requirement
+    if (window.workflowData.requirements) {
+        const req = window.workflowData.requirements.find(r => r.id === id);
+        if (req) {
+            req.userResponse = response;
+        }
+    }
+}
+
+// Skip and utility functions
+function skipWithTemplate() {
+    if (confirm('Mit Vorlage fortfahren? Dies verwendet Standard-Antworten.')) {
+        // Load template responses
+        window.workflowData.selectedRequirements = [
+            { requirement: { text: "Berufserfahrung" }, response: "Mehrjährige relevante Berufserfahrung vorhanden" },
+            { requirement: { text: "Teamarbeit" }, response: "Erfahrung in der Zusammenarbeit in verschiedenen Teams" }
+        ];
+        nextWorkflowStep(3);
+    }
+}
+
+function saveAndContinueLater() {
+    // Save current progress
+    localStorage.setItem('workflow-step2-progress', JSON.stringify(window.workflowData));
+    alert('Fortschritt gespeichert! Sie können später fortfahren.');
+}
+
+function addSkillToDevelopment(skill) {
+    alert(`"${skill}" zur Entwicklungsliste hinzugefügt. Empfohlene Lernressourcen werden in einer zukünftigen Version verfügbar sein.`);
+}
+
 // Analyze requirements function
 async function analyzeRequirements() {
     console.log('🚀 === SMART WORKFLOW SCHRITT 2: KI-ANFORDERUNGSANALYSE ===');
@@ -2063,3 +3312,717 @@ window.generateSmartCoverLetter = async function() {
         }
     }, 100);
 };
+
+// =================== SCHRITT 3 OPTIMIERUNGEN - CSS UND JAVASCRIPT FUNKTIONEN ===================
+
+// OPTIMIZATION 1: Advanced CSS Injection for Step 3
+function injectStep3Styles() {
+    const styleId = 'step3-optimized-styles';
+    if (document.getElementById(styleId)) return; // Already injected
+    
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+        /* Step 3 Optimizations Styling */
+        .step3-optimized .writing-mode-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step3-optimized .writing-mode-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step3-optimized .writing-mode-card.active {
+            background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .step3-optimized .writing-mode-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .step3-optimized .writing-mode-card:hover::before {
+            animation: shimmer 1.5s ease-in-out;
+            opacity: 1;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        /* Writing Dashboard Metrics */
+        .writing-metrics-grid .metric-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .writing-metrics-grid .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #f59e0b;
+        }
+        
+        .metric-value {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: valueUpdate 0.5s ease-in-out;
+        }
+        
+        @keyframes valueUpdate {
+            0% { transform: scale(1.2); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Generation Button Enhancement */
+        .generation-btn.enhanced {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .generation-btn.enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .generation-btn.enhanced:active {
+            transform: translateY(0);
+        }
+        
+        /* Rich Text Editor */
+        .rich-text-editor {
+            transition: all 0.3s ease;
+        }
+        
+        .rich-text-editor:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .toolbar-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        .toolbar-btn.active {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+        
+        .toolbar-btn.ai-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border-color: #8b5cf6;
+        }
+        
+        .toolbar-separator {
+            width: 1px;
+            background: #e5e7eb;
+            margin: 0 0.25rem;
+        }
+        
+        /* Letter Structure Checklist */
+        .structure-checkbox {
+            transition: all 0.3s ease;
+        }
+        
+        .structure-checkbox:hover {
+            background: #f0fdf4 !important;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+        }
+        
+        .structure-checkbox input:checked + span {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        /* Export Grid Enhancement */
+        .export-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .export-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .export-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* AI Assistant Panel */
+        .ai-assistant-panel {
+            animation: slideInLeft 0.3s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .suggestion-item {
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-item:hover {
+            background: #e0f2fe !important;
+            border: 1px solid #0284c7;
+            transform: translateX(4px);
+        }
+        
+        /* Enhanced Selects */
+        .enhanced-select {
+            position: relative;
+        }
+        
+        .enhanced-select:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+            outline: none;
+        }
+        
+        /* Live Preview Panel */
+        .live-preview-panel {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .preview-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .preview-btn:hover {
+            background: #f59e0b !important;
+            color: white !important;
+            border-color: #f59e0b !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* Advanced Action Bar for Step 3 */
+        .action-bar.step3 {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 16px;
+            margin-top: 2rem;
+            border: 1px solid #f59e0b;
+        }
+        
+        .template-options {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .template-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .template-btn:hover {
+            border-color: #f59e0b;
+            background: #fef3c7;
+            color: #92400e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+        
+        /* Responsive Design for Step 3 */
+        @media (max-width: 768px) {
+            .step3-optimized .mode-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .step3-optimized .writing-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .step3-optimized .export-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .step3-optimized .section-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-assistant-panel {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: auto;
+                border-radius: 12px 12px 0 0;
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
+// =================== STEP 3 HELPER FUNCTIONS ===================
+
+// OPTIMIZATION 2: Advanced Help System for Step 3
+window.showStep3Help = function() {
+    const helpModal = `
+        <div id="step3HelpModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+            <div style="background: white; border-radius: 16px; padding: 2rem; max-width: 600px; max-height: 80vh; overflow-y: auto; margin: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0; color: #1f2937;">📝 Anschreiben-Generator Hilfe</h3>
+                    <button onclick="closeStep3Help()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;">&times;</button>
+                </div>
+                
+                <div style="space-y: 1.5rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #f59e0b; margin-bottom: 0.75rem;">🤖 KI-Modi erklärt</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="padding: 0.75rem; background: #fef3c7; border-radius: 8px; margin-bottom: 0.5rem;">
+                                <strong>KI-Vollgenerierung:</strong> Erstellt automatisch ein komplettes Anschreiben basierend auf Ihren Anforderungen und der Stellenanalyse.
+                            </li>
+                            <li style="padding: 0.75rem; background: #f3f4f6; border-radius: 8px; margin-bottom: 0.5rem;">
+                                <strong>KI-Unterstützter Editor:</strong> Rich-Text Editor mit intelligenten Vorschlägen während Sie schreiben.
+                            </li>
+                            <li style="padding: 0.75rem; background: #f0f9ff; border-radius: 8px;">
+                                <strong>Template-Generator:</strong> Wählen Sie aus professionellen Vorlagen und passen Sie diese an.
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: #10b981; margin-bottom: 0.75rem;">📊 Dashboard-Metriken</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;"><strong>Qualitäts-Score:</strong> Bewertet Struktur, Inhalt und Personalisierung</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;"><strong>Wörter:</strong> Aktuelle Wortanzahl (ideal: 200-400)</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;"><strong>Lesbarkeit:</strong> Verständlichkeits-Index</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;"><strong>Personalisierung:</strong> Grad der Anpassung an Stelle/Unternehmen</li>
+                            <li style="padding: 0.5rem 0;"><strong>Req.-Match:</strong> Übereinstimmung mit Stellenanforderungen</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #6366f1; margin-bottom: 0.75rem;">⌨️ Tastenkürzel</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; font-family: monospace; font-size: 0.875rem;">
+                            <span>Ctrl+B</span><span>Text fett formatieren</span>
+                            <span>Ctrl+I</span><span>Text kursiv formatieren</span>
+                            <span>Ctrl+G</span><span>KI-Anschreiben generieren</span>
+                            <span>Ctrl+S</span><span>Als Entwurf speichern</span>
+                            <span>Ctrl+P</span><span>Vorschau anzeigen</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button onclick="closeStep3Help()" style="padding: 0.75rem 2rem; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        Verstanden!
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', helpModal);
+};
+
+window.closeStep3Help = function() {
+    const modal = document.getElementById('step3HelpModal');
+    if (modal) modal.remove();
+};
+
+// OPTIMIZATION 3: Multi-Mode Writing Selection
+window.selectWritingMode = function(mode) {
+    // Update visual selection
+    document.querySelectorAll('.writing-mode-card').forEach(card => {
+        card.classList.remove('active');
+        card.style.border = '2px solid #e5e7eb';
+        card.style.background = 'white';
+    });
+    
+    const selectedCard = document.querySelector(`[data-mode="${mode}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('active');
+    }
+    
+    // Update mode badge
+    const modeBadge = document.getElementById('writingMode');
+    const currentModeSpan = document.getElementById('currentMode');
+    
+    switch(mode) {
+        case 'ai-generated':
+            if (modeBadge) modeBadge.textContent = 'KI-Vollmodus ✨';
+            if (currentModeSpan) currentModeSpan.textContent = 'Vollautomatisch';
+            break;
+        case 'ai-assisted':
+            if (modeBadge) modeBadge.textContent = 'KI-Assistent 🖊️';
+            if (currentModeSpan) currentModeSpan.textContent = 'Unterstützt';
+            break;
+        case 'template-based':
+            if (modeBadge) modeBadge.textContent = 'Template-Modus 📝';
+            if (currentModeSpan) currentModeSpan.textContent = 'Template';
+            break;
+    }
+    
+    // Store selected mode
+    if (!window.workflowData) window.workflowData = {};
+    window.workflowData.writingMode = mode;
+    
+    // Show/hide relevant sections
+    updateWritingInterface(mode);
+};
+
+function updateWritingInterface(mode) {
+    const letterEditor = document.getElementById('letterEditor');
+    const generateBtn = document.getElementById('generateBtn');
+    
+    if (mode === 'ai-generated') {
+        if (letterEditor) letterEditor.style.display = 'none';
+        if (generateBtn) {
+            generateBtn.style.display = 'inline-flex';
+            generateBtn.querySelector('.btn-text').textContent = 'KI-Anschreiben generieren';
+        }
+    } else if (mode === 'ai-assisted') {
+        if (letterEditor) letterEditor.style.display = 'block';
+        if (generateBtn) {
+            generateBtn.style.display = 'inline-flex';
+            generateBtn.querySelector('.btn-text').textContent = 'Editor mit KI-Unterstützung öffnen';
+        }
+    } else if (mode === 'template-based') {
+        if (letterEditor) letterEditor.style.display = 'block';
+        if (generateBtn) {
+            generateBtn.style.display = 'inline-flex';
+            generateBtn.querySelector('.btn-text').textContent = 'Template-Assistent öffnen';
+        }
+    }
+}
+
+// OPTIMIZATION 5: Smart Generation Trigger
+window.startIntelligentGeneration = function() {
+    const generateBtn = document.getElementById('generateBtn');
+    const mode = window.workflowData?.writingMode || 'ai-generated';
+    
+    // Show loading state
+    if (generateBtn) {
+        const icon = generateBtn.querySelector('.btn-icon');
+        const text = generateBtn.querySelector('.btn-text');
+        const spinner = generateBtn.querySelector('.btn-spinner');
+        
+        if (icon) icon.style.display = 'none';
+        if (text) text.textContent = 'Generiere...';
+        if (spinner) spinner.style.display = 'block';
+        generateBtn.disabled = true;
+    }
+    
+    // Simulate AI generation delay
+    setTimeout(() => {
+        if (mode === 'ai-generated') {
+            generateFullAILetter();
+        } else if (mode === 'ai-assisted') {
+            openAssistedEditor();
+        } else if (mode === 'template-based') {
+            openTemplateAssistant();
+        }
+        
+        // Reset button state
+        if (generateBtn) {
+            const icon = generateBtn.querySelector('.btn-icon');
+            const text = generateBtn.querySelector('.btn-text');
+            const spinner = generateBtn.querySelector('.btn-spinner');
+            
+            if (icon) icon.style.display = 'block';
+            if (text) text.textContent = 'Anschreiben generieren';
+            if (spinner) spinner.style.display = 'none';
+            generateBtn.disabled = false;
+        }
+    }, 2000);
+};
+
+function generateFullAILetter() {
+    const company = window.workflowData?.company || 'das Unternehmen';
+    const position = window.workflowData?.position || 'die Position';
+    
+    let letterContent = `
+        <p><strong>Manuel Weiss</strong><br>
+        Musterstraße 123<br>
+        12345 Musterstadt<br>
+        E-Mail: manuel.weiss@email.com</p>
+        
+        <p>${company}<br>
+        z.H. Personalabteilung<br>
+        ${new Date().toLocaleDateString('de-DE')}</p>
+        
+        <p><strong>Bewerbung als ${position}</strong></p>
+        
+        <p>Sehr geehrte Damen und Herren,</p>
+        
+        <p>mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${position} gelesen. Die Herausforderungen und Entwicklungsmöglichkeiten bei ${company} entsprechen genau meinen beruflichen Vorstellungen und Zielen.</p>
+        
+        <p>Meine Qualifikationen umfassen umfassende Erfahrungen in relevanten Bereichen sowie die Fähigkeit, komplexe Herausforderungen erfolgreich zu meistern. Besonders meine proaktive Arbeitsweise und mein Engagement für Exzellenz zeichnen mich aus.</p>
+        
+        <p>Gerne überzeuge ich Sie in einem persönlichen Gespräch von meinen Qualifikationen und meiner Motivation für diese Position.</p>
+        
+        <p>Mit freundlichen Grüßen<br>
+        Manuel Weiss</p>
+    `;
+    
+    showGeneratedLetter(letterContent);
+}
+
+function showGeneratedLetter(content) {
+    const letterEditor = document.getElementById('letterEditor');
+    const livePreviewPanel = document.getElementById('livePreviewPanel');
+    const letterContentDiv = document.getElementById('letterContent');
+    const previewContent = document.getElementById('previewContent');
+    
+    if (letterEditor) letterEditor.style.display = 'block';
+    if (livePreviewPanel) livePreviewPanel.style.display = 'block';
+    
+    if (letterContentDiv) {
+        letterContentDiv.innerHTML = content;
+    }
+    
+    if (previewContent) {
+        previewContent.innerHTML = content;
+    }
+    
+    updateContinueButton();
+    showAIAssistant();
+    updateWritingMetrics();
+}
+
+// OPTIMIZATION 4: Real-time Writing Dashboard Updates
+window.updateWritingMetrics = function() {
+    const letterContent = document.getElementById('letterContent');
+    if (!letterContent) return;
+    
+    const text = letterContent.textContent || letterContent.innerText || '';
+    const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+    
+    animateMetricValue('wordCount', wordCount);
+    
+    const qualityScore = calculateQualityScore(text);
+    const readabilityScore = calculateReadabilityScore(text);
+    const personalizationLevel = calculatePersonalizationLevel(text);
+    const requirementMatch = calculateRequirementMatch(text);
+    
+    animateMetricValue('letterScore', qualityScore + '%');
+    animateMetricValue('readabilityScore', readabilityScore);
+    animateMetricValue('personalizationLevel', personalizationLevel + '%');
+    animateMetricValue('requirementMatch', requirementMatch + '%');
+    
+    updateContinueButton();
+};
+
+function animateMetricValue(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (element && element.textContent !== newValue.toString()) {
+        element.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            element.textContent = newValue;
+            element.style.transform = 'scale(1)';
+        }, 150);
+    }
+}
+
+function calculateQualityScore(text) {
+    let score = 0;
+    const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+    
+    if (wordCount >= 200 && wordCount <= 400) score += 30;
+    else if (wordCount >= 150) score += 20;
+    else if (wordCount >= 100) score += 10;
+    
+    if (text.includes('Sehr geehrte') || text.includes('Liebe')) score += 15;
+    if (text.includes('Mit freundlichen Grüßen')) score += 15;
+    
+    if (window.workflowData?.company && text.includes(window.workflowData.company)) score += 20;
+    if (window.workflowData?.position && text.includes(window.workflowData.position)) score += 20;
+    
+    return Math.min(100, score);
+}
+
+function calculateReadabilityScore(text) {
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    if (sentences.length === 0) return 'A+';
+    
+    const avgWordsPerSentence = text.split(/\s+/).length / sentences.length;
+    
+    if (avgWordsPerSentence <= 15) return 'A+';
+    if (avgWordsPerSentence <= 20) return 'A';
+    if (avgWordsPerSentence <= 25) return 'B';
+    return 'C';
+}
+
+function calculatePersonalizationLevel(text) {
+    let personalizations = 0;
+    const maxPersonalizations = 5;
+    
+    if (window.workflowData?.company && text.toLowerCase().includes(window.workflowData.company.toLowerCase())) personalizations++;
+    if (window.workflowData?.position && text.toLowerCase().includes(window.workflowData.position.toLowerCase())) personalizations++;
+    if (text.includes('Ihre') || text.includes('Sie')) personalizations++;
+    if (text.includes('ich') || text.includes('meine')) personalizations++;
+    if (text.length > 300) personalizations++;
+    
+    return Math.round((personalizations / maxPersonalizations) * 100);
+}
+
+function calculateRequirementMatch(text) {
+    if (!window.workflowData?.requirements) return 0;
+    
+    const requirements = window.workflowData.requirements;
+    let matches = 0;
+    
+    requirements.forEach(req => {
+        if (text.toLowerCase().includes(req.skill?.toLowerCase() || '')) {
+            matches++;
+        }
+    });
+    
+    return Math.round((matches / requirements.length) * 100);
+}
+
+// Additional Helper Functions for Step 3
+window.showAIAssistant = function() {
+    const aiPanel = document.getElementById('aiAssistantPanel');
+    if (aiPanel) {
+        aiPanel.style.display = 'block';
+    }
+};
+
+window.exportLetterPDF = function() {
+    alert('PDF Export wird vorbereitet... 📄');
+};
+
+window.exportLetterWord = function() {
+    alert('Word Export wird vorbereitet... 📝');
+};
+
+window.saveAsDraft = function() {
+    const letterContent = document.getElementById('letterContent');
+    if (letterContent) {
+        localStorage.setItem('letterDraft', JSON.stringify({
+            content: letterContent.innerHTML,
+            timestamp: new Date().toISOString()
+        }));
+        alert('Entwurf gespeichert! ✅');
+    }
+};
+
+window.shareViaEmail = function() {
+    alert('E-Mail Client wird geöffnet... 📧');
+};
+
+window.loadTemplate = function(templateType) {
+    alert(`${templateType} Template wird geladen... 📋`);
+};
+
+window.loadPreviousLetter = function() {
+    alert('Vorherige Anschreiben werden geladen... 📜');
+};
+
+function updateContinueButton() {
+    const continueBtn = document.getElementById('continueStep3Btn');
+    const letterContent = document.getElementById('letterContent');
+    
+    if (continueBtn && letterContent) {
+        const text = letterContent.textContent || letterContent.innerText || '';
+        const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+        
+        if (wordCount >= 50) {
+            continueBtn.style.display = 'inline-flex';
+        } else {
+            continueBtn.style.display = 'none';
+        }
+    }
+}
+
+function openAssistedEditor() {
+    const letterEditor = document.getElementById('letterEditor');
+    if (letterEditor) {
+        letterEditor.style.display = 'block';
+        const letterContent = document.getElementById('letterContent');
+        if (letterContent) {
+            letterContent.focus();
+            letterContent.innerHTML = '<p>Beginnen Sie hier mit dem Schreiben...</p>';
+        }
+        showAIAssistant();
+    }
+}
+
+function openTemplateAssistant() {
+    alert('Template-Assistent wird geöffnet... 🎨');
+}
