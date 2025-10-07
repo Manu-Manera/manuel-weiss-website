@@ -351,7 +351,7 @@
         <section class="hero-section">
             <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
             <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
-            <button class="main-cta" onclick="startBewerbungsprozess()">
+            <button class="main-cta" onclick="startBewerbungsprozess()" id="mainStartButton">
                 <i class="fas fa-play-circle"></i>
                 Neue Bewerbung starten
             </button>
@@ -474,7 +474,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 2rem;">
-                <button class="main-cta" onclick="startBewerbungsprozess()">
+                <button class="main-cta" onclick="startBewerbungsprozess()" id="workflowStartButton">
                     <i class="fas fa-rocket"></i>
                     Workflow jetzt starten
                 </button>
@@ -487,51 +487,119 @@
     <script src="js/smart-workflow-steps.js" async></script>
     
     <script>
+        // Global flag to track workflow status
+        window.workflowStarted = false;
+        
         // Hauptfunktion zum Starten des Bewerbungsprozesses
         function startBewerbungsprozess() {
             console.log('🚀 Bewerbungsprozess wird gestartet...');
             
-            // Show loading
-            document.getElementById('loadingSection').classList.add('active');
+            // Prevent multiple calls
+            if (window.workflowStarted) {
+                console.log('⚠️ Workflow bereits gestartet, überspringe...');
+                return;
+            }
             
-            // Initialize workflow system
+            window.workflowStarted = true;
+            
+            try {
+                // Show loading
+                const loadingSection = document.getElementById('loadingSection');
+                if (loadingSection) {
+                    loadingSection.classList.add('active');
+                    console.log('✅ Loading-Animation gestartet');
+                } else {
+                    console.warn('⚠️ loadingSection Element nicht gefunden');
+                }
+                
+                // Check if workflow is already loaded
+                if (window.startSmartBewerbungsWorkflow && typeof window.startSmartBewerbungsWorkflow === 'function') {
+                    console.log('✅ Workflow bereits geladen, starte direkt...');
+                    if (loadingSection) loadingSection.classList.remove('active');
+                    
+                    // Small delay for better UX
+                    setTimeout(() => {
+                        window.startSmartBewerbungsWorkflow();
+                    }, 300);
+                    return;
+                }
+                
+                // Initialize workflow system
+                setTimeout(() => {
+                    loadBewerbungsSystem();
+                }, 500);
+                
+            } catch (error) {
+                console.error('❌ Fehler in startBewerbungsprozess:', error);
+                window.workflowStarted = false; // Reset flag on error
+                
+                const loadingSection = document.getElementById('loadingSection');
+                if (loadingSection) loadingSection.classList.remove('active');
+                
+                // Direct fallback to legacy system
+                emergencyWorkflowStart();
+            }
+        }
+        
+        // Emergency fallback function
+        function emergencyWorkflowStart() {
+            console.log('🚨 Notfall-Workflow wird gestartet...');
+            window.workflowStarted = false; // Reset flag for emergency
+            
+            alert('Das Bewerbungssystem wird initialisiert. Sie werden zur Bewerbungsseite weitergeleitet...');
+            
+            // Try direct navigation to bewerbungen.html as ultimate fallback
             setTimeout(() => {
-                loadBewerbungsSystem();
-            }, 1000);
+                window.location.href = 'bewerbungen.html';
+            }, 1500);
         }
         
         async function loadBewerbungsSystem() {
+            const loadingSection = document.getElementById('loadingSection');
+            
             try {
                 console.log('📦 Lade Bewerbungs-Module...');
                 
-                // Simple and reliable approach: Load legacy system directly
-                console.log('🔄 Lade bewährtes Workflow-System...');
+                // Check if already loaded from static script
+                if (window.startSmartBewerbungsWorkflow && typeof window.startSmartBewerbungsWorkflow === 'function') {
+                    console.log('✅ Script bereits aus statischem Tag geladen');
+                    if (loadingSection) loadingSection.classList.remove('active');
+                    window.startSmartBewerbungsWorkflow();
+                    return;
+                }
+                
+                // Load dynamically if not already available
+                console.log('🔄 Lade Workflow-System dynamisch...');
                 await loadScript('js/smart-workflow-steps.js');
                 
-                // Hide loading
-                document.getElementById('loadingSection').classList.remove('active');
+                // Wait a moment for script execution
+                await new Promise(resolve => setTimeout(resolve, 200));
                 
-                // Start workflow
-                if (window.startSmartBewerbungsWorkflow) {
+                // Hide loading
+                if (loadingSection) loadingSection.classList.remove('active');
+                
+                // Start workflow with multiple checks
+                if (window.startSmartBewerbungsWorkflow && typeof window.startSmartBewerbungsWorkflow === 'function') {
                     console.log('✅ System geladen, starte Workflow...');
                     setTimeout(() => {
-                        window.startSmartBewerbungsWorkflow();
+                        try {
+                            window.startSmartBewerbungsWorkflow();
+                        } catch (workflowError) {
+                            console.error('❌ Fehler beim Workflow-Start:', workflowError);
+                            emergencyWorkflowStart();
+                        }
                     }, 100);
                 } else {
-                    console.error('❌ startSmartBewerbungsWorkflow Funktion nicht verfügbar');
-                    alert('❌ Workflow-System konnte nicht geladen werden. Bitte versuchen Sie es erneut.');
+                    console.error('❌ startSmartBewerbungsWorkflow nicht verfügbar nach dem Laden');
+                    console.log('🔍 Verfügbare window-Objekte:', Object.keys(window).filter(key => key.includes('workflow') || key.includes('Smart')));
+                    emergencyWorkflowStart();
                 }
                 
             } catch (error) {
                 console.error('❌ Fehler beim Laden:', error);
-                document.getElementById('loadingSection').classList.remove('active');
-                
-                // Emergency fallback: Direct navigation
-                console.log('🚨 Notfall-Fallback: Direkte Navigation');
-                alert('Das Bewerbungssystem wird geladen. Sie werden zur Bewerbungsseite weitergeleitet...');
-                setTimeout(() => {
-                    window.location.href = 'bewerbungen.html';
-                }, 1000);
+                window.workflowStarted = false; // Reset flag on error
+                if (loadingSection) loadingSection.classList.remove('active');
+                emergencyWorkflowStart();
             }
         }
         
@@ -568,6 +636,55 @@
                     console.log(`📋 Schritt ${index + 1}: ${stepNames[index]}`);
                 });
             });
+        });
+        
+        // Initialization on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 Seite geladen, initialisiere Bewerbungsmanager...');
+            
+            // Check if script loaded successfully 
+            setTimeout(() => {
+                if (window.startSmartBewerbungsWorkflow) {
+                    console.log('✅ Workflow-Script erfolgreich geladen');
+                } else {
+                    console.warn('⚠️ Workflow-Script nicht geladen, wird bei Button-Klick nachgeladen');
+                }
+            }, 1000);
+            
+            // Add click handlers as backup
+            const mainButton = document.getElementById('mainStartButton');
+            const workflowButton = document.getElementById('workflowStartButton');
+            
+            if (mainButton) {
+                mainButton.addEventListener('click', function(e) {
+                    console.log('🖱️ Haupt-Button geklickt:', this.textContent.trim());
+                    // Additional backup: direct call if onclick fails
+                    setTimeout(() => {
+                        if (!window.workflowStarted) {
+                            console.log('🔄 Backup-Trigger für Haupt-Button');
+                            startBewerbungsprozess();
+                        }
+                    }, 100);
+                });
+            }
+            
+            if (workflowButton) {
+                workflowButton.addEventListener('click', function(e) {
+                    console.log('🖱️ Workflow-Button geklickt:', this.textContent.trim());
+                    // Additional backup: direct call if onclick fails
+                    setTimeout(() => {
+                        if (!window.workflowStarted) {
+                            console.log('🔄 Backup-Trigger für Workflow-Button');
+                            startBewerbungsprozess();
+                        }
+                    }, 100);
+                });
+            }
+        });
+        
+        // Additional error handling for the entire page
+        window.addEventListener('error', function(error) {
+            console.error('🚨 JavaScript-Fehler auf der Seite:', error);
         });
         
         console.log('✅ Bewerbungsmanager initialisiert');
