@@ -4043,6 +4043,59 @@
                         
 
 
+                                        <!-- Smart Workflow Integration -->
+                                        <div class="smart-workflow-integration" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                            <div style="text-align: center; margin-bottom: 1.5rem;">
+                                                <h3 style="color: #1e40af; margin: 0 0 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                                    🚀 KI-gestützter Bewerbungsworkflow
+                                                </h3>
+                                                <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
+                                                    Erstelle professionelle Bewerbungen mit modernster KI-Technologie
+                                                </p>
+                                            </div>
+                                            
+                                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                                <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="
+                                                    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
+                                                    color: white; 
+                                                    border: none; 
+                                                    padding: 1rem 2rem; 
+                                                    border-radius: 8px; 
+                                                    cursor: pointer; 
+                                                    font-weight: 700; 
+                                                    font-size: 1rem; 
+                                                    display: flex; 
+                                                    align-items: center; 
+                                                    gap: 0.75rem;
+                                                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                                                    transition: all 0.3s ease;
+                                                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.4)'" 
+                                                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
+                                                    <i class="fas fa-plus"></i>
+                                                    <span>Neue Bewerbung erstellen</span>
+                                                </button>
+                                                
+                                                <button onclick="window.open('bewerbungsmanager.html#ai-analysis', '_blank')" style="
+                                                    background: rgba(59, 130, 246, 0.1); 
+                                                    color: #1e40af; 
+                                                    border: 2px solid rgba(59, 130, 246, 0.3); 
+                                                    padding: 1rem 1.5rem; 
+                                                    border-radius: 8px; 
+                                                    cursor: pointer; 
+                                                    font-weight: 600; 
+                                                    font-size: 0.95rem; 
+                                                    display: flex; 
+                                                    align-items: center; 
+                                                    gap: 0.5rem;
+                                                    transition: all 0.3s ease;
+                                                " onmouseover="this.style.background='rgba(59, 130, 246, 0.15)'" 
+                                                   onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'">
+                                                    <i class="fas fa-brain"></i>
+                                                    <span>KI-Analyse starten</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                        
                                         <!-- Aktuelle Bewerbungen Liste -->
 
 
@@ -4128,19 +4181,19 @@
                                                  </div>
 
 
-                                     <button id="smartWorkflowButton" onclick="if(typeof openBewerbungsmanager === 'function') { openBewerbungsmanager(); } else { window.location.href = 'bewerbungsmanager.html'; }" style="padding: 1rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem; width: auto; max-width: 100%;">
+                                     <button id="smartWorkflowButton" onclick="navigateToBewerbungsSection()" style="padding: 1rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem; width: auto; max-width: 100%;">
                                          <i class="fas fa-rocket" style="font-size: 1.2rem;"></i>
-                                         <span>Bewerbungsmanager öffnen</span>
+                                         <span>Bewerbungsdashboard öffnen</span>
                                      </button>
                                      
                                      <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; max-width: 100%;">
-                                         <button onclick="if(typeof openBewerbungsmanager === 'function') { openBewerbungsmanager(); } else { window.location.href = 'bewerbungsmanager.html'; }" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                             <i class="fas fa-list"></i>
-                                             <span>Verwalten</span>
+                                         <button onclick="navigateToBewerbungsSection()" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                             <i class="fas fa-tachometer-alt"></i>
+                                             <span>Dashboard</span>
                                          </button>
                                          <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
                                              <i class="fas fa-external-link-alt"></i>
-                                             <span>Neues Tab</span>
+                                             <span>Workflow</span>
                                          </button>
                                      </div>
                                 </div>
@@ -17124,22 +17177,33 @@ Bitte antworte im folgenden JSON-Format:
         
         // =================== BEWERBUNGSMANAGER INTEGRATION ===================
         
-        function openBewerbungsmanager() {
-            console.log('🚀 Öffne Bewerbungsmanager...');
+        function navigateToBewerbungsSection() {
+            console.log('🚀 Navigiere zur integrierten Bewerbungssektion...');
             
-            // Mit Animation zur neuen Seite navigieren
+            // Animation des Buttons
             const button = document.getElementById('smartWorkflowButton');
             if (button) {
                 button.style.transform = 'scale(0.95)';
                 button.style.opacity = '0.8';
                 
                 setTimeout(() => {
-                    window.location.href = 'bewerbungsmanager.html';
+                    // Navigation zur Bewerbungen-Sektion im Admin Panel
+                    navigateToSection('applications');
+                    
+                    // Button Animation zurücksetzen
+                    button.style.transform = 'scale(1)';
+                    button.style.opacity = '1';
                 }, 150);
             } else {
                 // Fallback ohne Animation
-                window.location.href = 'bewerbungsmanager.html';
+                navigateToSection('applications');
             }
+        }
+        
+        // Legacy-Support
+        function openBewerbungsmanager() {
+            console.log('🔄 Legacy-Call: Weiterleitung zur integrierten Bewerbungssektion');
+            navigateToBewerbungsSection();
         }
         
         // Legacy-Support für bestehende Implementierungen
