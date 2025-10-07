@@ -1,5 +1,16 @@
 // Smart Workflow Steps with Requirement Analysis
 
+// Main workflow function
+window.startSmartBewerbungsWorkflow = function() {
+    console.log('🚀 Starting Smart Bewerbungsworkflow...');
+    try {
+        nextWorkflowStep(1);
+    } catch (error) {
+        console.error('❌ Fehler beim Starten des Workflows:', error);
+        alert('Workflow konnte nicht gestartet werden. Bitte versuchen Sie es erneut.');
+    }
+};
+
 // Initialize job analyzer when needed
 async function initializeJobAnalyzer() {
     console.log('🔧 Initialisiere Job-Analyzer...');
