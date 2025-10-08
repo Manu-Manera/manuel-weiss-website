@@ -4041,61 +4041,51 @@
 
                         </div>
                         
+                                        <!-- Smart Workflow Button -->
+                                        <div class="smart-workflow-section" style="margin-bottom: 3rem; max-width: 100%; overflow: hidden;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; max-width: 100%; box-sizing: border-box;">
+                                                 <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem;">
+                                                     🚀 Smart Bewerbungsmanager
+                                                 </h3>
 
+                                                 <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; font-size: 1.1rem;">
+                                                     Erstelle professionelle Bewerbungen mit KI-Unterstützung
+                                                 </p>
+                                                 
+                                                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; max-width: 100%;">
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">6</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Schritte</div>
+                                                     </div>
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">60+</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Features</div>
+                                                     </div>
+                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
+                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">98%</div>
+                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">ATS-Ready</div>
+                                                     </div>
+                                                 </div>
 
-                                        <!-- Smart Workflow Integration -->
-                                        <div class="smart-workflow-integration" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                            <div style="text-align: center; margin-bottom: 1.5rem;">
-                                                <h3 style="color: #1e40af; margin: 0 0 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                                                    🚀 KI-gestützter Bewerbungsworkflow
-                                                </h3>
-                                                <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
-                                                    Erstelle professionelle Bewerbungen mit modernster KI-Technologie
-                                                </p>
-                                            </div>
-                                            
-                                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                                                <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="
-                                                    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
-                                                    color: white; 
-                                                    border: none; 
-                                                    padding: 1rem 2rem; 
-                                                    border-radius: 8px; 
-                                                    cursor: pointer; 
-                                                    font-weight: 700; 
-                                                    font-size: 1rem; 
-                                                    display: flex; 
-                                                    align-items: center; 
-                                                    gap: 0.75rem;
-                                                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-                                                    transition: all 0.3s ease;
-                                                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.4)'" 
-                                                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
-                                                    <i class="fas fa-plus"></i>
-                                                    <span>Neue Bewerbung erstellen</span>
-                                                </button>
-                                                
-                                                <button onclick="window.open('bewerbungsmanager.html#ai-analysis', '_blank')" style="
-                                                    background: rgba(59, 130, 246, 0.1); 
-                                                    color: #1e40af; 
-                                                    border: 2px solid rgba(59, 130, 246, 0.3); 
-                                                    padding: 1rem 1.5rem; 
-                                                    border-radius: 8px; 
-                                                    cursor: pointer; 
-                                                    font-weight: 600; 
-                                                    font-size: 0.95rem; 
-                                                    display: flex; 
-                                                    align-items: center; 
-                                                    gap: 0.5rem;
-                                                    transition: all 0.3s ease;
-                                                " onmouseover="this.style.background='rgba(59, 130, 246, 0.15)'" 
-                                                   onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'">
-                                                    <i class="fas fa-brain"></i>
-                                                    <span>KI-Analyse starten</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                        
+                                     <button id="smartWorkflowButton" onclick="navigateToBewerbungsSection()" style="padding: 1rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem; width: auto; max-width: 100%;">
+                                         <i class="fas fa-rocket" style="font-size: 1.2rem;"></i>
+                                         <span>Bewerbungsdashboard öffnen</span>
+                                     </button>
+                                     
+                                     <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; max-width: 100%;">
+                                         <button onclick="navigateToBewerbungsSection()" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                             <i class="fas fa-tachometer-alt"></i>
+                                             <span>Dashboard</span>
+                                         </button>
+                                         <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                             <i class="fas fa-external-link-alt"></i>
+                                             <span>Workflow</span>
+                                         </button>
+                                     </div>
+                                </div>
+                            </div>
+                            
+
                                         <!-- Aktuelle Bewerbungen Liste -->
 
 
@@ -4148,60 +4138,6 @@
                                 
 
 
-                                        <!-- Smart Workflow Button -->
-
-
-                                        <div class="smart-workflow-section" style="margin-bottom: 3rem; max-width: 100%; overflow: hidden;">
-
-
-                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; max-width: 100%; box-sizing: border-box;">
-
-
-                                                 <h3 style="color: white; margin-bottom: 1rem; font-size: 1.8rem;">
-                                                     🚀 Smart Bewerbungsmanager
-                                                 </h3>
-
-                                                 <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; font-size: 1.1rem;">
-                                                     Erstelle professionelle Bewerbungen mit KI-Unterstützung
-                                                 </p>
-                                                 
-                                                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; max-width: 100%;">
-                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">6</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Schritte</div>
-                                                     </div>
-                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">60+</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Features</div>
-                                                     </div>
-                                                     <div style="text-align: center; flex: 1; min-width: 80px;">
-                                                         <div style="color: white; font-weight: 700; font-size: 1.1rem;">98%</div>
-                                                         <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">ATS-Ready</div>
-                                                     </div>
-                                                 </div>
-
-
-                                     <button id="smartWorkflowButton" onclick="navigateToBewerbungsSection()" style="padding: 1rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; margin-bottom: 1rem; width: auto; max-width: 100%;">
-                                         <i class="fas fa-rocket" style="font-size: 1.2rem;"></i>
-                                         <span>Bewerbungsdashboard öffnen</span>
-                                     </button>
-                                     
-                                     <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; max-width: 100%;">
-                                         <button onclick="navigateToBewerbungsSection()" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                             <i class="fas fa-tachometer-alt"></i>
-                                             <span>Dashboard</span>
-                                         </button>
-                                         <button onclick="window.open('bewerbungsmanager.html', '_blank')" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; flex: 1; min-width: 120px; max-width: 150px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                             <i class="fas fa-external-link-alt"></i>
-                                             <span>Workflow</span>
-                                         </button>
-                                     </div>
-                                </div>
-                            </div>
-                            
-
-
-                        </div>
                         
 
 
