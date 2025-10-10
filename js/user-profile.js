@@ -8,7 +8,7 @@ class UserProfile {
     }
 
     init() {
-        this.setupEventListeners();
+            this.setupEventListeners();
         this.loadProfileData();
         this.updateProgressDisplay();
         this.updateStats();
@@ -27,14 +27,14 @@ class UserProfile {
             
             if (currentUser) {
                 this.updateUserInfoFromAuth(currentUser);
+                console.log('✅ User authenticated, profile loaded');
             } else {
-                console.log('❌ No current user found, redirecting to login');
-                this.redirectToLogin();
+                console.log('❌ No current user found, showing login prompt');
+                this.showLoginPrompt();
             }
         } else {
-            console.log('❌ Not authenticated, redirecting to login');
-            // Redirect to login if not authenticated
-            this.redirectToLogin();
+            console.log('❌ Not authenticated, showing login prompt');
+            this.showLoginPrompt();
         }
     }
 
@@ -88,6 +88,18 @@ class UserProfile {
         if (profileHeaderEmail) {
             profileHeaderEmail.textContent = displayEmail;
         }
+    }
+
+    showLoginPrompt() {
+        // Show notification and redirect to login
+        this.showNotification('Bitte melden Sie sich an, um Ihr Profil zu verwalten', 'info');
+        
+        // Store current URL for return after login
+        localStorage.setItem('returnUrl', window.location.href);
+        
+        setTimeout(() => {
+            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        }, 2000);
     }
 
     redirectToLogin() {

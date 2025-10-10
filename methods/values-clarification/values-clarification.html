@@ -65,7 +65,7 @@
                     <div class="step-indicator">
                         <div class="step-number">1</div>
                         <div class="step-icon"><i class="fas fa-search"></i></div>
-                    </div>
+        </div>
                     <div class="step-content">
                         <h3>Werte-Entdeckung</h3>
                         <p>Entdecke deine wichtigsten Werte</p>
@@ -125,7 +125,7 @@
             <div class="step-header">
                 <h2>Schritt 1: Werte-Entdeckung</h2>
                 <p>Entdecke deine wichtigsten Werte durch gezielte Fragen oder wähle sie manuell aus.</p>
-            </div>
+                    </div>
 
             <div class="discovery-options">
                 <div class="discovery-card">
@@ -152,14 +152,14 @@
             </div>
         </div>
     </section>
-
+    
     <!-- Step 2: Werte-Ranking -->
     <section class="workflow-step" data-step="2">
         <div class="step-container">
-            <div class="step-header">
+        <div class="step-header">
                 <h2>Schritt 2: Werte-Ranking</h2>
                 <p>Ordne deine ausgewählten Werte nach Priorität. Was ist dir am wichtigsten?</p>
-            </div>
+        </div>
             <div class="step-content">
                 <div id="rankingList" class="ranking-list">
                     <!-- Values for ranking will be loaded here -->
@@ -215,7 +215,7 @@
             </div>
         </div>
     </section>
-
+    
     <!-- Workflow Navigation -->
     <div class="workflow-navigation">
         <button class="btn-secondary" id="prevStepBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Zurück</button>
@@ -225,6 +225,10 @@
     <!-- Global Notification -->
     <div id="notificationContainer" class="notification-container"></div>
 
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="../../js/aws-config.js"></script>
+    <script src="../../js/real-aws-auth.js"></script>
+    <script src="../../js/personality-auth-integration.js"></script>
     <script src="values-questions-workflow.js"></script>
 </body>
 </html>
