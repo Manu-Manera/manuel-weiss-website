@@ -5,6 +5,25 @@
     --header-height: 80px;
 }
 
+/* Force mobile text visibility */
+@media (max-width: 768px) {
+    .personality-hero .hero-title {
+        font-size: 2rem !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        line-height: 1.3 !important;
+        padding: 0 0.5rem !important;
+        margin: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+    }
+}
+
 /* Language Switcher Styles */
 .language-switcher {
     margin-left: 1rem;
@@ -68,6 +87,13 @@
     .personality-hero {
         padding: 4rem 0 3rem 0;
         margin-top: var(--header-height, 80px);
+        overflow: visible !important;
+    }
+    
+    .hero-container {
+        overflow: visible !important;
+        max-width: 100vw !important;
+        padding: 0 0.5rem !important;
     }
     
     .hero-title {
@@ -79,6 +105,10 @@
         overflow-wrap: normal !important;
         white-space: nowrap !important;
         overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
     }
     
     .hero-subtitle {
@@ -95,6 +125,13 @@
     .personality-hero {
         padding: 3rem 0 2rem 0;
         margin-top: var(--header-height, 80px);
+        overflow: visible !important;
+    }
+    
+    .hero-container {
+        overflow: visible !important;
+        max-width: 100vw !important;
+        padding: 0 0.25rem !important;
     }
     
     .hero-title {
@@ -103,11 +140,14 @@
         line-height: 1.1;
         max-width: 100%;
         text-align: center;
-        padding: 0 0.5rem;
+        padding: 0 !important;
         word-break: keep-all !important;
         overflow-wrap: normal !important;
         white-space: nowrap !important;
         overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        width: 100% !important;
     }
     
     .hero-subtitle {
@@ -185,6 +225,9 @@
     overflow-wrap: normal !important;
     white-space: nowrap !important;
     overflow: visible !important;
+    text-overflow: unset !important;
+    display: block !important;
+    width: 100% !important;
 }
 
 .personality-hero .hero-title,
