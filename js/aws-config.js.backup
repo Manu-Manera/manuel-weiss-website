@@ -1,13 +1,13 @@
 // AWS Configuration for Production
 window.AWS_CONFIG = {
     // Cognito User Pool Configuration
-    userPoolId: 'eu-central-1_8gP4gLK9r', // ✅ Live User Pool ID
-    clientId: '7kc5tt6a23fgh53d60vkefm812', // ✅ Live Client ID
+    userPoolId: 'eu-central-1_XXXXXXXXX', // TODO: Replace with actual User Pool ID
+    clientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: Replace with actual Client ID
     region: 'eu-central-1',
     
     // S3 Configuration for file uploads
     s3: {
-        bucket: 'mawps-user-files-1760106396',
+        bucket: 'mawps-user-files',
         region: 'eu-central-1'
     },
     
