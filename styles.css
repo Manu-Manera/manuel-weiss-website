@@ -452,7 +452,7 @@ a:hover {
         0 20px 40px rgba(0,0,0,0.3),
         0 0 0 1px rgba(255,255,255,0.1);
     object-fit: cover !important;
-    object-position: center !important;
+    object-position: center top !important;
     aspect-ratio: 1/1;
     max-width: 300px;
     max-height: 300px;
@@ -1454,7 +1454,7 @@ a:hover {
         width: 250px;
         height: 250px;
         object-fit: cover !important;
-        object-position: center !important;
+        object-position: center top !important;
         aspect-ratio: 1/1;
         max-width: 250px;
         max-height: 250px;
