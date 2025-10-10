@@ -13,23 +13,32 @@ class RealAWSAuth {
 
     async init() {
         try {
+            console.log('🚀 Initializing Real AWS Cognito System...');
+            
             // Load AWS SDK if not already loaded
             if (typeof AWS === 'undefined') {
+                console.log('📦 Loading AWS SDK...');
                 await this.loadAWSSDK();
+                console.log('✅ AWS SDK loaded successfully');
             }
+            
+            // Wait a bit for AWS to be fully available
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
             // Configure AWS
             AWS.config.region = this.region;
+            console.log('🌍 AWS region configured:', this.region);
             
             // Initialize Cognito Identity Service Provider
             this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
                 region: this.region
             });
+            console.log('🔐 Cognito Identity Service Provider initialized');
             
             this.isInitialized = true;
             this.checkCurrentUser();
             
-            console.log('✅ Real AWS Cognito System initialized');
+            console.log('✅ Real AWS Cognito System initialized successfully');
         } catch (error) {
             console.error('❌ Real AWS Cognito System initialization failed:', error);
             this.showNotification('AWS SDK konnte nicht geladen werden. Bitte Seite neu laden.', 'error');
@@ -58,9 +67,23 @@ class RealAWSAuth {
     }
 
     async register(email, password, name) {
+        console.log('🚀 Starting registration process...');
+        console.log('📧 Email:', email);
+        console.log('👤 Name:', name);
+        console.log('🔐 System initialized:', this.isInitialized);
+        
         if (!this.isInitialized) {
-            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            const errorMsg = 'System wird noch initialisiert. Bitte warten...';
+            console.error('❌', errorMsg);
+            this.showNotification(errorMsg, 'error');
             return { success: false, error: 'System not initialized' };
+        }
+
+        if (!this.cognitoIdentityServiceProvider) {
+            const errorMsg = 'AWS Cognito Service nicht verfügbar. Bitte Seite neu laden.';
+            console.error('❌', errorMsg);
+            this.showNotification(errorMsg, 'error');
+            return { success: false, error: 'Cognito service not available' };
         }
 
         try {
@@ -83,6 +106,8 @@ class RealAWSAuth {
             };
 
             console.log('📤 Sending registration request to AWS Cognito...');
+            console.log('📋 Parameters:', JSON.stringify(params, null, 2));
+            
             const result = await this.cognitoIdentityServiceProvider.signUp(params).promise();
             
             console.log('✅ Registration successful:', result);
@@ -100,6 +125,11 @@ class RealAWSAuth {
             
         } catch (error) {
             console.error('❌ Registration error:', error);
+            console.error('❌ Error details:', {
+                code: error.code,
+                message: error.message,
+                statusCode: error.statusCode
+            });
             
             let errorMessage = 'Registrierung fehlgeschlagen. ';
             
@@ -109,12 +139,14 @@ class RealAWSAuth {
                 errorMessage += 'Passwort entspricht nicht den Anforderungen.';
             } else if (error.code === 'InvalidParameterException') {
                 errorMessage += 'Ungültige Eingabedaten.';
+            } else if (error.code === 'LimitExceededException') {
+                errorMessage += 'Zu viele Anfragen. Bitte warten Sie einen Moment.';
             } else {
-                errorMessage += error.message || 'Unbekannter Fehler.';
+                errorMessage += (error.message || 'Unbekannter Fehler.') + ' (Code: ' + (error.code || 'UNKNOWN') + ')';
             }
             
             this.showNotification(errorMessage, 'error');
-            return { success: false, error: error.message };
+            return { success: false, error: error.message || 'Unknown error' };
         }
     }
 
