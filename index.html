@@ -84,7 +84,7 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo">
+                    <img src="Bewerbungsbild.jpeg" alt="Manuel Weiss" class="profile-image" id="profile-photo">
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -829,7 +829,12 @@
                             console.error('❌ WEBSITE: profile-photo element not found');
                         }
                     } else {
-                        console.log('ℹ️ WEBSITE: No custom image, using default');
+                        console.log('ℹ️ WEBSITE: No custom image, using fallback');
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = 'Bewerbungsbild.jpeg';
+                            profilePhoto.style.display = 'block';
+                        }
                     }
                     
                     // Button-Text aktualisieren
