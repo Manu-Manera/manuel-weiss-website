@@ -198,6 +198,7 @@ class GlobalAuthSystem {
         const currentUser = this.getCurrentUser();
         
         console.log('🔄 Updating global UI, isLoggedIn:', isLoggedIn);
+        console.log('📱 GitHub Desktop Test - Änderung sichtbar?');
         
         // Simple, robust button update
         const allButtons = document.querySelectorAll('button');
