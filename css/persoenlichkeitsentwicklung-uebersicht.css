@@ -1,5 +1,10 @@
 /* Persönlichkeitsentwicklung Übersicht - Modern Clean Design */
 
+/* CSS Variables */
+:root {
+    --header-height: 80px;
+}
+
 /* Language Switcher Styles */
 .language-switcher {
     margin-left: 1rem;
@@ -51,16 +56,47 @@
 /* Hero Section - Ultra Modern Redesign like Ikigai */
 .personality-hero {
     background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-    padding: 6rem 0 4rem;
+    padding: 8rem 0 4rem;
     position: relative;
     overflow: hidden;
     color: white !important;
+    margin-top: var(--header-height, 80px);
 }
 
 /* Mobile Hero Improvements */
 @media (max-width: 768px) {
     .personality-hero {
-        padding: 2rem 0 4rem 0;
+        padding: 4rem 0 3rem 0;
+        margin-top: var(--header-height, 80px);
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+}
+
+/* Extra Mobile Optimizations */
+@media (max-width: 480px) {
+    .personality-hero {
+        padding: 3rem 0 2rem 0;
+        margin-top: var(--header-height, 80px);
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        line-height: 1.4;
     }
 }
 
