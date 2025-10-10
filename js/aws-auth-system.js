@@ -77,9 +77,12 @@ class AWSAuthSystem {
                     this.logout();
                 }
             }
+            // Keine automatische Anmeldung - User muss sich einloggen
+            this.updateUI(false);
             return false;
         } catch (error) {
             console.error('❌ Error checking current user:', error);
+            this.updateUI(false);
             return false;
         }
     }

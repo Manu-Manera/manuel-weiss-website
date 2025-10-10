@@ -24,7 +24,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
-    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20241209">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20241210">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">                                 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">                                                    
     
@@ -68,15 +68,15 @@
                             </div>
                         </div>
                         <div class="user-dropdown-content">
-                            <a href="#" class="user-dropdown-item">
+                            <a href="#" class="user-dropdown-item" onclick="openProfile()">
                                 <i class="fas fa-user-circle"></i>
                                 <span>Profil</span>
                             </a>
-                            <a href="#" class="user-dropdown-item">
+                            <a href="#" class="user-dropdown-item" onclick="openSettings()">
                                 <i class="fas fa-cog"></i>
                                 <span>Einstellungen</span>
                             </a>
-                            <a href="#" class="user-dropdown-item">
+                            <a href="#" class="user-dropdown-item" onclick="openProgress()">
                                 <i class="fas fa-chart-line"></i>
                                 <span>Fortschritt</span>
                             </a>
@@ -1772,11 +1772,16 @@
 
     // Integrated User System Functions
     function toggleUserMenu() {
-        // Prüfe ob AWS Auth System verfügbar ist
+        const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
+        
+        // Prüfe ob User eingeloggt ist
         if (window.awsAuth && window.awsAuth.isLoggedIn()) {
-            const dropdown = document.getElementById('userDropdown');
+            // User ist eingeloggt - zeige Dropdown
             if (dropdown.style.display === 'none' || dropdown.style.display === '') {
                 dropdown.style.display = 'block';
+                loginBtn.innerHTML = '<i class="fas fa-user-circle"></i><span>Manuel Weiss</span>';
+                loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
             } else {
                 dropdown.style.display = 'none';
             }
@@ -1801,6 +1806,31 @@
             
             showNotification('Erfolgreich abgemeldet!', 'success');
         }
+    }
+
+    // Dropdown Button Functions
+    function openProfile() {
+        showNotification('Profil wird geöffnet...', 'info');
+        // Hier würde das Profil geöffnet werden
+        setTimeout(() => {
+            window.location.href = 'admin.html#profile';
+        }, 500);
+    }
+
+    function openSettings() {
+        showNotification('Einstellungen werden geöffnet...', 'info');
+        // Hier würden die Einstellungen geöffnet werden
+        setTimeout(() => {
+            window.location.href = 'admin.html#settings';
+        }, 500);
+    }
+
+    function openProgress() {
+        showNotification('Fortschritt wird angezeigt...', 'info');
+        // Hier würde der Fortschritt angezeigt werden
+        setTimeout(() => {
+            window.location.href = 'admin.html#progress';
+        }, 500);
     }
 
     // Close dropdown when clicking outside
