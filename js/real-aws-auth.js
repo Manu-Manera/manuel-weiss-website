@@ -241,8 +241,16 @@ class RealAWSAuth {
             
             this.showNotification('✅ Erfolgreich angemeldet!', 'success');
             
-            // Don't redirect automatically - let user stay on current page
-            console.log('✅ Login completed, staying on current page');
+            // Check if we should redirect back to original page
+            const returnUrl = localStorage.getItem('returnUrl');
+            if (returnUrl && returnUrl !== window.location.href) {
+                console.log('🔄 Redirecting back to:', returnUrl);
+                setTimeout(() => {
+                    window.location.href = returnUrl;
+                }, 1000);
+            } else {
+                console.log('✅ Login completed, staying on current page');
+            }
             return { success: true };
             
         } catch (error) {
@@ -306,11 +314,10 @@ class RealAWSAuth {
                 this.currentUser = JSON.parse(session);
                 console.log('🔍 Checking user session:', this.currentUser);
                 
-                // Check if token is expired
+                // Check if token is expired (but don't auto-logout)
                 if (this.isTokenExpired()) {
-                    console.log('🔄 Token expired, logging out');
-                    this.logout();
-                    return;
+                    console.log('⏰ Token expired, but keeping session for now');
+                    // Don't logout automatically - let user continue
                 }
                 
                 // Validate session data
@@ -322,6 +329,7 @@ class RealAWSAuth {
                 
                 this.updateUI(true);
                 console.log('✅ User session restored successfully');
+                return true;
             } catch (error) {
                 console.error('❌ Error parsing session:', error);
                 localStorage.removeItem('aws_auth_session');
@@ -331,6 +339,7 @@ class RealAWSAuth {
             console.log('ℹ️ No session found');
             this.updateUI(false);
         }
+        return false;
     }
 
     isTokenExpired() {
