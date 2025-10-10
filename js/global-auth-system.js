@@ -117,7 +117,8 @@ class GlobalAuthSystem {
     setupGlobalEventListeners() {
         // Global login button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn')) {
+            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn') || 
+                e.target.closest('.nav-login-btn, .global-login-btn, .login-btn')) {
                 e.preventDefault();
                 this.handleGlobalLoginClick();
             }
@@ -125,7 +126,8 @@ class GlobalAuthSystem {
         
         // Global profile button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn')) {
+            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn') ||
+                e.target.closest('.nav-profile-btn, .global-profile-btn, .profile-btn')) {
                 e.preventDefault();
                 this.handleGlobalProfileClick();
             }
@@ -133,7 +135,8 @@ class GlobalAuthSystem {
         
         // Global logout button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn')) {
+            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn') ||
+                e.target.closest('.nav-logout-btn, .global-logout-btn, .logout-btn')) {
                 e.preventDefault();
                 this.handleGlobalLogoutClick();
             }
@@ -146,8 +149,15 @@ class GlobalAuthSystem {
         // Store current URL for return after login
         localStorage.setItem('returnUrl', window.location.href);
         
-        // Redirect to main page with login
-        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        // Try to show login modal first
+        if (window.authModals && window.authModals.showLogin) {
+            console.log('📧 Opening login modal...');
+            window.authModals.showLogin();
+        } else {
+            console.log('🔄 Redirecting to login page...');
+            // Fallback: redirect to main page with login
+            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        }
     }
     
     handleGlobalProfileClick() {
