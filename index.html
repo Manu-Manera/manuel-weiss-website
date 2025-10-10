@@ -1109,13 +1109,21 @@
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
 
-    <!-- Footer mit rechtlichen Links -->
+    <!-- Footer mit allen Bereichen -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
-                    <p>HR-Berater für AI & Transformation</p>
+                <!-- Linke Spalte: Persönliche Informationen -->
+                <div class="footer-section footer-brand">
+                    <div class="brand-info">
+                        <div class="brand-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="brand-text">
+                            <h3>Manuel Weiss</h3>
+                            <p>HR-Berater für AI & Transformation</p>
+                        </div>
+                    </div>
                     <div class="contact-info">
                         <p><i class="fas fa-envelope"></i> <a href="mailto:weiss-manuel@gmx.de">weiss-manuel@gmx.de</a></p>
                         <p><i class="fas fa-phone"></i> <a href="tel:+41798385590">+41 79 838 55 90</a></p>
@@ -1123,27 +1131,60 @@
                     </div>
                 </div>
                 
+                <!-- Services Spalte -->
                 <div class="footer-section">
-                    <h3>Rechtliches</h3>
+                    <h3>Services</h3>
                     <ul>
+                        <li><a href="ai-digitalisierung.html">AI & Digitalisierung</a></li>
+                        <li><a href="hr-transformation.html">HR Transformation</a></li>
+                        <li><a href="hr-prozessautomatisierung.html">Geschäftsprozesse</a></li>
+                        <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
+                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Aktivitäten Spalte -->
+                <div class="footer-section">
+                    <h3>Aktivitäten</h3>
+                    <ul>
+                        <li><a href="wohnmobil.html">Wohnmobil</a></li>
+                        <li><a href="fotobox.html">Fotobox</a></li>
+                        <li><a href="ebike.html">E-Bikes</a></li>
+                        <li><a href="sup.html">SUP</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Kontakt & Rechtliches Spalte -->
+                <div class="footer-section">
+                    <h3>Kontakt & Rechtliches</h3>
+                    <ul>
+                        <li><a href="mailto:weiss-manuel@gmx.de">E-Mail</a></li>
+                        <li><a href="#contact">Kontaktformular</a></li>
                         <li><a href="impressum.html">Impressum</a></li>
                         <li><a href="datenschutz.html">Datenschutz</a></li>
                         <li><a href="nutzungsbedingungen.html">Nutzungsbedingungen</a></li>
                     </ul>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Services</h3>
-                    <ul>
-                        <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
-                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
-                        <li><a href="admin.html">Admin Panel</a></li>
-                    </ul>
-                </div>
             </div>
             
+            <!-- Footer Bottom mit Copyright und Social Media -->
             <div class="footer-bottom">
-                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <div class="footer-bottom-content">
+                    <div class="copyright">
+                        <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                    </div>
+                    <div class="social-media">
+                        <a href="https://linkedin.com/in/manuel-weiss" target="_blank" rel="noopener">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://twitter.com/manuelweiss" target="_blank" rel="noopener">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://github.com/Manu-Manera" target="_blank" rel="noopener">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -1158,59 +1199,197 @@
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
             margin-bottom: 2rem;
         }
         
+        /* Brand Section (erste Spalte) */
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .brand-text h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .brand-text p {
+            color: #94a3b8;
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Standard Footer Sections */
         .footer-section h3 {
             color: #60a5fa;
             margin-bottom: 1rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
         
         .footer-section ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         
         .footer-section ul li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .footer-section a {
             color: #cbd5e1;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 0.9rem;
         }
         
         .footer-section a:hover {
             color: #60a5fa;
+            transform: translateX(4px);
         }
         
+        /* Contact Info */
         .contact-info p {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            font-size: 0.9rem;
         }
         
         .contact-info i {
             color: #60a5fa;
             width: 16px;
+            text-align: center;
         }
         
+        .contact-info a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-info a:hover {
+            color: #60a5fa;
+        }
+        
+        /* Footer Bottom */
         .footer-bottom {
             border-top: 1px solid #475569;
-            padding-top: 1rem;
-            text-align: center;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .copyright p {
             color: #94a3b8;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .social-media {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-media a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .social-media a:hover {
+            background: #60a5fa;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
         }
         
         @media (max-width: 768px) {
             .footer-content {
                 grid-template-columns: 1fr;
+                gap: 2rem;
                 text-align: center;
+            }
+            
+            .brand-info {
+                justify-content: center;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .footer {
+                padding: 2rem 0 1rem;
+            }
+            
+            .footer-content {
+                gap: 1.5rem;
+            }
+            
+            .brand-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .brand-text h3 {
+                font-size: 1.3rem;
             }
         }
     </style>
