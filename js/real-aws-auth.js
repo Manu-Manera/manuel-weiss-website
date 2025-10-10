@@ -240,6 +240,9 @@ class RealAWSAuth {
             this.updateUI(true);
             
             this.showNotification('✅ Erfolgreich angemeldet!', 'success');
+            
+            // Don't redirect automatically - let user stay on current page
+            console.log('✅ Login completed, staying on current page');
             return { success: true };
             
         } catch (error) {
@@ -290,6 +293,10 @@ class RealAWSAuth {
 
     isLoggedIn() {
         return this.currentUser !== null;
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
     }
 
     checkCurrentUser() {
@@ -380,33 +387,59 @@ class RealAWSAuth {
     updateUI(isLoggedIn) {
         const loginBtn = document.querySelector('.nav-login-btn');
         const userDropdown = document.querySelector('.user-dropdown');
+        const userAvatarSmall = document.querySelector('.user-avatar-small');
+        const userNameSmall = document.querySelector('.user-name-small');
+        const userEmailSmall = document.querySelector('.user-email-small');
+        
+        console.log('🔄 Updating UI, isLoggedIn:', isLoggedIn);
+        console.log('👤 Current user:', this.currentUser);
         
         if (loginBtn) {
-            if (isLoggedIn) {
+            if (isLoggedIn && this.currentUser) {
+                // Get user data from token
+                const userData = this.getUserDataFromToken();
+                console.log('👤 User data from token:', userData);
+                
+                // Update login button
                 loginBtn.innerHTML = '<i class="fas fa-user"></i> Profil';
                 loginBtn.style.display = 'none';
+                
+                // Show user dropdown
                 if (userDropdown) {
                     userDropdown.style.display = 'block';
-                    
-                    // Update user info in dropdown
-                    const userData = this.getUserDataFromToken();
-                    if (userData) {
-                        const userNameElement = userDropdown.querySelector('.user-name-small');
-                        const userEmailElement = userDropdown.querySelector('.user-email-small');
-                        
-                        if (userNameElement) {
-                            userNameElement.textContent = userData.name;
-                        }
-                        if (userEmailElement) {
-                            userEmailElement.textContent = userData.email;
-                        }
+                }
+                
+                // Update user info in dropdown
+                if (userData) {
+                    if (userNameSmall) {
+                        userNameSmall.textContent = userData.name || 'Benutzer';
+                        console.log('✅ Updated user name:', userData.name);
+                    }
+                    if (userEmailSmall) {
+                        userEmailSmall.textContent = userData.email || this.currentUser.email;
+                        console.log('✅ Updated user email:', userData.email || this.currentUser.email);
+                    }
+                    if (userAvatarSmall) {
+                        userAvatarSmall.style.display = 'flex';
+                    }
+                } else {
+                    // Fallback to session data
+                    if (userNameSmall) {
+                        userNameSmall.textContent = 'Benutzer';
+                    }
+                    if (userEmailSmall) {
+                        userEmailSmall.textContent = this.currentUser.email;
                     }
                 }
             } else {
+                // Not logged in
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
                 loginBtn.style.display = 'flex';
                 if (userDropdown) {
                     userDropdown.style.display = 'none';
+                }
+                if (userAvatarSmall) {
+                    userAvatarSmall.style.display = 'none';
                 }
             }
         }
