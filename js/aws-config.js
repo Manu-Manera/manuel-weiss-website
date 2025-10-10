@@ -1,52 +1,46 @@
-// AWS Configuration for Manuel Weiss Website
-const AWS_CONFIG = {
-    // AWS Region
+// AWS Configuration for Production
+window.AWS_CONFIG = {
+    // Cognito User Pool Configuration
+    userPoolId: 'eu-central-1_XXXXXXXXX', // Replace with actual User Pool ID
+    clientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // Replace with actual Client ID
     region: 'eu-central-1',
     
-    // API Gateway Endpoints
-    api: {
-        baseUrl: 'https://api.manuel-weiss.com',
-        upload: '/upload',
-        download: '/download',
-        users: '/users'
-    },
-    
-    // Cognito Configuration
-    cognito: {
-        userPoolId: 'eu-central-1_XXXXXXXXX', // Will be updated after deployment
-        userPoolClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // Will be updated after deployment
-        region: 'eu-central-1'
-    },
-    
-    // S3 Configuration
+    // S3 Configuration for file uploads
     s3: {
-        bucket: 'manuel-weiss-documents',
+        bucket: 'mawps-user-files',
         region: 'eu-central-1'
     },
     
-    // DynamoDB Configuration
+    // DynamoDB Configuration for user data
     dynamodb: {
-        documentsTable: 'manuel-weiss-documents',
-        usersTable: 'manuel-weiss-users',
+        tableName: 'mawps-user-profiles',
         region: 'eu-central-1'
+    },
+    
+    // API Gateway Configuration
+    apiGateway: {
+        baseUrl: 'https://api.mawps.netlify.app',
+        endpoints: {
+            userProfile: '/user/profile',
+            userProgress: '/user/progress',
+            userSettings: '/user/settings'
+        }
     }
 };
 
-// AWS SDK Configuration
-const AWS_SDK_CONFIG = {
-    region: AWS_CONFIG.region,
-    credentials: {
-        // Will be configured via Cognito Identity Pool
-        identityPoolId: 'eu-central-1:XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
-    }
-};
-
-// Initialize AWS SDK
+// Initialize AWS with configuration
 if (typeof AWS !== 'undefined') {
-    AWS.config.update(AWS_SDK_CONFIG);
-}
-
-// Export configuration
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { AWS_CONFIG, AWS_SDK_CONFIG };
+    AWS.config.update({
+        region: window.AWS_CONFIG.region
+    });
+    
+    // Configure Cognito
+    window.AWS_COGNITO_CONFIG = {
+        UserPoolId: window.AWS_CONFIG.userPoolId,
+        ClientId: window.AWS_CONFIG.clientId
+    };
+    
+    console.log('✅ AWS Configuration loaded');
+} else {
+    console.warn('⚠️ AWS SDK not loaded yet');
 }

@@ -8,10 +8,53 @@ class UserProfile {
     }
 
     init() {
-            this.setupEventListeners();
+        this.setupEventListeners();
         this.loadProfileData();
         this.updateProgressDisplay();
         this.updateStats();
+        this.checkAuthStatus();
+    }
+
+    checkAuthStatus() {
+        // Check if user is authenticated with AWS
+        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+            const currentUser = window.awsAuth.getCurrentUser();
+            if (currentUser) {
+                this.updateUserInfoFromAuth(currentUser);
+            }
+        } else {
+            // Redirect to login if not authenticated
+            this.redirectToLogin();
+        }
+    }
+
+    updateUserInfoFromAuth(user) {
+        // Update profile with authenticated user data
+        if (user.email) {
+            const emailInput = document.getElementById('email');
+            if (emailInput && !emailInput.value) {
+                emailInput.value = user.email;
+            }
+        }
+        
+        // Update display name
+        const userNameEl = document.getElementById('userName');
+        if (userNameEl) {
+            userNameEl.textContent = user.firstName ? `${user.firstName} ${user.lastName}` : 'User';
+        }
+        
+        const userEmailEl = document.getElementById('userEmail');
+        if (userEmailEl) {
+            userEmailEl.textContent = user.email;
+        }
+    }
+
+    redirectToLogin() {
+        // Show notification and redirect to login
+        this.showNotification('Bitte melden Sie sich an, um Ihr Profil zu verwalten', 'info');
+        setTimeout(() => {
+            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        }, 2000);
     }
 
     setupEventListeners() {
