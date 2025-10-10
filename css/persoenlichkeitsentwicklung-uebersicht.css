@@ -75,8 +75,10 @@
         margin-bottom: 1rem;
         max-width: 100%;
         text-align: center;
-        word-break: keep-all;
-        overflow-wrap: normal;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
     
     .hero-subtitle {
@@ -101,9 +103,11 @@
         line-height: 1.1;
         max-width: 100%;
         text-align: center;
-        padding: 0 1rem;
-        word-break: keep-all;
-        overflow-wrap: normal;
+        padding: 0 0.5rem;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
     
     .hero-subtitle {
@@ -121,8 +125,10 @@
     .hero-title {
         font-size: 1.5rem;
         padding: 0 0.5rem;
-        word-break: break-word;
-        overflow-wrap: break-word;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
     
     .hero-subtitle {
@@ -134,9 +140,11 @@
 /* Only break on very small screens */
 @media (max-width: 320px) {
     .hero-title {
+        font-size: 1.2rem;
         word-break: break-word;
         overflow-wrap: break-word;
         hyphens: auto;
+        white-space: normal;
     }
 }
 
@@ -161,7 +169,7 @@
     position: relative;
     z-index: 2;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
     padding: 0 1rem;
 }
 
@@ -173,8 +181,10 @@
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     max-width: 100%;
-    word-break: keep-all;
-    overflow-wrap: normal;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
 }
 
 .personality-hero .hero-title,
