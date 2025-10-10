@@ -3027,6 +3027,46 @@
     <script src="js/global-auth-system.js"></script>
     <script src="js/auth-modals.js"></script>
     <script src="js/aws-auth-tester.js"></script>
+    
+    <!-- Check for pending application workflow -->
+    <script>
+        // Check if user has a pending application type after login
+        document.addEventListener('DOMContentLoaded', function() {
+            const pendingApplicationType = localStorage.getItem('pendingApplicationType');
+            if (pendingApplicationType) {
+                console.log('🔄 Pending application type found:', pendingApplicationType);
+                
+                // Show notification
+                setTimeout(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'pending-application-notification';
+                    notification.innerHTML = `
+                        <div style="background: #667eea; color: white; padding: 1rem 2rem; border-radius: 8px; margin: 1rem; text-align: center;">
+                            <h4>🎯 Bewerbungsmanager bereit!</h4>
+                            <p>Sie können jetzt mit Ihrer ${pendingApplicationType === 'job-posting' ? 'Stellenausschreibung' : 'Initiativbewerbung'} fortfahren.</p>
+                            <button onclick="continueApplicationWorkflow()" style="background: white; color: #667eea; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 0.5rem; cursor: pointer; font-weight: 600;">
+                                Bewerbungsmanager öffnen
+                            </button>
+                        </div>
+                    `;
+                    document.body.insertBefore(notification, document.body.firstChild);
+                }, 2000);
+            }
+        });
+        
+        function continueApplicationWorkflow() {
+            const pendingApplicationType = localStorage.getItem('pendingApplicationType');
+            if (pendingApplicationType) {
+                // Remove pending type
+                localStorage.removeItem('pendingApplicationType');
+                
+                // Redirect to application manager
+                window.location.href = 'bewerbungsmanager.html';
+            }
+        }
+        
+        window.continueApplicationWorkflow = continueApplicationWorkflow;
+    </script>
 </body>
 </html>
 
