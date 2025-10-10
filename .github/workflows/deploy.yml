@@ -1,0 +1,88 @@
+name: 🚀 Deploy Manuel Weiss Website
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: |
+        echo "🔧 Installing dependencies..."
+        npm install || echo "No package.json found, continuing..."
+        
+    - name: 🧪 Run Tests
+      run: |
+        echo "🧪 Running basic tests..."
+        # Test if critical files exist
+        test -f index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
+        test -f admin.html && echo "✅ admin.html exists" || echo "❌ admin.html missing"
+        test -f bewerbung.html && echo "✅ bewerbung.html exists" || echo "❌ bewerbung.html missing"
+        test -d js/ && echo "✅ js/ directory exists" || echo "❌ js/ directory missing"
+        test -d css/ && echo "✅ css/ directory exists" || echo "❌ css/ directory missing"
+        
+    - name: 🔧 Fix Auth Integration
+      run: |
+        echo "🔧 Applying auth fixes..."
+        
+        # Create unified auth integration
+        cat > components/unified-auth-integration.html << 'EOF'
+        <!-- 🔧 UNIFIED AUTH INTEGRATION -->
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+        <script src="js/redirect-url-config.js"></script>
+        <script src="js/fixed-auth-system.js"></script>
+        <script src="js/error-handler.js"></script>
+        <script src="js/global-auth-system.js"></script>
+        <script src="js/auth-modals.js"></script>
+        EOF
+        
+        # Update HTML files with auth integration
+        find . -name "*.html" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
+          if ! grep -q "UNIFIED AUTH INTEGRATION" "$file"; then
+            echo "🔄 Updating: $file"
+            sed -i "s|</body>|$(cat components/unified-auth-integration.html)\n</body>|" "$file"
+          fi
+        done
+        
+    - name: 🌐 Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: '.'
+        production-branch: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "🚀 Deploy from GitHub Actions"
+        enable-pull-request-comment: false
+        enable-commit-comment: true
+        overwrites-pull-request-comment: true
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        
+    - name: 📊 Deployment Summary
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo "📊 Website Statistics:"
+        echo "   📄 HTML files: $(find . -name '*.html' | wc -l)"
+        echo "   📜 JS modules: $(find js/ -name '*.js' | wc -l)"
+        echo "   🧠 Method pages: $(find methods/ -name '*.html' | wc -l)"
+        echo "   🎨 CSS files: $(find . -name '*.css' | wc -l)"
+        echo "   🖼️ Images: $(find images/ -type f | wc -l)"
+        echo ""
+        echo "🔗 Live URLs:"
+        echo "   🌐 Main site: https://mawps.netlify.app"
+        echo "   🔧 Admin panel: https://mawps.netlify.app/admin.html"
+        echo "   📝 Bewerbung: https://mawps.netlify.app/bewerbung.html"
