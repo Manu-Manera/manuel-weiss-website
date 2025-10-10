@@ -28,6 +28,11 @@ class GlobalAuthSystem {
         // Setup periodic session check
         this.setupSessionCheck();
         
+        // Force UI update after a short delay to ensure all elements are loaded
+        setTimeout(() => {
+            this.updateGlobalUI();
+        }, 1000);
+        
         this.isInitialized = true;
         console.log('✅ Global Auth System initialized');
     }
@@ -206,8 +211,11 @@ class GlobalAuthSystem {
         console.log('🔄 Updating global UI, isLoggedIn:', isLoggedIn);
         console.log('👤 Current user:', currentUser);
         
-        // Update all login buttons globally
-        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn, .personality-login-btn').forEach(btn => {
+        // Update all login buttons globally with more specific selectors
+        const loginButtons = document.querySelectorAll('button[id*="login"], button[class*="login"], .nav-login-btn, .global-login-btn, .login-btn, .personality-login-btn');
+        console.log('🔍 Found login buttons:', loginButtons.length);
+        
+        loginButtons.forEach(btn => {
             if (isLoggedIn) {
                 btn.innerHTML = '<i class="fas fa-user"></i> Profil';
                 btn.className = btn.className.replace('global-login-btn', 'global-profile-btn')
@@ -215,6 +223,7 @@ class GlobalAuthSystem {
                                            .replace('login-btn', 'profile-btn')
                                            .replace('personality-login-btn', 'personality-profile-btn');
                 btn.style.display = 'flex';
+                btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
             } else {
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
                 btn.className = btn.className.replace('global-profile-btn', 'global-login-btn')
@@ -222,6 +231,7 @@ class GlobalAuthSystem {
                                            .replace('profile-btn', 'login-btn')
                                            .replace('personality-profile-btn', 'personality-login-btn');
                 btn.style.display = 'flex';
+                btn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
             }
         });
         
@@ -471,10 +481,26 @@ class GlobalAuthSystem {
     }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.globalAuth = new GlobalAuthSystem();
-});
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.globalAuth = new GlobalAuthSystem();
+        });
+        
+        // Also initialize on page load (for navigation between pages)
+        window.addEventListener('load', () => {
+            if (window.globalAuth) {
+                console.log('🔄 Page loaded, updating UI...');
+                window.globalAuth.updateGlobalUI();
+            }
+        });
+        
+        // Update UI when page becomes visible (for tab switching)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && window.globalAuth) {
+                console.log('🔄 Page visible, updating UI...');
+                window.globalAuth.updateGlobalUI();
+            }
+        });
 
 // Add CSS for global notifications and dropdowns
 const globalStyle = document.createElement('style');
