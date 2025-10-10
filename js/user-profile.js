@@ -91,62 +91,15 @@ class UserProfile {
     }
 
     showLoginPrompt() {
-        // Show notification but don't redirect automatically
-        this.showNotification('Bitte melden Sie sich an, um Ihr Profil zu verwalten', 'info');
-        
-        // Show login modal instead of redirecting
-        if (window.authModals && window.authModals.showLogin) {
-            window.authModals.showLogin();
-        } else {
-            // Fallback: show simple login prompt
-            const loginPrompt = document.createElement('div');
-            loginPrompt.className = 'login-prompt-modal';
-            loginPrompt.innerHTML = `
-                <div class="login-prompt-content">
-                    <h3>Anmeldung erforderlich</h3>
-                    <p>Bitte melden Sie sich an, um Ihr Profil zu verwalten.</p>
-                    <button onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'" class="btn-primary">
-                        Zur Anmeldung
-                    </button>
-                    <button onclick="this.parentElement.parentElement.remove()" class="btn-secondary">
-                        Schließen
-                    </button>
-                </div>
-            `;
-            
-            // Add styles
-            loginPrompt.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-            `;
-            
-            loginPrompt.querySelector('.login-prompt-content').style.cssText = `
-                background: white;
-                padding: 2rem;
-                border-radius: 15px;
-                text-align: center;
-                max-width: 400px;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            `;
-            
-            document.body.appendChild(loginPrompt);
-        }
+        // Don't show any login prompt - just redirect silently
+        console.log('🔄 Redirecting to login page...');
+        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
     }
 
     redirectToLogin() {
-        // Show notification and redirect to login
-        this.showNotification('Bitte melden Sie sich an, um Ihr Profil zu verwalten', 'info');
-        setTimeout(() => {
-            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
-        }, 2000);
+        // Silent redirect without notification
+        console.log('🔄 Redirecting to login page...');
+        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
     }
 
     setupEventListeners() {
