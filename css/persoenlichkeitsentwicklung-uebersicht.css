@@ -73,11 +73,10 @@
     .hero-title {
         font-size: 2.5rem;
         margin-bottom: 1rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
         max-width: 100%;
         text-align: center;
+        word-break: keep-all;
+        overflow-wrap: normal;
     }
     
     .hero-subtitle {
@@ -100,12 +99,11 @@
         font-size: 1.8rem;
         margin-bottom: 0.75rem;
         line-height: 1.1;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
         max-width: 100%;
         text-align: center;
         padding: 0 1rem;
+        word-break: keep-all;
+        overflow-wrap: normal;
     }
     
     .hero-subtitle {
@@ -123,11 +121,22 @@
     .hero-title {
         font-size: 1.5rem;
         padding: 0 0.5rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
     
     .hero-subtitle {
         font-size: 0.9rem;
         padding: 0 0.5rem;
+    }
+}
+
+/* Only break on very small screens */
+@media (max-width: 320px) {
+    .hero-title {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 }
 
@@ -163,10 +172,9 @@
     margin-bottom: 1.5rem;
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
     max-width: 100%;
+    word-break: keep-all;
+    overflow-wrap: normal;
 }
 
 .personality-hero .hero-title,
