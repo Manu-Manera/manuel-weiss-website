@@ -29,7 +29,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <img src="Bewerbungsbild.jpeg" alt="MW" class="nav-logo">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
             
@@ -359,7 +359,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                    <img src="Bewerbungsbild.jpeg" alt="MW" class="footer-logo">
                     <div>
                         <h3>Manuel Weiss</h3>
                         <p>HR Berater für AI & Transformation</p>
@@ -1009,10 +1009,16 @@
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 WEBSITE: Page loaded, loading hero data...');
+            
+            // Sofort Standard-Statistiken garantieren
+            ensureDefaultStatistics();
+            
             try {
                 await loadHeroDataFromAdmin();
             } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
+                // Bei Fehler trotzdem Standard-Werte garantieren
+                ensureDefaultStatistics();
             }
             initializeLanguageSwitch();
         });
@@ -1063,7 +1069,28 @@
                 } catch (error) {
                     console.error('❌ WEBSITE: Error updating statistics:', error);
                 }
+            } else {
+                // Standard-Werte garantieren, falls keine Admin-Daten vorhanden
+                console.log('📊 WEBSITE: Using default statistics...');
+                ensureDefaultStatistics();
             }
+        }
+        
+        // Funktion um Standard-Statistiken zu garantieren
+        function ensureDefaultStatistics() {
+            const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
+            const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
+            const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
+            const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
+            const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
+            const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+            
+            if (stat1Number && !stat1Number.textContent) stat1Number.textContent = '5+';
+            if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'Jahre Erfahrung';
+            if (stat2Number && !stat2Number.textContent) stat2Number.textContent = '50+';
+            if (stat2Label && !stat2Label.textContent) stat2Label.textContent = 'Projekte';
+            if (stat3Number && !stat3Number.textContent) stat3Number.textContent = '100%';
+            if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'Zufriedenheit';
         }
         
         // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
