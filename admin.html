@@ -2692,7 +2692,7 @@
                             </a>
                         </li>
                         <li class="nav-item" data-tooltip="API Dokumentation">
-                            <a href="api-documentation.html" target="_blank">
+                            <a href="api-docs-simple.html" target="_blank">
                                 <i class="fas fa-code"></i>
                                 <span>API Docs</span>
                             </a>
@@ -4892,17 +4892,17 @@
                 <!-- Media Management Section -->
                 <section id="media" class="admin-section">
                     <div class="section-header">
-                        <h2>🚀 Zentrale Medienverwaltung - Smart API System</h2>
-                        <p>Verwalte alle Bilder, Dokumente und Medien zentral mit AWS-Integration</p>
+                        <h2>📸 Medienverwaltung</h2>
+                        <p>Verwalte alle Bilder, Dokumente und Medien zentral</p>
                     </div>
                     
-                    <!-- Smart API Status -->
-                    <div class="smart-api-status" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                    <!-- Upload Status -->
+                    <div class="upload-status" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <i class="fas fa-cloud" style="font-size: 1.5rem;"></i>
+                            <i class="fas fa-upload" style="font-size: 1.5rem;"></i>
                             <div>
-                                <h4 style="margin: 0; font-size: 1.1rem;">Smart API System aktiv</h4>
-                                <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">30+ Endpunkte • AWS S3 • DynamoDB • Analytics</p>
+                                <h4 style="margin: 0; font-size: 1.1rem;">Upload-System aktiv</h4>
+                                <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Drag & Drop • Bulk Upload • AWS S3 • LocalStorage</p>
                             </div>
                         </div>
                     </div>
@@ -4968,45 +4968,54 @@
                         </div>
                     </div>
                     
-                    <!-- Smart Upload Section -->
-                    <div class="smart-upload-section" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <!-- Upload Section -->
+                    <div class="upload-section" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
                         <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-upload"></i>
-                            Smart Upload System
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Dateien hochladen
                         </h3>
                         
-                        <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('standard')">
-                                <i class="fas fa-upload" style="font-size: 2rem; color: #6366f1; margin-bottom: 0.5rem;"></i>
-                                <h4 style="margin: 0.5rem 0; color: #333;">Standard Upload</h4>
-                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Normale Datei-Uploads</p>
+                        <!-- Upload Methods -->
+                        <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            <button class="upload-method-btn" onclick="triggerFileUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+                                <i class="fas fa-upload" style="font-size: 1.5rem; color: #6366f1; margin-bottom: 0.5rem;"></i>
+                                <div style="font-weight: 500; color: #333;">Dateien auswählen</div>
+                                <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Klicken zum Hochladen</div>
+                            </button>
+                            
+                            <button class="upload-method-btn" onclick="triggerBulkUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+                                <i class="fas fa-layer-group" style="font-size: 1.5rem; color: #10b981; margin-bottom: 0.5rem;"></i>
+                                <div style="font-weight: 500; color: #333;">Bulk Upload</div>
+                                <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Mehrere Dateien</div>
+                            </button>
+                            
+                            <button class="upload-method-btn" onclick="triggerCameraUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+                                <i class="fas fa-camera" style="font-size: 1.5rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
+                                <div style="font-weight: 500; color: #333;">Kamera</div>
+                                <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Foto aufnehmen</div>
+                            </button>
                             </div>
                             
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('bulk')">
-                                <i class="fas fa-layer-group" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
-                                <h4 style="margin: 0.5rem 0; color: #333;">Bulk Upload</h4>
-                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Mehrere Dateien gleichzeitig</p>
-                            </div>
-                            
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('chunked')">
-                                <i class="fas fa-puzzle-piece" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
-                                <h4 style="margin: 0.5rem 0; color: #333;">Chunked Upload</h4>
-                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Große Dateien in Chunks</p>
-                            </div>
-                            
-                            <div class="upload-method" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerSmartUploadMethod('direct')">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 0.5rem;"></i>
-                                <h4 style="margin: 0.5rem 0; color: #333;">Direct Upload</h4>
-                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Direkter S3-Upload</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Upload Area -->
-                        <div id="upload-area" style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; text-align: center; background: #f9fafb;">
+                        <!-- Drag & Drop Zone -->
+                        <div class="drag-drop-zone" id="dragDropZone" style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; background: #f8f9ff; transition: all 0.3s ease; cursor: pointer;" onclick="triggerFileUpload()" ondrop="handleFileDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
                             <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
-                            <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF (max. 100MB)</p>
-                            <input type="file" id="smart-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" data-category="general" data-subcategory="files" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'general', subcategory: 'files'})" style="display: none;">
+                            <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF, MP4 (max. 100MB)</p>
+                            <input type="file" id="media-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.mov" style="display: none;" onchange="handleFileUpload(this.files)">
+                            </div>
+                            
+                        <!-- Upload Progress -->
+                        <div id="upload-progress" style="display: none; margin-top: 1rem;">
+                            <div style="background: #f3f4f6; border-radius: 8px; padding: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500; color: #333;">Upload Fortschritt</span>
+                                    <span id="upload-percentage" style="color: #6366f1; font-weight: 500;">0%</span>
+                            </div>
+                                <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                                    <div id="upload-progress-bar" style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                                <div id="upload-status" style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Bereit zum Upload...</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -13503,6 +13512,9 @@ Bitte antworte im folgenden JSON-Format:
     
     <!-- Media Upload Tester -->
     <script src="js/media-upload-tester.js"></script>
+    
+    <!-- Media Upload Functions -->
+    <script src="js/media-upload-functions.js"></script>
     
     <!-- Admin Connection Test für Debugging -->
     <script src="js/admin-connection-test.js"></script>
