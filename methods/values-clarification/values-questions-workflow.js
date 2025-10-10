@@ -117,6 +117,12 @@ class ValuesQuestionsWorkflow {
     }
     
     setupEventListeners() {
+        // Start questions button
+        document.getElementById('startQuestionsBtn')?.addEventListener('click', () => this.startQuestions());
+        
+        // Start manual selection button
+        document.getElementById('startManualBtn')?.addEventListener('click', () => this.startManualSelection());
+        
         // Next/Previous buttons
         document.getElementById('nextQuestionBtn')?.addEventListener('click', () => this.nextQuestion());
         document.getElementById('prevQuestionBtn')?.addEventListener('click', () => this.prevQuestion());
@@ -130,8 +136,19 @@ class ValuesQuestionsWorkflow {
     }
     
     startWorkflow() {
+        // Don't start automatically - wait for user to choose
+        console.log('🔄 Werte-Workflow ready, waiting for user choice...');
+    }
+    
+    startQuestions() {
+        console.log('❓ Starting questions workflow...');
         this.showQuestion(0);
         this.updateProgress();
+    }
+    
+    startManualSelection() {
+        console.log('🖱️ Starting manual selection...');
+        this.showValueSelectionInterface();
     }
     
     showQuestion(questionIndex) {
