@@ -25,6 +25,9 @@ class GlobalAuthSystem {
         // Update UI on all pages
         this.updateGlobalUI();
         
+        // Setup periodic session check
+        this.setupSessionCheck();
+        
         this.isInitialized = true;
         console.log('✅ Global Auth System initialized');
     }
@@ -74,6 +77,41 @@ class GlobalAuthSystem {
                 this.updateGlobalUI();
             }
         };
+    }
+    
+    setupSessionCheck() {
+        // Check session every 5 seconds
+        setInterval(() => {
+            this.checkAndUpdateSession();
+        }, 5000);
+        
+        // Check session on page focus
+        window.addEventListener('focus', () => {
+            this.checkAndUpdateSession();
+        });
+        
+        // Check session on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.checkAndUpdateSession();
+            }
+        });
+    }
+    
+    checkAndUpdateSession() {
+        const wasLoggedIn = this.isLoggedIn();
+        const currentUser = this.getCurrentUser();
+        
+        // Update UI if session status changed
+        if (wasLoggedIn !== this.lastLoginStatus || 
+            (currentUser && currentUser.email !== this.lastUserEmail)) {
+            
+            console.log('🔄 Session status changed, updating UI...');
+            this.updateGlobalUI();
+            
+            this.lastLoginStatus = wasLoggedIn;
+            this.lastUserEmail = currentUser ? currentUser.email : null;
+        }
     }
     
     setupGlobalEventListeners() {
@@ -159,22 +197,29 @@ class GlobalAuthSystem {
         console.log('👤 Current user:', currentUser);
         
         // Update all login buttons globally
-        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn').forEach(btn => {
+        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn, .personality-login-btn').forEach(btn => {
             if (isLoggedIn) {
                 btn.innerHTML = '<i class="fas fa-user"></i> Profil';
                 btn.className = btn.className.replace('global-login-btn', 'global-profile-btn')
                                            .replace('nav-login-btn', 'nav-profile-btn')
-                                           .replace('login-btn', 'profile-btn');
+                                           .replace('login-btn', 'profile-btn')
+                                           .replace('personality-login-btn', 'personality-profile-btn');
+                btn.style.display = 'flex';
             } else {
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
                 btn.className = btn.className.replace('global-profile-btn', 'global-login-btn')
                                            .replace('nav-profile-btn', 'nav-login-btn')
-                                           .replace('profile-btn', 'login-btn');
+                                           .replace('profile-btn', 'login-btn')
+                                           .replace('personality-profile-btn', 'personality-login-btn');
+                btn.style.display = 'flex';
             }
         });
         
         // Update user info in navigation
         this.updateGlobalUserInfo(currentUser);
+        
+        // Update personality development specific elements
+        this.updatePersonalityDevelopmentUI(isLoggedIn, currentUser);
     }
     
     updateGlobalUserInfo(user) {
@@ -197,6 +242,43 @@ class GlobalAuthSystem {
                 el.style.display = 'block';
             } else {
                 el.style.display = 'none';
+            }
+        });
+    }
+    
+    updatePersonalityDevelopmentUI(isLoggedIn, user) {
+        // Update personality development specific UI elements
+        const userDropdown = document.querySelector('.user-dropdown');
+        const userAvatarSmall = document.querySelector('.user-avatar-small');
+        const userNameSmall = document.querySelector('.user-name-small');
+        const userEmailSmall = document.querySelector('.user-email-small');
+        
+        if (userDropdown) {
+            userDropdown.style.display = isLoggedIn ? 'block' : 'none';
+        }
+        
+        if (userAvatarSmall) {
+            userAvatarSmall.style.display = isLoggedIn ? 'flex' : 'none';
+        }
+        
+        if (userNameSmall && user) {
+            userNameSmall.textContent = user.name || user.email.split('@')[0];
+            userNameSmall.style.display = isLoggedIn ? 'block' : 'none';
+        }
+        
+        if (userEmailSmall && user) {
+            userEmailSmall.textContent = user.email;
+            userEmailSmall.style.display = isLoggedIn ? 'block' : 'none';
+        }
+        
+        // Update any personality development specific buttons
+        document.querySelectorAll('.personality-login-btn, .personality-profile-btn').forEach(btn => {
+            if (isLoggedIn) {
+                btn.innerHTML = '<i class="fas fa-user"></i> Profil';
+                btn.className = btn.className.replace('personality-login-btn', 'personality-profile-btn');
+            } else {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                btn.className = btn.className.replace('personality-profile-btn', 'personality-login-btn');
             }
         });
     }
