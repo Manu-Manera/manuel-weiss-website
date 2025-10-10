@@ -2691,6 +2691,12 @@
                                 <span>Medien</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-tooltip="API Dokumentation">
+                            <a href="api-documentation.html" target="_blank">
+                                <i class="fas fa-code"></i>
+                                <span>API Docs</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 
@@ -3037,7 +3043,7 @@
                             
                             <div style="margin-bottom: 1.5rem;">
                                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bild:</label>
-                                <input type="file" id="newServiceImage" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                <input type="file" id="newServiceImage" accept="image/*" data-category="services" data-subcategory="images" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'services', subcategory: 'images'})" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
                             </div>
                             
                             <button data-action="create-service" class="btn btn-primary" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
@@ -3940,10 +3946,10 @@
                                         <!-- Dashboard Widget -->
 
 
-                                         <div class="applications-dashboard" style="margin-bottom: 3rem;">
-                                            
+                                        <div class="applications-dashboard" style="margin-bottom: 3rem;">
 
-                                             <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+
+                                            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
 
 
                                                 <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
@@ -4271,7 +4277,7 @@
                                                         
                                                         <!-- Upload Area -->
                                                         <div style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; background: #f8f9ff;">
-                                                            <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple style="display: none;">
+                                                            <input type="file" id="doc-upload" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png" multiple data-category="documents" data-subcategory="general" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'documents', subcategory: 'general'})" style="display: none;">
                                                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
                                                             <p style="font-weight: 600; margin-bottom: 0.5rem;">Dokumente hochladen</p>
                                                             <button data-action="upload-document" class="btn btn-primary" style="padding: 0.75rem 2rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="triggerBewerbungsunterlagenUpload()">
@@ -4368,9 +4374,9 @@
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
 
 
-                                             <h3 style="margin: 0;">Neue Bewerbung hinzufügen</h3>
+                                            <h3 style="margin: 0;">Neue Bewerbung hinzufügen</h3>
 
-                                             <button data-action="close-new-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                            <button data-action="close-new-application-modal" class="btn btn-primary" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
                                         </div>
                         
 
@@ -4739,7 +4745,7 @@
                                             Kein Video verfügbar
                                         </video>
                                     </div>
-                                    <input type="file" id="profileVideoInput" accept="video/*" style="width: 100%; margin-bottom: 1rem;">
+                                    <input type="file" id="profileVideoInput" accept="video/*" data-category="videos" data-subcategory="profile" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'videos', subcategory: 'profile'})" style="width: 100%; margin-bottom: 1rem;">
                                     <button data-action="update-profile-video" class="btn btn-primary" style="width: 100%; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                         🎥 Video aktualisieren
                                     </button>
@@ -4928,10 +4934,36 @@
                                 Galerie
                                 <span class="tab-count" id="gallery-count">0</span>
                             </button>
+                            <button class="category-tab" data-category="videos">
+                                <i class="fas fa-video"></i>
+                                Videos
+                                <span class="tab-count" id="videos-count">0</span>
+                            </button>
                             <button class="category-tab" data-category="analytics">
                                 <i class="fas fa-chart-bar"></i>
                                 Analytics
                                 <span class="tab-count" id="analytics-count">📊</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Smart Search & Filter -->
+                        <div class="media-search-bar" style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+                            <div style="flex: 1; position: relative;">
+                                <input type="text" id="media-search" placeholder="🔍 Medien durchsuchen..." 
+                                       style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                                <button id="ai-search-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6366f1; cursor: pointer;" title="KI-Suche aktivieren">
+                                    <i class="fas fa-brain"></i>
+                                </button>
+                            </div>
+                            <select id="media-filter-type" style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;">
+                                <option value="">Alle Typen</option>
+                                <option value="image">Bilder</option>
+                                <option value="video">Videos</option>
+                                <option value="document">Dokumente</option>
+                                <option value="audio">Audio</option>
+                            </select>
+                            <button id="bulk-actions-btn" style="padding: 0.75rem 1rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                <i class="fas fa-tasks"></i> Bulk Actions
                             </button>
                         </div>
                     </div>
@@ -4974,7 +5006,7 @@
                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
                             <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
                             <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF (max. 100MB)</p>
-                            <input type="file" id="smart-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="display: none;">
+                            <input type="file" id="smart-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" data-category="general" data-subcategory="files" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'general', subcategory: 'files'})" style="display: none;">
                         </div>
                     </div>
                     
@@ -4988,6 +5020,14 @@
                                 <i class="fas fa-folder-plus"></i>
                                 Ordner erstellen
                             </button>
+                            <button class="btn btn-outline" onclick="smartMediaAPI.generateThumbnails()">
+                                <i class="fas fa-images"></i>
+                                Thumbnails generieren
+                            </button>
+                            <button class="btn btn-outline" onclick="smartMediaAPI.compressAllMedia()">
+                                <i class="fas fa-compress"></i>
+                                Komprimieren
+                            </button>
                         </div>
                         <div class="toolbar-right">
                             <div class="view-toggle">
@@ -4997,6 +5037,49 @@
                                 <button class="view-btn" data-view="list">
                                     <i class="fas fa-list"></i>
                                 </button>
+                            </div>
+                            <button class="btn btn-outline" onclick="smartMediaAPI.exportMedia()">
+                                <i class="fas fa-download"></i>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Media Grid -->
+                    <div id="media-grid" class="media-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                        <!-- Media cards will be dynamically loaded here -->
+                    </div>
+                    
+                    <!-- Analytics Dashboard -->
+                    <div id="analytics-dashboard" class="analytics-dashboard" style="display: none; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 2rem;">
+                        <h3 style="color: #333; margin-bottom: 1.5rem;">
+                            <i class="fas fa-chart-bar"></i>
+                            Medien-Analytics
+                        </h3>
+                        
+                        <div class="analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="stat-card" style="background: #f8f9ff; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <h4 style="margin: 0; color: #6366f1; font-size: 2rem;" id="total-files">0</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: #666;">Gesamt Dateien</p>
+                            </div>
+                            <div class="stat-card" style="background: #f0f9ff; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <h4 style="margin: 0; color: #0ea5e9; font-size: 2rem;" id="total-size">0 MB</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: #666;">Gesamt Größe</p>
+                            </div>
+                            <div class="stat-card" style="background: #f0fdf4; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <h4 style="margin: 0; color: #22c55e; font-size: 2rem;" id="storage-usage">0%</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: #666;">Speicher verwendet</p>
+                            </div>
+                            <div class="stat-card" style="background: #fef3f2; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <h4 style="margin: 0; color: #ef4444; font-size: 2rem;" id="recent-uploads">0</h4>
+                                <p style="margin: 0.5rem 0 0 0; color: #666;">Heute hochgeladen</p>
+                            </div>
+                        </div>
+                        
+                        <div class="category-breakdown" style="margin-top: 2rem;">
+                            <h4 style="color: #333; margin-bottom: 1rem;">Kategorien-Übersicht</h4>
+                            <div id="category-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <p style="color: #666;">Kategorie-Chart wird geladen...</p>
                             </div>
                         </div>
                     </div>
@@ -5013,7 +5096,7 @@
                                 <div class="image-preview">
                                     <img id="navLogoPreview" src="manuel-weiss-photo.svg" alt="Navigation Logo">
                                 </div>
-                                <input type="file" id="navLogoUpload" accept="image/*" onchange="uploadProfileImage('nav-logo', this)">
+                                <input type="file" id="navLogoUpload" accept="image/*" data-category="profile" data-subcategory="navigation" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'profile', subcategory: 'navigation'})"
                                 <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Logo hochladen
                                 </button>
@@ -5023,7 +5106,7 @@
                                 <div class="image-preview">
                                     <img id="heroImagePreview" src="manuel-weiss-photo.svg" alt="Hero Bild">
                                 </div>
-                                <input type="file" id="heroImageUpload" accept="image/*" onchange="uploadProfileImage('hero-image', this)">
+                                <input type="file" id="heroImageUpload" accept="image/*" data-category="profile" data-subcategory="hero" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'profile', subcategory: 'hero'})"
                                 <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Hero-Bild hochladen
                                 </button>
@@ -5033,7 +5116,7 @@
                                 <div class="image-preview">
                                     <img id="footerLogoPreview" src="manuel-weiss-photo.svg" alt="Footer Logo">
                                 </div>
-                                <input type="file" id="footerLogoUpload" accept="image/*" onchange="uploadProfileImage('footer-logo', this)">
+                                <input type="file" id="footerLogoUpload" accept="image/*" data-category="profile" data-subcategory="footer" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'profile', subcategory: 'footer'})"
                                 <button data-action="get-element-by-id" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Footer-Logo hochladen
                                 </button>
@@ -5053,7 +5136,7 @@
                                 <div class="image-preview">
                                     <img id="applicationPhotoPreview" src="manuel-weiss-photo.svg" alt="Bewerbungsbild">
                                 </div>
-                                <input type="file" id="portraitUpload" accept="image/*" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('portrait', file))">
+                                <input type="file" id="portraitUpload" accept="image/*" multiple data-category="application" data-subcategory="portrait" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'application', subcategory: 'portrait'})"
                                 <button onclick="triggerSmartPortraitUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Portrait hochladen
                                 </button>
@@ -5065,7 +5148,7 @@
                                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
                                     <p id="cvFileName">Manuel_Weiss_CV.pdf</p>
                                 </div>
-                                <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('cv', file))">
+                                <input type="file" id="cvUpload" accept=".pdf,.doc,.docx,.odt,.rtf" multiple data-category="documents" data-subcategory="cv" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'documents', subcategory: 'cv'})"
                                 <button onclick="triggerSmartCVUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Lebenslauf hochladen
                                 </button>
@@ -5077,7 +5160,7 @@
                                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626;"></i>
                                     <p id="certificatesFileName">Zugnisse.pdf</p>
                                 </div>
-                                <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onchange="Array.from(this.files).forEach(file => uploadDocument('certificates', file))">
+                                <input type="file" id="certificatesUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple data-category="documents" data-subcategory="certificates" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'documents', subcategory: 'certificates'})"
                                 <button onclick="triggerSmartCertificatesUpload()" class="btn btn-outline">
                                     <i class="fas fa-upload"></i> Zeugnisse hochladen
                                 </button>
@@ -12542,10 +12625,10 @@ Bitte antworte im folgenden JSON-Format:
         jobAnalyzerScript.src = `js/job-requirement-analyzer.js?v=1.0&t=${timestamp}`;
         document.head.appendChild(jobAnalyzerScript);
         
-         // Load smart workflow steps
-         const smartWorkflowScript = document.createElement('script');
-         smartWorkflowScript.src = `js/smart-workflow-steps.js?v=1.0&t=${timestamp}`;
-         document.head.appendChild(smartWorkflowScript);
+        // Load smart workflow steps
+        const smartWorkflowScript = document.createElement('script');
+        smartWorkflowScript.src = `js/smart-workflow-steps.js?v=1.0&t=${timestamp}`;
+        document.head.appendChild(smartWorkflowScript);
         
         // Load application learning system
         const learningSystemScript = document.createElement('script');
@@ -13402,6 +13485,24 @@ Bitte antworte im folgenden JSON-Format:
     
     <!-- Global API Configuration (Load First) -->
     <script src="js/api-config.js"></script>
+    
+    <!-- Unified AWS Upload System -->
+    <script src="js/unified-aws-upload.js"></script>
+    
+    <!-- Smart Media API -->
+    <script src="js/smart-media-api.js"></script>
+    
+    <!-- Additional API Endpoints -->
+    <script src="js/additional-api-endpoints.js"></script>
+    
+    <!-- API Endpoint Tester -->
+    <script src="js/api-endpoint-tester.js"></script>
+    
+    <!-- Upload/Download Tester -->
+    <script src="js/upload-download-tester.js"></script>
+    
+    <!-- Media Upload Tester -->
+    <script src="js/media-upload-tester.js"></script>
     
     <!-- Admin Connection Test für Debugging -->
     <script src="js/admin-connection-test.js"></script>
@@ -16793,29 +16894,6 @@ Bitte antworte im folgenden JSON-Format:
             }
         }
         
-        // Bild beim Laden anzeigen
-        function loadStoredImage() {
-            console.log('🔄 LOAD IMAGE: Loading stored image');
-            const storedImage = localStorage.getItem('heroProfileImage');
-            if (storedImage && storedImage !== 'manuel-weiss-photo.svg') {
-                const imageDisplay = document.getElementById('current-profile-image');
-                const nameDisplay = document.getElementById('current-profile-name');
-                
-                if (imageDisplay) {
-                    imageDisplay.src = storedImage;
-                    imageDisplay.style.display = 'block';
-                    console.log('✅ LOAD IMAGE: Image loaded from localStorage');
-                }
-                
-                if (nameDisplay) {
-                    nameDisplay.textContent = 'Hochgeladenes Profilbild';
-                    console.log('✅ LOAD IMAGE: Name updated');
-                }
-            } else {
-                console.log('ℹ️ LOAD IMAGE: No stored image found');
-            }
-        }
-        
         // FUNKTIONIERENDE UPLOAD-LÖSUNG
         function handleFileUpload(input) {
             console.log('🚀 UPLOAD: File selected');
@@ -17089,26 +17167,411 @@ Bitte antworte im folgenden JSON-Format:
             reader.readAsDataURL(file);
         }
         
-        // Bild beim Laden anzeigen
-        function loadStoredImage() {
-            console.log('🔄 LOAD: Loading stored image');
-            const stored = localStorage.getItem('heroProfileImage');
-            if (stored) {
-                const img = document.getElementById('current-profile-image');
-                if (img) {
-                    img.src = stored;
-                    img.style.display = 'block';
-                    console.log('✅ LOAD: Stored image displayed');
+        // Verbesserte Profilbild-Ladefunktion mit AWS-Integration
+        async function loadStoredImage() {
+            console.log('🔄 LOAD: Loading stored profile image...');
+            
+            const currentImage = document.getElementById('current-profile-image');
+            const currentName = document.getElementById('current-profile-name');
+            
+            if (!currentImage) {
+                console.error('❌ LOAD: current-profile-image element not found');
+                return;
+            }
+            
+            try {
+                // 1. Erst localStorage prüfen
+                const localImage = localStorage.getItem('heroProfileImage');
+                if (localImage && localImage !== 'manuel-weiss-photo.svg') {
+                    console.log('✅ LOAD: Found local image, updating display');
+                    currentImage.src = localImage;
+                    currentImage.style.display = 'block';
+                    
+                    if (currentName) {
+                        currentName.textContent = 'Hochgeladenes Profilbild';
+                    }
+                    
+                    updateAllProfilePreviews(localImage);
+                    return;
+                }
+                
+                // 2. AWS prüfen (falls Smart API verfügbar)
+                if (window.smartAPI) {
+                    console.log('🔄 LOAD: Checking AWS for profile image...');
+                    const awsImage = await loadProfileImageFromAWS();
+                    if (awsImage) {
+                        console.log('✅ LOAD: Found AWS image, updating display');
+                        currentImage.src = awsImage;
+                        currentImage.style.display = 'block';
+                        
+                        if (currentName) {
+                            currentName.textContent = 'AWS Profilbild';
+                        }
+                        
+                        updateAllProfilePreviews(awsImage);
+                        return;
+                    }
+                }
+                
+                // 3. Fallback auf Standard
+                console.log('ℹ️ LOAD: No custom image found, using default');
+                currentImage.src = 'manuel-weiss-photo.svg';
+                if (currentName) {
+                    currentName.textContent = 'Standard Profilbild';
+                }
+                
+            } catch (error) {
+                console.error('❌ LOAD: Error loading profile image:', error);
+                // Fallback auf Standard bei Fehlern
+                currentImage.src = 'manuel-weiss-photo.svg';
+                if (currentName) {
+                    currentName.textContent = 'Standard Profilbild';
+                }
+            }
+        }
+        
+        // AWS-Profilbild laden
+        async function loadProfileImageFromAWS() {
+            try {
+                if (!window.smartAPI) {
+                    console.log('ℹ️ AWS: Smart API not available');
+                    return null;
+                }
+                
+                const result = await window.smartAPI.getProfileImage();
+                if (result && result.url) {
+                    console.log('✅ AWS: Profile image loaded from AWS');
+                    return result.url;
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('❌ AWS: Error loading from AWS:', error);
+                return null;
+            }
+        }
+        
+        // Alle Profilbild-Previews aktualisieren
+        function updateAllProfilePreviews(imageUrl) {
+            const previews = [
+                'navLogoPreview',
+                'heroImagePreview', 
+                'footerLogoPreview',
+                'applicationPhotoPreview'
+            ];
+            
+            previews.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.src = imageUrl;
+                    console.log(`✅ Updated ${id} with new image`);
+                }
+            });
+        }
+        
+        // Verbesserte Upload-Funktion mit AWS-Integration
+        async function uploadProfileImageToAWS(file) {
+            try {
+                console.log('🚀 UPLOAD: Starting AWS upload...');
+                
+                // 1. Lokal speichern für sofortige Anzeige
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    localStorage.setItem('heroProfileImage', imageUrl);
+                    
+                    // Sofort anzeigen
+                    const currentImage = document.getElementById('current-profile-image');
+                    const currentName = document.getElementById('current-profile-name');
+                    
+                    if (currentImage) {
+                        currentImage.src = imageUrl;
+                        currentImage.style.display = 'block';
+                    }
+                    
+                    if (currentName) {
+                        currentName.textContent = file.name;
+                    }
+                    
+                    updateAllProfilePreviews(imageUrl);
+                    console.log('✅ UPLOAD: Image displayed locally');
+                };
+                reader.readAsDataURL(file);
+                
+                // 2. AWS-Upload (falls verfügbar)
+                if (window.smartAPI) {
+                    try {
+                        const result = await window.smartAPI.uploadProfileImage(file);
+                        console.log('✅ UPLOAD: Successfully uploaded to AWS:', result);
+                        return result;
+                    } catch (awsError) {
+                        console.warn('⚠️ UPLOAD: AWS upload failed, but local storage works:', awsError);
+                        return null;
                 }
             } else {
-                console.log('ℹ️ LOAD: No stored image found');
+                    console.log('ℹ️ UPLOAD: Smart API not available, using local storage only');
+                    return null;
+                }
+                
+            } catch (error) {
+                console.error('❌ UPLOAD: Error uploading profile image:', error);
+                throw error;
             }
         }
         
         // Beim Laden starten
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 PAGE: Page loaded - upload system ready');
+            console.log('🚀 PAGE: Page loaded - profile system ready');
             setTimeout(loadStoredImage, 1000);
+        });
+        
+        // =================== SMART MEDIA API INTEGRATION ===================
+        
+        // Initialize Smart Media API
+        function initializeSmartMediaAPI() {
+            console.log('🚀 Initializing Smart Media API...');
+            
+            // Load all media on page load
+            if (window.smartMediaAPI) {
+                window.smartMediaAPI.loadAllMedia();
+            }
+            
+            // Setup event listeners
+            setupMediaEventListeners();
+            
+            console.log('✅ Smart Media API initialized');
+        }
+        
+        // Setup media event listeners
+        function setupMediaEventListeners() {
+            // Category tab switching
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const category = e.currentTarget.dataset.category;
+                    switchMediaCategory(category);
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('media-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value;
+                    searchMedia(query);
+                });
+            }
+            
+            // AI search toggle
+            const aiSearchToggle = document.getElementById('ai-search-toggle');
+            if (aiSearchToggle) {
+                aiSearchToggle.addEventListener('click', (e) => {
+                    toggleAISearch();
+                });
+            }
+            
+            // Filter by type
+            const filterSelect = document.getElementById('media-filter-type');
+            if (filterSelect) {
+                filterSelect.addEventListener('change', (e) => {
+                    filterMediaByType(e.target.value);
+                });
+            }
+            
+            // Bulk actions
+            const bulkActionsBtn = document.getElementById('bulk-actions-btn');
+            if (bulkActionsBtn) {
+                bulkActionsBtn.addEventListener('click', (e) => {
+                    showBulkActionsMenu();
+                });
+            }
+        }
+        
+        // Switch media category
+        function switchMediaCategory(category) {
+            console.log(`📁 Switching to category: ${category}`);
+            
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Show/hide analytics dashboard
+            const analyticsDashboard = document.getElementById('analytics-dashboard');
+            const mediaGrid = document.getElementById('media-grid');
+            
+            if (category === 'analytics') {
+                analyticsDashboard.style.display = 'block';
+                mediaGrid.style.display = 'none';
+                loadAnalyticsDashboard();
+            } else {
+                analyticsDashboard.style.display = 'none';
+                mediaGrid.style.display = 'grid';
+                loadMediaByCategory(category);
+            }
+        }
+        
+        // Load media by category
+        async function loadMediaByCategory(category) {
+            if (!window.smartMediaAPI) return;
+            
+            try {
+                const media = window.smartMediaAPI.getMediaByCategory(category);
+                window.smartMediaAPI.renderMediaGrid(media);
+            } catch (error) {
+                console.error('❌ Failed to load media:', error);
+            }
+        }
+        
+        // Search media
+        async function searchMedia(query) {
+            if (!window.smartMediaAPI) return;
+            
+            try {
+                const results = await window.smartMediaAPI.searchMedia(query, {
+                    aiSearch: isAISearchEnabled()
+                });
+                window.smartMediaAPI.renderMediaGrid(results);
+            } catch (error) {
+                console.error('❌ Search failed:', error);
+            }
+        }
+        
+        // Toggle AI search
+        function toggleAISearch() {
+            const toggle = document.getElementById('ai-search-toggle');
+            const isEnabled = toggle.classList.contains('ai-enabled');
+            
+            if (isEnabled) {
+                toggle.classList.remove('ai-enabled');
+                toggle.style.color = '#6366f1';
+                toggle.title = 'KI-Suche aktivieren';
+            } else {
+                toggle.classList.add('ai-enabled');
+                toggle.style.color = '#10b981';
+                toggle.title = 'KI-Suche deaktivieren';
+            }
+        }
+        
+        // Check if AI search is enabled
+        function isAISearchEnabled() {
+            const toggle = document.getElementById('ai-search-toggle');
+            return toggle.classList.contains('ai-enabled');
+        }
+        
+        // Filter media by type
+        function filterMediaByType(type) {
+            if (!window.smartMediaAPI) return;
+            
+            const allMedia = window.smartMediaAPI.getAllMedia();
+            let filteredMedia = allMedia;
+            
+            if (type) {
+                filteredMedia = allMedia.filter(media => media.type.includes(type));
+            }
+            
+            window.smartMediaAPI.renderMediaGrid(filteredMedia);
+        }
+        
+        // Show bulk actions menu
+        function showBulkActionsMenu() {
+            const menu = document.createElement('div');
+            menu.className = 'bulk-actions-menu';
+            menu.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                padding: 2rem;
+                z-index: 1000;
+                min-width: 300px;
+            `;
+            
+            menu.innerHTML = `
+                <h3 style="margin: 0 0 1rem 0; color: #333;">Bulk Actions</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button onclick="smartMediaAPI.bulkDelete()" style="padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-trash"></i> Ausgewählte löschen
+                    </button>
+                    <button onclick="smartMediaAPI.bulkCompress()" style="padding: 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-compress"></i> Komprimieren
+                    </button>
+                    <button onclick="smartMediaAPI.bulkGenerateThumbnails()" style="padding: 0.75rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-images"></i> Thumbnails generieren
+                    </button>
+                    <button onclick="smartMediaAPI.bulkExport()" style="padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-download"></i> Exportieren
+                    </button>
+                </div>
+                <button onclick="this.parentElement.remove()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            `;
+            
+            document.body.appendChild(menu);
+        }
+        
+        // Load analytics dashboard
+        async function loadAnalyticsDashboard() {
+            if (!window.smartMediaAPI) return;
+            
+            try {
+                const analytics = await window.smartMediaAPI.getAnalytics();
+                
+                // Update stats
+                document.getElementById('total-files').textContent = analytics.totalFiles || 0;
+                document.getElementById('total-size').textContent = formatFileSize(analytics.totalSize || 0);
+                document.getElementById('storage-usage').textContent = `${Math.round(analytics.storageUsage?.percentage || 0)}%`;
+                document.getElementById('recent-uploads').textContent = analytics.recentUploads?.length || 0;
+                
+                // Load category chart
+                loadCategoryChart(analytics.categories);
+                
+            } catch (error) {
+                console.error('❌ Failed to load analytics:', error);
+            }
+        }
+        
+        // Load category chart
+        function loadCategoryChart(categories) {
+            const chartContainer = document.getElementById('category-chart');
+            if (!chartContainer || !categories) return;
+            
+            // Simple chart implementation
+            const chartData = Object.entries(categories).map(([category, data]) => ({
+                category,
+                count: data.count,
+                size: data.size
+            }));
+            
+            chartContainer.innerHTML = `
+                <div style="width: 100%; height: 100%; display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                    ${chartData.map(item => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8f9fa; border-radius: 4px;">
+                            <span style="font-weight: 500;">${item.category}</span>
+                            <div style="display: flex; gap: 1rem;">
+                                <span style="color: #666;">${item.count} Dateien</span>
+                                <span style="color: #666;">${formatFileSize(item.size)}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeSmartMediaAPI, 1000);
         });
         
         // =================== BEWERBUNGSMANAGER INTEGRATION ===================
