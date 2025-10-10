@@ -113,7 +113,7 @@ class RealAWSAuth {
             console.log('✅ Registration successful:', result);
             
             this.showNotification(
-                'Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach für den Bestätigungscode.',
+                '✅ Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach für den Bestätigungscode.',
                 'success'
             );
             
@@ -178,7 +178,7 @@ class RealAWSAuth {
             
             console.log('✅ Confirmation successful');
             
-            this.showNotification('E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
+            this.showNotification('✅ E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
             return { success: true };
             
         } catch (error) {
@@ -224,19 +224,22 @@ class RealAWSAuth {
             
             console.log('✅ Login successful:', result);
             
-            // Store session
+            // Store session with proper data
             this.currentUser = {
                 email: email,
                 accessToken: result.AuthenticationResult.AccessToken,
                 idToken: result.AuthenticationResult.IdToken,
                 refreshToken: result.AuthenticationResult.RefreshToken,
-                expiresIn: result.AuthenticationResult.ExpiresIn
+                expiresIn: result.AuthenticationResult.ExpiresIn,
+                tokenType: result.AuthenticationResult.TokenType,
+                loginTime: Date.now()
             };
             
+            console.log('💾 Storing user session:', this.currentUser);
             localStorage.setItem('aws_auth_session', JSON.stringify(this.currentUser));
             this.updateUI(true);
             
-            this.showNotification('Erfolgreich angemeldet!', 'success');
+            this.showNotification('✅ Erfolgreich angemeldet!', 'success');
             return { success: true };
             
         } catch (error) {
@@ -294,6 +297,7 @@ class RealAWSAuth {
         if (session) {
             try {
                 this.currentUser = JSON.parse(session);
+                console.log('🔍 Checking user session:', this.currentUser);
                 
                 // Check if token is expired
                 if (this.isTokenExpired()) {
@@ -302,26 +306,75 @@ class RealAWSAuth {
                     return;
                 }
                 
+                // Validate session data
+                if (!this.currentUser.email || !this.currentUser.accessToken) {
+                    console.log('❌ Invalid session data, logging out');
+                    this.logout();
+                    return;
+                }
+                
                 this.updateUI(true);
-                console.log('✅ User session restored');
+                console.log('✅ User session restored successfully');
             } catch (error) {
                 console.error('❌ Error parsing session:', error);
                 localStorage.removeItem('aws_auth_session');
                 this.updateUI(false);
             }
         } else {
+            console.log('ℹ️ No session found');
             this.updateUI(false);
         }
     }
 
     isTokenExpired() {
-        if (!this.currentUser || !this.currentUser.expiresIn) {
+        if (!this.currentUser || !this.currentUser.expiresIn || !this.currentUser.loginTime) {
+            console.log('❌ Token validation failed: missing data');
             return true;
         }
         
-        // Simple expiration check (in production, you'd want more sophisticated token validation)
-        const tokenAge = Date.now() - (this.currentUser.expiresIn * 1000);
-        return tokenAge > 0;
+        // Calculate token age in seconds
+        const currentTime = Math.floor(Date.now() / 1000);
+        const loginTime = Math.floor(this.currentUser.loginTime / 1000);
+        const tokenAge = currentTime - loginTime;
+        
+        console.log('🕐 Token age:', tokenAge, 'seconds, expires in:', this.currentUser.expiresIn, 'seconds');
+        
+        // Check if token is expired (with 5 minute buffer)
+        const isExpired = tokenAge >= (this.currentUser.expiresIn - 300);
+        
+        if (isExpired) {
+            console.log('⏰ Token expired');
+        }
+        
+        return isExpired;
+    }
+
+    getUserDataFromToken() {
+        if (!this.currentUser || !this.currentUser.idToken) {
+            return null;
+        }
+        
+        try {
+            // Decode JWT token (simple base64 decode)
+            const tokenParts = this.currentUser.idToken.split('.');
+            if (tokenParts.length !== 3) {
+                console.error('❌ Invalid JWT token format');
+                return null;
+            }
+            
+            const payload = JSON.parse(atob(tokenParts[1]));
+            console.log('👤 User data from token:', payload);
+            
+            return {
+                email: payload.email,
+                name: payload.name || payload.given_name || 'Benutzer',
+                sub: payload.sub,
+                emailVerified: payload.email_verified
+            };
+        } catch (error) {
+            console.error('❌ Error decoding token:', error);
+            return null;
+        }
     }
 
     updateUI(isLoggedIn) {
@@ -334,6 +387,20 @@ class RealAWSAuth {
                 loginBtn.style.display = 'none';
                 if (userDropdown) {
                     userDropdown.style.display = 'block';
+                    
+                    // Update user info in dropdown
+                    const userData = this.getUserDataFromToken();
+                    if (userData) {
+                        const userNameElement = userDropdown.querySelector('.user-name-small');
+                        const userEmailElement = userDropdown.querySelector('.user-email-small');
+                        
+                        if (userNameElement) {
+                            userNameElement.textContent = userData.name;
+                        }
+                        if (userEmailElement) {
+                            userEmailElement.textContent = userData.email;
+                        }
+                    }
                 }
             } else {
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
@@ -582,7 +649,7 @@ class RealAWSAuth {
                 const result = await this.confirmRegistration(email, code);
                 if (result.success) {
                     modal.remove();
-                    this.showNotification('E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
+                    this.showNotification('✅ E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
                 }
             } catch (error) {
                 console.error('Confirmation error:', error);
