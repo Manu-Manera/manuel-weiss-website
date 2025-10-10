@@ -120,28 +120,17 @@ class GlobalAuthSystem {
     }
     
     setupGlobalEventListeners() {
-        // Global login button clicks
+        // Simple, robust event listener for all buttons
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn') || 
-                e.target.closest('.nav-login-btn, .global-login-btn, .login-btn')) {
+            const text = e.target.textContent || e.target.innerHTML;
+            
+            if (text.includes('Anmelden') || text.includes('Login')) {
                 e.preventDefault();
                 this.handleGlobalLoginClick();
-            }
-        });
-        
-        // Global profile button clicks
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn') ||
-                e.target.closest('.nav-profile-btn, .global-profile-btn, .profile-btn')) {
+            } else if (text.includes('Profil') || text.includes('Profile')) {
                 e.preventDefault();
                 this.handleGlobalProfileClick();
-            }
-        });
-        
-        // Global logout button clicks
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn') ||
-                e.target.closest('.nav-logout-btn, .global-logout-btn, .logout-btn')) {
+            } else if (text.includes('Abmelden') || text.includes('Logout')) {
                 e.preventDefault();
                 this.handleGlobalLogoutClick();
             }
@@ -209,37 +198,24 @@ class GlobalAuthSystem {
         const currentUser = this.getCurrentUser();
         
         console.log('🔄 Updating global UI, isLoggedIn:', isLoggedIn);
-        console.log('👤 Current user:', currentUser);
         
-        // Update all login buttons globally with more specific selectors
-        const loginButtons = document.querySelectorAll('button[id*="login"], button[class*="login"], .nav-login-btn, .global-login-btn, .login-btn, .personality-login-btn');
-        console.log('🔍 Found login buttons:', loginButtons.length);
-        
-        loginButtons.forEach(btn => {
-            if (isLoggedIn) {
-                btn.innerHTML = '<i class="fas fa-user"></i> Profil';
-                btn.className = btn.className.replace('global-login-btn', 'global-profile-btn')
-                                           .replace('nav-login-btn', 'nav-profile-btn')
-                                           .replace('login-btn', 'profile-btn')
-                                           .replace('personality-login-btn', 'personality-profile-btn');
-                btn.style.display = 'flex';
-                btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            } else {
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
-                btn.className = btn.className.replace('global-profile-btn', 'global-login-btn')
-                                           .replace('nav-profile-btn', 'nav-login-btn')
-                                           .replace('profile-btn', 'login-btn')
-                                           .replace('personality-profile-btn', 'personality-login-btn');
-                btn.style.display = 'flex';
-                btn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        // Simple, robust button update
+        const allButtons = document.querySelectorAll('button');
+        allButtons.forEach(btn => {
+            const text = btn.textContent || btn.innerHTML;
+            if (text.includes('Anmelden') || text.includes('Login') || text.includes('Sign in')) {
+                if (isLoggedIn) {
+                    btn.innerHTML = '<i class="fas fa-user"></i> Profil';
+                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                    btn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                }
             }
         });
         
-        // Update user info in navigation
+        // Update user info
         this.updateGlobalUserInfo(currentUser);
-        
-        // Update personality development specific elements
-        this.updatePersonalityDevelopmentUI(isLoggedIn, currentUser);
     }
     
     updateGlobalUserInfo(user) {
