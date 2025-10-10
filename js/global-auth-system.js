@@ -248,14 +248,9 @@ class GlobalAuthSystem {
     
     updatePersonalityDevelopmentUI(isLoggedIn, user) {
         // Update personality development specific UI elements
-        const userDropdown = document.querySelector('.user-dropdown');
         const userAvatarSmall = document.querySelector('.user-avatar-small');
         const userNameSmall = document.querySelector('.user-name-small');
         const userEmailSmall = document.querySelector('.user-email-small');
-        
-        if (userDropdown) {
-            userDropdown.style.display = isLoggedIn ? 'block' : 'none';
-        }
         
         if (userAvatarSmall) {
             userAvatarSmall.style.display = isLoggedIn ? 'flex' : 'none';
