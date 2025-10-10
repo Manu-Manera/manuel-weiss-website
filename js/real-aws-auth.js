@@ -134,7 +134,15 @@ class RealAWSAuth {
             let errorMessage = 'Registrierung fehlgeschlagen. ';
             
             if (error.code === 'UsernameExistsException') {
-                errorMessage += 'Diese E-Mail-Adresse ist bereits registriert.';
+                // Check if user is unconfirmed and try to resend code
+                try {
+                    console.log('🔄 User exists, attempting to resend confirmation code...');
+                    await this.resendConfirmationCode(email);
+                    errorMessage = 'Diese E-Mail-Adresse ist bereits registriert. Eine neue Bestätigungs-E-Mail wurde gesendet.';
+                } catch (resendError) {
+                    console.error('❌ Could not resend confirmation code:', resendError);
+                    errorMessage += 'Diese E-Mail-Adresse ist bereits registriert. Bitte prüfen Sie Ihr E-Mail-Postfach oder warten Sie auf die Bestätigung.';
+                }
             } else if (error.code === 'InvalidPasswordException') {
                 errorMessage += 'Passwort entspricht nicht den Anforderungen.';
             } else if (error.code === 'InvalidParameterException') {
@@ -336,6 +344,14 @@ class RealAWSAuth {
     }
 
     showNotification(message, type = 'info') {
+        // Remove existing notifications to prevent overlap
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        });
+        
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -374,6 +390,35 @@ class RealAWSAuth {
                 }
             }, 300);
         }, duration);
+    }
+
+    async resendConfirmationCode(email) {
+        if (!this.isInitialized || !this.cognitoIdentityServiceProvider) {
+            throw new Error('System not initialized');
+        }
+
+        try {
+            console.log('📧 Resending confirmation code for:', email);
+            
+            const params = {
+                ClientId: this.clientId,
+                Username: email
+            };
+
+            const result = await this.cognitoIdentityServiceProvider.resendConfirmationCode(params).promise();
+            console.log('✅ Confirmation code resent successfully');
+            
+            this.showNotification(
+                'Neue Bestätigungs-E-Mail wurde gesendet! Bitte prüfen Sie Ihr E-Mail-Postfach.',
+                'success'
+            );
+            
+            return { success: true, codeDeliveryDetails: result.CodeDeliveryDetails };
+            
+        } catch (error) {
+            console.error('❌ Resend confirmation code error:', error);
+            throw error;
+        }
     }
 
     // Test method to create a test user
