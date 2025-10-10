@@ -292,15 +292,23 @@
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <h4>E-Mail</h4>
-                                <a href="mailto:weissmanuel94@gmail.com">weissmanuel94@gmail.com</a>
+                                <a href="mailto:weiss-manuel@gmx.de">weiss-manuel@gmx.de</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Telefon</h4>
+                                <a href="tel:+41798385590">+41 79 838 55 90</a>
                             </div>
                         </div>
                         
                         <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
-                                <h4>Standort</h4>
-                                <p>Schweiz</p>
+                                <h4>Adresse</h4>
+                                <p>Pilatusstrasse 40<br>8330 Pfäffikon ZH</p>
                             </div>
                         </div>
                         
@@ -1100,6 +1108,112 @@
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
+
+    <!-- Footer mit rechtlichen Links -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR-Berater für AI & Transformation</p>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:weiss-manuel@gmx.de">weiss-manuel@gmx.de</a></p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+41798385590">+41 79 838 55 90</a></p>
+                        <p><i class="fas fa-map-marker-alt"></i> Pilatusstrasse 40, 8330 Pfäffikon ZH</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Rechtliches</h3>
+                    <ul>
+                        <li><a href="impressum.html">Impressum</a></li>
+                        <li><a href="datenschutz.html">Datenschutz</a></li>
+                        <li><a href="nutzungsbedingungen.html">Nutzungsbedingungen</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
+                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
+                        <li><a href="admin.html">Admin Panel</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: #60a5fa;
+        }
+        
+        .contact-info p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .contact-info i {
+            color: #60a5fa;
+            width: 16px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #475569;
+            padding-top: 1rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
 
 </body>
 </html>
