@@ -1772,29 +1772,35 @@
 
     // Integrated User System Functions
     function toggleUserMenu() {
-        const dropdown = document.getElementById('userDropdown');
-        const loginBtn = document.getElementById('navLoginBtn');
-        
-        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-            dropdown.style.display = 'block';
-            loginBtn.innerHTML = '<i class="fas fa-user-circle"></i><span>Manuel Weiss</span>';
-            loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        // Prüfe ob AWS Auth System verfügbar ist
+        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
         } else {
-            dropdown.style.display = 'none';
-            loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
-            loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+            // User ist nicht eingeloggt - zeige Login Modal
+            showLoginModal();
         }
     }
 
     function logoutUser() {
-        const dropdown = document.getElementById('userDropdown');
-        const loginBtn = document.getElementById('navLoginBtn');
-        
-        dropdown.style.display = 'none';
-        loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
-        loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
-        
-        showNotification('Erfolgreich abgemeldet!', 'success');
+        // Verwende AWS Auth System für Logout
+        if (window.awsAuth) {
+            window.awsAuth.logout();
+        } else {
+            // Fallback für lokales Logout
+            const dropdown = document.getElementById('userDropdown');
+            const loginBtn = document.getElementById('navLoginBtn');
+            
+            dropdown.style.display = 'none';
+            loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
+            loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+            
+            showNotification('Erfolgreich abgemeldet!', 'success');
+        }
     }
 
     // Close dropdown when clicking outside
@@ -3003,6 +3009,11 @@
         }
         });
     </script>
+    
+    <!-- AWS Auth System -->
+    <script src="js/aws-auth-system.js"></script>
+    <script src="js/auth-modals.js"></script>
+    <script src="js/aws-auth-tester.js"></script>
 </body>
 </html>
 
