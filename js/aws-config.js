@@ -1,8 +1,8 @@
 // AWS Configuration for Production
 window.AWS_CONFIG = {
     // Cognito User Pool Configuration
-    userPoolId: 'eu-central-1_XXXXXXXXX', // Replace with actual User Pool ID
-    clientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // Replace with actual Client ID
+    userPoolId: 'eu-central-1_XXXXXXXXX', // TODO: Replace with actual User Pool ID
+    clientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: Replace with actual Client ID
     region: 'eu-central-1',
     
     // S3 Configuration for file uploads
