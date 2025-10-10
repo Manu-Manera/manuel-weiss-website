@@ -241,16 +241,8 @@ class RealAWSAuth {
             
             this.showNotification('✅ Erfolgreich angemeldet!', 'success');
             
-            // Check if we should redirect back to original page
-            const returnUrl = localStorage.getItem('returnUrl');
-            if (returnUrl && returnUrl !== window.location.href) {
-                console.log('🔄 Redirecting back to:', returnUrl);
-                setTimeout(() => {
-                    window.location.href = returnUrl;
-                }, 1000);
-            } else {
-                console.log('✅ Login completed, staying on current page');
-            }
+            // Don't redirect automatically - let user stay on current page
+            console.log('✅ Login completed, staying on current page');
             return { success: true };
             
         } catch (error) {
