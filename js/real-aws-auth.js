@@ -251,7 +251,9 @@ class RealAWSAuth {
             } else if (error.code === 'InvalidPasswordException') {
                 errorMessage += 'Ungültiges Passwort.';
             } else if (error.code === 'UserNotConfirmedException') {
-                errorMessage += 'E-Mail-Adresse wurde noch nicht bestätigt.';
+                // Show confirmation code input modal
+                this.showConfirmationCodeModal(email);
+                errorMessage = 'E-Mail-Adresse wurde noch nicht bestätigt. Bitte geben Sie den Bestätigungscode ein.';
             } else {
                 errorMessage += error.message || 'Unbekannter Fehler.';
             }
@@ -390,6 +392,224 @@ class RealAWSAuth {
                 }
             }, 300);
         }, duration);
+    }
+
+    showConfirmationCodeModal(email) {
+        // Remove existing modals
+        const existingModal = document.querySelector('.confirmation-code-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.className = 'confirmation-code-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📧 E-Mail-Bestätigung erforderlich</h3>
+                        <button class="modal-close" onclick="this.closest('.confirmation-code-modal').remove()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Ihre E-Mail-Adresse <strong>${email}</strong> wurde noch nicht bestätigt.</p>
+                        <p>Bitte geben Sie den Bestätigungscode ein, den Sie per E-Mail erhalten haben:</p>
+                        <div class="input-group">
+                            <input type="text" id="confirmationCodeInput" placeholder="Bestätigungscode eingeben" maxlength="6">
+                            <button id="confirmCodeBtn" class="btn-primary">Bestätigen</button>
+                        </div>
+                        <div class="modal-actions">
+                            <button id="resendCodeBtn" class="btn-secondary">Code erneut senden</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .confirmation-code-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 10000;
+            }
+            
+            .modal-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            
+            .modal-content {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+                max-width: 500px;
+                width: 100%;
+                animation: modalSlideIn 0.3s ease-out;
+            }
+            
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 24px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            .modal-header h3 {
+                margin: 0;
+                color: #1f2937;
+                font-size: 1.25rem;
+            }
+            
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #6b7280;
+                padding: 0;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .modal-body {
+                padding: 24px;
+            }
+            
+            .input-group {
+                display: flex;
+                gap: 12px;
+                margin: 16px 0;
+            }
+            
+            .input-group input {
+                flex: 1;
+                padding: 12px 16px;
+                border: 2px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 16px;
+                text-align: center;
+                letter-spacing: 2px;
+                font-weight: 600;
+            }
+            
+            .input-group input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .btn-primary {
+                background: #3b82f6;
+                color: white;
+            }
+            
+            .btn-primary:hover {
+                background: #2563eb;
+            }
+            
+            .btn-secondary {
+                background: #f3f4f6;
+                color: #374151;
+                border: 1px solid #d1d5db;
+            }
+            
+            .btn-secondary:hover {
+                background: #e5e7eb;
+            }
+            
+            .modal-actions {
+                margin-top: 16px;
+                text-align: center;
+            }
+            
+            @keyframes modalSlideIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.9) translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        const confirmBtn = modal.querySelector('#confirmCodeBtn');
+        const resendBtn = modal.querySelector('#resendCodeBtn');
+        const codeInput = modal.querySelector('#confirmationCodeInput');
+
+        confirmBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            if (!code) {
+                this.showNotification('Bitte geben Sie den Bestätigungscode ein.', 'error');
+                return;
+            }
+
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Bestätige...';
+
+            try {
+                const result = await this.confirmRegistration(email, code);
+                if (result.success) {
+                    modal.remove();
+                    this.showNotification('E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
+                }
+            } catch (error) {
+                console.error('Confirmation error:', error);
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Bestätigen';
+            }
+        });
+
+        resendBtn.addEventListener('click', async () => {
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Sende...';
+
+            try {
+                await this.resendConfirmationCode(email);
+            } catch (error) {
+                console.error('Resend error:', error);
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Code erneut senden';
+            }
+        });
+
+        // Focus on input
+        setTimeout(() => {
+            codeInput.focus();
+        }, 100);
     }
 
     async resendConfirmationCode(email) {
