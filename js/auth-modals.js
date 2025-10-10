@@ -98,7 +98,7 @@ class AuthModals {
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="acceptTerms" required>
                                     <span class="checkmark"></span>
-                                    Ich akzeptiere die <a href="#" target="_blank">Nutzungsbedingungen</a> und <a href="#" target="_blank">Datenschutzerklärung</a>
+                                    Ich akzeptiere die <a href="nutzungsbedingungen.html" target="_blank">Nutzungsbedingungen</a> und <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a>
                                 </label>
                             </div>
                             <button type="submit" class="btn-primary">
