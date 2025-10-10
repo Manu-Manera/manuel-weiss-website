@@ -13,14 +13,14 @@
 }
 
 .nav-login-btn {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
     backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
     border-radius: 50px !important;
     padding: 12px 24px !important;
-    color: white !important;
+    color: #1f2937 !important;
     font-size: 1rem !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     cursor: pointer !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     display: flex !important;
@@ -28,9 +28,10 @@
     gap: 8px !important;
     min-width: 140px !important;
     justify-content: center !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
     position: relative !important;
     overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
 }
 
 .nav-login-btn::before {
@@ -45,10 +46,11 @@
 }
 
 .nav-login-btn:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+    color: #111827 !important;
 }
 
 .nav-login-btn:hover::before {
@@ -74,16 +76,16 @@
     position: absolute !important;
     top: 100% !important;
     right: 0 !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-    min-width: 280px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+    min-width: 300px !important;
     z-index: 1000 !important;
-    margin-top: 8px !important;
+    margin-top: 12px !important;
     overflow: hidden !important;
-    animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: dropdownSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     transform-origin: top right !important;
 }
 
@@ -149,13 +151,16 @@
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    padding: 12px 16px !important;
+    padding: 14px 18px !important;
     color: #374151 !important;
     text-decoration: none !important;
-    border-radius: 10px !important;
-    transition: all 0.2s ease !important;
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-weight: 500 !important;
     font-size: 0.95rem !important;
+    cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .user-dropdown-item:hover {
