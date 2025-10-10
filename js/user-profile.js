@@ -16,36 +16,77 @@ class UserProfile {
     }
 
     checkAuthStatus() {
+        console.log('🔍 Checking auth status...');
+        console.log('🔍 AWS Auth available:', !!window.awsAuth);
+        console.log('🔍 Is logged in:', window.awsAuth ? window.awsAuth.isLoggedIn() : false);
+        
         // Check if user is authenticated with AWS
         if (window.awsAuth && window.awsAuth.isLoggedIn()) {
             const currentUser = window.awsAuth.getCurrentUser();
+            console.log('👤 Current user from auth:', currentUser);
+            
             if (currentUser) {
                 this.updateUserInfoFromAuth(currentUser);
+            } else {
+                console.log('❌ No current user found, redirecting to login');
+                this.redirectToLogin();
             }
         } else {
+            console.log('❌ Not authenticated, redirecting to login');
             // Redirect to login if not authenticated
             this.redirectToLogin();
         }
     }
 
     updateUserInfoFromAuth(user) {
-        // Update profile with authenticated user data
-        if (user.email) {
+        console.log('🔄 Updating user info from auth:', user);
+        
+        // Get user data from token if available
+        let userData = null;
+        if (window.awsAuth && window.awsAuth.getUserDataFromToken) {
+            userData = window.awsAuth.getUserDataFromToken();
+            console.log('👤 User data from token:', userData);
+        }
+        
+        // Use token data if available, otherwise fallback to session data
+        const displayEmail = userData ? userData.email : user.email;
+        const displayName = userData ? userData.name : (user.firstName ? `${user.firstName} ${user.lastName}` : 'Benutzer');
+        
+        console.log('📧 Display email:', displayEmail);
+        console.log('👤 Display name:', displayName);
+        
+        // Update email input
+        if (displayEmail) {
             const emailInput = document.getElementById('email');
             if (emailInput && !emailInput.value) {
-                emailInput.value = user.email;
+                emailInput.value = displayEmail;
+                console.log('✅ Updated email input:', displayEmail);
             }
         }
         
         // Update display name
         const userNameEl = document.getElementById('userName');
         if (userNameEl) {
-            userNameEl.textContent = user.firstName ? `${user.firstName} ${user.lastName}` : 'User';
+            userNameEl.textContent = displayName;
+            console.log('✅ Updated user name display:', displayName);
         }
         
+        // Update email display
         const userEmailEl = document.getElementById('userEmail');
         if (userEmailEl) {
-            userEmailEl.textContent = user.email;
+            userEmailEl.textContent = displayEmail;
+            console.log('✅ Updated user email display:', displayEmail);
+        }
+        
+        // Update profile header
+        const profileHeaderName = document.querySelector('.profile-header h1');
+        if (profileHeaderName) {
+            profileHeaderName.textContent = displayName;
+        }
+        
+        const profileHeaderEmail = document.querySelector('.profile-header .profile-email');
+        if (profileHeaderEmail) {
+            profileHeaderEmail.textContent = displayEmail;
         }
     }
 
