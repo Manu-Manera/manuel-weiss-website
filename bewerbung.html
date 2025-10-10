@@ -1038,7 +1038,7 @@
                                 <i class="fas fa-file-pdf" style="color: var(--primary);"></i>
                                 Lebenslauf hochladen
                             </h4>
-                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" data-category="documents" data-subcategory="cv" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'documents', subcategory: 'cv'})" style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
                             <button id="btnCvUpload" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
                                 <i class="fas fa-upload"></i> Lebenslauf hochladen
                             </button>
@@ -1051,7 +1051,7 @@
                                 <i class="fas fa-certificate" style="color: var(--secondary);"></i>
                                 Zeugnisse hochladen
                             </h4>
-                            <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple data-category="documents" data-subcategory="certificates" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'documents', subcategory: 'certificates'})" style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
                             <button id="btnCertificateUpload" style="background: var(--secondary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
                                 <i class="fas fa-upload"></i> Zeugnisse hochladen
                             </button>
@@ -1524,6 +1524,7 @@ Manuel Weiss`;
     
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
 <script src="js/aws-auth.js"></script>
+<script src="js/unified-aws-upload.js"></script>
 <script src="./js/base-logger.js"></script>
 
     <section id="userfiles" style="margin: 3rem auto; max-width: 1200px; padding: 0 1rem;">

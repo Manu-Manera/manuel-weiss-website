@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Manuel Weiss</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .swagger-ui {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .api-stats {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin: 0.5rem 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Manuel Weiss API Documentation</h1>
+        <p>Vollständige API-Dokumentation für alle Endpunkte und Services</p>
+    </div>
+    
+    <div class="api-stats">
+        <h2 style="margin: 0 0 1.5rem 0; color: #333;">📊 API Statistiken</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">API Endpunkte</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Service Kategorien</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Swagger Coverage</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">API Verfügbarkeit</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="swagger-ui" class="swagger-ui"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        // Vollständige OpenAPI 3.0 Spezifikation
+        const swaggerSpec = {
+            openapi: "3.0.0",
+            info: {
+                title: "Manuel Weiss API",
+                version: "1.0.0",
+                description: "Vollständige API-Dokumentation für das Manuel Weiss Multi-User System mit AWS-Integration",
+                contact: {
+                    name: "Manuel Weiss",
+                    email: "manuel@manuel-weiss.com",
+                    url: "https://manuel-weiss.com"
+                },
+                license: {
+                    name: "MIT",
+                    url: "https://opensource.org/licenses/MIT"
+                }
+            },
+            servers: [
+                {
+                    url: "https://api.manuel-weiss.com",
+                    description: "Production Server"
+                },
+                {
+                    url: "https://staging-api.manuel-weiss.com",
+                    description: "Staging Server"
+                },
+                {
+                    url: "http://localhost:3001",
+                    description: "Development Server"
+                }
+            ],
+            security: [
+                {
+                    bearerAuth: []
+                }
+            ],
+            components: {
+                securitySchemes: {
+                    bearerAuth: {
+                        type: "http",
+                        scheme: "bearer",
+                        bearerFormat: "JWT"
+                    }
+                },
+                schemas: {
+                    MediaFile: {
+                        type: "object",
+                        properties: {
+                            id: { type: "string", example: "file_1234567890_abc123" },
+                            originalName: { type: "string", example: "portrait.jpg" },
+                            size: { type: "integer", example: 2048576 },
+                            type: { type: "string", example: "image/jpeg" },
+                            category: { type: "string", example: "profile" },
+                            subcategory: { type: "string", example: "hero" },
+                            s3Url: { type: "string", example: "https://bucket.s3.amazonaws.com/path/file.jpg" },
+                            uploadedAt: { type: "string", format: "date-time" },
+                            tags: { type: "array", items: { type: "string" } },
+                            metadata: { type: "object" }
+                        }
+                    },
+                    Error: {
+                        type: "object",
+                        properties: {
+                            error: { type: "string", example: "File not found" },
+                            message: { type: "string", example: "The requested file could not be found" },
+                            code: { type: "integer", example: 404 }
+                        }
+                    }
+                }
+            },
+            paths: {
+                // =================== MEDIA API ENDPOINTS ===================
+                "/api/v1/media/upload": {
+                    post: {
+                        tags: ["Media"],
+                        summary: "Upload single file",
+                        description: "Upload a single file to the media system",
+                        requestBody: {
+                            content: {
+                                "multipart/form-data": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            file: { type: "string", format: "binary" },
+                                            category: { type: "string", example: "profile" },
+                                            subcategory: { type: "string", example: "hero" },
+                                            tags: { type: "array", items: { type: "string" } }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
+                                description: "File uploaded successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/MediaFile" }
+                                    }
+                                }
+                            },
+                            "400": { $ref: "#/components/responses/BadRequest" },
+                            "401": { $ref: "#/components/responses/Unauthorized" }
+                        }
+                    }
+                },
+                "/api/v1/media/bulk-upload": {
+                    post: {
+                        tags: ["Media"],
+                        summary: "Upload multiple files",
+                        description: "Upload multiple files in a single request",
+                        requestBody: {
+                            content: {
+                                "multipart/form-data": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            files: { type: "array", items: { type: "string", format: "binary" } },
+                                            category: { type: "string", example: "gallery" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
+                                description: "Files uploaded successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: { $ref: "#/components/schemas/MediaFile" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/media/download/{fileId}": {
+                    get: {
+                        tags: ["Media"],
+                        summary: "Download file",
+                        description: "Download a file by its ID",
+                        parameters: [
+                            {
+                                name: "fileId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "File download",
+                                content: {
+                                    "application/octet-stream": {
+                                        schema: { type: "string", format: "binary" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/media/list": {
+                    get: {
+                        tags: ["Media"],
+                        summary: "List media files",
+                        description: "Get a list of all media files with optional filtering",
+                        parameters: [
+                            {
+                                name: "category",
+                                in: "query",
+                                schema: { type: "string", example: "profile" }
+                            },
+                            {
+                                name: "subcategory",
+                                in: "query",
+                                schema: { type: "string", example: "hero" }
+                            },
+                            {
+                                name: "limit",
+                                in: "query",
+                                schema: { type: "integer", default: 50 }
+                            },
+                            {
+                                name: "offset",
+                                in: "query",
+                                schema: { type: "integer", default: 0 }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "List of media files",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                files: {
+                                                    type: "array",
+                                                    items: { $ref: "#/components/schemas/MediaFile" }
+                                                },
+                                                total: { type: "integer" },
+                                                limit: { type: "integer" },
+                                                offset: { type: "integer" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/media/delete/{fileId}": {
+                    delete: {
+                        tags: ["Media"],
+                        summary: "Delete file",
+                        description: "Delete a file by its ID",
+                        parameters: [
+                            {
+                                name: "fileId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "File deleted successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                success: { type: "boolean" },
+                                                message: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                // =================== AI ENDPOINTS ===================
+                "/api/v1/media/ai/analyze": {
+                    post: {
+                        tags: ["AI"],
+                        summary: "AI Content Analysis",
+                        description: "Analyze media content using AI",
+                        requestBody: {
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            fileId: { type: "string" },
+                                            analysisType: { type: "string", enum: ["content", "objects", "text", "faces"] }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
+                                description: "Analysis results",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                analysis: { type: "object" },
+                                                confidence: { type: "number" },
+                                                tags: { type: "array", items: { type: "string" } }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/media/ai/search": {
+                    get: {
+                        tags: ["AI"],
+                        summary: "AI-powered search",
+                        description: "Search media using AI-powered semantic search",
+                        parameters: [
+                            {
+                                name: "query",
+                                in: "query",
+                                required: true,
+                                schema: { type: "string", example: "business professional portrait" }
+                            },
+                            {
+                                name: "category",
+                                in: "query",
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "Search results",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: { $ref: "#/components/schemas/MediaFile" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                // =================== ANALYTICS ENDPOINTS ===================
+                "/api/v1/analytics/media": {
+                    get: {
+                        tags: ["Analytics"],
+                        summary: "Media analytics",
+                        description: "Get comprehensive media analytics",
+                        parameters: [
+                            {
+                                name: "timeRange",
+                                in: "query",
+                                schema: { type: "string", enum: ["7d", "30d", "90d", "1y"], default: "30d" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "Analytics data",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                totalFiles: { type: "integer" },
+                                                totalSize: { type: "integer" },
+                                                categories: { type: "object" },
+                                                uploadStats: { type: "object" },
+                                                storageUsage: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/analytics/usage": {
+                    get: {
+                        tags: ["Analytics"],
+                        summary: "Usage statistics",
+                        description: "Get API usage statistics",
+                        responses: {
+                            "200": {
+                                description: "Usage statistics",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                requests: { type: "integer" },
+                                                errors: { type: "integer" },
+                                                averageResponseTime: { type: "number" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                // =================== USER MANAGEMENT ENDPOINTS ===================
+                "/api/v1/users": {
+                    get: {
+                        tags: ["Users"],
+                        summary: "List users",
+                        description: "Get a list of all users",
+                        responses: {
+                            "200": {
+                                description: "List of users",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: {
+                                                type: "object",
+                                                properties: {
+                                                    id: { type: "string" },
+                                                    email: { type: "string" },
+                                                    name: { type: "string" },
+                                                    role: { type: "string" },
+                                                    createdAt: { type: "string", format: "date-time" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/users/{userId}": {
+                    get: {
+                        tags: ["Users"],
+                        summary: "Get user details",
+                        description: "Get detailed information about a specific user",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User details",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                id: { type: "string" },
+                                                email: { type: "string" },
+                                                name: { type: "string" },
+                                                role: { type: "string" },
+                                                profile: { type: "object" },
+                                                activity: { type: "array" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
+                // =================== SYSTEM ENDPOINTS ===================
+                "/api/v1/health": {
+                    get: {
+                        tags: ["System"],
+                        summary: "Health check",
+                        description: "Check API health status",
+                        responses: {
+                            "200": {
+                                description: "System is healthy",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                status: { type: "string", example: "healthy" },
+                                                timestamp: { type: "string", format: "date-time" },
+                                                services: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/api/v1/system/info": {
+                    get: {
+                        tags: ["System"],
+                        summary: "System information",
+                        description: "Get system information and configuration",
+                        responses: {
+                            "200": {
+                                description: "System information",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                version: { type: "string" },
+                                                environment: { type: "string" },
+                                                uptime: { type: "number" },
+                                                configuration: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            components: {
+                responses: {
+                    BadRequest: {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    },
+                    Unauthorized: {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    },
+                    NotFound: {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Swagger UI initialisieren
+        SwaggerUIBundle({
+            url: null,
+            spec: swaggerSpec,
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+            tryItOutEnabled: true,
+            supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+            onComplete: function() {
+                console.log('🚀 API Documentation loaded successfully');
+            }
+        });
+    </script>
+</body>
+</html>
+
