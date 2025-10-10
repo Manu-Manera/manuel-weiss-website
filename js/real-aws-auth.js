@@ -386,64 +386,77 @@ class RealAWSAuth {
     }
 
     updateUI(isLoggedIn) {
-        const loginBtn = document.querySelector('.nav-login-btn');
-        const userDropdown = document.querySelector('.user-dropdown');
-        const userAvatarSmall = document.querySelector('.user-avatar-small');
-        const userNameSmall = document.querySelector('.user-name-small');
-        const userEmailSmall = document.querySelector('.user-email-small');
+        // Einheitliche UI-Updates für alle Seiten
+        const loginButtons = document.querySelectorAll('.nav-login-btn, .login-btn, button[class*="login"]');
+        const profileButtons = document.querySelectorAll('.nav-profile-btn, .profile-btn, button[class*="profile"]');
         
         console.log('🔄 Updating UI, isLoggedIn:', isLoggedIn);
         console.log('👤 Current user:', this.currentUser);
         
-        if (loginBtn) {
+        loginButtons.forEach(btn => {
             if (isLoggedIn && this.currentUser) {
                 // Get user data from token
                 const userData = this.getUserDataFromToken();
                 console.log('👤 User data from token:', userData);
                 
                 // Update login button
-                loginBtn.innerHTML = '<i class="fas fa-user"></i> Profil';
-                loginBtn.style.display = 'none';
-                
-                // Show user dropdown
-                if (userDropdown) {
-                    userDropdown.style.display = 'block';
-                }
-                
-                // Update user info in dropdown
-                if (userData) {
-                    if (userNameSmall) {
-                        userNameSmall.textContent = userData.name || 'Benutzer';
-                        console.log('✅ Updated user name:', userData.name);
+                btn.innerHTML = '<i class="fas fa-user"></i> Profil';
+                btn.style.display = 'flex';
+                btn.onclick = () => {
+                    // Redirect to profile or show dropdown
+                    if (window.location.pathname.includes('user-profile.html')) {
+                        return; // Already on profile page
                     }
-                    if (userEmailSmall) {
-                        userEmailSmall.textContent = userData.email || this.currentUser.email;
-                        console.log('✅ Updated user email:', userData.email || this.currentUser.email);
-                    }
-                    if (userAvatarSmall) {
-                        userAvatarSmall.style.display = 'flex';
-                    }
-                } else {
-                    // Fallback to session data
-                    if (userNameSmall) {
-                        userNameSmall.textContent = 'Benutzer';
-                    }
-                    if (userEmailSmall) {
-                        userEmailSmall.textContent = this.currentUser.email;
-                    }
-                }
+                    window.location.href = 'user-profile.html';
+                };
             } else {
                 // Not logged in
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
-                loginBtn.style.display = 'flex';
-                if (userDropdown) {
-                    userDropdown.style.display = 'none';
-                }
-                if (userAvatarSmall) {
-                    userAvatarSmall.style.display = 'none';
-                }
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                btn.style.display = 'flex';
+                btn.onclick = () => {
+                    // Show login modal
+                    if (window.authModals && window.authModals.showLogin) {
+                        window.authModals.showLogin();
+                    } else {
+                        // Fallback: redirect to login page
+                        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+                    }
+                };
             }
+        });
+        
+        profileButtons.forEach(btn => {
+            btn.style.display = isLoggedIn ? 'flex' : 'none';
+        });
+        
+        // User Info aktualisieren
+        if (isLoggedIn && this.currentUser) {
+            const userData = this.getUserDataFromToken();
+            this.updateUserInfo(userData);
         }
+    }
+    
+    updateUserInfo(userData) {
+        const userNameElements = document.querySelectorAll('.user-name, .nav-user-name, .global-user-name');
+        const userEmailElements = document.querySelectorAll('.user-email, .nav-user-email, .global-user-email');
+        
+        userNameElements.forEach(el => {
+            if (userData && userData.name) {
+                el.textContent = userData.name;
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+        
+        userEmailElements.forEach(el => {
+            if (userData && userData.email) {
+                el.textContent = userData.email;
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        });
     }
 
     showNotification(message, type = 'info') {

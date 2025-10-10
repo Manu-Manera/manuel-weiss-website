@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test - Manuel Weiss</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- 🔧 AUTH SYSTEM INTEGRATION -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/redirect-url-config.js"></script>
+    <script src="js/aws-config.js"></script>
+    <script src="js/real-aws-auth.js"></script>
+    <script src="js/global-auth-system.js"></script>
+    <script src="js/auth-modals.js"></script>
+</head>
+<body>
+    <div class="container" style="max-width: 800px; margin: 50px auto; padding: 20px;">
+        <h1>🔧 Authentifizierung Test</h1>
+        
+        <div class="auth-status" id="authStatus" style="padding: 20px; margin: 20px 0; border-radius: 8px; background: #f3f4f6;">
+            <h3>Status: <span id="statusText">Lädt...</span></h3>
+            <p id="userInfo">Keine Benutzerinformationen</p>
+        </div>
+        
+        <div class="test-buttons" style="display: flex; gap: 10px; margin: 20px 0;">
+            <button class="btn nav-login-btn" id="testLoginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Test Login</span>
+            </button>
+            
+            <button class="btn" id="testLogoutBtn" style="display: none;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Test Logout</span>
+            </button>
+            
+            <button class="btn" id="testRegisterBtn">
+                <i class="fas fa-user-plus"></i>
+                <span>Test Registrierung</span>
+            </button>
+        </div>
+        
+        <div class="debug-info" style="background: #1f2937; color: white; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+            <h4>Debug Information:</h4>
+            <div id="debugInfo">Lädt...</div>
+        </div>
+        
+        <div class="test-results" style="margin-top: 20px;">
+            <h3>Test Results:</h3>
+            <ul id="testResults"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Test Script
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusText = document.getElementById('statusText');
+            const userInfo = document.getElementById('userInfo');
+            const debugInfo = document.getElementById('debugInfo');
+            const testResults = document.getElementById('testResults');
+            const testLoginBtn = document.getElementById('testLoginBtn');
+            const testLogoutBtn = document.getElementById('testLogoutBtn');
+            const testRegisterBtn = document.getElementById('testRegisterBtn');
+            
+            let testCount = 0;
+            
+            function addTestResult(message, success = true) {
+                testCount++;
+                const li = document.createElement('li');
+                li.innerHTML = `${success ? '✅' : '❌'} Test ${testCount}: ${message}`;
+                li.style.color = success ? 'green' : 'red';
+                testResults.appendChild(li);
+            }
+            
+            function updateStatus() {
+                // Check if auth systems are loaded
+                const awsAuth = window.awsAuth;
+                const globalAuth = window.globalAuth;
+                const authModals = window.authModals;
+                
+                if (awsAuth && awsAuth.isLoggedIn()) {
+                    const user = awsAuth.getCurrentUser();
+                    statusText.textContent = '✅ Angemeldet';
+                    statusText.style.color = 'green';
+                    userInfo.textContent = `Benutzer: ${user.email}`;
+                    testLoginBtn.style.display = 'none';
+                    testLogoutBtn.style.display = 'inline-flex';
+                } else {
+                    statusText.textContent = '❌ Nicht angemeldet';
+                    statusText.style.color = 'red';
+                    userInfo.textContent = 'Kein Benutzer angemeldet';
+                    testLoginBtn.style.display = 'inline-flex';
+                    testLogoutBtn.style.display = 'none';
+                }
+                
+                // Debug Information
+                debugInfo.innerHTML = `
+                    AWS Auth: ${awsAuth ? '✅' : '❌'}<br>
+                    Global Auth: ${globalAuth ? '✅' : '❌'}<br>
+                    Auth Modals: ${authModals ? '✅' : '❌'}<br>
+                    AWS SDK: ${typeof AWS !== 'undefined' ? '✅' : '❌'}<br>
+                    Session: ${localStorage.getItem('aws_auth_session') ? '✅' : '❌'}<br>
+                    Base URL: ${window.getBaseUrl ? window.getBaseUrl() : 'N/A'}<br>
+                    Redirect URL: ${window.getRedirectUrl ? window.getRedirectUrl() : 'N/A'}
+                `;
+            }
+            
+            // Test Login
+            testLoginBtn.addEventListener('click', () => {
+                addTestResult('Login Button clicked');
+                if (window.authModals && window.authModals.showLogin) {
+                    window.authModals.showLogin();
+                    addTestResult('Login Modal opened');
+                } else {
+                    addTestResult('Login Modal not available', false);
+                }
+            });
+            
+            // Test Logout
+            testLogoutBtn.addEventListener('click', () => {
+                addTestResult('Logout Button clicked');
+                if (window.awsAuth && window.awsAuth.logout) {
+                    window.awsAuth.logout();
+                    addTestResult('Logout executed');
+                } else {
+                    addTestResult('Logout not available', false);
+                }
+            });
+            
+            // Test Register
+            testRegisterBtn.addEventListener('click', () => {
+                addTestResult('Register Button clicked');
+                if (window.authModals && window.authModals.showRegister) {
+                    window.authModals.showRegister();
+                    addTestResult('Register Modal opened');
+                } else {
+                    addTestResult('Register Modal not available', false);
+                }
+            });
+            
+            // Initial status update
+            updateStatus();
+            
+            // Update status every 2 seconds
+            setInterval(updateStatus, 2000);
+            
+            // Add initial test results
+            addTestResult('Page loaded');
+            addTestResult('Auth systems initialized');
+        });
+    </script>
+</body>
+</html>
