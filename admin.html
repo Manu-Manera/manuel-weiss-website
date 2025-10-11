@@ -8,6 +8,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="admin-styles.css">
     <link rel="stylesheet" href="admin-modern-styles.css">
+    <link rel="stylesheet" href="css/media-management-2025.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -4939,6 +4940,21 @@
                                 Videos
                                 <span class="tab-count" id="videos-count">0</span>
                             </button>
+                            <button class="category-tab" data-category="wohnmobil">
+                                <i class="fas fa-caravan"></i>
+                                Wohnmobil
+                                <span class="tab-count" id="wohnmobil-count">0</span>
+                            </button>
+                            <button class="category-tab" data-category="photobox">
+                                <i class="fas fa-camera"></i>
+                                Photobox
+                                <span class="tab-count" id="photobox-count">0</span>
+                            </button>
+                            <button class="category-tab" data-category="sup">
+                                <i class="fas fa-water"></i>
+                                SUP
+                                <span class="tab-count" id="sup-count">0</span>
+                            </button>
                             <button class="category-tab" data-category="analytics">
                                 <i class="fas fa-chart-bar"></i>
                                 Analytics
@@ -4996,13 +5012,48 @@
                             </button>
                             </div>
                             
-                        <!-- Drag & Drop Zone -->
+                        <!-- Service-specific Upload Zones -->
+                        <div class="service-upload-zones" id="serviceUploadZones" style="display: none;">
+                            <!-- Wohnmobil Upload Zone -->
+                            <div class="upload-zone" data-service="wohnmobil" style="display: none;">
+                                <div class="upload-content">
+                                    <i class="fas fa-caravan"></i>
+                                    <p>Wohnmobil Bilder hier hineinziehen oder klicken zum Auswählen</p>
+                                    <input type="file" id="wohnmobilInput" multiple accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- Photobox Upload Zone -->
+                            <div class="upload-zone" data-service="photobox" style="display: none;">
+                                <div class="upload-content">
+                                    <i class="fas fa-camera"></i>
+                                    <p>Photobox Bilder hier hineinziehen oder klicken zum Auswählen</p>
+                                    <input type="file" id="photoboxInput" multiple accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- SUP Upload Zone -->
+                            <div class="upload-zone" data-service="sup" style="display: none;">
+                                <div class="upload-content">
+                                    <i class="fas fa-water"></i>
+                                    <p>SUP Bilder hier hineinziehen oder klicken zum Auswählen</p>
+                                    <input type="file" id="supInput" multiple accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- General Drag & Drop Zone (for other categories) -->
                         <div class="drag-drop-zone" id="dragDropZone" style="border: 2px dashed #6366f1; border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; background: #f8f9ff; transition: all 0.3s ease; cursor: pointer;" onclick="triggerFileUpload()" ondrop="handleFileDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                             <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
                             <h4 style="margin: 0 0 0.5rem 0; color: #374151;">Dateien hier ablegen oder klicken zum Auswählen</h4>
                             <p style="margin: 0; color: #6b7280;">Unterstützt: PDF, DOC, DOCX, JPG, PNG, GIF, MP4 (max. 100MB)</p>
                             <input type="file" id="media-file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.mov" style="display: none;" onchange="handleFileUpload(this.files)">
-                            </div>
+                        </div>
+                        
+                        <!-- Media Gallery -->
+                        <div class="media-gallery" id="mediaGallery">
+                            <!-- Dynamisch generierte Bilder -->
+                        </div>
                             
                         <!-- Upload Progress -->
                         <div id="upload-progress" style="display: none; margin-top: 1rem;">
@@ -13515,6 +13566,9 @@ Bitte antworte im folgenden JSON-Format:
     
     <!-- Media Upload Functions -->
     <script src="js/media-upload-functions.js"></script>
+    
+    <!-- Media Management System 2025 -->
+    <script src="js/media-management-2025.js"></script>
     
     <!-- Admin Connection Test für Debugging -->
     <script src="js/admin-connection-test.js"></script>
