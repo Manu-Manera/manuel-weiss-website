@@ -117,24 +117,30 @@ class GlobalAuthSystem {
     setupGlobalEventListeners() {
         // Global login button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn')) {
+            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn') || 
+                e.target.closest('.global-login-btn, .nav-login-btn, .login-btn')) {
                 e.preventDefault();
+                console.log('🔐 Login button clicked');
                 this.handleGlobalLoginClick();
             }
         });
         
         // Global profile button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn')) {
+            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn') || 
+                e.target.closest('.global-profile-btn, .nav-profile-btn, .profile-btn')) {
                 e.preventDefault();
+                console.log('👤 Profile button clicked');
                 this.handleGlobalProfileClick();
             }
         });
         
         // Global logout button clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn')) {
+            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn') || 
+                e.target.closest('.global-logout-btn, .nav-logout-btn, .logout-btn')) {
                 e.preventDefault();
+                console.log('🚪 Logout button clicked');
                 this.handleGlobalLogoutClick();
             }
         });
@@ -146,16 +152,23 @@ class GlobalAuthSystem {
         // Store current URL for return after login
         localStorage.setItem('returnUrl', window.location.href);
         
-        // Redirect to main page with login
-        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        // Try to show login modal first
+        if (window.authModals && window.authModals.showLogin) {
+            console.log('📧 Opening login modal...');
+            window.authModals.showLogin();
+        } else {
+            console.log('🔄 Redirecting to login page...');
+            // Fallback: redirect to main page with login
+            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        }
     }
     
     handleGlobalProfileClick() {
         console.log('👤 Global profile button clicked');
         
         if (this.isLoggedIn()) {
-            // Show profile dropdown
-            this.showGlobalProfileDropdown();
+            // Toggle user dropdown
+            this.toggleUserMenu();
         } else {
             // Redirect to login
             this.handleGlobalLoginClick();
@@ -197,7 +210,7 @@ class GlobalAuthSystem {
         console.log('👤 Current user:', currentUser);
         
         // Update all login buttons globally
-        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn, .personality-login-btn').forEach(btn => {
+        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn, .personality-login-btn, .global-profile-btn, .nav-profile-btn, .profile-btn, .personality-profile-btn').forEach(btn => {
             if (isLoggedIn) {
                 btn.innerHTML = '<i class="fas fa-user"></i> Profil';
                 btn.className = btn.className.replace('global-login-btn', 'global-profile-btn')
@@ -501,6 +514,7 @@ class GlobalAuthSystem {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🌐 Initializing Global Auth System...');
     window.globalAuth = new GlobalAuthSystem();
     
     // Make functions globally available
@@ -509,6 +523,22 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openSettings = () => window.globalAuth.openSettings();
     window.openProgress = () => window.globalAuth.openProgress();
     window.logoutUser = () => window.globalAuth.logoutUser();
+    
+    // Force UI update after initialization
+    setTimeout(() => {
+        if (window.globalAuth) {
+            console.log('🔄 Force updating UI after initialization...');
+            window.globalAuth.updateGlobalUI();
+        }
+    }, 1000);
+});
+
+// Also initialize on page load (for navigation between pages)
+window.addEventListener('load', () => {
+    if (window.globalAuth) {
+        console.log('🔄 Page loaded, updating UI...');
+        window.globalAuth.updateGlobalUI();
+    }
 });
 
 // Add CSS for global notifications and dropdowns
