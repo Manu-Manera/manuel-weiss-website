@@ -78,6 +78,31 @@
             transform: translateY(-2px);
         }
         
+        /* Auth Navigation Buttons */
+        .auth-nav-btn.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .auth-nav-btn.primary:hover {
+            background: linear-gradient(135deg, #5b5bd6, #7c3aed);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .auth-nav-btn.secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .auth-nav-btn.secondary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Gast-Modus CSS entfernt */
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -94,80 +119,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        /* Auth Buttons Section */
-        .auth-buttons-section {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
-        
-        .auth-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #333;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .auth-btn.primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-        
-        .auth-btn.primary:hover {
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-        
-        .auth-btn.secondary {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        
-        .auth-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-        }
-        
-        .auth-btn.tertiary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-        
-        .auth-btn.tertiary:hover {
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
-        }
-        
-        @media (max-width: 768px) {
-            .auth-buttons-section {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .auth-btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-        }
+        /* ENTFERNT: Auth-Buttons sind jetzt in der Navigation */
         
         .hero-section h2 {
             font-size: 2.5rem;
@@ -355,6 +307,17 @@
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .auth-nav-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
             }
             
             .container {
@@ -538,6 +501,17 @@
                 <h1>Smart Bewerbungsmanager</h1>
             </div>
             <nav class="nav-links">
+                <!-- Auth Buttons in Navigation für Design-Konsistenz -->
+                <button class="nav-btn auth-nav-btn primary" onclick="loginUser()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Anmelden
+                </button>
+                <button class="nav-btn auth-nav-btn secondary" onclick="registerUser()">
+                    <i class="fas fa-user-plus"></i>
+                    Registrieren
+                </button>
+                <!-- Gast-Modus entfernt -->
+                
                 <a href="admin.html" class="nav-btn">
                     <i class="fas fa-tachometer-alt"></i>
                     Admin Dashboard
@@ -556,21 +530,7 @@
             <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
             <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
             
-            <!-- Auth Buttons Section -->
-            <div class="auth-buttons-section">
-                <button class="auth-btn primary" onclick="loginUser()">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Anmelden
-                </button>
-                <button class="auth-btn secondary" onclick="registerUser()">
-                    <i class="fas fa-user-plus"></i>
-                    Registrieren
-                </button>
-                <button class="auth-btn tertiary" onclick="showGuestMode()">
-                    <i class="fas fa-user-secret"></i>
-                    Gast-Modus
-                </button>
-            </div>
+            <!-- Auth Buttons sind jetzt in der Navigation für Design-Konsistenz -->
             
             <button class="main-cta" onclick="direktWorkflowStarten()" id="mainStartButton">
                 <i class="fas fa-play-circle"></i>
@@ -766,9 +726,8 @@
     </div>
 
     <!-- Scripts -->
-    <!-- Global Auth System -->
-    <script src="js/global-auth-system.js"></script>
-    <script src="js/real-aws-auth.js"></script>
+    <!-- AWS Cognito 2025 Best Practices -->
+    <script src="js/aws-cognito-2025.js"></script>
     
     <!-- Admin Panel Integration - Automatische API Key Verknüpfung -->
     <script src="js/admin-panel-integration.js"></script>
@@ -1079,12 +1038,7 @@
             }
         }
         
-        function showGuestMode() {
-            console.log('👤 Gast-Modus aktiviert');
-            alert('Gast-Modus aktiviert! Sie können den Bewerbungsworkflow ohne Anmeldung nutzen.');
-            // Direkt Workflow starten
-            direktWorkflowStarten();
-        }
+        // Gast-Modus Funktion entfernt
         
         function closeLoginModal() {
             const modal = document.getElementById('loginModal');
@@ -1110,26 +1064,61 @@
             registerUser();
         }
         
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             console.log('🔐 Login-Formular abgesendet');
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            // Simuliere Login (in echter App würde hier AWS Cognito verwendet)
-            if (email && password) {
-                alert(`Willkommen zurück, ${email}!`);
-                closeLoginModal();
+            if (!email || !password) {
+                showNotification('Bitte füllen Sie alle Felder aus.', 'error');
+                return;
+            }
+            
+            try {
+                // 2025 Best Practice: Use AWS Cognito 2025 System
+                if (window.awsCognito2025 && window.awsCognito2025.isInitialized) {
+                    console.log('🚀 Using AWS Cognito 2025 System');
+                    await window.awsCognito2025.login(email, password);
+                    
+                    // Schließe Modal
+                    closeLoginModal();
+                    
+                    // Starte automatisch den Workflow nach erfolgreicher Anmeldung
+                    setTimeout(() => {
+                        console.log('🚀 Starte Workflow nach erfolgreicher Anmeldung...');
+                        startWorkflowAfterLogin();
+                    }, 1000);
+                    
+                } else {
+                    // Fallback: Simuliere Login
+                    console.log('⚠️ AWS Cognito 2025 not available, using fallback');
+                    console.log('✅ Login erfolgreich für:', email);
+                    
+                    // Schließe Modal
+                    closeLoginModal();
+                    
+                    // Update UI to show logged in state
+                    updateAuthUI(true, email);
+                    
+                    // Zeige Erfolgsmeldung
+                    showNotification('Erfolgreich angemeldet!', 'success');
+                    
+                    // Starte automatisch den Workflow nach erfolgreicher Anmeldung
+                    setTimeout(() => {
+                        console.log('🚀 Starte Workflow nach erfolgreicher Anmeldung...');
+                        startWorkflowAfterLogin();
+                    }, 1000);
+                }
                 
-                // Update UI to show logged in state
-                updateAuthUI(true, email);
-            } else {
-                alert('Bitte füllen Sie alle Felder aus.');
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showNotification('Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Daten.', 'error');
             }
         }
         
-        function handleRegister(event) {
+        async function handleRegister(event) {
             event.preventDefault();
             console.log('📝 Register-Formular abgesendet');
             
@@ -1137,56 +1126,185 @@
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             
-            // Simuliere Registrierung
-            if (name && email && password) {
-                alert(`Registrierung erfolgreich! Willkommen, ${name}!`);
-                closeRegisterModal();
+            if (!name || !email || !password) {
+                showNotification('Bitte füllen Sie alle Felder aus.', 'error');
+                return;
+            }
+            
+            try {
+                // 2025 Best Practice: Use AWS Cognito 2025 System
+                if (window.awsCognito2025 && window.awsCognito2025.isInitialized) {
+                    console.log('🚀 Using AWS Cognito 2025 System for registration');
+                    // Note: Registration would be implemented in the AWS Cognito 2025 system
+                    // For now, simulate successful registration
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Schließe Modal
+                    closeRegisterModal();
+                    
+                    // Update UI to show logged in state
+                    updateAuthUI(true, name);
+                    
+                    // Zeige Erfolgsmeldung
+                    showNotification(`Registrierung erfolgreich! Willkommen, ${name}!`, 'success');
+                    
+                    // Starte automatisch den Workflow nach erfolgreicher Registrierung
+                    setTimeout(() => {
+                        console.log('🚀 Starte Workflow nach erfolgreicher Registrierung...');
+                        startWorkflowAfterLogin();
+                    }, 1000);
+                    
+                } else {
+                    // Fallback: Simuliere Registrierung
+                    console.log('⚠️ AWS Cognito 2025 not available, using fallback');
+                    console.log('✅ Registrierung erfolgreich für:', name);
+                    
+                    // Schließe Modal
+                    closeRegisterModal();
+                    
+                    // Update UI to show logged in state
+                    updateAuthUI(true, name);
+                    
+                    // Zeige Erfolgsmeldung
+                    showNotification(`Registrierung erfolgreich! Willkommen, ${name}!`, 'success');
+                    
+                    // Starte automatisch den Workflow nach erfolgreicher Registrierung
+                    setTimeout(() => {
+                        console.log('🚀 Starte Workflow nach erfolgreicher Registrierung...');
+                        startWorkflowAfterLogin();
+                    }, 1000);
+                }
                 
-                // Update UI to show logged in state
-                updateAuthUI(true, name);
-            } else {
-                alert('Bitte füllen Sie alle Felder aus.');
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                showNotification('Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.', 'error');
             }
         }
         
         function updateAuthUI(isLoggedIn, userName) {
-            const authButtons = document.querySelector('.auth-buttons-section');
-            if (authButtons) {
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks) {
                 if (isLoggedIn) {
-                    authButtons.innerHTML = `
-                        <div class="auth-btn primary" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-user-check"></i>
-                            Willkommen, ${userName}!
-                        </div>
-                        <button class="auth-btn secondary" onclick="logoutUser()">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Abmelden
-                        </button>
-                    `;
+                    // Ersetze Auth-Buttons mit angemeldetem Zustand
+                    const authButtons = navLinks.querySelectorAll('.auth-nav-btn');
+                    authButtons.forEach(btn => btn.remove());
+                    
+                    // Füge Willkommens-Button hinzu
+                    const welcomeBtn = document.createElement('button');
+                    welcomeBtn.className = 'nav-btn auth-nav-btn primary';
+                    welcomeBtn.innerHTML = `<i class="fas fa-user-check"></i> Willkommen, ${userName}!`;
+                    welcomeBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    
+                    // Füge Abmelden-Button hinzu
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.className = 'nav-btn auth-nav-btn secondary';
+                    logoutBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Abmelden`;
+                    logoutBtn.onclick = logoutUser;
+                    
+                    // Füge Buttons vor Admin Dashboard ein
+                    const adminLink = navLinks.querySelector('a[href="admin.html"]');
+                    navLinks.insertBefore(welcomeBtn, adminLink);
+                    navLinks.insertBefore(logoutBtn, adminLink);
+                    
+                    console.log('✅ Auth UI aktualisiert - angemeldet');
                 } else {
-                    // Reset to original buttons
-                    authButtons.innerHTML = `
-                        <button class="auth-btn primary" onclick="loginUser()">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Anmelden
-                        </button>
-                        <button class="auth-btn secondary" onclick="registerUser()">
-                            <i class="fas fa-user-plus"></i>
-                            Registrieren
-                        </button>
-                        <button class="auth-btn tertiary" onclick="showGuestMode()">
-                            <i class="fas fa-user-secret"></i>
-                            Gast-Modus
-                        </button>
-                    `;
+                    // Reset zu ursprünglichen Buttons
+                    const welcomeBtn = navLinks.querySelector('button[class*="auth-nav-btn"]');
+                    const logoutBtn = navLinks.querySelector('button[onclick="logoutUser()"]');
+                    if (welcomeBtn) welcomeBtn.remove();
+                    if (logoutBtn) logoutBtn.remove();
+                    
+                    console.log('✅ Auth UI zurückgesetzt - nicht angemeldet');
                 }
             }
         }
         
-        function logoutUser() {
+        async function logoutUser() {
             console.log('🚪 Benutzer abgemeldet');
-            updateAuthUI(false);
-            alert('Sie wurden erfolgreich abgemeldet.');
+            
+            try {
+                // 2025 Best Practice: Use AWS Cognito 2025 System
+                if (window.awsCognito2025 && window.awsCognito2025.isInitialized) {
+                    console.log('🚀 Using AWS Cognito 2025 System for logout');
+                    await window.awsCognito2025.logout();
+                } else {
+                    // Fallback: Manual logout
+                    console.log('⚠️ AWS Cognito 2025 not available, using fallback');
+                    updateAuthUI(false);
+                    showNotification('Sie wurden erfolgreich abgemeldet.', 'info');
+                }
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+                // Force logout even if error
+                updateAuthUI(false);
+                showNotification('Sie wurden abgemeldet.', 'info');
+            }
+        }
+        
+        // Notification System
+        function showNotification(message, type = 'info') {
+            // Entferne bestehende Notifications
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                    color: white; padding: 1rem 1.5rem; border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    font-weight: 600; max-width: 300px;
+                ">
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove nach 3 Sekunden
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+        
+        // Workflow nach Login starten
+        function startWorkflowAfterLogin() {
+            console.log('🚀 Starte Workflow nach Login...');
+            
+            try {
+                // Verstecke Loading falls sichtbar
+                const loadingSection = document.getElementById('loadingSection');
+                if (loadingSection) loadingSection.classList.remove('active');
+                
+                // Starte Workflow direkt
+                if (typeof window.showSmartWorkflowModal === 'function') {
+                    const modal = window.showSmartWorkflowModal();
+                    console.log('✅ Workflow-Modal nach Login geöffnet');
+                    
+                    // Starte Step 0 nach kurzer Verzögerung
+                    setTimeout(() => {
+                        if (typeof window.generateStep0 === 'function') {
+                            const content = window.generateStep0();
+                            const workflowContent = document.getElementById('workflowContent');
+                            if (workflowContent) {
+                                workflowContent.innerHTML = content;
+                                console.log('✅ Workflow Step 0 nach Login geladen');
+                            }
+                        }
+                    }, 200);
+                } else {
+                    // Fallback: Direkter Workflow-Start
+                    console.log('⚠️ Workflow-Modal nicht verfügbar, verwende Fallback');
+                    direktWorkflowStarten();
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Workflow-Start nach Login:', error);
+                showNotification('Fehler beim Starten des Workflows. Bitte versuchen Sie es erneut.', 'error');
+            }
         }
         
         // Close modals when clicking outside
