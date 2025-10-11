@@ -539,8 +539,14 @@ class ValuesQuestionsWorkflow {
         
         // Proceed to ranking step
         this.showNotification('Werte ausgewählt! Weiter zum Ranking...', 'success');
-        // Here you would proceed to the ranking step
-        console.log('Selected values:', this.selectedValues);
+        
+        // Initialize ranking workflow
+        if (window.ValuesRankingWorkflow) {
+            this.rankingWorkflow = new window.ValuesRankingWorkflow(this.selectedValues);
+        } else {
+            console.log('Selected values:', this.selectedValues);
+            this.showNotification('Ranking-Workflow wird geladen...', 'info');
+        }
     }
     
     filterValues(searchTerm) {
