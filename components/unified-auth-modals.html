@@ -1,0 +1,226 @@
+<!-- 🔐 UNIFIED AUTH MODALS 2025 -->
+<!-- Einheitliche Authentifizierungs-Modals für alle Seiten -->
+
+<!-- Login Modal -->
+<div class="auth-modal" id="loginModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Anmelden</h2>
+            <p class="auth-modal-subtitle">Melden Sie sich mit Ihren Anmeldedaten an</p>
+        </div>
+        <form class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="loginEmail">E-Mail</label>
+                <input type="email" id="loginEmail" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="loginPassword">Passwort</label>
+                <input type="password" id="loginPassword" class="form-input" required>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Anmelden</button>
+                <button type="button" class="btn-secondary" onclick="closeLoginModal()">Abbrechen</button>
+            </div>
+            <div class="auth-links">
+                <a href="#" onclick="showSignupModal(); closeLoginModal();">Noch kein Konto? Registrieren</a>
+                <a href="#" onclick="showForgotPasswordModal(); closeLoginModal();">Passwort vergessen?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="auth-modal" id="signupModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeSignupModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Registrieren</h2>
+            <p class="auth-modal-subtitle">Erstellen Sie ein neues Konto</p>
+        </div>
+        <form class="auth-form" id="signupForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="signupFirstName">Vorname</label>
+                    <input type="text" id="signupFirstName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signupLastName">Nachname</label>
+                    <input type="text" id="signupLastName" class="form-input" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="signupEmail">E-Mail</label>
+                <input type="email" id="signupEmail" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="signupPassword">Passwort</label>
+                <input type="password" id="signupPassword" class="form-input" required>
+                <div class="password-requirements">
+                    <small>Mindestens 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen</small>
+                </div>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Registrieren</button>
+                <button type="button" class="btn-secondary" onclick="closeSignupModal()">Abbrechen</button>
+            </div>
+            <div class="auth-links">
+                <a href="#" onclick="showLoginModal(); closeSignupModal();">Bereits ein Konto? Anmelden</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Email Verification Modal -->
+<div class="auth-modal" id="verificationModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeVerificationModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">E-Mail bestätigen</h2>
+            <p class="auth-modal-subtitle">Geben Sie den Bestätigungscode ein, der an <span id="verificationEmail"></span> gesendet wurde</p>
+        </div>
+        <form class="auth-form" id="verificationForm">
+            <div class="form-group">
+                <label class="form-label" for="verificationCode">Bestätigungscode</label>
+                <input type="text" id="verificationCode" class="form-input" required>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Bestätigen</button>
+                <button type="button" class="btn-secondary" onclick="closeVerificationModal()">Abbrechen</button>
+            </div>
+            <div class="auth-links">
+                <a href="#" onclick="resendVerificationCode()">Code erneut senden</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="auth-modal" id="forgotPasswordModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeForgotPasswordModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Passwort vergessen</h2>
+            <p class="auth-modal-subtitle">Geben Sie Ihre E-Mail-Adresse ein, um ein neues Passwort anzufordern</p>
+        </div>
+        <form class="auth-form" id="forgotPasswordForm">
+            <div class="form-group">
+                <label class="form-label" for="forgotEmail">E-Mail</label>
+                <input type="email" id="forgotEmail" class="form-input" required>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Passwort zurücksetzen</button>
+                <button type="button" class="btn-secondary" onclick="closeForgotPasswordModal()">Abbrechen</button>
+            </div>
+            <div class="auth-links">
+                <a href="#" onclick="showLoginModal(); closeForgotPasswordModal();">Zurück zur Anmeldung</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Password Reset Modal -->
+<div class="auth-modal" id="passwordResetModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closePasswordResetModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Neues Passwort setzen</h2>
+            <p class="auth-modal-subtitle">Geben Sie den Code und Ihr neues Passwort für <span id="resetEmail"></span> ein</p>
+        </div>
+        <form class="auth-form" id="passwordResetForm">
+            <div class="form-group">
+                <label class="form-label" for="resetCode">Bestätigungscode</label>
+                <input type="text" id="resetCode" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="newPassword">Neues Passwort</label>
+                <input type="password" id="newPassword" class="form-input" required>
+                <div class="password-requirements">
+                    <small>Mindestens 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen</small>
+                </div>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Passwort setzen</button>
+                <button type="button" class="btn-secondary" onclick="closePasswordResetModal()">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- New Password Modal (für erzwungene Passwort-Änderung) -->
+<div class="auth-modal" id="newPasswordModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeNewPasswordModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Neues Passwort erforderlich</h2>
+            <p class="auth-modal-subtitle">Sie müssen ein neues Passwort setzen</p>
+        </div>
+        <form class="auth-form" id="newPasswordForm">
+            <div class="form-group">
+                <label class="form-label" for="newPasswordRequired">Neues Passwort</label>
+                <input type="password" id="newPasswordRequired" class="form-input" required>
+                <div class="password-requirements">
+                    <small>Mindestens 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen</small>
+                </div>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Passwort setzen</button>
+                <button type="button" class="btn-secondary" onclick="closeNewPasswordModal()">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- User Profile Modal -->
+<div class="auth-modal" id="userProfileModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeUserProfileModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Profil verwalten</h2>
+            <p class="auth-modal-subtitle">Verwalten Sie Ihre Kontoinformationen</p>
+        </div>
+        <div class="user-profile-content">
+            <div class="profile-info">
+                <h3>Kontoinformationen</h3>
+                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>E-Mail:</strong> <span id="profileEmail"></span></p>
+            </div>
+            <div class="profile-actions">
+                <button class="btn-outline" onclick="showChangePasswordModal()">Passwort ändern</button>
+                <button class="btn-danger" onclick="confirmSignOut()">Abmelden</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="auth-modal" id="changePasswordModal" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-modal" onclick="closeChangePasswordModal()">&times;</button>
+        <div class="auth-modal-header">
+            <h2 class="auth-modal-title">Passwort ändern</h2>
+            <p class="auth-modal-subtitle">Geben Sie Ihr aktuelles und neues Passwort ein</p>
+        </div>
+        <form class="auth-form" id="changePasswordForm">
+            <div class="form-group">
+                <label class="form-label" for="currentPassword">Aktuelles Passwort</label>
+                <input type="password" id="currentPassword" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="newPasswordChange">Neues Passwort</label>
+                <input type="password" id="newPasswordChange" class="form-input" required>
+                <div class="password-requirements">
+                    <small>Mindestens 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Passwort bestätigen</label>
+                <input type="password" id="confirmPassword" class="form-input" required>
+            </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Passwort ändern</button>
+                <button type="button" class="btn-secondary" onclick="closeChangePasswordModal()">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</div>

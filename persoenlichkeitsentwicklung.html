@@ -19,6 +19,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -1195,9 +1196,9 @@
 
 <!-- Scripts -->
     
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-<script src="js/aws-auth.js"></script>
-<script src="script.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/unified-auth-manager.js"></script>
+    <script src="script.js"></script>
     <script src="js/ikigai-planner.js"></script>
     
     <!-- Direct Ikigai Navigation Script -->
@@ -1210,11 +1211,72 @@
     // Load auth modals
     async function loadAuthModals() {
         try {
-            const response = await fetch('components/auth-modals.html');
+            const response = await fetch('components/unified-auth-modals.html');
             const html = await response.text();
             document.getElementById('authModalsContainer').innerHTML = html;
+            
+            // Setup form handlers
+            setupAuthFormHandlers();
         } catch (error) {
             console.error('Error loading auth modals:', error);
+        }
+    }
+    
+    function setupAuthFormHandlers() {
+        // Login form
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (window.unifiedAuthManager) {
+                    const result = await window.unifiedAuthManager.login(email, password);
+                    if (result.success) {
+                        closeLoginModal();
+                    }
+                }
+            });
+        }
+        
+        // Signup form
+        const signupForm = document.getElementById('signupForm');
+        if (signupForm) {
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                const firstName = document.getElementById('signupFirstName').value;
+                const lastName = document.getElementById('signupLastName').value;
+                
+                if (window.unifiedAuthManager) {
+                    const result = await window.unifiedAuthManager.register(email, password, firstName, lastName);
+                    if (result.success) {
+                        closeSignupModal();
+                        // Show verification modal
+                        document.getElementById('verificationEmail').textContent = email;
+                        document.getElementById('verificationModal').style.display = 'flex';
+                    }
+                }
+            });
+        }
+        
+        // Verification form
+        const verificationForm = document.getElementById('verificationForm');
+        if (verificationForm) {
+            verificationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('verificationEmail').textContent;
+                const code = document.getElementById('verificationCode').value;
+                
+                if (window.unifiedAuthManager) {
+                    const result = await window.unifiedAuthManager.confirmRegistration(email, code);
+                    if (result.success) {
+                        closeVerificationModal();
+                    }
+                }
+            });
         }
     }
 

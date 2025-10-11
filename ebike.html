@@ -18,404 +18,490 @@
     <!-- Open Graph -->
     <meta property="og:title" content="E-Bike Vermietung - Manuel Weiss">
     <meta property="og:description" content="Premium E-Bikes für Ihre nächste Tour">
+    <meta property="og:image" content="images/ebike/ebike-1.jpg">
     <meta property="og:url" content="https://manuel-weiss.ch/ebike.html">
+    
+    <style>
+        /* Modern E-Bike Styles - Clean & Modern wie Wohnmobil */
+        .ebike-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ebike-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('images/ebike/ebike-1.jpg') center/cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .ebike-hero .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+        
+        .ebike-hero .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .ebike-hero .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+        
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .pricing-package {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .pricing-package:hover {
+            transform: translateY(-5px);
+        }
+        
+        .package-features {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        
+        .package-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .package-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .package-features li i {
+            color: #667eea;
+            width: 20px;
+        }
+        
+        .btn-modern {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .booking-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 4rem 0;
+        }
+        
+        .booking-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .ebike-hero .hero-title {
+                font-size: 3rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ebike-hero .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .ebike-hero .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .booking-form {
+                padding: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Modern Navigation -->
-    <nav class="nav-modern" id="navbar">
-        <div class="container">
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="nav-container">
-                <a href="index.html" class="nav-logo">
-                    <img src="manuel-weiss-photo.svg" alt="MW">
-                    <span>Manuel Weiss</span>
-                </a>
+            <div class="nav-logo">
+                <a href="index.html">Manuel Weiss</a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="bewerbungsmanager.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="wohnmobil.html" class="nav-link">Wohnmobil</a>
+                <a href="fotobox.html" class="nav-link">Fotobox</a>
+                <a href="sup.html" class="nav-link">SUP</a>
+                <a href="ebike.html" class="nav-link active">E-Bikes</a>
                 
-                <ul class="nav-menu" id="navMenu">
-                    <li><a href="index.html#home" class="nav-link">Home</a></li>
-                    <li><a href="index.html#services" class="nav-link">Services</a></li>
-                    <li><a href="index.html#projects" class="nav-link">Projekte</a></li>
-                    <li><a href="index.html#about" class="nav-link">Über mich</a></li>
-                    <li><a href="index.html#contact" class="nav-link">Kontakt</a></li>
-            </ul>
-                
-                <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+                <!-- Unified User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName">Benutzer</span>
+                            <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Anmelden</span>
+                        </button>
+                    </div>
                 </div>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="activity-hero gradient-forest">
+    <section class="ebike-hero">
         <div class="container">
-            <div class="hero-content text-center">
-                <h1 class="display-1 mb-4 fade-in">E-Bike Vermietung</h1>
-                <p class="lead mb-5 fade-in-delay-1">Entdecken Sie die Schweiz mit modernsten E-Bikes</p>
-                <div class="hero-cta fade-in-delay-2">
-                    <a href="#booking" class="btn btn-primary btn-lg">
-                        <i class="fas fa-bicycle"></i>
-                        E-Bike reservieren
-                    </a>
-                    <a href="#bikes" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-info-circle"></i>
-                        Unsere E-Bikes
-                    </a>
-                </div>
+            <div class="hero-content">
+                <h1 class="hero-title">E-Bike Vermietung</h1>
+                <p class="hero-subtitle">Entdecken Sie die Schweiz mit modernster E-Bike Technik</p>
+                <a href="#booking" class="btn-modern">Jetzt buchen</a>
             </div>
-        </div>
-        <div class="hero-waves">
-            <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-                <path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,213.3C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-            </svg>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="section" id="features">
+    <section class="features-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Warum unsere E-Bikes?</h2>
-                <p class="lead">Modernste Technik für maximalen Fahrspass</p>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
+            <h2 class="section-title">Warum unsere E-Bikes?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="fas fa-battery-full"></i>
-                        </div>
-                        <h3>Starke Akkus</h3>
-                        <p>Bis zu 150km Reichweite mit modernsten Lithium-Ionen Akkus</p>
                     </div>
+                    <h3>Lange Reichweite</h3>
+                    <p>Bis zu 120km Reichweite mit einer Akkuladung</p>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="fas fa-cog"></i>
-                        </div>
-                        <h3>Premium Komponenten</h3>
-                        <p>Hochwertige Schaltung, hydraulische Bremsen und gefederte Gabeln</p>
                     </div>
+                    <h3>Moderne Technik</h3>
+                    <p>Neueste Bosch und Shimano Motoren für optimalen Antrieb</p>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Sicherheit</h3>
-                        <p>Helme, Schlösser und Sicherheitswesten inklusive</p>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
+                    <h3>Sicherheit</h3>
+                    <p>Helme und Sicherheitsausrüstung inklusive</p>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-route"></i>
-                        </div>
-                        <h3>Tourenberatung</h3>
-                        <p>Persönliche Empfehlungen für die schönsten Routen</p>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
                     </div>
+                    <h3>Routenempfehlungen</h3>
+                    <p>Die schönsten E-Bike Routen in der Region</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3>Wartung</h3>
+                    <p>Alle E-Bikes werden regelmäßig gewartet und gepflegt</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>GPS Navigation</h3>
+                    <p>Integrierte GPS Navigation für Ihre Touren</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Bikes Section -->
-    <section class="section bg-light" id="bikes">
+    <!-- Gallery Section -->
+    <section class="gallery-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Unsere E-Bike Flotte</h2>
-                <p class="lead">Für jeden Anspruch das passende Bike</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="bike-card">
-                        <div class="bike-header">
-                            <h3>City E-Bike</h3>
-                            <span class="bike-type">Komfort</span>
-                        </div>
-                        <div class="bike-image">
-                            <div class="placeholder-image">
-                                <i class="fas fa-bicycle"></i>
-                            </div>
-                        </div>
-                        <div class="bike-features">
-                            <ul>
-                                <li><i class="fas fa-check"></i> Aufrechte Sitzposition</li>
-                                <li><i class="fas fa-check"></i> Tiefer Einstieg</li>
-                                <li><i class="fas fa-check"></i> Gepäckträger & Korb</li>
-                                <li><i class="fas fa-check"></i> StVZO-Ausstattung</li>
-                        </ul>
-                        </div>
-                        <div class="bike-price">
-                            <span class="from">ab</span>
-                            <span class="amount">CHF 50</span>
-                            <span class="period">/ Tag</span>
-                        </div>
-                    </div>
-                    </div>
-
-                <div class="col-lg-4">
-                    <div class="bike-card featured">
-                        <div class="bike-badge">Beliebt</div>
-                        <div class="bike-header">
-                            <h3>Trekking E-Bike</h3>
-                            <span class="bike-type">Allrounder</span>
-                        </div>
-                        <div class="bike-image">
-                            <div class="placeholder-image">
-                                <i class="fas fa-bicycle"></i>
-                            </div>
-                        </div>
-                        <div class="bike-features">
-                            <ul>
-                                <li><i class="fas fa-check"></i> Sportliche Geometrie</li>
-                                <li><i class="fas fa-check"></i> 21-Gang Schaltung</li>
-                                <li><i class="fas fa-check"></i> Federgabel</li>
-                                <li><i class="fas fa-check"></i> Lange Reichweite</li>
-                        </ul>
-                        </div>
-                        <div class="bike-price">
-                            <span class="from">ab</span>
-                            <span class="amount">CHF 70</span>
-                            <span class="period">/ Tag</span>
-                        </div>
-                    </div>
-                    </div>
-
-                <div class="col-lg-4">
-                    <div class="bike-card">
-                        <div class="bike-header">
-                            <h3>Mountain E-Bike</h3>
-                            <span class="bike-type">Sport</span>
-                        </div>
-                        <div class="bike-image">
-                            <div class="placeholder-image">
-                                <i class="fas fa-bicycle"></i>
-                            </div>
-                        </div>
-                        <div class="bike-features">
-                            <ul>
-                                <li><i class="fas fa-check"></i> Vollgefedert</li>
-                                <li><i class="fas fa-check"></i> Kraftvoller Motor</li>
-                                <li><i class="fas fa-check"></i> Breite Reifen</li>
-                                <li><i class="fas fa-check"></i> Profi-Ausstattung</li>
-                        </ul>
-                        </div>
-                        <div class="bike-price">
-                            <span class="from">ab</span>
-                            <span class="amount">CHF 90</span>
-                            <span class="period">/ Tag</span>
-                        </div>
-                    </div>
+            <h2 class="section-title">Unsere E-Bikes</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-1.jpg" alt="E-Bike Tour">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-2.jpg" alt="E-Bike Gruppe">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-3.jpg" alt="E-Bike Bergtour">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-4.jpg" alt="E-Bike Stadt">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-5.jpg" alt="E-Bike See">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/ebike/ebike-6.jpg" alt="E-Bike Wald">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <section class="section">
+    <section class="pricing-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Flexible Mietoptionen</h2>
-                <p class="lead">Attraktive Preise für jeden Bedarf</p>
-            </div>
-            
-            <div class="pricing-table">
-                <table class="table table-modern">
-                    <thead>
-                        <tr>
-                            <th>Mietdauer</th>
-                            <th>City E-Bike</th>
-                            <th>Trekking E-Bike</th>
-                            <th>Mountain E-Bike</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1 Tag</td>
-                            <td>CHF 50.-</td>
-                            <td>CHF 70.-</td>
-                            <td>CHF 90.-</td>
-                        </tr>
-                        <tr>
-                            <td>2-3 Tage</td>
-                            <td>CHF 45.-/Tag</td>
-                            <td>CHF 65.-/Tag</td>
-                            <td>CHF 85.-/Tag</td>
-                        </tr>
-                        <tr>
-                            <td>4-6 Tage</td>
-                            <td>CHF 40.-/Tag</td>
-                            <td>CHF 60.-/Tag</td>
-                            <td>CHF 80.-/Tag</td>
-                        </tr>
-                        <tr>
-                            <td>1 Woche</td>
-                            <td>CHF 250.-</td>
-                            <td>CHF 380.-</td>
-                            <td>CHF 500.-</td>
-                        </tr>
-                        <tr>
-                            <td>2 Wochen</td>
-                            <td>CHF 450.-</td>
-                            <td>CHF 700.-</td>
-                            <td>CHF 900.-</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="text-center mt-4">
-                    <p class="text-muted">Alle Preise inklusive Helm, Schloss und Pannenhilfe</p>
-                    <p class="text-muted">Kaution: CHF 500.- pro E-Bike</p>
+            <h2 class="section-title">Preise & Pakete</h2>
+            <div class="feature-grid">
+                <div class="pricing-package">
+                    <h3>Halbtagspaket</h3>
+                    <div class="price">45€/4 Stunden</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> Premium E-Bike</li>
+                        <li><i class="fas fa-check"></i> Helm & Sicherheitsausrüstung</li>
+                        <li><i class="fas fa-check"></i> GPS Navigation</li>
+                        <li><i class="fas fa-check"></i> Routenempfehlung</li>
+                        <li><i class="fas fa-check"></i> Akku-Ladung</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
+                </div>
+                <div class="pricing-package">
+                    <h3>Ganztagspaket</h3>
+                    <div class="price">75€/8 Stunden</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> Premium E-Bike</li>
+                        <li><i class="fas fa-check"></i> Helm & Sicherheitsausrüstung</li>
+                        <li><i class="fas fa-check"></i> GPS Navigation</li>
+                        <li><i class="fas fa-check"></i> Routenempfehlung</li>
+                        <li><i class="fas fa-check"></i> Akku-Ladung</li>
+                        <li><i class="fas fa-check"></i> Lunch-Paket</li>
+                        <li><i class="fas fa-check"></i> Ersatzakku</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
+                </div>
+                <div class="pricing-package">
+                    <h3>Wochenendpaket</h3>
+                    <div class="price">120€/Wochenende</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> Premium E-Bike</li>
+                        <li><i class="fas fa-check"></i> Helm & Sicherheitsausrüstung</li>
+                        <li><i class="fas fa-check"></i> GPS Navigation</li>
+                        <li><i class="fas fa-check"></i> Routenempfehlung</li>
+                        <li><i class="fas fa-check"></i> Akku-Ladung</li>
+                        <li><i class="fas fa-check"></i> Lunch-Paket</li>
+                        <li><i class="fas fa-check"></i> Ersatzakku</li>
+                        <li><i class="fas fa-check"></i> Übernachtungsempfehlungen</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Booking Section -->
-    <section class="section bg-primary text-white" id="booking">
+    <section id="booking" class="booking-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">E-Bike reservieren</h2>
-                <p class="lead">Buchen Sie Ihr E-Bike für die nächste Tour</p>
-            </div>
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <form class="booking-form" id="bookingForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="startDate">Von</label>
-                                    <input type="date" class="form-control" id="startDate" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="endDate">Bis</label>
-                                    <input type="date" class="form-control" id="endDate" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="bikeType">E-Bike Typ</label>
-                                    <select class="form-control" id="bikeType" required>
-                                        <option value="">Bitte wählen...</option>
-                                        <option value="city">City E-Bike</option>
-                                        <option value="trekking">Trekking E-Bike</option>
-                                        <option value="mountain">Mountain E-Bike</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="quantity">Anzahl</label>
-                                    <input type="number" class="form-control" id="quantity" min="1" max="4" value="1" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" id="name" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="email">E-Mail</label>
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="phone">Telefon</label>
-                                    <input type="tel" class="form-control" id="phone" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="extras">Extras</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="childSeat">
-                                        <label class="form-check-label" for="childSeat">
-                                            Kindersitz
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="extraBattery">
-                                        <label class="form-check-label" for="extraBattery">
-                                            Zusatzakku
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="message">Nachricht (optional)</label>
-                                    <textarea class="form-control" id="message" rows="3" placeholder="Geplante Route, spezielle Wünsche..."></textarea>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-light btn-lg w-100">
-                                    <i class="fas fa-paper-plane"></i>
-                                    Reservierung anfragen
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Routes Section -->
-    <section class="section">
-        <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Beliebte Touren</h2>
-                <p class="lead">Entdecken Sie die schönsten Routen der Region</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="route-card">
-                        <div class="route-difficulty easy">Leicht</div>
-                        <h3>Zürichsee Rundfahrt</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-route"></i> 90 km</span>
-                            <span><i class="fas fa-clock"></i> 4-5 Std.</span>
-                            <span><i class="fas fa-mountain"></i> 200 hm</span>
-                        </div>
-                        <p>Gemütliche Tour entlang des Zürichsees mit vielen Einkehrmöglichkeiten.</p>
+            <h2 class="section-title">E-Bike buchen</h2>
+            <div class="booking-form">
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-4">
-                    <div class="route-card">
-                        <div class="route-difficulty medium">Mittel</div>
-                        <h3>Uetliberg Trail</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-route"></i> 45 km</span>
-                            <span><i class="fas fa-clock"></i> 3 Std.</span>
-                            <span><i class="fas fa-mountain"></i> 600 hm</span>
-                        </div>
-                        <p>Aussichtsreiche Tour auf den Zürcher Hausberg mit Panoramablick.</p>
+                    <div class="form-group">
+                        <label for="email">E-Mail *</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-4">
-                    <div class="route-card">
-                        <div class="route-difficulty hard">Schwer</div>
-                        <h3>Albis Pass Challenge</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-route"></i> 75 km</span>
-                            <span><i class="fas fa-clock"></i> 5 Std.</span>
-                            <span><i class="fas fa-mountain"></i> 1200 hm</span>
-                        </div>
-                        <p>Anspruchsvolle Tour über den Albispass für sportliche Fahrer.</p>
+                    <div class="form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" id="phone" name="phone">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="rental-date">Mietdatum *</label>
+                        <input type="date" id="rental-date" name="rental-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start-time">Startzeit *</label>
+                        <input type="time" id="start-time" name="start-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Dauer *</label>
+                        <select id="duration" name="duration" required>
+                            <option value="">Dauer wählen</option>
+                            <option value="4">4 Stunden (Halbtag)</option>
+                            <option value="8">8 Stunden (Ganztag)</option>
+                            <option value="weekend">Wochenende</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="participants">Anzahl Personen *</label>
+                        <input type="number" id="participants" name="participants" min="1" max="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Fahrerfahrung</label>
+                        <select id="experience" name="experience">
+                            <option value="beginner">Anfänger</option>
+                            <option value="intermediate">Fortgeschritten</option>
+                            <option value="expert">Experte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="special-requests">Besondere Wünsche</label>
+                        <textarea id="special-requests" name="special-requests" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn-modern">Anfrage senden</button>
+                </form>
             </div>
         </div>
     </section>
@@ -423,76 +509,58 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h4>Manuel Weiss</h4>
-                    <p>Professional Services</p>
-                    <div class="social-links mt-3">
-                        <a href="https://linkedin.com/in/manuel-weiss-526592131" target="_blank" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
-                            <i class="fas fa-envelope"></i>
-                        </a>
-                    </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>Ihr Partner für Persönlichkeitsentwicklung und besondere Erlebnisse</p>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <h5>Weitere Vermietungen</h5>
-                    <ul class="footer-links">
-                        <li><a href="wohnmobil.html">Wohnmobil</a></li>
-                        <li><a href="fotobox.html">Fotobox</a></li>
-                        <li><a href="sup.html">Stand-Up Paddle</a></li>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
+                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
+                        <li><a href="wohnmobil.html">Wohnmobil Vermietung</a></li>
+                        <li><a href="fotobox.html">Fotobox Vermietung</a></li>
+                        <li><a href="sup.html">SUP Vermietung</a></li>
+                        <li><a href="ebike.html">E-Bike Vermietung</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <h5>Kontakt</h5>
-                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
-                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
-                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>E-Mail: info@manuel-weiss.ch</p>
+                    <p>Telefon: +41 79 123 45 67</p>
                 </div>
             </div>
-            <hr class="footer-divider">
-            <div class="text-center">
-                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-gallery.js"></script>
-    <script src="script.js"></script>
+    <script src="js/global-navigation.js"></script>
+    <script src="js/unified-auth-manager.js"></script>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+    
     <script>
-        // Initialize page functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Booking form handling
-            const bookingForm = document.getElementById('bookingForm');
-            if (bookingForm) {
-                bookingForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = {
-                        startDate: document.getElementById('startDate').value,
-                        endDate: document.getElementById('endDate').value,
-                        bikeType: document.getElementById('bikeType').value,
-                        quantity: document.getElementById('quantity').value,
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value,
-                        phone: document.getElementById('phone').value,
-                        childSeat: document.getElementById('childSeat').checked,
-                        extraBattery: document.getElementById('extraBattery').checked,
-                        message: document.getElementById('message').value,
-                        rental: 'E-Bike'
-                    };
-                    
-                    // Show success message
-                    alert('Vielen Dank für Ihre Reservierung! Wir bestätigen Ihre Anfrage innerhalb von 24 Stunden.');
-                    bookingForm.reset();
-                });
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
             }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
         });
     </script>
 </body>
-</html> 
+</html>
