@@ -120,27 +120,17 @@ class GlobalAuthSystem {
     }
     
     setupGlobalEventListeners() {
-        // Robuste Event-Listener für alle Buttons
+        // Simple, robust event listener for all buttons
         document.addEventListener('click', (e) => {
-            const target = e.target;
-            const text = target.textContent || target.innerHTML;
-            const className = target.className || '';
+            const text = e.target.textContent || e.target.innerHTML;
             
-            // Login Button Handler
-            if (text.includes('Anmelden') || text.includes('Login') || 
-                className.includes('nav-login-btn') || className.includes('login-btn')) {
+            if (text.includes('Anmelden') || text.includes('Login')) {
                 e.preventDefault();
                 this.handleGlobalLoginClick();
-            } 
-            // Profile Button Handler
-            else if (text.includes('Profil') || text.includes('Profile') || 
-                     className.includes('nav-profile-btn') || className.includes('profile-btn')) {
+            } else if (text.includes('Profil') || text.includes('Profile')) {
                 e.preventDefault();
                 this.handleGlobalProfileClick();
-            } 
-            // Logout Button Handler
-            else if (text.includes('Abmelden') || text.includes('Logout') || 
-                     className.includes('logout-btn')) {
+            } else if (text.includes('Abmelden') || text.includes('Logout')) {
                 e.preventDefault();
                 this.handleGlobalLogoutClick();
             }
