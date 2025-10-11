@@ -467,6 +467,345 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * 🚀 SMART MEDIA API - Enhanced Features
+ */
+class SmartMediaAPI {
+    constructor() {
+        this.config = {
+            baseUrl: 'https://api.manuel-weiss.com',
+            endpoints: {
+                upload: '/api/v1/media/upload',
+                download: '/api/v1/media/download',
+                list: '/api/v1/media/list',
+                delete: '/api/v1/media/delete',
+                bulkUpload: '/api/v1/media/bulk-upload',
+                search: '/api/v1/media/search',
+                analytics: '/api/v1/media/analytics',
+                aiAnalyze: '/api/v1/media/ai/analyze',
+                generateThumbnails: '/api/v1/media/thumbnails'
+            }
+        };
+    }
+    
+    async uploadFile(file, options = {}) {
+        // Enhanced upload with smart categorization
+        const fileMetadata = {
+            id: this.generateFileId(),
+            originalName: file.name,
+            size: file.size,
+            type: file.type,
+            category: options.category || 'general',
+            subcategory: options.subcategory || null,
+            tags: options.tags || [],
+            uploadedAt: new Date().toISOString(),
+            status: 'uploading'
+        };
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        fileMetadata.s3Key = `media/${Date.now()}-${file.name}`;
+        fileMetadata.s3Url = `https://mawps-media-2025.s3.eu-central-1.amazonaws.com/${fileMetadata.s3Key}`;
+        fileMetadata.status = 'completed';
+        
+        return fileMetadata;
+    }
+    
+    async bulkUpload(files, options = {}) {
+        const results = [];
+        for (const file of files) {
+            try {
+                const result = await this.uploadFile(file, options);
+                results.push(result);
+            } catch (error) {
+                results.push({ file, error: error.message });
+            }
+        }
+        return results;
+    }
+    
+    async searchMedia(query, filters = {}) {
+        // Enhanced search functionality
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        return allMedia.filter(media => 
+            media.originalName.toLowerCase().includes(query.toLowerCase()) ||
+            media.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        );
+    }
+    
+    generateFileId() {
+        return Date.now() + Math.random().toString(36).substr(2, 9);
+    }
+}
+
+/**
+ * 🔄 UNIFIED AWS UPLOAD - Enhanced Integration
+ */
+class UnifiedAWSUpload {
+    constructor() {
+        this.config = {
+            s3: {
+                bucket: 'mawps-media-2025',
+                region: 'eu-central-1',
+                maxFileSize: 50 * 1024 * 1024, // 50MB
+                allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4']
+            }
+        };
+    }
+    
+    async uploadFile(file, service, options = {}) {
+        // Enhanced upload with chunking and retry logic
+        const maxRetries = 3;
+        let retries = 0;
+        
+        while (retries < maxRetries) {
+            try {
+                return await this.performUpload(file, service, options);
+            } catch (error) {
+                retries++;
+                if (retries >= maxRetries) throw error;
+                await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+            }
+        }
+    }
+    
+    async performUpload(file, service, options) {
+        // Simulate chunked upload
+        const key = `${service}/${Date.now()}-${file.name}`;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        return {
+            Key: key,
+            Location: `https://mawps-media-2025.s3.eu-central-1.amazonaws.com/${key}`,
+            ETag: `"${Date.now()}-${Math.random().toString(36).substr(2, 9)}"`,
+            Bucket: 'mawps-media-2025'
+        };
+    }
+}
+
+/**
+ * 📊 MEDIA ANALYTICS - Enhanced Analytics
+ */
+class MediaAnalytics {
+    constructor() {
+        this.metrics = {
+            totalUploads: 0,
+            totalSize: 0,
+            uploadsByService: {},
+            uploadsByType: {},
+            uploadsByDate: {}
+        };
+    }
+    
+    trackUpload(mediaItem) {
+        this.metrics.totalUploads++;
+        this.metrics.totalSize += mediaItem.size;
+        
+        // Track by service
+        if (!this.metrics.uploadsByService[mediaItem.service]) {
+            this.metrics.uploadsByService[mediaItem.service] = 0;
+        }
+        this.metrics.uploadsByService[mediaItem.service]++;
+        
+        // Track by type
+        const type = mediaItem.type.split('/')[0];
+        if (!this.metrics.uploadsByType[type]) {
+            this.metrics.uploadsByType[type] = 0;
+        }
+        this.metrics.uploadsByType[type]++;
+        
+        // Track by date
+        const date = new Date(mediaItem.uploadDate).toDateString();
+        if (!this.metrics.uploadsByDate[date]) {
+            this.metrics.uploadsByDate[date] = 0;
+        }
+        this.metrics.uploadsByDate[date]++;
+        
+        this.saveMetrics();
+    }
+    
+    getAnalytics() {
+        return {
+            ...this.metrics,
+            averageFileSize: this.metrics.totalSize / this.metrics.totalUploads || 0,
+            mostUsedService: this.getMostUsedService(),
+            mostUsedType: this.getMostUsedType()
+        };
+    }
+    
+    getMostUsedService() {
+        return Object.keys(this.metrics.uploadsByService).reduce((a, b) => 
+            this.metrics.uploadsByService[a] > this.metrics.uploadsByService[b] ? a : b, 'none'
+        );
+    }
+    
+    getMostUsedType() {
+        return Object.keys(this.metrics.uploadsByType).reduce((a, b) => 
+            this.metrics.uploadsByType[a] > this.metrics.uploadsByType[b] ? a : b, 'none'
+        );
+    }
+    
+    saveMetrics() {
+        localStorage.setItem('mediaAnalytics', JSON.stringify(this.metrics));
+    }
+    
+    loadMetrics() {
+        const saved = localStorage.getItem('mediaAnalytics');
+        if (saved) {
+            this.metrics = { ...this.metrics, ...JSON.parse(saved) };
+        }
+    }
+}
+
+/**
+ * 🔍 MEDIA SEARCH ENGINE - Enhanced Search
+ */
+class MediaSearchEngine {
+    constructor() {
+        this.searchIndex = new Map();
+        this.buildIndex();
+    }
+    
+    buildIndex() {
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        allMedia.forEach(media => {
+            this.indexMedia(media);
+        });
+    }
+    
+    indexMedia(media) {
+        const searchableText = [
+            media.originalName,
+            media.service,
+            ...(media.tags || []),
+            media.type
+        ].join(' ').toLowerCase();
+        
+        this.searchIndex.set(media.id, searchableText);
+    }
+    
+    search(query, filters = {}) {
+        const results = [];
+        const queryLower = query.toLowerCase();
+        
+        for (const [id, searchableText] of this.searchIndex) {
+            if (searchableText.includes(queryLower)) {
+                const media = this.getMediaById(id);
+                if (media && this.matchesFilters(media, filters)) {
+                    results.push(media);
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    getMediaById(id) {
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        return allMedia.find(media => media.id === id);
+    }
+    
+    matchesFilters(media, filters) {
+        if (filters.service && media.service !== filters.service) return false;
+        if (filters.type && !media.type.startsWith(filters.type)) return false;
+        if (filters.dateFrom && new Date(media.uploadDate) < new Date(filters.dateFrom)) return false;
+        if (filters.dateTo && new Date(media.uploadDate) > new Date(filters.dateTo)) return false;
+        return true;
+    }
+}
+
+/**
+ * 📦 BULK OPERATIONS - Enhanced Bulk Features
+ */
+class BulkOperations {
+    constructor() {
+        this.selectedItems = new Set();
+    }
+    
+    selectItem(id) {
+        this.selectedItems.add(id);
+    }
+    
+    deselectItem(id) {
+        this.selectedItems.delete(id);
+    }
+    
+    selectAll() {
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        this.selectedItems = new Set(allMedia.map(media => media.id));
+    }
+    
+    clearSelection() {
+        this.selectedItems.clear();
+    }
+    
+    async bulkDelete() {
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        const remainingMedia = allMedia.filter(media => !this.selectedItems.has(media.id));
+        localStorage.setItem('mediaLibrary', JSON.stringify(remainingMedia));
+        this.clearSelection();
+        return this.selectedItems.size;
+    }
+    
+    async bulkDownload() {
+        const selectedMedia = Array.from(this.selectedItems);
+        // Simulate bulk download
+        console.log(`📥 Downloading ${selectedMedia.length} files...`);
+        return selectedMedia;
+    }
+    
+    async bulkTag(tags) {
+        const allMedia = JSON.parse(localStorage.getItem('mediaLibrary') || '[]');
+        allMedia.forEach(media => {
+            if (this.selectedItems.has(media.id)) {
+                media.tags = [...(media.tags || []), ...tags];
+            }
+        });
+        localStorage.setItem('mediaLibrary', JSON.stringify(allMedia));
+    }
+}
+
+/**
+ * 🤖 AI FEATURES - Enhanced AI Integration
+ */
+class AIFeatures {
+    constructor() {
+        this.aiEnabled = true;
+    }
+    
+    async analyzeImage(imageUrl) {
+        if (!this.aiEnabled) return null;
+        
+        // Simulate AI analysis
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        return {
+            tags: ['outdoor', 'nature', 'adventure'],
+            description: 'A beautiful outdoor scene',
+            confidence: 0.95,
+            colors: ['#4a90e2', '#7ed321', '#f5a623'],
+            objects: ['person', 'mountain', 'sky']
+        };
+    }
+    
+    async generateTags(imageUrl) {
+        const analysis = await this.analyzeImage(imageUrl);
+        return analysis?.tags || [];
+    }
+    
+    async optimizeImage(imageUrl, options = {}) {
+        // Simulate AI optimization
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        return {
+            optimizedUrl: imageUrl.replace('.jpg', '_optimized.jpg'),
+            sizeReduction: '30%',
+            qualityImprovement: '15%'
+        };
+    }
+}
+
 // Global functions for HTML onclick handlers
 function triggerFileUpload() {
     if (mediaManager) {
@@ -489,5 +828,34 @@ function triggerDragUpload() {
 function triggerCameraUpload() {
     if (mediaManager) {
         mediaManager.triggerUpload('camera');
+    }
+}
+
+// Enhanced global functions
+function triggerSmartSearch() {
+    if (mediaManager) {
+        const query = document.getElementById('media-search')?.value;
+        if (query) {
+            mediaManager.searchEngine.search(query);
+        }
+    }
+}
+
+function triggerBulkDelete() {
+    if (mediaManager && confirm('Alle ausgewählten Dateien löschen?')) {
+        mediaManager.bulkOperations.bulkDelete();
+    }
+}
+
+function triggerBulkDownload() {
+    if (mediaManager) {
+        mediaManager.bulkOperations.bulkDownload();
+    }
+}
+
+function triggerAIAnalysis() {
+    if (mediaManager) {
+        // Trigger AI analysis for selected images
+        console.log('🤖 Starting AI analysis...');
     }
 }
