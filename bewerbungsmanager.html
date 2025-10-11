@@ -1208,40 +1208,17 @@
         function direktWorkflowStarten() {
             console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
             
-            // Use new complete workflow system - FORCE USE
-            console.log('🎯 Checking for Complete Workflow System...');
-            console.log('completeWorkflowSystem available:', !!window.completeWorkflowSystem);
-            
+            // FORCE: Use new complete workflow system
             if (window.completeWorkflowSystem) {
                 console.log('🎯 Using Complete Workflow System - Starting with Step 0');
                 window.completeWorkflowSystem.start();
                 return;
             }
             
-            // Wait for system to load
-            console.log('⏳ Waiting for Complete Workflow System to load...');
-            let attempts = 0;
-            const maxAttempts = 10;
-            
-            const checkAndStart = () => {
-                attempts++;
-                console.log(`🔄 Attempt ${attempts}/${maxAttempts} to load Complete Workflow System...`);
-                
-                if (window.completeWorkflowSystem) {
-                    console.log('🎯 Complete Workflow System loaded, starting with Step 0...');
-                    window.completeWorkflowSystem.start();
-                    return;
-                }
-                
-                if (attempts < maxAttempts) {
-                    setTimeout(checkAndStart, 200);
-                } else {
-                    console.log('❌ Complete Workflow System not available after all attempts');
-                    alert('❌ Workflow-System konnte nicht geladen werden. Bitte Seite neu laden.');
-                }
-            };
-            
-            checkAndStart();
+            // If not available, create it manually
+            console.log('🔧 Creating Complete Workflow System manually...');
+            window.completeWorkflowSystem = new CompleteWorkflowSystem();
+            window.completeWorkflowSystem.start();
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
