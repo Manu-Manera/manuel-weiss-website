@@ -3,13 +3,9 @@
 
 <!-- AWS SDK -->
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-
 <!-- Auth Configuration -->
 <script src="js/unified-auth-config.js"></script>
-<script src="js/real-aws-auth.js"></script>
-<script src="js/global-auth-system.js"></script>
-<script src="js/auth-modals.js"></script>
-
+<script src="js/unified-auth-manager.js"></script>
 <!-- Enhanced Error Handling -->
 <script>
 // Globale Fehlerbehandlung für Auth-Probleme
@@ -27,42 +23,21 @@ window.addEventListener('error', (event) => {
             }
         } else if (message.includes('network') || message.includes('fetch')) {
             console.error('🚨 Network Error detected');
-            if (window.enhancedAuth) {
-                window.enhancedAuth.showNotification(
                     'Netzwerk-Fehler: Bitte Internetverbindung prüfen', 
-                    'error'
-                );
-            }
         } else if (message.includes('token') || message.includes('auth')) {
             console.error('🚨 Auth Error detected');
-            if (window.enhancedAuth) {
-                window.enhancedAuth.showNotification(
                     'Authentifizierungs-Fehler: Bitte erneut anmelden', 
-                    'error'
-                );
-            }
         }
     }
 });
-
 // Unhandled Promise Rejections
 window.addEventListener('unhandledrejection', (event) => {
     console.error('🚨 Unhandled Promise Rejection:', event.reason);
     
     if (event.reason && event.reason.message) {
         const message = event.reason.message.toLowerCase();
-        
         if (message.includes('cors') || message.includes('network') || message.includes('auth')) {
-            if (window.enhancedAuth) {
-                window.enhancedAuth.showNotification(
                     'System-Fehler: Bitte Seite neu laden', 
-                    'error'
-                );
-            }
-        }
-    }
-});
-
 // Debug Information
 console.log('🔧 Auth System Status:', {
     enhancedAuth: !!window.enhancedAuth,
@@ -70,11 +45,8 @@ console.log('🔧 Auth System Status:', {
     globalAuth: !!window.globalAuth,
     authModals: !!window.authModals,
     awsSDK: typeof AWS !== 'undefined'
-});
 </script>
-
 <!-- Auth Status Debug Panel (nur in Development) -->
-<script>
 // Debug Panel für Development
 if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
     const debugPanel = document.createElement('div');
@@ -91,11 +63,9 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
         z-index: 10000;
         max-width: 300px;
     `;
-    
     const updateDebugInfo = () => {
         const isLoggedIn = window.enhancedAuth ? window.enhancedAuth.isLoggedIn() : false;
         const user = window.enhancedAuth ? window.enhancedAuth.getCurrentUser() : null;
-        
         debugPanel.innerHTML = `
             <div><strong>Auth Debug Panel</strong></div>
             <div>Status: ${isLoggedIn ? '✅ Angemeldet' : '❌ Nicht angemeldet'}</div>
@@ -105,11 +75,26 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
             <div>AWS SDK: ${typeof AWS !== 'undefined' ? '✅' : '❌'}</div>
         `;
     };
-    
     document.body.appendChild(debugPanel);
     updateDebugInfo();
-    
     // Update alle 5 Sekunden
     setInterval(updateDebugInfo, 5000);
 }
-</script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -9,20 +9,18 @@
     <meta name="description" data-translate="ikigai.subtitle" content="Discover what you love, what you're good at, what you can be paid for, and what the world needs">
     <meta name="keywords" content="ikigai, life purpose, personal development, career guidance, life coaching">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="Ikigai - Find Your Life Purpose">
     <meta property="og:description" content="Discover what you love, what you're good at, what you can be paid for, and what the world needs">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app/ikigai.html">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="manuel-weiss-photo.svg">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Header -->
@@ -41,30 +39,19 @@
                         <li class="nav-item">
                             <a href="index.html" data-translate="nav.home">Home</a>
                         </li>
-                        <li class="nav-item">
                             <a href="persoenlichkeitsentwicklung.html" data-translate="nav.personality">Personality Development</a>
-                        </li>
                         <li class="nav-item active">
                             <a href="ikigai.html" data-translate="nav.ikigai">Ikigai Planner</a>
-                        </li>
-                        <li class="nav-item">
                             <a href="ernaehrungsberatung.html" data-translate="nav.nutrition">Nutrition Consulting</a>
-                        </li>
-                        <li class="nav-item">
                             <a href="personal-training.html" data-translate="nav.training">Personal Training</a>
-                        </li>
-                        <li class="nav-item">
                             <a href="beraterprofil.html" data-translate="nav.coaching">Personal Coaching</a>
-                        </li>
                     </ul>
                 </nav>
-                
                 <div class="header-actions">
                     <button class="btn btn-outline" onclick="window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN()">
                         <i class="fas fa-play"></i>
                         <span data-translate="ikigai.start_workflow">Start Ikigai Workflow</span>
                     </button>
-                </div>
             </div>
         </div>
     </header>
@@ -87,18 +74,12 @@
                             <span>Learn More</span>
                         </a>
                     </div>
-                </div>
-            </div>
         </section>
-
         <!-- About Ikigai Section -->
         <section id="about-ikigai" class="about-ikigai">
-            <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">What is Ikigai?</h2>
                     <p class="section-subtitle">The Japanese concept of finding your reason for being</p>
-                </div>
-                
                 <div class="ikigai-diagram">
                     <div class="ikigai-circle">
                         <div class="ikigai-center">
@@ -109,168 +90,107 @@
                         <div class="ikigai-quadrant top-left">
                             <h4 data-translate="ikigai.what_you_love">What You Love</h4>
                             <p>Your passions and interests</p>
-                        </div>
-                        
                         <div class="ikigai-quadrant top-right">
                             <h4 data-translate="ikigai.what_you_good_at">What You're Good At</h4>
                             <p>Your skills and talents</p>
-                        </div>
-                        
                         <div class="ikigai-quadrant bottom-left">
                             <h4 data-translate="ikigai.what_world_needs">What the World Needs</h4>
                             <p>Problems you want to solve</p>
-                        </div>
-                        
                         <div class="ikigai-quadrant bottom-right">
                             <h4 data-translate="ikigai.what_you_paid_for">What You Can Be Paid For</h4>
                             <p>Your professional opportunities</p>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="ikigai-benefits">
                     <div class="benefit-card">
                         <i class="fas fa-heart"></i>
                         <h3>Find Your Passion</h3>
                         <p>Discover what truly motivates and energizes you</p>
-                    </div>
                     
-                    <div class="benefit-card">
                         <i class="fas fa-star"></i>
                         <h3>Leverage Your Strengths</h3>
                         <p>Use your natural talents and developed skills</p>
-                    </div>
-                    
-                    <div class="benefit-card">
                         <i class="fas fa-globe"></i>
                         <h3>Make a Difference</h3>
                         <p>Contribute to something larger than yourself</p>
-                    </div>
-                    
-                    <div class="benefit-card">
                         <i class="fas fa-dollar-sign"></i>
                         <h3>Build Your Career</h3>
                         <p>Create sustainable professional opportunities</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- How It Works Section -->
         <section class="how-it-works">
-            <div class="container">
-                <div class="section-header">
                     <h2 class="section-title">How It Works</h2>
                     <p class="section-subtitle">A simple 5-step process to discover your Ikigai</p>
-                </div>
-                
                 <div class="steps">
                     <div class="step">
                         <div class="step-number">1</div>
                         <div class="step-content">
                             <h3 data-translate="ikigai.step1_title">Step 1: What You Love</h3>
                             <p data-translate="ikigai.step1_description">Think about the things that truly bring you joy and fulfillment</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
                         <div class="step-number">2</div>
-                        <div class="step-content">
                             <h3 data-translate="ikigai.step2_title">Step 2: What You're Good At</h3>
                             <p data-translate="ikigai.step2_description">Identify your strengths, skills, and natural talents</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
                         <div class="step-number">3</div>
-                        <div class="step-content">
                             <h3 data-translate="ikigai.step3_title">Step 3: What the World Needs</h3>
                             <p data-translate="ikigai.step3_description">Consider how you can make a positive contribution to the world</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
                         <div class="step-number">4</div>
-                        <div class="step-content">
                             <h3 data-translate="ikigai.step4_title">Step 4: What You Can Be Paid For</h3>
                             <p data-translate="ikigai.step4_description">Identify your professional opportunities and market value</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
                         <div class="step-number">5</div>
-                        <div class="step-content">
                             <h3 data-translate="ikigai.step5_title">Step 5: Your Ikigai</h3>
                             <p data-translate="ikigai.step5_description">Find the intersection of all four areas</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- CTA Section -->
         <section class="cta">
-            <div class="container">
                 <div class="cta-content">
                     <h2>Ready to Discover Your Ikigai?</h2>
                     <p>Start your journey to finding your life purpose today</p>
                     <button class="btn btn-primary btn-large" onclick="window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN()">
                         <i class="fas fa-compass"></i>
-                        <span data-translate="ikigai.start_workflow">Start Ikigai Workflow</span>
-                    </button>
-                </div>
-            </div>
-        </section>
     </main>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>HR Consultant for AI & Transformation</p>
-                </div>
-                
-                <div class="footer-section">
                     <h4>Services</h4>
                     <ul>
                         <li><a href="persoenlichkeitsentwicklung.html">Personality Development</a></li>
                         <li><a href="ikigai.html">Ikigai Planner</a></li>
                         <li><a href="ernaehrungsberatung.html">Nutrition Consulting</a></li>
                         <li><a href="personal-training.html">Personal Training</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
                     <h4>Contact</h4>
                     <p>Email: info@manuel-weiss.com</p>
                     <p>Phone: +49 123 456 789</p>
-                </div>
-            </div>
             
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. All rights reserved.</p>
-            </div>
-        </div>
     </footer>
-
     <!-- Translation Manager -->
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
-
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/aws-config.js"></script>
-    <script src="js/real-aws-auth.js"></script>
-    <script src="js/global-auth-system.js"></script>
+    <script src="js/unified-auth-manager.js"></script>
 <script src="js/translation-manager.js"></script>
-    
     <!-- Ikigai Workflow -->
     <script src="js/ikigai-workflow-en.js"></script>
-    
     <!-- Main Script -->
     <script src="script.js"></script>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

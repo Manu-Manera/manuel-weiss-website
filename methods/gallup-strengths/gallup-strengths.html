@@ -6,6 +6,7 @@
     <title>Gallup StrengthsFinder Assessment</title>
     <link rel="stylesheet" href="../../css/ikigai-planner.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <div class="workflow-header">
@@ -23,27 +24,21 @@
             <div class="progress-step" data-step="2">
                 <div class="step-number">2</div>
                 <div class="step-title">Assessment</div>
-            </div>
             <div class="progress-step" data-step="3">
                 <div class="step-number">3</div>
                 <div class="step-title">Auswertung</div>
-            </div>
             <div class="progress-step" data-step="4">
                 <div class="step-number">4</div>
                 <div class="step-title">Top 5 Talente</div>
-            </div>
             <div class="progress-step" data-step="5">
                 <div class="step-number">5</div>
                 <div class="step-title">Entwicklungsplan</div>
-            </div>
             <div class="progress-step" data-step="6">
                 <div class="step-number">6</div>
                 <div class="step-title">Anwendung</div>
-            </div>
             <div class="progress-step" data-step="7">
                 <div class="step-number">7</div>
                 <div class="step-title">Ergebnisse</div>
-            </div>
         </div>
 
         <!-- Workflow Content -->
@@ -54,7 +49,6 @@
                     <h3>Gallup StrengthsFinder Assessment</h3>
                     <p>Entdecke deine natürlichen Talente und lerne, sie optimal einzusetzen</p>
                 </div>
-
                 <div class="assessment-intro">
                     <div class="intro-content">
                         <h4>Was ist der Gallup StrengthsFinder?</h4>
@@ -70,7 +64,6 @@
                                 <li><strong>Team-Integration</strong> - Wie du deine Talente in Teams einbringst</li>
                             </ul>
                         </div>
-
                         <div class="assessment-structure">
                             <h5>Assessment-Struktur:</h5>
                             <div class="structure-grid">
@@ -79,27 +72,18 @@
                                     <h6>Dauer</h6>
                                     <p>30-45 Minuten</p>
                                 </div>
-                                <div class="structure-item">
                                     <i class="fas fa-question-circle"></i>
                                     <h6>Fragen</h6>
                                     <p>177 Forced-Choice Paare</p>
-                                </div>
-                                <div class="structure-item">
                                     <i class="fas fa-star"></i>
                                     <h6>Talente</h6>
                                     <p>34 Talent-Themen</p>
-                                </div>
-                                <div class="structure-item">
                                     <i class="fas fa-trophy"></i>
                                     <h6>Ergebnis</h6>
                                     <p>Top 5 Talente</p>
-                                </div>
                             </div>
-                        </div>
-
                         <div class="preparation-tips">
                             <h5>Vorbereitung für das Assessment:</h5>
-                            <ul>
                                 <li>Wähle eine ruhige Umgebung ohne Ablenkungen</li>
                                 <li>Antworte spontan - es gibt keine richtigen oder falschen Antworten</li>
                                 <li>Denke an Situationen, in denen du dich natürlich verhältst</li>
@@ -107,127 +91,69 @@
                                 <li>Du hast 20 Sekunden pro Frage - antworte intuitiv und schnell</li>
                                 <li>Jede Frage ist ein Forced-Choice Paar - wähle die bessere Beschreibung</li>
                                 <li>Das Assessment dauert 30-45 Minuten - plane genügend Zeit ein</li>
-                            </ul>
-                        </div>
                     </div>
-                </div>
-            </div>
-
             <!-- Step 2: Assessment Questions -->
             <div class="workflow-step" data-step="2">
-                <div class="step-header">
-                    <h3>Gallup StrengthsFinder Assessment</h3>
                     <p>Beantworte die folgenden Fragen spontan und ehrlich</p>
-                </div>
-
                 <div class="assessment-questions">
                     <div class="question-progress">
                         <div class="progress-bar">
                             <div class="progress-fill" id="question-progress"></div>
-                        </div>
                         <div class="question-timer">
                             <span id="timer-display">20</span>s
-                        </div>
-                    </div>
-
                     <div class="question-container" id="question-container">
                         <!-- Questions will be loaded dynamically -->
-                    </div>
-
                     <div class="question-navigation">
                         <button class="btn btn-secondary" id="prev-question" style="display: none;">
                             <i class="fas fa-arrow-left"></i> Zurück
                         </button>
                         <div class="question-counter">
                             <span class="progress-text">Frage <span id="current-question">1</span> von <span id="total-questions">177</span></span>
-                        </div>
                         <button class="btn btn-primary" id="next-question">
                             Weiter <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <!-- Step 3: Results Analysis -->
             <div class="workflow-step" data-step="3">
-                <div class="step-header">
                     <h3>Deine Talent-Auswertung</h3>
                     <p>Analyse deiner 34 Talente und Identifikation deiner Top 5</p>
-                </div>
-
                 <div class="results-analysis">
                     <div class="talent-overview">
                         <h4>Deine Talent-Landkarte</h4>
                         <p>Hier siehst du alle 34 Talente mit deinen Bewertungen:</p>
-                        
                         <div class="talent-categories">
                             <div class="talent-category">
                                 <h5>Exekutiv-Talente</h5>
                                 <div class="talent-list" id="executing-talents">
                                     <!-- Executing talents will be populated -->
-                                </div>
-                            </div>
-                            <div class="talent-category">
                                 <h5>Einfluss-Talente</h5>
                                 <div class="talent-list" id="influencing-talents">
                                     <!-- Influencing talents will be populated -->
-                                </div>
-                            </div>
-                            <div class="talent-category">
                                 <h5>Beziehungs-Talente</h5>
                                 <div class="talent-list" id="relationship-talents">
                                     <!-- Relationship talents will be populated -->
-                                </div>
-                            </div>
-                            <div class="talent-category">
                                 <h5>Strategische Denk-Talente</h5>
                                 <div class="talent-list" id="thinking-talents">
                                     <!-- Thinking talents will be populated -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="top-talents-preview">
                         <h4>Deine Top 5 Talente</h4>
                         <div class="top-talents-list" id="top-talents-preview">
                             <!-- Top 5 talents will be populated -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Step 4: Top 5 Talents Deep Dive -->
             <div class="workflow-step" data-step="4">
-                <div class="step-header">
                     <h3>Deine Top 5 Talente im Detail</h3>
                     <p>Lerne deine stärksten Talente kennen und verstehe, wie du sie nutzen kannst</p>
-                </div>
-
                 <div class="top-talents-detail">
                     <div class="talent-detail-container" id="talent-detail-container">
                         <!-- Individual talent details will be populated -->
-                    </div>
-                </div>
-            </div>
-
             <!-- Step 5: Development Plan -->
             <div class="workflow-step" data-step="5">
-                <div class="step-header">
                     <h3>Dein Talent-Entwicklungsplan</h3>
                     <p>Konkrete Schritte zur Stärkung und Anwendung deiner Talente</p>
-                </div>
-
                 <div class="development-plan">
                     <div class="plan-sections">
                         <div class="plan-section">
                             <h4>Stärkung deiner Top 5 Talente</h4>
                             <div class="strengthening-plan" id="strengthening-plan">
                                 <!-- Strengthening plan will be populated -->
-                            </div>
-                        </div>
-
-                        <div class="plan-section">
                             <h4>Anwendung in verschiedenen Lebensbereichen</h4>
                             <div class="application-areas">
                                 <div class="application-area">
@@ -235,83 +161,42 @@
                                     <div class="career-applications" id="career-applications">
                                         <!-- Career applications will be populated -->
                                     </div>
-                                </div>
-                                <div class="application-area">
                                     <h5>Beziehungen & Familie</h5>
                                     <div class="relationship-applications" id="relationship-applications">
                                         <!-- Relationship applications will be populated -->
-                                    </div>
-                                </div>
-                                <div class="application-area">
                                     <h5>Persönliche Entwicklung</h5>
                                     <div class="personal-applications" id="personal-applications">
                                         <!-- Personal applications will be populated -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="plan-section">
                             <h4>Team-Integration</h4>
                             <div class="team-integration">
                                 <p>Wie du deine Talente optimal in Teams einbringst:</p>
                                 <div class="team-roles" id="team-roles">
                                     <!-- Team roles will be populated -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Step 6: Practical Application -->
             <div class="workflow-step" data-step="6">
-                <div class="step-header">
                     <h3>Praktische Anwendung</h3>
                     <p>Konkrete Übungen und Strategien für den Alltag</p>
-                </div>
-
                 <div class="practical-application">
                     <div class="application-exercises">
                         <div class="exercise-category">
                             <h4>Täglich anwendbare Strategien</h4>
                             <div class="daily-strategies" id="daily-strategies">
                                 <!-- Daily strategies will be populated -->
-                            </div>
-                        </div>
-
-                        <div class="exercise-category">
                             <h4>Wöchentliche Reflexionsübungen</h4>
                             <div class="weekly-exercises" id="weekly-exercises">
                                 <!-- Weekly exercises will be populated -->
-                            </div>
-                        </div>
-
-                        <div class="exercise-category">
                             <h4>Langfristige Entwicklungsziele</h4>
                             <div class="long-term-goals" id="long-term-goals">
                                 <!-- Long-term goals will be populated -->
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="challenge-areas">
                         <h4>Herausforderungen meistern</h4>
                         <p>Jedes Talent hat auch Schattenseiten. Lerne, wie du mit den Herausforderungen deiner Talente umgehst:</p>
                         <div class="challenges-list" id="challenges-list">
                             <!-- Challenges will be populated -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Step 7: Final Results & Export -->
             <div class="workflow-step" data-step="7">
-                <div class="step-header">
                     <h3>Dein Gallup StrengthsFinder Profil</h3>
                     <p>Zusammenfassung deiner Ergebnisse und nächste Schritte</p>
-                </div>
-
                 <div class="final-results">
                     <div class="results-summary">
                         <h4>Zusammenfassung deiner Talente</h4>
@@ -320,24 +205,13 @@
                                 <h5>Deine Top 5 Talente</h5>
                                 <div class="top-5-summary" id="top-5-summary">
                                     <!-- Top 5 summary will be populated -->
-                                </div>
-                            </div>
-                            <div class="summary-item">
                                 <h5>Talent-Kategorien</h5>
                                 <div class="category-summary" id="category-summary">
                                     <!-- Category summary will be populated -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="next-steps">
                         <h4>Deine nächsten Schritte</h4>
                         <div class="action-plan" id="action-plan">
                             <!-- Action plan will be populated -->
-                        </div>
-                    </div>
-
                     <div class="export-options">
                         <h4>Ergebnisse exportieren</h4>
                         <div class="export-buttons">
@@ -346,16 +220,8 @@
                             </button>
                             <button class="btn btn-outline" data-action="export-results" data-param="csv">
                                 <i class="fas fa-file-csv"></i> CSV Export
-                            </button>
                             <button class="btn btn-outline" data-action="export-results" data-param="json">
                                 <i class="fas fa-file-code"></i> JSON Export
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Navigation -->
         <div class="workflow-navigation">
             <div class="nav-buttons">
@@ -364,20 +230,32 @@
                 </button>
                 <button class="btn btn-primary" id="next-step">
                     Weiter <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
             <div class="progress-info">
                 <span id="step-info">Schritt 1 von 7</span>
-            </div>
-        </div>
-    </div>
-
     <script src="gallup-strengths.js"></script>
-
     <!-- Global Auth System -->
     <script src="../../js/aws-config.js"></script>
-    <script src="../../js/real-aws-auth.js"></script>
-    <script src="../../js/global-auth-system.js"></script>
+    <script src="../../js/unified-auth-manager.js"></script>
     
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

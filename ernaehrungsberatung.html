@@ -9,21 +9,19 @@
     <meta name="description" content="Professionelle Ernährungsberatung mit KI-gestützten Ernährungsplänen. Personalisierte Rezepte, Kalender-Integration und Einkaufslisten-Automatisierung.">
     <meta name="keywords" content="Ernährungsberatung, Ernährungsplan, KI, Rezepte, Kalender, Gesundheit, Fitness">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="Ernährungsberatung - Manuel Weiss">
     <meta property="og:description" content="Professionelle Ernährungsberatung mit KI-gestützten Ernährungsplänen">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app/ernaehrungsberatung.html">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/nutrition-planner.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -39,13 +37,8 @@
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -64,7 +57,6 @@
                     <a href="#nutrition-planner" class="btn btn-primary">Ernährungsplan erstellen</a>
                     <a href="#features" class="btn btn-outline">Features entdecken</a>
                 </div>
-            </div>
             <div class="hero-visual">
                 <div class="nutrition-visual">
                     <div class="nutrition-icon">
@@ -75,20 +67,11 @@
                             <span class="stat-number">AI</span>
                             <span class="stat-label">KI-gestützt</span>
                         </div>
-                        <div class="stat-item">
                             <span class="stat-number">📅</span>
                             <span class="stat-label">Kalender-Integration</span>
-                        </div>
-                        <div class="stat-item">
                             <span class="stat-number">🛒</span>
                             <span class="stat-label">Einkaufslisten</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
@@ -96,71 +79,32 @@
                 <h2 class="section-title">Warum unsere Ernährungsberatung?</h2>
                 <p class="section-subtitle">
                     Moderne Technologie trifft auf professionelle Ernährungsberatung
-                </p>
-            </div>
-            
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
-                    </div>
                     <h3>KI-gestützte Planung</h3>
                     <p>Unsere künstliche Intelligenz analysiert deine Ziele, Präferenzen und körperlichen Daten, um den perfekten Ernährungsplan zu erstellen.</p>
-                </div>
                 
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-calendar-alt"></i>
-                    </div>
                     <h3>Kalender-Integration</h3>
                     <p>Automatische Integration in Apple Calendar, Google Calendar oder als ICS-Datei. Deine Mahlzeiten werden direkt in deinen Terminkalender eingetragen.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-shopping-cart"></i>
-                    </div>
                     <h3>Einkaufslisten-Automatisierung</h3>
                     <p>Automatisch generierte Einkaufslisten basierend auf deinem Ernährungsplan. Nie wieder vergessen, was du einkaufen musst.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-user-md"></i>
-                    </div>
                     <h3>Personalisierte Rezepte</h3>
                     <p>Rezepte werden individuell auf deine Ziele, Allergien und Präferenzen angepasst. Von Muskelaufbau bis zur Gewichtsreduktion.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
-                    </div>
                     <h3>Nährstoff-Tracking</h3>
                     <p>Detaillierte Übersicht über Kalorien, Makronährstoffe und Mikronährstoffe. Verfolge deine Fortschritte und optimiere deine Ernährung.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-mobile-alt"></i>
-                    </div>
                     <h3>Mobile Optimierung</h3>
                     <p>Vollständig responsive und mobile-optimiert. Erstelle und verwalte deine Ernährungspläne von überall aus.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Nutrition Planner Section -->
     <section id="nutrition-planner" class="nutrition-planner">
-        <div class="container">
-            <div class="section-header">
                 <h2 class="section-title">Intelligenter Ernährungsplan-Generator</h2>
-                <p class="section-subtitle">
                     KI-gestützte Ernährungsplanung für deine persönlichen Ziele
-                </p>
-            </div>
-            
             <div class="nutrition-planner-app">
                 <!-- Wizard Steps -->
                 <div class="wizard-container">
@@ -168,24 +112,18 @@
                         <div class="step active" data-step="1">
                             <div class="step-number">1</div>
                             <div class="step-title">Ziele & Präferenzen</div>
-                        </div>
                         <div class="step" data-step="2">
                             <div class="step-number">2</div>
                             <div class="step-title">Körperliche Daten</div>
-                        </div>
                         <div class="step" data-step="3">
                             <div class="step-number">3</div>
                             <div class="step-title">Zeitliche Verfügbarkeit</div>
-                        </div>
                         <div class="step" data-step="4">
                             <div class="step-number">4</div>
                             <div class="step-title">AI-Generierung</div>
-                        </div>
                         <div class="step" data-step="5">
                             <div class="step-number">5</div>
                             <div class="step-title">Anpassung & Export</div>
-                        </div>
-                    </div>
                     
                     <!-- Step Content -->
                     <div class="wizard-content">
@@ -199,24 +137,18 @@
                                     <div class="goal-title">Muskelaufbau</div>
                                     <div class="goal-description">Mehr Protein, gezielte Nährstoffe</div>
                                 </label>
-                                <label class="goal-card">
                                     <input type="radio" name="goal" value="weight-loss">
                                     <div class="goal-icon">🔥</div>
                                     <div class="goal-title">Abnehmen</div>
                                     <div class="goal-description">Kaloriendefizit, gesunde Fette</div>
-                                </label>
-                                <label class="goal-card">
                                     <input type="radio" name="goal" value="endurance">
                                     <div class="goal-icon">🏃</div>
                                     <div class="goal-title">Ausdauer</div>
                                     <div class="goal-description">Kohlenhydrate, Elektrolyte</div>
-                                </label>
-                                <label class="goal-card">
                                     <input type="radio" name="goal" value="health">
                                     <div class="goal-icon">❤️</div>
                                     <div class="goal-title">Gesundheit</div>
                                     <div class="goal-description">Ausgewogene Ernährung</div>
-                                </label>
                             </div>
                             
                             <div class="preferences-section">
@@ -226,29 +158,17 @@
                                         <input type="checkbox" name="preferences" value="vegetarian">
                                         <span>Vegetarisch</span>
                                     </label>
-                                    <label class="preference-item">
                                         <input type="checkbox" name="preferences" value="vegan">
                                         <span>Vegan</span>
-                                    </label>
-                                    <label class="preference-item">
                                         <input type="checkbox" name="preferences" value="gluten-free">
                                         <span>Glutenfrei</span>
-                                    </label>
-                                    <label class="preference-item">
                                         <input type="checkbox" name="preferences" value="lactose-free">
                                         <span>Laktosefrei</span>
-                                    </label>
-                                    <label class="preference-item">
                                         <input type="checkbox" name="preferences" value="low-carb">
                                         <span>Low-Carb</span>
-                                    </label>
-                                    <label class="preference-item">
                                         <input type="checkbox" name="preferences" value="keto">
                                         <span>Keto</span>
-                                    </label>
                                 </div>
-                            </div>
-                        </div>
                         
                         <!-- Step 2: Physical Data -->
                         <div class="step-content" data-step="2">
@@ -259,18 +179,11 @@
                                         <label for="age">Alter</label>
                                         <input type="number" id="age" name="age" min="16" max="100" placeholder="25">
                                     </div>
-                                    <div class="form-group">
                                         <label for="weight">Gewicht (kg)</label>
                                         <input type="number" id="weight" name="weight" min="30" max="200" step="0.1" placeholder="70">
-                                    </div>
-                                    <div class="form-group">
                                         <label for="height">Größe (cm)</label>
                                         <input type="number" id="height" name="height" min="120" max="220" placeholder="175">
-                                    </div>
-                                </div>
                                 
-                                <div class="form-row">
-                                    <div class="form-group">
                                         <label for="activity-level">Aktivitätslevel</label>
                                         <select id="activity-level" name="activity-level">
                                             <option value="sedentary">Sitzend (wenig Bewegung)</option>
@@ -279,24 +192,14 @@
                                             <option value="active">Sehr aktiv (6-7x Sport/Woche)</option>
                                             <option value="very-active">Extrem aktiv (2x täglich Sport)</option>
                                         </select>
-                                    </div>
-                                    <div class="form-group">
                                         <label for="gender">Geschlecht</label>
                                         <select id="gender" name="gender">
                                             <option value="male">Männlich</option>
                                             <option value="female">Weiblich</option>
                                             <option value="other">Andere</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
                                 <div class="allergies-section">
                                     <h4>Allergien & Unverträglichkeiten</h4>
                                     <textarea id="allergies" name="allergies" placeholder="z.B. Nüsse, Meeresfrüchte, etc. (optional)"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Step 3: Time Availability -->
                         <div class="step-content" data-step="3">
                             <h3>Deine zeitliche Verfügbarkeit</h3>
@@ -308,45 +211,25 @@
                                             <input type="radio" name="meals-per-day" value="3">
                                             <span>3 Mahlzeiten (Frühstück, Mittag, Abend)</span>
                                         </label>
-                                        <label class="meal-option">
                                             <input type="radio" name="meals-per-day" value="4">
                                             <span>4 Mahlzeiten (+ Snack)</span>
-                                        </label>
-                                        <label class="meal-option">
                                             <input type="radio" name="meals-per-day" value="5">
                                             <span>5 Mahlzeiten (+ 2 Snacks)</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
                                 <div class="cooking-time">
                                     <h4>Verfügbare Kochzeit</h4>
                                     <div class="time-options">
                                         <label class="time-option">
                                             <input type="radio" name="cooking-time" value="15">
                                             <span>15 Minuten</span>
-                                        </label>
-                                        <label class="time-option">
                                             <input type="radio" name="cooking-time" value="30">
                                             <span>30 Minuten</span>
-                                        </label>
-                                        <label class="time-option">
                                             <input type="radio" name="cooking-time" value="60">
                                             <span>60+ Minuten</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
                                 <div class="meal-prep">
                                     <h4>Meal Prep</h4>
                                     <label class="meal-prep-option">
                                         <input type="checkbox" name="meal-prep" value="yes">
                                         <span>Ich möchte am Wochenende vorkochen</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Step 4: AI Generation -->
                         <div class="step-content" data-step="4">
                             <h3>AI-Generierung läuft...</h3>
@@ -354,27 +237,15 @@
                                 <div class="ai-progress">
                                     <div class="progress-bar">
                                         <div class="progress-fill"></div>
-                                    </div>
                                     <div class="progress-text">Erstelle deinen personalisierten Ernährungsplan...</div>
-                                </div>
-                                
                                 <div class="ai-steps">
                                     <div class="ai-step">
                                         <div class="ai-step-icon">🧠</div>
                                         <div class="ai-step-text">Analysiere deine Daten</div>
-                                    </div>
-                                    <div class="ai-step">
                                         <div class="ai-step-icon">🍽️</div>
                                         <div class="ai-step-text">Generiere Rezepte</div>
-                                    </div>
-                                    <div class="ai-step">
                                         <div class="ai-step-icon">📅</div>
                                         <div class="ai-step-text">Erstelle Kalender-Einträge</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Step 5: Review & Export -->
                         <div class="step-content" data-step="5">
                             <h3>Dein Ernährungsplan ist fertig!</h3>
@@ -387,36 +258,19 @@
                                                 <span class="nutrient-label">Kalorien:</span>
                                                 <span class="nutrient-value" id="total-calories">-</span>
                                             </div>
-                                            <div class="nutrient-item">
                                                 <span class="nutrient-label">Protein:</span>
                                                 <span class="nutrient-value" id="total-protein">-</span>
-                                            </div>
-                                            <div class="nutrient-item">
                                                 <span class="nutrient-label">Kohlenhydrate:</span>
                                                 <span class="nutrient-value" id="total-carbs">-</span>
-                                            </div>
-                                            <div class="nutrient-item">
                                                 <span class="nutrient-label">Fette:</span>
                                                 <span class="nutrient-value" id="total-fats">-</span>
-                                            </div>
                                         </div>
-                                    </div>
                                     
-                                    <div class="summary-card">
                                         <h4>📅 Wochenplan</h4>
                                         <div class="week-overview" id="week-overview">
                                             <!-- Wird dynamisch gefüllt -->
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="summary-card">
                                         <h4>🛒 Einkaufsliste</h4>
                                         <div class="shopping-list" id="shopping-list">
-                                            <!-- Wird dynamisch gefüllt -->
-                                        </div>
-                                    </div>
-                                </div>
-                                
                                 <div class="export-options">
                                     <h4>Export-Optionen</h4>
                                     <div class="export-buttons">
@@ -427,34 +281,18 @@
                                         <button class="export-btn" id="export-google">
                                             <i class="fab fa-google"></i>
                                             Google Calendar
-                                        </button>
                                         <button class="export-btn" id="export-ics">
                                             <i class="fas fa-download"></i>
                                             ICS Datei
-                                        </button>
                                         <button class="export-btn" id="export-shopping">
                                             <i class="fas fa-shopping-cart"></i>
                                             Einkaufsliste
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Navigation Buttons -->
                     <div class="wizard-navigation">
                         <button class="btn btn-secondary" id="prev-step" disabled>Zurück</button>
                         <button class="btn btn-primary" id="next-step">Weiter</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section class="contact">
-        <div class="container">
             <div class="contact-content">
                 <div class="contact-info">
                     <h2 class="section-title">Kontakt</h2>
@@ -462,78 +300,42 @@
                         Hast du Fragen zur Ernährungsberatung oder möchtest du einen persönlichen Termin vereinbaren? 
                         Ich helfe dir gerne weiter!
                     </p>
-                    
                     <div class="contact-details">
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <h4>E-Mail</h4>
                                 <a href="mailto:weissmanuel94@gmail.com">weissmanuel94@gmail.com</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <div>
                                 <h4>Standort</h4>
                                 <p>Schweiz</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-clock"></i>
-                            <div>
                                 <h4>Verfügbarkeit</h4>
                                 <p>Mo-Fr: 9:00 - 18:00</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="email">E-Mail</label>
                             <input type="email" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="subject">Betreff</label>
                             <input type="text" id="subject" name="subject" value="Ernährungsberatung" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="message">Nachricht</label>
                             <textarea id="message" name="message" rows="5" placeholder="Erzähle mir von deinen Ernährungszielen..." required></textarea>
-                        </div>
-                        
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i>
                             Nachricht senden
                         </button>
                     </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
                     <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
                     <div>
                         <h3>Manuel Weiss</h3>
                         <p>HR Berater für AI & Transformation</p>
-                    </div>
-                </div>
-                
                 <div class="footer-links">
                     <div class="footer-section">
                         <h4>Services</h4>
@@ -543,42 +345,44 @@
                             <li><a href="index.html#services">Geschäftsprozesse</a></li>
                             <li><a href="ernaehrungsberatung.html">Ernährungsberatung</a></li>
                         </ul>
-                    </div>
-                    
-                    <div class="footer-section">
                         <h4>Aktivitäten</h4>
-                        <ul>
                             <li><a href="wohnmobil.html">Wohnmobil</a></li>
                             <li><a href="fotobox.html">Fotobox</a></li>
                             <li><a href="ebike.html">E-Bikes</a></li>
                             <li><a href="sup.html">SUP</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
                         <h4>Kontakt</h4>
-                        <ul>
                             <li><a href="mailto:weissmanuel94@gmail.com">E-Mail</a></li>
                             <li><a href="#contact">Kontaktformular</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
                 <div class="footer-social">
                     <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </div>
     </footer>
-
     <!-- Scripts -->
     <script src="script.js"></script>
     <script src="js/ai-integration.js"></script>
     <script src="js/nutrition-planner.js"></script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

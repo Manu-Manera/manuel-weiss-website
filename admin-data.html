@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Data Handler</title>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Hidden Netlify Form for data storage -->
@@ -22,12 +23,29 @@
         <textarea name="image-data" placeholder="Base64 Image Data"></textarea>
         <input type="text" name="filename" value="" />
         <input type="text" name="upload-time" value="" />
-        <input type="text" name="bot-field" />
-    </form>
-
     <script>
         // This page exists only to register Netlify forms
         console.log('Netlify Forms registered for data storage');
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

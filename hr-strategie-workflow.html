@@ -23,28 +23,19 @@
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
             border-radius: 12px;
-        }
-        
         .workflow-header h1 {
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 0.75rem;
-        }
-        
         .workflow-header p {
             font-size: 1rem;
             opacity: 0.9;
-        }
-        
         .workflow-progress {
             display: flex;
             justify-content: center;
             margin-bottom: 3rem;
             flex-wrap: wrap;
-        }
-        
         .progress-step {
-            display: flex;
             align-items: center;
             margin: 0.5rem;
             padding: 0.75rem 1.5rem;
@@ -53,69 +44,34 @@
             font-weight: 500;
             color: #6b7280;
             transition: all 0.3s ease;
-        }
-        
         .progress-step.active {
             background: #3b82f6;
-            color: white;
-        }
-        
         .progress-step.completed {
             background: #1d4ed8;
-            color: white;
-        }
-        
         .workflow-step {
             background: white;
             border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
-        }
-        
         .step-header {
-            display: flex;
-            align-items: center;
             margin-bottom: 1.5rem;
-        }
-        
         .step-number {
-            background: #3b82f6;
-            color: white;
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-weight: 700;
             margin-right: 1rem;
-        }
-        
         .step-title {
             font-size: 1.5rem;
-            font-weight: 700;
             color: #1f2937;
-        }
-        
         .step-description {
-            color: #6b7280;
-            margin-bottom: 2rem;
             line-height: 1.6;
-        }
-        
         .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
         .form-group label {
             display: block;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: #374151;
-        }
-        
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -123,190 +79,74 @@
             padding: 0.75rem;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
-            font-size: 1rem;
             transition: border-color 0.3s ease;
-        }
-        
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: #3b82f6;
-        }
-        
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
-        }
-        
         .checkbox-item {
-            display: flex;
-            align-items: center;
             padding: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
         .checkbox-item:hover {
-            border-color: #3b82f6;
             background: #f0f9ff;
-        }
-        
         .checkbox-item input[type="checkbox"] {
             margin-right: 0.75rem;
             width: auto;
-        }
-        
         .btn {
-            background: #3b82f6;
-            color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
-            margin: 0.5rem;
-        }
-        
         .btn:hover {
-            background: #1d4ed8;
             transform: translateY(-2px);
-        }
-        
         .btn-secondary {
             background: #6b7280;
-        }
-        
         .btn-secondary:hover {
             background: #4b5563;
-        }
-        
         .btn-success {
             background: #059669;
-        }
-        
         .btn-success:hover {
             background: #047857;
-        }
-        
         .harvard-mit-section {
-            background: #f0f9ff;
             border: 2px solid #3b82f6;
-            border-radius: 12px;
             padding: 1.5rem;
             margin: 1.5rem 0;
-        }
-        
         .harvard-mit-section h4 {
             color: #1d4ed8;
             margin-bottom: 1rem;
             font-size: 1.2rem;
-            font-weight: 700;
-        }
-        
         .harvard-mit-section .methodology {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-        
         .harvard-mit-section .methodology i {
             color: #3b82f6;
             margin-right: 0.5rem;
             width: 20px;
-        }
-        
         .harvard-mit-section .methodology strong {
-            color: #1d4ed8;
-            margin-right: 0.5rem;
-        }
-        
         .practical-implementation {
             background: #f0fdf4;
             border: 2px solid #10b981;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
         .practical-implementation h5 {
             color: #059669;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
         .export-section {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 16px;
-            text-align: center;
             margin-top: 2rem;
-        }
-        
         .export-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
             margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
         .btn-pdf {
             background: #dc2626;
-            color: white;
             border: 2px solid white;
             padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
         .btn-pdf:hover {
-            background: white;
             color: #dc2626;
-        }
-        
         .btn-excel {
-            background: #059669;
-            color: white;
-            border: 2px solid white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
         .btn-excel:hover {
-            background: white;
-            color: #059669;
-        }
-        
         .btn-word {
             background: #2563eb;
-            color: white;
-            border: 2px solid white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
         .btn-word:hover {
-            background: white;
             color: #2563eb;
-        }
-        
         @media (max-width: 768px) {
             .workflow-progress {
                 flex-direction: column;
@@ -315,156 +155,73 @@
             
             .progress-step {
                 margin: 0.25rem 0;
-            }
-            
             .checkbox-group {
                 grid-template-columns: 1fr;
-            }
-            
             .export-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
-            display: flex;
-            align-items: center;
             margin-left: 20px;
-        }
 
         .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
-            border-radius: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
         .user-info:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         .user-avatar {
             width: 32px;
             height: 32px;
-            border-radius: 50%;
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
         .user-avatar-img {
-            width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
         .user-details {
-            display: flex;
             flex-direction: column;
             gap: 2px;
-        }
-
         .user-name {
             font-size: 0.8rem;
-            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
-        }
-
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.2;
-        }
-
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            border-radius: 50%;
             width: 28px;
             height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
         .user-login {
-            display: flex;
-            align-items: center;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
         .btn-login i {
-            font-size: 0.7rem;
-        }
-
         /* Responsive Design for User System */
-        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
-            }
-
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
-            }
-
             .user-avatar {
                 width: 28px;
                 height: 28px;
-            }
-
             .user-name {
                 font-size: 0.7rem;
-            }
-
             .user-email {
                 font-size: 0.6rem;
-            }
-
             .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <div class="hr-strategy-container">
@@ -473,7 +230,6 @@
             <h1><i class="fas fa-chart-line"></i> HR-Strategieentwicklung</h1>
             <p>Entwickeln Sie eine umfassende HR-Strategie mit bewährten Harvard & MIT Methoden</p>
         </div>
-
         <!-- Progress Indicator -->
         <div class="workflow-progress">
             <div class="progress-step active" id="step1-progress">
@@ -481,45 +237,31 @@
             </div>
             <div class="progress-step" id="step2-progress">
                 <i class="fas fa-chart-bar"></i> Wertschöpfung
-            </div>
             <div class="progress-step" id="step3-progress">
                 <i class="fas fa-database"></i> Datenbasis
-            </div>
             <div class="progress-step" id="step4-progress">
                 <i class="fas fa-users"></i> Organisation
-            </div>
             <div class="progress-step" id="step5-progress">
                 <i class="fas fa-shield-alt"></i> Ethik
-            </div>
             <div class="progress-step" id="step6-progress">
                 <i class="fas fa-expand-arrows-alt"></i> Skalierung
-            </div>
             <div class="progress-step" id="step7-progress">
                 <i class="fas fa-sync-alt"></i> Lernen
-            </div>
-        </div>
-
         <!-- Step 1: Vision & strategische Verankerung -->
         <div class="workflow-step" id="step1">
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-title">Vision & strategische Verankerung</div>
-            </div>
-            
             <div class="step-description">
                 <p>Entwickeln Sie eine klare HR-Vision, die als strategischer Business Partner agiert und die Unternehmensstrategie aktiv mitgestaltet.</p>
-            </div>
-            
             <div class="harvard-mit-section">
                 <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
                 <div class="methodology">
                     <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> HR muss als strategischer Business Partner agieren und die Unternehmensstrategie aktiv mitgestalten (Porter, Christensen).
                 </div>
-                <div class="methodology">
                     <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> HR als Treiber von Organisational Agility – Menschen und Organisationen werden auf digitale, globale und disruptive Märkte vorbereitet.
-                </div>
                 
                 <div class="practical-implementation">
                     <h5>👉 Praktische Umsetzung:</h5>
@@ -528,389 +270,151 @@
                         <li>HR-Strategie mit Unternehmenszielen verknüpfen (Wachstum, Innovation, Nachhaltigkeit, Internationalisierung)</li>
                         <li>Stakeholder (Geschäftsführung, Führungskräfte, Betriebsrat) früh einbinden</li>
                     </ul>
-                </div>
-            </div>
-            
             <div class="form-group">
                 <label for="companyVision">Unternehmensvision</label>
                 <textarea id="companyVision" rows="3" placeholder="Beschreiben Sie Ihre Unternehmensvision und -ziele..."></textarea>
-            </div>
-            
-            <div class="form-group">
                 <label for="hrVision">HR-Vision</label>
                 <textarea id="hrVision" rows="3" placeholder="Wie soll HR zur Unternehmensvision beitragen?"></textarea>
-            </div>
-            
-            <div class="form-group">
                 <label>Strategische Ziele</label>
                 <div class="checkbox-group">
                     <div class="checkbox-item">
                         <input type="checkbox" id="growth" value="growth">
                         <label for="growth">Wachstum & Expansion</label>
                     </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="innovation" value="innovation">
                         <label for="innovation">Innovation & Digitalisierung</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="sustainability" value="sustainability">
                         <label for="sustainability">Nachhaltigkeit & ESG</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="internationalization" value="internationalization">
                         <label for="internationalization">Internationalisierung</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="digitalization" value="digitalization">
                         <label for="digitalization">Digitale Transformation</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="agility" value="agility">
                         <label for="agility">Organisational Agility</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 2: Wertschöpfung & Schlüsselfelder -->
         <div class="workflow-step" id="step2" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">2</div>
                 <div class="step-title">Wertschöpfung & Schlüsselfelder der HR-Strategie</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Definieren Sie die strategischen Handlungsfelder, die messbar zum Unternehmenserfolg beitragen.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> Fokus auf den „Return on People" – wie HR messbar zum Unternehmenserfolg beiträgt.
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Analytische Szenarien & Datenorientierung – HR entscheidet faktenbasiert statt rein erfahrungsbasiert.
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>Strategische Handlungsfelder</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="talentAcquisition" value="talent-acquisition">
                         <label for="talentAcquisition">Talent Acquisition & Employer Branding</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="learningDevelopment" value="learning-development">
                         <label for="learningDevelopment">Learning & Development</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="employeeExperience" value="employee-experience">
                         <label for="employeeExperience">Employee Experience & Engagement</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="workforcePlanning" value="workforce-planning">
                         <label for="workforcePlanning">Workforce Planning</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="diversityInclusion" value="diversity-inclusion">
                         <label for="diversityInclusion">Diversity, Equity & Inclusion</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="performanceManagement" value="performance-management">
                         <label for="performanceManagement">Performance Management</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label for="keyMetrics">Wichtige HR-Metriken</label>
                 <textarea id="keyMetrics" rows="4" placeholder="Definieren Sie die wichtigsten KPIs für Ihre HR-Strategie..."></textarea>
-            </div>
-        </div>
-
         <!-- Step 3: Daten- und Infrastruktur-Basis -->
         <div class="workflow-step" id="step3" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">3</div>
                 <div class="step-title">Daten- und Infrastruktur-Basis</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Bauen Sie eine robuste HR-Datenbasis auf für faktenbasierte Entscheidungen.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> Menschenbezogene Daten als strategisches Asset.
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Fokus auf Workforce Analytics & „Evidence-Based HR".
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>HR-Systeme & Tools</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="hris" value="hris">
                         <label for="hris">HRIS-Systeme (SAP SuccessFactors, Workday)</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="ats" value="ats">
                         <label for="ats">Applicant Tracking System (ATS)</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="lms" value="lms">
                         <label for="lms">Learning Management System (LMS)</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="surveyTools" value="survey-tools">
                         <label for="surveyTools">Umfragetools & Pulse Checks</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="analyticsTools" value="analytics-tools">
                         <label for="analyticsTools">People Analytics Tools</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="performanceTools" value="performance-tools">
                         <label for="performanceTools">Performance Management Tools</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label for="dataGovernance">Data Governance</label>
                 <textarea id="dataGovernance" rows="3" placeholder="Beschreiben Sie Ihre Datenrichtlinien und -sicherheit..."></textarea>
-            </div>
-        </div>
-
         <!-- Step 4: Organisation & HR Operating Model -->
         <div class="workflow-step" id="step4" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">4</div>
                 <div class="step-title">Organisation & HR Operating Model</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Gestalten Sie Ihre HR-Organisation für maximale Effektivität und Zusammenarbeit.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> HR-Organisation muss professionalisiert werden (Center of Excellence).
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Fokus auf Cross-Functional Collaboration – HR arbeitet eng mit Business, IT und Operations zusammen.
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>Neue HR-Rollen</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="peopleAnalytics" value="people-analytics">
                         <label for="peopleAnalytics">People Analytics Manager</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="talentStrategist" value="talent-strategist">
                         <label for="talentStrategist">Talent Strategist</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="changeManager" value="change-manager">
                         <label for="changeManager">Change Manager</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="experienceDesigner" value="experience-designer">
                         <label for="experienceDesigner">Employee Experience Designer</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="cultureManager" value="culture-manager">
                         <label for="cultureManager">Culture & Engagement Manager</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="diversityManager" value="diversity-manager">
                         <label for="diversityManager">Diversity & Inclusion Manager</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 5: Ethik, Fairness & Vertrauen -->
         <div class="workflow-step" id="step5" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">5</div>
                 <div class="step-title">Ethik, Fairness & Vertrauen</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Etablieren Sie ethische Grundsätze und Vertrauen als Basis für nachhaltige HR-Strategie.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> HR ist Treiber von Corporate Social Responsibility und Kultur.
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Faire und transparente Entscheidungen sind Voraussetzung für eine zukunftsfähige Workforce.
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>Ethische Grundsätze</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="fairness" value="fairness">
                         <label for="fairness">Fairness & Transparenz</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="diversity" value="diversity">
                         <label for="diversity">Diversity & Inclusion</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="privacy" value="privacy">
                         <label for="privacy">Datenschutz & Privatsphäre</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="sustainability" value="sustainability">
                         <label for="sustainability">Nachhaltigkeit</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="wellbeing" value="wellbeing">
                         <label for="wellbeing">Employee Wellbeing</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="transparency" value="transparency">
                         <label for="transparency">Transparente Kommunikation</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 6: Skalierung & HR-Ökosystem -->
         <div class="workflow-step" id="step6" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">6</div>
                 <div class="step-title">Skalierung & HR-Ökosystem</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Nutzen Sie externe Partnerschaften und Ökosysteme für skalierbare HR-Lösungen.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> HR muss als Teil eines größeren Partner- und Branchenökosystems gedacht werden.
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Offene Systeme, Plattformen und Kooperationen (Start-ups, Hochschulen, Netzwerke).
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>Ökosystem-Partnerschaften</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="universities" value="universities">
                         <label for="universities">Universitäten & Business Schools</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="startups" value="startups">
                         <label for="startups">HR-Tech Start-ups</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="consultants" value="consultants">
                         <label for="consultants">Externe Berater</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="networks" value="networks">
                         <label for="networks">HR-Netzwerke</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="platforms" value="platforms">
                         <label for="platforms">Talent-Plattformen</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="benchmarks" value="benchmarks">
                         <label for="benchmarks">Benchmarking-Partner</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 7: Kontinuierliches Lernen & Anpassung -->
         <div class="workflow-step" id="step7" style="display: none;">
-            <div class="step-header">
                 <div class="step-number">7</div>
                 <div class="step-title">Kontinuierliches Lernen & Anpassung</div>
-            </div>
-            
-            <div class="step-description">
                 <p>Etablieren Sie Feedback-Loops und kontinuierliche Verbesserung für Ihre HR-Strategie.</p>
-            </div>
-            
-            <div class="harvard-mit-section">
-                <h4><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</h4>
-                <div class="methodology">
-                    <i class="fas fa-university"></i>
                     <strong>Harvard:</strong> Strategie ist ein dynamischer Prozess (Disruption, „Innovator's Dilemma").
-                </div>
-                <div class="methodology">
-                    <i class="fas fa-cogs"></i>
                     <strong>MIT:</strong> Living Strategy – HR-Strategie wird iterativ angepasst.
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>KPI-Monitoring</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
                         <input type="checkbox" id="turnover" value="turnover">
                         <label for="turnover">Fluktuationsraten</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="timeToHire" value="time-to-hire">
                         <label for="timeToHire">Time-to-Hire</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="engagement" value="engagement">
                         <label for="engagement">Engagement Scores</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="satisfaction" value="satisfaction">
                         <label for="satisfaction">Mitarbeiterzufriedenheit</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="development" value="development">
                         <label for="development">Entwicklungsfortschritt</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="diversity" value="diversity">
                         <label for="diversity">Diversity-Metriken</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label for="feedbackLoops">Feedback-Loops</label>
                 <textarea id="feedbackLoops" rows="3" placeholder="Beschreiben Sie Ihre Feedback-Mechanismen..."></textarea>
-            </div>
-            
-            <div class="form-group">
                 <label>Weitere eigene Angaben</label>
                 <div class="custom-inputs">
                     <div class="custom-input-item">
@@ -918,20 +422,10 @@
                         <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
                             <i class="fas fa-trash"></i>
                         </button>
-                    </div>
-                    <div class="custom-input-item">
                         <input type="text" id="customInput2" placeholder="Eigene Angabe 2">
-                        <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
                     <button class="btn btn-primary btn-small" onclick="addCustomInput()">
                         <i class="fas fa-plus"></i> Weitere Angabe hinzufügen
                     </button>
-                </div>
-            </div>
-            
-            <div class="form-group">
                 <label>Bewertung der HR-Strategie</label>
                 <div class="rating-section">
                     <div class="rating-item">
@@ -948,59 +442,22 @@
                             <span class="star" data-value="9">★</span>
                             <span class="star" data-value="10">★</span>
                         </div>
-                    </div>
-                    <div class="rating-item">
                         <label>Datenqualität (1-10):</label>
                         <div class="star-rating" data-rating="data-quality">
-                            <span class="star" data-value="1">★</span>
-                            <span class="star" data-value="2">★</span>
-                            <span class="star" data-value="3">★</span>
-                            <span class="star" data-value="4">★</span>
-                            <span class="star" data-value="5">★</span>
-                            <span class="star" data-value="6">★</span>
-                            <span class="star" data-value="7">★</span>
-                            <span class="star" data-value="8">★</span>
-                            <span class="star" data-value="9">★</span>
-                            <span class="star" data-value="10">★</span>
-                        </div>
-                    </div>
-                    <div class="rating-item">
                         <label>Change Readiness (1-10):</label>
                         <div class="star-rating" data-rating="change-readiness">
-                            <span class="star" data-value="1">★</span>
-                            <span class="star" data-value="2">★</span>
-                            <span class="star" data-value="3">★</span>
-                            <span class="star" data-value="4">★</span>
-                            <span class="star" data-value="5">★</span>
-                            <span class="star" data-value="6">★</span>
-                            <span class="star" data-value="7">★</span>
-                            <span class="star" data-value="8">★</span>
-                            <span class="star" data-value="9">★</span>
-                            <span class="star" data-value="10">★</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Export Section -->
         <div class="export-section">
             <h3><i class="fas fa-download"></i> HR-Strategie herunterladen</h3>
             <p>Ihre entwickelte HR-Strategie ist bereit! Laden Sie die Zusammenfassung herunter und implementieren Sie sie in Ihrem Unternehmen.</p>
-            
             <div class="export-buttons">
                 <a href="#" class="btn-pdf" onclick="exportHRStrategyToPDF()">
                     <i class="fas fa-file-pdf"></i> Als PDF
                 </a>
                 <a href="#" class="btn-excel" onclick="exportHRStrategyToExcel()">
                     <i class="fas fa-file-excel"></i> Als Excel
-                </a>
                 <a href="#" class="btn-word" onclick="exportHRStrategyToWord()">
                     <i class="fas fa-file-word"></i> Als Word
-                </a>
-            </div>
-        </div>
-
         <!-- Navigation Buttons -->
         <div style="text-align: center; margin-top: 2rem;">
             <button class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
@@ -1008,19 +465,12 @@
             </button>
             <button class="btn btn-success" id="nextBtn" onclick="changeStep(1)">
                 Weiter <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
     </div>
-
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
 <script>
         let currentStep = 1;
         const totalSteps = 7;
-
-        
     // Load auth modals
     async function loadAuthModals() {
         try {
@@ -1029,17 +479,12 @@
             document.getElementById('authModalsContainer').innerHTML = html;
         } catch (error) {
             console.error('Error loading auth modals:', error);
-        }
     }
-
     // AWS User System Functions
     function loginUser() {
         const modal = document.getElementById('loginModal');
         if (modal) {
             modal.style.display = 'flex';
-        }
-    }
-
     function logoutUser() {
         if (window.awsAuth) {
             window.awsAuth.signOut().then(() => {
@@ -1047,45 +492,28 @@
             }).catch(error => {
                 console.error('Fehler beim Abmelden:', error);
             });
-        }
-    }
-
     // Initialize auth system
     document.addEventListener('DOMContentLoaded', async function() {
         await loadAuthModals();
-        
         // Check user status
-        if (window.awsAuth) {
             window.awsAuth.checkUserStatus();
-        }
     });
-
     function changeStep(direction) {
             const prevStep = currentStep;
             currentStep += direction;
-            
             if (currentStep < 1) currentStep = 1;
             if (currentStep > totalSteps) currentStep = totalSteps;
-            
             if (currentStep !== prevStep) {
                 updateStepDisplay();
                 updateProgress();
                 updateNavigation();
-            }
-        }
-
         function updateStepDisplay() {
             // Hide all steps
             for (let i = 1; i <= totalSteps; i++) {
                 document.getElementById(`step${i}`).style.display = 'none';
-            }
-            
             // Show current step
             document.getElementById(`step${currentStep}`).style.display = 'block';
-        }
-
         function updateProgress() {
-            for (let i = 1; i <= totalSteps; i++) {
                 const progressStep = document.getElementById(`step${i}-progress`);
                 if (i < currentStep) {
                     progressStep.classList.remove('active');
@@ -1096,24 +524,16 @@
                 } else {
                     progressStep.classList.remove('active', 'completed');
                 }
-            }
-        }
-
         function updateNavigation() {
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            
             prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
-            
             if (currentStep === totalSteps) {
                 nextBtn.innerHTML = '<i class="fas fa-download"></i> Strategie generieren';
                 nextBtn.onclick = generateHRStrategy;
             } else {
                 nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
                 nextBtn.onclick = () => changeStep(1);
-            }
-        }
-
         function generateHRStrategy() {
             // Collect all form data
             const strategyData = {
@@ -1126,93 +546,52 @@
                 feedbackLoops: document.getElementById('feedbackLoops').value || '',
                 timestamp: new Date().toISOString()
             };
-            
             console.log('HR Strategy Data:', strategyData);
             alert('✅ HR-Strategie erfolgreich generiert! Sie können jetzt die Zusammenfassung herunterladen.');
-        }
-
         function exportHRStrategyToPDF() {
             const strategyData = collectStrategyData();
             const content = generateStrategyContent(strategyData);
-            
             // Create PDF content
             const pdfContent = `
 # HR-Strategie für ${strategyData.company || 'Ihr Unternehmen'}
-
 ## Vision & strategische Verankerung
 ${strategyData.companyVision || 'Nicht definiert'}
-
 ## HR-Vision
 ${strategyData.hrVision || 'Nicht definiert'}
-
 ## Strategische Ziele
 ${strategyData.strategicGoals.join(', ') || 'Keine Ziele definiert'}
-
 ## Wichtige Metriken
 ${strategyData.keyMetrics || 'Nicht definiert'}
-
 ## Data Governance
 ${strategyData.dataGovernance || 'Nicht definiert'}
-
 ## Feedback-Loops
 ${strategyData.feedbackLoops || 'Nicht definiert'}
-
 Erstellt am: ${strategyData.timestamp}
             `;
-            
             downloadFile(pdfContent, 'hr-strategie.pdf', 'application/pdf');
-        }
-
         function exportHRStrategyToExcel() {
-            const strategyData = collectStrategyData();
-            const content = generateStrategyContent(strategyData);
             downloadFile(content, 'hr-strategie.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        }
-
         function exportHRStrategyToWord() {
-            const strategyData = collectStrategyData();
-            const content = generateStrategyContent(strategyData);
             downloadFile(content, 'hr-strategie.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        }
-
         function collectStrategyData() {
             return {
                 company: 'Ihr Unternehmen',
-                companyVision: document.getElementById('companyVision').value || '',
-                hrVision: document.getElementById('hrVision').value || '',
-                strategicGoals: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                    .map(cb => cb.value),
-                keyMetrics: document.getElementById('keyMetrics').value || '',
-                dataGovernance: document.getElementById('dataGovernance').value || '',
-                feedbackLoops: document.getElementById('feedbackLoops').value || '',
-                timestamp: new Date().toISOString()
-            };
-        }
-
         function generateStrategyContent(data) {
             return `# HR-Strategie für ${data.company}
-
 ## 1. Vision & strategische Verankerung
 **Unternehmensvision:** ${data.companyVision || 'Nicht definiert'}
 **HR-Vision:** ${data.hrVision || 'Nicht definiert'}
-
 ## 2. Strategische Ziele
 ${data.strategicGoals.join(', ') || 'Keine Ziele definiert'}
-
 ## 3. Wichtige Metriken
 ${data.keyMetrics || 'Nicht definiert'}
-
 ## 4. Data Governance
 ${data.dataGovernance || 'Nicht definiert'}
-
 ## 5. Feedback-Loops
 ${data.feedbackLoops || 'Nicht definiert'}
-
 ---
 Erstellt am: ${data.timestamp}
 Entwickelt mit Harvard & MIT Methodologie`;
-        }
-
         function downloadFile(content, filename, mimeType) {
             const blob = new Blob([content], { type: mimeType });
             const url = URL.createObjectURL(blob);
@@ -1223,15 +602,11 @@ Entwickelt mit Harvard & MIT Methodologie`;
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
             alert(`✅ ${filename} erfolgreich heruntergeladen!`);
-        }
-
         function addCustomInput() {
             const customInputs = document.querySelector('.custom-inputs');
             const inputCount = customInputs.querySelectorAll('.custom-input-item').length;
             const newInputId = `customInput${inputCount + 1}`;
-            
             const newInputItem = document.createElement('div');
             newInputItem.className = 'custom-input-item';
             newInputItem.innerHTML = `
@@ -1239,16 +614,10 @@ Entwickelt mit Harvard & MIT Methodologie`;
                 <button class="btn btn-small btn-secondary" onclick="removeCustomInput(this)">
                     <i class="fas fa-trash"></i>
                 </button>
-            `;
-            
             const addButton = customInputs.querySelector('button');
             customInputs.insertBefore(newInputItem, addButton);
-        }
-        
         function removeCustomInput(button) {
             button.parentElement.remove();
-        }
-        
         // Initialize star ratings
         document.addEventListener('DOMContentLoaded', function() {
             const starRatings = document.querySelectorAll('.star-rating');
@@ -1261,35 +630,22 @@ Entwickelt mit Harvard & MIT Methodologie`;
                     });
                     
                     star.addEventListener('mouseenter', function() {
-                        const value = parseInt(this.dataset.value);
                         highlightStars(rating, value);
-                    });
                 });
-                
                 rating.addEventListener('mouseleave', function() {
                     const currentRating = rating.dataset.currentRating || 0;
                     highlightStars(rating, currentRating);
-                });
-            });
         });
-        
         function setRating(rating, value) {
             rating.dataset.currentRating = value;
             highlightStars(rating, value);
             console.log(`Rating set to ${value} for ${rating.dataset.rating}`);
-        }
-        
         function highlightStars(rating, value) {
             const stars = rating.querySelectorAll('.star');
             stars.forEach((star, index) => {
                 if (index < value) {
                     star.classList.add('active');
-                } else {
                     star.classList.remove('active');
-                }
-            });
-        }
-
         // Initialize
         updateStepDisplay();
         updateProgress();

@@ -13,33 +13,25 @@
             <span class="feature-badge">Logisch</span>
             <span class="feature-badge">Effektiv</span>
         </div>
-    </div>
     
     <div class="workflow-progress">
         <div class="progress-step active" data-step="1">
             <div class="step-number">1</div>
             <div class="step-title">Problem</div>
-        </div>
         <div class="progress-step" data-step="2">
             <div class="step-number">2</div>
             <div class="step-title">Analyse</div>
-        </div>
         <div class="progress-step" data-step="3">
             <div class="step-number">3</div>
             <div class="step-title">Lösung</div>
-        </div>
         <div class="progress-step" data-step="4">
             <div class="step-number">4</div>
             <div class="step-title">Umsetzung</div>
-        </div>
-    </div>
-    
     <!-- Step 1: Problem -->
     <div class="workflow-step active" data-step="1">
         <div class="step-header">
             <h3>Schritt 1: Problem definieren</h3>
             <p>Definiere das Problem klar und präzise, um eine solide Grundlage für die Lösung zu schaffen.</p>
-        </div>
         
         <div class="problem-definition">
             <div class="problem-form">
@@ -48,115 +40,56 @@
                     <textarea id="problem-description" placeholder="Beschreibe das Problem in 1-2 Sätzen..."></textarea>
                 </div>
                 
-                <div class="problem-item">
                     <label>Wann tritt das Problem auf?</label>
                     <textarea id="problem-timing" placeholder="Wann tritt das Problem auf?"></textarea>
-                </div>
-                
-                <div class="problem-item">
                     <label>Wer ist betroffen?</label>
                     <textarea id="problem-affected" placeholder="Wer ist von dem Problem betroffen?"></textarea>
-                </div>
-                
-                <div class="problem-item">
                     <label>Welche Auswirkungen hat das Problem?</label>
                     <textarea id="problem-impact" placeholder="Welche negativen Auswirkungen hat das Problem?"></textarea>
-                </div>
             </div>
-        </div>
-    </div>
-    
     <!-- Step 2: Analyse -->
     <div class="workflow-step" data-step="2">
-        <div class="step-header">
             <h3>Schritt 2: Problem analysieren</h3>
             <p>Analysiere das Problem systematisch, um die Ursachen und Zusammenhänge zu verstehen.</p>
-        </div>
-        
         <div class="problem-analysis">
             <div class="analysis-form">
                 <div class="analysis-item">
                     <label>Was sind die möglichen Ursachen?</label>
                     <textarea id="analysis-causes" placeholder="Liste alle möglichen Ursachen auf..."></textarea>
-                </div>
-                
-                <div class="analysis-item">
                     <label>Welche Faktoren beeinflussen das Problem?</label>
                     <textarea id="analysis-factors" placeholder="Welche internen und externen Faktoren spielen eine Rolle?"></textarea>
-                </div>
-                
-                <div class="analysis-item">
                     <label>Gibt es ähnliche Probleme in der Vergangenheit?</label>
                     <textarea id="analysis-history" placeholder="Wie wurde das Problem früher gelöst?"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 3: Lösung -->
     <div class="workflow-step" data-step="3">
-        <div class="step-header">
             <h3>Schritt 3: Lösungen entwickeln</h3>
             <p>Entwickle verschiedene Lösungsansätze und wähle die beste aus.</p>
-        </div>
-        
         <div class="solution-development">
             <div class="solution-form">
                 <div class="solution-item">
                     <label>Lösungsansatz 1</label>
                     <textarea id="solution-1" placeholder="Beschreibe den ersten Lösungsansatz..."></textarea>
-                </div>
-                
-                <div class="solution-item">
                     <label>Lösungsansatz 2</label>
                     <textarea id="solution-2" placeholder="Beschreibe den zweiten Lösungsansatz..."></textarea>
-                </div>
-                
-                <div class="solution-item">
                     <label>Lösungsansatz 3</label>
                     <textarea id="solution-3" placeholder="Beschreibe den dritten Lösungsansatz..."></textarea>
-                </div>
-                
-                <div class="solution-item">
                     <label>Welche Lösung ist am besten?</label>
                     <textarea id="solution-choice" placeholder="Begründe deine Wahl..."></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 4: Umsetzung -->
     <div class="workflow-step" data-step="4">
-        <div class="step-header">
             <h3>Schritt 4: Lösung umsetzen</h3>
             <p>Setze die gewählte Lösung in konkrete Schritte um und plane die Umsetzung.</p>
-        </div>
-        
         <div class="solution-implementation">
             <div class="implementation-form">
                 <div class="implementation-item">
                     <label>Was ist der erste Schritt?</label>
                     <textarea id="implementation-step1" placeholder="Beschreibe den ersten Umsetzungsschritt..."></textarea>
-                </div>
-                
-                <div class="implementation-item">
                     <label>Was sind die weiteren Schritte?</label>
                     <textarea id="implementation-steps" placeholder="Liste alle weiteren Schritte auf..."></textarea>
-                </div>
-                
-                <div class="implementation-item">
                     <label>Wer ist verantwortlich?</label>
                     <textarea id="implementation-responsible" placeholder="Wer ist für die Umsetzung verantwortlich?"></textarea>
-                </div>
-                
-                <div class="implementation-item">
                     <label>Bis wann soll es umgesetzt sein?</label>
                     <textarea id="implementation-deadline" placeholder="Wann soll die Lösung umgesetzt sein?"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
@@ -165,17 +98,28 @@
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            </div>
             <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
 </div>
-
 
 <!-- Global Auth System -->
 <script src="../../js/aws-config.js"></script>
-<script src="../../js/real-aws-auth.js"></script>
-<script src="../../js/global-auth-system.js"></script>
-
+<script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

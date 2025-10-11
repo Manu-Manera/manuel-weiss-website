@@ -10,17 +10,14 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="Wohnmobil Vermietung - Manuel Weiss">
     <meta property="og:description" content="Erleben Sie Freiheit und Komfort auf Reisen mit unserem hochwertigen Wohnmobil">
     <meta property="og:image" content="images/wohnmobil/wohnmobil-exterior.jpg">
     <meta property="og:url" content="https://manuel-weiss.ch/wohnmobil.html">
-    
     <style>
         /* Modern Wohnmobil Styles */
         .wohnmobil-hero {
@@ -42,181 +39,90 @@
             background: url('images/wohnmobil/wohnmobil-exterior.jpg') center/cover;
             opacity: 0.3;
             z-index: 1;
-        }
-        
         .wohnmobil-hero .hero-content {
-            position: relative;
             z-index: 2;
             text-align: center;
             color: white;
-        }
-        
         .wohnmobil-hero .hero-title {
             font-size: 4rem;
             font-weight: 800;
             margin-bottom: 1.5rem;
             text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
         .wohnmobil-hero .hero-subtitle {
             font-size: 1.5rem;
             margin-bottom: 2rem;
             opacity: 0.9;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin: 3rem 0;
-        }
-        
         .feature-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 2rem;
-            text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-        
         .feature-icon {
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
             font-size: 2rem;
-            color: white;
-        }
-        
         .pricing-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
             padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .booking-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             padding: 5rem 0;
-        }
-        
         .booking-form {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: white;
-        }
-        
         .form-control {
             width: 100%;
             padding: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
             font-size: 1rem;
-        }
-        
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.7);
-        }
-        
         .btn-modern {
             background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
             border: none;
             padding: 1rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
-            align-items: center;
             gap: 0.5rem;
-        }
-        
         .btn-modern:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-        }
-        
         .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        
         .gallery-item {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
-        }
-        
         .gallery-item:hover {
             transform: scale(1.05);
-        }
-        
         .gallery-item img {
-            width: 100%;
             height: 250px;
             object-fit: cover;
-        }
-        
         .gallery-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             opacity: 0;
             transition: opacity 0.3s ease;
-        }
-        
         .gallery-item:hover .gallery-overlay {
             opacity: 1;
-        }
-        
         .gallery-overlay i {
-            color: white;
-            font-size: 2rem;
-        }
-        
         @media (max-width: 768px) {
             .wohnmobil-hero .hero-title {
                 font-size: 2.5rem;
@@ -224,16 +130,9 @@
             
             .wohnmobil-hero .hero-subtitle {
                 font-size: 1.2rem;
-            }
-            
             .feature-grid {
                 grid-template-columns: 1fr;
-            }
-            
             .gallery-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
@@ -244,7 +143,6 @@
                 <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
-            
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
@@ -263,7 +161,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -273,16 +170,9 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -299,91 +189,43 @@
                 <a href="#features" class="btn-modern" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
                     <i class="fas fa-info-circle"></i>
                     Mehr erfahren
-                </a>
-            </div>
-        </div>
     </section>
-
     <!-- Features Section -->
     <section class="section" id="features" style="padding: 5rem 0; background: #f8fafc;">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 style="font-size: 3rem; font-weight: 800; color: #333; margin-bottom: 1rem;">Ihr Zuhause auf Rädern</h2>
                 <p style="font-size: 1.2rem; color: #666;">Modernste Ausstattung für unvergessliche Reiseerlebnisse</p>
-            </div>
-            
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-bed"></i>
-                    </div>
                     <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Komfortable Schlafplätze</h3>
                     <p style="color: #666; line-height: 1.6;">Platz für bis zu 4 Personen mit hochwertigen Matratzen</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-kitchen-set"></i>
-                    </div>
                     <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Voll ausgestattete Küche</h3>
                     <p style="color: #666; line-height: 1.6;">Kühlschrank, Herd, Spüle und komplettes Geschirr</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-shower"></i>
-                    </div>
                     <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Bad & WC</h3>
                     <p style="color: #666; line-height: 1.6;">Eigenes Badezimmer mit Dusche und WC</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-solar-panel"></i>
-                    </div>
                     <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Autark unterwegs</h3>
                     <p style="color: #666; line-height: 1.6;">Solaranlage und große Batterien für Unabhängigkeit</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Gallery Section -->
     <section class="section" style="padding: 5rem 0; background: white;">
-        <div class="container">
-            <div class="text-center mb-5">
                 <h2 style="font-size: 3rem; font-weight: 800; color: #333; margin-bottom: 1rem;">Eindrücke</h2>
                 <p style="font-size: 1.2rem; color: #666;">Werfen Sie einen Blick in unser Wohnmobil</p>
-            </div>
-            
             <div class="gallery-grid">
                 <div class="gallery-item">
                     <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil Außenansicht" loading="lazy">
                     <div class="gallery-overlay">
                         <i class="fas fa-expand"></i>
-                    </div>
-                </div>
-                <div class="gallery-item">
                     <img src="images/wohnmobil/wohnmobil-kitchen.jpg" alt="Wohnmobil Küche" loading="lazy">
-                    <div class="gallery-overlay">
-                        <i class="fas fa-expand"></i>
-                    </div>
-                </div>
-                <div class="gallery-item">
                     <img src="images/wohnmobil/wohnmobil-bedroom.jpg" alt="Wohnmobil Schlafbereich" loading="lazy">
-                    <div class="gallery-overlay">
-                        <i class="fas fa-expand"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Pricing Section -->
     <section class="section" style="padding: 5rem 0; background: #f8fafc;">
-        <div class="container">
-            <div class="text-center mb-5">
                 <h2 style="font-size: 3rem; font-weight: 800; color: #333; margin-bottom: 1rem;">Preise & Konditionen</h2>
                 <p style="font-size: 1.2rem; color: #666;">Transparente Preisgestaltung für Ihre Reiseplanung</p>
-            </div>
-            
             <div class="pricing-card">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; align-items: start;">
                     <div>
@@ -393,95 +235,43 @@
                                 <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Tagesmiete: <strong style="color: #333;">CHF 150.-</strong>
                             </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Wochenende (Fr-So): <strong style="color: #333;">CHF 400.-</strong>
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Wochenmiete: <strong style="color: #333;">CHF 900.-</strong>
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Langzeitmiete: <strong style="color: #333;">auf Anfrage</strong>
-                            </li>
                         </ul>
-                    </div>
-                    <div>
                         <h3 style="font-size: 1.8rem; font-weight: 700; color: #333; margin-bottom: 1.5rem;">Inklusive</h3>
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Vollkasko-Versicherung
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Unbegrenzte Kilometer
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 Campingausstattung
-                            </li>
-                            <li style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.1rem;">
-                                <i class="fas fa-check" style="color: #10b981; margin-right: 1rem; font-size: 1.2rem;"></i>
                                 24/7 Pannenhilfe
-                            </li>
-                        </ul>
-                    </div>
-                </div>
                 <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
                     <p style="color: #666; font-size: 1.1rem; margin: 0;">Kaution: CHF 1'500.- (wird nach Rückgabe zurückerstattet)</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Booking Section -->
     <section class="booking-section" id="booking">
-        <div class="container">
-            <div class="text-center mb-5">
                 <h2 style="font-size: 3rem; font-weight: 800; color: white; margin-bottom: 1rem;">Verfügbarkeit anfragen</h2>
                 <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">Senden Sie uns Ihre Anfrage für Ihren Wunschzeitraum</p>
-            </div>
-            
             <div style="max-width: 800px; margin: 0 auto;">
                 <form class="booking-form" id="bookingForm">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                         <div class="form-group">
                             <label for="startDate">Von</label>
                             <input type="date" class="form-control" id="startDate" required>
-                        </div>
-                        <div class="form-group">
                             <label for="endDate">Bis</label>
                             <input type="date" class="form-control" id="endDate" required>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-                        <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control" id="name" required>
-                        </div>
-                        <div class="form-group">
                             <label for="email">E-Mail</label>
                             <input type="email" class="form-control" id="email" required>
-                        </div>
-                    </div>
                     <div class="form-group" style="margin-bottom: 2rem;">
                         <label for="message">Nachricht (optional)</label>
                         <textarea class="form-control" id="message" rows="4" placeholder="Teilen Sie uns Ihre Reisepläne oder spezielle Wünsche mit..."></textarea>
-                    </div>
                     <button type="submit" class="btn-modern" style="width: 100%; justify-content: center;">
                         <i class="fas fa-paper-plane"></i>
                         Anfrage senden
                     </button>
                 </form>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
                     <h4>Manuel Weiss</h4>
@@ -492,34 +282,22 @@
                         </a>
                         <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
                             <i class="fab fa-github"></i>
-                        </a>
                         <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
                             <i class="fas fa-envelope"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
                     <h5>Weitere Vermietungen</h5>
                     <ul class="footer-links">
                         <li><a href="fotobox.html">Fotobox</a></li>
                         <li><a href="sup.html">Stand-Up Paddle</a></li>
                         <li><a href="ebike.html">E-Bikes</a></li>
                     </ul>
-                </div>
-                <div class="col-lg-4 mb-4">
                     <h5>Kontakt</h5>
                     <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
                     <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
                     <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
-                </div>
-            </div>
             <hr class="footer-divider">
             <div class="text-center">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-
     <!-- Scripts -->
     <script src="js/image-gallery.js"></script>
     <script src="script.js"></script>
@@ -531,7 +309,6 @@
             if (bookingForm) {
                 bookingForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    
                     const formData = {
                         startDate: document.getElementById('startDate').value,
                         endDate: document.getElementById('endDate').value,
@@ -540,23 +317,17 @@
                         message: document.getElementById('message').value,
                         rental: 'Wohnmobil'
                     };
-                    
                     // Show success message
                     alert('Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
                     bookingForm.reset();
                 });
-            }
         });
     </script>
-    
     <!-- Unified Auth System -->
     <script src="js/unified-auth-manager.js"></script>
     <link rel="stylesheet" href="css/unified-auth-system.css">
-    
     <!-- Auth Modals Container -->
     <div id="authModalsContainer"></div>
-    
-    <script>
         // Load auth modals
         async function loadAuthModals() {
             try {
@@ -565,13 +336,8 @@
                 document.getElementById('authModalsContainer').innerHTML = html;
             } catch (error) {
                 console.error('Error loading auth modals:', error);
-            }
-        }
-        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadAuthModals();
-        });
-    </script>
 </body>
 </html>

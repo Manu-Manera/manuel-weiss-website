@@ -8,12 +8,11 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/raisec-method.css">
-    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -39,7 +38,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -49,16 +47,10 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
                 
-            </div>
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -74,20 +66,12 @@
                     </a>
                     <a href="raisec-theorie.html" class="btn btn-outline">
                         <i class="fas fa-book"></i> Theorie verstehen
-                    </a>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- Application Steps -->
     <section class="application-steps-section">
-        <div class="container">
             <div class="section-header">
                 <h2>Ihre RAISEC-Ergebnisse optimal nutzen</h2>
                 <p>Ein 5-Schritte-Plan für die praktische Anwendung</p>
-            </div>
-
             <div class="steps-container">
                 <div class="step-card">
                     <div class="step-number">1</div>
@@ -103,479 +87,231 @@
                                     <li>Wo sehen Sie Entwicklungspotential?</li>
                                 </ul>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">2</div>
-                    <div class="step-content">
                         <h3>Karriere-Mapping</h3>
                         <p>Identifizieren Sie Berufsfelder und Positionen, die zu Ihrem RAISEC-Profil passen.</p>
-                        <div class="step-actions">
                             <div class="career-mapping">
                                 <h4>Karriere-Planung:</h4>
-                                <ul>
                                     <li>Passende Berufsfelder recherchieren</li>
                                     <li>Skill-Gaps identifizieren</li>
                                     <li>Karriereziele definieren</li>
                                     <li>Entwicklungsplan erstellen</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">3</div>
-                    <div class="step-content">
                         <h3>Skill-Entwicklung</h3>
                         <p>Entwickeln Sie gezielt die Fähigkeiten, die zu Ihrem RAISEC-Profil passen.</p>
-                        <div class="step-actions">
                             <div class="skill-development">
                                 <h4>Entwicklungsbereiche:</h4>
-                                <ul>
                                     <li>Hard Skills für Ihr Profil</li>
                                     <li>Soft Skills stärken</li>
                                     <li>Zertifikate und Weiterbildungen</li>
                                     <li>Praktische Erfahrungen sammeln</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">4</div>
-                    <div class="step-content">
                         <h3>Networking & Mentoring</h3>
                         <p>Bauen Sie ein Netzwerk mit Menschen auf, die ähnliche RAISEC-Profile haben.</p>
-                        <div class="step-actions">
                             <div class="networking-tips">
                                 <h4>Networking-Strategien:</h4>
-                                <ul>
                                     <li>Branchenevents besuchen</li>
                                     <li>Online-Communities beitreten</li>
                                     <li>Mentoren finden</li>
                                     <li>Peer-Gruppen bilden</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">5</div>
-                    <div class="step-content">
                         <h3>Kontinuierliche Anpassung</h3>
                         <p>Überprüfen Sie regelmäßig Ihr RAISEC-Profil und passen Sie Ihre Strategie an.</p>
-                        <div class="step-actions">
                             <div class="adaptation-strategy">
                                 <h4>Anpassungsstrategien:</h4>
-                                <ul>
                                     <li>Jährliche RAISEC-Wiederholung</li>
                                     <li>Karriereziele überprüfen</li>
                                     <li>Neue Trends berücksichtigen</li>
                                     <li>Flexibilität entwickeln</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Career Paths -->
     <section class="career-paths-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>Karrierewege nach RAISEC-Profilen</h2>
                 <p>Detaillierte Berufsempfehlungen für jeden Typ</p>
-            </div>
-
             <div class="career-paths-grid">
                 <!-- Realistic Careers -->
                 <div class="career-path-card realistic">
                     <div class="career-header">
                         <div class="career-icon">
                             <i class="fas fa-tools"></i>
-                        </div>
                         <h3>Realistische Karrierewege</h3>
                         <p>Praktische und technische Berufsfelder</p>
-                    </div>
                     <div class="career-content">
                         <div class="career-categories">
                             <div class="category">
                                 <h4>Ingenieurswesen</h4>
-                                <ul>
                                     <li>Maschinenbauingenieur</li>
                                     <li>Elektroingenieur</li>
                                     <li>Bauingenieur</li>
                                     <li>Produktionsingenieur</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Technik & Handwerk</h4>
-                                <ul>
                                     <li>Techniker</li>
                                     <li>Mechaniker</li>
                                     <li>Elektriker</li>
                                     <li>Zimmerer</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Landwirtschaft & Natur</h4>
-                                <ul>
                                     <li>Landwirt</li>
                                     <li>Forstwirt</li>
                                     <li>Gärtner</li>
                                     <li>Umwelttechniker</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Investigative Careers -->
                 <div class="career-path-card investigative">
-                    <div class="career-header">
-                        <div class="career-icon">
                             <i class="fas fa-flask"></i>
-                        </div>
                         <h3>Analytische Karrierewege</h3>
                         <p>Forschung und wissenschaftliche Berufe</p>
-                    </div>
-                    <div class="career-content">
-                        <div class="career-categories">
-                            <div class="category">
                                 <h4>Wissenschaft & Forschung</h4>
-                                <ul>
                                     <li>Wissenschaftler</li>
                                     <li>Forscher</li>
                                     <li>Laborant</li>
                                     <li>Datenanalyst</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Medizin & Gesundheit</h4>
-                                <ul>
                                     <li>Arzt</li>
                                     <li>Apotheker</li>
                                     <li>Psychologe</li>
                                     <li>Therapeut</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>IT & Technologie</h4>
-                                <ul>
                                     <li>Software-Entwickler</li>
                                     <li>Data Scientist</li>
                                     <li>Systemanalyst</li>
                                     <li>IT-Berater</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Artistic Careers -->
                 <div class="career-path-card artistic">
-                    <div class="career-header">
-                        <div class="career-icon">
                             <i class="fas fa-palette"></i>
-                        </div>
                         <h3>Künstlerische Karrierewege</h3>
                         <p>Kreative und expressive Berufsfelder</p>
-                    </div>
-                    <div class="career-content">
-                        <div class="career-categories">
-                            <div class="category">
                                 <h4>Design & Kunst</h4>
-                                <ul>
                                     <li>Grafikdesigner</li>
                                     <li>Webdesigner</li>
                                     <li>Künstler</li>
                                     <li>Fotograf</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Medien & Kommunikation</h4>
-                                <ul>
                                     <li>Journalist</li>
                                     <li>Schriftsteller</li>
                                     <li>Videograf</li>
                                     <li>Content-Creator</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Unterhaltung & Kultur</h4>
-                                <ul>
                                     <li>Musiker</li>
                                     <li>Schauspieler</li>
                                     <li>Regisseur</li>
                                     <li>Eventmanager</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Social Careers -->
                 <div class="career-path-card social">
-                    <div class="career-header">
-                        <div class="career-icon">
                             <i class="fas fa-heart"></i>
-                        </div>
                         <h3>Soziale Karrierewege</h3>
                         <p>Hilfsbereite und kommunikative Berufe</p>
-                    </div>
-                    <div class="career-content">
-                        <div class="career-categories">
-                            <div class="category">
                                 <h4>Bildung & Erziehung</h4>
-                                <ul>
                                     <li>Lehrer</li>
                                     <li>Dozent</li>
                                     <li>Erzieher</li>
                                     <li>Trainer</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Sozialarbeit & Beratung</h4>
-                                <ul>
                                     <li>Sozialarbeiter</li>
                                     <li>Berater</li>
                                     <li>Coach</li>
-                                    <li>Therapeut</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Gesundheit & Pflege</h4>
-                                <ul>
                                     <li>Krankenpfleger</li>
                                     <li>Altenpfleger</li>
                                     <li>Physiotherapeut</li>
                                     <li>Hebamme</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Enterprising Careers -->
                 <div class="career-path-card enterprising">
-                    <div class="career-header">
-                        <div class="career-icon">
                             <i class="fas fa-chart-line"></i>
-                        </div>
                         <h3>Unternehmerische Karrierewege</h3>
                         <p>Führungs- und verkaufsorientierte Berufe</p>
-                    </div>
-                    <div class="career-content">
-                        <div class="career-categories">
-                            <div class="category">
                                 <h4>Management & Führung</h4>
-                                <ul>
                                     <li>Manager</li>
                                     <li>Geschäftsführer</li>
                                     <li>Projektleiter</li>
                                     <li>Teamleiter</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Verkauf & Marketing</h4>
-                                <ul>
                                     <li>Verkäufer</li>
                                     <li>Account Manager</li>
                                     <li>Marketing-Manager</li>
                                     <li>Vertriebsleiter</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Unternehmertum</h4>
-                                <ul>
                                     <li>Unternehmer</li>
                                     <li>Start-up-Gründer</li>
-                                    <li>Berater</li>
                                     <li>Investor</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Conventional Careers -->
                 <div class="career-path-card conventional">
-                    <div class="career-header">
-                        <div class="career-icon">
                             <i class="fas fa-calculator"></i>
-                        </div>
                         <h3>Konventionelle Karrierewege</h3>
                         <p>Strukturierte und organisatorische Berufe</p>
-                    </div>
-                    <div class="career-content">
-                        <div class="career-categories">
-                            <div class="category">
                                 <h4>Buchhaltung & Finanzen</h4>
-                                <ul>
                                     <li>Buchhalter</li>
                                     <li>Controller</li>
                                     <li>Steuerberater</li>
                                     <li>Banker</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>Verwaltung & Organisation</h4>
-                                <ul>
                                     <li>Sekretär</li>
                                     <li>Assistent</li>
                                     <li>Verwaltungsangestellter</li>
                                     <li>Projektkoordinator</li>
-                                </ul>
-                            </div>
-                            <div class="category">
                                 <h4>IT & Datenmanagement</h4>
-                                <ul>
                                     <li>Datenbankadministrator</li>
                                     <li>Systemadministrator</li>
                                     <li>Qualitätsmanager</li>
                                     <li>Compliance-Manager</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Success Stories -->
     <section class="success-stories-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>Erfolgsgeschichten</h2>
                 <p>Wie andere ihre RAISEC-Ergebnisse erfolgreich umgesetzt haben</p>
-            </div>
-
             <div class="stories-grid">
                 <div class="story-card">
                     <div class="story-header">
                         <div class="story-avatar">
                             <i class="fas fa-user"></i>
-                        </div>
                         <div class="story-info">
                             <h4>Sarah M.</h4>
                             <p>RAISEC: I-A-S</p>
-                        </div>
-                    </div>
                     <div class="story-content">
                         <h3>Von der Buchhaltung zur UX-Designerin</h3>
                         <p>"Mein RAISEC-Profil zeigte starke künstlerische und analytische Tendenzen. Ich habe daraufhin eine UX-Design-Ausbildung begonnen und bin jetzt als Senior UX-Designerin tätig."</p>
                         <div class="story-outcome">
                             <span class="outcome-tag">Karrierewechsel</span>
                             <span class="outcome-tag">Erfolgreich</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="story-card">
-                    <div class="story-header">
-                        <div class="story-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="story-info">
                             <h4>Michael K.</h4>
                             <p>RAISEC: E-S-A</p>
-                        </div>
-                    </div>
-                    <div class="story-content">
                         <h3>Vom Verkäufer zum Teamleiter</h3>
                         <p>"Mein unternehmerisches und soziales Profil hat mir geholfen, mich für Führungspositionen zu qualifizieren. Heute leite ich ein 15-köpfiges Vertriebsteam."</p>
-                        <div class="story-outcome">
                             <span class="outcome-tag">Beförderung</span>
                             <span class="outcome-tag">Führung</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="story-card">
-                    <div class="story-header">
-                        <div class="story-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="story-info">
                             <h4>Anna L.</h4>
                             <p>RAISEC: A-I-S</p>
-                        </div>
-                    </div>
-                    <div class="story-content">
                         <h3>Von der Verwaltung zur Data Scientist</h3>
                         <p>"Mein analytisches Profil hat mich dazu motiviert, Data Science zu studieren. Jetzt arbeite ich als Data Scientist in einem Tech-Unternehmen."</p>
-                        <div class="story-outcome">
                             <span class="outcome-tag">Weiterbildung</span>
                             <span class="outcome-tag">Tech-Karriere</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Call to Action -->
     <section class="cta-section">
-        <div class="container">
             <div class="cta-content">
                 <h2>Starten Sie Ihr RAISEC-Assessment</h2>
                 <p>Entdecken Sie Ihre beruflichen Interessen und finden Sie Ihren optimalen Karriereweg</p>
                 <div class="cta-actions">
-                    <a href="raisec-persoenlichkeitsentwicklung.html" class="btn btn-primary">
-                        <i class="fas fa-play"></i> Jetzt starten
-                    </a>
-                    <a href="raisec-theorie.html" class="btn btn-outline">
-                        <i class="fas fa-book"></i> Theorie verstehen
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
                     <h3>Manuel Weiss</h3>
                     <p>HR-Beratung für die digitale Transformation</p>
-                </div>
                 <div class="footer-links">
                     <a href="index.html">Start</a>
                     <a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a>
                     <a href="raisec-theorie.html">RAISEC-Theorie</a>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
 <script>
         // Mobile navigation toggle
         document.addEventListener('DOMContentLoaded', function() {
             const navToggle = document.getElementById('navToggle');
             const navMenu = document.getElementById('navMenu');
-            
             if (navToggle && navMenu) {
                 navToggle.addEventListener('click', function() {
                     navMenu.classList.toggle('active');
                     navToggle.classList.toggle('active');
                 });
-                
                 // Close menu when clicking on a link
                 const navLinks = document.querySelectorAll('.nav-link');
                 navLinks.forEach(link => {
@@ -583,9 +319,26 @@
                         navMenu.classList.remove('active');
                         navToggle.classList.remove('active');
                     });
-                });
             }
         });
     </script>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

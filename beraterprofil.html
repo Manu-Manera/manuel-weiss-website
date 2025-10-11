@@ -13,21 +13,16 @@
             body {
                 margin: 0;
                 padding: 0;
-            }
             .no-print {
                 display: none !important;
-            }
             .page-break {
                 page-break-before: always;
-            }
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
@@ -36,8 +31,6 @@
             max-width: 210mm;
             margin: 0 auto;
             padding: 20px;
-        }
-
         .header {
             display: flex;
             align-items: center;
@@ -45,225 +38,111 @@
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
             border-bottom: 3px solid #2563eb;
-        }
-
         .profile-image {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid #2563eb;
-        }
-
         .profile-info h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #1e293b;
             margin-bottom: 0.5rem;
-        }
-
         .profile-info h2 {
             font-size: 1.3rem;
             font-weight: 600;
             color: #2563eb;
             margin-bottom: 1rem;
-        }
-
         .profile-info p {
             font-size: 1.1rem;
             color: #64748b;
             max-width: 500px;
-        }
-
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
         .contact-item {
-            display: flex;
-            align-items: center;
             gap: 0.5rem;
             font-size: 0.95rem;
-        }
-
         .contact-item i {
-            color: #2563eb;
             width: 20px;
-        }
-
         .section {
-            margin-bottom: 2rem;
-        }
-
         .section-title {
             font-size: 1.5rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 1rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #e2e8f0;
-        }
-
         .expertise-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
         .expertise-card {
             background: #f8fafc;
             padding: 1.5rem;
             border-radius: 8px;
             border-left: 4px solid #2563eb;
-        }
-
         .expertise-card h3 {
             font-size: 1.2rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
         .expertise-card p {
-            color: #64748b;
-            font-size: 0.95rem;
-        }
-
         .project-item {
             margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
             border-bottom: 1px solid #e2e8f0;
-        }
-
         .project-item:last-child {
             border-bottom: none;
-        }
-
         .project-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
         .project-company {
             font-size: 1rem;
-            color: #2563eb;
             font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
         .project-description {
-            color: #64748b;
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-        }
-
         .project-tech {
-            display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
         .tech-tag {
             background: #2563eb;
             color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 500;
-        }
-
         .stats-grid {
-            display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
         .stat-item {
             text-align: center;
             padding: 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-
         .stat-number {
             font-size: 2rem;
-            font-weight: 700;
-            color: #2563eb;
             display: block;
-        }
-
         .stat-label {
             font-size: 0.9rem;
-            color: #64748b;
             margin-top: 0.25rem;
-        }
-
         .certifications {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
         .certification {
-            background: #2563eb;
-            color: white;
             padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
         .download-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #2563eb;
-            color: white;
             padding: 1rem 2rem;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
             transition: all 0.3s ease;
-        }
-
         .download-btn:hover {
             background: #1d4ed8;
             transform: translateY(-2px);
-        }
-
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 text-align: center;
-            }
             
             .stats-grid {
                 grid-template-columns: 1fr;
-            }
-            
             .expertise-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <button class="download-btn no-print" data-action="print">
         <i class="fas fa-download"></i> PDF herunterladen
     </button>
-
     <!-- Seite 1 -->
     <div class="page">
         <div class="header">
@@ -274,41 +153,24 @@
                 <p>Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.</p>
             </div>
         </div>
-
         <div class="contact-grid">
             <div class="contact-item">
                 <i class="fas fa-envelope"></i>
                 <span>weiss-manuel@gmx.de</span>
-            </div>
-            <div class="contact-item">
                 <i class="fas fa-phone"></i>
                 <span>+49 173 3993407</span>
-            </div>
-            <div class="contact-item">
                 <i class="fas fa-map-marker-alt"></i>
                 <span>Schweiz</span>
-            </div>
-            <div class="contact-item">
                 <i class="fas fa-globe"></i>
                 <span>Remote & On-Site verfügbar</span>
-            </div>
-        </div>
-
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-number">6+</span>
                 <span class="stat-label">Jahre Erfahrung</span>
-            </div>
-            <div class="stat-item">
                 <span class="stat-number">30+</span>
                 <span class="stat-label">Projekte geleitet</span>
-            </div>
-            <div class="stat-item">
                 <span class="stat-number">100%</span>
                 <span class="stat-label">Kundenzufriedenheit</span>
-            </div>
-        </div>
-
         <div class="section">
             <h2 class="section-title">Expertise & Kernkompetenzen</h2>
             <div class="expertise-grid">
@@ -316,22 +178,12 @@
                     <h3>HR-Tech Beratung</h3>
                     <p>Spezialisierung auf UKG HRSD, Service Delivery Optimierung und HR-Systeme Implementierung mit Fokus auf Change Management.</p>
                 </div>
-                <div class="expertise-card">
                     <h3>Prozessmanagement</h3>
                     <p>BPMN 2.0, ADONIS Implementierung, Workflow-Design und Prozessoptimierung für nachhaltige Effizienzsteigerungen.</p>
-                </div>
-                <div class="expertise-card">
                     <h3>Digitale Transformation</h3>
                     <p>Strategische Beratung und Implementierung von Digitalisierungsroadmaps mit Design Thinking und agilen Methoden.</p>
-                </div>
-                <div class="expertise-card">
                     <h3>Projektmanagement</h3>
                     <p>Scrum Master, Prince2 Agile, Stakeholder-Management und erfolgreiche Projektleitung in internationalen Teams.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
             <h2 class="section-title">Zertifikate & Qualifikationen</h2>
             <div class="certifications">
                 <span class="certification">Scrum Master</span>
@@ -340,15 +192,10 @@
                 <span class="certification">Bachelor HR Management</span>
                 <span class="certification">Supply Chain Management</span>
                 <span class="certification">Service Management</span>
-            </div>
-        </div>
     </div>
-
     <!-- Seite 2 -->
     <div class="page page-break">
-        <div class="section">
             <h2 class="section-title">Ausgewählte Projekte & Erfolge</h2>
-            
             <div class="project-item">
                 <div class="project-title">Digitalisierung HR-Prozesse</div>
                 <div class="project-company">Internationaler Konzern (500+ Mitarbeiter)</div>
@@ -356,65 +203,37 @@
                     Implementierung von UKG HRSD für einen internationalen Konzern. Entwicklung einer Digitalisierungsroadmap, 
                     Prozessanalyse und -optimierung des gesamten Employee Lifecycle. Erfolgreiche Einführung von Self-Service 
                     Funktionen und Case Management.
-                </div>
                 <div class="project-tech">
                     <span class="tech-tag">UKG HRSD</span>
                     <span class="tech-tag">BPMN 2.0</span>
                     <span class="tech-tag">Change Management</span>
                     <span class="tech-tag">Process Mining</span>
-                </div>
-            </div>
-
-            <div class="project-item">
                 <div class="project-title">Prozessoptimierung mit ADONIS</div>
                 <div class="project-company">Schweizer Bank</div>
-                <div class="project-description">
                     Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank. Implementierung von ADONIS, 
                     Erstellung von Prozesslandkarten und Schulung der Mitarbeiter in BPMN 2.0. Aufbau einer Wissensdatenbank 
                     für nachhaltige Prozessdokumentation.
-                </div>
-                <div class="project-tech">
                     <span class="tech-tag">ADONIS</span>
-                    <span class="tech-tag">BPMN 2.0</span>
                     <span class="tech-tag">Banking</span>
                     <span class="tech-tag">Knowledge Management</span>
-                </div>
-            </div>
-
-            <div class="project-item">
                 <div class="project-title">HR Service Center Digitalisierung</div>
                 <div class="project-company">Diverse Kunden</div>
-                <div class="project-description">
                     Beratung und Implementierung von digitalen HR Service Centers. Optimierung von Service Delivery Prozessen, 
                     Einführung von Self-Service Portalen und Integration verschiedener HR-Systeme für eine nahtlose 
                     Mitarbeitererfahrung.
-                </div>
-                <div class="project-tech">
                     <span class="tech-tag">Service Delivery</span>
                     <span class="tech-tag">Self-Service</span>
                     <span class="tech-tag">Integration</span>
                     <span class="tech-tag">UX Design</span>
-                </div>
-            </div>
-
-            <div class="project-item">
                 <div class="project-title">Agile Transformation</div>
                 <div class="project-company">IT-Dienstleister</div>
-                <div class="project-description">
                     Begleitung einer agilen Transformation in einem IT-Dienstleister. Einführung von Scrum, Kanban und 
                     Design Thinking Methoden. Schulung von Scrum Mastern und Product Ownern für nachhaltige 
                     Organisationsentwicklung.
-                </div>
-                <div class="project-tech">
                     <span class="tech-tag">Scrum</span>
                     <span class="tech-tag">Kanban</span>
                     <span class="tech-tag">Design Thinking</span>
                     <span class="tech-tag">Organizational Change</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
             <h2 class="section-title">Technologien & Tools</h2>
             <div class="project-tech">
                 <span class="tech-tag">UKG HRSD</span>
@@ -429,32 +248,16 @@
                 <span class="tech-tag">Digital Transformation</span>
                 <span class="tech-tag">HR-Tech</span>
                 <span class="tech-tag">Agile Methoden</span>
-            </div>
-        </div>
-
-        <div class="section">
             <h2 class="section-title">Sprachen & Verfügbarkeit</h2>
             <div class="contact-grid">
                 <div class="contact-item">
                     <i class="fas fa-language"></i>
                     <span>Deutsch (Muttersprache)</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-language"></i>
                     <span>Englisch (C1)</span>
-                </div>
-                <div class="contact-item">
                     <i class="fas fa-clock"></i>
                     <span>Sofort verfügbar</span>
-                </div>
-                <div class="contact-item">
                     <i class="fas fa-location-arrow"></i>
                     <span>Remote & On-Site</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Load saved profile image if available
         document.addEventListener('DOMContentLoaded', () => {
@@ -464,8 +267,27 @@
                 if (profileImage) {
                     profileImage.src = savedImage;
                 }
-            }
         });
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html> 
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
