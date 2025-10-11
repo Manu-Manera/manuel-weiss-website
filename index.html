@@ -763,8 +763,24 @@
                         console.log('📸 WEBSITE: Profile image from localStorage:', profileImage ? 'Found' : 'Not found');
                     }
                     
-                    // 3. ZENTRALE Profilbild-Verwaltung (verhindert alle Konflikte)
-                    setProfileImageUnified(profileImage, 'hero-data');
+                    // 3. Profilbild anzeigen
+                    if (profileImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = profileImage;
+                            profilePhoto.style.display = 'block';
+                            console.log('✅ WEBSITE: Profile image displayed');
+                        } else {
+                            console.error('❌ WEBSITE: profile-photo element not found');
+                        }
+                    } else {
+                        console.log('ℹ️ WEBSITE: No custom image, using fallback');
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = 'Bewerbungsbild.jpeg';
+                            profilePhoto.style.display = 'block';
+                        }
+                    }
                     
                     // Button-Text aktualisieren
                     if (data.buttonText) {
@@ -1036,15 +1052,14 @@
             if (heroData) {
                 try {
                     const data = JSON.parse(heroData);
-                    // DEAKTIVIERT: Verhindert Konflikte mit UNIFIED Handler
-                    // if (data.profileImage) {
-                    //     const profilePhoto = document.getElementById('profile-photo');
-                    //     if (profilePhoto) {
-                    //         profilePhoto.src = data.profileImage;
-                    //         profilePhoto.style.display = 'block';
-                    //         console.log('🔄 WEBSITE: Profile image updated from localStorage');
-                    //     }
-                    // }
+                    if (data.profileImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = data.profileImage;
+                            profilePhoto.style.display = 'block';
+                            console.log('🔄 WEBSITE: Profile image updated from localStorage');
+                        }
+                    }
                 } catch (error) {
                     console.error('❌ WEBSITE: Error updating profile image:', error);
                 }
@@ -1055,59 +1070,18 @@
         // Live-Update für Profilbild
         function updateProfileImageLive() {
             const storedImage = localStorage.getItem('heroProfileImage');
-            // DEAKTIVIERT: Verhindert Konflikte mit UNIFIED Handler
-            // if (storedImage) {
-            //     const profilePhoto = document.getElementById('profile-photo');
-            //     if (profilePhoto && profilePhoto.src !== storedImage) {
-            //         profilePhoto.src = storedImage;
-            //         profilePhoto.style.display = 'block';
-            //         console.log('🔄 WEBSITE: Profile image updated live');
-            //     }
-            // }
+            if (storedImage) {
+                const profilePhoto = document.getElementById('profile-photo');
+                if (profilePhoto && profilePhoto.src !== storedImage) {
+                    profilePhoto.src = storedImage;
+                    profilePhoto.style.display = 'block';
+                    console.log('🔄 WEBSITE: Profile image updated live');
+                }
+            }
         }
         
-        // ZENTRALE PROFILBILD-VERWALTUNG - Verhindert alle Konflikte
-        let profileImageLock = false;
-        
-        function setProfileImageUnified(imageSrc, source = 'unknown') {
-            if (profileImageLock) {
-                console.log('🔒 UNIFIED: Profilbild wird bereits gesetzt, überspringe Update von:', source);
-                return;
-            }
-            
-            profileImageLock = true;
-            const profilePhoto = document.getElementById('profile-photo');
-            
-            if (!profilePhoto) {
-                console.error('❌ UNIFIED: profile-photo element not found');
-                profileImageLock = false;
-                return;
-            }
-            
-            // Prüfe zuerst localStorage für hochgeladene Bilder
-            const uploadedImage = localStorage.getItem('profileImage');
-            if (uploadedImage && uploadedImage.startsWith('data:image/')) {
-                profilePhoto.src = uploadedImage;
-                profilePhoto.style.display = 'block';
-                console.log('✅ UNIFIED: Hochgeladenes Profilbild verwendet (von:', source + ')');
-            } else if (imageSrc) {
-                profilePhoto.src = imageSrc;
-                profilePhoto.style.display = 'block';
-                console.log('✅ UNIFIED: Profilbild gesetzt:', imageSrc, '(von:', source + ')');
-            } else {
-                profilePhoto.src = 'Bewerbungsbild.jpeg';
-                profilePhoto.style.display = 'block';
-                console.log('✅ UNIFIED: Standard-Profilbild verwendet (von:', source + ')');
-            }
-            
-            // Lock nach kurzer Zeit freigeben
-            setTimeout(() => {
-                profileImageLock = false;
-            }, 100);
-        }
-        
-        // Polling für Live-Updates (deaktiviert um Konflikte zu vermeiden)
-        // setInterval(updateProfileImageLive, 2000);
+        // Polling für Live-Updates
+        setInterval(updateProfileImageLive, 2000);
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>
