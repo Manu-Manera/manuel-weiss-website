@@ -18,35 +18,60 @@
             color: white;
             padding: 2rem;
             text-align: center;
+        }
+        
         .header h1 {
+            margin: 0;
             font-size: 2.5rem;
             font-weight: 700;
+        }
+        
         .header p {
             margin: 0.5rem 0 0 0;
             opacity: 0.9;
             font-size: 1.1rem;
+        }
+        
         .swagger-ui {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
+        }
+        
         .api-stats {
             background: white;
             border-radius: 8px;
+            padding: 2rem;
             margin: 2rem auto;
+            max-width: 1200px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
+        }
+        
         .stat-card {
             background: #f8f9ff;
             padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
         .stat-number {
             font-size: 2rem;
+            font-weight: 700;
             color: #6366f1;
+            margin: 0;
+        }
+        
         .stat-label {
             color: #666;
+            margin: 0.5rem 0 0 0;
+        }
     </style>
-    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <div class="header">
@@ -58,17 +83,26 @@
         <h2 style="margin: 0 0 1.5rem 0; color: #333;">📊 API Statistiken</h2>
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">75+</div>
+                <div class="stat-number">50+</div>
                 <div class="stat-label">API Endpunkte</div>
             </div>
-                <div class="stat-number">12</div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
                 <div class="stat-label">Service Kategorien</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-number">100%</div>
                 <div class="stat-label">Swagger Coverage</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-number">24/7</div>
                 <div class="stat-label">API Verfügbarkeit</div>
+            </div>
         </div>
+    </div>
+    
     <div id="swagger-ui" class="swagger-ui"></div>
+    
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js"></script>
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js"></script>
     <script>
@@ -93,13 +127,21 @@
                 {
                     url: "https://api.manuel-weiss.com",
                     description: "Production Server"
+                },
+                {
                     url: "https://staging-api.manuel-weiss.com",
                     description: "Staging Server"
+                },
+                {
                     url: "http://localhost:3001",
                     description: "Development Server"
+                }
             ],
             security: [
+                {
                     bearerAuth: []
+                }
+            ],
             components: {
                 securitySchemes: {
                     bearerAuth: {
@@ -107,6 +149,7 @@
                         scheme: "bearer",
                         bearerFormat: "JWT"
                     }
+                },
                 schemas: {
                     MediaFile: {
                         type: "object",
@@ -123,63 +166,16 @@
                             metadata: { type: "object" }
                         }
                     },
-                    User: {
-                            id: { type: "string", example: "user_1234567890" },
-                            email: { type: "string", format: "email", example: "user@example.com" },
-                            name: { type: "string", example: "John Doe" },
-                            role: { type: "string", enum: ["admin", "moderator", "user"], example: "user" },
-                            status: { type: "string", enum: ["active", "inactive", "pending"], example: "active" },
-                            createdAt: { type: "string", format: "date-time", example: "2024-01-01T00:00:00Z" },
-                            lastLogin: { type: "string", format: "date-time", example: "2025-01-27T10:30:00Z" }
-                    UserDetail: {
-                            profile: {
-                                type: "object",
-                                properties: {
-                                    firstName: { type: "string", example: "John" },
-                                    lastName: { type: "string", example: "Doe" },
-                                    phone: { type: "string", example: "+49 123 456789" },
-                                    company: { type: "string", example: "Example Company" },
-                                    position: { type: "string", example: "Developer" }
-                                }
-                            },
-                            activity: {
-                                type: "array",
-                                items: { $ref: "#/components/schemas/UserActivity" }
-                    UserActivity: {
-                            action: { type: "string", example: "login" },
-                            timestamp: { type: "string", format: "date-time", example: "2025-01-27T10:30:00Z" },
-                            ip: { type: "string", example: "192.168.1.100" },
-                            userAgent: { type: "string", example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" },
-                            details: { type: "string", example: "Updated profile information" }
-                    UserAnalytics: {
-                            totalUsers: { type: "integer", example: 156 },
-                            activeUsers: { type: "integer", example: 142 },
-                            inactiveUsers: { type: "integer", example: 14 },
-                            newUsersThisMonth: { type: "integer", example: 23 },
-                            userGrowth: {
-                                    last7Days: { type: "integer", example: 5 },
-                                    last30Days: { type: "integer", example: 23 },
-                                    last90Days: { type: "integer", example: 67 }
-                            roleDistribution: {
-                                    admin: { type: "integer", example: 3 },
-                                    moderator: { type: "integer", example: 0 },
-                                    user: { type: "integer", example: 153 }
-                            loginStats: {
-                                    today: { type: "integer", example: 45 },
-                                    thisWeek: { type: "integer", example: 312 },
-                                    thisMonth: { type: "integer", example: 1247 }
-                            topCountries: {
-                                items: {
-                                    type: "object",
-                                    properties: {
-                                        country: { type: "string", example: "Germany" },
-                                        users: { type: "integer", example: 89 }
-                                    }
-                            }
                     Error: {
+                        type: "object",
+                        properties: {
                             error: { type: "string", example: "File not found" },
                             message: { type: "string", example: "The requested file could not be found" },
                             code: { type: "integer", example: 404 }
+                        }
+                    }
+                }
+            },
             paths: {
                 // =================== MEDIA API ENDPOINTS ===================
                 "/api/v1/media/upload": {
@@ -198,6 +194,9 @@
                                             subcategory: { type: "string", example: "hero" },
                                             tags: { type: "array", items: { type: "string" } }
                                         }
+                                    }
+                                }
+                            }
                         },
                         responses: {
                             "200": {
@@ -205,19 +204,50 @@
                                 content: {
                                     "application/json": {
                                         schema: { $ref: "#/components/schemas/MediaFile" }
+                                    }
+                                }
+                            },
                             "400": { $ref: "#/components/responses/BadRequest" },
                             "401": { $ref: "#/components/responses/Unauthorized" }
+                        }
+                    }
+                },
                 "/api/v1/media/bulk-upload": {
+                    post: {
+                        tags: ["Media"],
                         summary: "Upload multiple files",
                         description: "Upload multiple files in a single request",
+                        requestBody: {
+                            content: {
+                                "multipart/form-data": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             files: { type: "array", items: { type: "string", format: "binary" } },
                                             category: { type: "string", example: "gallery" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
                                 description: "Files uploaded successfully",
+                                content: {
+                                    "application/json": {
                                         schema: {
                                             type: "array",
                                             items: { $ref: "#/components/schemas/MediaFile" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/media/download/{fileId}": {
                     get: {
+                        tags: ["Media"],
                         summary: "Download file",
                         description: "Download a file by its ID",
                         parameters: [
@@ -226,23 +256,53 @@
                                 in: "path",
                                 required: true,
                                 schema: { type: "string" }
+                            }
                         ],
+                        responses: {
+                            "200": {
                                 description: "File download",
+                                content: {
                                     "application/octet-stream": {
                                         schema: { type: "string", format: "binary" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/media/list": {
+                    get: {
+                        tags: ["Media"],
                         summary: "List media files",
                         description: "Get a list of all media files with optional filtering",
+                        parameters: [
+                            {
                                 name: "category",
                                 in: "query",
                                 schema: { type: "string", example: "profile" }
+                            },
+                            {
                                 name: "subcategory",
+                                in: "query",
                                 schema: { type: "string", example: "hero" }
+                            },
+                            {
                                 name: "limit",
+                                in: "query",
                                 schema: { type: "integer", default: 50 }
+                            },
+                            {
                                 name: "offset",
+                                in: "query",
                                 schema: { type: "integer", default: 0 }
+                            }
+                        ],
+                        responses: {
+                            "200": {
                                 description: "List of media files",
+                                content: {
+                                    "application/json": {
+                                        schema: {
                                             type: "object",
                                             properties: {
                                                 files: {
@@ -253,181 +313,323 @@
                                                 limit: { type: "integer" },
                                                 offset: { type: "integer" }
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/media/delete/{fileId}": {
                     delete: {
+                        tags: ["Media"],
                         summary: "Delete file",
                         description: "Delete a file by its ID",
+                        parameters: [
+                            {
+                                name: "fileId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
                                 description: "File deleted successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 success: { type: "boolean" },
                                                 message: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 
                 // =================== AI ENDPOINTS ===================
                 "/api/v1/media/ai/analyze": {
+                    post: {
                         tags: ["AI"],
                         summary: "AI Content Analysis",
                         description: "Analyze media content using AI",
+                        requestBody: {
+                            content: {
                                 "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
                                             fileId: { type: "string" },
                                             analysisType: { type: "string", enum: ["content", "objects", "text", "faces"] }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
                                 description: "Analysis results",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 analysis: { type: "object" },
                                                 confidence: { type: "number" },
                                                 tags: { type: "array", items: { type: "string" } }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/media/ai/search": {
+                    get: {
+                        tags: ["AI"],
                         summary: "AI-powered search",
                         description: "Search media using AI-powered semantic search",
+                        parameters: [
+                            {
                                 name: "query",
+                                in: "query",
+                                required: true,
                                 schema: { type: "string", example: "business professional portrait" }
+                            },
+                            {
+                                name: "category",
+                                in: "query",
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
                                 description: "Search results",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: { $ref: "#/components/schemas/MediaFile" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
                 // =================== ANALYTICS ENDPOINTS ===================
                 "/api/v1/analytics/media": {
+                    get: {
                         tags: ["Analytics"],
                         summary: "Media analytics",
                         description: "Get comprehensive media analytics",
+                        parameters: [
+                            {
                                 name: "timeRange",
+                                in: "query",
                                 schema: { type: "string", enum: ["7d", "30d", "90d", "1y"], default: "30d" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
                                 description: "Analytics data",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 totalFiles: { type: "integer" },
                                                 totalSize: { type: "integer" },
                                                 categories: { type: "object" },
                                                 uploadStats: { type: "object" },
                                                 storageUsage: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/analytics/usage": {
+                    get: {
+                        tags: ["Analytics"],
                         summary: "Usage statistics",
                         description: "Get API usage statistics",
+                        responses: {
+                            "200": {
                                 description: "Usage statistics",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 requests: { type: "integer" },
                                                 errors: { type: "integer" },
                                                 averageResponseTime: { type: "number" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
                 // =================== USER MANAGEMENT ENDPOINTS ===================
                 "/api/v1/users": {
+                    get: {
                         tags: ["Users"],
-                        summary: "List all users",
-                        description: "Get a comprehensive list of all users with filtering and pagination",
-                                schema: { type: "integer", default: 50, maximum: 100 }
-                                name: "role",
-                                schema: { type: "string", enum: ["admin", "user", "moderator"] }
-                                name: "status",
-                                schema: { type: "string", enum: ["active", "inactive", "pending"] }
-                                name: "search",
-                                schema: { type: "string", description: "Search by name or email" }
-                                description: "List of users with pagination info",
-                                                users: {
-                                                    items: { $ref: "#/components/schemas/User" }
-                                                pagination: {
-                                                    type: "object",
-                                                    properties: {
-                                                        total: { type: "integer" },
-                                                        limit: { type: "integer" },
-                                                        offset: { type: "integer" },
-                                                        hasMore: { type: "boolean" }
-                                                    }
-                                                }
-                            "401": { $ref: "#/components/responses/Unauthorized" },
-                            "403": { $ref: "#/components/responses/Forbidden" }
-                        summary: "Create new user",
-                        description: "Create a new user account",
-                            required: true,
-                                        required: ["email", "name"],
-                                            email: { type: "string", format: "email" },
-                                            name: { type: "string" },
-                                            role: { type: "string", enum: ["user", "moderator"], default: "user" },
-                                            profile: {
+                        summary: "List users",
+                        description: "Get a list of all users",
+                        responses: {
+                            "200": {
+                                description: "List of users",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: {
                                                 type: "object",
                                                 properties: {
-                                                    firstName: { type: "string" },
-                                                    lastName: { type: "string" },
-                                                    phone: { type: "string" },
-                                                    company: { type: "string" },
-                                                    position: { type: "string" }
-                            "201": {
-                                description: "User created successfully",
-                                        schema: { $ref: "#/components/schemas/User" }
-                            "409": {
-                                description: "User already exists",
-                                        schema: { $ref: "#/components/schemas/Error" }
+                                                    id: { type: "string" },
+                                                    email: { type: "string" },
+                                                    name: { type: "string" },
+                                                    role: { type: "string" },
+                                                    createdAt: { type: "string", format: "date-time" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/users/{userId}": {
+                    get: {
+                        tags: ["Users"],
                         summary: "Get user details",
-                        description: "Get detailed information about a specific user including profile and activity",
+                        description: "Get detailed information about a specific user",
+                        parameters: [
+                            {
                                 name: "userId",
-                                schema: { type: "string" },
-                                description: "Unique user identifier"
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
                                 description: "User details",
-                                        schema: { $ref: "#/components/schemas/UserDetail" }
-                            "404": { $ref: "#/components/responses/NotFound" },
-                    put: {
-                        summary: "Update user",
-                        description: "Update user information and profile",
-                                            role: { type: "string", enum: ["user", "moderator", "admin"] },
-                                            status: { type: "string", enum: ["active", "inactive", "pending"] },
-                                description: "User updated successfully",
-                            "404": { $ref: "#/components/responses/NotFound" }
-                        summary: "Delete user",
-                        description: "Permanently delete a user account",
-                                description: "User deleted successfully",
-                            "403": { $ref: "#/components/responses/Forbidden" },
-                "/api/v1/users/{userId}/role": {
-                        summary: "Change user role",
-                        description: "Change the role of a specific user",
-                                        required: ["role"],
-                                            role: { 
-                                                type: "string", 
-                                                enum: ["user", "moderator", "admin"],
-                                                description: "New role for the user"
-                                description: "User role changed successfully",
-                                                message: { type: "string" },
-                                                userId: { type: "string" },
-                                                newRole: { type: "string" }
-                "/api/v1/users/{userId}/activate": {
-                        summary: "Activate user",
-                        description: "Activate a user account",
-                                description: "User activated successfully",
-                                                status: { type: "string" }
-                "/api/v1/users/{userId}/deactivate": {
-                        summary: "Deactivate user",
-                        description: "Deactivate a user account",
-                                description: "User deactivated successfully",
-                "/api/v1/users/{userId}/activity": {
-                        summary: "Get user activity",
-                        description: "Get activity log for a specific user",
-                                description: "User activity log",
-                                            items: { $ref: "#/components/schemas/UserActivity" }
-                "/api/v1/users/analytics": {
-                        summary: "Get user analytics",
-                        description: "Get comprehensive user analytics and statistics",
-                                description: "User analytics data",
-                                        schema: { $ref: "#/components/schemas/UserAnalytics" }
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                id: { type: "string" },
+                                                email: { type: "string" },
+                                                name: { type: "string" },
+                                                role: { type: "string" },
+                                                profile: { type: "object" },
+                                                activity: { type: "array" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                
                 // =================== SYSTEM ENDPOINTS ===================
                 "/api/v1/health": {
+                    get: {
                         tags: ["System"],
                         summary: "Health check",
                         description: "Check API health status",
+                        responses: {
+                            "200": {
                                 description: "System is healthy",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 status: { type: "string", example: "healthy" },
                                                 timestamp: { type: "string", format: "date-time" },
                                                 services: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "/api/v1/system/info": {
+                    get: {
+                        tags: ["System"],
                         summary: "System information",
                         description: "Get system information and configuration",
+                        responses: {
+                            "200": {
                                 description: "System information",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
                                                 version: { type: "string" },
                                                 environment: { type: "string" },
                                                 uptime: { type: "number" },
                                                 configuration: { type: "object" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            components: {
                 responses: {
                     BadRequest: {
                         description: "Bad request",
                         content: {
                             "application/json": {
                                 schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    },
                     Unauthorized: {
                         description: "Unauthorized",
-                    Forbidden: {
-                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    },
                     NotFound: {
                         description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    }
+                }
             }
         };
+        
         // Swagger UI initialisieren
         SwaggerUIBundle({
             url: null,
@@ -437,35 +639,18 @@
             presets: [
                 SwaggerUIBundle.presets.apis,
                 SwaggerUIStandalonePreset
+            ],
             plugins: [
                 SwaggerUIBundle.plugins.DownloadUrl
+            ],
             layout: "StandaloneLayout",
             tryItOutEnabled: true,
             supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
             onComplete: function() {
                 console.log('🚀 API Documentation loaded successfully');
+            }
         });
     </script>
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
 </body>
 </html>
 
-    
-    <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
-    </script>
