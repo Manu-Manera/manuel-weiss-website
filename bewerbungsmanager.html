@@ -1045,7 +1045,7 @@
         <section class="hero-section">
             <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
             <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
-            <button class="main-cta" onclick="direktWorkflowStarten()" id="mainStartButton">
+            <button class="main-cta" onclick="startNewWorkflow()" id="mainStartButton">
                 <i class="fas fa-play-circle"></i>
                 Neue Bewerbung starten
             </button>
@@ -1168,7 +1168,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 2rem;">
-                <button class="main-cta" onclick="direktWorkflowStarten()" id="workflowStartButton">
+                <button class="main-cta" onclick="startNewWorkflow()" id="workflowStartButton">
                     <i class="fas fa-rocket"></i>
                     Workflow jetzt starten
                 </button>
@@ -1203,7 +1203,67 @@
             }
         });
         
-        // NEUE WORKFLOW START FUNKTION - NUR SCHRITT 0
+        // NEUE EINFACHE WORKFLOW FUNKTION
+        function startNewWorkflow() {
+            console.log('🚀 STARTE NEUEN WORKFLOW - BEWERBUNGSART AUSWAHL');
+            
+            // Verstecke Loading
+            const loadingSection = document.getElementById('loadingSection');
+            if (loadingSection) loadingSection.classList.remove('active');
+            
+            // Erstelle Modal
+            const modal = document.createElement('div');
+            modal.id = 'workflow-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; width: 90%; max-width: 800px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 2rem; text-align: center;">
+                        <h2 style="margin: 0; font-size: 1.8rem;">🚀 Smart Bewerbungsmanager</h2>
+                        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Wählen Sie Ihre Bewerbungsart</p>
+                    </div>
+                    
+                    <div style="padding: 2rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                            <div onclick="selectType('job-posting')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                                <h3 style="margin: 0 0 0.5rem 0; color: #1f2937;">Stellenausschreibung</h3>
+                                <p style="color: #6b7280; margin: 0 0 1rem 0;">Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
+                                <div style="background: #f8fafc; padding: 0.5rem; border-radius: 8px; font-size: 0.9rem; color: #374151;">✓ KI-Analyse der Stellenausschreibung</div>
+                            </div>
+                            
+                            <div onclick="selectType('initiative')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                                <h3 style="margin: 0 0 0.5rem 0; color: #1f2937;">Initiativbewerbung</h3>
+                                <p style="color: #6b7280; margin: 0 0 1rem 0;">Ich sende eine unaufgeforderte Bewerbung</p>
+                                <div style="background: #f8fafc; padding: 0.5rem; border-radius: 8px; font-size: 0.9rem; color: #374151;">✓ Unternehmen-spezifische Anpassung</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function selectType(type) {
+            console.log('📋 Gewählt:', type);
+            alert('✅ Bewerbungsart gewählt: ' + (type === 'job-posting' ? 'Stellenausschreibung' : 'Initiativbewerbung'));
+            document.getElementById('workflow-modal').remove();
+        }
+        
+        // ALTE FUNKTION ALS BACKUP
         function direktWorkflowStarten() {
             console.log('🚀 STARTE WORKFLOW MIT SCHRITT 0');
             
