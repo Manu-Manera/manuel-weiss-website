@@ -102,9 +102,32 @@ class ContentManager {
         if (heroSubtitle) heroSubtitle.textContent = hero.subtitle;
         if (heroDescription) heroDescription.textContent = hero.description;
         
-        // DEAKTIVIERT: Content Manager Profilbild-Handler um Konflikte zu vermeiden
-        // Das Profilbild wird jetzt zentral über den UNIFIED Handler in index.html verwaltet
-        console.log('ℹ️ CONTENT-MANAGER: Profilbild-Handler deaktiviert (UNIFIED Handler aktiv)');
+        // Profilbild mit verbesserter Fehlerbehandlung laden
+        if (profileImage && !profileImage.getAttribute('data-loaded')) {
+            if (hero.profileImage) {
+                // Prüfe zuerst, ob ein hochgeladenes Profilbild existiert
+                const uploadedImage = localStorage.getItem('profileImage');
+                if (uploadedImage && uploadedImage.startsWith('data:image/')) {
+                    profileImage.src = uploadedImage;
+                    profileImage.setAttribute('data-loaded', 'true');
+                    console.log('✅ Hochgeladenes Profilbild verwendet (content-manager)');
+                } else {
+                    // Verwende Image Manager für bessere Fehlerbehandlung
+                    if (window.imageManager) {
+                        const imagePath = hero.profileImage.startsWith('./') ? hero.profileImage : `./${hero.profileImage}`;
+                        window.imageManager.loadImageWithFallback(profileImage, imagePath);
+                        profileImage.setAttribute('data-loaded', 'true');
+                        console.log('✅ Profilbild mit Image Manager geladen:', imagePath);
+                    } else {
+                        // Fallback zur ursprünglichen Methode
+                        profileImage.src = hero.profileImage;
+                        profileImage.setAttribute('data-loaded', 'true');
+                        console.log('✅ Standard-Profilbild verwendet (content-manager):', hero.profileImage);
+                    }
+                }
+                profileImage.alt = hero.name;
+            }
+        }
 
         // Statistiken rendern
         this.renderStats(hero.stats);

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Bewerbungsmanager - Manuel Weiss</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
         * {
             margin: 0;
@@ -20,8 +19,7 @@
             color: #333;
         }
         
-        /* Navigation - Konsistent mit Hauptwebsite */
-        .navbar {
+        .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -31,226 +29,72 @@
             z-index: 100;
         }
         
-        .nav-container {
+        .header-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 clamp(1rem, 4vw, 2rem);
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
         }
         
-        .nav-brand {
+        .logo {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
         
-        .nav-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-        
-        .nav-name {
+        .logo h1 {
             color: #667eea;
             font-size: 1.5rem;
             font-weight: 700;
         }
         
-        .nav-menu {
+        .nav-links {
             display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-link:hover {
-            color: #667eea;
-        }
-        
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-        }
-        
-        .nav-toggle span {
-            width: 25px;
-            height: 3px;
-            background: #333;
-            transition: all 0.3s ease;
-        }
-        
-        /* User System Styles */
-        .user-system {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
             gap: 1rem;
-            padding: 8px 16px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .user-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid #6366f1;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-        
-        .user-avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            color: #1f2937;
-            font-size: 0.9rem;
-        }
-        
-        .user-email {
-            color: #6b7280;
-            font-size: 0.8rem;
-        }
-        
-        .user-logout {
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
             align-items: center;
-            justify-content: center;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-        
-        .user-logout:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-        
-        .user-login {
-            display: flex;
-            align-items: center;
-        }
-        
-        .btn-login {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 25px;
             font-weight: 600;
-            cursor: pointer;
+            text-decoration: none;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            gap: 0.5rem;
         }
         
-        .btn-login:hover {
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-        
-        .btn-login i {
-            font-size: 0.7rem;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-            
-            .nav-toggle {
-                display: flex;
-            }
-            
-            .user-system {
-                margin-left: 10px;
-            }
-            
-            .user-info {
-                padding: 6px 12px;
-            }
-            
-            .user-name {
-                font-size: 0.8rem;
-            }
-            
-            .user-email {
-                font-size: 0.7rem;
-            }
-            
-            .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: clamp(1rem, 4vw, 2rem);
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
+            padding: 2rem;
         }
         
         .hero-section {
             text-align: center;
             margin-bottom: 3rem;
-            padding: clamp(2rem, 6vw, 3rem) clamp(1rem, 4vw, 2rem);
+            padding: 3rem 2rem;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
         }
         
-        
         .hero-section h2 {
-            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-size: 2.5rem;
             color: #333;
             margin-bottom: 1rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -260,7 +104,7 @@
         }
         
         .hero-section p {
-            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-size: 1.2rem;
             color: #666;
             margin-bottom: 2rem;
             max-width: 600px;
@@ -479,238 +323,34 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        
-        /* Smart Workflow Modal - Ursprüngliches Design */
-        .smart-workflow-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .workflow-wrapper {
-            background: white;
-            width: 95%;
-            max-width: 1200px;
-            height: 90vh;
-            max-height: 900px;
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        .workflow-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .workflow-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .btn-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        
-        .btn-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .workflow-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-            background: #f8f9fa;
-        }
-        
-        .workflow-step {
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .step-header {
-            margin-bottom: 2rem;
-        }
-        
-        .step-header h2 {
-            color: #2c3e50;
-            margin: 0 0 0.5rem 0;
-            font-size: 1.75rem;
-        }
-        
-        .step-description {
-            color: #6c757d;
-            font-size: 1.1rem;
-        }
-        
-        .workflow-options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-        
-        .workflow-option-card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        
-        .workflow-option-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
-        }
-        
-        .workflow-option-card .option-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-        
-        .workflow-option-card h3 {
-            color: #2c3e50;
-            margin: 0 0 1rem 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .workflow-option-card p {
-            color: #6c757d;
-            margin: 0 0 1.5rem 0;
-            line-height: 1.6;
-        }
-        
-        .option-features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .feature-tag {
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        @media (max-width: 768px) {
-            .workflow-wrapper {
-                width: 98%;
-                height: 95vh;
-            }
-            
-            .workflow-options-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .workflow-option-card {
-                padding: 1.5rem;
-            }
-        }
-        
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
-                <span class="nav-name">Manuel Weiss</span>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-briefcase" style="font-size: 2rem; color: #667eea;"></i>
+                <h1>Smart Bewerbungsmanager</h1>
             </div>
-            
-            <div class="nav-menu" id="navMenu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="index.html#services" class="nav-link">Services</a>
-                <a href="index.html#about" class="nav-link">Über mich</a>
-                <a href="index.html#contact" class="nav-link">Kontakt</a>
-            
-                <!-- AWS User System - Konsistent mit anderen Seiten -->
-                <div class="user-system" id="userSystem">
-                    <div class="user-info" id="userInfo" style="display: none;">
-                        <div class="user-avatar">
-                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
-                        </div>
-                        <div class="user-details">
-                            <span class="user-name" id="userName">Benutzer</span>
-                            <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
-                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="user-login" id="userLogin">
-                        <button class="btn-login" onclick="loginUser()">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Anmelden</span>
-                        </button>
-                    </div>
-                </div>
-                
-            </div>
-            
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <nav class="nav-links">
+                <a href="admin.html" class="nav-btn">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Admin Dashboard
+                </a>
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i>
+                    Zur Startseite
+                </a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <div class="container">
         <!-- Hero Section -->
         <section class="hero-section">
             <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
             <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
-            
             <button class="main-cta" onclick="direktWorkflowStarten()" id="mainStartButton">
                 <i class="fas fa-play-circle"></i>
                 Neue Bewerbung starten
@@ -842,12 +482,7 @@
         </section>
     </div>
 
-
     <!-- Scripts -->
-    <!-- Global Auth System -->
-    <script src="js/global-auth-system.js"></script>
-    <script src="js/real-aws-auth.js"></script>
-    
     <!-- Admin Panel Integration - Automatische API Key Verknüpfung -->
     <script src="js/admin-panel-integration.js"></script>
     
@@ -867,68 +502,26 @@
             const loadingSection = document.getElementById('loadingSection');
             if (loadingSection) loadingSection.classList.remove('active');
             
-            // GAST-MODUS: Direkt Workflow starten ohne Anmeldung
-            console.log('👤 Gast-Modus: Workflow startet direkt');
-            
-            // Erstelle das ursprüngliche schöne Workflow-Modal
-            const modal = document.createElement('div');
-            modal.id = 'workflowModal';
-            modal.className = 'smart-workflow-modal';
-            modal.innerHTML = `
-                <div class="workflow-wrapper">
-                    <div class="workflow-header">
-                        <h1>🚀 Bewerbungs-Workflow</h1>
-                        <button class="btn-close" onclick="closeWorkflowModal()">×</button>
-                    </div>
-                    <div class="workflow-body">
-                        <div class="workflow-step">
-                            <div class="step-header">
-                                <h2>Wählen Sie Ihren Bewerbungstyp</h2>
-                                <p class="step-description">Entscheiden Sie, wie Sie vorgehen möchten</p>
-                            </div>
-                            <div class="workflow-options-grid">
-                                <div class="workflow-option-card" onclick="startStellenausschreibungWorkflow()">
-                                    <div class="option-icon">📄</div>
-                                    <h3>Mit Stellenausschreibung</h3>
-                                    <p>Optimiert für spezifische Stellenausschreibungen. Analysiert Anforderungen und passt Bewerbung an.</p>
-                                    <div class="option-features">
-                                        <span class="feature-tag">Anforderungsanalyse</span>
-                                        <span class="feature-tag">Keyword-Optimierung</span>
-                                        <span class="feature-tag">Stellenbezogene Anpassung</span>
-                                    </div>
-                                </div>
-                                <div class="workflow-option-card" onclick="startInitiativbewerbungWorkflow()">
-                                    <div class="option-icon">💼</div>
-                                    <h3>Initiativbewerbung</h3>
-                                    <p>Allgemeine Bewerbung ohne Stellenausschreibung. Fokus auf Ihre Stärken und Ziele.</p>
-                                    <div class="option-features">
-                                        <span class="feature-tag">Stärkenanalyse</span>
-                                        <span class="feature-tag">Zielorientierung</span>
-                                        <span class="feature-tag">Flexible Anpassung</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-        
-        function startStellenausschreibungWorkflow() {
-            alert('Stellenausschreibung-Workflow startet...');
-            closeWorkflowModal();
-        }
-        
-        function startInitiativbewerbungWorkflow() {
-            alert('Initiativbewerbung-Workflow startet...');
-            closeWorkflowModal();
-        }
-        
-        function closeWorkflowModal() {
-            const modal = document.getElementById('workflowModal');
-            if (modal) {
-                modal.remove();
+            // Sofort Modal anzeigen und Workflow starten
+            if (typeof window.showSmartWorkflowModal === 'function') {
+                const modal = window.showSmartWorkflowModal();
+                
+                // Warte kurz und starte dann Step 0
+                setTimeout(() => {
+                    if (typeof window.generateStep0 === 'function') {
+                        const content = window.generateStep0();
+                        const workflowContent = document.getElementById('workflowContent');
+                        if (workflowContent) {
+                            workflowContent.innerHTML = content;
+                        }
+                    }
+                }, 100);
+                
+            } else {
+                // Fallback - warte auf Module
+                setTimeout(() => {
+                    direktWorkflowStarten();
+                }, 300);
             }
         }
         
@@ -1181,26 +774,6 @@
         });
         
         console.log('✅ Bewerbungsmanager mit API Key Management initialisiert');
-        
-        // EINHEITLICHE AUTH-FUNKTIONEN - Konsistent mit anderen Seiten
-        function loginUser() {
-            console.log('🔐 Login über einheitliches System');
-            // Das einheitliche Auth-System aus global-auth-system.js wird verwendet
-            if (window.awsAuth && window.awsAuth.showLoginModal) {
-                window.awsAuth.showLoginModal();
-            } else {
-                alert('Anmelde-System wird geladen...');
-            }
-        }
-        
-        function logoutUser() {
-            console.log('🚪 Logout über einheitliches System');
-            if (window.awsAuth && window.awsAuth.logout) {
-                window.awsAuth.logout();
-            } else {
-                alert('Sie wurden abgemeldet.');
-            }
-        }
     </script>
 </body>
 </html>

@@ -111,33 +111,6 @@
     box-sizing: border-box;
 }
 
-/* Verhindert horizontalen Overflow */
-html, body {
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
-}
-
-/* Globale Overflow-Prävention */
-* {
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-/* Responsive Design - Flexible Einheiten */
-:root {
-    --vw: 1vw;
-    --vh: 1vh;
-    --container-padding: clamp(1rem, 4vw, 2rem);
-    --hero-padding: clamp(2rem, 8vw, 4rem);
-}
-
-/* Spezielle Regeln für problematische Elemente */
-img, video, iframe, canvas, svg {
-    max-width: 100%;
-    height: auto;
-}
-
 html {
     scroll-behavior: smooth;
     font-size: 16px;
@@ -222,9 +195,7 @@ a:hover {
 .container {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 var(--container-padding);
-    width: 100%;
-    overflow-x: hidden;
+    padding: 0 var(--spacing-lg);
 }
 
 /* Navigation */
@@ -239,21 +210,16 @@ a:hover {
     border-bottom: 1px solid var(--gray-200);
     z-index: 1000;
     transition: all var(--transition-base);
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
 }
 
 .nav-container {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 var(--container-padding);
+    padding: 0 var(--spacing-lg);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    overflow-x: hidden;
 }
 
 .nav-brand {
@@ -347,13 +313,11 @@ a:hover {
 
 /* Hero Section */
 .hero {
-    padding: calc(var(--header-height) + var(--hero-padding)) var(--container-padding) var(--hero-padding);
+    padding: calc(var(--header-height) + var(--spacing-3xl)) 0 var(--spacing-3xl);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     position: relative;
     overflow: hidden;
-    width: 100%;
-    max-width: 100%;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -387,14 +351,11 @@ a:hover {
 .hero-container {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0;
+    padding: 0 var(--spacing-lg);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(2rem, 5vw, 4rem);
+    gap: var(--spacing-3xl);
     align-items: center;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
 }
 
 .hero-title {
@@ -484,8 +445,8 @@ a:hover {
 }
 
 .profile-image {
-    width: clamp(200px, 25vw, 300px);
-    height: clamp(200px, 25vw, 300px);
+    width: 300px;
+    height: 300px;
     border-radius: var(--radius-2xl);
     box-shadow: 
         0 20px 40px rgba(0,0,0,0.3),
@@ -493,17 +454,11 @@ a:hover {
     object-fit: cover !important;
     object-position: center top !important;
     aspect-ratio: 1/1;
+    max-width: 300px;
+    max-height: 300px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    /* Verhindert Flicker und Platzhalter-Überlagerung */
-    display: block !important;
-    position: relative;
-    z-index: 10;
-    opacity: 1 !important;
-    visibility: visible !important;
-    /* Verhindert Overflow */
-    max-width: 100%;
 }
 
 .profile-image:hover {
@@ -1380,33 +1335,10 @@ a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-    .hero-container {
-        gap: clamp(1rem, 3vw, 2rem);
-    }
-    
-    .profile-image {
-        width: clamp(180px, 20vw, 250px);
-        height: clamp(180px, 20vw, 250px);
-    }
-}
-
 @media (max-width: 1024px) {
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-        gap: clamp(1rem, 4vw, 2rem);
-    }
-    
-    .hero-title {
-        font-size: clamp(2rem, 8vw, 3rem);
-    }
-    
-    .hero-subtitle {
-        font-size: clamp(1rem, 4vw, 1.25rem);
     }
     
     .about-content {
@@ -1488,50 +1420,14 @@ a:hover {
     }
 }
 
-@media (max-width: 768px) {
-    .hero-container {
-        gap: 1rem;
-    }
-    
-    .hero-title {
-        font-size: clamp(1.5rem, 6vw, 2.5rem);
-    }
-    
-    .hero-subtitle {
-        font-size: clamp(0.9rem, 3vw, 1.1rem);
-    }
-    
-    .profile-image {
-        width: clamp(150px, 30vw, 200px);
-        height: clamp(150px, 30vw, 200px);
-    }
-}
-
 @media (max-width: 480px) {
     .container {
         padding: 0 var(--spacing-md);
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
     }
     
     .hero-actions {
         flex-direction: column;
         align-items: stretch;
-    }
-    
-    .profile-image {
-        width: clamp(120px, 40vw, 180px);
-        height: clamp(120px, 40vw, 180px);
-        max-width: 100%;
-    }
-    
-    .hero-title {
-        font-size: clamp(1.2rem, 8vw, 2rem);
-    }
-    
-    .hero-subtitle {
-        font-size: clamp(0.8rem, 4vw, 1rem);
     }
     
     .btn {
