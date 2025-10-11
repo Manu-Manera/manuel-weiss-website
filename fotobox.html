@@ -10,338 +10,357 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
     <!-- Open Graph -->
     <meta property="og:title" content="Fotobox Vermietung - Manuel Weiss">
     <meta property="og:description" content="Professionelle Fotobox für unvergessliche Events">
     <meta property="og:image" content="images/fotobox/fotobox-1.jpg">
     <meta property="og:url" content="https://manuel-weiss.ch/fotobox.html">
-    <style>
-        /* Modern Fotobox Styles - Clean & Modern wie Wohnmobil */
-        .fotobox-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .fotobox-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('images/fotobox/fotobox-1.jpg') center/cover;
-            opacity: 0.3;
-            z-index: 1;
-        .fotobox-hero .hero-content {
-            z-index: 2;
-            text-align: center;
-            color: white;
-        .fotobox-hero .hero-title {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        .fotobox-hero .hero-subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        .feature-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
-        .gallery-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        .gallery-item {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        .gallery-item:hover {
-            transform: scale(1.05);
-        .gallery-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        .pricing-package {
-            padding: 2.5rem;
-        .pricing-package:hover {
-            transform: translateY(-5px);
-        .package-features {
-            list-style: none;
-            padding: 0;
-            margin: 1.5rem 0;
-        .package-features li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            gap: 0.75rem;
-        .package-features li:last-child {
-            border-bottom: none;
-        .package-features li i {
-            color: #667eea;
-            width: 20px;
-        .btn-modern {
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        .btn-modern:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-        .booking-section {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 4rem 0;
-        .booking-form {
-            padding: 3rem;
-        .form-group {
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .fotobox-hero .hero-title {
-                font-size: 3rem;
-            }
-            
-            .feature-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1.5rem;
-        @media (max-width: 768px) {
-                font-size: 2.5rem;
-            .fotobox-hero .hero-subtitle {
-                font-size: 1.2rem;
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            .gallery-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            .booking-form {
-                padding: 2rem;
-    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">Manuel Weiss</a>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
-                <a href="bewerbungsmanager.html" class="nav-link">Bewerbungsmanager</a>
-                <a href="wohnmobil.html" class="nav-link">Wohnmobil</a>
-                <a href="fotobox.html" class="nav-link active">Fotobox</a>
-                <a href="sup.html" class="nav-link">SUP</a>
-                <a href="ebike.html" class="nav-link">E-Bikes</a>
+    <!-- Modern Navigation -->
+    <nav class="nav-modern" id="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <img src="manuel-weiss-photo.svg" alt="MW">
+                    <span>Manuel Weiss</span>
+                </a>
                 
-                <!-- Unified User System -->
-                <div class="user-system" id="userSystem">
-                    <div class="user-info" id="userInfo" style="display: none;">
-                        <div class="user-avatar">
-                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
-                        </div>
-                        <div class="user-details">
-                            <span class="user-name" id="userName">Benutzer</span>
-                            <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="user-login" id="userLogin">
-                        <button class="btn-login" onclick="loginUser()">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Anmelden</span>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html#home" class="nav-link">Home</a></li>
+                    <li><a href="index.html#services" class="nav-link">Services</a></li>
+                    <li><a href="index.html#projects" class="nav-link">Projekte</a></li>
+                    <li><a href="index.html#about" class="nav-link">Über mich</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Kontakt</a></li>
+                </ul>
+                
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-            <div class="nav-toggle">
-                <span class="bar"></span>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="fotobox-hero">
+    <section class="activity-hero">
+        <div class="hero-background">
+            <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox" class="hero-image">
+            <div class="hero-overlay"></div>
+        </div>
         <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">Fotobox Vermietung</h1>
-                <p class="hero-subtitle">Unvergessliche Momente für Ihre Veranstaltung</p>
-                <a href="#booking" class="btn-modern">Jetzt buchen</a>
-    </section>
-    <!-- Features Section -->
-    <section class="features-section">
-            <h2 class="section-title">Warum unsere Fotobox?</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
+            <div class="hero-content text-center">
+                <h1 class="display-1 mb-4 fade-in">Fotobox Vermietung</h1>
+                <p class="lead mb-5 fade-in-delay-1">Unvergessliche Momente auf Knopfdruck festhalten</p>
+                <div class="hero-cta fade-in-delay-2">
+                    <a href="#booking" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-check"></i>
+                        Event anfragen
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">
                         <i class="fas fa-camera"></i>
-                    <h3>Professionelle Qualität</h3>
-                    <p>Hochauflösende Kameras und professionelle Beleuchtung für perfekte Fotos</p>
-                        <i class="fas fa-print"></i>
-                    <h3>Sofortige Ausdrucke</h3>
-                    <p>Fotos werden sofort ausgedruckt und können mit nach Hause genommen werden</p>
-                        <i class="fas fa-palette"></i>
-                    <h3>Individuelle Gestaltung</h3>
-                    <p>Anpassbare Hintergründe und Rahmen für Ihr Event-Branding</p>
-                        <i class="fas fa-users"></i>
-                    <h3>Gruppenfotos</h3>
-                    <p>Perfekt für Gruppenfotos mit bis zu 8 Personen gleichzeitig</p>
-                        <i class="fas fa-mobile-alt"></i>
-                    <h3>Digitale Kopien</h3>
-                    <p>Alle Fotos werden auch digital zur Verfügung gestellt</p>
-                        <i class="fas fa-truck"></i>
-                    <h3>Lieferung & Aufbau</h3>
-                    <p>Komplette Lieferung, Aufbau und Abholung inklusive</p>
+                        Funktionen ansehen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Die perfekte Unterhaltung</h2>
+                <p class="lead">Professionelle Fotobox mit modernster Technik</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-camera-retro"></i>
+                        </div>
+                        <h3>Hochauflösende Kamera</h3>
+                        <p>Professionelle DSLR-Kamera für gestochen scharfe Aufnahmen</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <h3>Sofortdruck</h3>
+                        <p>Hochwertige Ausdrucke in wenigen Sekunden</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3>Individuelle Designs</h3>
+                        <p>Personalisierte Layouts passend zu Ihrem Event</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <h3>Digital Sharing</h3>
+                        <p>Direkter Upload in Social Media und Online-Galerie</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Gallery Section -->
-    <section class="gallery-section">
-            <h2 class="section-title">Unsere Fotobox in Aktion</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup">
-                    <img src="images/fotobox/fotobox-2.jpg" alt="Fotobox in Aktion">
-                    <img src="images/fotobox/fotobox-3.jpg" alt="Gruppenfoto">
-                    <img src="images/fotobox/fotobox-4.jpg" alt="Hochzeitsfotos">
-                    <img src="images/fotobox/fotobox-5.jpg" alt="Geburtstagsfeier">
-                    <img src="images/fotobox/fotobox-6.jpg" alt="Firmenevent">
-    <!-- Pricing Section -->
-    <section class="pricing-section">
-            <h2 class="section-title">Preise & Pakete</h2>
-                <div class="pricing-package">
-                    <h3>Basic Paket</h3>
-                    <div class="price">ab 299€</div>
-                    <ul class="package-features">
-                        <li><i class="fas fa-check"></i> 4 Stunden Fotobox</li>
-                        <li><i class="fas fa-check"></i> Sofortige Ausdrucke</li>
-                        <li><i class="fas fa-check"></i> Digitale Kopien</li>
-                        <li><i class="fas fa-check"></i> Lieferung & Aufbau</li>
-                        <li><i class="fas fa-check"></i> Grundausstattung</li>
-                    </ul>
-                    <a href="#booking" class="btn-modern">Buchen</a>
-                    <h3>Premium Paket</h3>
-                    <div class="price">ab 499€</div>
-                        <li><i class="fas fa-check"></i> 6 Stunden Fotobox</li>
-                        <li><i class="fas fa-check"></i> Individuelle Hintergründe</li>
-                        <li><i class="fas fa-check"></i> Personalisierte Rahmen</li>
-                        <li><i class="fas fa-check"></i> Erweiterte Ausstattung</li>
-                    <h3>Luxury Paket</h3>
-                    <div class="price">ab 799€</div>
-                        <li><i class="fas fa-check"></i> 8 Stunden Fotobox</li>
-                        <li><i class="fas fa-check"></i> Vollständige Anpassung</li>
-                        <li><i class="fas fa-check"></i> Premium Ausstattung</li>
-                        <li><i class="fas fa-check"></i> Betreuung vor Ort</li>
-                        <li><i class="fas fa-check"></i> Nachbearbeitung</li>
+    <section class="section bg-light">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Im Einsatz</h2>
+                <p class="lead">Die Fotobox auf verschiedenen Events</p>
+            </div>
+            
+            <div class="image-gallery" id="fotoboxGallery">
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Package Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Unsere Pakete</h2>
+                <p class="lead">Wählen Sie das passende Paket für Ihre Veranstaltung</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="pricing-package">
+                        <h3 class="package-title">Basic</h3>
+                        <div class="package-price">
+                            <span class="currency">CHF</span>
+                            <span class="amount">299</span>
+                            <span class="period">/ 3 Stunden</span>
+                        </div>
+                        <ul class="package-features">
+                            <li><i class="fas fa-check"></i> Fotobox-Aufbau & Abbau</li>
+                            <li><i class="fas fa-check"></i> Unbegrenzte Fotos</li>
+                            <li><i class="fas fa-check"></i> Standard-Hintergründe</li>
+                            <li><i class="fas fa-check"></i> Sofortdrucke</li>
+                            <li><i class="fas fa-check"></i> Online-Galerie</li>
+                        </ul>
+                        <a href="#booking" class="btn btn-outline-primary btn-block">Anfragen</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="pricing-package featured">
+                        <div class="package-badge">Beliebt</div>
+                        <h3 class="package-title">Premium</h3>
+                        <div class="package-price">
+                            <span class="currency">CHF</span>
+                            <span class="amount">499</span>
+                            <span class="period">/ 5 Stunden</span>
+                        </div>
+                        <ul class="package-features">
+                            <li><i class="fas fa-check"></i> Alles aus Basic</li>
+                            <li><i class="fas fa-check"></i> Individuelle Layouts</li>
+                            <li><i class="fas fa-check"></i> Requisiten-Set</li>
+                            <li><i class="fas fa-check"></i> GIF & Boomerang</li>
+                            <li><i class="fas fa-check"></i> Gästebuch-Service</li>
+                            <li><i class="fas fa-check"></i> Betreuung vor Ort</li>
+                        </ul>
+                        <a href="#booking" class="btn btn-primary btn-block">Anfragen</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="pricing-package">
+                        <h3 class="package-title">Deluxe</h3>
+                        <div class="package-price">
+                            <span class="currency">CHF</span>
+                            <span class="amount">799</span>
+                            <span class="period">/ ganzer Tag</span>
+                        </div>
+                        <ul class="package-features">
+                            <li><i class="fas fa-check"></i> Alles aus Premium</li>
+                            <li><i class="fas fa-check"></i> Green Screen</li>
+                            <li><i class="fas fa-check"></i> Video-Messages</li>
+                            <li><i class="fas fa-check"></i> Slow-Motion Videos</li>
+                            <li><i class="fas fa-check"></i> Live-Slideshow</li>
+                            <li><i class="fas fa-check"></i> Alle Daten auf USB</li>
+                        </ul>
+                        <a href="#booking" class="btn btn-outline-primary btn-block">Anfragen</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Booking Section -->
-    <section id="booking" class="booking-section">
-            <h2 class="section-title">Fotobox buchen</h2>
-            <div class="booking-form">
-                <form>
-                    <div class="form-group">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" required>
-                        <label for="email">E-Mail *</label>
-                        <input type="email" id="email" name="email" required>
-                        <label for="phone">Telefon</label>
-                        <input type="tel" id="phone" name="phone">
-                        <label for="event-date">Event-Datum *</label>
-                        <input type="date" id="event-date" name="event-date" required>
-                        <label for="event-time">Event-Zeit</label>
-                        <input type="time" id="event-time" name="event-time">
-                        <label for="event-location">Veranstaltungsort *</label>
-                        <input type="text" id="event-location" name="event-location" required>
-                        <label for="package">Paket auswählen *</label>
-                        <select id="package" name="package" required>
-                            <option value="">Paket wählen</option>
-                            <option value="basic">Basic Paket - ab 299€</option>
-                            <option value="premium">Premium Paket - ab 499€</option>
-                            <option value="luxury">Luxury Paket - ab 799€</option>
-                        </select>
-                        <label for="guests">Anzahl Gäste</label>
-                        <input type="number" id="guests" name="guests" min="1">
-                        <label for="special-requests">Besondere Wünsche</label>
-                        <textarea id="special-requests" name="special-requests" rows="4"></textarea>
-                    <button type="submit" class="btn-modern">Anfrage senden</button>
-                </form>
+    <section class="section bg-primary text-white" id="booking">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-2">Fotobox anfragen</h2>
+                <p class="lead">Erzählen Sie uns von Ihrem Event</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form class="booking-form" id="bookingForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventDate">Event-Datum</label>
+                                    <input type="date" class="form-control" id="eventDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventType">Art der Veranstaltung</label>
+                                    <select class="form-control" id="eventType" required>
+                                        <option value="">Bitte wählen...</option>
+                                        <option value="hochzeit">Hochzeit</option>
+                                        <option value="geburtstag">Geburtstag</option>
+                                        <option value="firmenfeier">Firmenfeier</option>
+                                        <option value="andere">Andere</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">E-Mail</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="package">Gewünschtes Paket</label>
+                                    <select class="form-control" id="package">
+                                        <option value="">Noch unsicher</option>
+                                        <option value="basic">Basic</option>
+                                        <option value="premium">Premium</option>
+                                        <option value="deluxe">Deluxe</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="guests">Anzahl Gäste</label>
+                                    <input type="number" class="form-control" id="guests" min="1">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="message">Weitere Informationen</label>
+                                    <textarea class="form-control" id="message" rows="4" placeholder="Location, spezielle Wünsche, Fragen..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-light btn-lg w-100">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Anfrage senden
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
-                    <p>Ihr Partner für Persönlichkeitsentwicklung und besondere Erlebnisse</p>
-                    <h3>Services</h3>
-                    <ul>
-                        <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
-                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
-                        <li><a href="wohnmobil.html">Wohnmobil Vermietung</a></li>
-                        <li><a href="fotobox.html">Fotobox Vermietung</a></li>
-                        <li><a href="sup.html">SUP Vermietung</a></li>
-                        <li><a href="ebike.html">E-Bike Vermietung</a></li>
-                    <h3>Kontakt</h3>
-                    <p>E-Mail: info@manuel-weiss.ch</p>
-                    <p>Telefon: +41 79 123 45 67</p>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4>Manuel Weiss</h4>
+                    <p>Professional Services</p>
+                    <div class="social-links mt-3">
+                        <a href="https://linkedin.com/in/manuel-weiss-526592131" target="_blank" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5>Weitere Vermietungen</h5>
+                    <ul class="footer-links">
+                        <li><a href="wohnmobil.html">Wohnmobil</a></li>
+                        <li><a href="sup.html">Stand-Up Paddle</a></li>
+                        <li><a href="ebike.html">E-Bikes</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5>Kontakt</h5>
+                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
+                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
     </footer>
+
     <!-- Scripts -->
-    <script src="js/global-navigation.js"></script>
-    <script src="js/unified-auth-manager.js"></script>
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
+    <script src="js/image-gallery.js"></script>
+    <script src="script.js"></script>
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Booking form handling
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        eventDate: document.getElementById('eventDate').value,
+                        eventType: document.getElementById('eventType').value,
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        package: document.getElementById('package').value,
+                        guests: document.getElementById('guests').value,
+                        message: document.getElementById('message').value,
+                        rental: 'Fotobox'
+                    };
+                    
+                    // Show success message
+                    alert('Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
+                    bookingForm.reset();
+                });
+            }
         });
     </script>
 </body>
