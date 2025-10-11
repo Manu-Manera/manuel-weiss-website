@@ -1,6 +1,7 @@
 /**
- * 📸 Media Management System 2025
+ * 📸 Media Management System 2025 - Enhanced
  * Moderne Lösung für Service-Bilder mit AWS S3 Integration
+ * Integriert alle Features aus den bestehenden Media Management Systemen
  */
 
 class MediaManagement2025 {
@@ -10,6 +11,14 @@ class MediaManagement2025 {
         this.currentService = 'wohnmobil';
         this.uploadProgress = new UploadProgress();
         this.mediaGallery = new MediaGallery();
+        this.smartAPI = new SmartMediaAPI();
+        this.unifiedUpload = new UnifiedAWSUpload();
+        
+        // Enhanced Features
+        this.analytics = new MediaAnalytics();
+        this.searchEngine = new MediaSearchEngine();
+        this.bulkOperations = new BulkOperations();
+        this.aiFeatures = new AIFeatures();
         
         this.init();
     }
