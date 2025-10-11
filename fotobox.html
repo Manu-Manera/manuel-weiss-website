@@ -101,150 +101,57 @@
             color: white;
         }
         
-        .fotobox-hero .hero-title {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
-        .fotobox-hero .hero-subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .feature-grid {
+        .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin: 3rem 0;
         }
         
-        .feature-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
         
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-        
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
-            color: white;
-        }
-        
-        .pricing-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Pricing Package Styles - Optimiert für bessere Lesbarkeit */
-        .pricing-package {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .pricing-package:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-        
-        .pricing-package.featured {
-            border: 2px solid #667eea;
+        .gallery-item:hover {
             transform: scale(1.05);
         }
         
-        .package-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.5rem 1rem;
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .pricing-package {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 2.5rem;
             text-align: center;
-            margin-bottom: 1.5rem;
-            display: inline-block;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
         }
         
-        .package-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        
-        .package-price {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .package-price .currency {
-            font-size: 1.2rem;
-            color: #6b7280;
-            vertical-align: top;
-        }
-        
-        .package-price .amount {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #667eea;
-            line-height: 1;
-        }
-        
-        .package-price .period {
-            font-size: 1rem;
-            color: #6b7280;
-            display: block;
-            margin-top: 0.5rem;
+        .pricing-package:hover {
+            transform: translateY(-5px);
         }
         
         .package-features {
             list-style: none;
             padding: 0;
-            margin: 0 0 2rem 0;
-            flex-grow: 1;
+            margin: 1.5rem 0;
         }
         
         .package-features li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #374151;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
         
         .package-features li:last-child {
@@ -252,110 +159,41 @@
         }
         
         .package-features li i {
-            color: #10b981;
-            font-size: 1.1rem;
-            margin-top: 0.1rem;
-            flex-shrink: 0;
+            color: #667eea;
+            width: 20px;
         }
         
-        .package-features li:not(:last-child) {
-            margin-bottom: 0.5rem;
-        }
-        
-        .btn-block {
-            width: 100%;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        
-        .btn-primary {
+        .btn-modern {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border: 2px solid transparent;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        .btn-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
             color: white;
-        }
-        
-        .btn-outline-primary {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .btn-outline-primary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        /* Responsive Design für Pricing */
-        @media (max-width: 768px) {
-            .pricing-package {
-                padding: 2rem 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .package-title {
-                font-size: 1.8rem;
-            }
-            
-            .package-price .amount {
-                font-size: 2.5rem;
-            }
-            
-            .package-features li {
-                padding: 0.5rem 0;
-                font-size: 0.95rem;
-            }
-            
-            .btn-block {
-                padding: 0.875rem 1.5rem;
-                font-size: 1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .pricing-package {
-                padding: 1.5rem 1rem;
-            }
-            
-            .package-title {
-                font-size: 1.6rem;
-            }
-            
-            .package-price .amount {
-                font-size: 2.2rem;
-            }
-            
-            .package-features li {
-                font-size: 0.9rem;
-                gap: 0.5rem;
-            }
+            text-decoration: none;
         }
         
         .booking-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 5rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 4rem 0;
         }
         
         .booking-form {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -367,89 +205,37 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: white;
+            color: #374151;
         }
         
-        .form-control {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e5e7eb;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
             font-size: 1rem;
+            transition: border-color 0.3s ease;
         }
         
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
         }
         
-        .btn-modern {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-        }
-        
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        
-        .gallery-item {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .gallery-item:hover {
-            transform: scale(1.05);
-        }
-        
-        .gallery-item img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-        
-        .gallery-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
-        }
-        
-        .gallery-overlay i {
-            color: white;
-            font-size: 2rem;
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .fotobox-hero .hero-title {
+                font-size: 3rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
         }
         
         @media (max-width: 768px) {
@@ -463,262 +249,230 @@
             
             .feature-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
             .gallery-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .booking-form {
+                padding: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Modern Navigation -->
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-brand">
-                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
-                <span class="nav-name">Manuel Weiss</span>
+            <div class="nav-logo">
+                <a href="index.html">Manuel Weiss</a>
             </div>
-            
-            <div class="nav-menu" id="navMenu">
+            <div class="nav-menu">
                 <a href="index.html" class="nav-link">Home</a>
-                <a href="index.html#services" class="nav-link">Services</a>
-                <a href="index.html#about" class="nav-link">Über mich</a>
-                <a href="index.html#contact" class="nav-link">Kontakt</a>
+                <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="bewerbungsmanager.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="wohnmobil.html" class="nav-link">Wohnmobil</a>
+                <a href="fotobox.html" class="nav-link active">Fotobox</a>
+                <a href="sup.html" class="nav-link">SUP</a>
+                <a href="ebike.html" class="nav-link">E-Bikes</a>
             </div>
-            
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="fotobox-hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Fotobox Vermietung</h1>
-            <p class="hero-subtitle">Unvergessliche Momente auf Knopfdruck festhalten</p>
-            <div class="hero-actions">
-                <a href="#booking" class="btn-modern">
-                    <i class="fas fa-calendar-check"></i>
-                    Event anfragen
-                </a>
-                <a href="#features" class="btn-modern" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
-                    <i class="fas fa-camera"></i>
-                    Funktionen ansehen
-                </a>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Fotobox Vermietung</h1>
+                <p class="hero-subtitle">Unvergessliche Momente für Ihre Veranstaltung</p>
+                <a href="#booking" class="btn-modern">Jetzt buchen</a>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="section" id="features" style="padding: 5rem 0; background: #f8fafc;">
+    <section class="features-section">
         <div class="container">
-            <div class="text-center mb-5">
-                <h2 style="font-size: 3rem; font-weight: 800; color: #333; margin-bottom: 1rem;">Die perfekte Unterhaltung</h2>
-                <p style="font-size: 1.2rem; color: #666;">Professionelle Fotobox mit modernster Technik</p>
-            </div>
-            
+            <h2 class="section-title">Warum unsere Fotobox?</h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-camera-retro"></i>
+                        <i class="fas fa-camera"></i>
                     </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Hochauflösende Kamera</h3>
-                    <p style="color: #666; line-height: 1.6;">Professionelle DSLR-Kamera für gestochen scharfe Aufnahmen</p>
+                    <h3>Professionelle Qualität</h3>
+                    <p>Hochauflösende Kameras und professionelle Beleuchtung für perfekte Fotos</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-print"></i>
                     </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Sofortdruck</h3>
-                    <p style="color: #666; line-height: 1.6;">Hochwertige Ausdrucke in wenigen Sekunden</p>
+                    <h3>Sofortige Ausdrucke</h3>
+                    <p>Fotos werden sofort ausgedruckt und können mit nach Hause genommen werden</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-palette"></i>
                     </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Individuelle Designs</h3>
-                    <p style="color: #666; line-height: 1.6;">Personalisierte Layouts passend zu Ihrem Event</p>
+                    <h3>Individuelle Gestaltung</h3>
+                    <p>Anpassbare Hintergründe und Rahmen für Ihr Event-Branding</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-share-alt"></i>
+                        <i class="fas fa-users"></i>
                     </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 1rem;">Digital Sharing</h3>
-                    <p style="color: #666; line-height: 1.6;">Direkter Upload in Social Media und Online-Galerie</p>
+                    <h3>Gruppenfotos</h3>
+                    <p>Perfekt für Gruppenfotos mit bis zu 8 Personen gleichzeitig</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Digitale Kopien</h3>
+                    <p>Alle Fotos werden auch digital zur Verfügung gestellt</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Lieferung & Aufbau</h3>
+                    <p>Komplette Lieferung, Aufbau und Abholung inklusive</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Gallery Section -->
-    <section class="section" style="padding: 5rem 0; background: white;">
+    <section class="gallery-section">
         <div class="container">
-            <div class="text-center mb-5">
-                <h2 style="font-size: 3rem; font-weight: 800; color: #333; margin-bottom: 1rem;">Im Einsatz</h2>
-                <p style="font-size: 1.2rem; color: #666;">Die Fotobox auf verschiedenen Events</p>
-            </div>
-            
+            <h2 class="section-title">Unsere Fotobox in Aktion</h2>
             <div class="gallery-grid">
                 <div class="gallery-item">
-                    <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup" loading="lazy">
-                    <div class="gallery-overlay">
-                        <i class="fas fa-expand"></i>
-                    </div>
+                    <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/fotobox/fotobox-2.jpg" alt="Fotobox in Aktion">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/fotobox/fotobox-3.jpg" alt="Gruppenfoto">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/fotobox/fotobox-4.jpg" alt="Hochzeitsfotos">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/fotobox/fotobox-5.jpg" alt="Geburtstagsfeier">
+                </div>
+                <div class="gallery-item">
+                    <img src="images/fotobox/fotobox-6.jpg" alt="Firmenevent">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Package Section -->
-    <section class="section">
+    <!-- Pricing Section -->
+    <section class="pricing-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Unsere Pakete</h2>
-                <p class="lead">Wählen Sie das passende Paket für Ihre Veranstaltung</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="pricing-package">
-                        <h3 class="package-title">Basic</h3>
-                        <div class="package-price">
-                            <span class="currency">CHF</span>
-                            <span class="amount">299</span>
-                            <span class="period">/ 3 Stunden</span>
-                        </div>
-                        <ul class="package-features">
-                            <li><i class="fas fa-check"></i> Fotobox-Aufbau & Abbau</li>
-                            <li><i class="fas fa-check"></i> Unbegrenzte Fotos</li>
-                            <li><i class="fas fa-check"></i> Standard-Hintergründe</li>
-                            <li><i class="fas fa-check"></i> Sofortdrucke</li>
-                            <li><i class="fas fa-check"></i> Online-Galerie</li>
-                        </ul>
-                        <a href="#booking" class="btn btn-outline-primary btn-block">Anfragen</a>
-                    </div>
+            <h2 class="section-title">Preise & Pakete</h2>
+            <div class="feature-grid">
+                <div class="pricing-package">
+                    <h3>Basic Paket</h3>
+                    <div class="price">ab 299€</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> 4 Stunden Fotobox</li>
+                        <li><i class="fas fa-check"></i> Sofortige Ausdrucke</li>
+                        <li><i class="fas fa-check"></i> Digitale Kopien</li>
+                        <li><i class="fas fa-check"></i> Lieferung & Aufbau</li>
+                        <li><i class="fas fa-check"></i> Grundausstattung</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
                 </div>
-                
-                <div class="col-lg-4">
-                    <div class="pricing-package featured">
-                        <div class="package-badge">Beliebt</div>
-                        <h3 class="package-title">Premium</h3>
-                        <div class="package-price">
-                            <span class="currency">CHF</span>
-                            <span class="amount">499</span>
-                            <span class="period">/ 5 Stunden</span>
-                        </div>
-                        <ul class="package-features">
-                            <li><i class="fas fa-check"></i> Alles aus Basic</li>
-                            <li><i class="fas fa-check"></i> Individuelle Layouts</li>
-                            <li><i class="fas fa-check"></i> Requisiten-Set</li>
-                            <li><i class="fas fa-check"></i> GIF & Boomerang</li>
-                            <li><i class="fas fa-check"></i> Gästebuch-Service</li>
-                            <li><i class="fas fa-check"></i> Betreuung vor Ort</li>
-                        </ul>
-                        <a href="#booking" class="btn btn-primary btn-block">Anfragen</a>
-                    </div>
+                <div class="pricing-package">
+                    <h3>Premium Paket</h3>
+                    <div class="price">ab 499€</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> 6 Stunden Fotobox</li>
+                        <li><i class="fas fa-check"></i> Sofortige Ausdrucke</li>
+                        <li><i class="fas fa-check"></i> Digitale Kopien</li>
+                        <li><i class="fas fa-check"></i> Individuelle Hintergründe</li>
+                        <li><i class="fas fa-check"></i> Personalisierte Rahmen</li>
+                        <li><i class="fas fa-check"></i> Erweiterte Ausstattung</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
                 </div>
-                
-                <div class="col-lg-4">
-                    <div class="pricing-package">
-                        <h3 class="package-title">Deluxe</h3>
-                        <div class="package-price">
-                            <span class="currency">CHF</span>
-                            <span class="amount">799</span>
-                            <span class="period">/ ganzer Tag</span>
-                        </div>
-                        <ul class="package-features">
-                            <li><i class="fas fa-check"></i> Alles aus Premium</li>
-                            <li><i class="fas fa-check"></i> Green Screen</li>
-                            <li><i class="fas fa-check"></i> Video-Messages</li>
-                            <li><i class="fas fa-check"></i> Slow-Motion Videos</li>
-                            <li><i class="fas fa-check"></i> Live-Slideshow</li>
-                            <li><i class="fas fa-check"></i> Alle Daten auf USB</li>
-                        </ul>
-                        <a href="#booking" class="btn btn-outline-primary btn-block">Anfragen</a>
-                    </div>
+                <div class="pricing-package">
+                    <h3>Luxury Paket</h3>
+                    <div class="price">ab 799€</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check"></i> 8 Stunden Fotobox</li>
+                        <li><i class="fas fa-check"></i> Sofortige Ausdrucke</li>
+                        <li><i class="fas fa-check"></i> Digitale Kopien</li>
+                        <li><i class="fas fa-check"></i> Vollständige Anpassung</li>
+                        <li><i class="fas fa-check"></i> Premium Ausstattung</li>
+                        <li><i class="fas fa-check"></i> Betreuung vor Ort</li>
+                        <li><i class="fas fa-check"></i> Nachbearbeitung</li>
+                    </ul>
+                    <a href="#booking" class="btn-modern">Buchen</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Booking Section -->
-    <section class="section bg-primary text-white" id="booking">
+    <section id="booking" class="booking-section">
         <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-2">Fotobox anfragen</h2>
-                <p class="lead">Erzählen Sie uns von Ihrem Event</p>
-            </div>
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <form class="booking-form" id="bookingForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="eventDate">Event-Datum</label>
-                                    <input type="date" class="form-control" id="eventDate" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="eventType">Art der Veranstaltung</label>
-                                    <select class="form-control" id="eventType" required>
-                                        <option value="">Bitte wählen...</option>
-                                        <option value="hochzeit">Hochzeit</option>
-                                        <option value="geburtstag">Geburtstag</option>
-                                        <option value="firmenfeier">Firmenfeier</option>
-                                        <option value="andere">Andere</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" id="name" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="email">E-Mail</label>
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="package">Gewünschtes Paket</label>
-                                    <select class="form-control" id="package">
-                                        <option value="">Noch unsicher</option>
-                                        <option value="basic">Basic</option>
-                                        <option value="premium">Premium</option>
-                                        <option value="deluxe">Deluxe</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="guests">Anzahl Gäste</label>
-                                    <input type="number" class="form-control" id="guests" min="1">
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="message">Weitere Informationen</label>
-                                    <textarea class="form-control" id="message" rows="4" placeholder="Location, spezielle Wünsche, Fragen..."></textarea>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-light btn-lg w-100">
-                                    <i class="fas fa-paper-plane"></i>
-                                    Anfrage senden
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <h2 class="section-title">Fotobox buchen</h2>
+            <div class="booking-form">
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-Mail *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-date">Event-Datum *</label>
+                        <input type="date" id="event-date" name="event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-time">Event-Zeit</label>
+                        <input type="time" id="event-time" name="event-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-location">Veranstaltungsort *</label>
+                        <input type="text" id="event-location" name="event-location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="package">Paket auswählen *</label>
+                        <select id="package" name="package" required>
+                            <option value="">Paket wählen</option>
+                            <option value="basic">Basic Paket - ab 299€</option>
+                            <option value="premium">Premium Paket - ab 499€</option>
+                            <option value="luxury">Luxury Paket - ab 799€</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Anzahl Gäste</label>
+                        <input type="number" id="guests" name="guests" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="special-requests">Besondere Wünsche</label>
+                        <textarea id="special-requests" name="special-requests" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn-modern">Anfrage senden</button>
+                </form>
             </div>
         </div>
     </section>
@@ -726,73 +480,35 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h4>Manuel Weiss</h4>
-                    <p>Professional Services</p>
-                    <div class="social-links mt-3">
-                        <a href="https://linkedin.com/in/manuel-weiss-526592131" target="_blank" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="https://github.com/Manu-Ma-Ma" target="_blank" aria-label="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="mailto:weissmanuel94@gmail.com" aria-label="Email">
-                            <i class="fas fa-envelope"></i>
-                        </a>
-                    </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>Ihr Partner für Persönlichkeitsentwicklung und besondere Erlebnisse</p>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <h5>Weitere Vermietungen</h5>
-                    <ul class="footer-links">
-                        <li><a href="wohnmobil.html">Wohnmobil</a></li>
-                        <li><a href="sup.html">Stand-Up Paddle</a></li>
-                        <li><a href="ebike.html">E-Bikes</a></li>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
+                        <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
+                        <li><a href="wohnmobil.html">Wohnmobil Vermietung</a></li>
+                        <li><a href="fotobox.html">Fotobox Vermietung</a></li>
+                        <li><a href="sup.html">SUP Vermietung</a></li>
+                        <li><a href="ebike.html">E-Bike Vermietung</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <h5>Kontakt</h5>
-                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
-                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
-                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>E-Mail: info@manuel-weiss.ch</p>
+                    <p>Telefon: +41 79 123 45 67</p>
                 </div>
             </div>
-            <hr class="footer-divider">
-            <div class="text-center">
-                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/image-gallery.js"></script>
-    <script src="script.js"></script>
-    <script>
-        // Initialize page functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Booking form handling
-            const bookingForm = document.getElementById('bookingForm');
-            if (bookingForm) {
-                bookingForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = {
-                        eventDate: document.getElementById('eventDate').value,
-                        eventType: document.getElementById('eventType').value,
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value,
-                        package: document.getElementById('package').value,
-                        guests: document.getElementById('guests').value,
-                        message: document.getElementById('message').value,
-                        rental: 'Fotobox'
-                    };
-                    
-                    // Show success message
-                    alert('Vielen Dank für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
-                    bookingForm.reset();
-                });
-            }
-        });
-    </script>
+    <script src="js/global-navigation.js"></script>
 </body>
 </html>
