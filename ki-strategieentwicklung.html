@@ -9,10 +9,12 @@
     <meta name="description" content="Professionelle KI-Strategieentwicklung für HR nach Harvard & MIT Methoden. Strategische Beratung für KI-Integration in HR-Prozesse.">
     <meta name="keywords" content="KI-Strategie, HR, Harvard, MIT, KI-Integration, HR-Transformation, People Analytics">
     <meta name="author" content="Manuel Weiss">
+    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <!-- Custom Styles for KI Strategy -->
     <style>
         .ki-strategy-hero {
@@ -31,11 +33,15 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+        
         .ki-strategy-hero p {
             font-size: 1.1rem;
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto 1.5rem;
+        }
+        
         .methodology-badge {
             display: inline-flex;
             align-items: center;
@@ -46,14 +52,20 @@
             font-size: 0.9rem;
             font-weight: 500;
             backdrop-filter: blur(10px);
+        }
+        
         .strategy-overview {
             padding: 4rem 0;
             background: #f8fafc;
+        }
+        
         .strategy-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
+        }
+        
         .strategy-card {
             background: white;
             border-radius: 16px;
@@ -61,20 +73,34 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             border: 1px solid #e5e7eb;
+        }
+        
         .strategy-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
         .strategy-card h3 {
             color: #1f2937;
             font-size: 1.5rem;
             font-weight: 700;
+            margin-bottom: 1rem;
             display: flex;
+            align-items: center;
             gap: 0.75rem;
+        }
+        
         .strategy-card .icon {
             width: 48px;
             height: 48px;
             border-radius: 12px;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
         .strategy-card .icon.vision { background: linear-gradient(135deg, #667eea, #764ba2); }
         .strategy-card .icon.value { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .strategy-card .icon.data { background: linear-gradient(135deg, #4facfe, #00f2fe); }
@@ -82,48 +108,114 @@
         .strategy-card .icon.ethics { background: linear-gradient(135deg, #fa709a, #fee140); }
         .strategy-card .icon.scaling { background: linear-gradient(135deg, #a8edea, #fed6e3); }
         .strategy-card .icon.learning { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        
         .strategy-card p {
             color: #6b7280;
             line-height: 1.6;
             margin-bottom: 1.5rem;
+        }
+        
         .strategy-features {
             list-style: none;
             padding: 0;
+        }
+        
         .strategy-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             padding: 0.5rem 0;
             color: #374151;
+            font-weight: 500;
+        }
+        
         .strategy-features li i {
             color: #10b981;
             font-size: 0.875rem;
+        }
+        
         .workflow-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
         .workflow-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
         .workflow-cta p {
             font-size: 1.25rem;
+            opacity: 0.9;
             margin-bottom: 2rem;
+            max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+        }
+        
         .btn-workflow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
             color: #667eea;
             padding: 1rem 2rem;
+            border-radius: 50px;
             font-weight: 600;
+            font-size: 1.1rem;
             text-decoration: none;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
         .btn-workflow:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
             color: #5a67d8;
+        }
+        
         .methodology-section {
+            padding: 4rem 0;
+            background: white;
+        }
+        
         .methodology-grid {
+            display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 3rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+        
         .methodology-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 2rem;
             border-left: 4px solid #667eea;
+        }
+        
         .methodology-card h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
         .methodology-card .university-badge {
             background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .ki-strategy-hero h1 {
                 font-size: 2rem;
@@ -131,20 +223,37 @@
             
             .strategy-grid {
                 grid-template-columns: 1fr;
+            }
+            
             .methodology-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
+            display: flex;
+            align-items: center;
             margin-left: 20px;
+        }
 
         .user-info {
+            display: flex;
+            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
             border-radius: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
         .user-info:hover {
+            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
         .user-avatar {
             width: 32px;
             height: 32px;
@@ -152,53 +261,113 @@
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
         .user-avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
         .user-details {
+            display: flex;
             flex-direction: column;
             gap: 2px;
+        }
+
         .user-name {
+            font-size: 0.8rem;
+            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
+        }
+
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
+            line-height: 1.2;
+        }
+
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
             border: none;
+            border-radius: 50%;
             width: 28px;
             height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
         .user-login {
+            display: flex;
+            align-items: center;
+        }
+
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
         .btn-login:hover {
+            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
         .btn-login i {
+            font-size: 0.7rem;
+        }
+
         /* Responsive Design for User System */
+        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
+            }
+
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
+            }
+
             .user-avatar {
                 width: 28px;
                 height: 28px;
+            }
+
             .user-name {
                 font-size: 0.7rem;
+            }
+
             .user-email {
                 font-size: 0.6rem;
+            }
+
             .btn-login {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -208,11 +377,13 @@
                 <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
+            
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
+            
                 <!-- AWS User System - Nur auf Service-Unterseiten -->
                 <div class="user-system" id="userSystem">
                     <div class="user-info" id="userInfo" style="display: none;">
@@ -222,6 +393,7 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -231,35 +403,50 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
+                        </button>
+                    </div>
                 </div>
                 
+            </div>
+            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
+
     <!-- Hero Section -->
     <section class="ki-strategy-hero">
         <div class="container">
             <div class="methodology-badge">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Harvard & MIT Methodologie</span>
+            </div>
             <h1>KI-Strategieentwicklung für HR</h1>
             <p>Entwickeln Sie eine umfassende KI-Strategie für Ihr HR mit bewährten Methoden von Harvard und MIT. Strategische Verankerung, Wertschöpfung und ethische Implementierung.</p>
             <a href="#workflow" class="btn-workflow">
                 <i class="fas fa-brain"></i>
                 KI-Strategie entwickeln
             </a>
+        </div>
     </section>
+
     <!-- Strategy Overview -->
     <section class="strategy-overview">
+        <div class="container">
             <div class="section-header">
                 <h2>Die 7 Säulen der KI-Strategieentwicklung</h2>
                 <p>Ein systematischer Ansatz für die erfolgreiche KI-Integration in HR</p>
+            </div>
+            
             <div class="strategy-grid">
                 <div class="strategy-card">
                     <h3>
                         <div class="icon vision">
                             <i class="fas fa-eye"></i>
+                        </div>
                         Vision & strategische Verankerung
                     </h3>
                     <p>KI in HR muss die übergeordnete Unternehmensstrategie stützen. Talent als "strategisches Asset" mit Fokus auf "Augmentation statt Substitution".</p>
@@ -269,114 +456,186 @@
                         <li><i class="fas fa-check"></i> Augmentation statt Substitution</li>
                         <li><i class="fas fa-check"></i> HR-Teams befähigen</li>
                     </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon value">
                             <i class="fas fa-chart-line"></i>
+                        </div>
                         Wertschöpfung & HR-Use Cases
+                    </h3>
                     <p>Klare Werthebel identifizieren und "Use case factory" Ansatz: Pilotieren in abgegrenzten HR-Feldern, dann iterativ skalieren.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> Bessere Recruiting-Qualität</li>
                         <li><i class="fas fa-check"></i> Schnellere Onboarding-Prozesse</li>
                         <li><i class="fas fa-check"></i> Individuelle Lernpfade</li>
                         <li><i class="fas fa-check"></i> People Analytics</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon data">
                             <i class="fas fa-database"></i>
+                        </div>
                         Daten- und Technologie-Architektur
+                    </h3>
                     <p>People Data Governance mit klaren Regeln zu Datenschutz, Fairness und Employee Consent. "Data Readiness" für strukturierte, integrierte HR-Daten.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> People Data Governance</li>
                         <li><i class="fas fa-check"></i> Datenschutz & Fairness</li>
                         <li><i class="fas fa-check"></i> HR-Datenplattform</li>
                         <li><i class="fas fa-check"></i> System-Integration</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon organization">
                             <i class="fas fa-sitemap"></i>
+                        </div>
                         Organisation & HR Operating Model
+                    </h3>
                     <p>HR Analytics / AI CoE einrichten. "Hybrid HR" - HR-Profis werden zu "People Scientists" mit Daten- und Technologiekompetenz.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> HR Analytics CoE</li>
                         <li><i class="fas fa-check"></i> Hybrid HR Model</li>
                         <li><i class="fas fa-check"></i> People Scientists</li>
                         <li><i class="fas fa-check"></i> Neue Rollen definieren</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon ethics">
                             <i class="fas fa-balance-scale"></i>
+                        </div>
                         Ethik, Fairness & Employee Trust
+                    </h3>
                     <p>Starke Betonung von Fairness & Anti-Bias. Transparente Algorithmen ("Explainable AI") für nachvollziehbare KI-Entscheidungen.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> Anti-Bias Maßnahmen</li>
                         <li><i class="fas fa-check"></i> Explainable AI</li>
                         <li><i class="fas fa-check"></i> Transparente Algorithmen</li>
                         <li><i class="fas fa-check"></i> Employee Trust</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon scaling">
                             <i class="fas fa-expand-arrows-alt"></i>
+                        </div>
                         Skalierung & HR-Ökosystem
+                    </h3>
                     <p>Partnerschaften mit HR-Tech-Providern und Plattformen. Open Innovation & Plattform-Ökosysteme für nachhaltige KI-Integration.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> HR-Tech Partnerschaften</li>
                         <li><i class="fas fa-check"></i> Open Innovation</li>
                         <li><i class="fas fa-check"></i> Plattform-Ökosysteme</li>
                         <li><i class="fas fa-check"></i> Talent-Ökosystem</li>
+                    </ul>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>
                         <div class="icon learning">
                             <i class="fas fa-sync-alt"></i>
+                        </div>
                         Kontinuierliches Lernen & Anpassung
+                    </h3>
                     <p>"Disruptive HR" - HR muss sich selbst neu erfinden. KI-Strategie als lebendes System mit ständiger Anpassung an Tech-Sprünge.</p>
+                    <ul class="strategy-features">
                         <li><i class="fas fa-check"></i> Disruptive HR</li>
                         <li><i class="fas fa-check"></i> Lebendes System</li>
                         <li><i class="fas fa-check"></i> KPI-Monitoring</li>
                         <li><i class="fas fa-check"></i> Kontinuierliche Anpassung</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Methodology Section -->
     <section class="methodology-section">
+        <div class="container">
+            <div class="section-header">
                 <h2>Wissenschaftlich fundierte Methodologie</h2>
                 <p>Basierend auf bewährten Ansätzen von führenden Universitäten</p>
+            </div>
+            
             <div class="methodology-grid">
                 <div class="methodology-card">
+                    <h3>
                         <span class="university-badge">Harvard</span>
                         Harvard Business School Ansatz
+                    </h3>
                     <p><strong>Strategische Verankerung:</strong> KI in HR muss die übergeordnete Unternehmensstrategie stützen. Talent als "strategisches Asset" mit klaren Werthebeln.</p>
                     <p><strong>People Data Governance:</strong> Klare Regeln zu Datenschutz, Fairness und Employee Consent. Starke Betonung von Anti-Bias und Transparenz.</p>
                     <p><strong>Disruptive HR:</strong> HR muss sich selbst neu erfinden, bevor andere es tun. Kontinuierliche Transformation und Anpassung.</p>
+                </div>
+                
+                <div class="methodology-card">
+                    <h3>
                         <span class="university-badge">MIT</span>
                         MIT Sloan School Ansatz
+                    </h3>
                     <p><strong>Augmentation statt Substitution:</strong> KI soll HR-Teams und Führungskräfte befähigen, nicht ersetzen. Fokus auf "Hybrid HR" Modelle.</p>
                     <p><strong>Data Readiness:</strong> HR-Daten müssen strukturiert, integriert und qualitativ hochwertig sein. "Use case factory" für iterative Skalierung.</p>
                     <p><strong>Open Innovation:</strong> Nutzung von Plattform-Ökosystemen und Partnerschaften für nachhaltige KI-Integration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Workflow CTA -->
     <section class="workflow-cta" id="workflow">
+        <div class="container">
             <h2>Starten Sie Ihre KI-Strategieentwicklung</h2>
             <p>Durchlaufen Sie unseren strukturierten Workflow und entwickeln Sie eine maßgeschneiderte KI-Strategie für Ihr HR.</p>
             <a href="ki-strategie-workflow.html" class="btn-workflow">
+                <i class="fas fa-brain"></i>
+                KI-Strategie entwickeln
+            </a>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
+        <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>HR Berater für AI & Transformation</p>
+                </div>
+                <div class="footer-section">
                     <h4>Services</h4>
                     <ul>
                         <li><a href="ki-strategieentwicklung.html">KI-Strategieentwicklung</a></li>
                         <li><a href="index.html#services">HR Transformation</a></li>
                         <li><a href="index.html#services">Prozessoptimierung</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
                     <h4>Kontakt</h4>
                     <p>manuel.weiss@example.com</p>
                     <p>+41 79 123 45 67</p>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
     </footer>
+
+    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
+
+
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
 <script src="js/aws-auth.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
-    
-    <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
-    </script>

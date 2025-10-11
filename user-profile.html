@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/user-profile.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Modern Navigation -->
@@ -25,6 +24,7 @@
                     <i class="fas fa-save"></i>
                     Speichern
                 </button>
+            </div>
         </div>
     </nav>
 
@@ -49,11 +49,18 @@
                             <span class="stat-number" id="completedMethods">0</span>
                             <span class="stat-label">Abgeschlossene Methoden</span>
                         </div>
+                        <div class="stat-item">
                             <span class="stat-number" id="totalProgress">0%</span>
                             <span class="stat-label">Gesamtfortschritt</span>
+                        </div>
+                        <div class="stat-item">
                             <span class="stat-number" id="streakDays">0</span>
                             <span class="stat-label">Tage in Folge</span>
+                        </div>
+                    </div>
+                </div>
             </section>
+
             <!-- Profile Tabs -->
             <section class="profile-tabs">
                 <div class="tab-nav">
@@ -64,12 +71,18 @@
                     <button class="tab-btn" data-tab="settings">
                         <i class="fas fa-cog"></i>
                         Einstellungen
+                    </button>
                     <button class="tab-btn" data-tab="progress">
                         <i class="fas fa-chart-line"></i>
                         Fortschritt
+                    </button>
                     <button class="tab-btn" data-tab="achievements">
                         <i class="fas fa-trophy"></i>
                         Erfolge
+                    </button>
+                </div>
+            </section>
+
             <!-- Tab Content -->
             <div class="tab-content">
                 <!-- Personal Data Tab -->
@@ -81,21 +94,41 @@
                                 <label for="firstName">Vorname</label>
                                 <input type="text" id="firstName" value="Manuel" placeholder="Dein Vorname">
                             </div>
+                            <div class="form-group">
                                 <label for="lastName">Nachname</label>
                                 <input type="text" id="lastName" value="Weiss" placeholder="Dein Nachname">
+                            </div>
+                            <div class="form-group">
                                 <label for="email">E-Mail</label>
                                 <input type="email" id="email" value="manuel.weiss@example.com" placeholder="Deine E-Mail">
+                            </div>
+                            <div class="form-group">
                                 <label for="phone">Telefon</label>
                                 <input type="tel" id="phone" placeholder="Deine Telefonnummer">
+                            </div>
+                            <div class="form-group">
                                 <label for="birthDate">Geburtsdatum</label>
                                 <input type="date" id="birthDate">
+                            </div>
+                            <div class="form-group">
                                 <label for="location">Standort</label>
                                 <input type="text" id="location" placeholder="Dein Standort">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3><i class="fas fa-briefcase"></i> Berufliche Informationen</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
                                 <label for="profession">Beruf</label>
                                 <input type="text" id="profession" placeholder="Dein Beruf">
+                            </div>
+                            <div class="form-group">
                                 <label for="company">Unternehmen</label>
                                 <input type="text" id="company" placeholder="Dein Unternehmen">
+                            </div>
+                            <div class="form-group">
                                 <label for="experience">Berufserfahrung</label>
                                 <select id="experience">
                                     <option value="">Wähle deine Erfahrung</option>
@@ -104,16 +137,30 @@
                                     <option value="6-10">6-10 Jahre</option>
                                     <option value="10+">10+ Jahre</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="industry">Branche</label>
                                 <input type="text" id="industry" placeholder="Deine Branche">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3><i class="fas fa-heart"></i> Persönliche Ziele</h3>
                         <div class="form-group">
                             <label for="goals">Deine Ziele</label>
                             <textarea id="goals" placeholder="Beschreibe deine persönlichen und beruflichen Ziele..."></textarea>
+                        </div>
+                        <div class="form-group">
                             <label for="interests">Interessen</label>
                             <textarea id="interests" placeholder="Deine Hobbys und Interessen..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Settings Tab -->
                 <div class="tab-panel" id="settings">
+                    <div class="form-section">
                         <h3><i class="fas fa-bell"></i> Benachrichtigungen</h3>
                         <div class="settings-grid">
                             <div class="setting-item">
@@ -125,38 +172,83 @@
                                     <input type="checkbox" id="emailNotifications" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
                                     <h4>Wöchentliche Zusammenfassung</h4>
                                     <p>Wöchentlicher Fortschrittsbericht</p>
+                                </div>
+                                <label class="toggle-switch">
                                     <input type="checkbox" id="weeklySummary" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
                                     <h4>Erinnerungen</h4>
                                     <p>Erinnerungen für tägliche Übungen</p>
+                                </div>
+                                <label class="toggle-switch">
                                     <input type="checkbox" id="reminders">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3><i class="fas fa-palette"></i> Design-Einstellungen</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
                                 <label for="theme">Design-Theme</label>
                                 <select id="theme">
                                     <option value="light">Hell</option>
                                     <option value="dark">Dunkel</option>
                                     <option value="auto">Automatisch</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="language">Sprache</label>
                                 <select id="language">
                                     <option value="de">Deutsch</option>
                                     <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3><i class="fas fa-shield-alt"></i> Datenschutz</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <div class="setting-info">
                                     <h4>Daten teilen</h4>
                                     <p>Anonymisierte Daten für Verbesserungen teilen</p>
+                                </div>
+                                <label class="toggle-switch">
                                     <input type="checkbox" id="dataSharing">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Progress Tab -->
                 <div class="tab-panel" id="progress">
                     <div class="progress-dashboard">
                         <div class="dashboard-header">
                             <h3><i class="fas fa-chart-line"></i> Dein Fortschritt</h3>
                             <p>Verfolge deine Entwicklung in der Persönlichkeitsentwicklung</p>
+                        </div>
+
                         <!-- Overall Progress -->
                         <div class="progress-overview">
                             <div class="overview-card">
                                 <div class="card-header">
                                     <h4>Gesamtfortschritt</h4>
                                     <span class="progress-percentage" id="overallProgress">0%</span>
+                                </div>
                                 <div class="progress-ring">
                                     <svg class="progress-ring-svg" width="120" height="120">
                                         <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="#e5e7eb" stroke-width="8"/>
@@ -166,34 +258,85 @@
                                         <span class="progress-number" id="overallProgressNumber">0</span>
                                         <span class="progress-label">von 29 Methoden</span>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Method Categories -->
                         <div class="categories-grid">
                             <div class="category-card">
                                 <div class="category-header">
                                     <div class="category-icon">
                                         <i class="fas fa-heart"></i>
+                                    </div>
                                     <div class="category-info">
                                         <h4>Selbstfindung</h4>
                                         <p>5 Methoden</p>
+                                    </div>
+                                </div>
                                 <div class="category-progress">
                                     <div class="progress-bar">
                                         <div class="progress-fill" style="width: 60%"></div>
+                                    </div>
                                     <span class="progress-text">3/5 abgeschlossen</span>
+                                </div>
+                            </div>
+
+                            <div class="category-card">
+                                <div class="category-header">
+                                    <div class="category-icon">
                                         <i class="fas fa-brain"></i>
+                                    </div>
+                                    <div class="category-info">
                                         <h4>Entwicklung</h4>
                                         <p>8 Methoden</p>
+                                    </div>
+                                </div>
+                                <div class="category-progress">
+                                    <div class="progress-bar">
                                         <div class="progress-fill" style="width: 25%"></div>
+                                    </div>
                                     <span class="progress-text">2/8 abgeschlossen</span>
+                                </div>
+                            </div>
+
+                            <div class="category-card">
+                                <div class="category-header">
+                                    <div class="category-icon">
                                         <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="category-info">
                                         <h4>Beziehungen</h4>
                                         <p>6 Methoden</p>
+                                    </div>
+                                </div>
+                                <div class="category-progress">
+                                    <div class="progress-bar">
                                         <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
                                     <span class="progress-text">0/6 abgeschlossen</span>
+                                </div>
+                            </div>
+
+                            <div class="category-card">
+                                <div class="category-header">
+                                    <div class="category-icon">
                                         <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div class="category-info">
                                         <h4>Karriere</h4>
                                         <p>4 Methoden</p>
+                                    </div>
+                                </div>
+                                <div class="category-progress">
+                                    <div class="progress-bar">
                                         <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
                                     <span class="progress-text">3/4 abgeschlossen</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Recent Activity -->
                         <div class="activity-section">
                             <h4><i class="fas fa-clock"></i> Letzte Aktivitäten</h4>
@@ -201,64 +344,105 @@
                                 <div class="activity-item">
                                     <div class="activity-icon">
                                         <i class="fas fa-check-circle"></i>
+                                    </div>
                                     <div class="activity-content">
                                         <h5>Werte-Klärung abgeschlossen</h5>
                                         <p>vor 2 Tagen</p>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
                                         <h5>Ikigai-Methode abgeschlossen</h5>
                                         <p>vor 1 Woche</p>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
                                         <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
                                         <h5>Emotionale Intelligenz gestartet</h5>
                                         <p>vor 3 Tagen</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Achievements Tab -->
                 <div class="tab-panel" id="achievements">
                     <div class="achievements-dashboard">
+                        <div class="dashboard-header">
                             <h3><i class="fas fa-trophy"></i> Deine Erfolge</h3>
                             <p>Feiere deine Fortschritte und erreiche neue Meilensteine</p>
+                        </div>
+
                         <div class="achievements-grid">
                             <div class="achievement-card earned">
                                 <div class="achievement-icon">
                                     <i class="fas fa-star"></i>
+                                </div>
                                 <div class="achievement-info">
                                     <h4>Erste Schritte</h4>
                                     <p>Erste Methode abgeschlossen</p>
+                                </div>
                                 <div class="achievement-date">
                                     <i class="fas fa-calendar"></i>
                                     <span>vor 2 Tagen</span>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card earned">
+                                <div class="achievement-icon">
                                     <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="achievement-info">
                                     <h4>Werte-Entdecker</h4>
                                     <p>Werte-Klärung abgeschlossen</p>
+                                </div>
+                                <div class="achievement-date">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>vor 2 Tagen</span>
+                                </div>
+                            </div>
+
                             <div class="achievement-card locked">
+                                <div class="achievement-icon">
                                     <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="achievement-info">
                                     <h4>Streak-Master</h4>
                                     <p>7 Tage in Folge aktiv</p>
+                                </div>
                                 <div class="achievement-progress">
                                     <span>3/7 Tage</span>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card locked">
+                                <div class="achievement-icon">
                                     <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="achievement-info">
                                     <h4>Entwicklungs-Experte</h4>
                                     <p>10 Methoden abgeschlossen</p>
+                                </div>
+                                <div class="achievement-progress">
                                     <span>5/10 Methoden</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+
     <script src="js/working-auth-system.js"></script>
     <script src="js/user-profile.js"></script>
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
 </body>
 </html>
-    
-    <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
-    </script>
