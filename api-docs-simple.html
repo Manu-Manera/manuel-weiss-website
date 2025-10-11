@@ -16,190 +16,97 @@
             background: #f8f9fa;
             color: #333;
             line-height: 1.6;
-        }
-        
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 3rem 2rem;
             text-align: center;
-        }
-        
         .header h1 {
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 1rem;
-        }
-        
         .header p {
             font-size: 1.2rem;
             opacity: 0.9;
-        }
-        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
-        }
-        
         .api-section {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
         .api-section h2 {
-            color: #333;
             margin-bottom: 1.5rem;
             font-size: 1.8rem;
             border-bottom: 3px solid #6366f1;
             padding-bottom: 0.5rem;
-        }
-        
         .endpoint {
-            background: #f8f9fa;
             border-radius: 8px;
             padding: 1.5rem;
-            margin-bottom: 1rem;
             border-left: 4px solid #6366f1;
-        }
-        
         .endpoint-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
         .method {
             padding: 0.5rem 1rem;
             border-radius: 6px;
             font-weight: 600;
             font-size: 0.9rem;
-        }
-        
         .method.get { background: #10b981; color: white; }
         .method.post { background: #3b82f6; color: white; }
         .method.put { background: #f59e0b; color: white; }
         .method.delete { background: #ef4444; color: white; }
-        
         .endpoint-url {
             font-family: 'Monaco', 'Menlo', monospace;
             background: #e5e7eb;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-        
         .endpoint-description {
             color: #666;
-            margin-bottom: 1rem;
-        }
-        
         .parameters {
             margin-top: 1rem;
-        }
-        
         .parameter {
-            background: white;
-            border-radius: 6px;
             padding: 1rem;
             margin-bottom: 0.5rem;
             border: 1px solid #e5e7eb;
-        }
-        
         .parameter-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
         .parameter-type {
             color: #6366f1;
-            font-size: 0.9rem;
-        }
-        
         .parameter-description {
-            color: #666;
-            font-size: 0.9rem;
             margin-top: 0.25rem;
-        }
-        
         .response {
             background: #f0f9ff;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-top: 1rem;
             border: 1px solid #0ea5e9;
-        }
-        
         .response-code {
-            font-weight: 600;
             color: #0ea5e9;
-        }
-        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
         .stat-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
         .stat-number {
             font-size: 2.5rem;
-            font-weight: 700;
-            color: #6366f1;
-            margin-bottom: 0.5rem;
-        }
-        
         .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
         .test-button {
             background: #10b981;
-            color: white;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
             transition: background 0.3s ease;
-        }
-        
         .test-button:hover {
             background: #059669;
-        }
-        
         .back-button {
             position: fixed;
             top: 2rem;
             left: 2rem;
             background: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
             text-decoration: none;
-            transition: background 0.3s ease;
-        }
-        
         .back-button:hover {
             background: #4f46e5;
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <a href="admin.html" class="back-button">← Zurück zum Admin</a>
@@ -208,7 +115,6 @@
         <h1>🚀 API Dokumentation</h1>
         <p>Vollständige API-Dokumentation für alle Endpunkte und Services</p>
     </div>
-    
     <div class="container">
         <!-- API Statistiken -->
         <div class="api-section">
@@ -218,297 +124,104 @@
                     <div class="stat-number">50+</div>
                     <div class="stat-label">API Endpunkte</div>
                 </div>
-                <div class="stat-card">
                     <div class="stat-number">8</div>
                     <div class="stat-label">Service Kategorien</div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-number">100%</div>
                     <div class="stat-label">Swagger Coverage</div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-number">24/7</div>
                     <div class="stat-label">API Verfügbarkeit</div>
-                </div>
             </div>
         </div>
-        
         <!-- Media Management API -->
-        <div class="api-section">
             <h2>📸 Media Management API</h2>
             
             <div class="endpoint">
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/media/upload</span>
-                </div>
                 <div class="endpoint-description">
                     Lädt eine einzelne Datei hoch und speichert sie in AWS S3
-                </div>
                 <div class="parameters">
                     <div class="parameter">
                         <div class="parameter-name">file <span class="parameter-type">(File)</span></div>
                         <div class="parameter-description">Die hochzuladende Datei</div>
                     </div>
-                    <div class="parameter">
                         <div class="parameter-name">category <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Kategorie der Datei (profile, documents, videos, etc.)</div>
-                    </div>
-                    <div class="parameter">
                         <div class="parameter-name">subcategory <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Unterkategorie der Datei (hero, cv, gallery, etc.)</div>
-                    </div>
-                </div>
                 <div class="response">
                     <div class="response-code">200 OK</div>
                     <div>Datei erfolgreich hochgeladen</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/media/bulk-upload</span>
-                </div>
-                <div class="endpoint-description">
                     Lädt mehrere Dateien gleichzeitig hoch
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">files <span class="parameter-type">(File[])</span></div>
                         <div class="parameter-description">Array von Dateien zum Hochladen</div>
-                    </div>
-                    <div class="parameter">
-                        <div class="parameter-name">category <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Kategorie für alle Dateien</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Alle Dateien erfolgreich hochgeladen</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
                     <span class="method get">GET</span>
                     <span class="endpoint-url">/api/v1/media/list</span>
-                </div>
-                <div class="endpoint-description">
                     Listet alle Medien in einer Kategorie auf
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">category <span class="parameter-type">(String, optional)</span></div>
                         <div class="parameter-description">Filter nach Kategorie</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Liste der Medien</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
                     <span class="endpoint-url">/api/v1/media/download/{id}</span>
-                </div>
-                <div class="endpoint-description">
                     Lädt eine Datei herunter
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">id <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Eindeutige ID der Datei</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Datei-Inhalt</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
                     <span class="method delete">DELETE</span>
                     <span class="endpoint-url">/api/v1/media/delete/{id}</span>
-                </div>
-                <div class="endpoint-description">
                     Löscht eine Datei
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
-                        <div class="parameter-name">id <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Eindeutige ID der zu löschenden Datei</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Datei erfolgreich gelöscht</div>
-                </div>
-            </div>
-        </div>
-        
         <!-- Bewerbungsworkflow API -->
-        <div class="api-section">
             <h2>📝 Bewerbungsworkflow API</h2>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/bewerbung/create</span>
-                </div>
-                <div class="endpoint-description">
                     Erstellt eine neue Bewerbung
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">jobDescription <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Stellenbeschreibung</div>
-                    </div>
-                    <div class="parameter">
                         <div class="parameter-name">company <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Unternehmensname</div>
-                    </div>
-                    <div class="parameter">
                         <div class="parameter-name">position <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Stellenbezeichnung</div>
-                    </div>
-                </div>
-                <div class="response">
                     <div class="response-code">201 Created</div>
                     <div>Bewerbung erfolgreich erstellt</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/bewerbung/analyze</span>
-                </div>
-                <div class="endpoint-description">
                     Analysiert eine Stellenbeschreibung mit KI
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
-                        <div class="parameter-name">jobDescription <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">Stellenbeschreibung zur Analyse</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>KI-Analyse der Stellenbeschreibung</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/bewerbung/generate-cover-letter</span>
-                </div>
-                <div class="endpoint-description">
                     Generiert ein Anschreiben mit KI
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">requirements <span class="parameter-type">(Array)</span></div>
                         <div class="parameter-description">Anforderungen aus der Stellenanalyse</div>
-                    </div>
-                    <div class="parameter">
                         <div class="parameter-name">personalInfo <span class="parameter-type">(Object)</span></div>
                         <div class="parameter-description">Persönliche Informationen</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Generiertes Anschreiben</div>
-                </div>
-            </div>
-        </div>
-        
         <!-- Persönlichkeitsentwicklung API -->
-        <div class="api-section">
             <h2>🧠 Persönlichkeitsentwicklung API</h2>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
                     <span class="endpoint-url">/api/v1/personality/methods</span>
-                </div>
-                <div class="endpoint-description">
                     Listet alle verfügbaren Entwicklungsmethoden auf
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Liste der Entwicklungsmethoden</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
                     <span class="endpoint-url">/api/v1/personality/start-workflow</span>
-                </div>
-                <div class="endpoint-description">
                     Startet einen Entwicklungs-Workflow
-                </div>
-                <div class="parameters">
-                    <div class="parameter">
                         <div class="parameter-name">methodId <span class="parameter-type">(String)</span></div>
                         <div class="parameter-description">ID der gewählten Methode</div>
-                    </div>
-                </div>
-                <div class="response">
-                    <div class="response-code">201 Created</div>
                     <div>Workflow erfolgreich gestartet</div>
-                </div>
-            </div>
-        </div>
-        
         <!-- System API -->
-        <div class="api-section">
             <h2>⚙️ System API</h2>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
                     <span class="endpoint-url">/api/v1/system/health</span>
-                </div>
-                <div class="endpoint-description">
                     Überprüft den System-Status
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>System-Status und Metriken</div>
-                </div>
-            </div>
-            
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
                     <span class="endpoint-url">/api/v1/system/analytics</span>
-                </div>
-                <div class="endpoint-description">
                     Liefert System-Analytics und Statistiken
-                </div>
-                <div class="response">
-                    <div class="response-code">200 OK</div>
                     <div>Analytics-Daten</div>
-                </div>
-            </div>
-        </div>
-        
         <!-- Test Section -->
-        <div class="api-section">
             <h2>🧪 API Testing</h2>
             <p>Teste alle API-Endpunkte direkt in der Admin-Oberfläche:</p>
             <button class="test-button" onclick="window.open('admin.html#media', '_blank')">
                 🧪 API Tests starten
             </button>
-        </div>
-    </div>
-    
     <script>
         // Add smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -519,21 +232,35 @@
                 });
             });
         });
-        
         // Add hover effects to endpoints
         document.querySelectorAll('.endpoint').forEach(endpoint => {
             endpoint.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-2px)';
                 this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-            });
-            
             endpoint.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0)';
                 this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
-            });
-        });
-        
         console.log('📚 API Documentation loaded');
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

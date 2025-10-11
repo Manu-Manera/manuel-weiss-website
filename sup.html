@@ -10,17 +10,14 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="SUP Vermietung - Manuel Weiss">
     <meta property="og:description" content="Stand-Up Paddleboarding für unvergessliche Wassererlebnisse">
     <meta property="og:image" content="images/sup/sup-1.jpg">
     <meta property="og:url" content="https://manuel-weiss.ch/sup.html">
-    
     <style>
         /* Modern SUP Styles - Clean & Modern wie Wohnmobil */
         .sup-hero {
@@ -42,130 +39,75 @@
             background: url('images/sup/sup-1.jpg') center/cover;
             opacity: 0.3;
             z-index: 1;
-        }
-        
         .sup-hero .hero-content {
-            position: relative;
             z-index: 2;
             text-align: center;
             color: white;
-        }
-        
         .sup-hero .hero-title {
             font-size: 4rem;
             font-weight: 800;
             margin-bottom: 1.5rem;
             text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
         .sup-hero .hero-subtitle {
             font-size: 1.5rem;
             margin-bottom: 2rem;
             opacity: 0.9;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin: 3rem 0;
-        }
-        
         .feature-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 2rem;
-            text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-        
         .feature-icon {
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
             font-size: 2rem;
-            color: white;
-        }
-        
         .gallery-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin: 3rem 0;
-        }
-        
         .gallery-item {
             border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
-        }
-        
         .gallery-item:hover {
             transform: scale(1.05);
-        }
-        
         .gallery-item img {
             width: 100%;
             height: 200px;
             object-fit: cover;
-        }
-        
         .pricing-package {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
             padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
-        }
-        
         .pricing-package:hover {
             transform: translateY(-5px);
-        }
-        
         .package-features {
             list-style: none;
             padding: 0;
             margin: 1.5rem 0;
-        }
-        
         .package-features li {
             padding: 0.75rem 0;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
             gap: 0.75rem;
-        }
-        
         .package-features li:last-child {
             border-bottom: none;
-        }
-        
         .package-features li i {
             color: #667eea;
             width: 20px;
-        }
-        
         .btn-modern {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
             border: none;
             padding: 1rem 2rem;
             border-radius: 50px;
@@ -174,58 +116,32 @@
             display: inline-block;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        
         .btn-modern:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-            color: white;
-            text-decoration: none;
-        }
-        
         .booking-section {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             padding: 4rem 0;
-        }
-        
         .booking-form {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
             padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
             color: #374151;
-        }
-        
         .form-group input,
         .form-group select,
         .form-group textarea {
-            width: 100%;
             padding: 1rem;
             border: 2px solid #e5e7eb;
             border-radius: 10px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
-        }
-        
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
-        }
-        
         /* Responsive Design */
         @media (max-width: 1024px) {
             .sup-hero .hero-title {
@@ -235,32 +151,16 @@
             .feature-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 gap: 1.5rem;
-            }
-        }
-        
         @media (max-width: 768px) {
-            .sup-hero .hero-title {
                 font-size: 2.5rem;
-            }
-            
             .sup-hero .hero-subtitle {
                 font-size: 1.2rem;
-            }
-            
-            .feature-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
-            }
-            
             .gallery-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
-            }
-            
             .booking-form {
                 padding: 2rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -288,7 +188,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -298,15 +197,9 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
             <div class="nav-toggle">
                 <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
         </div>
     </nav>
 
@@ -317,93 +210,45 @@
                 <h1 class="hero-title">SUP Vermietung</h1>
                 <p class="hero-subtitle">Entdecken Sie die Ruhe auf dem Wasser</p>
                 <a href="#booking" class="btn-modern">Jetzt buchen</a>
-            </div>
-        </div>
     </section>
-
     <!-- Features Section -->
     <section class="features-section">
-        <div class="container">
             <h2 class="section-title">Warum SUP mit uns?</h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-water"></i>
-                    </div>
                     <h3>Hochwertige Boards</h3>
                     <p>Professionelle SUP-Boards für Anfänger und Fortgeschrittene</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-life-ring"></i>
-                    </div>
                     <h3>Sicherheitsausrüstung</h3>
                     <p>Schwimmwesten und Sicherheitsausrüstung inklusive</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-user-graduate"></i>
-                    </div>
                     <h3>Einweisung</h3>
                     <p>Kostenlose Einweisung für Anfänger vor dem Start</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-map-marked-alt"></i>
-                    </div>
                     <h3>Routenempfehlungen</h3>
                     <p>Die schönsten SUP-Routen in der Region</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-clock"></i>
-                    </div>
                     <h3>Flexible Zeiten</h3>
                     <p>Mieten Sie für Stunden oder den ganzen Tag</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-users"></i>
-                    </div>
                     <h3>Gruppenbuchungen</h3>
                     <p>Perfekt für Gruppen und Teamevents</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Gallery Section -->
     <section class="gallery-section">
-        <div class="container">
             <h2 class="section-title">SUP in Aktion</h2>
             <div class="gallery-grid">
                 <div class="gallery-item">
                     <img src="images/sup/sup-1.jpg" alt="SUP auf dem See">
-                </div>
-                <div class="gallery-item">
                     <img src="images/sup/sup-2.jpg" alt="SUP Gruppe">
-                </div>
-                <div class="gallery-item">
                     <img src="images/sup/sup-3.jpg" alt="SUP Sonnenuntergang">
-                </div>
-                <div class="gallery-item">
                     <img src="images/sup/sup-4.jpg" alt="SUP Anfänger">
-                </div>
-                <div class="gallery-item">
                     <img src="images/sup/sup-5.jpg" alt="SUP Yoga">
-                </div>
-                <div class="gallery-item">
                     <img src="images/sup/sup-6.jpg" alt="SUP Tour">
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Pricing Section -->
     <section class="pricing-section">
-        <div class="container">
             <h2 class="section-title">Preise & Pakete</h2>
-            <div class="feature-grid">
                 <div class="pricing-package">
                     <h3>Stundenpaket</h3>
                     <div class="price">25€/Stunde</div>
@@ -414,65 +259,30 @@
                         <li><i class="fas fa-check"></i> Routenempfehlung</li>
                     </ul>
                     <a href="#booking" class="btn-modern">Buchen</a>
-                </div>
-                <div class="pricing-package">
                     <h3>Halbtagspaket</h3>
                     <div class="price">80€/4 Stunden</div>
-                    <ul class="package-features">
-                        <li><i class="fas fa-check"></i> SUP-Board + Paddel</li>
-                        <li><i class="fas fa-check"></i> Schwimmweste</li>
-                        <li><i class="fas fa-check"></i> Einweisung</li>
-                        <li><i class="fas fa-check"></i> Routenempfehlung</li>
                         <li><i class="fas fa-check"></i> Snack-Paket</li>
                         <li><i class="fas fa-check"></i> Wasserdichte Tasche</li>
-                    </ul>
-                    <a href="#booking" class="btn-modern">Buchen</a>
-                </div>
-                <div class="pricing-package">
                     <h3>Ganztagspaket</h3>
                     <div class="price">120€/8 Stunden</div>
-                    <ul class="package-features">
-                        <li><i class="fas fa-check"></i> SUP-Board + Paddel</li>
-                        <li><i class="fas fa-check"></i> Schwimmweste</li>
-                        <li><i class="fas fa-check"></i> Einweisung</li>
-                        <li><i class="fas fa-check"></i> Routenempfehlung</li>
                         <li><i class="fas fa-check"></i> Lunch-Paket</li>
-                        <li><i class="fas fa-check"></i> Wasserdichte Tasche</li>
                         <li><i class="fas fa-check"></i> Trockenanzug (bei Bedarf)</li>
-                    </ul>
-                    <a href="#booking" class="btn-modern">Buchen</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Booking Section -->
     <section id="booking" class="booking-section">
-        <div class="container">
             <h2 class="section-title">SUP buchen</h2>
             <div class="booking-form">
                 <form>
                     <div class="form-group">
                         <label for="name">Name *</label>
                         <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
                         <label for="email">E-Mail *</label>
                         <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
                         <label for="phone">Telefon</label>
                         <input type="tel" id="phone" name="phone">
-                    </div>
-                    <div class="form-group">
                         <label for="rental-date">Mietdatum *</label>
                         <input type="date" id="rental-date" name="rental-date" required>
-                    </div>
-                    <div class="form-group">
                         <label for="start-time">Startzeit *</label>
                         <input type="time" id="start-time" name="start-time" required>
-                    </div>
-                    <div class="form-group">
                         <label for="duration">Dauer *</label>
                         <select id="duration" name="duration" required>
                             <option value="">Dauer wählen</option>
@@ -481,38 +291,23 @@
                             <option value="4">4 Stunden (Halbtag)</option>
                             <option value="8">8 Stunden (Ganztag)</option>
                         </select>
-                    </div>
-                    <div class="form-group">
                         <label for="participants">Anzahl Personen *</label>
                         <input type="number" id="participants" name="participants" min="1" max="10" required>
-                    </div>
-                    <div class="form-group">
                         <label for="experience">SUP-Erfahrung</label>
                         <select id="experience" name="experience">
                             <option value="beginner">Anfänger</option>
                             <option value="intermediate">Fortgeschritten</option>
                             <option value="expert">Experte</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="special-requests">Besondere Wünsche</label>
                         <textarea id="special-requests" name="special-requests" rows="4"></textarea>
-                    </div>
                     <button type="submit" class="btn-modern">Anfrage senden</button>
                 </form>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>Ihr Partner für Persönlichkeitsentwicklung und besondere Erlebnisse</p>
-                </div>
-                <div class="footer-section">
                     <h3>Services</h3>
                     <ul>
                         <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
@@ -521,28 +316,18 @@
                         <li><a href="fotobox.html">Fotobox Vermietung</a></li>
                         <li><a href="sup.html">SUP Vermietung</a></li>
                         <li><a href="ebike.html">E-Bike Vermietung</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
                     <h3>Kontakt</h3>
                     <p>E-Mail: info@manuel-weiss.ch</p>
                     <p>Telefon: +41 79 123 45 67</p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-
     <!-- Scripts -->
     <script src="js/global-navigation.js"></script>
     <script src="js/unified-auth-manager.js"></script>
     <link rel="stylesheet" href="css/unified-auth-system.css">
-    
     <!-- Auth Modals Container -->
     <div id="authModalsContainer"></div>
-    
     <script>
         // Load auth modals
         async function loadAuthModals() {
@@ -552,9 +337,6 @@
                 document.getElementById('authModalsContainer').innerHTML = html;
             } catch (error) {
                 console.error('Error loading auth modals:', error);
-            }
-        }
-        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadAuthModals();

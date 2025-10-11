@@ -9,10 +9,10 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/personal-training.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -26,13 +26,11 @@
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
-            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="training-hero">
-        <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Personal Training</h1>
                 <p class="hero-subtitle">KI-gestützte Trainingspläne für deine Ziele</p>
@@ -45,34 +43,23 @@
                         <span class="stat-number">500+</span>
                         <span class="stat-label">Übungen</span>
                     </div>
-                    <div class="stat">
                         <span class="stat-number">50+</span>
                         <span class="stat-label">Trainingspläne</span>
-                    </div>
-                    <div class="stat">
                         <span class="stat-number">100%</span>
                         <span class="stat-label">Personalisierung</span>
-                    </div>
                 </div>
-            </div>
-        </div>
     </section>
-
     <!-- Training Planner Section -->
     <section id="training-planner" class="training-planner">
-        <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Trainingsplan-Generator</h2>
                 <p class="section-subtitle">Erstelle deinen personalisierten Trainingsplan in wenigen Schritten</p>
-            </div>
-
             <!-- Training Wizard -->
             <div class="training-wizard">
                 <!-- Progress Bar -->
                 <div class="wizard-progress">
                     <div class="progress-bar">
                         <div class="progress-fill" id="progress-fill"></div>
-                    </div>
                     <div class="progress-steps">
                         <div class="step-indicator active" data-step="1">
                             <span class="step-number">1</span>
@@ -81,22 +68,15 @@
                         <div class="step-indicator" data-step="2">
                             <span class="step-number">2</span>
                             <span class="step-label">Ausstattung</span>
-                        </div>
                         <div class="step-indicator" data-step="3">
                             <span class="step-number">3</span>
                             <span class="step-label">Zeit & Häufigkeit</span>
-                        </div>
                         <div class="step-indicator" data-step="4">
                             <span class="step-number">4</span>
                             <span class="step-label">Präferenzen</span>
-                        </div>
                         <div class="step-indicator" data-step="5">
                             <span class="step-number">5</span>
                             <span class="step-label">Plan erstellen</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Wizard Content -->
                 <div class="wizard-content">
                     <!-- Step 1: Goals & Level -->
@@ -104,7 +84,6 @@
                         <div class="step-header">
                             <h3>Deine Ziele & Fitness-Level</h3>
                             <p>Was möchtest du erreichen und wie ist dein aktueller Fitness-Stand?</p>
-                        </div>
                         
                         <div class="goals-section">
                             <h4>🎯 Trainingsziele</h4>
@@ -117,50 +96,32 @@
                                     <p>Masse und Kraft aufbauen</p>
                                 </div>
                                 <div class="goal-card" data-goal="weight-loss">
-                                    <div class="goal-icon">
                                         <i class="fas fa-fire"></i>
-                                    </div>
                                     <h5>Gewichtsreduktion</h5>
                                     <p>Fett verbrennen und definieren</p>
-                                </div>
                                 <div class="goal-card" data-goal="endurance">
-                                    <div class="goal-icon">
                                         <i class="fas fa-heartbeat"></i>
-                                    </div>
                                     <h5>Ausdauer</h5>
                                     <p>Kondition und Herz-Kreislauf</p>
-                                </div>
                                 <div class="goal-card" data-goal="strength">
-                                    <div class="goal-icon">
                                         <i class="fas fa-fist-raised"></i>
-                                    </div>
                                     <h5>Kraft</h5>
                                     <p>Maximale Kraft steigern</p>
-                                </div>
                                 <div class="goal-card" data-goal="flexibility">
-                                    <div class="goal-icon">
                                         <i class="fas fa-leaf"></i>
-                                    </div>
                                     <h5>Flexibilität</h5>
                                     <p>Beweglichkeit verbessern</p>
-                                </div>
                                 <div class="goal-card" data-goal="general-fitness">
-                                    <div class="goal-icon">
                                         <i class="fas fa-balance-scale"></i>
-                                    </div>
                                     <h5>Allgemeine Fitness</h5>
                                     <p>Ganzheitliches Training</p>
-                                </div>
                             </div>
-                        </div>
-
                         <div class="level-section">
                             <h4>💪 Fitness-Level</h4>
                             <div class="level-options">
                                 <div class="level-card" data-level="beginner">
                                     <div class="level-icon">
                                         <i class="fas fa-seedling"></i>
-                                    </div>
                                     <h5>Anfänger</h5>
                                     <p>Weniger als 6 Monate Erfahrung</p>
                                     <ul>
@@ -168,83 +129,47 @@
                                         <li>Technik aufbauen</li>
                                         <li>Körpergewicht-Übungen</li>
                                     </ul>
-                                </div>
                                 <div class="level-card" data-level="intermediate">
-                                    <div class="level-icon">
                                         <i class="fas fa-chart-line"></i>
-                                    </div>
                                     <h5>Fortgeschritten</h5>
                                     <p>6 Monate - 2 Jahre Erfahrung</p>
-                                    <ul>
                                         <li>Komplexere Übungen</li>
                                         <li>Progressive Überladung</li>
                                         <li>Split-Training</li>
-                                    </ul>
-                                </div>
                                 <div class="level-card" data-level="advanced">
-                                    <div class="level-icon">
                                         <i class="fas fa-trophy"></i>
-                                    </div>
                                     <h5>Experte</h5>
                                     <p>Mehr als 2 Jahre Erfahrung</p>
-                                    <ul>
                                         <li>Spezialisierte Programme</li>
                                         <li>Periodisierung</li>
                                         <li>Peak-Performance</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Step 2: Equipment -->
                     <div class="wizard-step" data-step="2">
-                        <div class="step-header">
                             <h3>Verfügbare Ausstattung</h3>
                             <p>Welche Geräte und Equipment stehen dir zur Verfügung?</p>
-                        </div>
-                        
                         <div class="equipment-section">
                             <h4>🏋️ Gym-Ausstattung</h4>
                             <div class="equipment-grid">
                                 <div class="equipment-card" data-equipment="full-gym">
                                     <div class="equipment-icon">
                                         <i class="fas fa-building"></i>
-                                    </div>
                                     <h5>Vollausgestattetes Gym</h5>
                                     <p>Alle Geräte und Gewichte verfügbar</p>
-                                </div>
                                 <div class="equipment-card" data-equipment="basic-gym">
-                                    <div class="equipment-icon">
-                                        <i class="fas fa-dumbbell"></i>
-                                    </div>
                                     <h5>Basis-Gym</h5>
                                     <p>Hanteln, Bank, Kabelzug</p>
-                                </div>
                                 <div class="equipment-card" data-equipment="home-gym">
-                                    <div class="equipment-icon">
                                         <i class="fas fa-home"></i>
-                                    </div>
                                     <h5>Home-Gym</h5>
                                     <p>Hanteln, Bank, Kettlebell</p>
-                                </div>
                                 <div class="equipment-card" data-equipment="minimal">
-                                    <div class="equipment-icon">
                                         <i class="fas fa-user"></i>
-                                    </div>
                                     <h5>Minimal Equipment</h5>
                                     <p>Nur Körpergewicht + Bänder</p>
-                                </div>
                                 <div class="equipment-card" data-equipment="bodyweight">
-                                    <div class="equipment-icon">
                                         <i class="fas fa-hands"></i>
-                                    </div>
                                     <h5>Nur Körpergewicht</h5>
                                     <p>Keine Geräte erforderlich</p>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="additional-equipment">
                             <h4>🔧 Zusätzliches Equipment</h4>
                             <div class="equipment-checkboxes">
@@ -253,110 +178,59 @@
                                     <span class="checkmark"></span>
                                     Widerstandsbänder
                                 </label>
-                                <label class="equipment-checkbox">
                                     <input type="checkbox" data-equipment="kettlebell">
-                                    <span class="checkmark"></span>
                                     Kettlebell
-                                </label>
-                                <label class="equipment-checkbox">
                                     <input type="checkbox" data-equipment="pull-up-bar">
-                                    <span class="checkmark"></span>
                                     Klimmzugstange
-                                </label>
-                                <label class="equipment-checkbox">
                                     <input type="checkbox" data-equipment="yoga-mat">
-                                    <span class="checkmark"></span>
                                     Yogamatte
-                                </label>
-                                <label class="equipment-checkbox">
                                     <input type="checkbox" data-equipment="trx">
-                                    <span class="checkmark"></span>
                                     TRX/Suspension Trainer
-                                </label>
-                                <label class="equipment-checkbox">
                                     <input type="checkbox" data-equipment="medicine-ball">
-                                    <span class="checkmark"></span>
                                     Medizinball
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Step 3: Time & Frequency -->
                     <div class="wizard-step" data-step="3">
-                        <div class="step-header">
                             <h3>Zeit & Trainingshäufigkeit</h3>
                             <p>Wie viel Zeit kannst du pro Woche für Training investieren?</p>
-                        </div>
-                        
                         <div class="time-section">
                             <h4>⏰ Trainingszeit pro Session</h4>
                             <div class="time-options">
                                 <div class="time-card" data-time="30">
                                     <div class="time-icon">
                                         <i class="fas fa-clock"></i>
-                                    </div>
                                     <h5>30 Minuten</h5>
                                     <p>Kurze, intensive Workouts</p>
-                                </div>
                                 <div class="time-card" data-time="45">
-                                    <div class="time-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
                                     <h5>45 Minuten</h5>
                                     <p>Ausgewogene Trainings</p>
-                                </div>
                                 <div class="time-card" data-time="60">
-                                    <div class="time-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
                                     <h5>60 Minuten</h5>
                                     <p>Umfassende Workouts</p>
-                                </div>
                                 <div class="time-card" data-time="90">
-                                    <div class="time-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
                                     <h5>90+ Minuten</h5>
                                     <p>Lange, detaillierte Sessions</p>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="frequency-section">
                             <h4>📅 Trainingshäufigkeit pro Woche</h4>
                             <div class="frequency-options">
                                 <div class="frequency-card" data-frequency="2">
                                     <div class="frequency-number">2x</div>
                                     <p>Ganzkörper-Workouts</p>
-                                </div>
                                 <div class="frequency-card" data-frequency="3">
                                     <div class="frequency-number">3x</div>
                                     <p>Push/Pull/Legs</p>
-                                </div>
                                 <div class="frequency-card" data-frequency="4">
                                     <div class="frequency-number">4x</div>
                                     <p>Oberkörper/Unterkörper</p>
-                                </div>
                                 <div class="frequency-card" data-frequency="5">
                                     <div class="frequency-number">5x</div>
                                     <p>Split-Training</p>
-                                </div>
                                 <div class="frequency-card" data-frequency="6">
                                     <div class="frequency-number">6x</div>
                                     <p>Intensives Training</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Step 4: Preferences -->
                     <div class="wizard-step" data-step="4">
-                        <div class="step-header">
                             <h3>Trainingspräferenzen</h3>
                             <p>Was sind deine Vorlieben und Einschränkungen?</p>
-                        </div>
-                        
                         <div class="preferences-section">
                             <div class="preference-group">
                                 <h4>🎵 Trainingsstil</h4>
@@ -368,76 +242,37 @@
                                             <span>Kraftfokussiert</span>
                                         </span>
                                     </label>
-                                    <label class="preference-option">
                                         <input type="radio" name="training-style" value="hypertrophy">
-                                        <span class="option-content">
                                             <i class="fas fa-expand-arrows-alt"></i>
                                             <span>Muskelaufbau</span>
-                                        </span>
-                                    </label>
-                                    <label class="preference-option">
                                         <input type="radio" name="training-style" value="functional">
-                                        <span class="option-content">
                                             <i class="fas fa-running"></i>
                                             <span>Funktionell</span>
-                                        </span>
-                                    </label>
-                                    <label class="preference-option">
                                         <input type="radio" name="training-style" value="cardio-focused">
-                                        <span class="option-content">
                                             <i class="fas fa-heartbeat"></i>
                                             <span>Cardio-fokussiert</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="preference-group">
                                 <h4>🚫 Einschränkungen</h4>
                                 <div class="restrictions-grid">
                                     <label class="restriction-item">
                                         <input type="checkbox" data-restriction="knee-problems">
                                         <span class="restriction-text">Knie-Probleme</span>
-                                    </label>
-                                    <label class="restriction-item">
                                         <input type="checkbox" data-restriction="back-problems">
                                         <span class="restriction-text">Rücken-Probleme</span>
-                                    </label>
-                                    <label class="restriction-item">
                                         <input type="checkbox" data-restriction="shoulder-problems">
                                         <span class="restriction-text">Schulter-Probleme</span>
-                                    </label>
-                                    <label class="restriction-item">
                                         <input type="checkbox" data-restriction="wrist-problems">
                                         <span class="restriction-text">Handgelenk-Probleme</span>
-                                    </label>
-                                    <label class="restriction-item">
                                         <input type="checkbox" data-restriction="no-jumping">
                                         <span class="restriction-text">Keine Sprünge</span>
-                                    </label>
-                                    <label class="restriction-item">
                                         <input type="checkbox" data-restriction="low-impact">
                                         <span class="restriction-text">Schonende Übungen</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="preference-group">
                                 <h4>🎯 Spezielle Wünsche</h4>
                                 <div class="special-requests">
                                     <textarea placeholder="Hast du spezielle Wünsche oder Anmerkungen zu deinem Trainingsplan?" id="special-requests"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Step 5: Generate Plan -->
                     <div class="wizard-step" data-step="5">
-                        <div class="step-header">
                             <h3>Trainingsplan erstellen</h3>
                             <p>Basierend auf deinen Angaben erstellen wir deinen personalisierten Trainingsplan</p>
-                        </div>
-                        
                         <div class="plan-generation">
                             <div class="generation-summary">
                                 <h4>📋 Deine Auswahl</h4>
@@ -445,65 +280,37 @@
                                     <div class="summary-item">
                                         <span class="summary-label">Ziel:</span>
                                         <span class="summary-value" id="summary-goal">-</span>
-                                    </div>
-                                    <div class="summary-item">
                                         <span class="summary-label">Level:</span>
                                         <span class="summary-value" id="summary-level">-</span>
-                                    </div>
-                                    <div class="summary-item">
                                         <span class="summary-label">Ausstattung:</span>
                                         <span class="summary-value" id="summary-equipment">-</span>
-                                    </div>
-                                    <div class="summary-item">
                                         <span class="summary-label">Zeit:</span>
                                         <span class="summary-value" id="summary-time">-</span>
-                                    </div>
-                                    <div class="summary-item">
                                         <span class="summary-label">Häufigkeit:</span>
                                         <span class="summary-value" id="summary-frequency">-</span>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="ai-generation">
                                 <div class="ai-header">
                                     <div class="ai-icon">
                                         <i class="fas fa-robot"></i>
-                                    </div>
                                     <h4>KI erstellt deinen Trainingsplan</h4>
                                     <p>Bitte warten, während wir deinen personalisierten Plan generieren...</p>
-                                </div>
                                 
                                 <div class="generation-progress">
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="ai-progress"></div>
-                                    </div>
                                     <div class="progress-text" id="progress-text">Analysiere deine Daten...</div>
-                                </div>
-
                                 <div class="ai-steps">
                                     <div class="ai-step" id="step-analyze">
                                         <i class="fas fa-search"></i>
                                         <span>Daten analysieren</span>
-                                    </div>
                                     <div class="ai-step" id="step-exercises">
-                                        <i class="fas fa-dumbbell"></i>
                                         <span>Übungen auswählen</span>
-                                    </div>
                                     <div class="ai-step" id="step-schedule">
                                         <i class="fas fa-calendar"></i>
                                         <span>Zeitplan erstellen</span>
-                                    </div>
                                     <div class="ai-step" id="step-optimize">
                                         <i class="fas fa-cogs"></i>
                                         <span>Plan optimieren</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Navigation -->
                 <div class="wizard-navigation">
                     <button class="btn btn-secondary" id="prev-step" disabled>
@@ -513,71 +320,40 @@
                     <button class="btn btn-primary" id="next-step">
                         Weiter
                         <i class="fas fa-arrow-right"></i>
-                    </button>
                     <button class="btn btn-success" id="generate-plan" style="display: none;">
                         <i class="fas fa-magic"></i>
                         Trainingsplan erstellen
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Generated Plan Section -->
     <section id="generated-plan" class="generated-plan" style="display: none;">
-        <div class="container">
             <div class="plan-header">
                 <h2>Dein personalisierter Trainingsplan</h2>
                 <p>Hier ist dein maßgeschneiderter Trainingsplan, erstellt mit KI-Unterstützung</p>
-            </div>
-
             <div class="plan-overview">
                 <div class="plan-stats">
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-calendar-week"></i>
-                        </div>
                         <div class="stat-content">
                             <h3 id="plan-duration">4 Wochen</h3>
                             <p>Programmdauer</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
                             <i class="fas fa-dumbbell"></i>
-                        </div>
-                        <div class="stat-content">
                             <h3 id="plan-sessions">12 Sessions</h3>
                             <p>Trainingssessions</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
                             <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-content">
                             <h3 id="plan-time">45 Min</h3>
                             <p>Pro Session</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="plan-content">
                 <div class="plan-tabs">
                     <button class="tab-btn active" data-tab="overview">Übersicht</button>
                     <button class="tab-btn" data-tab="schedule">Zeitplan</button>
                     <button class="tab-btn" data-tab="exercises">Übungen</button>
                     <button class="tab-btn" data-tab="progress">Fortschritt</button>
-                </div>
-
                 <div class="tab-content">
                     <div class="tab-panel active" id="overview">
                         <div class="overview-content">
                             <div class="plan-description">
                                 <h3>Plan-Beschreibung</h3>
                                 <p id="plan-description-text">Dein personalisierter Trainingsplan wurde speziell für deine Ziele und dein Fitness-Level erstellt.</p>
-                            </div>
                             
                             <div class="plan-features">
                                 <h3>Plan-Features</h3>
@@ -586,10 +362,6 @@
                                     <li>Ausgewogene Muskelgruppen</li>
                                     <li>Angepasst an dein Level</li>
                                 </ul>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="tab-panel" id="schedule">
                         <div class="schedule-content">
                             <div class="schedule-header">
@@ -598,8 +370,6 @@
                                     <button class="week-btn" data-week="2">Woche 2</button>
                                     <button class="week-btn" data-week="3">Woche 3</button>
                                     <button class="week-btn" data-week="4">Woche 4</button>
-                                </div>
-                                
                                 <div class="schedule-actions">
                                     <button class="btn btn-primary" id="edit-schedule">
                                         <i class="fas fa-edit"></i>
@@ -608,16 +378,8 @@
                                     <button class="btn btn-secondary" id="ai-optimize-schedule">
                                         <i class="fas fa-magic"></i>
                                         AI optimieren
-                                    </button>
-                                </div>
-                            </div>
-                            
                             <div class="week-schedule" id="week-schedule">
                                 <!-- Dynamisch generiert -->
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="tab-panel" id="exercises">
                         <div class="exercises-content">
                             <div class="exercise-header">
@@ -629,54 +391,27 @@
                                     <button class="category-btn" data-category="shoulders">Schultern</button>
                                     <button class="category-btn" data-category="arms">Arme</button>
                                     <button class="category-btn" data-category="core">Core</button>
-                                </div>
-                                
                                 <div class="exercise-actions">
                                     <button class="btn btn-primary" id="ai-update-exercises">
-                                        <i class="fas fa-robot"></i>
                                         AI-Update
-                                    </button>
                                     <button class="btn btn-secondary" id="add-custom-exercise">
                                         <i class="fas fa-plus"></i>
                                         Übung hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-                            
                             <div class="exercises-grid" id="exercises-grid">
-                                <!-- Dynamisch generiert -->
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="tab-panel" id="progress">
                         <div class="progress-content">
                             <div class="progress-tracking">
                                 <h3>Fortschritts-Tracking</h3>
                                 <p>Verfolge deine Fortschritte und passe deinen Plan entsprechend an.</p>
-                                
                                 <div class="progress-metrics">
                                     <div class="metric-card">
                                         <h4>Gewicht</h4>
                                         <input type="number" placeholder="Aktuelles Gewicht (kg)" id="current-weight">
-                                    </div>
-                                    <div class="metric-card">
                                         <h4>Körperfett</h4>
                                         <input type="number" placeholder="Körperfettanteil (%)" id="body-fat">
-                                    </div>
-                                    <div class="metric-card">
                                         <h4>Muskelmasse</h4>
                                         <input type="number" placeholder="Muskelmasse (kg)" id="muscle-mass">
-                                    </div>
-                                </div>
-                                
                                 <button class="btn btn-primary" id="save-progress">Fortschritt speichern</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="plan-actions">
                 <button class="btn btn-primary" id="export-calendar">
                     <i class="fas fa-calendar-plus"></i>
@@ -685,18 +420,11 @@
                 <button class="btn btn-secondary" id="download-plan">
                     <i class="fas fa-download"></i>
                     Plan herunterladen
-                </button>
                 <button class="btn btn-outline" id="share-plan">
                     <i class="fas fa-share"></i>
                     Plan teilen
-                </button>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <div class="container">
             <div class="contact-content">
                 <h2>Kontakt</h2>
                 <p>Hast du Fragen zu deinem Trainingsplan oder möchtest du eine persönliche Beratung?</p>
@@ -704,24 +432,33 @@
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
                         <span>manuel.weiss@example.com</span>
-                    </div>
-                    <div class="contact-item">
                         <i class="fas fa-phone"></i>
                         <span>+49 123 456 789</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-        </div>
     </footer>
-
     <!-- Scripts -->
     <script src="js/personal-training.js"></script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

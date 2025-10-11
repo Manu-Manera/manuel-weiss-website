@@ -8,16 +8,14 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="manuel-weiss-photo.svg">
-    
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/methods.css">
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -43,7 +41,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -53,15 +50,9 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -83,59 +74,41 @@
                     </a>
                     <a href="#raisec-theorie" class="btn btn-outline">
                         <i class="fas fa-book"></i> Theorie verstehen
-                    </a>
-                </div>
-            </div>
             <div class="hero-visual">
                 <div class="raisec-visual">
                     <div class="raisec-circle">
                         <div class="raisec-center">
                             <span class="raisec-text">RAISEC</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="realistic">
                             <i class="fas fa-tools"></i>
                             <span>Realistisch</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="artistic">
                             <i class="fas fa-palette"></i>
                             <span>Künstlerisch</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="investigative">
                             <i class="fas fa-microscope"></i>
                             <span>Analytisch</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="social">
                             <i class="fas fa-users"></i>
                             <span>Sozial</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="enterprising">
                             <i class="fas fa-chart-line"></i>
                             <span>Unternehmerisch</span>
-                        </div>
                         <div class="raisec-quadrant" data-quadrant="conventional">
                             <i class="fas fa-calculator"></i>
                             <span>Konventionell</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- RAISEC Theorie -->
     <section id="raisec-theorie" class="method-theory">
         <div class="container">
             <div class="section-header">
                 <h2>Das RAISEC-Modell verstehen</h2>
                 <p class="section-subtitle">Ein bewährtes Instrument zur Berufsorientierung und Persönlichkeitsanalyse</p>
-            </div>
-
             <!-- Wissenschaftlicher Hintergrund -->
             <div class="scientific-background">
                 <div class="background-card">
                     <div class="background-icon">
                         <i class="fas fa-microscope"></i>
-                    </div>
                     <div class="background-content">
                         <h3>Wissenschaftlicher Hintergrund</h3>
                         <p>Das RAISEC-Modell (auch Holland-Codes genannt) wurde von John L. Holland entwickelt und ist eines der am besten validierten Instrumente zur Berufsorientierung. Über 50 Jahre Forschung und Millionen von Teilnehmern haben die Wirksamkeit bestätigt.</p>
@@ -144,37 +117,24 @@
                                 <span class="stat-number">50+</span>
                                 <span class="stat-label">Jahre Forschung</span>
                             </div>
-                            <div class="stat-item">
                                 <span class="stat-number">10M+</span>
                                 <span class="stat-label">Teilnehmer weltweit</span>
-                            </div>
-                            <div class="stat-item">
                                 <span class="stat-number">95%</span>
                                 <span class="stat-label">Validierungsrate</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <div class="theory-content">
                 <div class="theory-intro">
                     <h3>Was ist das RAISEC-Modell?</h3>
                     <p>Das RAISEC-Modell (auch Holland-Codes genannt) wurde von John L. Holland entwickelt und ist eines der bekanntesten und am häufigsten verwendeten Instrumente zur Berufsorientierung. Es basiert auf der Annahme, dass Menschen und Berufe in sechs grundlegende Persönlichkeitstypen eingeteilt werden können.</p>
-                </div>
-
                 <div class="raisec-types">
                     <div class="type-card">
                         <div class="type-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
                         <div class="type-content">
                             <h4>R - Realistisch (Realistic)</h4>
                             <div class="type-description">
                                 <p><strong>Kernpersönlichkeit:</strong> Praktisch, handwerklich, technisch orientiert</p>
                                 <p><strong>Stärken:</strong> Problemlösung, handwerkliche Fähigkeiten, technisches Verständnis</p>
                                 <p><strong>Werte:</strong> Ehrlichkeit, Direktheit, praktische Ergebnisse</p>
-                            </div>
                             <div class="type-interests">
                                 <h5>Interessensgebiete:</h5>
                                 <div class="interest-tags">
@@ -183,7 +143,6 @@
                                     <span class="interest-tag">Körperliche Arbeit</span>
                                     <span class="interest-tag">Natur & Umwelt</span>
                                 </div>
-                            </div>
                             <div class="type-careers">
                                 <h5>Passende Berufe:</h5>
                                 <ul class="career-list">
@@ -193,145 +152,63 @@
                                     <li>Polizist & Sicherheitsdienst</li>
                                     <li>Handwerker (Zimmerer, Elektriker)</li>
                                 </ul>
-                            </div>
                             <div class="type-insights">
                                 <h5>Moderne Erkenntnisse:</h5>
                                 <p>Realistische Typen sind in der digitalen Transformation besonders gefragt, da sie technische Innovationen praktisch umsetzen können.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="type-card">
-                        <div class="type-icon">
                             <i class="fas fa-search"></i>
-                        </div>
-                        <div class="type-content">
                             <h4>A - Analytisch (Investigative)</h4>
-                            <div class="type-description">
                                 <p><strong>Kernpersönlichkeit:</strong> Analytisch, wissenschaftlich, intellektuell</p>
                                 <p><strong>Stärken:</strong> Logisches Denken, Forschung, Problemlösung, Innovation</p>
                                 <p><strong>Werte:</strong> Wahrheit, Objektivität, wissenschaftliche Methodik</p>
-                            </div>
-                            <div class="type-interests">
-                                <h5>Interessensgebiete:</h5>
-                                <div class="interest-tags">
                                     <span class="interest-tag">Forschung & Wissenschaft</span>
                                     <span class="interest-tag">Datenanalyse</span>
                                     <span class="interest-tag">Technologie</span>
                                     <span class="interest-tag">Problemlösung</span>
-                                </div>
-                            </div>
-                            <div class="type-careers">
-                                <h5>Passende Berufe:</h5>
-                                <ul class="career-list">
                                     <li>Wissenschaftler & Forscher</li>
                                     <li>Arzt & Mediziner</li>
                                     <li>Programmierer & Software-Entwickler</li>
                                     <li>Datenanalyst & Data Scientist</li>
                                     <li>Psychologe & Therapeut</li>
-                                </ul>
-                            </div>
-                            <div class="type-insights">
-                                <h5>Moderne Erkenntnisse:</h5>
                                 <p>Analytische Typen sind die Treiber der KI-Revolution und werden in Zukunft noch wichtiger für datengetriebene Entscheidungen.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="type-card">
-                        <div class="type-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
                         <h4>I - Künstlerisch (Artistic)</h4>
                         <p><strong>Eigenschaften:</strong> Kreativ, expressiv, unkonventionell</p>
                         <p><strong>Interessen:</strong> Kunst, Musik, Design, kreative Ausdrucksformen</p>
                         <p><strong>Berufe:</strong> Künstler, Designer, Musiker, Schriftsteller</p>
-                    </div>
-
-                    <div class="type-card">
-                        <div class="type-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
                         <h4>S - Sozial (Social)</h4>
                         <p><strong>Eigenschaften:</strong> Hilfsbereit, empathisch, kommunikativ</p>
                         <p><strong>Interessen:</strong> Menschen helfen, lehren, beraten</p>
                         <p><strong>Berufe:</strong> Lehrer, Sozialarbeiter, Therapeut, Berater</p>
-                    </div>
-
-                    <div class="type-card">
-                        <div class="type-icon">
                             <i class="fas fa-briefcase"></i>
-                        </div>
                         <h4>E - Unternehmerisch (Enterprising)</h4>
                         <p><strong>Eigenschaften:</strong> Führungsstark, überzeugend, ehrgeizig</p>
                         <p><strong>Interessen:</strong> Verkaufen, führen, organisieren, überzeugen</p>
                         <p><strong>Berufe:</strong> Manager, Verkäufer, Politiker, Unternehmer</p>
-                    </div>
-
-                    <div class="type-card">
-                        <div class="type-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
                         <h4>C - Konventionell (Conventional)</h4>
                         <p><strong>Eigenschaften:</strong> Organisiert, strukturiert, detailorientiert</p>
                         <p><strong>Interessen:</strong> Daten, Zahlen, Strukturen, Ordnung</p>
                         <p><strong>Berufe:</strong> Buchhalter, Sekretär, Banker, Verwaltungsangestellter</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- RAISEC Assessment - Ultra Modern -->
     <section id="raisec-assessment" class="assessment-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>Ihr RAISEC-Assessment</h2>
                 <p class="section-subtitle">Entdecken Sie Ihre beruflichen Interessen in 5 Minuten</p>
-            </div>
-
             <!-- Assessment Info - Ultra Modern -->
             <div class="assessment-info">
                 <div class="info-cards">
                     <div class="info-card">
                         <div class="info-icon">
                             <i class="fas fa-clock"></i>
-                        </div>
                         <div class="info-content">
                             <h4>Dauer</h4>
                             <p>5-7 Minuten</p>
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-icon">
                             <i class="fas fa-question-circle"></i>
-                        </div>
-                        <div class="info-content">
                             <h4>Fragen</h4>
                             <p>30 Fragen</p>
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-icon">
                             <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <div class="info-content">
                             <h4>Typen</h4>
                             <p>6 Persönlichkeitstypen</p>
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-icon">
                             <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <div class="info-content">
                             <h4>Datenschutz</h4>
                             <p>100% anonym</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Assessment Container - Ultra Modern -->
             <div class="assessment-container">
                 <!-- Progress Section -->
@@ -339,114 +216,60 @@
                     <div class="progress-header">
                         <h3 id="progress-text">Frage 1 von 30</h3>
                         <div class="progress-percentage" id="progress-percentage">3%</div>
-                    </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progress-fill"></div>
-                    </div>
-                </div>
-
                 <!-- Question Section -->
                 <div class="assessment-content">
                     <div class="question-container" id="question-container">
                         <!-- Fragen werden hier dynamisch eingefügt -->
-                    </div>
-
                     <div class="assessment-actions">
                         <button class="btn btn-secondary" id="prev-btn" disabled>
                             <i class="fas fa-arrow-left"></i> Zurück
-                        </button>
                         <button class="btn btn-primary" id="next-btn">
                             Weiter <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Ergebnisse -->
     <section id="raisec-results" class="results-section" style="display: none;">
-        <div class="container">
-            <div class="section-header">
                 <h2>Ihre RAISEC-Ergebnisse</h2>
                 <p class="section-subtitle">Ihr persönliches Interessenprofil</p>
-            </div>
-
             <!-- Ergebnisse Übersicht -->
             <div class="results-overview">
                 <div class="overview-card">
                     <div class="overview-icon">
                         <i class="fas fa-trophy"></i>
-                    </div>
                     <div class="overview-content">
                         <h3>Ihr Haupttyp</h3>
                         <div id="primary-type-display" class="primary-type-display">
                             <!-- Wird dynamisch gefüllt -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="overview-card">
-                    <div class="overview-icon">
                         <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="overview-content">
                         <h3>Ihr Profil</h3>
                         <div id="profile-summary" class="profile-summary">
-                            <!-- Wird dynamisch gefüllt -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="results-content">
                 <div class="results-chart">
                     <canvas id="raisec-chart" width="400" height="300"></canvas>
-                </div>
-
                 <div class="results-details">
                     <div class="primary-type" id="primary-type">
                         <!-- Primärer Typ wird hier angezeigt -->
-                    </div>
-                    
                     <div class="type-combinations" id="type-combinations">
                         <!-- Typ-Kombinationen werden hier angezeigt -->
-                    </div>
-
                     <div class="career-recommendations" id="career-recommendations">
                         <!-- Berufsempfehlungen werden hier angezeigt -->
-                    </div>
-                </div>
-            </div>
-
             <div class="results-actions">
                 <button class="btn btn-primary" onclick="generatePDF()">
                     <i class="fas fa-file-pdf"></i> PDF-Report erstellen
                 </button>
                 <button class="btn btn-secondary" onclick="downloadResults()">
                     <i class="fas fa-download"></i> JSON-Daten herunterladen
-                </button>
                 <button class="btn btn-outline" onclick="restartAssessment()">
                     <i class="fas fa-redo"></i> Assessment wiederholen
-                </button>
-            </div>
-        </div>
-    </section>
-
     <!-- Anwendung in der Praxis -->
     <section class="application-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>RAISEC in der Praxis anwenden</h2>
                 <p class="section-subtitle">Wie Sie Ihre Ergebnisse nutzen können</p>
-            </div>
-
             <!-- Moderne Anwendungen -->
             <div class="modern-applications">
                 <div class="application-card">
                     <div class="app-icon">
                         <i class="fas fa-robot"></i>
-                    </div>
                     <h3>KI & Digitalisierung</h3>
                     <p>Verstehen Sie, wie Ihr RAISEC-Profil mit modernen Technologien und KI-Tools harmoniert.</p>
                     <ul>
@@ -454,88 +277,47 @@
                         <li>Digitale Skills-Mapping</li>
                         <li>Remote-Work Kompatibilität</li>
                     </ul>
-                </div>
-
-                <div class="application-card">
-                    <div class="app-icon">
                         <i class="fas fa-users"></i>
-                    </div>
                     <h3>Team-Diversität</h3>
                     <p>Nutzen Sie RAISEC für bessere Team-Zusammensetzung und effektivere Zusammenarbeit.</p>
-                    <ul>
                         <li>Team-Balance Analyse</li>
                         <li>Komplementäre Stärken</li>
                         <li>Konfliktprävention</li>
-                    </ul>
-                </div>
-
-                <div class="application-card">
-                    <div class="app-icon">
                         <i class="fas fa-graduation-cap"></i>
-                    </div>
                     <h3>Lebenslanges Lernen</h3>
                     <p>Identifizieren Sie passende Weiterbildungen und Entwicklungsmöglichkeiten.</p>
-                    <ul>
                         <li>Personalisiertes Lernen</li>
                         <li>Skills-Gap Analyse</li>
                         <li>Karriere-Entwicklung</li>
-                    </ul>
-                </div>
-            </div>
-
             <div class="application-steps">
                 <div class="step-card">
                     <div class="step-number">1</div>
                     <h3>Selbstreflexion</h3>
                     <p>Analysieren Sie Ihre Ergebnisse und überlegen Sie, inwieweit diese mit Ihren tatsächlichen Interessen übereinstimmen.</p>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">2</div>
                     <h3>Berufsorientierung</h3>
                     <p>Nutzen Sie Ihre Ergebnisse, um passende Berufsfelder und Karrierewege zu identifizieren.</p>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">3</div>
                     <h3>Entwicklungsplanung</h3>
                     <p>Erstellen Sie einen persönlichen Entwicklungsplan basierend auf Ihren Interessen und Stärken.</p>
-                </div>
-
-                <div class="step-card">
                     <div class="step-number">4</div>
                     <h3>Team-Building</h3>
                     <p>Verstehen Sie die verschiedenen Typen in Ihrem Team und nutzen Sie diese Vielfalt als Stärke.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>HR Berater für AI & Transformation</p>
-                </div>
-                <div class="footer-section">
                     <h4>Kontakt</h4>
                     <p>📧 manuel.weiss@example.com</p>
                     <p>📱 +49 123 456 789</p>
-                </div>
-                <div class="footer-section">
                     <h4>Services</h4>
                     <p><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></p>
                     <p><a href="beraterprofil.html">Beratung</a></p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-
     <!-- Login Modal -->
     <div class="login-modal" id="loginModal" style="display: none;">
         <div class="login-modal-content">
@@ -543,24 +325,17 @@
             <div class="login-modal-header">
                 <h2 class="login-modal-title">Anmelden</h2>
                 <p class="login-modal-subtitle">Melden Sie sich an, um Ihre Ergebnisse zu speichern</p>
-            </div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
                     <label class="form-label" for="loginEmail">E-Mail</label>
                     <input type="email" id="loginEmail" class="form-input" required>
-                </div>
-                <div class="form-group">
                     <label class="form-label" for="loginPassword">Passwort</label>
                     <input type="password" id="loginPassword" class="form-input" required>
-                </div>
                 <div class="login-actions">
                     <button type="submit" class="btn-primary">Anmelden</button>
                     <button type="button" class="btn-secondary" onclick="closeLoginModal()">Abbrechen</button>
-                </div>
             </form>
-        </div>
     </div>
-
     <!-- JavaScript -->
     <script src="js/methods.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -573,10 +348,8 @@
                 this.questions = this.generateQuestions();
                 this.totalQuestions = this.questions.length;
                 this.scores = { R: 0, A: 0, I: 0, S: 0, E: 0, C: 0 };
-                
                 this.init();
             }
-
             generateQuestions() {
                 return [
                     // Realistic (R) Questions
@@ -585,35 +358,30 @@
                     { text: "Ich bevorzuge praktische Tätigkeiten", type: "R" },
                     { text: "Ich arbeite gerne im Freien", type: "R" },
                     { text: "Ich mag körperliche Arbeit", type: "R" },
-                    
                     // Investigative (A) Questions
                     { text: "Ich löse gerne komplexe Probleme", type: "A" },
                     { text: "Ich forsche gerne nach neuen Erkenntnissen", type: "A" },
                     { text: "Ich analysiere gerne Daten und Fakten", type: "A" },
                     { text: "Ich arbeite gerne wissenschaftlich", type: "A" },
                     { text: "Ich denke gerne logisch und systematisch", type: "A" },
-                    
                     // Artistic (I) Questions
                     { text: "Ich bin kreativ und künstlerisch begabt", type: "I" },
                     { text: "Ich drücke mich gerne künstlerisch aus", type: "I" },
                     { text: "Ich mag unkonventionelle Ideen", type: "I" },
                     { text: "Ich arbeite gerne mit Farben und Formen", type: "I" },
                     { text: "Ich habe eine lebhafte Fantasie", type: "I" },
-                    
                     // Social (S) Questions
                     { text: "Ich helfe gerne anderen Menschen", type: "S" },
                     { text: "Ich arbeite gerne in Teams", type: "S" },
                     { text: "Ich bin ein guter Zuhörer", type: "S" },
                     { text: "Ich erkläre gerne Dinge anderen", type: "S" },
                     { text: "Ich bin einfühlsam und verständnisvoll", type: "S" },
-                    
                     // Enterprising (E) Questions
                     { text: "Ich führe gerne andere an", type: "E" },
                     { text: "Ich überzeuge gerne andere", type: "E" },
                     { text: "Ich bin ehrgeizig und zielstrebig", type: "E" },
                     { text: "Ich organisiere gerne Projekte", type: "E" },
                     { text: "Ich nehme gerne Risiken auf mich", type: "E" },
-                    
                     // Conventional (C) Questions
                     { text: "Ich arbeite gerne strukturiert und geordnet", type: "C" },
                     { text: "Ich bin detailorientiert und genau", type: "C" },
@@ -621,22 +389,15 @@
                     { text: "Ich bevorzuge klare Regeln und Strukturen", type: "C" },
                     { text: "Ich bin zuverlässig und pünktlich", type: "C" }
                 ];
-            }
-
             init() {
                 this.renderQuestion();
                 this.setupEventListeners();
-            }
-
             setupEventListeners() {
                 document.getElementById('next-btn').addEventListener('click', () => this.nextQuestion());
                 document.getElementById('prev-btn').addEventListener('click', () => this.prevQuestion());
-            }
-
             renderQuestion() {
                 const question = this.questions[this.currentQuestion];
                 const container = document.getElementById('question-container');
-                
                 container.innerHTML = `
                     <div class="question-card">
                         <h3 class="question-text">${question.text}</h3>
@@ -645,94 +406,57 @@
                                 <input type="radio" name="answer" value="1">
                                 <span class="option-text">Trifft überhaupt nicht zu</span>
                             </label>
-                            <label class="option">
                                 <input type="radio" name="answer" value="2">
                                 <span class="option-text">Trifft wenig zu</span>
-                            </label>
-                            <label class="option">
                                 <input type="radio" name="answer" value="3">
                                 <span class="option-text">Trifft teilweise zu</span>
-                            </label>
-                            <label class="option">
                                 <input type="radio" name="answer" value="4">
                                 <span class="option-text">Trifft weitgehend zu</span>
-                            </label>
-                            <label class="option">
                                 <input type="radio" name="answer" value="5">
                                 <span class="option-text">Trifft vollständig zu</span>
-                            </label>
-                        </div>
-                    </div>
                 `;
-
                 this.updateProgress();
-            }
-
             updateProgress() {
                 const progress = ((this.currentQuestion + 1) / this.totalQuestions) * 100;
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 document.getElementById('progress-text').textContent = `Frage ${this.currentQuestion + 1} von ${this.totalQuestions}`;
-            }
-
             nextQuestion() {
                 const selectedAnswer = document.querySelector('input[name="answer"]:checked');
                 if (!selectedAnswer) {
                     alert('Bitte wählen Sie eine Antwort aus.');
                     return;
                 }
-
-                const question = this.questions[this.currentQuestion];
                 const score = parseInt(selectedAnswer.value);
                 this.scores[question.type] += score;
                 this.answers[this.currentQuestion] = score;
-
                 if (this.currentQuestion < this.totalQuestions - 1) {
                     this.currentQuestion++;
                     this.renderQuestion();
                 } else {
                     this.showResults();
-                }
-
                 this.updateButtons();
-            }
-
             prevQuestion() {
                 if (this.currentQuestion > 0) {
                     this.currentQuestion--;
-                    this.renderQuestion();
                     this.updateButtons();
-                }
-            }
-
             updateButtons() {
                 const prevBtn = document.getElementById('prev-btn');
                 const nextBtn = document.getElementById('next-btn');
-                
                 prevBtn.disabled = this.currentQuestion === 0;
-                
                 if (this.currentQuestion === this.totalQuestions - 1) {
                     nextBtn.innerHTML = '<i class="fas fa-check"></i> Ergebnisse anzeigen';
-                } else {
                     nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
-                }
-            }
-
             showResults() {
                 document.getElementById('raisec-assessment').style.display = 'none';
                 document.getElementById('raisec-results').style.display = 'block';
-                
                 this.renderResults();
                 this.renderChart();
-            }
-
             renderResults() {
                 const sortedScores = Object.entries(this.scores)
                     .sort(([,a], [,b]) => b - a);
-
                 const primaryType = sortedScores[0];
                 const secondaryType = sortedScores[1];
                 const tertiaryType = sortedScores[2];
-
                 const typeNames = {
                     R: 'Realistisch',
                     A: 'Analytisch', 
@@ -741,38 +465,22 @@
                     E: 'Unternehmerisch',
                     C: 'Konventionell'
                 };
-
                 document.getElementById('primary-type').innerHTML = `
                     <div class="primary-result">
                         <h3>Ihr Haupttyp: ${typeNames[primaryType[0]]}</h3>
                         <div class="score-bar">
                             <div class="score-fill" style="width: ${(primaryType[1] / 25) * 100}%"></div>
                             <span class="score-text">${primaryType[1]} Punkte</span>
-                        </div>
                         <p>Dieser Typ beschreibt am besten Ihre beruflichen Interessen und Präferenzen.</p>
-                    </div>
-                `;
-
                 document.getElementById('type-combinations').innerHTML = `
                     <div class="combination-results">
                         <h4>Ihr Interessenprofil:</h4>
                         <div class="combination-list">
                             <div class="combination-item">
                                 <strong>1. ${typeNames[primaryType[0]]}</strong> - ${primaryType[1]} Punkte
-                            </div>
-                            <div class="combination-item">
                                 <strong>2. ${typeNames[secondaryType[0]]}</strong> - ${secondaryType[1]} Punkte
-                            </div>
-                            <div class="combination-item">
                                 <strong>3. ${typeNames[tertiaryType[0]]}</strong> - ${tertiaryType[1]} Punkte
-                            </div>
-                        </div>
-                    </div>
-                `;
-
                 this.renderCareerRecommendations(primaryType[0], secondaryType[0]);
-            }
-
             renderCareerRecommendations(primary, secondary) {
                 const recommendations = {
                     'R': ['Ingenieur', 'Mechaniker', 'Techniker', 'Landwirt', 'Polizist'],
@@ -781,11 +489,8 @@
                     'S': ['Lehrer', 'Sozialarbeiter', 'Therapeut', 'Berater', 'Trainer'],
                     'E': ['Manager', 'Verkäufer', 'Unternehmer', 'Politiker', 'Projektleiter'],
                     'C': ['Buchhalter', 'Sekretär', 'Banker', 'Verwaltungsangestellter', 'Controller']
-                };
-
                 const primaryCareers = recommendations[primary] || [];
                 const secondaryCareers = recommendations[secondary] || [];
-                
                 document.getElementById('career-recommendations').innerHTML = `
                     <div class="career-recommendations">
                         <h4>Empfohlene Berufsfelder:</h4>
@@ -794,19 +499,8 @@
                                 <h5>Basierend auf Ihrem Haupttyp:</h5>
                                 <ul>
                                     ${primaryCareers.map(career => `<li>${career}</li>`).join('')}
-                                </ul>
-                            </div>
-                            <div class="career-list">
                                 <h5>Kombination mit Ihrem Nebentyp:</h5>
-                                <ul>
                                     ${secondaryCareers.slice(0, 3).map(career => `<li>${career}</li>`).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
             renderChart() {
                 const ctx = document.getElementById('raisec-chart').getContext('2d');
                 new Chart(ctx, {
@@ -838,16 +532,13 @@
                         }
                     }
                 });
-            }
         }
-
         // Global functions
         function downloadResults() {
             const results = {
                 scores: window.raisecAssessment.scores,
                 timestamp: new Date().toISOString()
             };
-            
             const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -855,26 +546,20 @@
             a.download = 'raisec-ergebnisse.json';
             a.click();
             URL.revokeObjectURL(url);
-        }
-
         // PDF Generation with Job Recommendations
         function generatePDF() {
             const assessment = window.raisecAssessment;
             if (!assessment) {
                 alert('Keine Assessment-Daten verfügbar!');
                 return;
-            }
-
             // Show loading state
             const button = event.target.closest('button');
             const originalText = button.innerHTML;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF wird erstellt...';
             button.disabled = true;
-
             // Get sorted scores
             const sortedScores = Object.entries(assessment.scores)
                 .sort(([,a], [,b]) => b - a);
-
             const typeNames = {
                 R: 'Realistisch',
                 A: 'Analytisch', 
@@ -882,15 +567,11 @@
                 S: 'Sozial',
                 E: 'Unternehmerisch',
                 C: 'Konventionell'
-            };
-
             const primaryType = sortedScores[0];
             const secondaryType = sortedScores[1];
             const tertiaryType = sortedScores[2];
-
             // Job recommendations based on types
             const jobRecommendations = getJobRecommendations(primaryType[0], secondaryType[0]);
-
             // Create PDF content
             const pdfContent = createPDFContent({
                 primaryType: primaryType,
@@ -901,14 +582,10 @@
                 jobRecommendations: jobRecommendations,
                 timestamp: new Date().toLocaleDateString('de-DE')
             });
-
             // Generate and download PDF
             generatePDFDocument(pdfContent, () => {
                 button.innerHTML = originalText;
                 button.disabled = false;
-            });
-        }
-
         function getJobRecommendations(primary, secondary) {
             const recommendations = {
                 'R': {
@@ -927,7 +604,6 @@
                 'A': {
                     title: 'Analytische Berufe',
                     description: 'Forschung, Wissenschaft und intellektuelle Tätigkeiten',
-                    jobs: [
                         'Wissenschaftler & Forscher',
                         'Arzt & Mediziner',
                         'Programmierer & Software-Entwickler',
@@ -935,12 +611,9 @@
                         'Psychologe & Therapeut',
                         'Mathematiker & Statistiker',
                         'Laborant & Chemiker'
-                    ]
-                },
                 'I': {
                     title: 'Künstlerische Berufe',
                     description: 'Kreative und expressive Tätigkeiten',
-                    jobs: [
                         'Künstler & Designer',
                         'Musiker & Komponist',
                         'Schriftsteller & Journalist',
@@ -948,12 +621,9 @@
                         'Schauspieler & Regisseur',
                         'Grafikdesigner & Illustrator',
                         'Architekt & Innenarchitekt'
-                    ]
-                },
                 'S': {
                     title: 'Soziale Berufe',
                     description: 'Hilfsbereite und kommunikative Tätigkeiten',
-                    jobs: [
                         'Lehrer & Dozent',
                         'Sozialarbeiter & Pädagoge',
                         'Therapeut & Berater',
@@ -961,12 +631,9 @@
                         'Pfleger & Mediziner',
                         'Psychologe & Seelsorger',
                         'Personalberater & Recruiter'
-                    ]
-                },
                 'E': {
                     title: 'Unternehmerische Berufe',
                     description: 'Führungs- und verkaufsorientierte Tätigkeiten',
-                    jobs: [
                         'Manager & Geschäftsführer',
                         'Verkäufer & Account Manager',
                         'Unternehmer & Gründer',
@@ -974,12 +641,9 @@
                         'Projektleiter & Teamleiter',
                         'Immobilienmakler & Versicherungsvertreter',
                         'Eventmanager & Veranstalter'
-                    ]
-                },
                 'C': {
                     title: 'Konventionelle Berufe',
                     description: 'Strukturierte und organisatorische Tätigkeiten',
-                    jobs: [
                         'Buchhalter & Controller',
                         'Sekretär & Assistent',
                         'Banker & Finanzberater',
@@ -987,16 +651,9 @@
                         'Datenbankadministrator',
                         'Qualitätsmanager & Prüfer',
                         'Steuerberater & Wirtschaftsprüfer'
-                    ]
-                }
-            };
-
             return {
                 primary: recommendations[primary] || recommendations['R'],
                 secondary: recommendations[secondary] || recommendations['A']
-            };
-        }
-
         function createPDFContent(data) {
             return `
                 <!DOCTYPE html>
@@ -1008,7 +665,6 @@
                         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
                         
                         * { margin: 0; padding: 0; box-sizing: border-box; }
-                        
                         body { 
                             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
                             margin: 0; 
@@ -1016,8 +672,6 @@
                             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
                             line-height: 1.6;
                             color: #1e293b;
-                        }
-                        
                         .header { 
                             text-align: center; 
                             margin-bottom: 60px; 
@@ -1028,8 +682,6 @@
                             box-shadow: 0 20px 40px rgba(30, 58, 138, 0.3);
                             position: relative;
                             overflow: hidden;
-                        }
-                        
                         .header::before {
                             content: '';
                             position: absolute;
@@ -1039,13 +691,8 @@
                             bottom: 0;
                             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
                             opacity: 0.4;
-                        }
-                        
                         .header-content {
-                            position: relative;
                             z-index: 2;
-                        }
-                        
                         .logo { 
                             font-size: 3rem; 
                             font-weight: 900; 
@@ -1055,15 +702,11 @@
                             -webkit-background-clip: text;
                             -webkit-text-fill-color: transparent;
                             background-clip: text;
-                        }
-                        
                         .subtitle { 
                             color: rgba(255, 255, 255, 0.95); 
                             font-size: 1.3rem; 
                             font-weight: 500;
                             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                        }
-                        
                         .section { 
                             margin-bottom: 40px; 
                             background: white; 
@@ -1071,28 +714,15 @@
                             border-radius: 24px; 
                             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
                             border: 1px solid rgba(99, 102, 241, 0.1);
-                            position: relative;
-                            overflow: hidden;
-                        }
-                        
                         .section::before {
-                            content: '';
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
                             height: 6px;
                             background: linear-gradient(90deg, #6366f1, #8b5cf6);
-                        }
-                        
                         .section-title { 
                             font-size: 2rem; 
                             font-weight: 800; 
                             color: #1e293b; 
                             margin-bottom: 30px; 
                             letter-spacing: -0.02em;
-                        }
-                        
                         .type-card { 
                             background: linear-gradient(135deg, #f0f4ff, #e0e7ff); 
                             padding: 30px; 
@@ -1101,92 +731,54 @@
                             border: 1px solid rgba(99, 102, 241, 0.2);
                             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.1);
                             transition: all 0.3s ease;
-                        }
-                        
                         .type-name { 
                             font-size: 1.5rem; 
-                            font-weight: 800; 
                             color: #6366f1; 
                             margin-bottom: 15px; 
                             letter-spacing: -0.01em;
-                        }
-                        
                         .type-score { 
                             font-size: 2.5rem; 
-                            font-weight: 900; 
-                            color: #1e293b;
                             margin-bottom: 10px;
-                        }
-                        
                         .type-description {
                             color: #64748b;
                             font-size: 1.1rem;
-                            font-weight: 500;
-                        }
-                        
                         .job-list { 
                             list-style: none; 
                             padding: 0; 
                             margin-top: 20px;
-                        }
-                        
                         .job-list li { 
                             padding: 15px 0; 
                             border-bottom: 1px solid #e2e8f0; 
                             position: relative; 
                             padding-left: 30px;
-                            font-size: 1.1rem;
-                            font-weight: 500;
                             color: #374151;
-                        }
-                        
                         .job-list li:before { 
                             content: '→'; 
                             position: absolute; 
                             left: 0; 
-                            color: #6366f1; 
                             font-weight: 800;
                             font-size: 1.2rem;
-                        }
-                        
                         .job-list li:last-child {
                             border-bottom: none;
-                        }
-                        
                         .chart-placeholder { 
                             background: linear-gradient(135deg, #f1f5f9, #e2e8f0); 
                             height: 250px; 
-                            border-radius: 20px; 
                             display: flex; 
                             align-items: center; 
                             justify-content: center; 
                             color: #64748b; 
-                            font-size: 1.2rem;
                             font-weight: 600;
                             border: 2px dashed #cbd5e1;
-                        }
-                        
                         .footer { 
-                            text-align: center; 
                             margin-top: 60px; 
-                            color: #64748b; 
                             font-size: 1rem;
                             background: white;
                             padding: 40px;
                             border-radius: 20px;
                             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-                        }
-                        
                         .footer p {
-                            margin-bottom: 10px;
-                        }
-                        
                         .footer p:first-child {
                             font-weight: 700;
-                            color: #1e293b;
-                            font-size: 1.1rem;
-                        }
-                        
                         .highlight-box {
                             background: linear-gradient(135deg, #fef3c7, #fde68a);
                             border: 2px solid #f59e0b;
@@ -1194,81 +786,51 @@
                             padding: 25px;
                             margin: 25px 0;
                             box-shadow: 0 8px 25px rgba(245, 158, 11, 0.1);
-                        }
-                        
                         .highlight-box strong {
                             color: #92400e;
-                            font-weight: 800;
-                        }
-                        
                         @media print {
                             body { padding: 20px; }
                             .section { break-inside: avoid; }
-                        }
                     </style>
-                </head>
+                    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
                 <body>
                     <div class="header">
                         <div class="logo">RAISEC-Assessment Report</div>
                         <div class="subtitle">Ihr persönliches Interessenprofil • ${data.timestamp}</div>
-                    </div>
-
                     <div class="section">
                         <div class="section-title">Ihr Haupttyp: ${data.typeNames[data.primaryType[0]]}</div>
                         <div class="type-card">
                             <div class="type-name">${data.typeNames[data.primaryType[0]]} (${data.primaryType[0]})</div>
                             <div class="type-score">${data.primaryType[1]} Punkte</div>
                             <p>Dieser Typ beschreibt am besten Ihre beruflichen Interessen und Präferenzen.</p>
-                        </div>
-                    </div>
-
-                    <div class="section">
                         <div class="section-title">Ihr Interessenprofil</div>
-                        <div class="type-card">
                             <div class="type-name">1. ${data.typeNames[data.primaryType[0]]}</div>
-                            <div class="type-score">${data.primaryType[1]} Punkte</div>
-                        </div>
-                        <div class="type-card">
                             <div class="type-name">2. ${data.typeNames[data.secondaryType[0]]}</div>
                             <div class="type-score">${data.secondaryType[1]} Punkte</div>
-                        </div>
-                        <div class="type-card">
                             <div class="type-name">3. ${data.typeNames[data.tertiaryType[0]]}</div>
                             <div class="type-score">${data.tertiaryType[1]} Punkte</div>
-                        </div>
-                    </div>
-
-                    <div class="section">
                         <div class="section-title">Empfohlene Berufe - ${data.jobRecommendations.primary.title}</div>
                         <p>${data.jobRecommendations.primary.description}</p>
                         <ul class="job-list">
                             ${data.jobRecommendations.primary.jobs.map(job => `<li>${job}</li>`).join('')}
                         </ul>
-                    </div>
-
-                    <div class="section">
                         <div class="section-title">Zusätzliche Empfehlungen - ${data.jobRecommendations.secondary.title}</div>
                         <p>${data.jobRecommendations.secondary.description}</p>
-                        <ul class="job-list">
                             ${data.jobRecommendations.secondary.jobs.slice(0, 5).map(job => `<li>${job}</li>`).join('')}
-                        </ul>
-                    </div>
-
                     <div class="footer">
                         <p>Erstellt mit dem RAISEC-Modell nach Holland • Manuel Weiss HR-Beratung</p>
                         <p>www.manuel-weiss.de • ${data.timestamp}</p>
-                    </div>
-                </body>
+                    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
                 </html>
             `;
-        }
-
         function generatePDFDocument(content, callback) {
             // Create a new window with the PDF content
             const printWindow = window.open('', '_blank');
             printWindow.document.write(content);
             printWindow.document.close();
-            
             // Wait for content to load, then trigger print
             printWindow.onload = function() {
                 setTimeout(() => {
@@ -1276,64 +838,41 @@
                     printWindow.close();
                     if (callback) callback();
                 }, 1000);
-            };
-        }
-
         function restartAssessment() {
             document.getElementById('raisec-results').style.display = 'none';
             document.getElementById('raisec-assessment').style.display = 'block';
             window.raisecAssessment = new RAISECAssessment();
-        }
-
         // AWS User System Functions
         function loginUser() {
             document.getElementById('loginModal').style.display = 'flex';
-        }
-
         function closeLoginModal() {
             document.getElementById('loginModal').style.display = 'none';
-        }
-
         function logoutUser() {
             // Clear user data
             localStorage.removeItem('userData');
             localStorage.removeItem('userProfile');
-            
             // Update UI
             document.getElementById('userInfo').style.display = 'none';
             document.getElementById('userLogin').style.display = 'flex';
-            
             // Show success message
             alert('Erfolgreich abgemeldet!');
-        }
-
         function showUserInfo(userData) {
             document.getElementById('userName').textContent = userData.name || 'Benutzer';
             document.getElementById('userEmail').textContent = userData.email || 'benutzer@example.com';
-            
             if (userData.avatar) {
                 document.getElementById('userAvatar').src = userData.avatar;
-            }
-            
             document.getElementById('userInfo').style.display = 'flex';
             document.getElementById('userLogin').style.display = 'none';
-        }
-
         function checkUserStatus() {
             const userData = localStorage.getItem('userData');
             if (userData) {
                 const parsedUserData = JSON.parse(userData);
                 showUserInfo(parsedUserData);
-            }
-        }
-
         // Login form handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            
             // Simulate AWS authentication
             if (email && password) {
                 const userData = {
@@ -1341,35 +880,24 @@
                     email: email,
                     avatar: 'manuel-weiss-photo.svg',
                     loginTime: new Date().toISOString()
-                };
-                
                 localStorage.setItem('userData', JSON.stringify(userData));
                 showUserInfo(userData);
                 closeLoginModal();
-                
                 alert('Erfolgreich angemeldet!');
             } else {
                 alert('Bitte füllen Sie alle Felder aus.');
-            }
         });
-
         // Initialize assessment when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            window.raisecAssessment = new RAISECAssessment();
-            
             // Check user status
             checkUserStatus();
-            
             // Mobile navigation toggle
             const navToggle = document.getElementById('navToggle');
             const navMenu = document.getElementById('navMenu');
-            
             if (navToggle && navMenu) {
                 navToggle.addEventListener('click', function() {
                     navMenu.classList.toggle('active');
                     navToggle.classList.toggle('active');
-                });
-                
                 // Close menu when clicking on a link
                 const navLinks = document.querySelectorAll('.nav-link');
                 navLinks.forEach(link => {
@@ -1377,9 +905,26 @@
                         navMenu.classList.remove('active');
                         navToggle.classList.remove('active');
                     });
-                });
-            }
-        });
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

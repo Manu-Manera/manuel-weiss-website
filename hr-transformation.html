@@ -22,57 +22,41 @@
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 1rem;
-        }
-        
         .hr-transformation-hero p {
             font-size: 1.1rem;
             opacity: 0.9;
             max-width: 800px;
             margin: 0 auto 2rem auto;
-        }
-        
         .methodology-badge {
             display: inline-block;
             background: rgba(255, 255, 255, 0.2);
-            color: white;
             padding: 0.5rem 1rem;
             border-radius: 25px;
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 2rem;
             backdrop-filter: blur(10px);
-        }
-        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
-        }
-        
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin: 3rem 0;
-        }
-        
         .service-card {
             background: white;
             border-radius: 16px;
-            padding: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-        }
-        
         .service-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
         .service-card::before {
             content: '';
             position: absolute;
@@ -81,8 +65,6 @@
             right: 0;
             height: 4px;
             background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-        }
-        
         .service-icon {
             width: 60px;
             height: 60px;
@@ -92,165 +74,69 @@
             justify-content: center;
             margin-bottom: 1.5rem;
             font-size: 1.5rem;
-            color: white;
-        }
-        
         .service-card:nth-child(1) .service-icon {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-        
         .service-card:nth-child(2) .service-icon {
             background: linear-gradient(135deg, #10b981, #059669);
-        }
-        
         .service-card:nth-child(3) .service-icon {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-        
         .service-card h3 {
-            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
             color: #1f2937;
-        }
-        
         .service-card p {
             color: #6b7280;
             line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        
         .service-features {
             list-style: none;
             padding: 0;
-            margin-bottom: 2rem;
-        }
-        
         .service-features li {
-            display: flex;
-            align-items: center;
             margin-bottom: 0.75rem;
             color: #374151;
             font-weight: 500;
-        }
-        
         .service-features li i {
             color: #3b82f6;
             margin-right: 0.75rem;
             width: 16px;
-        }
-        
         .service-cta {
-            display: flex;
-            align-items: center;
             justify-content: space-between;
             padding: 1rem;
             background: linear-gradient(135deg, #f8fafc, #e2e8f0);
             border-radius: 8px;
             margin-top: auto;
-        }
-        
         .cta-text {
-            font-weight: 600;
-            color: #1f2937;
-        }
-        
         .cta-arrow {
-            color: #3b82f6;
             font-size: 1.2rem;
             transition: transform 0.3s ease;
-        }
-        
         .service-card:hover .cta-arrow {
             transform: translateX(4px);
-        }
-        
         .workflow-preview {
             background: #f8fafc;
-            border-radius: 12px;
             padding: 1.5rem;
             margin-top: 1.5rem;
-        }
-        
         .workflow-preview h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        
         .workflow-steps {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-        }
-        
         .workflow-step {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
             border-left: 3px solid #3b82f6;
-            font-size: 0.9rem;
-            color: #374151;
-        }
-        
         .workflow-step strong {
-            color: #1f2937;
-        }
-        
         .intro-section {
-            background: white;
-            border-radius: 16px;
             padding: 3rem;
             margin-bottom: 3rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-        }
-        
         .intro-section h2 {
             font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        
         .intro-section p {
-            font-size: 1.1rem;
-            color: #6b7280;
             line-height: 1.7;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 2rem auto;
-        }
-        
         .benefits-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
-        }
-        
         .benefit-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
             background: #f0f9ff;
-            border-radius: 8px;
             border: 1px solid #e0f2fe;
-        }
-        
         .benefit-item i {
-            color: #3b82f6;
             margin-right: 1rem;
-            font-size: 1.2rem;
-        }
-        
         .benefit-item span {
-            font-weight: 600;
-            color: #1f2937;
-        }
-        
         @media (max-width: 768px) {
             .hr-transformation-hero h1 {
                 font-size: 2rem;
@@ -258,151 +144,74 @@
             
             .services-grid {
                 grid-template-columns: 1fr;
-            }
-            
             .workflow-steps {
-                grid-template-columns: 1fr;
-            }
-        }
-    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
-            display: flex;
-            align-items: center;
             margin-left: 20px;
-        }
 
         .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
-            border-radius: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
         .user-info:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         .user-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
         .user-avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
         .user-details {
-            display: flex;
             flex-direction: column;
             gap: 2px;
-        }
-
         .user-name {
             font-size: 0.8rem;
-            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
-        }
-
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.2;
-        }
-
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
             border: none;
-            border-radius: 50%;
             width: 28px;
             height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
         .user-login {
-            display: flex;
-            align-items: center;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
         .btn-login i {
-            font-size: 0.7rem;
-        }
-
         /* Responsive Design for User System */
-        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
-            }
-
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
-            }
-
             .user-avatar {
                 width: 28px;
                 height: 28px;
-            }
-
             .user-name {
                 font-size: 0.7rem;
-            }
-
             .user-email {
                 font-size: 0.6rem;
-            }
-
             .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -417,60 +226,40 @@
                 <a href="index.html#services">Services</a>
                 <a href="index.html#about">Über mich</a>
                 <a href="index.html#contact">Kontakt</a>
-            </div>
         </div>
     </nav>
-
     <!-- Hero Section -->
     <div class="hr-transformation-hero">
         <div class="methodology-badge">
             <i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie
-        </div>
         <h1>HR-Transformation</h1>
         <p>Strategische Beratung für die Transformation von HR-Organisationen. Wissenschaftlich fundiert, praxisorientiert und zukunftssicher.</p>
     </div>
-
     <div class="container">
         <!-- Introduction -->
         <div class="intro-section">
             <h2>Unsere HR-Transformation Services</h2>
             <p>Drei zentrale Bereiche für erfolgreiche HR-Transformation mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Organisationsentwicklung und Change Management für nachhaltigen Erfolg.</p>
-            
             <div class="benefits-grid">
                 <div class="benefit-item">
                     <i class="fas fa-chart-line"></i>
                     <span>Strategische Verankerung</span>
                 </div>
-                <div class="benefit-item">
                     <i class="fas fa-users"></i>
                     <span>Organisationsentwicklung</span>
-                </div>
-                <div class="benefit-item">
                     <i class="fas fa-sync-alt"></i>
                     <span>Change Management</span>
-                </div>
-                <div class="benefit-item">
                     <i class="fas fa-brain"></i>
                     <span>Wissenschaftlich fundiert</span>
-                </div>
-                <div class="benefit-item">
                     <i class="fas fa-rocket"></i>
                     <span>Praxisorientiert</span>
-                </div>
-                <div class="benefit-item">
                     <i class="fas fa-shield-alt"></i>
                     <span>Zukunftssicher</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Services Grid -->
         <div class="services-grid">
             <!-- HR-Strategieentwicklung -->
             <div class="service-card" onclick="window.location.href='hr-strategie-workflow.html'">
                 <div class="service-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
                 <h3>HR-Strategieentwicklung</h3>
                 <p>Entwickeln Sie eine umfassende HR-Strategie mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Wertschöpfung und ethische Implementierung für nachhaltigen Erfolg.</p>
                 
@@ -483,7 +272,6 @@
                     <li>Skalierung & HR-Ökosystem</li>
                     <li>Kontinuierliches Lernen & Anpassung</li>
                 </ul>
-                
                 <div class="workflow-preview">
                     <h4>7-Schritte-Workflow:</h4>
                     <div class="workflow-steps">
@@ -491,48 +279,26 @@
                             <strong>1. Vision</strong><br>
                             Strategische Verankerung
                         </div>
-                        <div class="workflow-step">
                             <strong>2. Wertschöpfung</strong><br>
                             Schlüsselfelder definieren
-                        </div>
-                        <div class="workflow-step">
                             <strong>3. Datenbasis</strong><br>
                             Infrastruktur aufbauen
-                        </div>
-                        <div class="workflow-step">
                             <strong>4. Organisation</strong><br>
                             Rollen transformieren
-                        </div>
-                        <div class="workflow-step">
                             <strong>5. Ethik</strong><br>
                             Fairness & Vertrauen
-                        </div>
-                        <div class="workflow-step">
                             <strong>6. Skalierung</strong><br>
                             HR-Ökosystem nutzen
-                        </div>
-                        <div class="workflow-step">
                             <strong>7. Lernen</strong><br>
                             Kontinuierliche Anpassung
-                        </div>
                     </div>
-                </div>
-                
                 <div class="service-cta">
                     <span class="cta-text">HR-Strategie entwickeln</span>
                     <i class="fas fa-arrow-right cta-arrow"></i>
-                </div>
-            </div>
-
             <!-- Organisationsentwicklung -->
             <div class="service-card" onclick="window.location.href='organisationsentwicklung-workflow.html'">
-                <div class="service-icon">
-                    <i class="fas fa-users"></i>
-                </div>
                 <h3>Organisationsentwicklung</h3>
                 <p>Gestalten Sie Ihre Organisation für die Zukunft. Agile Strukturen, kollaborative Kulturen und nachhaltige Entwicklungsprozesse für maximale Performance und Mitarbeiterengagement.</p>
-                
-                <ul class="service-features">
                     <li>Organisationsdiagnose & Assessment</li>
                     <li>Agile Transformation</li>
                     <li>Kultur- & Werteentwicklung</li>
@@ -540,57 +306,25 @@
                     <li>Team-Entwicklung</li>
                     <li>Change Readiness</li>
                     <li>Nachhaltige Implementierung</li>
-                </ul>
-                
-                <div class="workflow-preview">
-                    <h4>7-Schritte-Workflow:</h4>
-                    <div class="workflow-steps">
-                        <div class="workflow-step">
                             <strong>1. Diagnose</strong><br>
                             Organisations-Assessment
-                        </div>
-                        <div class="workflow-step">
                             <strong>2. Vision</strong><br>
                             Zukunftsbild entwickeln
-                        </div>
-                        <div class="workflow-step">
                             <strong>3. Struktur</strong><br>
                             Agile Organisation
-                        </div>
-                        <div class="workflow-step">
                             <strong>4. Kultur</strong><br>
                             Werte & Verhalten
-                        </div>
-                        <div class="workflow-step">
                             <strong>5. Leadership</strong><br>
                             Führung entwickeln
-                        </div>
-                        <div class="workflow-step">
                             <strong>6. Teams</strong><br>
                             Kollaboration stärken
-                        </div>
-                        <div class="workflow-step">
                             <strong>7. Nachhaltigkeit</strong><br>
                             Kontinuierliche Entwicklung
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="service-cta">
                     <span class="cta-text">Organisation entwickeln</span>
-                    <i class="fas fa-arrow-right cta-arrow"></i>
-                </div>
-            </div>
-
             <!-- Change Management -->
             <div class="service-card" onclick="window.location.href='change-management-workflow.html'">
-                <div class="service-icon">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
                 <h3>Change Management</h3>
                 <p>Führen Sie erfolgreiche Transformationen durch. Systematische Veränderungsprozesse, Stakeholder-Management und nachhaltige Implementierung für dauerhaften Erfolg.</p>
-                
-                <ul class="service-features">
                     <li>Change Readiness Assessment</li>
                     <li>Stakeholder-Analyse</li>
                     <li>Kommunikationsstrategie</li>
@@ -598,50 +332,21 @@
                     <li>Training & Development</li>
                     <li>Monitoring & Evaluation</li>
                     <li>Nachhaltige Verankerung</li>
-                </ul>
-                
-                <div class="workflow-preview">
-                    <h4>7-Schritte-Workflow:</h4>
-                    <div class="workflow-steps">
-                        <div class="workflow-step">
                             <strong>1. Assessment</strong><br>
                             Change Readiness
-                        </div>
-                        <div class="workflow-step">
                             <strong>2. Stakeholder</strong><br>
                             Analyse & Mapping
-                        </div>
-                        <div class="workflow-step">
                             <strong>3. Kommunikation</strong><br>
                             Strategie entwickeln
-                        </div>
-                        <div class="workflow-step">
                             <strong>4. Widerstand</strong><br>
                             Management & Lösung
-                        </div>
-                        <div class="workflow-step">
                             <strong>5. Training</strong><br>
                             Kompetenzen entwickeln
-                        </div>
-                        <div class="workflow-step">
                             <strong>6. Monitoring</strong><br>
                             Fortschritt & Evaluation
-                        </div>
-                        <div class="workflow-step">
                             <strong>7. Verankerung</strong><br>
                             Nachhaltige Implementierung
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="service-cta">
                     <span class="cta-text">Change Management starten</span>
-                    <i class="fas fa-arrow-right cta-arrow"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -649,30 +354,40 @@
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>HR-Transformation & Organisationsentwicklung</p>
-                </div>
-                <div class="footer-section">
                     <h4>Services</h4>
                     <ul>
                         <li><a href="hr-strategie-workflow.html">HR-Strategieentwicklung</a></li>
                         <li><a href="organisationsentwicklung-workflow.html">Organisationsentwicklung</a></li>
                         <li><a href="change-management-workflow.html">Change Management</a></li>
                     </ul>
-                </div>
-                <div class="footer-section">
                     <h4>Kontakt</h4>
                     <p>E-Mail: info@manuel-weiss.com</p>
                     <p>Telefon: +49 (0) 123 456 789</p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-    
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/aws-config.js"></script>
-    <script src="js/real-aws-auth.js"></script>
-    <script src="js/global-auth-system.js"></script>
+    <script src="js/unified-auth-manager.js"></script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

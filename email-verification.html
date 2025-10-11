@@ -24,166 +24,101 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
             width: 100%;
-        }
-        
         .verification-icon {
             width: 80px;
             height: 80px;
             background: #10b981;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin: 0 auto 1.5rem;
             color: white;
             font-size: 2rem;
-        }
-        
         .verification-icon.error {
             background: #ef4444;
-        }
-        
         .verification-icon.pending {
             background: #f59e0b;
-        }
-        
         h1 {
             color: #1f2937;
             margin-bottom: 1rem;
-        }
-        
         p {
             color: #6b7280;
             line-height: 1.6;
             margin-bottom: 1.5rem;
-        }
-        
         .verification-form {
             background: #f8fafc;
             padding: 1.5rem;
             border-radius: 10px;
             margin: 1.5rem 0;
-        }
-        
         .form-group {
-            margin-bottom: 1rem;
             text-align: left;
-        }
-        
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: #374151;
-        }
-        
         input {
-            width: 100%;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 1rem;
-        }
-        
         input:focus {
             outline: none;
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
         .btn {
             background: #6366f1;
-            color: white;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             margin: 0.5rem;
-        }
-        
         .btn:hover {
             background: #4f46e5;
             transform: translateY(-1px);
-        }
-        
         .btn-secondary {
             background: #6b7280;
-        }
-        
         .btn-secondary:hover {
             background: #4b5563;
-        }
-        
         .status-message {
             padding: 1rem;
-            border-radius: 8px;
             margin: 1rem 0;
-        }
-        
         .status-success {
             background: #d1fae5;
             color: #065f46;
             border: 1px solid #a7f3d0;
-        }
-        
         .status-error {
             background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fca5a5;
-        }
-        
         .status-info {
             background: #dbeafe;
             color: #1e40af;
             border: 1px solid #93c5fd;
-        }
-        
         .demo-section {
             background: #fef3c7;
             border: 1px solid #fbbf24;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        
         .demo-section h3 {
             margin: 0 0 0.5rem 0;
             color: #92400e;
-        }
-        
         .demo-section p {
             margin: 0;
-            color: #92400e;
             font-size: 0.875rem;
-        }
-        
         .token-display {
             background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
             font-family: monospace;
             word-break: break-all;
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <div class="verification-container">
         <div class="verification-icon" id="verificationIcon">
             <i class="fas fa-envelope"></i>
         </div>
-        
         <h1 id="verificationTitle">E-Mail Bestätigung</h1>
         <p id="verificationMessage">Bitte gib deinen Bestätigungscode ein, um deine E-Mail-Adresse zu bestätigen.</p>
-        
         <div class="demo-section">
             <h3>Demo-Modus</h3>
             <p>Dies ist eine Demo-Version. In der echten Anwendung würdest du eine E-Mail mit einem Bestätigungslink erhalten.</p>
-        </div>
-        
         <div class="verification-form">
             <div class="form-group">
                 <label for="verificationToken">Bestätigungscode:</label>
@@ -192,20 +127,14 @@
             
             <button class="btn" data-action="verify-email">E-Mail bestätigen</button>
             <button class="btn btn-secondary" data-action="resend-verification">Code erneut senden</button>
-        </div>
-        
         <div id="statusMessage" class="status-message" style="display: none;"></div>
-        
         <div class="token-display" id="tokenDisplay" style="display: none;">
             <strong>Demo-Token:</strong><br>
             <span id="demoToken"></span>
-        </div>
-        
         <div style="margin-top: 2rem;">
             <a href="persoenlichkeitsentwicklung-uebersicht.html" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
             </a>
-        </div>
     </div>
 
     <script src="js/user-auth.js"></script>
@@ -214,28 +143,21 @@
         // Demo token generation
         function generateDemoToken() {
             return 'demo_verify_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-        
         // Show demo token
         function showDemoToken() {
             const token = generateDemoToken();
             document.getElementById('demoToken').textContent = token;
             document.getElementById('tokenDisplay').style.display = 'block';
-            
             // Store demo token in localStorage for testing
             localStorage.setItem('demoVerificationToken', token);
-        }
-        
         // Verify email
         function verifyEmail() {
             const token = document.getElementById('verificationToken').value.trim();
             const demoToken = localStorage.getItem('demoVerificationToken');
-            
             if (!token) {
                 showStatus('Bitte gib einen Bestätigungscode ein.', 'error');
                 return;
             }
-            
             if (token === demoToken) {
                 // Success
                 document.getElementById('verificationIcon').innerHTML = '<i class="fas fa-check"></i>';
@@ -247,7 +169,6 @@
                 
                 // Clear demo token
                 localStorage.removeItem('demoVerificationToken');
-                
                 // In real app, this would call the verification function
                 if (window.userProfile && window.userAuth && window.userAuth.getCurrentUser()) {
                     window.userProfile.verifyEmail(token);
@@ -257,28 +178,20 @@
                 document.getElementById('verificationIcon').innerHTML = '<i class="fas fa-times"></i>';
                 document.getElementById('verificationIcon').classList.add('error');
                 showStatus('Ungültiger Bestätigungscode. Bitte überprüfe deine Eingabe.', 'error');
-            }
-        }
-        
         // Resend verification
         function resendVerification() {
             showDemoToken();
             showStatus('Neuer Bestätigungscode generiert!', 'info');
-        }
-        
         // Show status message
         function showStatus(message, type) {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = message;
             statusDiv.className = `status-message status-${type}`;
             statusDiv.style.display = 'block';
-            
             // Auto-hide after 5 seconds
             setTimeout(() => {
                 statusDiv.style.display = 'none';
             }, 5000);
-        }
-        
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Check if user is logged in
@@ -293,16 +206,31 @@
                 } else {
                     // Show demo token
                     showDemoToken();
-                }
-            } else {
                 // Not logged in
                 document.getElementById('verificationIcon').innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-                document.getElementById('verificationIcon').classList.add('error');
                 document.getElementById('verificationTitle').textContent = 'Nicht angemeldet';
                 document.getElementById('verificationMessage').textContent = 'Bitte melde dich zuerst an, um deine E-Mail-Adresse zu bestätigen.';
-                document.getElementById('verificationForm').style.display = 'none';
-            }
         });
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -23,6 +23,7 @@
         .btn:hover { background: #047857; transform: translateY(-2px); }
         .back-link { position: fixed; top: 2rem; left: 2rem; background: rgba(255,255,255,0.9); color: #059669; padding: 0.75rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 500; }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <a href="admin.html" class="back-link">
@@ -49,29 +50,18 @@
                     <a href="bewerbung.html" class="btn">Service nutzen</a>
                 </div>
                 
-                <div class="cloud-service">
                     <h3><i class="fas fa-database"></i> Data Storage</h3>
                     <p>Sichere Datenspeicherung in der Cloud</p>
-                    <ul class="feature-list">
                         <li>Persönliche Daten</li>
                         <li>Fortschritts-Tracking</li>
                         <li>Dokumente & Dateien</li>
                         <li>Backup & Synchronisation</li>
-                    </ul>
-                    <a href="bewerbung.html" class="btn">Service nutzen</a>
-                </div>
-                
-                <div class="cloud-service">
                     <h3><i class="fas fa-cogs"></i> API Services</h3>
                     <p>Professionelle Backend-APIs</p>
-                    <ul class="feature-list">
                         <li>REST API Endpoints</li>
                         <li>Real-time Updates</li>
                         <li>Data Analytics</li>
                         <li>Performance Monitoring</li>
-                    </ul>
-                    <a href="bewerbung.html" class="btn">Service nutzen</a>
-                </div>
             </div>
             
             <div style="text-align: center; background: #f0fdf4; padding: 2rem; border-radius: 12px;">
@@ -80,8 +70,26 @@
                 <a href="bewerbung.html" class="btn">
                     <i class="fas fa-sign-in-alt"></i> Anmelden
                 </a>
-            </div>
-        </div>
     </div>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -23,6 +23,7 @@
         .btn:hover { background: #6d28d9; transform: translateY(-2px); }
         .back-link { position: fixed; top: 2rem; left: 2rem; background: rgba(255,255,255,0.9); color: #7c3aed; padding: 0.75rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 500; }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <a href="admin.html" class="back-link">
@@ -49,41 +50,27 @@
                     <a href="hr-designer.html" class="btn">HR Portal öffnen</a>
                 </div>
                 
-                <div class="enterprise-service">
                     <h3><i class="fas fa-chart-line"></i> Business Analytics</h3>
                     <p>Datengetriebene Geschäftsentscheidungen</p>
-                    <ul class="feature-list">
                         <li>Performance Dashboards</li>
                         <li>User Analytics</li>
                         <li>Growth Metrics</li>
                         <li>ROI Tracking</li>
-                    </ul>
                     <a href="bewerbung.html" class="btn">Analytics nutzen</a>
-                </div>
-                
-                <div class="enterprise-service">
                     <h3><i class="fas fa-cog"></i> Process Automation</h3>
                     <p>Automatisierung für Effizienzsteigerung</p>
-                    <ul class="feature-list">
                         <li>Workflow Automation</li>
                         <li>Document Processing</li>
                         <li>Email Integration</li>
                         <li>API Connections</li>
-                    </ul>
                     <a href="bewerbung.html" class="btn">Automatisierung starten</a>
-                </div>
-                
-                <div class="enterprise-service">
                     <h3><i class="fas fa-graduation-cap"></i> Training Platform</h3>
                     <p>Mitarbeiterentwicklung und Schulungen</p>
-                    <ul class="feature-list">
                         <li>Online Learning Modules</li>
                         <li>Progress Tracking</li>
                         <li>Certification System</li>
                         <li>Custom Curricula</li>
-                    </ul>
                     <a href="personal-training.html" class="btn">Training Platform</a>
-                </div>
             </div>
             
             <div style="text-align: center; background: #faf5ff; padding: 2rem; border-radius: 12px;">
@@ -92,8 +79,26 @@
                 <a href="bewerbung.html" class="btn">
                     <i class="fas fa-handshake"></i> Anmelden
                 </a>
-            </div>
-        </div>
     </div>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

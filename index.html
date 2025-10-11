@@ -9,20 +9,18 @@
     <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
     <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="Manuel Weiss - Professional Services">
     <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -52,17 +50,8 @@
                 <i class="fas fa-download"></i>
                 <span class="download-text">Beraterprofil herunterladen</span>
             </a>
-        </div>
-                
-                
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -81,29 +70,19 @@
                     <a href="#services" class="btn btn-primary" data-de="Services entdecken" data-en="Discover Services">Services entdecken</a>
                     <a href="#contact" class="btn btn-outline" data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</a>
                 </div>
-            </div>
             <div class="hero-visual">
                 <div class="hero-image">
                     <img src="Bewerbungsbild.jpeg" alt="Manuel Weiss" class="profile-image" id="profile-photo">
-                </div>
                 <div class="hero-stats">
                     <div class="stat-item">
                         <span class="stat-number">5+</span>
                         <span class="stat-label">Jahre Erfahrung</span>
                     </div>
-                    <div class="stat-item">
                         <span class="stat-number">50+</span>
                         <span class="stat-label">Projekte</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number">100%</span>
                         <span class="stat-label">Zufriedenheit</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- Services Section -->
     <section id="services" class="services">
         <div class="container">
@@ -111,14 +90,10 @@
                 <h2 class="section-title">Meine Services</h2>
                 <p class="section-subtitle">
                     Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse
-                </p>
-            </div>
-            
             <div class="services-grid">
                 <div class="service-card" onclick="window.location.href='ai-digitalisierung.html'">
                     <div class="service-icon">
                         <i class="fas fa-robot"></i>
-                    </div>
                     <h3>AI & Digitalisierung</h3>
                     <p>Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe.</p>
                     <ul class="service-features">
@@ -129,156 +104,77 @@
                     <div class="service-cta">
                         <span class="cta-text">Mehr erfahren</span>
                         <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-                
                 <div class="service-card" onclick="window.location.href='hr-transformation.html'">
-                    <div class="service-icon">
                         <i class="fas fa-users"></i>
-                    </div>
                     <h3>HR Transformation</h3>
                     <p>Moderne HR-Strukturen und -Prozesse für zukunftsfähige Unternehmen.</p>
-                    <ul class="service-features">
                         <li>HR-Strategie</li>
                         <li>Organisationsentwicklung</li>
                         <li>Change Management</li>
-                    </ul>
-                    <div class="service-cta">
-                        <span class="cta-text">Mehr erfahren</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-                
                 <div class="service-card" onclick="window.location.href='hr-prozessautomatisierung.html'">
-                    <div class="service-icon">
                         <i class="fas fa-cogs"></i>
-                    </div>
                     <h3>HR-Prozessautomatisierung</h3>
                     <p>KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience.</p>
-                    <ul class="service-features">
                         <li>RPA & KI-Integration</li>
                         <li>HR-Self-Service</li>
                         <li>Prozessoptimierung</li>
-                    </ul>
-                    <div class="service-cta">
-                        <span class="cta-text">Mehr erfahren</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-                
                 <div class="service-card modern-highlight" onclick="window.location.href='bewerbungsmanager.html'">
-                    <div class="service-icon">
                         <i class="fas fa-briefcase"></i>
-                    </div>
                     <div class="service-badge">🚀 NEU</div>
                     <h3>Moderne Bewerbungsverwaltung</h3>
                     <p>Intelligentes Bewerbungsmanagement mit KI-Integration, Real-time Analytics und modernem Dashboard.</p>
-                    <ul class="service-features">
                         <li>📊 KI-powered Analytics & Insights</li>
                         <li>📤 Smart Upload mit Progress Tracking</li>
                         <li>📱 Mobile-optimierte Benutzeroberfläche</li>
                         <li>🔄 Offline-Funktionalität mit Sync</li>
-                    </ul>
                     <a href="bewerbungsmanager.html" class="btn btn-primary modern-btn">
                         <i class="fas fa-rocket"></i>
                         Bewerbungen verwalten
                     </a>
-                </div>
-                
                 <div class="service-card">
-                    <div class="service-icon">
                         <i class="fas fa-seedling"></i>
-                    </div>
                     <h3 service.personality.title">Persönlichkeitsentwicklung</h3>
                     <p service.personality.description">Entdecke 29 bewährte Methoden für deine persönliche Entwicklung. Von Ikigai bis Stress-Management - finde deinen Weg zu mehr Klarheit und Wachstum.</p>
-                    <ul class="service-features">
                         <li service.personality.features.0">29 verschiedene Methoden</li>
                         <li service.personality.features.1">Interaktive Workflows</li>
                         <li service.personality.features.2">Progress-Tracking</li>
                         <li service.personality.features.3">Export-Funktionen</li>
-                    </ul>
                     <a href="persoenlichkeitsentwicklung-uebersicht.html" class="btn btn-primary">Methoden entdecken</a>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">
                         <i class="fas fa-dumbbell"></i>
-                    </div>
                     <h3 service.training.title">Personal Training</h3>
                     <p service.training.description">KI-gestützte Trainingspläne für Gym oder Home-Workout. Personalisierte Pläne mit Kalender-Integration und Fortschritts-Tracking.</p>
-                    <ul class="service-features">
                         <li service.training.features.0">AI-Trainingsplan-Generator</li>
                         <li service.training.features.1">Gym & Bodyweight-Optionen</li>
                         <li service.training.features.2">Kalender-Export (Google/Apple)</li>
                         <li service.training.features.3">Fortschritts-Tracking</li>
-                    </ul>
                     <a href="personal-training.html" class="btn btn-primary">Trainingsplan erstellen</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Activities Section -->
     <section class="activities">
-        <div class="container">
-            <div class="section-header">
                 <h2 class="section-title">Aktivitäten & Vermietungen</h2>
-                <p class="section-subtitle">
                     Entdecke meine verschiedenen Angebote und Aktivitäten
-                </p>
-            </div>
-            
             <div class="activities-grid">
                 <a href="wohnmobil.html" class="activity-card">
                     <div class="activity-image">
                         <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil">
-                    </div>
                     <div class="activity-content">
                         <h3>Wohnmobil</h3>
                         <p>Komfortable Reisen mit unserem modernen Wohnmobil</p>
                         <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
-                    </div>
                 </a>
-                
                 <a href="fotobox.html" class="activity-card">
-                    <div class="activity-image">
                         <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox">
-                    </div>
-                    <div class="activity-content">
                         <h3>Fotobox</h3>
                         <p>Professionelle Fotobox für Events und Feiern</p>
-                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-                
                 <a href="ebike.html" class="activity-card">
-                    <div class="activity-image">
                         <img src="images/ebike/ebike-1.jpg" alt="E-Bikes" onerror="this.style.display='none'">
-                    </div>
-                    <div class="activity-content">
                         <h3>E-Bikes</h3>
                         <p>Elektrofahrräder für umweltfreundliche Mobilität</p>
-                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-                
                 <a href="sup.html" class="activity-card">
-                    <div class="activity-image">
                         <img src="images/sup/sup-1.jpg" alt="SUP" onerror="this.style.display='none'">
-                    </div>
-                    <div class="activity-content">
                         <h3>SUP</h3>
                         <p>Stand-Up Paddling für Wassersport-Enthusiasten</p>
-                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <div class="container">
             <div class="contact-content">
                 <div class="contact-info">
                     <h2 class="section-title">Kontakt</h2>
@@ -296,71 +192,34 @@
                             </div>
                         </div>
                         
-                        <div class="contact-item">
                             <i class="fas fa-phone"></i>
-                            <div>
                                 <h4>Telefon</h4>
                                 <a href="tel:+41798385590">+41 79 838 55 90</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <div>
                                 <h4>Adresse</h4>
                                 <p>Pilatusstrasse 40<br>8330 Pfäffikon ZH</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-clock"></i>
-                            <div>
                                 <h4>Verfügbarkeit</h4>
                                 <p>Mo-Fr: 9:00 - 18:00</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="email">E-Mail</label>
                             <input type="email" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="subject">Betreff</label>
                             <input type="text" id="subject" name="subject" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="message">Nachricht</label>
                             <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i>
                             Nachricht senden
                         </button>
                     </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
     <!-- Translation Manager -->
-    
-    
     <!-- Scripts -->
     <script src="script.js"></script>
-    
     <!-- Smart API für AWS-Integration -->
     <script>
         // Smart API laden für AWS-Integration
@@ -371,14 +230,11 @@
         };
         document.head.appendChild(smartApiScript);
     </script>
-
     <!-- Login Visibility Control -->
-    <script>
         // Prüfe ob Benutzer von Service-Unterseite kommt
         function checkServiceReferrer() {
             const referrer = document.referrer;
             const currentUrl = window.location.href;
-            
             // Service-Unterseiten die Login-Button aktivieren
             const servicePages = [
                 'persoenlichkeitsentwicklung.html',
@@ -397,24 +253,18 @@
                 'website-services.html',
                 'multi-user-dashboard.html'
             ];
-            
             // Prüfe ob Referrer eine Service-Unterseite ist
             const isFromServicePage = servicePages.some(page => 
                 referrer.includes(page) || currentUrl.includes(page)
             );
-            
             // Prüfe URL-Parameter für Service-Referrer
             const urlParams = new URLSearchParams(window.location.search);
             const serviceReferrer = urlParams.get('from_service');
-            
         }
-        
         // Initial check when page loads
         document.addEventListener('DOMContentLoaded', checkServiceReferrer);
-        
         // Check on page show (for back/forward navigation)
         window.addEventListener('pageshow', checkServiceReferrer);
-        
         // Beraterprofil herunterladen Funktionalität
         document.addEventListener('DOMContentLoaded', function() {
             const profileDownloadBtn = document.getElementById('profileDownloadBtn');
@@ -425,10 +275,8 @@
                 });
             }
         });
-        
         function downloadBeraterprofil() {
             console.log('📄 Beraterprofil wird heruntergeladen...');
-            
             // Erstelle ein visuell ansprechendes Beraterprofil mit KORREKTEN Lebenslauf-Daten
             const profileData = {
                 name: 'Manuel Alexander Weiss',
@@ -445,19 +293,14 @@
                         period: '12.2021 - 06.2025',
                         description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR Health Checks.'
                     },
-                    {
                         position: 'Process Consultant',
                         company: 'BOC Information Technologies Consulting GmbH, Berlin',
                         period: '12.2019 - 12.2021',
                         description: 'Business Process Management (BPM) Praxis für Kundenorganisationen. Prozess-Discovery Sessions, Workflow-Dokumentation, Gap-Analyse, SIPOC und Root-Cause-Analyse. ADONIS Prozess-Management Suite Deployment.'
-                    },
-                    {
                         position: 'IT Project Manager, Sales & Contract Management',
                         company: 'eeMobility (Startup), München',
                         period: '03.2019 - 09.2019',
                         description: 'End-to-end Vertragsmanagement Lifecycle, Digitalisierungsprojekte für optimierte Workflows. Trade-Fair Koordination und 6-monatiges Sales Training mit externem Coach.'
-                    },
-                    {
                         position: 'Production Technician',
                         company: 'Work and travel Australia',
                         period: '09.2017 - 02.2019',
@@ -465,74 +308,53 @@
                     }
                 ],
                 projects: [
-                    {
                         name: 'UKG HRSD Implementierungen',
                         type: 'KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler',
                         period: '2021 - 2025',
                         description: 'End-to-end UKG HRSD Implementierungen mit Wissensdatenbank, Prozessoptimierung und digitalem Personaldossier für verschiedene Branchen. Kunden: KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler.',
                         skills: ['UKG HRSD', 'Wissensdatenbank', 'Digitales Personaldossier', 'Prozessoptimierung']
-                    },
-                    {
                         name: 'ADONIS BPMN 2.0 Einführung',
                         type: 'Müller Milch, KFW',
                         period: '2019 - 2021',
                         description: 'Einführung von ADONIS und fachliches Business Process Management (BPM) bei Müller Milch. GRC-Implementierung bei KFW für optimierte Governance-Prozesse.',
                         skills: ['ADONIS', 'BPMN 2.0', 'GRC', 'Governance']
-                    },
-                    {
                         name: 'Prozessschulungen & Workshops',
                         type: 'Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr',
-                        period: '2019 - 2021',
                         description: 'Durchführung von Prozessschulungen und Workshops für verschiedene Organisationen. Training in BPM-Methoden und Prozessoptimierung bei Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr.',
                         skills: ['Prozessschulungen', 'Workshops', 'BPM-Training', 'Change Management']
-                    },
-                    {
                         name: 'Business Process Management (BPM)',
                         type: 'BOC Information Technologies',
-                        period: '2019 - 2021',
                         description: 'Strukturierte BPM-Praxis für Kundenorganisationen. Prozess-Discovery Sessions, Workflow-Dokumentation und Gap-Analyse mit SIPOC und Root-Cause-Analyse Techniken.',
                         skills: ['BPM', 'Prozess-Discovery', 'Gap-Analyse', 'SIPOC', 'Root-Cause-Analyse']
-                    }
-                ],
                 skills: {
                     'HR-Tech & Process Expertise (9/10)': [
                         'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR Health Checks'
                     ],
                     'Project Governance & Delivery (9/10)': [
                         'PRINCE2 Practitioner', 'Scrum Master', 'Agile/Waterfall', 'Hybrid Approaches', 'Project Tailoring'
-                    ],
                     'Language Proficiency (8/10)': [
                         'Deutsch (Muttersprache)', 'Englisch C1 (18 Monate Australien)', 'Spanisch A2'
-                    ],
                     'Collaboration & Productivity (9/10)': [
                         'Microsoft 365 Power-User', 'Teams', 'SharePoint', 'Power Automate', 'Co-Authoring'
                     ]
                 },
                 education: [
-                    {
                         degree: 'Bachelor in Wirtschaftswissenschaften',
                         institution: 'Munich University of Applied Sciences',
                         period: '04.2012 - 06.2017',
                         description: 'Spezialisierungen: Human Resource Management, Supply Chain Management und Service Management.',
                         skills: ['Wirtschaftswissenschaften', 'HR Management', 'Supply Chain Management', 'Service Management']
-                    },
-                    {
                         degree: 'Master Professional in Business Administration (Skilled Crafts)',
                         institution: 'Handwerkskammer für Schwaben',
                         period: '04.2009 - 04.2010',
                         description: 'Weiterbildung während der Abendschule.',
                         skills: ['Business Administration', 'Skilled Crafts', 'Abendschule']
-                    }
                 ]
             };
-            
             // Erstelle HTML für das Beraterprofil
             const profileHTML = createBeraterprofilHTML(profileData);
-            
             // Erstelle und lade PDF herunter
             createAndDownloadPDF(profileHTML, 'Manuel_Weiss_Beraterprofil.pdf');
-        }
-        
         function createBeraterprofilHTML(data) {
             return `
                 <!DOCTYPE html>
@@ -554,67 +376,49 @@
                         .header {
                             text-align: center;
                             margin-bottom: 3rem;
-                            padding: 2rem;
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             color: white;
                             border-radius: 12px;
-                        }
                         .header h1 {
                             font-size: 2.5rem;
                             margin-bottom: 0.5rem;
-                        }
                         .header h2 {
                             font-size: 1.5rem;
                             opacity: 0.9;
                             margin-bottom: 1rem;
-                        }
                         .contact-info {
                             display: flex;
                             justify-content: center;
                             gap: 2rem;
                             flex-wrap: wrap;
-                        }
                         .section {
                             margin-bottom: 2.5rem;
-                        }
                         .section h3 {
                             color: #667eea;
                             border-bottom: 2px solid #667eea;
                             padding-bottom: 0.5rem;
                             margin-bottom: 1.5rem;
-                        }
                         .experience-item, .project-item {
-                            margin-bottom: 1.5rem;
                             padding: 1rem;
                             background: #f8f9fa;
                             border-radius: 8px;
                             border-left: 4px solid #667eea;
-                        }
                         .experience-item h4, .project-item h4 {
                             color: #1f2937;
-                            margin-bottom: 0.5rem;
-                        }
                         .skills-grid {
-                            display: flex;
-                            flex-wrap: wrap;
                             gap: 0.5rem;
-                        }
                         .skill-tag {
                             background: #667eea;
-                            color: white;
                             padding: 0.25rem 0.75rem;
-                            border-radius: 12px;
                             font-size: 0.875rem;
-                        }
                         .footer {
-                            text-align: center;
                             margin-top: 3rem;
                             padding-top: 2rem;
                             border-top: 1px solid #e5e7eb;
                             color: #6b7280;
-                        }
                     </style>
-                </head>
+                    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
                 <body>
                     <div class="header">
                         <h1>${data.name}</h1>
@@ -624,9 +428,6 @@
                             <span>📞 ${data.phone}</span>
                             <span>📍 ${data.location}</span>
                             <span>🌐 ${data.website}</span>
-                        </div>
-                    </div>
-                    
                     <div class="section">
                         <h3>Berufserfahrung</h3>
                         ${data.experience.map(exp => `
@@ -634,11 +435,7 @@
                                 <h4>${exp.position}</h4>
                                 <p><strong>${exp.company}</strong> | ${exp.period}</p>
                                 <p>${exp.description}</p>
-                            </div>
                         `).join('')}
-                    </div>
-                    
-                    <div class="section">
                         <h3>Projekte</h3>
                         ${data.projects.map(project => `
                             <div class="project-item">
@@ -648,58 +445,34 @@
                                 <div class="skills-grid">
                                     ${project.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
                                 </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="section">
                         <h3>Fähigkeiten</h3>
                         ${Object.entries(data.skills).map(([category, skills]) => `
                             <div style="margin-bottom: 1.5rem;">
                                 <h4 style="color: #667eea; margin-bottom: 0.5rem;">${category}</h4>
-                                <div class="skills-grid">
                                     ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="section">
                         <h3>Ausbildung</h3>
                         ${data.education.map(edu => `
-                            <div class="experience-item">
                                 <h4>${edu.degree}</h4>
                                 <p><strong>${edu.institution}</strong> | ${edu.period}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                </body>
+                    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
                 </html>
             `;
-        }
-        
         function createAndDownloadPDF(htmlContent, filename) {
             // Erstelle ein neues Fenster mit dem HTML-Inhalt
             const printWindow = window.open('', '_blank');
             printWindow.document.write(htmlContent);
             printWindow.document.close();
-            
             // Warte kurz und drucke als PDF
             setTimeout(() => {
                 printWindow.print();
             }, 500);
-        }
-    </script>
-    
     <!-- Hero-Daten Integration aus Admin-Panel -->
-    <script>
         console.log('🚀 WEBSITE: Loading hero data integration...');
-        
         // Hero-Daten aus Admin-Panel laden und anwenden
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
-            
             // Erst versuchen von AWS zu laden
             let heroData = null;
             try {
@@ -709,22 +482,16 @@
                     if (awsData && awsData.data) {
                         heroData = JSON.stringify(awsData.data);
                         console.log('✅ WEBSITE: Hero data loaded from AWS');
-                    }
                 }
             } catch (error) {
                 console.log('⚠️ WEBSITE: AWS not available, using localStorage');
-            }
-            
             // Falls AWS nicht verfügbar, localStorage verwenden
             if (!heroData) {
                 heroData = localStorage.getItem('heroData');
-            }
-            
             if (heroData) {
                 try {
                     const data = JSON.parse(heroData);
                     console.log('✅ WEBSITE: Hero data found:', data);
-                    
                     // Hero-Titel aktualisieren
                     if (data.title) {
                         const heroTitle = document.querySelector('.hero-title');
@@ -735,53 +502,32 @@
                                 titleText = titleText.replace('AI & Transformation', '<span class="gradient-text">AI & Transformation</span>');
                             }
                             heroTitle.innerHTML = titleText;
-                        }
-                    }
-                    
                     // Hero-Untertitel aktualisieren
                     if (data.subtitle) {
                         const heroSubtitle = document.querySelector('.hero-subtitle');
                         if (heroSubtitle) {
                             heroSubtitle.textContent = data.subtitle;
-                        }
-                    }
-                    
                     // PROFILBILD LADEN - GARANTIERT FUNKTIONIEREND
                     console.log('📸 WEBSITE: Loading profile image...');
-                    
                     let profileImage = null;
-                    
                     // 1. Aus heroData laden
                     if (data.profileImage) {
                         profileImage = data.profileImage;
                         console.log('✅ WEBSITE: Profile image from heroData');
-                    }
-                    
                     // 2. Aus localStorage laden
                     if (!profileImage) {
                         profileImage = localStorage.getItem('heroProfileImage');
                         console.log('📸 WEBSITE: Profile image from localStorage:', profileImage ? 'Found' : 'Not found');
-                    }
-                    
                     // 3. ZENTRALE Profilbild-Verwaltung (verhindert alle Konflikte)
                     setProfileImageUnified(profileImage, 'hero-data');
-                    
                     // Button-Text aktualisieren
                     if (data.buttonText) {
                         const contactButton = document.querySelector('.hero-actions .btn-outline');
                         if (contactButton) {
                             contactButton.textContent = data.buttonText;
-                        }
-                    }
-                    
                     // Button-Link aktualisieren
                     if (data.buttonLink) {
-                        const contactButton = document.querySelector('.hero-actions .btn-outline');
-                        if (contactButton) {
                             contactButton.href = data.buttonLink;
-                        }
-                    }
-                    
                     // Kontaktdaten aktualisieren
                     if (data.email) {
                         const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
@@ -789,92 +535,61 @@
                             link.href = `mailto:${data.email}`;
                             link.textContent = data.email;
                         });
-                    }
-                    
                     if (data.phone) {
                         // Telefonnummer in Kontakt-Sektion hinzufügen/aktualisieren
                         updateContactPhone(data.phone);
-                    }
-                    
                     if (data.location) {
                         const locationElement = document.querySelector('.contact-item .fas.fa-map-marker-alt').parentElement.querySelector('p');
                         if (locationElement) {
                             locationElement.textContent = data.location;
-                        }
-                    }
-                    
                     // Hintergrund-Farben aktualisieren
                     if (data.bgColor1 && data.bgColor2) {
                         const heroSection = document.querySelector('.hero');
                         if (heroSection) {
                             heroSection.style.background = `linear-gradient(135deg, ${data.bgColor1} 0%, ${data.bgColor2} 100%)`;
-                        }
-                    }
-                    
                     // Text-Farbe aktualisieren
                     if (data.textColor) {
                         const heroContent = document.querySelector('.hero-content');
                         if (heroContent) {
                             heroContent.style.color = data.textColor;
-                        }
-                    }
-                    
                     // Hero-Statistiken aktualisieren
                     console.log('📊 WEBSITE: Updating hero statistics...', {
                         stat1: { number: data.stat1Number, label: data.stat1Label },
                         stat2: { number: data.stat2Number, label: data.stat2Label },
                         stat3: { number: data.stat3Number, label: data.stat3Label }
                     });
-                    
                     if (data.stat1Number && data.stat1Label) {
                         const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
                         const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
                         if (stat1Number) {
                             stat1Number.textContent = data.stat1Number;
                             console.log('✅ WEBSITE: Stat1 number updated to:', data.stat1Number);
-                        }
                         if (stat1Label) {
                             stat1Label.textContent = data.stat1Label;
                             console.log('✅ WEBSITE: Stat1 label updated to:', data.stat1Label);
-                        }
-                    }
-                    
                     if (data.stat2Number && data.stat2Label) {
                         const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
                         const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
                         if (stat2Number) {
                             stat2Number.textContent = data.stat2Number;
                             console.log('✅ WEBSITE: Stat2 number updated to:', data.stat2Number);
-                        }
                         if (stat2Label) {
                             stat2Label.textContent = data.stat2Label;
                             console.log('✅ WEBSITE: Stat2 label updated to:', data.stat2Label);
-                        }
-                    }
-                    
                     if (data.stat3Number && data.stat3Label) {
                         const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
                         const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
                         if (stat3Number) {
                             stat3Number.textContent = data.stat3Number;
                             console.log('✅ WEBSITE: Stat3 number updated to:', data.stat3Number);
-                        }
                         if (stat3Label) {
                             stat3Label.textContent = data.stat3Label;
                             console.log('✅ WEBSITE: Stat3 label updated to:', data.stat3Label);
-                        }
-                    }
-                    
                     console.log('✅ WEBSITE: Hero data applied successfully');
-                    
                 } catch (error) {
                     console.error('❌ WEBSITE: Error loading hero data:', error);
-                }
             } else {
                 console.log('ℹ️ WEBSITE: No hero data found, using defaults');
-            }
-        }
-        
         // Telefonnummer in Kontakt-Sektion hinzufügen/aktualisieren
         function updateContactPhone(phoneNumber) {
             const contactDetails = document.querySelector('.contact-details');
@@ -887,7 +602,6 @@
                     if (phoneLink) {
                         phoneLink.href = `tel:${phoneNumber}`;
                         phoneLink.textContent = phoneNumber;
-                    }
                 } else {
                     // Neue Telefonnummer hinzufügen
                     const phoneItem = document.createElement('div');
@@ -897,32 +611,21 @@
                         <div>
                             <h4>Telefon</h4>
                             <a href="tel:${phoneNumber}">${phoneNumber}</a>
-                        </div>
                     `;
-                    
                     // Nach dem E-Mail Element einfügen
                     const emailItem = contactDetails.querySelector('.contact-item .fas.fa-envelope').parentElement;
                     emailItem.parentNode.insertBefore(phoneItem, emailItem.nextSibling);
-                }
-            }
-        }
-        
         // Sprachumschaltung Funktionalität
         function initializeLanguageSwitch() {
             const langSwitch = document.getElementById('langSwitch');
             const currentLangSpan = document.getElementById('currentLang');
             let currentLang = 'de';
-            
             // Sprache wechseln
             if (langSwitch) {
                 langSwitch.addEventListener('click', function() {
                     currentLang = currentLang === 'de' ? 'en' : 'de';
                     currentLangSpan.textContent = currentLang.toUpperCase();
                     switchLanguage(currentLang);
-                });
-            }
-        }
-        
         // Sprache umschalten
         function switchLanguage(lang) {
             const elements = document.querySelectorAll('[data-de][data-en]');
@@ -930,86 +633,46 @@
                 const text = element.getAttribute(`data-${lang}`);
                 if (text) {
                     element.textContent = text;
-                }
             });
-            
             // Spezielle Behandlung für Download-Button
             const downloadText = document.querySelector('.download-text');
             if (downloadText) {
                 downloadText.textContent = lang === 'de' ? 'Beraterprofil herunterladen' : 'Download Consultant Profile';
-            }
-        }
-        
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 WEBSITE: Page loaded, loading hero data...');
-            
             // Sofort Standard-Statistiken garantieren
             ensureDefaultStatistics();
-            
-            try {
                 await loadHeroDataFromAdmin();
-            } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
                 // Bei Fehler trotzdem Standard-Werte garantieren
                 ensureDefaultStatistics();
-            }
             initializeLanguageSwitch();
-        });
-        
         // Auch bei Storage-Änderungen reagieren (für Live-Updates)
         window.addEventListener('storage', function(e) {
             if (e.key === 'heroData') {
                 console.log('🔄 WEBSITE: Hero data updated, reloading...');
                 loadHeroDataFromAdmin();
-            }
-        });
-        
         // Zusätzliche Funktion für sofortige Statistiken-Updates
         function updateHeroStatistics() {
             const heroData = localStorage.getItem('heroData');
-            if (heroData) {
-                try {
-                    const data = JSON.parse(heroData);
                     console.log('📊 WEBSITE: Updating statistics immediately...', data);
-                    
                     // Statistiken sofort aktualisieren
                     if (data.stat1Number) {
-                        const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
                         if (stat1Number) stat1Number.textContent = data.stat1Number;
-                    }
                     if (data.stat1Label) {
-                        const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
                         if (stat1Label) stat1Label.textContent = data.stat1Label;
-                    }
-                    
                     if (data.stat2Number) {
-                        const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
                         if (stat2Number) stat2Number.textContent = data.stat2Number;
-                    }
                     if (data.stat2Label) {
-                        const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
                         if (stat2Label) stat2Label.textContent = data.stat2Label;
-                    }
-                    
                     if (data.stat3Number) {
-                        const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
                         if (stat3Number) stat3Number.textContent = data.stat3Number;
-                    }
                     if (data.stat3Label) {
-                        const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
                         if (stat3Label) stat3Label.textContent = data.stat3Label;
-                    }
-                } catch (error) {
                     console.error('❌ WEBSITE: Error updating statistics:', error);
-                }
-            } else {
                 // Standard-Werte garantieren, falls keine Admin-Daten vorhanden
                 console.log('📊 WEBSITE: Using default statistics...');
-                ensureDefaultStatistics();
-            }
-        }
-        
         // Funktion um Standard-Statistiken zu garantieren
         function ensureDefaultStatistics() {
             const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
@@ -1018,24 +681,16 @@
             const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
             const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
             const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
-            
             if (stat1Number && !stat1Number.textContent) stat1Number.textContent = '5+';
             if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'Jahre Erfahrung';
             if (stat2Number && !stat2Number.textContent) stat2Number.textContent = '50+';
             if (stat2Label && !stat2Label.textContent) stat2Label.textContent = 'Projekte';
             if (stat3Number && !stat3Number.textContent) stat3Number.textContent = '100%';
             if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'Zufriedenheit';
-        }
-        
         // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
         setInterval(updateHeroStatistics, 2000);
-        
         // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
         function updateWebsiteProfileImage() {
-            const heroData = localStorage.getItem('heroData');
-            if (heroData) {
-                try {
-                    const data = JSON.parse(heroData);
                     // DEAKTIVIERT: Verhindert Konflikte mit UNIFIED Handler
                     // if (data.profileImage) {
                     //     const profilePhoto = document.getElementById('profile-photo');
@@ -1045,12 +700,7 @@
                     //         console.log('🔄 WEBSITE: Profile image updated from localStorage');
                     //     }
                     // }
-                } catch (error) {
                     console.error('❌ WEBSITE: Error updating profile image:', error);
-                }
-            }
-        }
-        
         // Profilbild-Updates alle 3 Sekunden prüfen
         // Live-Update für Profilbild
         function updateProfileImageLive() {
@@ -1064,26 +714,17 @@
             //         console.log('🔄 WEBSITE: Profile image updated live');
             //     }
             // }
-        }
-        
         // ZENTRALE PROFILBILD-VERWALTUNG - Verhindert alle Konflikte
         let profileImageLock = false;
-        
         function setProfileImageUnified(imageSrc, source = 'unknown') {
             if (profileImageLock) {
                 console.log('🔒 UNIFIED: Profilbild wird bereits gesetzt, überspringe Update von:', source);
                 return;
-            }
-            
             profileImageLock = true;
             const profilePhoto = document.getElementById('profile-photo');
-            
             if (!profilePhoto) {
                 console.error('❌ UNIFIED: profile-photo element not found');
                 profileImageLock = false;
-                return;
-            }
-            
             // Prüfe zuerst localStorage für hochgeladene Bilder
             const uploadedImage = localStorage.getItem('profileImage');
             if (uploadedImage && uploadedImage.startsWith('data:image/')) {
@@ -1092,48 +733,29 @@
                 console.log('✅ UNIFIED: Hochgeladenes Profilbild verwendet (von:', source + ')');
             } else if (imageSrc) {
                 profilePhoto.src = imageSrc;
-                profilePhoto.style.display = 'block';
                 console.log('✅ UNIFIED: Profilbild gesetzt:', imageSrc, '(von:', source + ')');
-            } else {
                 profilePhoto.src = 'Bewerbungsbild.jpeg';
-                profilePhoto.style.display = 'block';
                 console.log('✅ UNIFIED: Standard-Profilbild verwendet (von:', source + ')');
-            }
-            
             // Lock nach kurzer Zeit freigeben
-            setTimeout(() => {
-                profileImageLock = false;
             }, 100);
-        }
-        
         // Polling für Live-Updates (deaktiviert um Konflikte zu vermeiden)
         // setInterval(updateProfileImageLive, 2000);
-        
         console.log('✅ WEBSITE: Hero data integration ready');
-    </script>
-
     <!-- Footer mit allen Bereichen -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <!-- Linke Spalte: Persönliche Informationen -->
                 <div class="footer-section footer-brand">
                     <div class="brand-info">
                         <div class="brand-icon">
                             <i class="fas fa-user-tie"></i>
-                        </div>
                         <div class="brand-text">
                             <h3>Manuel Weiss</h3>
                             <p>HR-Berater für AI & Transformation</p>
-                        </div>
-                    </div>
                     <div class="contact-info">
                         <p><i class="fas fa-envelope"></i> <a href="mailto:weiss-manuel@gmx.de">weiss-manuel@gmx.de</a></p>
                         <p><i class="fas fa-phone"></i> <a href="tel:+41798385590">+41 79 838 55 90</a></p>
                         <p><i class="fas fa-map-marker-alt"></i> Pilatusstrasse 40, 8330 Pfäffikon ZH</p>
-                    </div>
-                </div>
-                
                 <!-- Services Spalte -->
                 <div class="footer-section">
                     <h3>Services</h3>
@@ -1143,259 +765,155 @@
                         <li><a href="hr-prozessautomatisierung.html">Geschäftsprozesse</a></li>
                         <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
                         <li><a href="bewerbungsmanager.html">Bewerbungsmanager</a></li>
-                    </ul>
-                </div>
-                
                 <!-- Aktivitäten Spalte -->
-                <div class="footer-section">
                     <h3>Aktivitäten</h3>
-                    <ul>
                         <li><a href="wohnmobil.html">Wohnmobil</a></li>
                         <li><a href="fotobox.html">Fotobox</a></li>
                         <li><a href="ebike.html">E-Bikes</a></li>
                         <li><a href="sup.html">SUP</a></li>
-                    </ul>
-                </div>
-                
                 <!-- Kontakt & Rechtliches Spalte -->
-                <div class="footer-section">
                     <h3>Kontakt & Rechtliches</h3>
-                    <ul>
                         <li><a href="mailto:weiss-manuel@gmx.de">E-Mail</a></li>
                         <li><a href="#contact">Kontaktformular</a></li>
                         <li><a href="impressum.html">Impressum</a></li>
                         <li><a href="datenschutz.html">Datenschutz</a></li>
                         <li><a href="nutzungsbedingungen.html">Nutzungsbedingungen</a></li>
-                    </ul>
-                </div>
-            </div>
-            
             <!-- Footer Bottom mit Copyright und Social Media -->
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
                     <div class="copyright">
                         <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-                    </div>
                     <div class="social-media">
                         <a href="https://linkedin.com/in/manuel-weiss" target="_blank" rel="noopener">
                             <i class="fab fa-linkedin"></i>
                         </a>
                         <a href="https://twitter.com/manuelweiss" target="_blank" rel="noopener">
                             <i class="fab fa-twitter"></i>
-                        </a>
                         <a href="https://github.com/Manu-Manera" target="_blank" rel="noopener">
                             <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </footer>
-
     <style>
         .footer {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
             padding: 3rem 0 1rem;
             margin-top: 4rem;
-        }
-        
         .footer-content {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 1fr;
             gap: 3rem;
             margin-bottom: 2rem;
-        }
-        
         /* Brand Section (erste Spalte) */
         .footer-brand {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-        }
-        
         .brand-info {
-            display: flex;
             align-items: center;
             gap: 1rem;
-        }
-        
         .brand-icon {
             width: 50px;
             height: 50px;
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
             border-radius: 12px;
-            display: flex;
-            align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            color: white;
-        }
-        
         .brand-text h3 {
-            color: white;
             margin: 0;
-            font-size: 1.5rem;
             font-weight: 700;
-        }
-        
         .brand-text p {
             color: #94a3b8;
             margin: 0.25rem 0 0 0;
             font-size: 0.9rem;
-        }
-        
         /* Standard Footer Sections */
         .footer-section h3 {
             color: #60a5fa;
             margin-bottom: 1rem;
             font-size: 1.1rem;
             font-weight: 600;
-        }
-        
         .footer-section ul {
             list-style: none;
             padding: 0;
-            margin: 0;
-        }
-        
         .footer-section ul li {
             margin-bottom: 0.75rem;
-        }
-        
         .footer-section a {
             color: #cbd5e1;
             text-decoration: none;
             transition: all 0.3s ease;
             display: inline-block;
-            font-size: 0.9rem;
-        }
-        
         .footer-section a:hover {
-            color: #60a5fa;
             transform: translateX(4px);
-        }
-        
         /* Contact Info */
         .contact-info p {
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
             gap: 0.75rem;
-            font-size: 0.9rem;
-        }
-        
         .contact-info i {
-            color: #60a5fa;
             width: 16px;
             text-align: center;
-        }
-        
         .contact-info a {
-            color: #cbd5e1;
-            text-decoration: none;
             transition: color 0.3s ease;
-        }
-        
         .contact-info a:hover {
-            color: #60a5fa;
-        }
-        
         /* Footer Bottom */
         .footer-bottom {
             border-top: 1px solid #475569;
             padding-top: 1.5rem;
             margin-top: 2rem;
-        }
-        
         .footer-bottom-content {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
         .copyright p {
-            color: #94a3b8;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        
         .social-media {
-            display: flex;
-            gap: 1rem;
-        }
-        
         .social-media a {
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-        }
-        
         .social-media a:hover {
             background: #60a5fa;
-            color: white;
             transform: translateY(-2px);
-        }
-        
         /* Responsive Design */
         @media (max-width: 1024px) {
             .footer-content {
                 grid-template-columns: 1fr 1fr;
                 gap: 2rem;
-            }
-            
             .footer-brand {
                 grid-column: 1 / -1;
-            }
-        }
-        
         @media (max-width: 768px) {
-            .footer-content {
                 grid-template-columns: 1fr;
-                gap: 2rem;
                 text-align: center;
-            }
-            
             .brand-info {
                 justify-content: center;
-            }
-            
             .footer-bottom-content {
                 flex-direction: column;
-                text-align: center;
-            }
-        }
-        
         @media (max-width: 480px) {
             .footer {
                 padding: 2rem 0 1rem;
-            }
-            
-            .footer-content {
                 gap: 1.5rem;
-            }
-            
             .brand-icon {
                 width: 40px;
                 height: 40px;
                 font-size: 1.2rem;
-            }
-            
             .brand-text h3 {
                 font-size: 1.3rem;
-            }
-        }
     </style>
-
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

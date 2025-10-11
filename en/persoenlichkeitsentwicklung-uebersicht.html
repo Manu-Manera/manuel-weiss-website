@@ -9,11 +9,11 @@
     <meta name="description" content="Discover 29 proven methods for personal development and self-discovery. From Ikigai to stress management - find your path to more clarity and growth.">
     <meta name="keywords" content="personality development, self-discovery, personal growth, Ikigai, coaching methods">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="../css/persoenlichkeitsentwicklung-uebersicht.css">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -33,13 +33,8 @@
                     <a href="../index.html" class="lang-link">🇩🇪 DE</a>
                     <a href="index.html" class="lang-link active">🇬🇧 EN</a>
                 </div>
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -54,11 +49,7 @@
                 <div class="hero-actions">
                     <a href="#methods" class="btn btn-primary">Explore Methods</a>
                     <a href="../index.html" class="btn btn-outline">Back to Home</a>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- Search and Filter Section -->
     <section class="search-section">
         <div class="container">
@@ -66,7 +57,6 @@
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Search methods...">
-                </div>
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">All</button>
                     <button class="filter-btn" data-filter="self-discovery">Self-Discovery</button>
@@ -78,14 +68,8 @@
                     <button class="filter-btn" data-filter="habits">Habits</button>
                     <button class="filter-btn" data-filter="analysis">Analysis</button>
                     <button class="filter-btn" data-filter="conflict">Conflict</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Methods Grid -->
     <section id="methods" class="methods-section">
-        <div class="container">
             <div class="methods-grid" id="methodsGrid">
                 <!-- Ikigai Method -->
                 <div class="method-card" data-category="self-discovery" onclick="startMethod('ikigai')">
@@ -109,314 +93,110 @@
                                 <i class="fas fa-list-ol"></i>
                                 <span>7 Steps</span>
                             </div>
-                            <div class="stat">
                                 <i class="fas fa-clock"></i>
                                 <span>2-3h Duration</span>
-                            </div>
-                            <div class="stat">
                                 <i class="fas fa-question-circle"></i>
                                 <span>45+ Questions</span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="method-actions">
                         <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
                         <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Values Clarification -->
                 <div class="method-card" data-category="self-discovery" onclick="startMethod('values-clarification')">
-                    <div class="method-icon">
                         <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Values Clarification</h3>
-                        <p class="method-description">
                             Identify your personal values and create clarity about what is truly important to you in life.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Values</span>
                             <span class="tag">Clarity</span>
                             <span class="tag">Decision Making</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
                                 <span>5 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
                                 <span>1-2h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Strengths Analysis -->
                 <div class="method-card" data-category="self-discovery" onclick="startMethod('strengths-finder')">
-                    <div class="method-icon">
                         <i class="fas fa-star"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Strengths Analysis</h3>
-                        <p class="method-description">
                             Discover your natural talents and strengths. Learn how to use them optimally.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Strengths</span>
                             <span class="tag">Talents</span>
                             <span class="tag">Self-Awareness</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
                                 <span>4 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
                                 <span>1h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Goal Setting -->
                 <div class="method-card" data-category="goals" onclick="startMethod('goal-setting')">
-                    <div class="method-icon">
                         <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Goal Setting</h3>
-                        <p class="method-description">
                             Set clear, achievable goals with the SMART method and develop an action plan.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Goals</span>
                             <span class="tag">SMART</span>
                             <span class="tag">Planning</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
                                 <span>6 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
-                                <span>1-2h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Mindfulness -->
                 <div class="method-card" data-category="mindfulness" onclick="startMethod('mindfulness')">
-                    <div class="method-icon">
                         <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Mindfulness & Meditation</h3>
-                        <p class="method-description">
                             Develop mindfulness and inner peace through guided meditations and mindfulness exercises.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Mindfulness</span>
                             <span class="tag">Meditation</span>
                             <span class="tag">Inner Peace</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
                                 <span>8 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
                                 <span>Daily Practice</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Emotional Intelligence -->
                 <div class="method-card" data-category="self-discovery" onclick="startMethod('emotional-intelligence')">
-                    <div class="method-icon">
                         <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Emotional Intelligence</h3>
-                        <p class="method-description">
                             Improve your emotional intelligence and learn to better understand and regulate emotions.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Emotions</span>
                             <span class="tag">EQ</span>
                             <span class="tag">Self-Regulation</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
-                                <span>5 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
                                 <span>2h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Habit Building -->
                 <div class="method-card" data-category="habits" onclick="startMethod('habit-building')">
-                    <div class="method-icon">
                         <i class="fas fa-sync-alt"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Habit Building</h3>
-                        <p class="method-description">
                             Learn to develop positive habits and break bad ones with proven methods.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Habits</span>
                             <span class="tag">Behavior Change</span>
                             <span class="tag">Consistency</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
-                                <span>7 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
                                 <span>21 Days</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Communication -->
                 <div class="method-card" data-category="communication" onclick="startMethod('communication')">
-                    <div class="method-icon">
                         <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Communication</h3>
-                        <p class="method-description">
                             Improve your communication skills and learn to communicate more effectively.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Communication</span>
                             <span class="tag">Relationships</span>
                             <span class="tag">Skills</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
-                                <span>6 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
-                                <span>1-2h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-
                 <!-- Time Management -->
                 <div class="method-card" data-category="goals" onclick="startMethod('time-management')">
-                    <div class="method-icon">
                         <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="method-content">
                         <h3>Time Management</h3>
-                        <p class="method-description">
                             Optimize your time management and learn to work more productively and efficiently.
-                        </p>
-                        <div class="method-tags">
                             <span class="tag">Productivity</span>
                             <span class="tag">Time</span>
                             <span class="tag">Efficiency</span>
-                        </div>
-                        <div class="method-stats">
-                            <div class="stat">
-                                <i class="fas fa-list-ol"></i>
-                                <span>5 Steps</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-clock"></i>
-                                <span>1h Duration</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="method-actions">
-                        <button class="btn btn-primary" data-action="stop-propagation">Start Now</button>
-                        <button class="btn btn-outline" data-action="stop-propagation">PDF</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
                     <img src="../manuel-weiss-photo.svg" alt="MW" class="footer-logo">
                     <span class="footer-name">Manuel Weiss</span>
-                </div>
                 <div class="footer-links">
                     <a href="../index.html">Home</a>
                     <a href="../index.html#services">Services</a>
                     <a href="../index.html#about">About</a>
                     <a href="../index.html#contact">Contact</a>
-                </div>
                 <div class="footer-social">
                     <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. All rights reserved.</p>
-            </div>
-        </div>
     </footer>
-
     <!-- Scripts -->
     <script src="../script.js"></script>
     <script>
         // Method routing function
         function startMethod(methodName) {
             console.log('Starting method:', methodName);
-            
             // Route to specific method pages
             const methodRoutes = {
                 'ikigai': '../persoenlichkeitsentwicklung.html',
@@ -429,7 +209,6 @@
                 'communication': '../methods/communication/communication.html',
                 'time-management': '../methods/time-management/time-management.html'
             };
-            
             const route = methodRoutes[methodName];
             if (route) {
                 window.location.href = route;
@@ -443,14 +222,11 @@
             console.log('Downloading PDF for method:', methodName);
             // Implement PDF download functionality
             alert('PDF download for ' + methodName + ' will be implemented soon!');
-        }
-        
         // Search and filter functionality
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
             const filterButtons = document.querySelectorAll('.filter-btn');
             const methodCards = document.querySelectorAll('.method-card');
-            
             // Search functionality
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
@@ -466,16 +242,13 @@
                     }
                 });
             });
-            
             // Filter functionality
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const filter = this.getAttribute('data-filter');
-                    
                     // Update active button
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-                    
                     // Filter cards
                     methodCards.forEach(card => {
                         if (filter === 'all' || card.getAttribute('data-category') === filter) {
@@ -484,9 +257,27 @@
                             card.style.display = 'none';
                         }
                     });
-                });
-            });
         });
     </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="values-clarification-modern.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Modern Navigation -->
@@ -31,7 +32,6 @@
                 <div class="hero-badge">
                     <i class="fas fa-heart"></i>
                     <span>Werte-Klärung</span>
-                </div>
                 <h1 class="hero-title">Entdecke deine <span class="gradient-text">wahren Werte</span></h1>
                 <p class="hero-subtitle">Finde heraus, was dir wirklich wichtig ist durch gezielte Fragen oder direkte Auswahl</p>
                 
@@ -40,23 +40,13 @@
                         <i class="fas fa-question-circle"></i>
                         <span>8 gezielte Fragen</span>
                     </div>
-                    <div class="feature-card">
                         <i class="fas fa-magic"></i>
                         <span>KI-gestützte Analyse</span>
-                    </div>
-                    <div class="feature-card">
                         <i class="fas fa-hand-pointer"></i>
                         <span>Manuelle Auswahl</span>
-                    </div>
-                    <div class="feature-card">
                         <i class="fas fa-balance-scale"></i>
                         <span>Konflikt-Detektor</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
-
     <!-- Modern Progress Steps -->
     <section class="progress-section">
         <div class="progress-container">
@@ -65,68 +55,35 @@
                     <div class="step-indicator">
                         <div class="step-number">1</div>
                         <div class="step-icon"><i class="fas fa-search"></i></div>
-        </div>
                     <div class="step-content">
                         <h3>Werte-Entdeckung</h3>
                         <p>Entdecke deine wichtigsten Werte</p>
-                    </div>
-                </div>
-                
                 <div class="progress-step" data-step="2">
-                    <div class="step-indicator">
                         <div class="step-number">2</div>
                         <div class="step-icon"><i class="fas fa-sort-amount-down"></i></div>
-                    </div>
-                    <div class="step-content">
                         <h3>Werte-Ranking</h3>
                         <p>Priorisiere deine Werte</p>
-                    </div>
-                </div>
-                
                 <div class="progress-step" data-step="3">
-                    <div class="step-indicator">
                         <div class="step-number">3</div>
                         <div class="step-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    </div>
-                    <div class="step-content">
                         <h3>Konflikt-Analyse</h3>
                         <p>Erkenne Werte-Konflikte</p>
-                    </div>
-                </div>
-                
                 <div class="progress-step" data-step="4">
-                    <div class="step-indicator">
                         <div class="step-number">4</div>
                         <div class="step-icon"><i class="fas fa-life-ring"></i></div>
-                    </div>
-                    <div class="step-content">
                         <h3>Lebensbereiche</h3>
                         <p>Werte in verschiedenen Bereichen</p>
-                    </div>
-                </div>
-                
                 <div class="progress-step" data-step="5">
-                    <div class="step-indicator">
                         <div class="step-number">5</div>
                         <div class="step-icon"><i class="fas fa-chart-line"></i></div>
-                    </div>
-                    <div class="step-content">
                         <h3>Werte-Tracking</h3>
                         <p>Verfolge deine Fortschritte</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Step 1: Werte-Entdeckung -->
     <section class="workflow-step active" data-step="1">
         <div class="step-container">
             <div class="step-header">
                 <h2>Schritt 1: Werte-Entdeckung</h2>
                 <p>Entdecke deine wichtigsten Werte durch gezielte Fragen oder wähle sie manuell aus.</p>
-                    </div>
-
             <div class="discovery-options">
                 <div class="discovery-card">
                     <div class="card-icon"><i class="fas fa-question-circle"></i></div>
@@ -135,101 +92,74 @@
                     <button class="btn-primary" id="startQuestionsBtn">
                         <i class="fas fa-play"></i> Fragen starten
                     </button>
-                </div>
-                
-                <div class="discovery-card">
                     <div class="card-icon"><i class="fas fa-hand-pointer"></i></div>
                     <h4>Manuelle Auswahl</h4>
                     <p>Durchsuche unsere Werte-Bibliothek und wähle deine wichtigsten Werte direkt aus.</p>
                     <button class="btn-secondary" id="startManualBtn">
                         <i class="fas fa-search"></i> Manuell auswählen
-                    </button>
-                </div>
-            </div>
             
             <div id="questionContainer" class="question-container" style="display: none;">
                 <!-- Questions will be loaded here -->
-            </div>
-        </div>
-    </section>
     
     <!-- Step 2: Werte-Ranking -->
     <section class="workflow-step" data-step="2">
-        <div class="step-container">
         <div class="step-header">
                 <h2>Schritt 2: Werte-Ranking</h2>
                 <p>Ordne deine ausgewählten Werte nach Priorität. Was ist dir am wichtigsten?</p>
-        </div>
             <div class="step-content">
                 <div id="rankingList" class="ranking-list">
                     <!-- Values for ranking will be loaded here -->
-                </div>
                 <p class="drag-info"><i class="fas fa-hand-rock"></i> Ziehe die Werte, um sie zu sortieren.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Step 3: Konflikt-Analyse -->
     <section class="workflow-step" data-step="3">
-        <div class="step-container">
-            <div class="step-header">
                 <h2>Schritt 3: Konflikt-Analyse</h2>
                 <p>Erkenne potenzielle Konflikte zwischen deinen Werten und finde Lösungen.</p>
-            </div>
-            <div class="step-content">
                 <div id="conflictAnalysis" class="conflict-analysis">
                     <!-- Conflict analysis will be displayed here -->
-                </div>
                 <button class="btn-primary" id="runConflictAnalysisBtn"><i class="fas fa-brain"></i> KI-Konflikt-Analyse starten</button>
-            </div>
-        </div>
-    </section>
-
     <!-- Step 4: Lebensbereiche -->
     <section class="workflow-step" data-step="4">
-        <div class="step-container">
-            <div class="step-header">
                 <h2>Schritt 4: Werte in Lebensbereichen</h2>
                 <p>Verbinde deine Werte mit verschiedenen Lebensbereichen, um ihre Relevanz zu verstehen.</p>
-            </div>
-            <div class="step-content">
                 <div id="lifeAreasMapping" class="life-areas-mapping">
                     <!-- Life areas mapping will be displayed here -->
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Step 5: Werte-Tracking -->
     <section class="workflow-step" data-step="5">
-        <div class="step-container">
-            <div class="step-header">
                 <h2>Schritt 5: Werte-Tracking & Reflexion</h2>
                 <p>Verfolge, wie gut du deine Werte im Alltag lebst und reflektieren deine Erfahrungen.</p>
-            </div>
-            <div class="step-content">
                 <div id="valueTrackingDashboard" class="value-tracking-dashboard">
                     <!-- Value tracking dashboard will be displayed here -->
-                </div>
                 <button class="btn-secondary" id="exportReportBtn"><i class="fas fa-file-export"></i> Bericht exportieren</button>
-            </div>
-        </div>
-    </section>
-    
     <!-- Workflow Navigation -->
     <div class="workflow-navigation" style="display: none;">
         <button class="btn-secondary" id="prevStepBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Zurück</button>
         <button class="btn-primary" id="nextStepBtn">Weiter <i class="fas fa-arrow-right"></i></button>
     </div>
-
     <!-- Global Notification -->
     <div id="notificationContainer" class="notification-container"></div>
-
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="../../js/aws-config.js"></script>
-    <script src="../../js/real-aws-auth.js"></script>
-    <script src="../../js/global-auth-system.js"></script>
-    
+    <script src="../../js/unified-auth-manager.js"></script>
     <script src="values-questions-workflow.js"></script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

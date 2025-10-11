@@ -13,33 +13,25 @@
             <span class="feature-badge">Chancen-Erkennung</span>
             <span class="feature-badge">Risiken-Bewertung</span>
         </div>
-    </div>
     
     <div class="workflow-progress">
         <div class="progress-step active" data-step="1">
             <div class="step-number">1</div>
             <div class="step-title">Stärken analysieren</div>
-        </div>
         <div class="progress-step" data-step="2">
             <div class="step-number">2</div>
             <div class="step-title">Schwächen identifizieren</div>
-        </div>
         <div class="progress-step" data-step="3">
             <div class="step-number">3</div>
             <div class="step-title">Chancen erkennen</div>
-        </div>
         <div class="progress-step" data-step="4">
             <div class="step-number">4</div>
             <div class="step-title">Risiken bewerten</div>
-        </div>
-    </div>
-    
     <!-- Step 1: Stärken analysieren -->
     <div class="workflow-step active" data-step="1">
         <div class="step-header">
             <h3>Schritt 1: Stärken analysieren</h3>
             <p>Identifiziere deine persönlichen Stärken, Fähigkeiten und Ressourcen. Was machst du besonders gut?</p>
-        </div>
         
         <div class="swot-analysis">
             <div class="analysis-intro">
@@ -60,72 +52,33 @@
                     <button class="btn btn-secondary" data-action="add-strength" data-param="personal">+ Stärke hinzufügen</button>
                 </div>
                 
-                <div class="strength-category">
                     <h5>🔧 Fachliche Stärken</h5>
                     <p>Deine beruflichen Fähigkeiten und Expertise</p>
-                    <div class="strength-list">
-                        <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Projektmanagement'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-strength" data-param="professional">+ Stärke hinzufügen</button>
-                </div>
-                
-                <div class="strength-category">
                     <h5>🎓 Ausbildungsstärken</h5>
                     <p>Deine Bildung, Zertifikate und Qualifikationen</p>
-                    <div class="strength-list">
-                        <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Master-Abschluss in Wirtschaft'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-strength" data-param="education">+ Stärke hinzufügen</button>
-                </div>
-                
-                <div class="strength-category">
                     <h5>🤝 Netzwerk-Stärken</h5>
                     <p>Deine Beziehungen und Kontakte</p>
-                    <div class="strength-list">
-                        <div class="strength-item">
                             <input type="text" placeholder="z.B. 'Großes berufliches Netzwerk'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-strength" data-param="network">+ Stärke hinzufügen</button>
-                </div>
-            </div>
-            
             <div class="strengths-summary">
                 <h4>📊 Stärken-Zusammenfassung</h4>
                 <div class="summary-stats">
                     <div class="stat-item">
                         <span class="stat-number" id="total-strengths">0</span>
                         <span class="stat-label">Gesamtstärken</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="top-category">-</span>
                         <span class="stat-label">Stärkste Kategorie</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 2: Schwächen identifizieren -->
     <div class="workflow-step" data-step="2">
-        <div class="step-header">
             <h3>Schritt 2: Schwächen identifizieren</h3>
             <p>Erkenne ehrlich deine Schwächen und Entwicklungsbereiche. Nur wer seine Schwächen kennt, kann sie überwinden.</p>
-        </div>
-        
         <div class="weaknesses-analysis">
-            <div class="analysis-intro">
                 <h4>⚠️ Deine Schwächen</h4>
                 <p>Schwächen sind Bereiche, in denen du dich verbessern könntest oder die dir im Weg stehen.</p>
-            </div>
-            
             <div class="weaknesses-categories">
                 <div class="weakness-category">
                     <h5>🎯 Persönliche Schwächen</h5>
@@ -134,77 +87,32 @@
                         <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Prokrastination'" class="weakness-input">
                             <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-weakness" data-param="personal">+ Schwäche hinzufügen</button>
-                </div>
-                
-                <div class="weakness-category">
                     <h5>🔧 Fachliche Schwächen</h5>
                     <p>Bereiche, in denen dir Wissen oder Fähigkeiten fehlen</p>
-                    <div class="weakness-list">
-                        <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Programmierung'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-weakness" data-param="professional">+ Schwäche hinzufügen</button>
-                </div>
-                
-                <div class="weakness-category">
                     <h5>🎓 Ausbildungsdefizite</h5>
                     <p>Fehlende Qualifikationen oder Zertifikate</p>
-                    <div class="weakness-list">
-                        <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Fremdsprachen'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-weakness" data-param="education">+ Schwäche hinzufügen</button>
-                </div>
-                
-                <div class="weakness-category">
                     <h5>🤝 Netzwerk-Schwächen</h5>
                     <p>Begrenzte Kontakte oder Beziehungen</p>
-                    <div class="weakness-list">
-                        <div class="weakness-item">
                             <input type="text" placeholder="z.B. 'Wenig Branchenkontakte'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-weakness" data-param="network">+ Schwäche hinzufügen</button>
-                </div>
-            </div>
-            
             <div class="weaknesses-summary">
                 <h4>📊 Schwächen-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="stat-item">
                         <span class="stat-number" id="total-weaknesses">0</span>
                         <span class="stat-label">Gesamtschwächen</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="improvement-areas">0</span>
                         <span class="stat-label">Verbesserungsbereiche</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 3: Chancen erkennen -->
     <div class="workflow-step" data-step="3">
-        <div class="step-header">
             <h3>Schritt 3: Chancen erkennen</h3>
             <p>Identifiziere externe Faktoren und Trends, die dir neue Möglichkeiten eröffnen könnten.</p>
-        </div>
-        
         <div class="opportunities-analysis">
-            <div class="analysis-intro">
                 <h4>🚀 Deine Chancen</h4>
                 <p>Chancen sind externe Faktoren, die dir positive Entwicklungsmöglichkeiten bieten.</p>
-            </div>
-            
             <div class="opportunities-categories">
                 <div class="opportunity-category">
                     <h5>💼 Berufliche Chancen</h5>
@@ -213,77 +121,32 @@
                         <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Neue Technologien in der Branche'" class="opportunity-input">
                             <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-opportunity" data-param="professional">+ Chance hinzufügen</button>
-                </div>
-                
-                <div class="opportunity-category">
                     <h5>📈 Marktchancen</h5>
                     <p>Trends und Entwicklungen am Markt</p>
-                    <div class="opportunity-list">
-                        <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Wachsender Markt für Nachhaltigkeit'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-opportunity" data-param="market">+ Chance hinzufügen</button>
-                </div>
-                
-                <div class="opportunity-category">
                     <h5>🎓 Bildungsmöglichkeiten</h5>
                     <p>Neue Lern- und Weiterbildungsmöglichkeiten</p>
-                    <div class="opportunity-list">
-                        <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Online-Kurse für neue Skills'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-opportunity" data-param="education">+ Chance hinzufügen</button>
-                </div>
-                
-                <div class="opportunity-category">
                     <h5>🤝 Netzwerk-Chancen</h5>
                     <p>Möglichkeiten für neue Kontakte und Beziehungen</p>
-                    <div class="opportunity-list">
-                        <div class="opportunity-item">
                             <input type="text" placeholder="z.B. 'Neue Networking-Events'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-opportunity" data-param="network">+ Chance hinzufügen</button>
-                </div>
-            </div>
-            
             <div class="opportunities-summary">
                 <h4>📊 Chancen-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="stat-item">
                         <span class="stat-number" id="total-opportunities">0</span>
                         <span class="stat-label">Gesamtchancen</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="high-potential">0</span>
                         <span class="stat-label">Hochpotenzial-Chancen</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 4: Risiken bewerten -->
     <div class="workflow-step" data-step="4">
-        <div class="step-header">
             <h3>Schritt 4: Risiken bewerten</h3>
             <p>Analysiere externe Bedrohungen und Risiken, die deine Ziele gefährden könnten.</p>
-        </div>
-        
         <div class="risks-analysis">
-            <div class="analysis-intro">
                 <h4>⚠️ Deine Risiken</h4>
                 <p>Risiken sind externe Faktoren, die deine Erfolge gefährden könnten.</p>
-            </div>
-            
             <div class="risks-categories">
                 <div class="risk-category">
                     <h5>💼 Berufliche Risiken</h5>
@@ -297,77 +160,25 @@
                                 <option value="high">Hoch</option>
                             </select>
                             <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-risk" data-param="professional">+ Risiko hinzufügen</button>
-                </div>
-                
-                <div class="risk-category">
                     <h5>📈 Marktrisiken</h5>
                     <p>Bedrohungen durch Marktveränderungen</p>
-                    <div class="risk-list">
-                        <div class="risk-item">
                             <input type="text" placeholder="z.B. 'Wirtschaftskrise'" class="risk-input">
-                            <select class="risk-level">
-                                <option value="low">Niedrig</option>
-                                <option value="medium">Mittel</option>
-                                <option value="high">Hoch</option>
-                            </select>
-                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-risk" data-param="market">+ Risiko hinzufügen</button>
-                </div>
-                
-                <div class="risk-category">
                     <h5>🎓 Bildungsrisiken</h5>
                     <p>Risiken durch fehlende Qualifikationen</p>
-                    <div class="risk-list">
-                        <div class="risk-item">
                             <input type="text" placeholder="z.B. 'Veraltete Skills'" class="risk-input">
-                            <select class="risk-level">
-                                <option value="low">Niedrig</option>
-                                <option value="medium">Mittel</option>
-                                <option value="high">Hoch</option>
-                            </select>
-                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-risk" data-param="education">+ Risiko hinzufügen</button>
-                </div>
-                
-                <div class="risk-category">
                     <h5>🤝 Netzwerk-Risiken</h5>
                     <p>Risiken durch begrenzte Kontakte</p>
-                    <div class="risk-list">
-                        <div class="risk-item">
                             <input type="text" placeholder="z.B. 'Verlust wichtiger Kontakte'" class="risk-input">
-                            <select class="risk-level">
-                                <option value="low">Niedrig</option>
-                                <option value="medium">Mittel</option>
-                                <option value="high">Hoch</option>
-                            </select>
-                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
-                        </div>
-                    </div>
                     <button class="btn btn-secondary" data-action="add-risk" data-param="network">+ Risiko hinzufügen</button>
-                </div>
-            </div>
-            
             <div class="risks-summary">
                 <h4>📊 Risiken-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="stat-item">
                         <span class="stat-number" id="total-risks">0</span>
                         <span class="stat-label">Gesamtrisiken</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="high-risks">0</span>
                         <span class="stat-label">Hohe Risiken</span>
-                    </div>
-                </div>
-            </div>
-            
             <div class="swot-matrix">
                 <h4>🎯 SWOT-Matrix</h4>
                 <div class="matrix-grid">
@@ -375,29 +186,18 @@
                         <h5>Stärken</h5>
                         <div class="cell-content" id="strengths-content">
                             <p>Fülle die Stärken aus, um sie hier zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="matrix-cell weaknesses">
                         <h5>Schwächen</h5>
                         <div class="cell-content" id="weaknesses-content">
                             <p>Fülle die Schwächen aus, um sie hier zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="matrix-cell opportunities">
                         <h5>Chancen</h5>
                         <div class="cell-content" id="opportunities-content">
                             <p>Fülle die Chancen aus, um sie hier zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="matrix-cell risks">
                         <h5>Risiken</h5>
                         <div class="cell-content" id="risks-content">
                             <p>Fülle die Risiken aus, um sie hier zu sehen.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <div class="action-strategies">
                 <h4>🎯 Handlungsstrategien</h4>
                 <div class="strategies-grid">
@@ -406,34 +206,21 @@
                         <p>Nutze deine Stärken, um Chancen zu ergreifen.</p>
                         <div class="strategy-content" id="so-strategies">
                             <p>Fülle Stärken und Chancen aus, um Strategien zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="strategy-card wo-strategy">
                         <h5>WO-Strategie (Schwächen + Chancen)</h5>
                         <p>Überwinde Schwächen, um Chancen zu nutzen.</p>
                         <div class="strategy-content" id="wo-strategies">
                             <p>Fülle Schwächen und Chancen aus, um Strategien zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="strategy-card st-strategy">
                         <h5>ST-Strategie (Stärken + Risiken)</h5>
                         <p>Nutze deine Stärken, um Risiken abzuwehren.</p>
                         <div class="strategy-content" id="st-strategies">
                             <p>Fülle Stärken und Risiken aus, um Strategien zu sehen.</p>
-                        </div>
-                    </div>
                     <div class="strategy-card wt-strategy">
                         <h5>WT-Strategie (Schwächen + Risiken)</h5>
                         <p>Minimiere Schwächen und vermeide Risiken.</p>
                         <div class="strategy-content" id="wt-strategies">
                             <p>Fülle Schwächen und Risiken aus, um Strategien zu sehen.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
@@ -442,17 +229,28 @@
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            </div>
             <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
 </div>
-
 
 <!-- Global Auth System -->
 <script src="../../js/aws-config.js"></script>
-<script src="../../js/real-aws-auth.js"></script>
-<script src="../../js/global-auth-system.js"></script>
-
+<script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

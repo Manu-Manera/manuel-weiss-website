@@ -9,12 +9,10 @@
     <meta name="description" content="KI-gestützte HR-Prozessautomatisierung nach Harvard & MIT Methoden. RPA, Self-Service und Prozessoptimierung für HR-Exzellenz.">
     <meta name="keywords" content="HR-Prozessautomatisierung, RPA, KI-Integration, HR-Self-Service, Prozessoptimierung, Harvard, MIT">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Custom Styles for HR Process Automation -->
     <style>
         .hr-automation-hero {
@@ -33,15 +31,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-        
         .hr-automation-hero p {
             font-size: 1.1rem;
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto 1.5rem;
-        }
-        
         .methodology-badge {
             display: inline-flex;
             align-items: center;
@@ -52,20 +46,14 @@
             font-size: 0.9rem;
             font-weight: 500;
             backdrop-filter: blur(10px);
-        }
-        
         .automation-overview {
             padding: 4rem 0;
             background: #f8fafc;
-        }
-        
         .automation-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
-        }
-        
         .automation-card {
             background: white;
             border-radius: 16px;
@@ -73,34 +61,20 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             border: 1px solid #e5e7eb;
-        }
-        
         .automation-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-        
         .automation-card h3 {
             color: #1f2937;
             font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
             display: flex;
-            align-items: center;
             gap: 0.75rem;
-        }
-        
         .automation-card .icon {
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-        
         .automation-card .icon.vision { background: linear-gradient(135deg, #10b981, #059669); }
         .automation-card .icon.value { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
         .automation-card .icon.technology { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
@@ -108,155 +82,58 @@
         .automation-card .icon.ethics { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .automation-card .icon.scaling { background: linear-gradient(135deg, #06b6d4, #0891b2); }
         .automation-card .icon.learning { background: linear-gradient(135deg, #84cc16, #65a30d); }
-        
         .automation-card p {
             color: #6b7280;
             line-height: 1.6;
             margin-bottom: 1.5rem;
-        }
-        
         .automation-features {
             list-style: none;
             padding: 0;
-        }
-        
         .automation-features li {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             padding: 0.5rem 0;
             color: #374151;
-            font-weight: 500;
-        }
-        
         .automation-features li i {
             color: #10b981;
             font-size: 0.875rem;
-        }
-        
         .use-cases-section {
-            padding: 4rem 0;
-            background: white;
-        }
-        
         .use-cases-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
         .use-case-card {
-            background: #f8fafc;
-            border-radius: 12px;
             padding: 1.5rem;
             border-left: 4px solid #10b981;
-            transition: all 0.3s ease;
-        }
-        
         .use-case-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
-        }
-        
         .use-case-card h4 {
-            color: #1f2937;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
         .use-case-card p {
-            color: #6b7280;
             margin: 0;
-            font-size: 0.9rem;
-        }
-        
         .workflow-cta {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-        }
-        
         .workflow-cta h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-        
         .workflow-cta p {
             font-size: 1.25rem;
-            opacity: 0.9;
             margin-bottom: 2rem;
-            max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-        }
-        
         .btn-workflow {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: white;
-            color: #10b981;
             padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
             text-decoration: none;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        
         .btn-workflow:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
             color: #059669;
-        }
-        
         .methodology-section {
-            padding: 4rem 0;
-            background: #f8fafc;
-        }
-        
         .methodology-grid {
-            display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 3rem;
-            align-items: center;
-            margin-top: 3rem;
-        }
-        
         .methodology-card {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
         .methodology-card h3 {
-            color: #1f2937;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
         .methodology-card .university-badge {
             background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
         @media (max-width: 768px) {
             .hr-automation-hero h1 {
                 font-size: 2rem;
@@ -264,41 +141,21 @@
             
             .automation-grid {
                 grid-template-columns: 1fr;
-            }
-            
             .use-cases-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .methodology-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
-            display: flex;
-            align-items: center;
             margin-left: 20px;
-        }
 
         .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
             border-radius: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
         .user-info:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         .user-avatar {
             width: 32px;
             height: 32px;
@@ -306,113 +163,53 @@
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
         .user-avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
         .user-details {
-            display: flex;
             flex-direction: column;
             gap: 2px;
-        }
-
         .user-name {
-            font-size: 0.8rem;
-            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
-        }
-
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.2;
-        }
-
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
             border: none;
-            border-radius: 50%;
             width: 28px;
             height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
         .user-login {
-            display: flex;
-            align-items: center;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
         .btn-login i {
-            font-size: 0.7rem;
-        }
-
         /* Responsive Design for User System */
-        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
-            }
-
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
-            }
-
             .user-avatar {
                 width: 28px;
                 height: 28px;
-            }
-
             .user-name {
                 font-size: 0.7rem;
-            }
-
             .user-email {
                 font-size: 0.6rem;
-            }
-
             .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -422,13 +219,11 @@
                 <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
-            
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
-            
                 <!-- AWS User System - Nur auf Service-Unterseiten -->
                 <div class="user-system" id="userSystem">
                     <div class="user-info" id="userInfo" style="display: none;">
@@ -438,7 +233,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -448,50 +242,35 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
                 
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
-
     <!-- Hero Section -->
     <section class="hr-automation-hero">
         <div class="container">
             <div class="methodology-badge">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Harvard & MIT Methodologie</span>
-            </div>
             <h1>HR-Prozessautomatisierung</h1>
             <p>KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience. RPA, Self-Service und intelligente Workflows.</p>
             <a href="#workflow" class="btn-workflow">
                 <i class="fas fa-play"></i>
                 HR-Automatisierung Workflow starten
             </a>
-        </div>
     </section>
-
     <!-- Automation Overview -->
     <section class="automation-overview">
-        <div class="container">
             <div class="section-header">
                 <h2>Die 7 Säulen der HR-Prozessautomatisierung</h2>
                 <p>Ein systematischer Ansatz für intelligente HR-Automatisierung</p>
-            </div>
-            
             <div class="automation-grid">
                 <div class="automation-card">
                     <h3>
                         <div class="icon vision">
                             <i class="fas fa-eye"></i>
-                        </div>
                         Vision & strategische Verankerung
                     </h3>
                     <p>Prozessautomatisierung ist kein Selbstzweck - sie muss messbar zur HR-Exzellenz & Unternehmensstrategie beitragen.</p>
@@ -501,228 +280,133 @@
                         <li><i class="fas fa-check"></i> Strategische Verankerung</li>
                         <li><i class="fas fa-check"></i> Employee Experience fokussiert</li>
                     </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon value">
                             <i class="fas fa-chart-line"></i>
-                        </div>
                         Wertschöpfung & Use Cases
-                    </h3>
                     <p>Fokus auf Prozesse mit hohem Impact. "Use Case Factory" - kleine Automatisierungen pilotieren, dann skalieren.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> Recruiting & Onboarding</li>
                         <li><i class="fas fa-check"></i> HR-Administration & Self-Service</li>
                         <li><i class="fas fa-check"></i> Payroll & Compliance</li>
                         <li><i class="fas fa-check"></i> Learning & Development</li>
-                    </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon technology">
                             <i class="fas fa-microchip"></i>
-                        </div>
                         Daten- und Technologie-Architektur
-                    </h3>
                     <p>Datenqualität & Governance als Voraussetzung. "Data Infrastructure Readiness" für systemübergreifende Integration.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> RPA (Robotic Process Automation)</li>
                         <li><i class="fas fa-check"></i> KI-Module (NLP, Chatbots, ML)</li>
                         <li><i class="fas fa-check"></i> HR-System-Integration</li>
                         <li><i class="fas fa-check"></i> Self-Service-Portale</li>
-                    </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon organization">
                             <i class="fas fa-sitemap"></i>
-                        </div>
                         Organisation & HR Operating Model
-                    </h3>
                     <p>HR Automation Center of Excellence. Fokus auf Citizen Development - HR-Mitarbeiter selbst automatisieren.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> HR Automation CoE</li>
                         <li><i class="fas fa-check"></i> Citizen Development</li>
                         <li><i class="fas fa-check"></i> Automation Architect</li>
                         <li><i class="fas fa-check"></i> Change Manager</li>
-                    </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon ethics">
                             <i class="fas fa-balance-scale"></i>
-                        </div>
                         Ethik, Fairness & Employee Trust
-                    </h3>
                     <p>Fairness & Transparenz bei automatisierten HR-Prozessen. Erklärbarkeit - Mitarbeiter wissen, wann KI vs. Mensch entscheidet.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> Transparente Kommunikation</li>
                         <li><i class="fas fa-check"></i> Menschliche HR-Beratung erhalten</li>
                         <li><i class="fas fa-check"></i> Employee Trust durch Transparenz</li>
                         <li><i class="fas fa-check"></i> DSGVO-konforme Verarbeitung</li>
-                    </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon scaling">
                             <i class="fas fa-expand-arrows-alt"></i>
-                        </div>
                         Skalierung & HR-Ökosystem
-                    </h3>
                     <p>Plattform-Strategien mit Technologieanbietern. Ökosystem-Ansatz - modulare Lösungen, offene Schnittstellen.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> Quick Wins starten</li>
                         <li><i class="fas fa-check"></i> Nachweisbare Erfolge skalieren</li>
                         <li><i class="fas fa-check"></i> HR-Tech Partnerschaften</li>
                         <li><i class="fas fa-check"></i> Unternehmensweites Framework</li>
-                    </ul>
-                </div>
-                
-                <div class="automation-card">
-                    <h3>
                         <div class="icon learning">
                             <i class="fas fa-sync-alt"></i>
-                        </div>
                         Kontinuierliches Lernen & Anpassung
-                    </h3>
                     <p>HR-Automatisierung als iterativer Transformationsprozess. Monitoring & Feedback-Loops für ständige Optimierung.</p>
-                    <ul class="automation-features">
                         <li><i class="fas fa-check"></i> KPI-Monitoring</li>
                         <li><i class="fas fa-check"></i> Feedback-Loops</li>
                         <li><i class="fas fa-check"></i> Technologie-Evaluation</li>
                         <li><i class="fas fa-check"></i> Process Mining & Data Literacy</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Use Cases Section -->
     <section class="use-cases-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>Typische KI-Automatisierungs-Use Cases im HR</h2>
                 <p>Konkrete Anwendungsfälle für intelligente HR-Automatisierung</p>
-            </div>
-            
             <div class="use-cases-grid">
                 <div class="use-case-card">
                     <h4><i class="fas fa-user-plus"></i> Recruiting & Onboarding</h4>
                     <p>Automatisierte Terminplanung für Interviews, KI-gestützte Dokumentenprüfung, Chatbots für Bewerberfragen</p>
-                </div>
-                
-                <div class="use-case-card">
                     <h4><i class="fas fa-cogs"></i> HR-Administration</h4>
                     <p>Automatisierte Vertragserstellung, digitale Assistenten für Urlaubsanträge, KI für HR-Ticketing</p>
-                </div>
-                
-                <div class="use-case-card">
                     <h4><i class="fas fa-money-bill-wave"></i> Payroll & Compliance</h4>
                     <p>Automatisierte Dokumentprüfung auf Compliance, KI-gestützte Anomalieerkennung in Gehaltsabrechnungen</p>
-                </div>
-                
-                <div class="use-case-card">
                     <h4><i class="fas fa-graduation-cap"></i> Learning & Development</h4>
                     <p>Automatisierte Erstellung von Lernplänen, Self-Service-Portale mit KI-Empfehlungen für Weiterbildung</p>
-                </div>
-                
-                <div class="use-case-card">
                     <h4><i class="fas fa-chart-bar"></i> People Analytics</h4>
                     <p>Automatisierte Berichterstattung, KI-gestützte Fluktuationsprognosen, Performance-Analytics</p>
-                </div>
-                
-                <div class="use-case-card">
                     <h4><i class="fas fa-shield-alt"></i> Compliance & Audit</h4>
                     <p>Automatisierte Compliance-Checks, Audit-Trail-Generierung, DSGVO-konforme Datenverarbeitung</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Methodology Section -->
     <section class="methodology-section">
-        <div class="container">
-            <div class="section-header">
                 <h2>Wissenschaftlich fundierte Methodologie</h2>
                 <p>Basierend auf bewährten Ansätzen von führenden Universitäten</p>
-            </div>
-            
             <div class="methodology-grid">
                 <div class="methodology-card">
-                    <h3>
                         <span class="university-badge">Harvard</span>
                         Harvard Business School Ansatz
-                    </h3>
                     <p><strong>Strategische Verankerung:</strong> Prozessautomatisierung muss messbar zur HR-Exzellenz beitragen. Fokus auf Kosten, Geschwindigkeit und Employee Experience.</p>
                     <p><strong>Center of Excellence:</strong> Einrichtung eines HR Automation CoE für systematische Automatisierung und Governance.</p>
                     <p><strong>Plattform-Strategien:</strong> Zusammenarbeit mit Technologieanbietern für nachhaltige Automatisierungslösungen.</p>
-                </div>
-                
-                <div class="methodology-card">
-                    <h3>
                         <span class="university-badge">MIT</span>
                         MIT Sloan School Ansatz
-                    </h3>
                     <p><strong>Humans + Machines:</strong> Automatisierung entlastet HR von Routinetätigkeiten, damit mehr Zeit für strategische Arbeit bleibt.</p>
                     <p><strong>Citizen Development:</strong> HR-Mitarbeiter selbst in die Lage versetzen, kleine Automatisierungen zu konfigurieren.</p>
                     <p><strong>Ökosystem-Ansatz:</strong> Modulare Automatisierungslösungen mit offenen Schnittstellen für flexible Integration.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Workflow CTA -->
     <section class="workflow-cta" id="workflow">
-        <div class="container">
             <h2>Starten Sie Ihre HR-Prozessautomatisierung</h2>
             <p>Durchlaufen Sie unseren strukturierten Workflow und entwickeln Sie eine maßgeschneiderte Automatisierungsstrategie für Ihr HR.</p>
             <a href="hr-automation-workflow.html" class="btn-workflow">
                 <i class="fas fa-rocket"></i>
-                HR-Automatisierung Workflow starten
-            </a>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Manuel Weiss</h3>
                     <p>HR Berater für AI & Transformation</p>
-                </div>
-                <div class="footer-section">
                     <h4>Services</h4>
                     <ul>
                         <li><a href="ki-strategieentwicklung.html">KI-Strategieentwicklung</a></li>
                         <li><a href="hr-prozessautomatisierung.html">HR-Prozessautomatisierung</a></li>
                         <li><a href="index.html#services">HR Transformation</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
                     <h4>Kontakt</h4>
                     <p>manuel.weiss@example.com</p>
                     <p>+41 79 123 45 67</p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
     </footer>
-
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
-
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
 <script src="js/aws-auth.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -13,33 +13,25 @@
             <span class="feature-badge">Prioritäten setzen</span>
             <span class="feature-badge">Aktionsplan erstellen</span>
         </div>
-    </div>
     
     <div class="workflow-progress">
         <div class="progress-step active" data-step="1">
             <div class="step-number">1</div>
             <div class="step-title">Lebensbereiche bewerten</div>
-        </div>
         <div class="progress-step" data-step="2">
             <div class="step-number">2</div>
             <div class="step-title">Balance analysieren</div>
-        </div>
         <div class="progress-step" data-step="3">
             <div class="step-number">3</div>
             <div class="step-title">Prioritäten setzen</div>
-        </div>
         <div class="progress-step" data-step="4">
             <div class="step-number">4</div>
             <div class="step-title">Aktionsplan erstellen</div>
-        </div>
-    </div>
-    
     <!-- Step 1: Lebensbereiche bewerten -->
     <div class="workflow-step active" data-step="1">
         <div class="step-header">
             <h3>Schritt 1: Lebensbereiche bewerten</h3>
             <p>Bewerte deine Zufriedenheit in verschiedenen Lebensbereichen auf einer Skala von 1-10.</p>
-        </div>
         
         <div class="wheel-of-life">
             <div class="life-categories">
@@ -51,61 +43,20 @@
                     </div>
                 </div>
                 
-                <div class="life-category">
                     <label>💰 Finanzen</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="finances">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>🏠 Familie & Beziehungen</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="family">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>👥 Freunde & Soziales</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="social">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>🎯 Persönliche Entwicklung</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="development">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>🏃‍♂️ Gesundheit & Fitness</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="health">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>🎨 Hobbys & Freizeit</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="hobbies">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="life-category">
                     <label>🌍 Spiritualität & Sinn</label>
-                    <div class="life-slider-container">
                         <input type="range" class="life-slider" min="1" max="10" value="5" data-category="spirituality">
-                        <span class="life-value">5</span>
-                    </div>
-                </div>
             </div>
             
             <div class="wheel-summary">
@@ -114,27 +65,16 @@
                     <span>Gesamtbalance:</span>
                     <span id="balance-score">5.0</span>
                     <span>/ 10</span>
-                </div>
                 <div class="wheel-visual" id="wheel-visual">
                     <!-- Wheel will be generated here -->
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 2: Balance analysieren -->
     <div class="workflow-step" data-step="2">
-        <div class="step-header">
             <h3>Schritt 2: Balance analysieren</h3>
             <p>Analysiere deine Lebensbalance und identifiziere Bereiche, die mehr Aufmerksamkeit benötigen.</p>
-        </div>
-        
         <div class="balance-analysis">
             <div class="analysis-intro">
                 <h4>⚖️ Balance-Analyse</h4>
                 <p>Eine ausgewogene Lebensbalance ist der Schlüssel zu Zufriedenheit und Wohlbefinden.</p>
-            </div>
-            
             <div class="balance-insights">
                 <h4>💡 Erkenntnisse</h4>
                 <div class="insights-container" id="balance-insights">
@@ -143,99 +83,53 @@
                         <div class="insight-content" id="strongest-areas">
                             <p>Bewerte deine Lebensbereiche, um deine Stärken zu sehen.</p>
                         </div>
-                    </div>
                     
-                    <div class="insight-item">
                         <h5>⚠️ Verbesserungsbereiche</h5>
                         <div class="insight-content" id="improvement-areas">
                             <p>Bewerte deine Lebensbereiche, um Verbesserungsmöglichkeiten zu sehen.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="insight-item">
                         <h5>📈 Balance-Trend</h5>
                         <div class="insight-content" id="balance-trend">
                             <p>Analysiere deine Bewertungen für Balance-Erkenntnisse.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <div class="balance-recommendations">
                 <h4>🎯 Empfehlungen</h4>
                 <div class="recommendations-list" id="balance-recommendations">
                     <p>Bewerte deine Lebensbereiche, um personalisierte Empfehlungen zu erhalten.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 3: Prioritäten setzen -->
     <div class="workflow-step" data-step="3">
-        <div class="step-header">
             <h3>Schritt 3: Prioritäten setzen</h3>
             <p>Setze Prioritäten für die Bereiche, die du verbessern möchtest.</p>
-        </div>
-        
         <div class="priorities-setting">
             <div class="priorities-intro">
                 <h4>🎯 Prioritäten setzen</h4>
                 <p>Wähle die 3 wichtigsten Bereiche aus, auf die du dich konzentrieren möchtest.</p>
-            </div>
-            
             <div class="priorities-selection">
                 <h4>📋 Prioritäten auswählen</h4>
                 <div class="priority-options" id="priority-options">
                     <!-- Priority options will be generated here -->
-                </div>
-            </div>
-            
             <div class="selected-priorities">
                 <h4>✅ Deine Prioritäten</h4>
                 <div class="priorities-list" id="selected-priorities">
                     <p>Wähle deine Prioritäten aus, um sie hier zu sehen.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Step 4: Aktionsplan erstellen -->
     <div class="workflow-step" data-step="4">
-        <div class="step-header">
             <h3>Schritt 4: Aktionsplan erstellen</h3>
             <p>Erstelle konkrete Schritte, um deine Prioritäten umzusetzen.</p>
-        </div>
-        
         <div class="action-plan">
             <div class="plan-intro">
                 <h4>📋 Aktionsplan</h4>
                 <p>Entwickle konkrete Schritte für deine gewählten Prioritäten.</p>
-            </div>
-            
             <div class="action-areas" id="action-areas">
                 <p>Setze Prioritäten, um deinen Aktionsplan zu erstellen.</p>
-            </div>
-            
             <div class="plan-summary">
                 <h4>📊 Plan-Zusammenfassung</h4>
                 <div class="summary-stats">
                     <div class="stat-item">
                         <span class="stat-number" id="total-actions">0</span>
                         <span class="stat-label">Geplante Aktionen</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="priority-areas">0</span>
                         <span class="stat-label">Prioritätsbereiche</span>
-                    </div>
-                    <div class="stat-item">
                         <span class="stat-number" id="estimated-time">0</span>
                         <span class="stat-label">Geschätzte Zeit (Wochen)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Navigation -->
     <div class="workflow-navigation">
         <div class="nav-buttons">
@@ -244,17 +138,28 @@
             </button>
             <div class="progress-info">
                 <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            </div>
             <button class="btn btn-primary" id="next-btn" data-action="next-step">
                 Weiter <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
 </div>
-
 
 <!-- Global Auth System -->
 <script src="../../js/aws-config.js"></script>
-<script src="../../js/real-aws-auth.js"></script>
-<script src="../../js/global-auth-system.js"></script>
-
+<script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -9,12 +9,10 @@
     <meta name="description" content="Strukturierter Workflow für Digital Workplace nach Harvard & MIT Methoden. KI-gestützte Kommunikation, Wissensmanagement und Employee Experience.">
     <meta name="keywords" content="Digital Workplace Workflow, KI-Kommunikation, Wissensmanagement, Employee Experience, Harvard, MIT">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Custom Styles for Digital Workplace Workflow -->
     <style>
         .workflow-container {
@@ -30,21 +28,14 @@
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
             border-radius: 12px;
-        }
-        
         .workflow-header h1 {
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 0.75rem;
-        }
-        
         .workflow-header p {
             font-size: 1rem;
             opacity: 0.9;
             max-width: 600px;
-            margin: 0 auto;
-        }
-        
         .workflow-progress {
             display: flex;
             justify-content: center;
@@ -52,11 +43,7 @@
             margin: 2rem 0;
             gap: 1rem;
             flex-wrap: wrap;
-        }
-        
         .progress-step {
-            display: flex;
-            align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
             background: rgba(255, 255, 255, 0.2);
@@ -64,85 +51,45 @@
             font-weight: 500;
             transition: all 0.3s ease;
             font-size: 0.9rem;
-        }
-        
         .progress-step.active {
             background: white;
             color: #f59e0b;
-        }
-        
         .progress-step.completed {
             background: #d97706;
-            color: white;
-        }
-        
         .workflow-step {
-            background: white;
             border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e5e7eb;
             display: none;
-        }
-        
         .workflow-step.active {
             display: block;
-        }
-        
         .step-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid #f3f4f6;
-        }
-        
         .step-number {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-weight: 700;
             font-size: 1.2rem;
-        }
-        
         .step-title {
             flex: 1;
-        }
-        
         .step-title h2 {
             font-size: 1.8rem;
-            font-weight: 700;
             color: #1f2937;
             margin: 0;
-        }
-        
         .step-title p {
             color: #6b7280;
             margin: 0.5rem 0 0;
-        }
-        
         .step-content {
             margin-top: 2rem;
-        }
-        
         .form-group {
             margin-bottom: 1.5rem;
-        }
-        
         .form-group label {
-            display: block;
             font-weight: 600;
             color: #374151;
             margin-bottom: 0.5rem;
-        }
-        
         .form-group input,
         .form-group textarea,
         .form-group select {
@@ -150,185 +97,73 @@
             padding: 0.75rem;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
-            font-size: 1rem;
             transition: border-color 0.3s ease;
-        }
-        
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
             border-color: #f59e0b;
-        }
-        
         .form-group textarea {
             min-height: 120px;
             resize: vertical;
-        }
-        
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
             margin-top: 1rem;
-        }
-        
         .checkbox-item {
-            display: flex;
-            align-items: center;
             gap: 0.75rem;
             padding: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
         .checkbox-item:hover {
-            border-color: #f59e0b;
             background: #fef3c7;
-        }
-        
         .checkbox-item input[type="checkbox"] {
             width: auto;
-            margin: 0;
-        }
-        
         .checkbox-item.checked {
-            border-color: #f59e0b;
-            background: #fef3c7;
-        }
-        
         .use-case-card {
-            background: #fef3c7;
-            border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
             border-left: 4px solid #f59e0b;
-        }
-        
         .use-case-card h4 {
-            color: #1f2937;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
         .use-case-card p {
-            color: #6b7280;
-            margin: 0;
-        }
-        
         .kpi-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
         .kpi-item {
             background: #f8fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            border: 2px solid #e5e7eb;
-        }
-        
         .kpi-item input {
-            width: 100%;
             padding: 0.5rem;
             border: 1px solid #d1d5db;
             border-radius: 4px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
         .kpi-item label {
-            display: block;
             font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-        }
-        
         .workflow-navigation {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 2rem;
             padding-top: 2rem;
             border-top: 2px solid #f3f4f6;
-        }
-        
         .btn {
-            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
         .btn-primary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }
-        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
-        }
-        
         .btn-secondary {
             background: #6b7280;
-            color: white;
-        }
-        
         .btn-secondary:hover {
             background: #4b5563;
-        }
-        
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-        
         .summary-card {
-            background: #fef3c7;
             border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
         .summary-card h4 {
-            color: #1f2937;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
         .summary-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 0.5rem 0;
             border-bottom: 1px solid #e5e7eb;
-        }
-        
         .summary-item:last-child {
             border-bottom: none;
-        }
-        
         .summary-item strong {
-            color: #374151;
-        }
-        
         .summary-item span {
-            color: #6b7280;
-        }
-        
         @media (max-width: 768px) {
             .workflow-container {
                 padding: 1rem;
@@ -336,166 +171,80 @@
             
             .workflow-header h1 {
                 font-size: 2rem;
-            }
-            
             .workflow-progress {
                 flex-direction: column;
                 gap: 0.5rem;
-            }
-            
             .progress-step {
                 width: 100%;
                 justify-content: center;
-            }
-            
             .step-header {
-                flex-direction: column;
                 text-align: center;
-            }
-            
             .checkbox-group {
                 grid-template-columns: 1fr;
-            }
-        }
-    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
-            display: flex;
-            align-items: center;
             margin-left: 20px;
-        }
 
         .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
-            border-radius: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
         .user-info:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         .user-avatar {
             width: 32px;
             height: 32px;
-            border-radius: 50%;
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
         .user-avatar-img {
-            width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
         .user-details {
-            display: flex;
             flex-direction: column;
             gap: 2px;
-        }
-
         .user-name {
             font-size: 0.8rem;
-            font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
-        }
-
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.2;
-        }
-
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            border-radius: 50%;
             width: 28px;
             height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
         .user-login {
-            display: flex;
-            align-items: center;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
         .btn-login i {
-            font-size: 0.7rem;
-        }
-
         /* Responsive Design for User System */
-        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
-            }
-
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
-            }
-
             .user-avatar {
                 width: 28px;
                 height: 28px;
-            }
-
             .user-name {
                 font-size: 0.7rem;
-            }
-
             .user-email {
                 font-size: 0.6rem;
-            }
-
             .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -505,13 +254,11 @@
                 <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
                 <span class="nav-name">Manuel Weiss</span>
             </div>
-            
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="digital-workplace.html" class="nav-link">Digital Workplace</a>
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
-            
                 <!-- AWS User System - Nur auf Service-Unterseiten -->
                 <div class="user-system" id="userSystem">
                     <div class="user-info" id="userInfo" style="display: none;">
@@ -521,7 +268,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -531,53 +277,38 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
                 
-            </div>
         </div>
     </nav>
-
     <div class="workflow-container">
         <!-- Workflow Header -->
         <div class="workflow-header">
             <h1>Digital Workplace</h1>
             <p>Entwickeln Sie einen intelligenten digitalen Arbeitsplatz mit KI-Unterstützung nach bewährten Harvard & MIT Methoden</p>
-        </div>
-
         <!-- Progress Indicator -->
         <div class="workflow-progress">
             <div class="progress-step active" data-step="1">
                 <i class="fas fa-eye"></i>
                 <span>Vision</span>
-            </div>
             <div class="progress-step" data-step="2">
                 <i class="fas fa-chart-line"></i>
                 <span>Use Cases</span>
-            </div>
             <div class="progress-step" data-step="3">
                 <i class="fas fa-microchip"></i>
                 <span>Technologie</span>
-            </div>
             <div class="progress-step" data-step="4">
                 <i class="fas fa-sitemap"></i>
                 <span>Organisation</span>
-            </div>
             <div class="progress-step" data-step="5">
                 <i class="fas fa-balance-scale"></i>
                 <span>Ethik</span>
-            </div>
             <div class="progress-step" data-step="6">
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span>Skalierung</span>
-            </div>
             <div class="progress-step" data-step="7">
                 <i class="fas fa-sync-alt"></i>
                 <span>Lernen</span>
-            </div>
-        </div>
-
         <!-- Step 1: Vision & strategische Verankerung -->
         <div class="workflow-step active" data-step="1">
             <div class="step-header">
@@ -585,16 +316,10 @@
                 <div class="step-title">
                     <h2>Vision & strategische Verankerung</h2>
                     <p>Harvard: Digital Workplace als strategischer Enabler - MIT: Augmentation statt Substitution</p>
-                </div>
-            </div>
-            
             <div class="step-content">
                 <div class="form-group">
                     <label>Unternehmensname</label>
                     <input type="text" id="companyName" placeholder="Ihr Unternehmen">
-                </div>
-                
-                <div class="form-group">
                     <label>Branche</label>
                     <select id="industry">
                         <option value="">Branche auswählen</option>
@@ -606,9 +331,6 @@
                         <option value="consulting">Beratung</option>
                         <option value="other">Andere</option>
                     </select>
-                </div>
-                
-                <div class="form-group">
                     <label>Mitarbeiteranzahl</label>
                     <select id="employeeCount">
                         <option value="">Anzahl auswählen</option>
@@ -617,545 +339,236 @@
                         <option value="201-500">201-500</option>
                         <option value="501-1000">501-1000</option>
                         <option value="1000+">1000+</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
                     <label>Digital Workplace Ziele</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" id="goal1" value="efficiency">
                             <label for="goal1">Effizienz steigern</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="goal2" value="innovation">
                             <label for="goal2">Innovation fördern</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="goal3" value="employee-satisfaction">
                             <label for="goal3">Mitarbeiterzufriedenheit</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="goal4" value="collaboration">
                             <label for="goal4">Kollaboration verbessern</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="goal5" value="knowledge-management">
                             <label for="goal5">Wissensmanagement</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="goal6" value="productivity">
                             <label for="goal6">Produktivität steigern</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Employee Experience Strategie</label>
                     <textarea id="employeeExperience" placeholder="Wie verankern Sie KI in Ihrer Employee Experience-Strategie?"></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 2: Wertschöpfung & Use Cases -->
         <div class="workflow-step" data-step="2">
-            <div class="step-header">
                 <div class="step-number">2</div>
-                <div class="step-title">
                     <h2>Wertschöpfung & Use Cases</h2>
                     <p>Harvard: Klare Werthebel - MIT: "Use Case Factory" mit kleinen, messbaren Verbesserungen</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>Prioritäre Digital Workplace Bereiche</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area1" value="communication">
                             <label for="area1">Kommunikation & Kollaboration</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area2" value="knowledge">
                             <label for="area2">Wissensmanagement & Suche</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area3" value="productivity">
                             <label for="area3">Produktivität & Automatisierung</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area4" value="experience">
                             <label for="area4">Employee Experience</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area5" value="security">
                             <label for="area5">Sicherheit & Governance</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="area6" value="training">
                             <label for="area6">AI Literacy & Training</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Konkrete KI-Use Cases</label>
                     <div class="use-case-card">
                         <h4>Kommunikation & Kollaboration</h4>
                         <p>KI-gestützte Meeting-Zusammenfassungen, automatische Übersetzung, Smart Scheduling & Kalender-Assistenten</p>
-                    </div>
-                    <div class="use-case-card">
                         <h4>Wissensmanagement & Suche</h4>
                         <p>Unternehmensweite KI-Suche, automatisierte FAQ-Bots, intelligente Dokumentenanalyse</p>
-                    </div>
-                    <div class="use-case-card">
                         <h4>Produktivität & Automatisierung</h4>
                         <p>Generative KI für Content-Erstellung, Workflow-Automatisierung, intelligente E-Mail-Assistenten</p>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Erwartete Werthebel</label>
                     <div class="kpi-grid">
                         <div class="kpi-item">
                             <label>Zeitersparnis (Stunden/Woche)</label>
                             <input type="number" id="timeSavings" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>Produktivitätssteigerung (%)</label>
                             <input type="number" id="productivityGain" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>Mitarbeiterzufriedenheit (1-10)</label>
                             <input type="number" id="employeeSatisfaction" placeholder="0" min="1" max="10">
-                        </div>
-                        <div class="kpi-item">
                             <label>Kollaborationseffizienz (%)</label>
                             <input type="number" id="collaborationEfficiency" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 3: Daten- und Technologie-Architektur -->
         <div class="workflow-step" data-step="3">
-            <div class="step-header">
                 <div class="step-number">3</div>
-                <div class="step-title">
                     <h2>Daten- und Technologie-Architektur</h2>
                     <p>Harvard: Daten als strategisches Asset - MIT: Integrierte Plattformarchitektur</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>Bestehende Collaboration Tools</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool1" value="microsoft365">
                             <label for="tool1">Microsoft 365</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool2" value="google-workspace">
                             <label for="tool2">Google Workspace</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool3" value="slack">
                             <label for="tool3">Slack</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool4" value="teams">
                             <label for="tool4">Microsoft Teams</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool5" value="atlassian">
                             <label for="tool5">Atlassian (Jira, Confluence)</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tool6" value="other">
                             <label for="tool6">Andere Tools</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>KI-Technologien für Digital Workplace</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech1" value="generative-ai">
                             <label for="tech1">Generative KI (ChatGPT, Copilot)</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech2" value="enterprise-search">
                             <label for="tech2">Enterprise Search & KI-Suche</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech3" value="automation">
                             <label for="tech3">Workflow-Automatisierung</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech4" value="nlp">
                             <label for="tech4">NLP für Dokumentenanalyse</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech5" value="chatbots">
                             <label for="tech5">Chatbots & Conversational AI</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="tech6" value="analytics">
                             <label for="tech6">Workplace Analytics</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Datenqualität & Governance</label>
-                    <div class="kpi-grid">
-                        <div class="kpi-item">
                             <label>Datenqualität (1-10)</label>
                             <input type="number" id="dataQuality" placeholder="0" min="1" max="10">
-                        </div>
-                        <div class="kpi-item">
                             <label>System-Integration (%)</label>
                             <input type="number" id="systemIntegration" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>API-Verfügbarkeit (%)</label>
                             <input type="number" id="apiAvailability" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>DSGVO-Compliance (%)</label>
                             <input type="number" id="gdprCompliance" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Technologie-Architektur Anforderungen</label>
                     <textarea id="techRequirements" placeholder="Beschreiben Sie Ihre Anforderungen an die Digital Workplace Architektur..."></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 4: Organisation & Operating Model -->
         <div class="workflow-step" data-step="4">
-            <div class="step-header">
                 <div class="step-number">4</div>
-                <div class="step-title">
                     <h2>Organisation & Operating Model</h2>
                     <p>Harvard: Digital Workplace CoE - MIT: Human + AI Collaboration</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>Neue Rollen im Digital Workplace</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role1" value="product-owner">
                             <label for="role1">Digital Workplace Product Owner</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role2" value="ai-adoption-manager">
                             <label for="role2">AI Adoption Manager</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role3" value="workplace-analyst">
                             <label for="role3">Workplace Data Analyst</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role4" value="change-agent">
                             <label for="role4">Change Agent</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role5" value="ai-trainer">
                             <label for="role5">AI Literacy Trainer</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="role6" value="workplace-architect">
                             <label for="role6">Digital Workplace Architect</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Digital Workplace Center of Excellence</label>
                     <textarea id="coeStructure" placeholder="Beschreiben Sie die Struktur Ihres Digital Workplace CoE..."></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>Human + AI Collaboration Strategie</label>
                     <textarea id="humanAICollaboration" placeholder="Wie fördern Sie die Zusammenarbeit zwischen Menschen und KI im Digital Workplace?"></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>AI Literacy & Training Programme</label>
                     <textarea id="aiTraining" placeholder="Welche Schulungsprogramme planen Sie für KI-Tools und neue Arbeitsweisen?"></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 5: Ethik, Fairness & Employee Trust -->
         <div class="workflow-step" data-step="5">
-            <div class="step-header">
                 <div class="step-number">5</div>
-                <div class="step-title">
                     <h2>Ethik, Fairness & Employee Trust</h2>
                     <p>Harvard: Transparenz & Fairness - MIT: Explainable AI</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>Transparenz-Maßnahmen</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="transparency1" value="tool-communication">
                             <label for="transparency1">Klare Kommunikation über KI-Tools</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="transparency2" value="data-protection">
                             <label for="transparency2">Schutz von Mitarbeiterdaten</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="transparency3" value="responsible-ai">
                             <label for="transparency3">Responsible AI Policies</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="transparency4" value="opt-in">
                             <label for="transparency4">Opt-in-Ansätze für KI-Unterstützung</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Explainable AI Implementierung</label>
                     <textarea id="explainableAI" placeholder="Wie stellen Sie sicher, dass Mitarbeiter verstehen, wie KI sie unterstützt?"></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>Employee Trust Strategie</label>
                     <textarea id="trustStrategy" placeholder="Wie bauen Sie das Vertrauen der Mitarbeiter in KI-gestützte Digital Workplace Tools auf?"></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>Datenschutz & Compliance</label>
                     <textarea id="dataProtection" placeholder="Welche Maßnahmen implementieren Sie für Datenschutz und DSGVO-Compliance?"></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 6: Skalierung & Ökosystem -->
         <div class="workflow-step" data-step="6">
-            <div class="step-header">
                 <div class="step-number">6</div>
-                <div class="step-title">
                     <h2>Skalierung & Ökosystem</h2>
                     <p>Harvard: Plattform-Strategien - MIT: Open Innovation & Ecosystem</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>Pilotprojekte identifizieren</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="pilot1" value="it-self-service">
                             <label for="pilot1">IT-Self-Service-Bot</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="pilot2" value="meeting-assistant">
                             <label for="pilot2">Meeting-Assistant</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="pilot3" value="knowledge-search">
                             <label for="pilot3">KI-gestützte Wissenssuche</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="pilot4" value="content-generation">
                             <label for="pilot4">Content-Generierung</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>HR-Tech Partnerschaften</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="partnership1" value="microsoft">
                             <label for="partnership1">Microsoft (Copilot, Teams)</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="partnership2" value="google">
                             <label for="partnership2">Google (Duet AI, Workspace)</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="partnership3" value="slack">
                             <label for="partnership3">Slack (GPT Integration)</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="partnership4" value="startups">
                             <label for="partnership4">KI-Startups & Innovation Labs</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Skalierungsplan</label>
                     <textarea id="scalingPlan" placeholder="Beschreiben Sie Ihren Plan für die Skalierung des Digital Workplace..."></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>Innovationsnetzwerke</label>
                     <textarea id="innovationNetworks" placeholder="Welche Innovationsnetzwerke (MIT, Harvard, Tech-Provider) nutzen Sie?"></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Step 7: Kontinuierliches Lernen & Anpassung -->
         <div class="workflow-step" data-step="7">
-            <div class="step-header">
                 <div class="step-number">7</div>
-                <div class="step-title">
                     <h2>Kontinuierliches Lernen & Anpassung</h2>
                     <p>Harvard: Lebendes System - MIT: Feedback Loops & agile Iteration</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
-                <div class="form-group">
                     <label>KPI-Monitoring für Digital Workplace</label>
-                    <div class="kpi-grid">
-                        <div class="kpi-item">
                             <label>Mitarbeiterproduktivität (%)</label>
                             <input type="number" id="employeeProductivity" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>Employee Satisfaction (1-10)</label>
-                            <input type="number" id="employeeSatisfaction" placeholder="0" min="1" max="10">
-                        </div>
-                        <div class="kpi-item">
-                            <label>Kollaborationseffizienz (%)</label>
-                            <input type="number" id="collaborationEfficiency" placeholder="0">
-                        </div>
-                        <div class="kpi-item">
                             <label>Meeting-Zeit-Reduktion (%)</label>
                             <input type="number" id="meetingTimeReduction" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Feedback-Mechanismen</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
                             <input type="checkbox" id="feedback1" value="user-surveys">
                             <label for="feedback1">User-Umfragen</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="feedback2" value="usage-analytics">
                             <label for="feedback2">Usage Analytics</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="feedback3" value="focus-groups">
                             <label for="feedback3">Focus Groups</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="feedback4" value="ai-literacy-tests">
                             <label for="feedback4">AI Literacy Tests</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
                     <label>Tech-Radar & Tool-Evaluation</label>
                     <textarea id="techRadar" placeholder="Wie evaluieren Sie kontinuierlich neue Tools (Microsoft Copilot, Google Duet AI, Slack GPT)?"></textarea>
-                </div>
-                
-                <div class="form-group">
                     <label>Agile Iteration & Anpassung</label>
                     <textarea id="agileIteration" placeholder="Wie implementieren Sie agile Iteration für kontinuierliche Verbesserung des Digital Workplace?"></textarea>
-                </div>
-            </div>
-        </div>
-
         <!-- Summary Step -->
         <div class="workflow-step" data-step="8">
-            <div class="step-header">
                 <div class="step-number">✓</div>
-                <div class="step-title">
                     <h2>Ihre Digital Workplace Strategie</h2>
                     <p>Überprüfen Sie Ihre entwickelte Digital Workplace Strategie</p>
-                </div>
-            </div>
-            
-            <div class="step-content">
                 <div class="summary-card">
                     <h4>Unternehmensinformationen</h4>
                     <div class="summary-item">
                         <strong>Unternehmen:</strong>
                         <span id="summaryCompany">-</span>
-                    </div>
-                    <div class="summary-item">
                         <strong>Branche:</strong>
                         <span id="summaryIndustry">-</span>
-                    </div>
-                    <div class="summary-item">
                         <strong>Mitarbeiteranzahl:</strong>
                         <span id="summaryEmployees">-</span>
-                    </div>
-                </div>
-                
-                <div class="summary-card">
                     <h4>Digital Workplace Ziele</h4>
                     <div id="summaryGoals">-</div>
-                </div>
-                
-                <div class="summary-card">
                     <h4>Prioritäre Bereiche</h4>
                     <div id="summaryAreas">-</div>
-                </div>
-                
-                <div class="summary-card">
                     <h4>Erwartete Werthebel</h4>
                     <div id="summaryValue">-</div>
-                </div>
-                
-                <div class="summary-card">
                     <h4>Nächste Schritte</h4>
                     <div id="summaryNextSteps">-</div>
-                </div>
-            </div>
-        </div>
-
         <!-- Navigation -->
         <div class="workflow-navigation">
             <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" disabled>
                 <i class="fas fa-arrow-left"></i>
                 Zurück
             </button>
-            
             <div class="step-indicator">
                 <span id="currentStep">1</span> von <span id="totalSteps">7</span>
-            </div>
-            
             <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
                 Weiter
                 <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
     </div>
-
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
 <script>
         let currentStep = 1;
         const totalSteps = 8;
-        
-        
     // Load auth modals
     async function loadAuthModals() {
         try {
@@ -1164,17 +577,12 @@
             document.getElementById('authModalsContainer').innerHTML = html;
         } catch (error) {
             console.error('Error loading auth modals:', error);
-        }
     }
-
     // AWS User System Functions
     function loginUser() {
         const modal = document.getElementById('loginModal');
         if (modal) {
             modal.style.display = 'flex';
-        }
-    }
-
     function logoutUser() {
         if (window.awsAuth) {
             window.awsAuth.signOut().then(() => {
@@ -1182,19 +590,12 @@
             }).catch(error => {
                 console.error('Fehler beim Abmelden:', error);
             });
-        }
-    }
-
     // Initialize auth system
     document.addEventListener('DOMContentLoaded', async function() {
         await loadAuthModals();
-        
         // Check user status
-        if (window.awsAuth) {
             window.awsAuth.checkUserStatus();
-        }
     });
-
     function updateProgress() {
             // Update progress indicators
             document.querySelectorAll('.progress-step').forEach((step, index) => {
@@ -1204,63 +605,40 @@
                 } else if (index + 1 === currentStep) {
                     step.classList.add('active');
                 }
-            });
-            
             // Update step visibility
             document.querySelectorAll('.workflow-step').forEach((step, index) => {
                 step.classList.remove('active');
                 if (index + 1 === currentStep) {
-                    step.classList.add('active');
-                }
-            });
-            
             // Update navigation
             document.getElementById('prevBtn').disabled = currentStep === 1;
             document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Zusammenfassung' : 'Weiter';
             document.getElementById('currentStep').textContent = currentStep;
             document.getElementById('totalSteps').textContent = totalSteps;
-        }
-        
         function nextStep() {
             if (currentStep < totalSteps) {
                 currentStep++;
                 updateProgress();
-                
                 if (currentStep === totalSteps) {
                     generateSummary();
-                }
-            }
-        }
-        
         function previousStep() {
             if (currentStep > 1) {
                 currentStep--;
-                updateProgress();
-            }
-        }
-        
         function generateSummary() {
             // Generate summary from form data
             const companyName = document.getElementById('companyName').value || '-';
             const industry = document.getElementById('industry').value || '-';
             const employeeCount = document.getElementById('employeeCount').value || '-';
-            
             document.getElementById('summaryCompany').textContent = companyName;
             document.getElementById('summaryIndustry').textContent = industry;
             document.getElementById('summaryEmployees').textContent = employeeCount;
-            
             // Collect selected goals
             const selectedGoals = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
                 .map(cb => cb.nextElementSibling.textContent)
                 .join(', ');
             document.getElementById('summaryGoals').textContent = selectedGoals || '-';
-            
             // Collect selected areas
             const selectedAreas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                .map(cb => cb.nextElementSibling.textContent)
-                .join(', ');
             document.getElementById('summaryAreas').textContent = selectedAreas || '-';
-            
             // Generate next steps
             const nextSteps = [
                 '1. Digital Workplace CoE einrichten',
@@ -1271,11 +649,8 @@
                 '6. KPI-System implementieren und monitoren'
             ];
             document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
-        }
-        
         // Initialize
         updateProgress();
-        
         // Add event listeners for checkboxes
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -1284,8 +659,6 @@
                     item.classList.add('checked');
                 } else {
                     item.classList.remove('checked');
-                }
-            });
         });
     </script>
 </body>

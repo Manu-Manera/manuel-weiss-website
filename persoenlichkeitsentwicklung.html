@@ -9,20 +9,17 @@
     <meta name="description" ikigai.subtitle" content="Entdecke deinen Ikigai - deinen Grund zu leben. Ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung.">
     <meta name="keywords" content="Ikigai, Persönlichkeitsentwicklung, Selbstfindung, Lebensziele, Motivation, Sinn des Lebens">
     <meta name="author" content="Manuel Weiss">
-    
     <!-- Open Graph -->
     <meta property="og:title" content="Persönlichkeitsentwicklung & Ikigai - Manuel Weiss">
     <meta property="og:description" content="Entdecke deinen Ikigai - deinen Grund zu leben">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app/persoenlichkeitsentwicklung.html">
-    
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
     <link rel="stylesheet" href="css/unified-auth-system.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -40,7 +37,6 @@
                 <a href="index.html?from_service=true#services" class="nav-link" nav.services">Services</a>
                 <a href="index.html?from_service=true#about" class="nav-link" nav.about">Über mich</a>
                 <a href="index.html?from_service=true#contact" class="nav-link" nav.contact">Kontakt</a>
-            
                 <!-- AWS User System - Nur auf Service-Unterseiten -->
                 <div class="user-system" id="userSystem">
                     <div class="user-info" id="userInfo" style="display: none;">
@@ -50,7 +46,6 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -60,17 +55,10 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                        </button>
-                    </div>
                 </div>
                 
-            </div>
-            
             <div class="nav-toggle" id="navToggle">
                 <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </nav>
 
@@ -88,37 +76,24 @@
                 <div class="hero-actions">
                     <a href="#ikigai-workflow" class="btn btn-primary" ikigai.start_workflow">Ikigai-Workflow starten</a>
                     <a href="#what-is-ikigai" class="btn btn-outline" ikigai.what_is_ikigai">Was ist Ikigai?</a>
-                </div>
-            </div>
             <div class="hero-visual">
                 <div class="ikigai-visual">
                     <div class="ikigai-circle">
                         <div class="ikigai-center">
                             <span class="ikigai-text">IKIGAI</span>
-                        </div>
                         <div class="ikigai-quadrant" data-quadrant="passion">
                             <i class="fas fa-heart"></i>
                             <span ikigai.what_you_love">Was du liebst</span>
-                        </div>
                         <div class="ikigai-quadrant" data-quadrant="mission">
                             <i class="fas fa-bullseye"></i>
                             <span ikigai.what_world_needs">Was die Welt braucht</span>
-                        </div>
                         <div class="ikigai-quadrant" data-quadrant="profession">
                             <i class="fas fa-briefcase"></i>
                             <span ikigai.what_you_paid_for">Wofür du bezahlt wirst</span>
-                        </div>
                         <div class="ikigai-quadrant" data-quadrant="vocation">
                             <i class="fas fa-star"></i>
                             <span ikigai.what_you_good_at">Worin du gut bist</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
-
-
     <!-- What is Ikigai Section -->
     <section id="what-is-ikigai" class="what-is-ikigai">
         <div class="container">
@@ -126,9 +101,6 @@
                 <h2 class="section-title" ikigai.what_is_ikigai_title">Was ist Ikigai?</h2>
                 <p class="section-subtitle" ikigai.what_is_ikigai_subtitle">
                     Die japanische Philosophie für ein erfülltes und sinnvolles Leben
-                </p>
-            </div>
-            
             <div class="ikigai-explanation">
                 <div class="explanation-content">
                     <div class="explanation-text">
@@ -144,23 +116,15 @@
                                 <h4 ikigai.what_you_love">Was du liebst</h4>
                                 <p ikigai.what_you_love_desc">Deine Leidenschaften und Interessen, die dir Freude bereiten</p>
                             </div>
-                            <div class="element">
                                 <div class="element-icon">🎯</div>
                                 <h4 ikigai.what_world_needs">Was die Welt braucht</h4>
                                 <p ikigai.what_world_needs_desc">Bereiche, in denen du einen positiven Beitrag leisten kannst</p>
-                            </div>
-                            <div class="element">
                                 <div class="element-icon">💼</div>
                                 <h4 ikigai.what_you_paid_for">Wofür du bezahlt wirst</h4>
                                 <p ikigai.what_you_paid_for_desc">Deine beruflichen Fähigkeiten und Talente</p>
-                            </div>
-                            <div class="element">
                                 <div class="element-icon">⭐</div>
                                 <h4 ikigai.what_you_good_at">Worin du gut bist</h4>
                                 <p ikigai.what_you_good_at_desc">Deine natürlichen Stärken und Kompetenzen</p>
-                            </div>
-                        </div>
-                        
                         <div class="benefits">
                             <h3>Warum Ikigai wichtig ist</h3>
                             <ul>
@@ -170,9 +134,6 @@
                                 <li><strong>Entscheidungsfindung:</strong> Hilft bei wichtigen Lebensentscheidungen</li>
                                 <li><strong>Stressreduktion:</strong> Reduziert Stress durch klare Lebensziele</li>
                             </ul>
-                        </div>
-                    </div>
-                    
                     <div class="video-resources">
                         <h3>Video-Tutorials & Tipps</h3>
                         <div class="video-grid">
@@ -183,81 +144,44 @@
                                 <h4>Ikigai erklärt</h4>
                                 <p>Grundlagen und Philosophie des Ikigai-Konzepts</p>
                                 <a href="#" class="video-link" data-video="ikigai-basics">Video ansehen</a>
-                            </div>
-                            <div class="video-card">
-                                <div class="video-thumbnail">
-                                    <i class="fab fa-youtube"></i>
-                                </div>
                                 <h4>Selbstreflexion</h4>
                                 <p>Techniken zur tiefen Selbstanalyse</p>
                                 <a href="#" class="video-link" data-video="self-reflection">Video ansehen</a>
-                            </div>
-                            <div class="video-card">
-                                <div class="video-thumbnail">
-                                    <i class="fab fa-youtube"></i>
-                                </div>
                                 <h4>Lebensziele setzen</h4>
                                 <p>Wie du deine Ziele strukturiert angehst</p>
                                 <a href="#" class="video-link" data-video="goal-setting">Video ansehen</a>
-                            </div>
-                            <div class="video-card">
-                                <div class="video-thumbnail">
-                                    <i class="fab fa-youtube"></i>
-                                </div>
                                 <h4>Ikigai im Alltag</h4>
                                 <p>Praktische Umsetzung im täglichen Leben</p>
                                 <a href="#" class="video-link" data-video="daily-ikigai">Video ansehen</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Ikigai Workflow Section -->
     <section id="ikigai-workflow" class="ikigai-workflow">
-        <div class="container">
-            <div class="section-header">
                 <h2 class="section-title" ikigai.workflow_title">Dein Ikigai-Workflow</h2>
                 <p class="section-subtitle" ikigai.workflow_subtitle">
                     Ein strukturierter Prozess zur Entdeckung deines persönlichen Ikigai
-                </p>
-            </div>
-            
             <div class="workflow-container">
                 <!-- Progress Bar -->
                 <div class="workflow-progress">
                     <div class="progress-step active" data-step="1">
                         <div class="step-number">1</div>
                         <div class="step-title" ikigai.step1">Selbstreflexion</div>
-                    </div>
                     <div class="progress-step" data-step="2">
                         <div class="step-number">2</div>
                         <div class="step-title" ikigai.step2">Passion</div>
-                    </div>
                     <div class="progress-step" data-step="3">
                         <div class="step-number">3</div>
                         <div class="step-title" ikigai.step3">Mission</div>
-                    </div>
                     <div class="progress-step" data-step="4">
                         <div class="step-number">4</div>
                         <div class="step-title" ikigai.step4">Profession</div>
-                    </div>
                     <div class="progress-step" data-step="5">
                         <div class="step-number">5</div>
                         <div class="step-title" ikigai.step5">Vocation</div>
-                    </div>
                     <div class="progress-step" data-step="6">
                         <div class="step-number">6</div>
                         <div class="step-title" ikigai.step6">Synthese</div>
-                    </div>
                     <div class="progress-step" data-step="7">
                         <div class="step-number">7</div>
                         <div class="step-title" ikigai.step7">Aktionsplan</div>
-                    </div>
-                </div>
-                
                 <!-- Workflow Content -->
                 <div class="workflow-content">
                     <!-- Step 1: Self-Reflection -->
@@ -265,8 +189,6 @@
                         <div class="step-header">
                             <h3 ikigai.step1_title">Schritt 1: Selbstreflexion & Vorbereitung</h3>
                             <p ikigai.step1_desc">Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen.</p>
-                        </div>
-                        
                         <div class="reflection-exercises">
                             <div class="exercise-card">
                                 <h4 ikigai.life_vision">🎯 Lebensvision & Vermächtnis</h4>
@@ -276,15 +198,8 @@
                                         <i class="fas fa-lightbulb"></i>
                                         <span>Denke an die Menschen, die du berührt hast</span>
                                     </div>
-                                    <div class="tip-item">
-                                        <i class="fas fa-lightbulb"></i>
                                         <span>Überlege, welche Probleme du gelöst hast</span>
-                                    </div>
-                                    <div class="tip-item">
-                                        <i class="fas fa-lightbulb"></i>
                                         <span>Stelle dir vor, was andere über dich sagen würden</span>
-                                    </div>
-                                </div>
                                 <textarea placeholder="Beschreibe deine Lebensvision und dein gewünschtes Vermächtnis..." id="life-vision"></textarea>
                                 
                                 <!-- Tiefere Reflexionsfragen -->
@@ -293,24 +208,14 @@
                                     <div class="reflection-question">
                                         <label>Was würde passieren, wenn du heute sterben würdest? Was würdest du am meisten bedauern, nicht getan zu haben?</label>
                                         <textarea placeholder="Deine Antwort..." id="regret-question"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Wenn du unbegrenzte Ressourcen hättest, was würdest du in den nächsten 5 Jahren erreichen wollen?</label>
                                         <textarea placeholder="Deine Antwort..." id="unlimited-resources"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Welche drei Wörter sollen auf deinem Grabstein stehen? Was soll dein Vermächtnis sein?</label>
                                         <textarea placeholder="Deine Antwort..." id="legacy-words"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Wenn du eine Zeitkapsel für deine zukünftigen Enkelkinder erstellen könntest, was würdest du ihnen über dein Leben erzählen?</label>
                                         <textarea placeholder="Deine Antwort..." id="time-capsule"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Was ist das Wichtigste, was du der Welt geben möchtest, bevor du gehst?</label>
                                         <textarea placeholder="Deine Antwort..." id="gift-to-world"></textarea>
-                                    </div>
-                                </div>
                                 <div class="exercise-examples">
                                     <h5>💡 Beispiele für Lebensvisionen:</h5>
                                     <div class="example-category">
@@ -320,38 +225,20 @@
                                             <li>"Ich habe eine nachhaltige Technologie entwickelt, die Millionen von Menschen hilft"</li>
                                             <li>"Ich habe andere inspiriert, bewusster zu leben und die Umwelt zu schützen"</li>
                                         </ul>
-                                    </div>
                                     
-                                    <div class="example-category">
                                         <h6>👥 Menschen & Beziehungen:</h6>
-                                        <ul>
                                             <li>"Ich habe Menschen dabei geholfen, ihre Träume zu verwirklichen"</li>
                                             <li>"Ich habe eine liebevolle Familie großgezogen und war ein Vorbild"</li>
                                             <li>"Ich habe Brücken zwischen verschiedenen Kulturen gebaut"</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div class="example-category">
                                         <h6>💼 Beruf & Innovation:</h6>
-                                        <ul>
                                             <li>"Ich habe ein Unternehmen aufgebaut, das nicht nur profitabel ist, sondern auch einen positiven Einfluss hat"</li>
                                             <li>"Ich habe eine Lösung für ein wichtiges gesellschaftliches Problem entwickelt"</li>
                                             <li>"Ich habe andere Unternehmer inspiriert und ihnen geholfen, erfolgreich zu werden"</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div class="example-category">
                                         <h6>🎨 Kreativität & Kunst:</h6>
-                                        <ul>
                                             <li>"Ich habe Kunst geschaffen, die Menschen berührt und inspiriert"</li>
                                             <li>"Ich habe anderen geholfen, ihre kreativen Talente zu entdecken"</li>
                                             <li>"Ich habe eine neue Kunstform oder einen neuen Stil entwickelt"</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
                             
-                            <div class="exercise-card">
                                 <h4>💎 Werte-Hierarchie & Entscheidungsfilter</h4>
                                 <p>Was sind deine 5 wichtigsten Werte? Diese werden deine Entscheidungsfilter für alle wichtigen Lebensentscheidungen.</p>
                                 <div class="values-input">
@@ -360,33 +247,10 @@
                                         <div class="value-description">
                                             <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
                                         </div>
-                                    </div>
-                                    <div class="value-item">
                                         <input type="text" placeholder="Wert 2" class="value-input" data-priority="2">
-                                        <div class="value-description">
-                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
-                                        </div>
-                                    </div>
-                                    <div class="value-item">
                                         <input type="text" placeholder="Wert 3" class="value-input" data-priority="3">
-                                        <div class="value-description">
-                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
-                                        </div>
-                                    </div>
-                                    <div class="value-item">
                                         <input type="text" placeholder="Wert 4" class="value-input" data-priority="4">
-                                        <div class="value-description">
-                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
-                                        </div>
-                                    </div>
-                                    <div class="value-item">
                                         <input type="text" placeholder="Wert 5" class="value-input" data-priority="5">
-                                        <div class="value-description">
-                                            <input type="text" placeholder="Was bedeutet dieser Wert für dich?" class="value-desc-input">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="exercise-examples">
                                     <h5>💡 Häufige Werte:</h5>
                                     <div class="values-suggestions">
                                         <div class="value-category">
@@ -396,125 +260,75 @@
                                             <span class="value-suggestion" data-value="Selbstverwirklichung">Selbstverwirklichung</span>
                                             <span class="value-suggestion" data-value="Authentizität">Authentizität</span>
                                             <span class="value-suggestion" data-value="Exzellenz">Exzellenz</span>
-                                        </div>
                                         
-                                        <div class="value-category">
                                             <h6>🤝 Beziehungen & Gemeinschaft:</h6>
                                             <span class="value-suggestion" data-value="Familie">Familie</span>
                                             <span class="value-suggestion" data-value="Liebe">Liebe</span>
                                             <span class="value-suggestion" data-value="Freundschaft">Freundschaft</span>
                                             <span class="value-suggestion" data-value="Gemeinschaft">Gemeinschaft</span>
                                             <span class="value-suggestion" data-value="Zugehörigkeit">Zugehörigkeit</span>
-                                        </div>
-                                        
-                                        <div class="value-category">
                                             <h6>🌍 Gesellschaft & Beitrag:</h6>
                                             <span class="value-suggestion" data-value="Beitrag">Beitrag</span>
                                             <span class="value-suggestion" data-value="Gerechtigkeit">Gerechtigkeit</span>
                                             <span class="value-suggestion" data-value="Nachhaltigkeit">Nachhaltigkeit</span>
                                             <span class="value-suggestion" data-value="Hilfsbereitschaft">Hilfsbereitschaft</span>
                                             <span class="value-suggestion" data-value="Umweltschutz">Umweltschutz</span>
-                                        </div>
-                                        
-                                        <div class="value-category">
                                             <h6>🎨 Kreativität & Ausdruck:</h6>
                                             <span class="value-suggestion" data-value="Kreativität">Kreativität</span>
                                             <span class="value-suggestion" data-value="Kunst">Kunst</span>
                                             <span class="value-suggestion" data-value="Schönheit">Schönheit</span>
                                             <span class="value-suggestion" data-value="Innovation">Innovation</span>
                                             <span class="value-suggestion" data-value="Selbstausdruck">Selbstausdruck</span>
-                                        </div>
-                                        
-                                        <div class="value-category">
                                             <h6>⚖️ Charakter & Ethik:</h6>
                                             <span class="value-suggestion" data-value="Integrität">Integrität</span>
                                             <span class="value-suggestion" data-value="Wahrheit">Wahrheit</span>
                                             <span class="value-suggestion" data-value="Ehrlichkeit">Ehrlichkeit</span>
                                             <span class="value-suggestion" data-value="Respekt">Respekt</span>
                                             <span class="value-suggestion" data-value="Verantwortung">Verantwortung</span>
-                                        </div>
-                                        
-                                        <div class="value-category">
                                             <h6>🚀 Leben & Erfahrung:</h6>
                                             <span class="value-suggestion" data-value="Freiheit">Freiheit</span>
                                             <span class="value-suggestion" data-value="Abenteuer">Abenteuer</span>
                                             <span class="value-suggestion" data-value="Spaß">Spaß</span>
                                             <span class="value-suggestion" data-value="Humor">Humor</span>
                                             <span class="value-suggestion" data-value="Neugier">Neugier</span>
-                                        </div>
-                                        
-                                        <div class="value-category">
                                             <h6>🏠 Sicherheit & Stabilität:</h6>
                                             <span class="value-suggestion" data-value="Sicherheit">Sicherheit</span>
                                             <span class="value-suggestion" data-value="Stabilität">Stabilität</span>
                                             <span class="value-suggestion" data-value="Komfort">Komfort</span>
                                             <span class="value-suggestion" data-value="Tradition">Tradition</span>
                                             <span class="value-suggestion" data-value="Ordnung">Ordnung</span>
-                                        </div>
-                                    </div>
-                                    
                                     <div class="value-tips">
                                         <h6>💡 Tipps für die Werte-Auswahl:</h6>
-                                        <ul>
                                             <li><strong>Frage dich:</strong> "Was ist mir wirklich wichtig, wenn alles andere wegfällt?"</li>
                                             <li><strong>Teste deine Werte:</strong> "Würde ich für diesen Wert Opfer bringen?"</li>
                                             <li><strong>Beobachte dich:</strong> "Wofür investiere ich am meisten Zeit und Energie?"</li>
                                             <li><strong>Höre auf deine Gefühle:</strong> "Was macht mich stolz oder beschämt?"</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>⚡ Energie-Mapping & Flow-Zustände</h4>
                                 <p>Wann fühlst du dich am lebendigsten? Was gibt dir Energie? Wann bist du im Flow?</p>
                                 <div class="energy-mapping">
                                     <div class="energy-category">
                                         <h5>🔥 Energie-Gebende Aktivitäten</h5>
                                         <textarea placeholder="z.B. Musik hören, Sport, Kochen, Lesen..." id="energy-giving"></textarea>
-                                    </div>
-                                    <div class="energy-category">
                                         <h5>💤 Energie-Nehmende Aktivitäten</h5>
                                         <textarea placeholder="z.B. Meetings, Smalltalk, Routine-Aufgaben..." id="energy-draining"></textarea>
-                                    </div>
-                                    <div class="energy-category">
                                         <h5>🌊 Flow-Zustände</h5>
                                         <textarea placeholder="Wann vergisst du die Zeit? Bei welchen Tätigkeiten?" id="flow-states"></textarea>
-                                    </div>
-                                </div>
-                                <div class="exercise-tips">
-                                    <div class="tip-item">
                                         <i class="fas fa-chart-line"></i>
                                         <span>Beobachte deine Energie über eine Woche</span>
-                                    </div>
-                                    <div class="tip-item">
                                         <i class="fas fa-clock"></i>
                                         <span>Notiere die Tageszeiten, wann du am produktivsten bist</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎨 Lebensdesign & Vision Board</h4>
                                 <p>Male oder beschreibe dein ideales Leben in 5 Jahren. Sei so detailliert wie möglich!</p>
                                 <div class="life-design-areas">
                                     <div class="design-area">
                                         <h5>🏠 Lebensstil & Umgebung</h5>
                                         <textarea placeholder="Wo lebst du? Wie sieht dein Zuhause aus? Wie verbringst du deine Zeit?" id="lifestyle"></textarea>
-                                    </div>
-                                    <div class="design-area">
                                         <h5>💼 Beruf & Karriere</h5>
                                         <textarea placeholder="Was machst du beruflich? Mit wem arbeitest du? Welche Projekte?" id="career"></textarea>
-                                    </div>
-                                    <div class="design-area">
                                         <h5>👥 Beziehungen & Familie</h5>
                                         <textarea placeholder="Wie sehen deine Beziehungen aus? Familie, Freunde, Partner?" id="relationships"></textarea>
-                                    </div>
-                                    <div class="design-area">
                                         <h5>🌱 Persönliches Wachstum</h5>
                                         <textarea placeholder="Welche Fähigkeiten hast du entwickelt? Was lernst du?" id="growth"></textarea>
-                                    </div>
-                                </div>
                                 <div class="vision-board-tools">
                                     <h5>🛠️ Vision Board Tools:</h5>
                                     <div class="tool-suggestions">
@@ -522,28 +336,16 @@
                                         <a href="#" class="tool-link">Pinterest Sammlung</a>
                                         <a href="#" class="tool-link">Notion Template</a>
                                         <a href="#" class="tool-link">Miro Board</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="step-tips">
                             <h4>💡 Tipps für die Selbstreflexion</h4>
-                            <ul>
                                 <li>Nimm dir Zeit - beeile dich nicht</li>
                                 <li>Sei ehrlich zu dir selbst</li>
                                 <li>Denke an Momente, in denen du dich besonders lebendig gefühlt hast</li>
                                 <li>Frage Freunde und Familie nach ihrer Einschätzung</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
                     <!-- Step 2: Passion (Was du liebst) -->
                     <div class="workflow-step" data-step="2">
-                        <div class="step-header">
                             <h3>Schritt 2: Was du liebst</h3>
                             <p>Entdecke deine Leidenschaften und Interessen, die dir Freude bereiten. Leidenschaften sind die Dinge, die dich so sehr faszinieren, dass du die Zeit vergisst.</p>
-                            
                             <div class="passion-intro">
                                 <h4>🎯 Was sind Leidenschaften?</h4>
                                 <p>Leidenschaften sind Aktivitäten, Themen oder Bereiche, die:</p>
@@ -554,11 +356,7 @@
                                     <li>Dich glücklich und erfüllt machen</li>
                                     <li>Teil deiner Identität werden</li>
                                 </ul>
-                            </div>
-                        </div>
-                        
                         <div class="passion-exercises">
-                            <div class="exercise-card">
                                 <h4>❤️ Leidenschaften-Mapping & Passion Audit</h4>
                                 <p>Liste alle Aktivitäten auf, die du liebst - auch die kleinen Dinge. Bewerte sie nach Intensität und Häufigkeit.</p>
                                 <div class="passion-grid">
@@ -570,171 +368,80 @@
                                                 <div class="example-category">
                                                     <strong>Visuelle Kunst:</strong> Malen, Zeichnen, Fotografie, Grafikdesign, Skulpturen
                                                 </div>
-                                                <div class="example-category">
                                                     <strong>Schriftlich:</strong> Schreiben, Bloggen, Poetry, Journaling, Storytelling
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Musik:</strong> Instrumente spielen, Singen, Komponieren, Musik hören
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Handwerk:</strong> Nähen, Töpfern, Holzarbeit, Schmuck herstellen
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Kulinarisch:</strong> Kochen, Backen, Rezepte entwickeln, Food Photography
-                                                </div>
                                             </div>
-                                        </div>
                                         <textarea placeholder="z.B. Malen, Schreiben, Kochen, Musik, Design..." id="creative-activities"></textarea>
                                         <div class="passion-rating">
                                             <label>Intensität (1-10):</label>
                                             <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="creative">
                                             <span class="rating-value">5</span>
-                                        </div>
-                                    </div>
-                                    <div class="passion-category">
                                         <h5>🧠 Lernbereiche & Wissensdurst</h5>
-                                        <div class="passion-examples">
-                                            <h6>💡 Beispiele:</h6>
-                                            <div class="example-grid">
-                                                <div class="example-category">
                                                     <strong>Sprachen:</strong> Neue Sprachen lernen, Kulturen entdecken, Übersetzen
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Wissenschaft:</strong> Physik, Chemie, Biologie, Astronomie, Mathematik
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Geschichte:</strong> Historische Ereignisse, Kulturen, Archäologie
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Technologie:</strong> Programmierung, KI, Blockchain, Gadgets
-                                                </div>
-                                                <div class="example-category">
                                                     <strong>Psychologie:</strong> Verhalten, Gehirn, Persönlichkeit, Therapie
-                                                </div>
-                                            </div>
-                                        </div>
                                         <textarea placeholder="z.B. Sprachen, Geschichte, Technik, Psychologie..." id="learning-areas"></textarea>
-                                        <div class="passion-rating">
-                                            <label>Intensität (1-10):</label>
                                             <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="learning">
-                                            <span class="rating-value">5</span>
-                                        </div>
-                                    </div>
-                                    <div class="passion-category">
                                         <h5>🏃‍♂️ Körperliche Aktivitäten</h5>
                                         <textarea placeholder="z.B. Sport, Tanzen, Wandern, Yoga..." id="physical-activities"></textarea>
-                                        <div class="passion-rating">
-                                            <label>Intensität (1-10):</label>
                                             <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="physical">
-                                            <span class="rating-value">5</span>
-                                        </div>
-                                    </div>
-                                    <div class="passion-category">
                                         <h5>🤝 Soziale Aktivitäten</h5>
                                         <textarea placeholder="z.B. Helfen, Lehren, Organisieren, Mentoring..." id="social-activities"></textarea>
-                                        <div class="passion-rating">
-                                            <label>Intensität (1-10):</label>
                                             <input type="range" min="1" max="10" value="5" class="passion-slider" data-category="social">
-                                            <span class="rating-value">5</span>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="passion-analysis">
                                     <h5>📊 Passion-Analyse</h5>
                                     <div class="analysis-grid">
                                         <div class="analysis-item">
                                             <h6>🔥 Top-Passion</h6>
                                             <p id="top-passion">-</p>
-                                        </div>
-                                        <div class="analysis-item">
                                             <h6>⏰ Zeit-Investition</h6>
                                             <p id="time-investment-analysis">-</p>
-                                        </div>
-                                        <div class="analysis-item">
                                             <h6>🎯 Entwicklungspotential</h6>
                                             <p id="development-potential">-</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
                                 <!-- Tiefere Reflexionsfragen für Passion -->
-                                <div class="deep-reflection-questions">
                                     <h5>🔍 Tiefere Reflexion - Leidenschaften:</h5>
-                                    <div class="reflection-question">
                                         <label>Welche Aktivität hast du als Kind am liebsten gemacht? Was hat sich daran bis heute geändert?</label>
                                         <textarea placeholder="Deine Antwort..." id="childhood-passion"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Wenn du einen ganzen Tag ohne Verpflichtungen hättest, womit würdest du ihn verbringen?</label>
                                         <textarea placeholder="Deine Antwort..." id="free-day-passion"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Welche Leidenschaft würdest du gerne zu deinem Beruf machen, wenn Geld keine Rolle spielen würde?</label>
                                         <textarea placeholder="Deine Antwort..." id="passion-as-career"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Was macht dich so neugierig, dass du stundenlang darüber lesen oder lernen könntest?</label>
                                         <textarea placeholder="Deine Antwort..." id="curiosity-passion"></textarea>
-                                    </div>
-                                    <div class="reflection-question">
                                         <label>Welche Aktivität gibt dir das Gefühl, "im Flow" zu sein - wo die Zeit wie im Flug vergeht?</label>
                                         <textarea placeholder="Deine Antwort..." id="flow-passion"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>⏰ Zeit-Investition & Energie-Flow</h4>
                                 <p>Wofür investierst du gerne Zeit, auch ohne Belohnung? Wann vergisst du die Zeit?</p>
                                 <div class="time-analysis">
                                     <div class="time-category">
                                         <h5>🕐 Zeit-Vergessen</h5>
                                         <textarea placeholder="Aktivitäten, bei denen du die Zeit vergisst..." id="time-forgetting"></textarea>
-                                    </div>
-                                    <div class="time-category">
                                         <h5>💰 Kostenlose Leidenschaft</h5>
                                         <textarea placeholder="Was würdest du auch ohne Bezahlung machen?" id="free-passion"></textarea>
-                                    </div>
-                                    <div class="time-category">
                                         <h5>🎁 Geschenk der Zeit</h5>
                                         <textarea placeholder="Wenn du 10 Stunden extra hättest - wofür?" id="gift-time"></textarea>
-                                    </div>
-                                </div>
-                                <div class="exercise-tips">
-                                    <div class="tip-item">
                                         <i class="fas fa-stopwatch"></i>
                                         <span>Beobachte dich eine Woche lang - wann bist du am glücklichsten?</span>
-                                    </div>
-                                    <div class="tip-item">
                                         <i class="fas fa-heart"></i>
                                         <span>Was machst du, wenn du traurig oder gestresst bist?</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎭 Kindheitsträume & Innere Stimme</h4>
                                 <p>Was wolltest du als Kind werden? Welche Träume hattest du? Was sagt deine innere Stimme?</p>
                                 <div class="childhood-analysis">
                                     <div class="childhood-category">
                                         <h5>👶 Kindheitsträume (5-10 Jahre)</h5>
                                         <textarea placeholder="Was wolltest du als Kind werden? Welche Träume hattest du?" id="childhood-dreams"></textarea>
-                                    </div>
-                                    <div class="childhood-category">
                                         <h5>🧒 Jugendträume (10-18 Jahre)</h5>
                                         <textarea placeholder="Was waren deine Träume als Teenager?" id="teenage-dreams"></textarea>
-                                    </div>
-                                    <div class="childhood-category">
                                         <h5>🎭 Versteckte Talente</h5>
                                         <textarea placeholder="Was konntest du als Kind besonders gut? Was wurde dir oft gesagt?" id="hidden-talents"></textarea>
-                                    </div>
-                                </div>
                                 <div class="inner-voice-exercise">
                                     <h5>🗣️ Innere Stimme-Übung</h5>
                                     <p>Stelle dir vor, dein 8-jähriges Ich würde dir einen Brief schreiben. Was würde es dir sagen?</p>
                                     <textarea placeholder="Liebes erwachsenes Ich..." id="inner-voice-letter"></textarea>
-                                </div>
-                                <div class="exercise-examples">
                                     <h5>💡 Typische Kindheitsträume:</h5>
                                     <ul>
                                         <li>Astronaut, Feuerwehrmann, Ärztin</li>
@@ -742,26 +449,16 @@
                                         <li>Lehrer, Tierarzt, Erfinder</li>
                                         <li>Prinzessin, Superheld, Entdecker</li>
                                     </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🌟 Passion-Entwicklung & Nächste Schritte</h4>
                                 <p>Wie kannst du deine Leidenschaften weiterentwickeln? Was sind die nächsten Schritte?</p>
                                 <div class="passion-development">
                                     <div class="development-area">
                                         <h5>📚 Lernen & Entwicklung</h5>
                                         <textarea placeholder="Welche Kurse, Bücher oder Erfahrungen könnten deine Leidenschaften vertiefen?" id="passion-learning"></textarea>
-                                    </div>
-                                    <div class="development-area">
                                         <h5>🤝 Community & Netzwerk</h5>
                                         <textarea placeholder="Welche Communities, Gruppen oder Menschen könnten dich unterstützen?" id="passion-community"></textarea>
-                                    </div>
-                                    <div class="development-area">
                                         <h5>🎯 Konkrete Schritte</h5>
                                         <textarea placeholder="Was könntest du diese Woche tun, um deine Leidenschaften zu leben?" id="passion-steps"></textarea>
-                                    </div>
-                                </div>
                                 <div class="passion-resources">
                                     <h5>🛠️ Hilfreiche Ressourcen:</h5>
                                     <div class="resource-links">
@@ -769,27 +466,15 @@
                                         <a href="#" class="resource-link">🎧 "The Tim Ferriss Show" Podcast</a>
                                         <a href="#" class="resource-link">📱 Skillshare - Online Kurse</a>
                                         <a href="#" class="resource-link">🌐 Meetup - Lokale Communities</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="video-resource">
                             <h4>📺 Video-Tipp: Leidenschaften entdecken</h4>
                             <p>Lerne Techniken zur Identifikation deiner wahren Leidenschaften.</p>
                             <a href="#" class="video-link" data-video="discover-passions">Video ansehen</a>
-                        </div>
-                    </div>
-                    
                     <!-- Step 3: Mission (Was die Welt braucht) -->
                     <div class="workflow-step" data-step="3">
-                        <div class="step-header">
                             <h3>Schritt 3: Was die Welt braucht</h3>
                             <p>Identifiziere Bereiche, in denen du einen positiven Beitrag leisten kannst.</p>
-                        </div>
-                        
                         <div class="mission-exercises">
-                            <div class="exercise-card">
                                 <h4>🌍 Weltprobleme</h4>
                                 <p>Welche Probleme in der Welt beschäftigen dich am meisten?</p>
                                 <div class="problem-categories">
@@ -797,174 +482,89 @@
                                         <input type="checkbox" value="environment">
                                         <span>🌱 Umwelt & Nachhaltigkeit</span>
                                     </label>
-                                    <label class="problem-option">
                                         <input type="checkbox" value="education">
                                         <span>📚 Bildung & Wissen</span>
-                                    </label>
-                                    <label class="problem-option">
                                         <input type="checkbox" value="health">
                                         <span>🏥 Gesundheit & Wohlbefinden</span>
-                                    </label>
-                                    <label class="problem-option">
                                         <input type="checkbox" value="social">
                                         <span>🤝 Soziales & Gemeinschaft</span>
-                                    </label>
-                                    <label class="problem-option">
                                         <input type="checkbox" value="technology">
                                         <span>💻 Technologie & Innovation</span>
-                                    </label>
-                                    <label class="problem-option">
                                         <input type="checkbox" value="culture">
                                         <span>🎨 Kultur & Kunst</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>💝 Beitrag leisten</h4>
                                 <p>Wie möchtest du zur Lösung dieser Probleme beitragen?</p>
                                 <textarea placeholder="Beschreibe deinen gewünschten Beitrag..." id="contribution"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🌟 Vermächtnis</h4>
                                 <p>Was möchtest du der Welt hinterlassen? Wie möchtest du in Erinnerung bleiben?</p>
                                 <textarea placeholder="Beschreibe dein gewünschtes Vermächtnis..." id="legacy"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="video-resource">
                             <h4>📺 Video-Tipp: Sinn und Mission finden</h4>
                             <p>Lerne, wie du deine persönliche Mission identifizierst.</p>
                             <a href="#" class="video-link" data-video="find-mission">Video ansehen</a>
-                        </div>
-                    </div>
-                    
                     <!-- Step 4: Profession (Wofür du bezahlt wirst) -->
                     <div class="workflow-step" data-step="4">
-                        <div class="step-header">
                             <h3>Schritt 4: Wofür du bezahlt wirst</h3>
                             <p>Analysiere deine beruflichen Fähigkeiten und Talente.</p>
-                        </div>
-                        
                         <div class="profession-exercises">
-                            <div class="exercise-card">
                                 <h4>💼 Berufliche Fähigkeiten</h4>
                                 <p>Welche Fähigkeiten hast du entwickelt, für die andere bezahlen würden?</p>
                                 <div class="skills-grid">
                                     <div class="skill-category">
                                         <h5>Technische Fähigkeiten</h5>
                                         <textarea placeholder="z.B. Programmierung, Design, Analyse..." id="technical-skills"></textarea>
-                                    </div>
-                                    <div class="skill-category">
                                         <h5>Soft Skills</h5>
                                         <textarea placeholder="z.B. Führung, Kommunikation, Problemlösung..." id="soft-skills"></textarea>
-                                    </div>
-                                    <div class="skill-category">
                                         <h5>Spezialwissen</h5>
                                         <textarea placeholder="z.B. Branchenkenntnisse, Zertifikate..." id="specialized-knowledge"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>💰 Wertschöpfung</h4>
                                 <p>Welchen Wert schaffst du für andere? Was ist dein einzigartiges Angebot?</p>
                                 <textarea placeholder="Beschreibe deinen Wert für andere..." id="value-creation"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎯 Marktbedarf</h4>
                                 <p>Welche Probleme löst du für andere? Was ist der Marktbedarf?</p>
                                 <textarea placeholder="Beschreibe den Marktbedarf für deine Fähigkeiten..." id="market-need"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="video-resource">
                             <h4>📺 Video-Tipp: Berufliche Stärken identifizieren</h4>
                             <p>Lerne, wie du deine beruflichen Stärken systematisch analysierst.</p>
                             <a href="#" class="video-link" data-video="professional-strengths">Video ansehen</a>
-                        </div>
-                    </div>
-                    
                     <!-- Step 5: Vocation (Worin du gut bist) -->
                     <div class="workflow-step" data-step="5">
-                        <div class="step-header">
                             <h3>Schritt 5: Worin du gut bist</h3>
                             <p>Entdecke deine natürlichen Talente und Stärken.</p>
-                        </div>
-                        
                         <div class="vocation-exercises">
-                            <div class="exercise-card">
                                 <h4>⭐ Natürliche Talente</h4>
                                 <p>Was fällt dir leicht, während es anderen schwerfällt?</p>
                                 <textarea placeholder="Beschreibe deine natürlichen Talente..." id="natural-talents"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🏆 Erfolge & Anerkennung</h4>
                                 <p>Wofür wurdest du schon gelobt oder ausgezeichnet?</p>
                                 <textarea placeholder="Liste deine Erfolge und Anerkennungen auf..." id="achievements"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎯 Flow-Zustände</h4>
                                 <p>Bei welchen Tätigkeiten vergisst du die Zeit? Wann bist du im Flow?</p>
                                 <textarea placeholder="Beschreibe deine Flow-Zustände..." id="flow-states"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>👥 Fremdwahrnehmung</h4>
                                 <p>Was sagen andere über deine Stärken? Frage Familie, Freunde, Kollegen.</p>
                                 <textarea placeholder="Notiere die Einschätzungen anderer..." id="external-perception"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="video-resource">
                             <h4>📺 Video-Tipp: Stärken entdecken</h4>
                             <p>Lerne Techniken zur Identifikation deiner natürlichen Stärken.</p>
                             <a href="#" class="video-link" data-video="discover-strengths">Video ansehen</a>
-                        </div>
-                    </div>
-                    
                     <!-- Step 6: Synthesis (Ikigai finden) -->
                     <div class="workflow-step" data-step="6">
-                        <div class="step-header">
                             <h3>Schritt 6: Dein Ikigai synthetisieren</h3>
                             <p>Jetzt verbinden wir alle vier Bereiche zu deinem persönlichen Ikigai.</p>
-                        </div>
-                        
                         <div class="synthesis-exercises">
-                            <div class="exercise-card">
                                 <h4>🔍 Schnittmengen finden</h4>
                                 <p>Wo überschneiden sich deine vier Bereiche? Suche nach Gemeinsamkeiten.</p>
                                 <div class="intersection-analysis">
                                     <div class="intersection">
                                         <h5>Passion + Mission</h5>
                                         <textarea placeholder="Was du liebst + Was die Welt braucht..." id="passion-mission"></textarea>
-                                    </div>
-                                    <div class="intersection">
                                         <h5>Profession + Vocation</h5>
                                         <textarea placeholder="Wofür du bezahlt wirst + Worin du gut bist..." id="profession-vocation"></textarea>
-                                    </div>
-                                    <div class="intersection">
                                         <h5>Passion + Vocation</h5>
                                         <textarea placeholder="Was du liebst + Worin du gut bist..." id="passion-vocation"></textarea>
-                                    </div>
-                                    <div class="intersection">
                                         <h5>Mission + Profession</h5>
                                         <textarea placeholder="Was die Welt braucht + Wofür du bezahlt wirst..." id="mission-profession"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎯 Ikigai-Formulierung</h4>
                                 <p>Formuliere dein Ikigai in einem klaren Satz:</p>
                                 <textarea placeholder="Mein Ikigai ist..." id="ikigai-statement"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🌟 Vision Board</h4>
                                 <p>Erstelle eine visuelle Darstellung deines Ikigai:</p>
                                 <div class="vision-board">
@@ -974,45 +574,23 @@
                                         <div class="quadrant" id="mission-quadrant">Mission</div>
                                         <div class="quadrant" id="profession-quadrant">Profession</div>
                                         <div class="quadrant" id="vocation-quadrant">Vocation</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="video-resource">
                             <h4>📺 Video-Tipp: Ikigai synthetisieren</h4>
                             <p>Lerne, wie du alle Bereiche zu einem kohärenten Ikigai verbindest.</p>
                             <a href="#" class="video-link" data-video="synthesize-ikigai">Video ansehen</a>
-                        </div>
-                    </div>
-                    
                     <!-- Step 7: Action Plan -->
                     <div class="workflow-step" data-step="7">
-                        <div class="step-header">
                             <h3>Schritt 7: Aktionsplan erstellen</h3>
                             <p>Jetzt setzen wir dein Ikigai in konkrete Schritte um.</p>
-                        </div>
-                        
                         <div class="action-plan-exercises">
-                            <div class="exercise-card">
                                 <h4>📅 Kurzfristige Ziele (3 Monate)</h4>
                                 <p>Was kannst du in den nächsten 3 Monaten tun, um deinem Ikigai näher zu kommen?</p>
                                 <textarea placeholder="Liste deine kurzfristigen Ziele auf..." id="short-term-goals"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🎯 Mittelfristige Ziele (1 Jahr)</h4>
                                 <p>Wo möchtest du in einem Jahr stehen?</p>
                                 <textarea placeholder="Beschreibe deine mittelfristigen Ziele..." id="medium-term-goals"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>🌟 Langfristige Vision (5 Jahre)</h4>
                                 <p>Wie sieht dein Leben in 5 Jahren aus, wenn du deinem Ikigai folgst?</p>
                                 <textarea placeholder="Beschreibe deine langfristige Vision..." id="long-term-vision"></textarea>
-                            </div>
-                            
-                            <div class="exercise-card">
                                 <h4>📋 Konkrete Schritte</h4>
                                 <p>Welche konkreten Schritte wirst du diese Woche unternehmen?</p>
                                 <div class="action-steps">
@@ -1021,10 +599,6 @@
                                     <input type="text" placeholder="Schritt 3" class="action-step">
                                     <input type="text" placeholder="Schritt 4" class="action-step">
                                     <input type="text" placeholder="Schritt 5" class="action-step">
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="final-resources">
                             <h4>📚 Weiterführende Ressourcen</h4>
                             <div class="resource-links">
@@ -1032,42 +606,24 @@
                                 <a href="#" class="resource-link">🎧 Podcast-Episoden</a>
                                 <a href="#" class="resource-link">📱 Apps & Tools</a>
                                 <a href="#" class="resource-link">👥 Community & Austausch</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Navigation Buttons -->
                 <div class="workflow-navigation">
                     <div class="nav-buttons">
                         <button class="btn btn-secondary" id="prev-step" disabled data-action="ikigai-previous-step" ikigai.back">Zurück</button>
                         <button class="btn btn-primary" id="next-step" data-action="ikigai-next-step" ikigai.next">Weiter</button>
                         <button class="btn btn-success" id="save-progress" style="display: none;" data-action="ikigai-save-progress">Fortschritt speichern</button>
-                    </div>
-                    
                     <!-- Export & Reminder Buttons -->
                     <div class="export-buttons">
                         <button class="btn btn-outline" data-action="show-reminder-settings" title="Erinnerungen einrichten">
                             <i class="fas fa-bell"></i> <span ikigai.remember">Erinnerungen</span>
-                        </button>
                         <button class="btn btn-outline" data-action="export-to-p-d-f" title="Als PDF exportieren">
                             <i class="fas fa-file-pdf"></i> <span ikigai.export_pdf">PDF</span>
-                        </button>
                         <button class="btn btn-outline" data-action="export-to-word" title="Als Word-Dokument exportieren">
                             <i class="fas fa-file-word"></i> <span ikigai.export_word">Word</span>
-                        </button>
                         <button class="btn btn-outline" data-action="export-to-excel" title="Als Excel-Tabelle exportieren">
                             <i class="fas fa-file-excel"></i> <span ikigai.export_excel">Excel</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section class="contact">
-        <div class="container">
             <div class="contact-content">
                 <div class="contact-info">
                     <h2 class="section-title">Persönliche Begleitung</h2>
@@ -1075,78 +631,41 @@
                         Möchtest du Unterstützung bei deiner Ikigai-Reise? Ich begleite dich gerne 
                         auf dem Weg zu deinem persönlichen Sinn des Lebens.
                     </p>
-                    
                     <div class="contact-details">
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <h4>E-Mail</h4>
                                 <a href="mailto:weissmanuel94@gmail.com">weissmanuel94@gmail.com</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <div>
                                 <h4>Standort</h4>
                                 <p>Schweiz</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
                             <i class="fas fa-clock"></i>
-                            <div>
                                 <h4>Verfügbarkeit</h4>
                                 <p>Mo-Fr: 9:00 - 18:00</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="email">E-Mail</label>
                             <input type="email" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="subject">Betreff</label>
                             <input type="text" id="subject" name="subject" value="Persönlichkeitsentwicklung & Ikigai" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="message">Nachricht</label>
                             <textarea id="message" name="message" rows="5" placeholder="Erzähle mir von deiner Ikigai-Reise..." required></textarea>
-                        </div>
-                        
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i>
                             Nachricht senden
-                        </button>
                     </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
                     <img src="manuel-weiss-photo.svg" alt="MW" class="footer-logo">
                     <div>
                         <h3>Manuel Weiss</h3>
                         <p>HR Berater für AI & Transformation</p>
-                    </div>
-                </div>
-                
                 <div class="footer-links">
                     <div class="footer-section">
                         <h4>Services</h4>
@@ -1157,56 +676,33 @@
                             <li><a href="ernaehrungsberatung.html">Ernährungsberatung</a></li>
                             <li><a href="persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a></li>
                         </ul>
-                    </div>
-                    
-                    <div class="footer-section">
                         <h4>Aktivitäten</h4>
-                        <ul>
                             <li><a href="wohnmobil.html">Wohnmobil</a></li>
                             <li><a href="fotobox.html">Fotobox</a></li>
                             <li><a href="ebike.html">E-Bikes</a></li>
                             <li><a href="sup.html">SUP</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
                         <h4>Kontakt</h4>
-                        <ul>
                             <li><a href="mailto:weissmanuel94@gmail.com">E-Mail</a></li>
                             <li><a href="#contact">Kontaktformular</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
             <div class="footer-bottom">
                 <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
                 <div class="footer-social">
                     <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </div>
     </footer>
-
-    
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
-
 <!-- Scripts -->
-    
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/unified-auth-manager.js"></script>
     <script src="script.js"></script>
     <script src="js/ikigai-planner.js"></script>
-    
     <!-- Direct Ikigai Navigation Script -->
     <script>
         // Simple Ikigai Navigation - Direct Implementation
         let currentIkigaiStep = 1;
         const totalIkigaiSteps = 7;
-        
         
     // Load auth modals
     async function loadAuthModals() {
@@ -1214,14 +710,12 @@
             const response = await fetch('components/unified-auth-modals.html');
             const html = await response.text();
             document.getElementById('authModalsContainer').innerHTML = html;
-            
             // Setup form handlers
             setupAuthFormHandlers();
         } catch (error) {
             console.error('Error loading auth modals:', error);
         }
     }
-    
     function setupAuthFormHandlers() {
         // Login form
         const loginForm = document.getElementById('loginForm');
@@ -1230,7 +724,6 @@
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
-                
                 if (window.unifiedAuthManager) {
                     const result = await window.unifiedAuthManager.login(email, password);
                     if (result.success) {
@@ -1238,76 +731,44 @@
                     }
                 }
             });
-        }
-        
         // Signup form
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
             signupForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
                 const email = document.getElementById('signupEmail').value;
                 const password = document.getElementById('signupPassword').value;
                 const firstName = document.getElementById('signupFirstName').value;
                 const lastName = document.getElementById('signupLastName').value;
-                
-                if (window.unifiedAuthManager) {
                     const result = await window.unifiedAuthManager.register(email, password, firstName, lastName);
-                    if (result.success) {
                         closeSignupModal();
                         // Show verification modal
                         document.getElementById('verificationEmail').textContent = email;
                         document.getElementById('verificationModal').style.display = 'flex';
-                    }
-                }
-            });
-        }
-        
         // Verification form
         const verificationForm = document.getElementById('verificationForm');
         if (verificationForm) {
             verificationForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
                 const email = document.getElementById('verificationEmail').textContent;
                 const code = document.getElementById('verificationCode').value;
-                
-                if (window.unifiedAuthManager) {
                     const result = await window.unifiedAuthManager.confirmRegistration(email, code);
-                    if (result.success) {
                         closeVerificationModal();
-                    }
-                }
-            });
-        }
-    }
-
     // AWS User System Functions
     function loginUser() {
         const modal = document.getElementById('loginModal');
         if (modal) {
             modal.style.display = 'flex';
-        }
-    }
-
     function logoutUser() {
         if (window.awsAuth) {
             window.awsAuth.signOut().then(() => {
                 console.log('Erfolgreich abgemeldet');
             }).catch(error => {
                 console.error('Fehler beim Abmelden:', error);
-            });
-        }
-    }
-
     // Initialize auth system
     document.addEventListener('DOMContentLoaded', async function() {
         await loadAuthModals();
-        
         // Check user status
-        if (window.awsAuth) {
             window.awsAuth.checkUserStatus();
-        }
     });
-
     function ikigaiNextStep() {
             console.log('ikigaiNextStep called, current step:', currentIkigaiStep);
             if (currentIkigaiStep < totalIkigaiSteps) {
@@ -1315,30 +776,19 @@
                 updateIkigaiStep();
                 console.log('Moved to step:', currentIkigaiStep);
             }
-        }
-        
         function ikigaiPreviousStep() {
             console.log('ikigaiPreviousStep called, current step:', currentIkigaiStep);
             if (currentIkigaiStep > 1) {
                 currentIkigaiStep--;
-                updateIkigaiStep();
-                console.log('Moved to step:', currentIkigaiStep);
-            }
-        }
-        
         function ikigaiSaveProgress() {
             console.log('ikigaiSaveProgress called');
             saveIkigaiProgress();
-        }
-
         // Export Functions
         function exportToPDF() {
             const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
             const exportData = generateExportData(progressData);
-            
             // Create PDF content
             const pdfContent = generatePDFContent(exportData);
-            
             // Create and download PDF
             const blob = new Blob([pdfContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
@@ -1347,42 +797,18 @@
             link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.html`;
             link.click();
             URL.revokeObjectURL(url);
-        }
-
         function exportToWord() {
-            const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
-            const exportData = generateExportData(progressData);
-            
             // Create Word document content
             const wordContent = generateWordContent(exportData);
-            
             // Create and download Word document
             const blob = new Blob([wordContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
             link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.docx`;
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
         function exportToExcel() {
-            const progressData = JSON.parse(localStorage.getItem('ikigaiProgress') || '{}');
-            const exportData = generateExportData(progressData);
-            
             // Create CSV content for Excel
             const csvContent = generateCSVContent(exportData);
-            
             // Create and download CSV
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
             link.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
         function generateExportData(progressData) {
             return {
                 title: 'Mein Ikigai-Workflow',
@@ -1403,7 +829,6 @@
                     },
                     step2: {
                         title: 'Leidenschaften & Interessen',
-                        data: {
                             creativeActivities: progressData.stepData?.creative_activities || '',
                             learningAreas: progressData.stepData?.learning_areas || '',
                             physicalActivities: progressData.stepData?.physical_activities || '',
@@ -1413,18 +838,10 @@
                             passionAsCareer: progressData.stepData?.passion_as_career || '',
                             curiosityPassion: progressData.stepData?.curiosity_passion || '',
                             flowPassion: progressData.stepData?.flow_passion || ''
-                        }
-                    }
-                }
             };
-        }
-
         function generatePDFContent(data) {
             return `
-<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
     <title>${data.title}</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
@@ -1434,17 +851,12 @@
         .question { font-weight: bold; color: #2d3748; margin-bottom: 5px; }
         .answer { margin-bottom: 15px; padding: 10px; background: white; border-radius: 5px; }
         .metadata { background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
             display: flex;
             align-items: center;
             margin-left: 20px;
-        }
-
         .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
@@ -1452,13 +864,9 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
             transition: all 0.3s ease;
-        }
-
         .user-info:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         .user-avatar {
             width: 32px;
             height: 32px;
@@ -1466,187 +874,108 @@
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
         .user-avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
         .user-details {
-            display: flex;
             flex-direction: column;
             gap: 2px;
-        }
-
         .user-name {
             font-size: 0.8rem;
             font-weight: 700;
             color: #1e293b;
             line-height: 1.2;
-        }
-
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.2;
-        }
-
         .user-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
             border: none;
-            border-radius: 50%;
             width: 28px;
             height: 28px;
-            display: flex;
-            align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
         .user-login {
-            display: flex;
-            align-items: center;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
         .btn-login:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
         .btn-login i {
-            font-size: 0.7rem;
-        }
-
         /* Responsive Design for User System */
         @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
-            }
-
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
-            }
-
             .user-avatar {
                 width: 28px;
                 height: 28px;
-            }
-
             .user-name {
                 font-size: 0.7rem;
-            }
-
             .user-email {
                 font-size: 0.6rem;
-            }
-
             .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
-</head>
-<body>
     <h1>${data.title}</h1>
     <div class="metadata">
         <p><strong>Erstellt am:</strong> ${data.date}</p>
         <p><strong>Fortschritt:</strong> ${data.completionPercentage}%</p>
         <p><strong>Zeit investiert:</strong> ${data.timeSpent}</p>
     </div>
-    
     <h2>Schritt 1: ${data.steps.step1.title}</h2>
     <div class="section">
         <div class="question">Lebensvision & Vermächtnis:</div>
         <div class="answer">${data.steps.step1.data.lifeVision || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Was würdest du am meisten bedauern?</div>
         <div class="answer">${data.steps.step1.data.regretQuestion || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Mit unbegrenzten Ressourcen:</div>
         <div class="answer">${data.steps.step1.data.unlimitedResources || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Grabstein-Wörter:</div>
         <div class="answer">${data.steps.step1.data.legacyWords || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Zeitkapsel für Enkelkinder:</div>
         <div class="answer">${data.steps.step1.data.timeCapsule || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Geschenk an die Welt:</div>
         <div class="answer">${data.steps.step1.data.giftToWorld || 'Nicht ausgefüllt'}</div>
-    </div>
-    
     <h2>Schritt 2: ${data.steps.step2.title}</h2>
-    <div class="section">
         <div class="question">Kreative Aktivitäten:</div>
         <div class="answer">${data.steps.step2.data.creativeActivities || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Lernbereiche:</div>
         <div class="answer">${data.steps.step2.data.learningAreas || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Körperliche Aktivitäten:</div>
         <div class="answer">${data.steps.step2.data.physicalActivities || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Soziale Aktivitäten:</div>
         <div class="answer">${data.steps.step2.data.socialActivities || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Kindheits-Leidenschaft:</div>
         <div class="answer">${data.steps.step2.data.childhoodPassion || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Freier Tag:</div>
         <div class="answer">${data.steps.step2.data.freeDayPassion || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Leidenschaft als Beruf:</div>
         <div class="answer">${data.steps.step2.data.passionAsCareer || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Neugier-Passion:</div>
         <div class="answer">${data.steps.step2.data.curiosityPassion || 'Nicht ausgefüllt'}</div>
-        
         <div class="question">Flow-Passion:</div>
         <div class="answer">${data.steps.step2.data.flowPassion || 'Nicht ausgefüllt'}</div>
-    </div>
 </body>
 </html>`;
-        }
-
         function generateWordContent(data) {
             // Simplified Word document content
             return generatePDFContent(data);
-        }
-
         function generateCSVContent(data) {
             let csv = 'Frage,Antwort\n';
             csv += `"Erstellt am","${data.date}"\n`;
             csv += `"Fortschritt","${data.completionPercentage}%"\n`;
             csv += `"Zeit investiert","${data.timeSpent}"\n\n`;
-            
             csv += '"=== SCHRITT 1: LEBENSVISION ====",""\n';
             csv += `"Lebensvision & Vermächtnis","${data.steps.step1.data.lifeVision || ''}"\n`;
             csv += `"Was würdest du am meisten bedauern?","${data.steps.step1.data.regretQuestion || ''}"\n`;
@@ -1654,7 +983,6 @@
             csv += `"Grabstein-Wörter","${data.steps.step1.data.legacyWords || ''}"\n`;
             csv += `"Zeitkapsel für Enkelkinder","${data.steps.step1.data.timeCapsule || ''}"\n`;
             csv += `"Geschenk an die Welt","${data.steps.step1.data.giftToWorld || ''}"\n\n`;
-            
             csv += '"=== SCHRITT 2: LEIDENSCHAFTEN ====",""\n';
             csv += `"Kreative Aktivitäten","${data.steps.step2.data.creativeActivities || ''}"\n`;
             csv += `"Lernbereiche","${data.steps.step2.data.learningAreas || ''}"\n`;
@@ -1665,46 +993,31 @@
             csv += `"Leidenschaft als Beruf","${data.steps.step2.data.passionAsCareer || ''}"\n`;
             csv += `"Neugier-Passion","${data.steps.step2.data.curiosityPassion || ''}"\n`;
             csv += `"Flow-Passion","${data.steps.step2.data.flowPassion || ''}"\n`;
-            
             return csv;
-        }
-        
         function updateIkigaiStep() {
             console.log('Updating to step:', currentIkigaiStep);
-            
             // Hide all steps
             document.querySelectorAll('.workflow-step').forEach(step => {
                 step.classList.remove('active');
-            });
-            
             // Show current step
             const currentStepElement = document.querySelector(`.workflow-step:nth-child(${currentIkigaiStep})`);
             if (currentStepElement) {
                 currentStepElement.classList.add('active');
                 console.log('Activated step element:', currentStepElement);
-            }
-            
             // Update progress indicators
             document.querySelectorAll('.progress-step').forEach((step, index) => {
                 const stepNumber = index + 1;
                 step.classList.remove('active', 'completed');
-                
                 if (stepNumber === currentIkigaiStep) {
                     step.classList.add('active');
                 } else if (stepNumber < currentIkigaiStep) {
                     step.classList.add('completed');
-                }
-            });
-            
             // Update navigation buttons
             const prevBtn = document.getElementById('prev-step');
             const nextBtn = document.getElementById('next-step');
             const saveBtn = document.getElementById('save-progress');
-            
             if (prevBtn) {
                 prevBtn.disabled = currentIkigaiStep === 1;
-            }
-            
             if (nextBtn && saveBtn) {
                 if (currentIkigaiStep === totalIkigaiSteps) {
                     nextBtn.style.display = 'none';
@@ -1712,9 +1025,6 @@
                 } else {
                     nextBtn.style.display = 'inline-block';
                     saveBtn.style.display = 'none';
-                }
-            }
-            
             // Scroll to Ikigai workflow section
             const ikigaiSection = document.getElementById('ikigai-workflow');
             if (ikigaiSection) {
@@ -1722,9 +1032,6 @@
             } else {
                 // Fallback to top if section not found
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-        
         // Progress Save System with Detailed Tracking
         function saveIkigaiProgress() {
             const progressData = {
@@ -1734,43 +1041,27 @@
                 completionPercentage: Math.round((currentIkigaiStep / totalIkigaiSteps) * 100),
                 timeSpent: calculateTimeSpent(),
                 lastUpdated: new Date().toLocaleString('de-DE')
-            };
-
             // Collect all form data
             document.querySelectorAll('textarea, input[type="text"], input[type="range"], input[type="checkbox"]').forEach(input => {
                 if (input.id && input.value) {
                     progressData.stepData[input.id] = input.value;
-                }
-            });
-
             // Save to localStorage
             localStorage.setItem('ikigaiProgress', JSON.stringify(progressData));
-            
             // Show save confirmation
             showSaveNotification();
-            
             console.log('Ikigai progress saved:', progressData);
-        }
-
         function loadIkigaiProgress() {
             const savedProgress = localStorage.getItem('ikigaiProgress');
             if (savedProgress) {
                 const progressData = JSON.parse(savedProgress);
                 currentIkigaiStep = progressData.currentStep || 1;
-                
                 // Restore form data
                 Object.keys(progressData.stepData).forEach(inputId => {
                     const input = document.getElementById(inputId);
                     if (input) {
                         input.value = progressData.stepData[inputId];
-                    }
                 });
-                
-                updateIkigaiStep();
                 showLoadNotification(progressData);
-            }
-        }
-
         function calculateTimeSpent() {
             const startTime = localStorage.getItem('ikigaiStartTime');
             if (startTime) {
@@ -1778,10 +1069,7 @@
                 const hours = Math.floor(timeDiff / (1000 * 60 * 60));
                 const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
                 return `${hours}h ${minutes}m`;
-            }
             return '0h 0m';
-        }
-
         function showSaveNotification() {
             const notification = document.createElement('div');
             notification.className = 'save-notification';
@@ -1789,65 +1077,34 @@
                 <div class="notification-content">
                     <i class="fas fa-check-circle"></i>
                     <span>Fortschritt gespeichert!</span>
-                </div>
             `;
             document.body.appendChild(notification);
-            
             setTimeout(() => {
                 notification.classList.add('show');
             }, 100);
-            
-            setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
                     document.body.removeChild(notification);
                 }, 300);
             }, 3000);
-        }
-
         function showLoadNotification(progressData) {
-            const notification = document.createElement('div');
             notification.className = 'load-notification';
-            notification.innerHTML = `
-                <div class="notification-content">
                     <i class="fas fa-history"></i>
                     <span>Fortschritt geladen: ${progressData.completionPercentage}% abgeschlossen</span>
-                </div>
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
             }, 4000);
-        }
-
         // Auto-save every 30 seconds
         setInterval(saveIkigaiProgress, 30000);
-
         // Save on input changes
         document.addEventListener('input', function(e) {
             if (e.target.matches('textarea, input[type="text"], input[type="range"], input[type="checkbox"]')) {
                 setTimeout(saveIkigaiProgress, 1000); // Debounced save
-            }
         });
-
         // Reminder System
         function setupReminderSystem() {
             // Check if user wants reminders
             const reminderSettings = JSON.parse(localStorage.getItem('ikigaiReminderSettings') || '{}');
-            
             if (reminderSettings.enabled) {
                 scheduleReminders(reminderSettings);
-            }
-        }
-
         function showReminderSettings() {
             const modal = document.createElement('div');
             modal.className = 'reminder-modal';
@@ -1856,15 +1113,12 @@
                     <div class="modal-header">
                         <h3>🔔 Erinnerungen einrichten</h3>
                         <button class="close-btn" data-action="close-reminder-modal">&times;</button>
-                    </div>
                     <div class="modal-body">
                         <div class="reminder-option">
                             <label>
                                 <input type="checkbox" id="enable-reminders">
                                 Erinnerungen aktivieren
                             </label>
-                        </div>
-                        <div class="reminder-option">
                             <label>Erinnerungsintervall:</label>
                             <select id="reminder-interval">
                                 <option value="daily">Täglich</option>
@@ -1872,70 +1126,43 @@
                                 <option value="biweekly">Alle 2 Wochen</option>
                                 <option value="monthly">Monatlich</option>
                             </select>
-                        </div>
-                        <div class="reminder-option">
                             <label>Erinnerungszeit:</label>
                             <input type="time" id="reminder-time" value="09:00">
-                        </div>
-                        <div class="reminder-option">
                             <label>Erinnerungstext:</label>
                             <textarea id="reminder-message" placeholder="Deine persönliche Erinnerungsnachricht...">Es ist Zeit, an deinem Ikigai zu arbeiten! 🌟</textarea>
-                        </div>
-                    </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" data-action="save-reminder-settings">Speichern</button>
                         <button class="btn btn-secondary" data-action="close-reminder-modal">Abbrechen</button>
-                    </div>
-                </div>
-            `;
             document.body.appendChild(modal);
-        }
-
         function saveReminderSettings() {
             const settings = {
                 enabled: document.getElementById('enable-reminders').checked,
                 interval: document.getElementById('reminder-interval').value,
                 time: document.getElementById('reminder-time').value,
                 message: document.getElementById('reminder-message').value
-            };
-            
             localStorage.setItem('ikigaiReminderSettings', JSON.stringify(settings));
-            
             if (settings.enabled) {
                 scheduleReminders(settings);
                 showNotification('Erinnerungen wurden eingerichtet!', 'success');
-            } else {
                 clearReminders();
                 showNotification('Erinnerungen wurden deaktiviert.', 'info');
-            }
-            
             closeReminderModal();
-        }
-
         function scheduleReminders(settings) {
             clearReminders();
-            
             const now = new Date();
             const reminderTime = new Date();
             const [hours, minutes] = settings.time.split(':');
             reminderTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            
             // If time has passed today, schedule for tomorrow
             if (reminderTime <= now) {
                 reminderTime.setDate(reminderTime.getDate() + 1);
-            }
-            
             const intervalMs = getIntervalMs(settings.interval);
-            
             const reminderId = setInterval(() => {
                 showReminderNotification(settings.message);
                 // Reschedule for next interval
                 setTimeout(() => scheduleReminders(settings), intervalMs);
             }, reminderTime.getTime() - now.getTime());
-            
             localStorage.setItem('ikigaiReminderId', reminderId.toString());
-        }
-
         function getIntervalMs(interval) {
             switch (interval) {
                 case 'daily': return 24 * 60 * 60 * 1000;
@@ -1943,123 +1170,61 @@
                 case 'biweekly': return 14 * 24 * 60 * 60 * 1000;
                 case 'monthly': return 30 * 24 * 60 * 60 * 1000;
                 default: return 24 * 60 * 60 * 1000;
-            }
-        }
-
         function clearReminders() {
             const reminderId = localStorage.getItem('ikigaiReminderId');
             if (reminderId) {
                 clearInterval(parseInt(reminderId));
                 localStorage.removeItem('ikigaiReminderId');
-            }
-        }
-
         function showReminderNotification(message) {
             if (Notification.permission === 'granted') {
                 new Notification('Ikigai-Workflow Erinnerung', {
                     body: message,
                     icon: '/favicon.ico',
                     tag: 'ikigai-reminder'
-                });
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission().then(permission => {
                     if (permission === 'granted') {
                         showReminderNotification(message);
-                    }
-                });
-            }
-        }
-
         function closeReminderModal() {
             const modal = document.querySelector('.reminder-modal');
             if (modal) {
                 document.body.removeChild(modal);
-            }
-        }
-
         function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div class="notification-content">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
                     <span>${message}</span>
-                </div>
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
                     if (document.body.contains(notification)) {
                         document.body.removeChild(notification);
-                    }
-                }, 300);
-            }, 4000);
-        }
-
         // Method Navigation Functions
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
         function showMethodModal(methodId) {
             const methodData = getMethodData(methodId);
-            const modal = document.createElement('div');
             modal.className = 'method-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
                         <div class="method-icon-large">
                             <i class="${methodData.icon}"></i>
-                        </div>
                         <h3>${methodData.title}</h3>
                         <button class="close-btn" data-action="close-method-modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
                         <p class="method-description">${methodData.description}</p>
-                        
                         <div class="method-details">
                             <h4>Was erwartet dich:</h4>
                             <ul class="method-features-list">
                                 ${methodData.features.map(feature => `<li>${feature}</li>`).join('')}
-                            </ul>
-                        </div>
-                        
                         <div class="method-benefits">
                             <h4>Nutzen für dich:</h4>
                             <ul class="benefits-list">
                                 ${methodData.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
-                            </ul>
-                        </div>
-                        
                         <div class="method-duration">
                             <div class="duration-info">
                                 <i class="fas fa-clock"></i>
                                 <span>Geschätzte Dauer: ${methodData.duration}</span>
-                            </div>
                             <div class="difficulty-info">
                                 <i class="fas fa-signal"></i>
                                 <span>Schwierigkeit: ${methodData.difficulty}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
                         <button class="btn btn-primary" data-action="start-method" data-param="${methodId}">Jetzt starten</button>
                         <button class="btn btn-secondary" data-action="close-method-modal">Schließen</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
         function getMethodData(methodId) {
             const methods = {
                 'values-clarification': {
@@ -2077,7 +1242,6 @@
                         'Bessere Entscheidungsfindung',
                         'Mehr Authentizität im Leben',
                         'Reduzierte innere Konflikte'
-                    ],
                     duration: '45-60 Minuten',
                     difficulty: 'Mittel'
                 },
@@ -2085,172 +1249,111 @@
                     title: 'Stärken-Analyse',
                     icon: 'fas fa-star',
                     description: 'Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst, um deine Ziele zu erreichen und dein Potenzial voll auszuschöpfen.',
-                    features: [
                         'Gallup StrengthsFinder Integration',
                         'VIA Character Strengths Test',
                         'Persönlicher Entwicklungsplan',
                         'Stärken-basierte Zielsetzung'
-                    ],
-                    benefits: [
                         'Bewusstsein für deine Talente',
                         'Fokus auf Stärken statt Schwächen',
                         'Höhere Motivation und Engagement',
                         'Bessere Karriere-Entscheidungen'
-                    ],
                     duration: '60-90 Minuten',
                     difficulty: 'Einfach'
-                },
                 'goal-setting': {
                     title: 'Ziel-Setting',
                     icon: 'fas fa-bullseye',
                     description: 'Setze dir klare, erreichbare Ziele mit der bewährten SMART-Methode und entwickle einen konkreten Aktionsplan für deren Umsetzung.',
-                    features: [
                         'SMART-Ziele Formulierung',
                         'Ziel-Hierarchie und Priorisierung',
                         'Aktionsplan-Erstellung',
                         'Fortschritts-Tracking System'
-                    ],
-                    benefits: [
                         'Klarheit über deine Ziele',
                         'Höhere Erfolgswahrscheinlichkeit',
                         'Bessere Motivation und Fokus',
                         'Messbare Fortschritte'
-                    ],
                     duration: '30-45 Minuten',
-                    difficulty: 'Einfach'
-                },
                 'mindfulness': {
                     title: 'Achtsamkeit & Meditation',
                     icon: 'fas fa-leaf',
                     description: 'Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und praktische Achtsamkeitsübungen für den Alltag.',
-                    features: [
                         'Geführte Meditationen (5-30 Min)',
                         'Achtsamkeitsübungen für den Alltag',
                         'Stress-Reduktions-Techniken',
                         'Atemübungen und Body-Scan'
-                    ],
-                    benefits: [
                         'Reduzierter Stress und Ängste',
                         'Verbesserte Konzentration',
                         'Bessere emotionale Regulation',
                         'Mehr Gelassenheit im Alltag'
-                    ],
                     duration: 'Flexibel (5-30 Min pro Session)',
-                    difficulty: 'Einfach'
-                },
                 'emotional-intelligence': {
                     title: 'Emotionale Intelligenz',
                     icon: 'fas fa-brain',
                     description: 'Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen, zu regulieren und in Beziehungen einzusetzen.',
-                    features: [
                         'EQ-Assessment und Selbsteinschätzung',
                         'Emotionsregulation-Techniken',
                         'Empathie-Training',
                         'Soziale Kompetenz-Übungen'
-                    ],
-                    benefits: [
                         'Bessere Selbstwahrnehmung',
                         'Verbesserte Beziehungen',
                         'Höhere Führungskompetenz',
                         'Mehr emotionale Stabilität'
-                    ],
                     duration: '90-120 Minuten',
-                    difficulty: 'Mittel'
-                },
                 'habit-building': {
                     title: 'Gewohnheiten aufbauen',
                     icon: 'fas fa-sync-alt',
                     description: 'Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden aus der Verhaltenspsychologie.',
-                    features: [
                         'Habit-Stacking Technik',
                         '21-Tage-Challenge System',
                         'Gewohnheits-Tracking',
                         'Umgebungs-Design für Erfolg'
-                    ],
-                    benefits: [
                         'Konsistente positive Veränderungen',
                         'Automatisierung guter Verhaltensweisen',
                         'Höhere Selbstdisziplin',
                         'Langfristige Lebensverbesserung'
-                    ],
                     duration: '30-60 Minuten Setup + tägliche Praxis',
-                    difficulty: 'Mittel'
-                },
                 'communication': {
                     title: 'Kommunikation',
                     icon: 'fas fa-comments',
                     description: 'Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren, zuzuhören und Konflikte zu lösen.',
-                    features: [
                         'Aktives Zuhören Training',
                         'Nonverbale Kommunikation',
                         'Konfliktlösungs-Strategien',
                         'Präsentations- und Rhetorik-Übungen'
-                    ],
-                    benefits: [
                         'Bessere Beziehungen',
                         'Höhere Überzeugungskraft',
                         'Weniger Missverständnisse',
                         'Professionellerer Auftritt'
-                    ],
-                    duration: '60-90 Minuten',
-                    difficulty: 'Mittel'
-                },
                 'time-management': {
                     title: 'Zeitmanagement',
                     icon: 'fas fa-clock',
                     description: 'Optimiere dein Zeitmanagement und lerne, produktiver und effizienter zu arbeiten mit bewährten Techniken und Tools.',
-                    features: [
                         'Pomodoro-Technik',
                         'Eisenhower-Matrix',
                         'Priorisierungs-Methoden',
                         'Produktivitäts-Tracking'
-                    ],
-                    benefits: [
                         'Höhere Produktivität',
                         'Bessere Work-Life-Balance',
                         'Weniger Stress',
                         'Mehr Zeit für wichtige Dinge'
-                    ],
-                    duration: '45-60 Minuten',
-                    difficulty: 'Einfach'
-                }
-            };
             return methods[methodId] || methods['values-clarification'];
-        }
-
         function startMethod(methodId) {
             // Hier würde die jeweilige Methode gestartet werden
             showNotification(`${getMethodData(methodId).title} wird bald verfügbar sein!`, 'info');
             closeMethodModal();
-        }
-
         function closeMethodModal() {
             const modal = document.querySelector('.method-modal');
-            if (modal) {
-                document.body.removeChild(modal);
-            }
-        }
-
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Ikigai navigation initialized');
-            
             // Set start time if not exists
             if (!localStorage.getItem('ikigaiStartTime')) {
                 localStorage.setItem('ikigaiStartTime', Date.now().toString());
-            }
-            
             // Load existing progress
             loadIkigaiProgress();
-            
             // Setup reminder system
             setupReminderSystem();
-            
             updateIkigaiStep();
-        });
     </script>
-    
     <!-- Translation Manager -->
     <script src="js/translation-manager.js"></script>
-</body>
 </html>
