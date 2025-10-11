@@ -459,6 +459,12 @@ a:hover {
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    /* Verhindert Flicker und Platzhalter-Überlagerung */
+    display: block !important;
+    position: relative;
+    z-index: 10;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .profile-image:hover {
