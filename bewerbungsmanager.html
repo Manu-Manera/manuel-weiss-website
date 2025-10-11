@@ -480,201 +480,178 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Workflow Modal Styles - Modernes Design */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        
-        .workflow-modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .workflow-modal-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 2rem 2rem 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        
-        .workflow-icon {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .workflow-modal-header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin: 0;
-            flex: 1;
-        }
-        
-        .workflow-close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #6b7280;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+        /* Smart Workflow Modal - Ursprüngliches Design */
+        .smart-workflow-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
         }
         
-        .workflow-close-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            color: #374151;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .workflow-modal-body {
-            padding: 1.5rem 2rem;
-        }
-        
-        .workflow-description {
-            font-size: 1.1rem;
-            color: #6b7280;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .workflow-options {
+        .workflow-wrapper {
+            background: white;
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 900px;
+            border-radius: 16px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         
-        .workflow-option {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(102, 126, 234, 0.1);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            width: 100%;
-        }
-        
-        .workflow-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-        
-        .workflow-option.stellenausschreibung:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
-            border-color: #3b82f6;
-        }
-        
-        .workflow-option.initiativbewerbung:hover {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-            border-color: #10b981;
-        }
-        
-        .option-icon {
-            font-size: 2rem;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .option-content h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin: 0 0 0.5rem 0;
-        }
-        
-        .option-content p {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin: 0;
-            line-height: 1.4;
-        }
-        
-        .workflow-modal-footer {
-            padding: 1rem 2rem 2rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .workflow-cancel-btn {
-            background: #6b7280;
+        .workflow-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 1.5rem 2rem;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
-            margin: 0 auto;
         }
         
-        .workflow-cancel-btn:hover {
-            background: #4b5563;
-            transform: translateY(-1px);
+        .workflow-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .workflow-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+        
+        .workflow-step {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .step-header {
+            margin-bottom: 2rem;
+        }
+        
+        .step-header h2 {
+            color: #2c3e50;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .workflow-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .workflow-option-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .workflow-option-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+        
+        .workflow-option-card .option-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .workflow-option-card h3 {
+            color: #2c3e50;
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .workflow-option-card p {
+            color: #6c757d;
+            margin: 0 0 1.5rem 0;
+            line-height: 1.6;
+        }
+        
+        .option-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .feature-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
         
         @media (max-width: 768px) {
-            .workflow-modal-content {
-                width: 95%;
-                max-height: 90vh;
+            .workflow-wrapper {
+                width: 98%;
+                height: 95vh;
             }
             
-            .workflow-modal-header {
-                padding: 1.5rem 1.5rem 1rem;
+            .workflow-options-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
-            .workflow-modal-body {
-                padding: 1rem 1.5rem;
-            }
-            
-            .workflow-option {
-                padding: 1rem;
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .option-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+            .workflow-option-card {
+                padding: 1.5rem;
             }
         }
         
@@ -893,46 +870,45 @@
             // GAST-MODUS: Direkt Workflow starten ohne Anmeldung
             console.log('👤 Gast-Modus: Workflow startet direkt');
             
-            // Erstelle schönes Workflow-Modal mit modernem Design
+            // Erstelle das ursprüngliche schöne Workflow-Modal
             const modal = document.createElement('div');
             modal.id = 'workflowModal';
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.8); display: flex; align-items: center; 
-                justify-content: center; z-index: 10000; backdrop-filter: blur(10px);
-                animation: fadeIn 0.3s ease-out;
-            `;
+            modal.className = 'smart-workflow-modal';
             modal.innerHTML = `
-                <div class="workflow-modal-content">
-                    <div class="workflow-modal-header">
-                        <div class="workflow-icon">🚀</div>
-                        <h2>Bewerbungs-Workflow</h2>
-                        <button class="workflow-close-btn" onclick="closeWorkflowModal()">×</button>
+                <div class="workflow-wrapper">
+                    <div class="workflow-header">
+                        <h1>🚀 Bewerbungs-Workflow</h1>
+                        <button class="btn-close" onclick="closeWorkflowModal()">×</button>
                     </div>
-                    <div class="workflow-modal-body">
-                        <p class="workflow-description">Wählen Sie Ihren Bewerbungstyp:</p>
-                        <div class="workflow-options">
-                            <button class="workflow-option stellenausschreibung" onclick="startStellenausschreibungWorkflow()">
-                                <div class="option-icon">📄</div>
-                                <div class="option-content">
+                    <div class="workflow-body">
+                        <div class="workflow-step">
+                            <div class="step-header">
+                                <h2>Wählen Sie Ihren Bewerbungstyp</h2>
+                                <p class="step-description">Entscheiden Sie, wie Sie vorgehen möchten</p>
+                            </div>
+                            <div class="workflow-options-grid">
+                                <div class="workflow-option-card" onclick="startStellenausschreibungWorkflow()">
+                                    <div class="option-icon">📄</div>
                                     <h3>Mit Stellenausschreibung</h3>
-                                    <p>Optimiert für spezifische Stellenausschreibungen</p>
+                                    <p>Optimiert für spezifische Stellenausschreibungen. Analysiert Anforderungen und passt Bewerbung an.</p>
+                                    <div class="option-features">
+                                        <span class="feature-tag">Anforderungsanalyse</span>
+                                        <span class="feature-tag">Keyword-Optimierung</span>
+                                        <span class="feature-tag">Stellenbezogene Anpassung</span>
+                                    </div>
                                 </div>
-                            </button>
-                            <button class="workflow-option initiativbewerbung" onclick="startInitiativbewerbungWorkflow()">
-                                <div class="option-icon">💼</div>
-                                <div class="option-content">
+                                <div class="workflow-option-card" onclick="startInitiativbewerbungWorkflow()">
+                                    <div class="option-icon">💼</div>
                                     <h3>Initiativbewerbung</h3>
-                                    <p>Allgemeine Bewerbung ohne Stellenausschreibung</p>
+                                    <p>Allgemeine Bewerbung ohne Stellenausschreibung. Fokus auf Ihre Stärken und Ziele.</p>
+                                    <div class="option-features">
+                                        <span class="feature-tag">Stärkenanalyse</span>
+                                        <span class="feature-tag">Zielorientierung</span>
+                                        <span class="feature-tag">Flexible Anpassung</span>
+                                    </div>
                                 </div>
-                            </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="workflow-modal-footer">
-                        <button class="workflow-cancel-btn" onclick="closeWorkflowModal()">
-                            <i class="fas fa-times"></i>
-                            Schließen
-                        </button>
                     </div>
                 </div>
             `;
