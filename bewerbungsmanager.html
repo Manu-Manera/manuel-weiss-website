@@ -820,6 +820,117 @@
             flex-wrap: wrap;
         }
         
+        /* Application Type Selection Styles */
+        .application-type-selection {
+            margin-bottom: 2rem;
+        }
+        
+        .type-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .type-option {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .type-option:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+        }
+        
+        .type-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .type-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2rem;
+            height: 2rem;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .type-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .type-option h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-weight: 700;
+        }
+        
+        .type-option p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .type-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .feature {
+            background: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #374151;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .type-info {
+            margin-top: 2rem;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #10b981;
+        }
+        
+        .info-card h4 {
+            color: #065f46;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .info-card p {
+            color: #047857;
+            margin: 0;
+            font-size: 1rem;
+        }
+        
         @media (max-width: 768px) {
             .workflow-modal {
                 width: 100%;
