@@ -6,6 +6,7 @@
     <title>Smart Bewerbungsmanager - Manuel Weiss</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
     <style>
         * {
             margin: 0;
@@ -958,8 +959,8 @@
         </section>
     </div>
 
-    <!-- Einheitliches Auth Modal mit Tabs -->
-    <div id="authModal" class="auth-modal" style="display: none;">
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
         <div class="auth-modal-content">
             <div class="auth-modal-header">
                 <h2 id="authModalTitle">Anmelden</h2>
@@ -1017,8 +1018,87 @@
 
 
     <!-- Scripts -->
-    <!-- AWS Cognito 2025 Best Practices -->
-    <script src="js/aws-cognito-2025.js"></script>
+    <!-- Unified Auth System -->
+    <script src="js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+                
+                // Setup form handlers
+                setupAuthFormHandlers();
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        function setupAuthFormHandlers() {
+            // Login form
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+                    
+                    if (window.unifiedAuthManager) {
+                        const result = await window.unifiedAuthManager.login(email, password);
+                        if (result.success) {
+                            closeLoginModal();
+                        }
+                    }
+                });
+            }
+            
+            // Signup form
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('signupEmail').value;
+                    const password = document.getElementById('signupPassword').value;
+                    const firstName = document.getElementById('signupFirstName').value;
+                    const lastName = document.getElementById('signupLastName').value;
+                    
+                    if (window.unifiedAuthManager) {
+                        const result = await window.unifiedAuthManager.register(email, password, firstName, lastName);
+                        if (result.success) {
+                            closeSignupModal();
+                            // Show verification modal
+                            document.getElementById('verificationEmail').textContent = email;
+                            document.getElementById('verificationModal').style.display = 'flex';
+                        }
+                    }
+                });
+            }
+            
+            // Verification form
+            const verificationForm = document.getElementById('verificationForm');
+            if (verificationForm) {
+                verificationForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('verificationEmail').textContent;
+                    const code = document.getElementById('verificationCode').value;
+                    
+                    if (window.unifiedAuthManager) {
+                        const result = await window.unifiedAuthManager.confirmRegistration(email, code);
+                        if (result.success) {
+                            closeVerificationModal();
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
     
     <!-- Admin Panel Integration - Automatische API Key Verknüpfung -->
     <script src="js/admin-panel-integration.js"></script>

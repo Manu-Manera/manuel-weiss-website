@@ -278,6 +278,29 @@
                 <a href="fotobox.html" class="nav-link active">Fotobox</a>
                 <a href="sup.html" class="nav-link">SUP</a>
                 <a href="ebike.html" class="nav-link">E-Bikes</a>
+                
+                <!-- Unified User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName">Benutzer</span>
+                            <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Anmelden</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="nav-toggle">
                 <span class="bar"></span>
@@ -510,5 +533,28 @@
 
     <!-- Scripts -->
     <script src="js/global-navigation.js"></script>
+    <script src="js/unified-auth-manager.js"></script>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
 </body>
 </html>

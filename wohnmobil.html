@@ -247,9 +247,35 @@
             
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
-                <a href="index.html#services" class="nav-link">Services</a>
-                <a href="index.html#about" class="nav-link">Über mich</a>
-                <a href="index.html#contact" class="nav-link">Kontakt</a>
+                <a href="persoenlichkeitsentwicklung.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="bewerbungsmanager.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="wohnmobil.html" class="nav-link active">Wohnmobil</a>
+                <a href="fotobox.html" class="nav-link">Fotobox</a>
+                <a href="sup.html" class="nav-link">SUP</a>
+                <a href="ebike.html" class="nav-link">E-Bikes</a>
+                
+                <!-- Unified User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName">Benutzer</span>
+                            <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Anmelden</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -520,6 +546,31 @@
                     bookingForm.reset();
                 });
             }
+        });
+    </script>
+    
+    <!-- Unified Auth System -->
+    <script src="js/unified-auth-manager.js"></script>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
         });
     </script>
 </body>
