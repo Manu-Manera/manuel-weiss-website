@@ -1180,25 +1180,68 @@
     <!-- Admin Panel Integration - Automatische API Key Verknüpfung -->
     <script src="js/admin-panel-integration.js"></script>
     
+    <!-- Complete Workflow System - MUST LOAD FIRST -->
+    <script src="js/complete-workflow-system.js"></script>
+    
     <!-- Backup: Static Script Loading für Zuverlässigkeit -->
     <!-- MODULARER WORKFLOW LOADER - Lädt alle Step-Module automatisch -->
     <script src="js/workflow-steps/workflow-loader.js"></script>
-    <script src="js/complete-workflow-system.js"></script>
     
     <script>
         // Global flag to track workflow status
         window.workflowStarted = false;
         
+        // Ensure Complete Workflow System is available
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Content Loaded - Checking Complete Workflow System...');
+            console.log('completeWorkflowSystem available:', !!window.completeWorkflowSystem);
+            
+            if (!window.completeWorkflowSystem) {
+                console.log('⏳ Complete Workflow System not yet loaded, waiting...');
+                setTimeout(() => {
+                    console.log('completeWorkflowSystem available after wait:', !!window.completeWorkflowSystem);
+                }, 1000);
+            }
+        });
+        
         // FUNKTIONIERENDE DIREKTE WORKFLOW-START FUNKTION 
         function direktWorkflowStarten() {
             console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
             
-            // Use new complete workflow system
+            // Use new complete workflow system - FORCE USE
+            console.log('🎯 Checking for Complete Workflow System...');
+            console.log('completeWorkflowSystem available:', !!window.completeWorkflowSystem);
+            
             if (window.completeWorkflowSystem) {
-                console.log('🎯 Using Complete Workflow System');
+                console.log('🎯 Using Complete Workflow System - Starting with Step 0');
                 window.completeWorkflowSystem.start();
                 return;
             }
+            
+            // Wait for system to load
+            console.log('⏳ Waiting for Complete Workflow System to load...');
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            const checkAndStart = () => {
+                attempts++;
+                console.log(`🔄 Attempt ${attempts}/${maxAttempts} to load Complete Workflow System...`);
+                
+                if (window.completeWorkflowSystem) {
+                    console.log('🎯 Complete Workflow System loaded, starting with Step 0...');
+                    window.completeWorkflowSystem.start();
+                    return;
+                }
+                
+                if (attempts < maxAttempts) {
+                    setTimeout(checkAndStart, 200);
+                } else {
+                    console.log('❌ Complete Workflow System not available after all attempts');
+                    alert('❌ Workflow-System konnte nicht geladen werden. Bitte Seite neu laden.');
+                }
+            };
+            
+            checkAndStart();
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
