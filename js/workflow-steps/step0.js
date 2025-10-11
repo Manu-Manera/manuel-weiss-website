@@ -128,15 +128,8 @@ function generateStep0() {
 // Application type selection handler
 function selectApplicationType(type) {
     console.log('🎯 Bewerbungsart ausgewählt:', type);
-    
-    // Check if user is authenticated
-    if (!checkUserAuthentication()) {
-        console.log('🔐 Benutzer nicht authentifiziert, zeige Login-Modal...');
-        showAuthenticationRequired(type);
-        return;
-    }
-    
-    console.log('✅ Benutzer authentifiziert, fahre mit Workflow fort...');
+    console.log('🔍 nextWorkflowStep verfügbar?', typeof window.nextWorkflowStep);
+    console.log('🔍 window.workflowData:', window.workflowData);
     
     // Store selection in workflow data
     window.workflowData.applicationType = type;
@@ -210,135 +203,8 @@ function selectApplicationType(type) {
     }, 1500);
 }
 
-// Check if user is authenticated
-function checkUserAuthentication() {
-    // Check if AWS Auth is available and user is logged in
-    if (window.awsAuth && window.awsAuth.isLoggedIn) {
-        return window.awsAuth.isLoggedIn();
-    }
-    
-    // Check localStorage for session
-    const session = localStorage.getItem('aws_auth_session');
-    if (session) {
-        try {
-            const userData = JSON.parse(session);
-            return userData && userData.email;
-        } catch (e) {
-            return false;
-        }
-    }
-    
-    return false;
-}
-
-// Show authentication required modal
-function showAuthenticationRequired(selectedType) {
-    const modal = document.createElement('div');
-    modal.className = 'auth-required-modal';
-    modal.innerHTML = `
-        <div class="auth-modal-content">
-            <div class="auth-modal-header">
-                <h3>🔐 Anmeldung erforderlich</h3>
-                <button class="close-btn" onclick="this.closest('.auth-required-modal').remove()">×</button>
-            </div>
-            <div class="auth-modal-body">
-                <p>Um den Bewerbungsmanager zu nutzen, müssen Sie sich anmelden oder registrieren.</p>
-                <p><strong>Ausgewählte Bewerbungsart:</strong> ${selectedType === 'job-posting' ? 'Stellenausschreibung' : 'Initiativbewerbung'}</p>
-            </div>
-            <div class="auth-modal-footer">
-                <button class="btn-secondary" onclick="this.closest('.auth-required-modal').remove()">Abbrechen</button>
-                <button class="btn-primary" onclick="proceedToAuthentication('${selectedType}')">Anmelden/Registrieren</button>
-            </div>
-        </div>
-    `;
-    
-    // Add styles
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
-    
-    modal.querySelector('.auth-modal-content').style.cssText = `
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        max-width: 500px;
-        width: 90%;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    `;
-    
-    modal.querySelector('.auth-modal-header').style.cssText = `
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-    `;
-    
-    modal.querySelector('.close-btn').style.cssText = `
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #6b7280;
-    `;
-    
-    modal.querySelector('.auth-modal-footer').style.cssText = `
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-        margin-top: 1.5rem;
-    `;
-    
-    modal.querySelectorAll('button').forEach(btn => {
-        btn.style.cssText = `
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        `;
-    });
-    
-    modal.querySelector('.btn-primary').style.cssText += `
-        background: #667eea;
-        color: white;
-    `;
-    
-    modal.querySelector('.btn-secondary').style.cssText += `
-        background: #f3f4f6;
-        color: #374151;
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-// Proceed to authentication
-function proceedToAuthentication(selectedType) {
-    // Store the selected type for after authentication
-    localStorage.setItem('pendingApplicationType', selectedType);
-    
-    // Close modal
-    document.querySelector('.auth-required-modal')?.remove();
-    
-    // Redirect to authentication page
-    window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
-}
-
 // Make functions globally available
 window.generateStep0 = generateStep0;
 window.selectApplicationType = selectApplicationType;
-window.checkUserAuthentication = checkUserAuthentication;
-window.showAuthenticationRequired = showAuthenticationRequired;
-window.proceedToAuthentication = proceedToAuthentication;
 
 console.log('✅ Step 0 Module (Bewerbungsart Auswahl) geladen');

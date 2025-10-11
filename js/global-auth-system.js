@@ -28,11 +28,6 @@ class GlobalAuthSystem {
         // Setup periodic session check
         this.setupSessionCheck();
         
-        // Force UI update after a short delay to ensure all elements are loaded
-        setTimeout(() => {
-            this.updateGlobalUI();
-        }, 1000);
-        
         this.isInitialized = true;
         console.log('✅ Global Auth System initialized');
     }
@@ -120,17 +115,25 @@ class GlobalAuthSystem {
     }
     
     setupGlobalEventListeners() {
-        // Simple, robust event listener for all buttons
+        // Global login button clicks
         document.addEventListener('click', (e) => {
-            const text = e.target.textContent || e.target.innerHTML;
-            
-            if (text.includes('Anmelden') || text.includes('Login')) {
+            if (e.target.matches('.global-login-btn, .nav-login-btn, .login-btn')) {
                 e.preventDefault();
                 this.handleGlobalLoginClick();
-            } else if (text.includes('Profil') || text.includes('Profile')) {
+            }
+        });
+        
+        // Global profile button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.global-profile-btn, .nav-profile-btn, .profile-btn')) {
                 e.preventDefault();
                 this.handleGlobalProfileClick();
-            } else if (text.includes('Abmelden') || text.includes('Logout')) {
+            }
+        });
+        
+        // Global logout button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.global-logout-btn, .nav-logout-btn, .logout-btn')) {
                 e.preventDefault();
                 this.handleGlobalLogoutClick();
             }
@@ -143,15 +146,8 @@ class GlobalAuthSystem {
         // Store current URL for return after login
         localStorage.setItem('returnUrl', window.location.href);
         
-        // Try to show login modal first
-        if (window.authModals && window.authModals.showLogin) {
-            console.log('📧 Opening login modal...');
-            window.authModals.showLogin();
-        } else {
-            console.log('🔄 Redirecting to login page...');
-            // Fallback: redirect to main page with login
-            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
-        }
+        // Redirect to main page with login
+        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
     }
     
     handleGlobalProfileClick() {
@@ -198,25 +194,32 @@ class GlobalAuthSystem {
         const currentUser = this.getCurrentUser();
         
         console.log('🔄 Updating global UI, isLoggedIn:', isLoggedIn);
-        console.log('📱 GitHub Desktop Test - Änderung sichtbar?');
+        console.log('👤 Current user:', currentUser);
         
-        // Simple, robust button update
-        const allButtons = document.querySelectorAll('button');
-        allButtons.forEach(btn => {
-            const text = btn.textContent || btn.innerHTML;
-            if (text.includes('Anmelden') || text.includes('Login') || text.includes('Sign in')) {
-                if (isLoggedIn) {
-                    btn.innerHTML = '<i class="fas fa-user"></i> Profil';
-                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                } else {
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
-                    btn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
-                }
+        // Update all login buttons globally
+        document.querySelectorAll('.global-login-btn, .nav-login-btn, .login-btn, .personality-login-btn').forEach(btn => {
+            if (isLoggedIn) {
+                btn.innerHTML = '<i class="fas fa-user"></i> Profil';
+                btn.className = btn.className.replace('global-login-btn', 'global-profile-btn')
+                                           .replace('nav-login-btn', 'nav-profile-btn')
+                                           .replace('login-btn', 'profile-btn')
+                                           .replace('personality-login-btn', 'personality-profile-btn');
+                btn.style.display = 'flex';
+            } else {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                btn.className = btn.className.replace('global-profile-btn', 'global-login-btn')
+                                           .replace('nav-profile-btn', 'nav-login-btn')
+                                           .replace('profile-btn', 'login-btn')
+                                           .replace('personality-profile-btn', 'personality-login-btn');
+                btn.style.display = 'flex';
             }
         });
         
-        // Update user info
+        // Update user info in navigation
         this.updateGlobalUserInfo(currentUser);
+        
+        // Update personality development specific elements
+        this.updatePersonalityDevelopmentUI(isLoggedIn, currentUser);
     }
     
     updateGlobalUserInfo(user) {
@@ -245,9 +248,14 @@ class GlobalAuthSystem {
     
     updatePersonalityDevelopmentUI(isLoggedIn, user) {
         // Update personality development specific UI elements
+        const userDropdown = document.querySelector('.user-dropdown');
         const userAvatarSmall = document.querySelector('.user-avatar-small');
         const userNameSmall = document.querySelector('.user-name-small');
         const userEmailSmall = document.querySelector('.user-email-small');
+        
+        if (userDropdown) {
+            userDropdown.style.display = isLoggedIn ? 'block' : 'none';
+        }
         
         if (userAvatarSmall) {
             userAvatarSmall.style.display = isLoggedIn ? 'flex' : 'none';
@@ -273,6 +281,39 @@ class GlobalAuthSystem {
                 btn.className = btn.className.replace('personality-profile-btn', 'personality-login-btn');
             }
         });
+    }
+    
+    // Global functions for user dropdown
+    toggleUserMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    openProfile() {
+        window.location.href = 'user-profile.html';
+    }
+    
+    openSettings() {
+        // Redirect to settings page or show settings modal
+        console.log('Settings clicked');
+    }
+    
+    openProgress() {
+        // Redirect to progress page or show progress modal
+        console.log('Progress clicked');
+    }
+    
+    logoutUser() {
+        if (window.awsAuth && window.awsAuth.logout) {
+            window.awsAuth.logout();
+        }
+        // Hide dropdown
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
     }
     
     showGlobalProfileDropdown() {
@@ -458,26 +499,17 @@ class GlobalAuthSystem {
     }
 }
 
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            window.globalAuth = new GlobalAuthSystem();
-        });
-        
-        // Also initialize on page load (for navigation between pages)
-        window.addEventListener('load', () => {
-            if (window.globalAuth) {
-                console.log('🔄 Page loaded, updating UI...');
-                window.globalAuth.updateGlobalUI();
-            }
-        });
-        
-        // Update UI when page becomes visible (for tab switching)
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && window.globalAuth) {
-                console.log('🔄 Page visible, updating UI...');
-                window.globalAuth.updateGlobalUI();
-            }
-        });
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.globalAuth = new GlobalAuthSystem();
+    
+    // Make functions globally available
+    window.toggleUserMenu = () => window.globalAuth.toggleUserMenu();
+    window.openProfile = () => window.globalAuth.openProfile();
+    window.openSettings = () => window.globalAuth.openSettings();
+    window.openProgress = () => window.globalAuth.openProgress();
+    window.logoutUser = () => window.globalAuth.logoutUser();
+});
 
 // Add CSS for global notifications and dropdowns
 const globalStyle = document.createElement('style');
