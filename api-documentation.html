@@ -83,11 +83,11 @@
         <h2 style="margin: 0 0 1.5rem 0; color: #333;">📊 API Statistiken</h2>
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">50+</div>
+                <div class="stat-number">75+</div>
                 <div class="stat-label">API Endpunkte</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">8</div>
+                <div class="stat-number">12</div>
                 <div class="stat-label">Service Kategorien</div>
             </div>
             <div class="stat-card">
@@ -164,6 +164,97 @@
                             uploadedAt: { type: "string", format: "date-time" },
                             tags: { type: "array", items: { type: "string" } },
                             metadata: { type: "object" }
+                        }
+                    },
+                    User: {
+                        type: "object",
+                        properties: {
+                            id: { type: "string", example: "user_1234567890" },
+                            email: { type: "string", format: "email", example: "user@example.com" },
+                            name: { type: "string", example: "John Doe" },
+                            role: { type: "string", enum: ["admin", "moderator", "user"], example: "user" },
+                            status: { type: "string", enum: ["active", "inactive", "pending"], example: "active" },
+                            createdAt: { type: "string", format: "date-time", example: "2024-01-01T00:00:00Z" },
+                            lastLogin: { type: "string", format: "date-time", example: "2025-01-27T10:30:00Z" }
+                        }
+                    },
+                    UserDetail: {
+                        type: "object",
+                        properties: {
+                            id: { type: "string", example: "user_1234567890" },
+                            email: { type: "string", format: "email", example: "user@example.com" },
+                            name: { type: "string", example: "John Doe" },
+                            role: { type: "string", enum: ["admin", "moderator", "user"], example: "user" },
+                            status: { type: "string", enum: ["active", "inactive", "pending"], example: "active" },
+                            profile: {
+                                type: "object",
+                                properties: {
+                                    firstName: { type: "string", example: "John" },
+                                    lastName: { type: "string", example: "Doe" },
+                                    phone: { type: "string", example: "+49 123 456789" },
+                                    company: { type: "string", example: "Example Company" },
+                                    position: { type: "string", example: "Developer" }
+                                }
+                            },
+                            activity: {
+                                type: "array",
+                                items: { $ref: "#/components/schemas/UserActivity" }
+                            },
+                            createdAt: { type: "string", format: "date-time", example: "2024-01-01T00:00:00Z" },
+                            lastLogin: { type: "string", format: "date-time", example: "2025-01-27T10:30:00Z" }
+                        }
+                    },
+                    UserActivity: {
+                        type: "object",
+                        properties: {
+                            action: { type: "string", example: "login" },
+                            timestamp: { type: "string", format: "date-time", example: "2025-01-27T10:30:00Z" },
+                            ip: { type: "string", example: "192.168.1.100" },
+                            userAgent: { type: "string", example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" },
+                            details: { type: "string", example: "Updated profile information" }
+                        }
+                    },
+                    UserAnalytics: {
+                        type: "object",
+                        properties: {
+                            totalUsers: { type: "integer", example: 156 },
+                            activeUsers: { type: "integer", example: 142 },
+                            inactiveUsers: { type: "integer", example: 14 },
+                            newUsersThisMonth: { type: "integer", example: 23 },
+                            userGrowth: {
+                                type: "object",
+                                properties: {
+                                    last7Days: { type: "integer", example: 5 },
+                                    last30Days: { type: "integer", example: 23 },
+                                    last90Days: { type: "integer", example: 67 }
+                                }
+                            },
+                            roleDistribution: {
+                                type: "object",
+                                properties: {
+                                    admin: { type: "integer", example: 3 },
+                                    moderator: { type: "integer", example: 0 },
+                                    user: { type: "integer", example: 153 }
+                                }
+                            },
+                            loginStats: {
+                                type: "object",
+                                properties: {
+                                    today: { type: "integer", example: 45 },
+                                    thisWeek: { type: "integer", example: 312 },
+                                    thisMonth: { type: "integer", example: 1247 }
+                                }
+                            },
+                            topCountries: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        country: { type: "string", example: "Germany" },
+                                        users: { type: "integer", example: 89 }
+                                    }
+                                }
+                            }
                         }
                     },
                     Error: {
@@ -487,26 +578,111 @@
                 "/api/v1/users": {
                     get: {
                         tags: ["Users"],
-                        summary: "List users",
-                        description: "Get a list of all users",
+                        summary: "List all users",
+                        description: "Get a comprehensive list of all users with filtering and pagination",
+                        parameters: [
+                            {
+                                name: "limit",
+                                in: "query",
+                                schema: { type: "integer", default: 50, maximum: 100 }
+                            },
+                            {
+                                name: "offset",
+                                in: "query",
+                                schema: { type: "integer", default: 0 }
+                            },
+                            {
+                                name: "role",
+                                in: "query",
+                                schema: { type: "string", enum: ["admin", "user", "moderator"] }
+                            },
+                            {
+                                name: "status",
+                                in: "query",
+                                schema: { type: "string", enum: ["active", "inactive", "pending"] }
+                            },
+                            {
+                                name: "search",
+                                in: "query",
+                                schema: { type: "string", description: "Search by name or email" }
+                            }
+                        ],
                         responses: {
                             "200": {
-                                description: "List of users",
+                                description: "List of users with pagination info",
                                 content: {
                                     "application/json": {
                                         schema: {
-                                            type: "array",
-                                            items: {
-                                                type: "object",
-                                                properties: {
-                                                    id: { type: "string" },
-                                                    email: { type: "string" },
-                                                    name: { type: "string" },
-                                                    role: { type: "string" },
-                                                    createdAt: { type: "string", format: "date-time" }
+                                            type: "object",
+                                            properties: {
+                                                users: {
+                                                    type: "array",
+                                                    items: { $ref: "#/components/schemas/User" }
+                                                },
+                                                pagination: {
+                                                    type: "object",
+                                                    properties: {
+                                                        total: { type: "integer" },
+                                                        limit: { type: "integer" },
+                                                        offset: { type: "integer" },
+                                                        hasMore: { type: "boolean" }
+                                                    }
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" }
+                        }
+                    },
+                    post: {
+                        tags: ["Users"],
+                        summary: "Create new user",
+                        description: "Create a new user account",
+                        requestBody: {
+                            required: true,
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        required: ["email", "name"],
+                                        properties: {
+                                            email: { type: "string", format: "email" },
+                                            name: { type: "string" },
+                                            role: { type: "string", enum: ["user", "moderator"], default: "user" },
+                                            profile: {
+                                                type: "object",
+                                                properties: {
+                                                    firstName: { type: "string" },
+                                                    lastName: { type: "string" },
+                                                    phone: { type: "string" },
+                                                    company: { type: "string" },
+                                                    position: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "201": {
+                                description: "User created successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/User" }
+                                    }
+                                }
+                            },
+                            "400": { $ref: "#/components/responses/BadRequest" },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "409": {
+                                description: "User already exists",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/Error" }
                                     }
                                 }
                             }
@@ -517,7 +693,84 @@
                     get: {
                         tags: ["Users"],
                         summary: "Get user details",
-                        description: "Get detailed information about a specific user",
+                        description: "Get detailed information about a specific user including profile and activity",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" },
+                                description: "Unique user identifier"
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User details",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/UserDetail" }
+                                    }
+                                }
+                            },
+                            "404": { $ref: "#/components/responses/NotFound" },
+                            "401": { $ref: "#/components/responses/Unauthorized" }
+                        }
+                    },
+                    put: {
+                        tags: ["Users"],
+                        summary: "Update user",
+                        description: "Update user information and profile",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        requestBody: {
+                            required: true,
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            name: { type: "string" },
+                                            role: { type: "string", enum: ["user", "moderator", "admin"] },
+                                            status: { type: "string", enum: ["active", "inactive", "pending"] },
+                                            profile: {
+                                                type: "object",
+                                                properties: {
+                                                    firstName: { type: "string" },
+                                                    lastName: { type: "string" },
+                                                    phone: { type: "string" },
+                                                    company: { type: "string" },
+                                                    position: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            "200": {
+                                description: "User updated successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/User" }
+                                    }
+                                }
+                            },
+                            "400": { $ref: "#/components/responses/BadRequest" },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    },
+                    delete: {
+                        tags: ["Users"],
+                        summary: "Delete user",
+                        description: "Permanently delete a user account",
                         parameters: [
                             {
                                 name: "userId",
@@ -528,23 +781,215 @@
                         ],
                         responses: {
                             "200": {
-                                description: "User details",
+                                description: "User deleted successfully",
                                 content: {
                                     "application/json": {
                                         schema: {
                                             type: "object",
                                             properties: {
-                                                id: { type: "string" },
-                                                email: { type: "string" },
-                                                name: { type: "string" },
-                                                role: { type: "string" },
-                                                profile: { type: "object" },
-                                                activity: { type: "array" }
+                                                success: { type: "boolean" },
+                                                message: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    }
+                },
+                "/api/v1/users/{userId}/role": {
+                    put: {
+                        tags: ["Users"],
+                        summary: "Change user role",
+                        description: "Change the role of a specific user",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        requestBody: {
+                            required: true,
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        required: ["role"],
+                                        properties: {
+                                            role: { 
+                                                type: "string", 
+                                                enum: ["user", "moderator", "admin"],
+                                                description: "New role for the user"
                                             }
                                         }
                                     }
                                 }
                             }
+                        },
+                        responses: {
+                            "200": {
+                                description: "User role changed successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                success: { type: "boolean" },
+                                                message: { type: "string" },
+                                                userId: { type: "string" },
+                                                newRole: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "400": { $ref: "#/components/responses/BadRequest" },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    }
+                },
+                "/api/v1/users/{userId}/activate": {
+                    post: {
+                        tags: ["Users"],
+                        summary: "Activate user",
+                        description: "Activate a user account",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User activated successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                success: { type: "boolean" },
+                                                message: { type: "string" },
+                                                userId: { type: "string" },
+                                                status: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    }
+                },
+                "/api/v1/users/{userId}/deactivate": {
+                    post: {
+                        tags: ["Users"],
+                        summary: "Deactivate user",
+                        description: "Deactivate a user account",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User deactivated successfully",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                success: { type: "boolean" },
+                                                message: { type: "string" },
+                                                userId: { type: "string" },
+                                                status: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    }
+                },
+                "/api/v1/users/{userId}/activity": {
+                    get: {
+                        tags: ["Users"],
+                        summary: "Get user activity",
+                        description: "Get activity log for a specific user",
+                        parameters: [
+                            {
+                                name: "userId",
+                                in: "path",
+                                required: true,
+                                schema: { type: "string" }
+                            },
+                            {
+                                name: "limit",
+                                in: "query",
+                                schema: { type: "integer", default: 50, maximum: 100 }
+                            },
+                            {
+                                name: "offset",
+                                in: "query",
+                                schema: { type: "integer", default: 0 }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User activity log",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: { $ref: "#/components/schemas/UserActivity" }
+                                        }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "404": { $ref: "#/components/responses/NotFound" }
+                        }
+                    }
+                },
+                "/api/v1/users/analytics": {
+                    get: {
+                        tags: ["Users"],
+                        summary: "Get user analytics",
+                        description: "Get comprehensive user analytics and statistics",
+                        parameters: [
+                            {
+                                name: "timeRange",
+                                in: "query",
+                                schema: { type: "string", enum: ["7d", "30d", "90d", "1y"], default: "30d" }
+                            }
+                        ],
+                        responses: {
+                            "200": {
+                                description: "User analytics data",
+                                content: {
+                                    "application/json": {
+                                        schema: { $ref: "#/components/schemas/UserAnalytics" }
+                                    }
+                                }
+                            },
+                            "401": { $ref: "#/components/responses/Unauthorized" },
+                            "403": { $ref: "#/components/responses/Forbidden" }
                         }
                     }
                 },
@@ -612,6 +1057,14 @@
                     },
                     Unauthorized: {
                         description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/Error" }
+                            }
+                        }
+                    },
+                    Forbidden: {
+                        description: "Forbidden",
                         content: {
                             "application/json": {
                                 schema: { $ref: "#/components/schemas/Error" }
