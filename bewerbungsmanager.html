@@ -1209,10 +1209,8 @@
             console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
             
             // FORCE CREATE AND START WORKFLOW SYSTEM
-            if (!window.completeWorkflowSystem) {
-                console.log('🔧 Creating Complete Workflow System...');
-                window.completeWorkflowSystem = new CompleteWorkflowSystem();
-            }
+            console.log('🔧 Creating Complete Workflow System...');
+            window.completeWorkflowSystem = new CompleteWorkflowSystem();
             
             console.log('🎯 Starting Complete Workflow System with Step 0');
             window.completeWorkflowSystem.start();
