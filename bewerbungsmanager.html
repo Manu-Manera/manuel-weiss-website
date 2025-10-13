@@ -1259,8 +1259,18 @@
         
         function selectType(type) {
             console.log('📋 Gewählt:', type);
-            alert('✅ Bewerbungsart gewählt: ' + (type === 'job-posting' ? 'Stellenausschreibung' : 'Initiativbewerbung'));
+            
+            // Entferne das einfache Modal
             document.getElementById('workflow-modal').remove();
+            
+            // Starte den vollständigen Workflow
+            if (window.completeWorkflowSystem) {
+                console.log('✅ Starte vollständigen Workflow mit Typ:', type);
+                window.completeWorkflowSystem.startWorkflow(type);
+            } else {
+                console.error('❌ Complete Workflow System nicht verfügbar');
+                alert('❌ Workflow-System nicht verfügbar. Bitte Seite neu laden.');
+            }
         }
         
         // ALTE FUNKTION ALS BACKUP
