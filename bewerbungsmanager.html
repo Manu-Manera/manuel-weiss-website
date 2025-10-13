@@ -929,6 +929,477 @@
             font-size: 1rem;
         }
         
+        /* Real AI Analysis Styles */
+        .input-hint {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .analysis-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .api-key-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .api-key-status.valid {
+            background: #f0fdf4;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        
+        .api-key-status.invalid {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .analysis-loading {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .loading-step {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .analysis-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .summary-icon {
+            font-size: 2rem;
+        }
+        
+        .summary-content h5 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .summary-number {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .requirements-section {
+            margin-top: 2rem;
+        }
+        
+        .requirements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .requirements-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-add-requirement,
+        .btn-reset-order {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-add-requirement:hover {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .btn-reset-order:hover {
+            background: #6b7280;
+            color: white;
+            border-color: #6b7280;
+        }
+        
+        .requirements-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .requirement-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: move;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .requirement-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        
+        .requirement-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .requirement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .requirement-priority {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .priority-badge {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        
+        .priority-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .requirement-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-edit,
+        .btn-delete {
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .btn-edit:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .requirement-content {
+            margin-bottom: 1rem;
+        }
+        
+        .requirement-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .requirement-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .requirement-category,
+        .requirement-experience,
+        .requirement-required {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .requirement-category {
+            background: #f0f4ff;
+            color: #3730a3;
+        }
+        
+        .requirement-experience {
+            background: #f0fdf4;
+            color: #166534;
+        }
+        
+        .requirement-required {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .requirement-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .keyword-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .requirement-priority-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .priority-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .priority-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .priority-value {
+            font-weight: 700;
+            color: #1f2937;
+            min-width: 3rem;
+            text-align: center;
+        }
+        
+        .priority-scale {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .scale-visual {
+            margin-top: 0.5rem;
+        }
+        
+        .scale-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .scale-segment {
+            height: 100%;
+        }
+        
+        .category-filter {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .analysis-error {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .sortable-container {
+            min-height: 200px;
+            transition: all 0.3s;
+        }
+        
+        .sortable-container.drag-over {
+            background: #f0f4ff;
+            border: 2px dashed #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .requirements-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .requirements-actions {
+                justify-content: center;
+            }
+            
+            .requirement-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .requirement-priority-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+            }
+        }
+        
         @media (max-width: 768px) {
             .workflow-modal {
                 width: 100%;
@@ -1182,6 +1653,10 @@
     <!-- MODULARER WORKFLOW LOADER - Lädt alle Step-Module automatisch -->
     <script src="js/workflow-steps/workflow-loader.js"></script>
     <script src="js/complete-workflow-system.js"></script>
+    
+    <!-- Real AI Analysis System -->
+    <script src="js/real-ai-analysis.js"></script>
+    <script src="js/requirements-priority-ui.js"></script>
     
     <script>
         // Global flag to track workflow status

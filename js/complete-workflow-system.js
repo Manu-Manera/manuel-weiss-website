@@ -269,8 +269,8 @@ class CompleteWorkflowSystem {
                 <div class="step-header">
                     <div class="step-icon">🔍</div>
                     <h3>Stellenanalyse</h3>
-                    <p class="step-subtitle">KI-Analyse der Stellenausschreibung</p>
-                    <p class="step-description">Fügen Sie die Stellenausschreibung ein und lassen Sie sie von KI analysieren</p>
+                    <p class="step-subtitle">Echte KI-Analyse der Stellenausschreibung</p>
+                    <p class="step-description">Fügen Sie die Stellenausschreibung ein und lassen Sie sie von echter OpenAI-KI analysieren</p>
                 </div>
                 
                 <div class="input-section">
@@ -287,15 +287,51 @@ class CompleteWorkflowSystem {
                     <div class="input-group">
                         <label for="jobDescriptionInput">Stellenausschreibung</label>
                         <textarea id="jobDescriptionInput" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein..."></textarea>
+                        <div class="input-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Mindestens 50 Zeichen für eine aussagekräftige Analyse
+                        </div>
                     </div>
                     
-                    <button class="btn-primary" onclick="completeWorkflowSystem.analyzeJobDescription()">
-                        <i class="fas fa-robot"></i> KI-Analyse starten
-                    </button>
+                    <div class="analysis-actions">
+                        <button class="btn-primary" onclick="completeWorkflowSystem.startRealAIAnalysis()" id="analyzeBtn">
+                            <i class="fas fa-robot"></i> Echte KI-Analyse starten
+                        </button>
+                        <div class="api-key-status" id="apiKeyStatus">
+                            <i class="fas fa-key"></i>
+                            <span id="apiKeyText">API Key wird überprüft...</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="analysisResults" class="analysis-results" style="display: none;">
-                    <!-- Analysis results will be displayed here -->
+                    <div class="analysis-header">
+                        <h4>🤖 KI-Analyse Ergebnisse</h4>
+                        <div class="analysis-meta">
+                            <span id="analysisTimestamp"></span>
+                            <span id="analysisModel">GPT-4</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-content">
+                        <div class="analysis-summary" id="analysisSummary">
+                            <!-- Summary will be loaded here -->
+                        </div>
+                        
+                        <div class="requirements-section">
+                            <div id="requirementsList" class="requirements-list">
+                                <!-- Requirements will be loaded here -->
+                            </div>
+                            
+                            <div id="priorityScale" class="priority-scale">
+                                <!-- Priority scale will be loaded here -->
+                            </div>
+                            
+                            <div id="categoryFilter" class="category-filter">
+                                <!-- Category filter will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -597,6 +633,26 @@ class CompleteWorkflowSystem {
     initializeStep1() {
         // Initialize job description analysis
         console.log('Initializing Step 1: Job Analysis');
+        
+        // Check API key status
+        setTimeout(() => {
+            this.checkApiKeyStatus();
+        }, 500);
+    }
+    
+    checkApiKeyStatus() {
+        const statusElement = document.getElementById('apiKeyStatus');
+        const textElement = document.getElementById('apiKeyText');
+        
+        if (!statusElement || !textElement) return;
+        
+        if (window.realAIAnalysis && window.realAIAnalysis.apiKey) {
+            statusElement.classList.add('valid');
+            textElement.textContent = 'OpenAI API Key konfiguriert';
+        } else {
+            statusElement.classList.add('invalid');
+            textElement.textContent = 'OpenAI API Key nicht konfiguriert - Demo-Modus verfügbar';
+        }
     }
     
     initializeStep2() {
@@ -624,13 +680,13 @@ class CompleteWorkflowSystem {
         console.log('Initializing Step 6: Export');
     }
     
-    analyzeJobDescription() {
+    async startRealAIAnalysis() {
         const company = document.getElementById('companyInput').value;
         const position = document.getElementById('positionInput').value;
         const jobDescription = document.getElementById('jobDescriptionInput').value;
         
-        if (!company || !position || !jobDescription) {
-            alert('Bitte füllen Sie alle Felder aus.');
+        if (!jobDescription || jobDescription.trim().length < 50) {
+            alert('Bitte fügen Sie eine Stellenausschreibung mit mindestens 50 Zeichen ein.');
             return;
         }
         
@@ -639,8 +695,201 @@ class CompleteWorkflowSystem {
         this.workflowData.position = position;
         this.workflowData.jobDescription = jobDescription;
         
-        // Simulate AI analysis
-        this.simulateAIAnalysis();
+        // Show loading state
+        this.showAnalysisLoading();
+        
+        try {
+            // Use real AI analysis
+            if (window.realAIAnalysis) {
+                const requirements = await window.realAIAnalysis.analyzeJobDescription(
+                    jobDescription, 
+                    company, 
+                    position
+                );
+                
+                this.displayRealAIAnalysis(requirements);
+            } else {
+                throw new Error('Real AI Analysis System nicht verfügbar');
+            }
+        } catch (error) {
+            console.error('Real AI Analysis failed:', error);
+            this.showAnalysisError(error.message);
+        }
+    }
+    
+    showAnalysisLoading() {
+        const resultsContainer = document.getElementById('analysisResults');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.innerHTML = `
+                <div class="analysis-loading">
+                    <div class="loading-spinner"></div>
+                    <h4>🤖 Echte KI-Analyse läuft...</h4>
+                    <p>OpenAI GPT-4 analysiert Ihre Stellenausschreibung</p>
+                    <div class="loading-steps">
+                        <div class="loading-step">📝 Text wird verarbeitet...</div>
+                        <div class="loading-step">🔍 Anforderungen werden extrahiert...</div>
+                        <div class="loading-step">🎯 Prioritäten werden berechnet...</div>
+                        <div class="loading-step">📊 Ergebnisse werden strukturiert...</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (analyzeBtn) {
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
+        }
+    }
+    
+    displayRealAIAnalysis(requirements) {
+        const resultsContainer = document.getElementById('analysisResults');
+        if (!resultsContainer) return;
+        
+        // Update timestamp
+        const timestamp = document.getElementById('analysisTimestamp');
+        if (timestamp) {
+            timestamp.textContent = `Analysiert am ${new Date().toLocaleString('de-DE')}`;
+        }
+        
+        // Display summary
+        this.displayAnalysisSummary();
+        
+        // Display requirements with drag & drop
+        if (window.requirementsPriorityUI) {
+            window.requirementsPriorityUI.displayRequirements(requirements);
+        }
+        
+        // Show results
+        resultsContainer.style.display = 'block';
+        
+        // Re-enable button
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        if (analyzeBtn) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-robot"></i> Echte KI-Analyse starten';
+        }
+        
+        // Auto-advance to next step after 3 seconds
+        setTimeout(() => {
+            this.nextStep();
+        }, 3000);
+    }
+    
+    displayAnalysisSummary() {
+        const summaryContainer = document.getElementById('analysisSummary');
+        if (!summaryContainer) return;
+        
+        const requirements = window.realAIAnalysis?.requirements || [];
+        const highPriority = requirements.filter(req => req.priority >= 8).length;
+        const mediumPriority = requirements.filter(req => req.priority >= 5 && req.priority < 8).length;
+        const lowPriority = requirements.filter(req => req.priority < 5).length;
+        
+        summaryContainer.innerHTML = `
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-icon">📋</div>
+                    <div class="summary-content">
+                        <h5>Gefundene Anforderungen</h5>
+                        <p class="summary-number">${requirements.length}</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🔴</div>
+                    <div class="summary-content">
+                        <h5>Kritisch (8-10)</h5>
+                        <p class="summary-number">${highPriority}</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🟡</div>
+                    <div class="summary-content">
+                        <h5>Wichtig (5-7)</h5>
+                        <p class="summary-number">${mediumPriority}</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🟢</div>
+                    <div class="summary-content">
+                        <h5>Nice-to-have (1-4)</h5>
+                        <p class="summary-number">${lowPriority}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    showAnalysisError(errorMessage) {
+        const resultsContainer = document.getElementById('analysisResults');
+        if (!resultsContainer) return;
+        
+        resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = `
+            <div class="analysis-error">
+                <div class="error-icon">❌</div>
+                <h4>KI-Analyse fehlgeschlagen</h4>
+                <p>${errorMessage}</p>
+                <div class="error-actions">
+                    <button class="btn-secondary" onclick="completeWorkflowSystem.startRealAIAnalysis()">
+                        <i class="fas fa-retry"></i> Erneut versuchen
+                    </button>
+                    <button class="btn-primary" onclick="completeWorkflowSystem.simulateAIAnalysis()">
+                        <i class="fas fa-magic"></i> Demo-Modus verwenden
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Re-enable button
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        if (analyzeBtn) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-robot"></i> Echte KI-Analyse starten';
+        }
+    }
+    
+    // Fallback simulation for demo purposes
+    simulateAIAnalysis() {
+        const resultsContainer = document.getElementById('analysisResults');
+        if (!resultsContainer) return;
+        
+        resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = `
+            <div class="analysis-card">
+                <h4>🔍 Demo-Analyse Ergebnisse</h4>
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <strong>Erkannte Anforderungen:</strong>
+                        <ul>
+                            <li>3+ Jahre Berufserfahrung</li>
+                            <li>JavaScript, React, Node.js</li>
+                            <li>Teamarbeit und Kommunikation</li>
+                            <li>Problemlösungsfähigkeiten</li>
+                        </ul>
+                    </div>
+                    <div class="analysis-item">
+                        <strong>Schlüsselwörter:</strong>
+                        <div class="keywords">
+                            <span class="keyword">JavaScript</span>
+                            <span class="keyword">React</span>
+                            <span class="keyword">Node.js</span>
+                            <span class="keyword">Teamarbeit</span>
+                        </div>
+                    </div>
+                    <div class="analysis-item">
+                        <strong>Branche:</strong>
+                        <span>IT/Software</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Auto-advance to next step
+        setTimeout(() => {
+            this.nextStep();
+        }, 2000);
     }
     
     simulateAIAnalysis() {
