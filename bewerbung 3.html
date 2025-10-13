@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbung - Manuel Weiss</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Modern HR Application Page - Swiss/German Best Practices */
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --accent: #dc2626;
+            --neutral-50: #f8fafc;
+            --neutral-100: #f1f5f9;
+            --neutral-200: #e2e8f0;
+            --neutral-300: #cbd5e1;
+            --neutral-400: #94a3b8;
+            --neutral-500: #64748b;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1e293b;
+            --neutral-900: #0f172a;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-800);
+            background: var(--neutral-50);
+        /* Header with Company Branding */
+        .application-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        .company-branding {
+            gap: 1rem;
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-lg);
+            background: var(--neutral-100);
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            border: 2px solid var(--neutral-200);
+            position: relative;
+            overflow: hidden;
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        .company-logo .fallback-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+        .company-info h1 {
+            color: var(--neutral-900);
+            margin-bottom: 0.25rem;
+        .company-info .position {
+            font-size: 1rem;
+            color: var(--neutral-600);
+            font-weight: 500;
+        .application-meta {
+            gap: 2rem;
+        .meta-item {
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        .meta-item i {
+        /* Main Content */
+        .application-content {
+            padding: 3rem 2rem;
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: start;
+        /* Left Column - Application Details */
+        .application-details {
+            border-radius: var(--radius-2xl);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--neutral-200);
+        .section-header {
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--neutral-100);
+        .section-header h2 {
+        .section-header i {
+            font-size: 1.25rem;
+        /* Cover Letter */
+        .cover-letter {
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        .cover-letter-header {
+            margin-bottom: 1.5rem;
+        .cover-letter-header h3 {
+        .ai-badge {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            gap: 0.375rem;
+        .cover-letter-content {
+            line-height: 1.8;
+            color: var(--neutral-700);
+            white-space: pre-wrap;
+        /* Right Column - Candidate Profile */
+        .candidate-profile {
+            top: 120px;
+        .candidate-header {
+            text-align: center;
+        .candidate-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            color: var(--neutral-400);
+            border: 4px solid var(--white);
+        .candidate-photo img {
+            object-fit: cover;
+        .candidate-name {
+            margin-bottom: 0.5rem;
+        .candidate-title {
+        /* Contact Info */
+        .contact-info {
+        .contact-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--neutral-100);
+        .contact-item:last-child {
+            border-bottom: none;
+        .contact-item i {
+            width: 20px;
+        .contact-item span {
+        /* Certificates */
+        .certificates-section {
+        .certificates-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            margin-top: 1rem;
+        .certificate-card {
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        .certificate-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        .certificate-header {
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        .certificate-title {
+            line-height: 1.4;
+        .certificate-download {
+            background: var(--primary);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+        .certificate-download:hover {
+            background: var(--primary-light);
+            transform: scale(1.1);
+        .certificate-info {
+            flex-direction: column;
+        .certificate-info-item {
+        .certificate-info-item i {
+            width: 16px;
+        .certificate-description {
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        .certificate-preview {
+        .certificate-preview img {
+        .certificate-preview .fallback {
+        .certificate-preview .fallback i {
+            font-size: 2rem;
+            display: block;
+        .certificate-preview .overlay {
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        .certificate-preview:hover .overlay {
+            opacity: 1;
+        .certificate-preview .overlay button {
+            padding: 0.75rem 1.5rem;
+        .certificate-preview .overlay button:hover {
+        /* Upload Sections Responsive */
+        @media (max-width: 768px) {
+            .upload-sections {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            .upload-section {
+                padding: 1rem !important;
+        /* Skills */
+        .skills-section {
+        .skills-grid {
+            grid-template-columns: repeat(2, 1fr);
+        .skill-item {
+            padding: 0.75rem 1rem;
+        /* Action Buttons */
+        .action-buttons {
+            margin-top: 2rem;
+        .btn {
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+        .btn-primary {
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        .btn-secondary {
+        .btn-secondary:hover {
+            border-color: var(--neutral-300);
+        .btn-success {
+            background: var(--secondary);
+        .btn-success:hover {
+            background: #047857;
+        /* Experience Section */
+        .experience-item {
+            padding-bottom: 2rem;
+        .experience-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        .experience-title {
+            font-size: 1.125rem;
+        .experience-company {
+        .experience-period {
+            color: var(--neutral-500);
+        .experience-description {
+        /* Education Section */
+        .education-item {
+            padding-bottom: 1.5rem;
+        .education-item:last-child {
+        .education-title {
+        .education-institution {
+        .education-period {
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            .candidate-profile {
+                position: static;
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            .application-meta {
+            .application-content {
+                padding: 2rem 1rem;
+            .application-details,
+                padding: 1.5rem;
+            .skills-grid {
+        /* Loading States */
+        .loading {
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        /* Error States */
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            margin: 1rem 0;
+        /* Success States */
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #059669;
+    </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
+<body>
+    <!-- Header with Company Branding -->
+    <header class="application-header">
+        <div class="header-container">
+            <div class="company-branding">
+                <div class="company-logo" id="companyLogo">
+                    <div class="fallback-text" id="companyInitials">MW</div>
+                </div>
+                <div class="company-info">
+                    <h1 id="companyName">Manuel Weiss</h1>
+                    <div class="position" id="applicationPosition">HR-Tech Consultant</div>
+            </div>
+            <div class="application-meta">
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span id="applicationDate">-</span>
+                    <i class="fas fa-eye"></i>
+                    <span id="viewCount">0 Aufrufe</span>
+                    <i class="fas fa-clock"></i>
+                    <span id="lastViewed">-</span>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="application-content">
+        <div class="content-grid">
+            <!-- Left Column - Application Details -->
+            <div class="application-details">
+                <!-- Cover Letter Section -->
+                <div class="cover-letter">
+                    <div class="cover-letter-header">
+                        <h3><i class="fas fa-file-alt"></i> Anschreiben</h3>
+                        <div class="ai-badge" id="aiBadge" style="display: none;">
+                            <i class="fas fa-robot"></i>
+                            KI-generiert
+                        </div>
+                    </div>
+                    <div class="cover-letter-content" id="coverLetterContent">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            Lade Anschreiben...
+                    
+                    <!-- Analysis Section -->
+                    <div class="analysis-section" id="analysisSection" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--neutral-50); border-radius: var(--radius-lg); border: 1px solid var(--neutral-200);">
+                        <h4 style="margin: 0 0 1rem 0; color: var(--neutral-800); display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                            KI-Analyse des Anschreibens
+                        </h4>
+                        <div id="analysisResults" style="display: none;">
+                            <!-- Analysis results will be displayed here -->
+                        <button id="startAnalysisBtn" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                            Analyse starten
+                        </button>
+                <!-- About Me Section -->
+                <div class="section-header">
+                    <i class="fas fa-user"></i>
+                    <h2>Über mich</h2>
+                <div class="about-content">
+                    <p>Ich bin ein erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen. Meine Expertise liegt in der Implementierung moderner HR-Technologien, der Optimierung von Recruiting-Prozessen und der Entwicklung innovativer Lösungen für Unternehmen aller Größenordnungen.</p>
+                    <p>Durch meine Arbeit habe ich bereits zahlreiche Unternehmen dabei unterstützt, ihre HR-Abteilungen zu digitalisieren und effizienter zu gestalten. Dabei lege ich besonderen Wert auf benutzerfreundliche Lösungen und nachhaltige Implementierungen.</p>
+                <!-- Skills Section -->
+                    <i class="fas fa-cogs"></i>
+                    <h2>Kompetenzen</h2>
+                <div class="skills-grid">
+                    <div class="skill-item">HR-Tech Beratung</div>
+                    <div class="skill-item">Prozessoptimierung</div>
+                    <div class="skill-item">Digital Transformation</div>
+                    <div class="skill-item">Recruiting Automation</div>
+                    <div class="skill-item">Change Management</div>
+                    <div class="skill-item">Data Analytics</div>
+                    <div class="skill-item">Project Management</div>
+                    <div class="skill-item">Stakeholder Management</div>
+                <!-- Experience Section -->
+                    <i class="fas fa-briefcase"></i>
+                    <h2>Berufserfahrung</h2>
+                <div class="experience-item">
+                    <div class="experience-title">Senior HR-Tech Consultant</div>
+                    <div class="experience-company">TechConsult GmbH</div>
+                    <div class="experience-period">2021 - heute</div>
+                    <div class="experience-description">
+                        Leitung von Digitalisierungsprojekten für HR-Abteilungen mittelständischer Unternehmen. Implementierung von ATS-Systemen, Entwicklung von Recruiting-Strategien und Schulung von HR-Teams.
+                    <div class="experience-title">HR-Tech Consultant</div>
+                    <div class="experience-company">InnovateHR AG</div>
+                    <div class="experience-period">2019 - 2021</div>
+                        Beratung von Unternehmen bei der Auswahl und Implementierung von HR-Software. Spezialisierung auf Recruiting-Tools und Employee Experience Plattformen.
+                    <div class="experience-title">HR Analyst</div>
+                    <div class="experience-company">DataDriven HR</div>
+                    <div class="experience-period">2018 - 2019</div>
+                        Analyse von HR-Daten und Entwicklung von Dashboards für HR-Reporting. Unterstützung bei der Implementierung von HR-Analytics-Tools.
+                <!-- Education Section -->
+                    <i class="fas fa-graduation-cap"></i>
+                    <h2>Ausbildung</h2>
+                <div class="education-item">
+                    <div class="education-title">Bachelor of Science in Wirtschaftsinformatik</div>
+                    <div class="education-institution">Universität Zürich</div>
+                    <div class="education-period">2014 - 2018</div>
+                    <div class="education-title">Zertifikat HR Analytics</div>
+                    <div class="education-institution">HR Academy Switzerland</div>
+                    <div class="education-period">2020</div>
+            <!-- Right Column - Candidate Profile -->
+            <div class="candidate-profile">
+                <div class="candidate-header">
+                    <div class="candidate-photo" id="candidatePhoto">
+                        <i class="fas fa-user"></i>
+                    <div class="candidate-name">Manuel Weiss</div>
+                    <div class="candidate-title">HR-Tech Consultant</div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>manuel.weiss@email.com</span>
+                        <i class="fas fa-phone"></i>
+                        <span>+41 44 123 45 67</span>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Zürich, Schweiz</span>
+                        <i class="fab fa-linkedin"></i>
+                        <span>linkedin.com/in/manuelweiss</span>
+                <div class="certificates-section">
+                    <h3>📜 Zeugnisse & Dokumente</h3>
+                    <!-- OCR Analysis Section -->
+                    <div class="ocr-analysis-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: var(--radius-lg); margin-bottom: 2rem; color: white;">
+                        <h4 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-eye" style="color: #fff;"></i>
+                            KI-Dokumentenanalyse
+                        <p style="margin: 0 0 1.5rem 0; opacity: 0.9;">Automatische Texterkennung und Analyse von Lebensläufen und Zeugnisse</p>
+                        
+                        <div id="ocrResults" style="display: none; background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                            <!-- OCR results will be displayed here -->
+                        <button id="startOcrAnalysis" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                            Dokumente analysieren
+                    <!-- Upload-Bereiche für verschiedene Dokumenttypen -->
+                    <div class="upload-sections" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Lebenslauf Upload -->
+                        <div class="upload-section" style="background: var(--neutral-50); padding: 1.5rem; border-radius: var(--radius-lg); border: 2px dashed var(--neutral-300);">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-800); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-file-pdf" style="color: var(--primary);"></i>
+                                Lebenslauf hochladen
+                            </h4>
+                            <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <button id="btnCvUpload" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
+                                <i class="fas fa-upload"></i> Lebenslauf hochladen
+                            </button>
+                            <p style="font-size: 0.875rem; color: var(--neutral-600); margin: 0.5rem 0 0 0;">PDF, DOC, DOCX bis 10MB</p>
+                        <!-- Zeugnisse Upload -->
+                                <i class="fas fa-certificate" style="color: var(--secondary);"></i>
+                                Zeugnisse hochladen
+                            <input type="file" id="certificateUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="width: 100%; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white; margin-bottom: 1rem;" />
+                            <button id="btnCertificateUpload" style="background: var(--secondary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
+                                <i class="fas fa-upload"></i> Zeugnisse hochladen
+                            <p style="font-size: 0.875rem; color: var(--neutral-600); margin: 0.5rem 0 0 0;">PDF, DOC, DOCX, JPG, PNG bis 10MB</p>
+                    <div class="certificates-grid" id="certificatesGrid">
+                        <!-- Wird dynamisch gefüllt -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" data-action="schedule-interview">
+                        <i class="fas fa-calendar-plus"></i>
+                        Interview terminieren
+                    </button>
+                    <button class="btn btn-success" data-action="accept-application">
+                        <i class="fas fa-check"></i>
+                        Bewerbung annehmen
+                    <button class="btn btn-secondary" data-action="download-c-v">
+                        <i class="fas fa-download"></i>
+                        Lebenslauf herunterladen
+                    <button class="btn btn-secondary" data-action="send-message">
+                        Nachricht senden
+    </main>
+    <script>
+        // Application Viewer Class
+        class ApplicationViewer {
+            constructor() {
+                this.applicationId = this.getApplicationIdFromUrl();
+                this.application = null;
+                this.init();
+            init() {
+                this.loadApplicationData();
+                this.setupEventListeners();
+            getApplicationIdFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('id');
+            async loadApplicationData() {
+                if (!this.applicationId) {
+                    this.showError('Keine Bewerbungs-ID gefunden.');
+                    return;
+                }
+                try {
+                    // Load application data from localStorage
+                    const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+                    this.application = applications.find(app => app.id == this.applicationId);
+                    if (!this.application) {
+                        this.showError('Bewerbung nicht gefunden.');
+                        return;
+                    }
+                    this.updateViewCount();
+                    this.displayApplication();
+                    this.loadCompanyBranding();
+                    this.loadCertificates();
+                } catch (error) {
+                    console.error('Error loading application:', error);
+                    this.showError('Fehler beim Laden der Bewerbung.');
+            updateViewCount() {
+                const key = `application_views_${this.applicationId}`;
+                let viewCount = parseInt(localStorage.getItem(key) || '0') + 1;
+                localStorage.setItem(key, viewCount);
+                localStorage.setItem(`application_last_view_${this.applicationId}`, new Date().toISOString());
+                
+                document.getElementById('viewCount').textContent = `${viewCount} Aufrufe`;
+                document.getElementById('lastViewed').textContent = 'Gerade eben';
+                console.log(`Application ${this.applicationId} viewed. Total views: ${viewCount}`);
+            loadCertificates() {
+                const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+                const certificates = hrDesignData.certificates || [];
+                const certificatesGrid = document.getElementById('certificatesGrid');
+                if (!certificatesGrid) return;
+                certificatesGrid.innerHTML = '';
+                certificates.forEach(cert => {
+                    const certElement = this.createCertificateElement(cert);
+                    certificatesGrid.appendChild(certElement);
+                });
+            createCertificateElement(cert) {
+                const div = document.createElement('div');
+                div.className = 'certificate-card';
+                div.innerHTML = `
+                    <div class="certificate-header">
+                        <div class="certificate-title">${cert.title}</div>
+                        <button class="certificate-download" data-action="download-certificate" data-param="${cert.id}" title="Download">
+                            <i class="fas fa-download"></i>
+                    <div class="certificate-info">
+                        <div class="certificate-info-item">
+                            <i class="fas fa-university"></i>
+                            <span>${cert.institution}</span>
+                            <i class="fas fa-calendar"></i>
+                            <span>${cert.year}</span>
+                    ${cert.description ? `<div class="certificate-description">${cert.description}</div>` : ''}
+                    <div class="certificate-preview">
+                        ${cert.file ? 
+                            `<img src="${cert.file}" alt="${cert.title}">
+                             <div class="overlay">
+                                 <button data-action="download-certificate" data-param="${cert.id}" class="btn btn-primary">
+                                     <i class="fas fa-download"></i> Download
+                                 </button>
+                             </div>` : 
+                            `<div class="fallback">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>${cert.fileName || 'Keine Vorschau verfügbar'}</div>
+                            </div>`
+                        }
+                `;
+                return div;
+            displayApplication() {
+                // Update page title
+                document.title = `Bewerbung ${this.application.position} - ${this.application.company} - Manuel Weiss`;
+                // Update header
+                document.getElementById('companyName').textContent = this.application.company;
+                document.getElementById('applicationPosition').textContent = this.application.position;
+                document.getElementById('applicationDate').textContent = new Date(this.application.date).toLocaleDateString('de-DE');
+                // Load cover letter
+                this.loadCoverLetter();
+            loadCoverLetter() {
+                // Try to find a saved cover letter for this application
+                const coverLetters = JSON.parse(localStorage.getItem('coverLetters') || '[]');
+                let matchingLetter = null;
+                // First try to find by coverLetterId if available
+                if (this.application.coverLetterId) {
+                    matchingLetter = coverLetters.find(letter => letter.id == this.application.coverLetterId);
+                // If not found, try to find by company and position
+                if (!matchingLetter) {
+                    matchingLetter = coverLetters.find(letter => 
+                        letter.company.toLowerCase() === this.application.company.toLowerCase() &&
+                        letter.position.toLowerCase() === this.application.position.toLowerCase()
+                    );
+                if (matchingLetter) {
+                    document.getElementById('coverLetterContent').innerHTML = 
+                        `<div style="white-space: pre-wrap; line-height: 1.6;">${matchingLetter.content}</div>`;
+                    // Show AI badge if applicable
+                    if (this.application.source === 'ai-generated') {
+                        document.getElementById('aiBadge').style.display = 'flex';
+                } else {
+                    // Generate a default cover letter
+                    const defaultLetter = this.generateDefaultCoverLetter();
+                        `<div style="white-space: pre-wrap; line-height: 1.6;">${defaultLetter}</div>`;
+            generateDefaultCoverLetter() {
+                return `Sehr geehrte Damen und Herren,
+mit großem Interesse habe ich Ihre Stellenanzeige für ${this.application.position} bei ${this.application.company} gelesen. Als erfahrener HR-Tech Consultant mit über 5 Jahren Berufserfahrung in der digitalen Transformation von HR-Prozessen bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+Meine Expertise umfasst die Implementierung moderner HR-Technologien, die Optimierung von Recruiting-Prozessen und die Entwicklung innovativer Lösungen für Unternehmen aller Größenordnungen. Durch meine bisherige Tätigkeit habe ich bereits zahlreiche Unternehmen dabei unterstützt, ihre HR-Abteilungen zu digitalisieren und effizienter zu gestalten.
+Besonders reizt mich an dieser Position die Möglichkeit, meine Leidenschaft für HR-Technologie mit meiner Erfahrung in der Beratung zu verbinden. Ich bringe nicht nur technisches Know-how mit, sondern auch die Fähigkeit, komplexe Sachverhalte verständlich zu vermitteln und Teams bei der Umsetzung zu unterstützen.
+Gerne würde ich in einem persönlichen Gespräch erläutern, wie ich Ihr Team bei der Weiterentwicklung der HR-Prozesse unterstützen kann. Ich freue mich auf Ihre Rückmeldung.
+Mit freundlichen Grüßen
+Manuel Weiss`;
+            async loadCompanyBranding() {
+                    // Try to find company logo and branding
+                    const companyData = await this.fetchCompanyData(this.application.company);
+                    this.applyCompanyBranding(companyData);
+                    console.error('Error loading company branding:', error);
+                    // Use fallback branding
+                    this.applyFallbackBranding();
+            async fetchCompanyData(companyName) {
+                // Simulate AI-powered company data fetching
+                // In a real implementation, this would call an AI service
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        // Simulate different company branding based on company name
+                        const companyBranding = this.getSimulatedCompanyBranding(companyName);
+                        resolve(companyBranding);
+                    }, 1000);
+            getSimulatedCompanyBranding(companyName) {
+                // Simulate different corporate designs based on company name
+                const brandingTemplates = {
+                    'google': {
+                        primary: '#4285f4',
+                        secondary: '#34a853',
+                        logo: 'G',
+                        name: 'Google',
+                        style: 'modern'
+                    },
+                    'microsoft': {
+                        primary: '#0078d4',
+                        secondary: '#00bcf2',
+                        logo: 'M',
+                        name: 'Microsoft',
+                        style: 'corporate'
+                    'apple': {
+                        primary: '#000000',
+                        secondary: '#1d1d1f',
+                        logo: '🍎',
+                        name: 'Apple',
+                        style: 'minimal'
+                    'sap': {
+                        primary: '#0f7b0f',
+                        secondary: '#1e7e34',
+                        logo: 'SAP',
+                        name: 'SAP',
+                        style: 'enterprise'
+                    'siemens': {
+                        primary: '#009999',
+                        secondary: '#00cccc',
+                        logo: 'S',
+                        name: 'Siemens',
+                        style: 'industrial'
+                };
+                // Find matching template or use default
+                const lowerName = companyName.toLowerCase();
+                for (const [key, branding] of Object.entries(brandingTemplates)) {
+                    if (lowerName.includes(key)) {
+                        return branding;
+                // Default Swiss/German corporate design
+                return {
+                    primary: '#1e40af',
+                    secondary: '#059669',
+                    logo: companyName.substring(0, 2).toUpperCase(),
+                    name: companyName,
+                    style: 'swiss'
+            applyCompanyBranding(branding) {
+                // Update CSS variables
+                document.documentElement.style.setProperty('--primary', branding.primary);
+                document.documentElement.style.setProperty('--secondary', branding.secondary);
+                // Update company logo
+                const logoElement = document.getElementById('companyLogo');
+                const initialsElement = document.getElementById('companyInitials');
+                if (branding.logo.length === 1) {
+                    initialsElement.textContent = branding.logo;
+                // Update company name
+                document.getElementById('companyName').textContent = branding.name;
+                // Apply style-specific adjustments
+                this.applyStyleAdjustments(branding.style);
+            applyStyleAdjustments(style) {
+                const header = document.querySelector('.application-header');
+                const logo = document.getElementById('companyLogo');
+                switch (style) {
+                    case 'modern':
+                        header.style.background = 'linear-gradient(135deg, #4285f4 0%, #34a853 100%)';
+                        header.style.color = 'white';
+                        break;
+                    case 'corporate':
+                        header.style.background = 'linear-gradient(135deg, #0078d4 0%, #00bcf2 100%)';
+                    case 'minimal':
+                        header.style.background = '#000000';
+                        logo.style.border = '2px solid white';
+                    case 'enterprise':
+                        header.style.background = 'linear-gradient(135deg, #0f7b0f 0%, #1e7e34 100%)';
+                    case 'industrial':
+                        header.style.background = 'linear-gradient(135deg, #009999 0%, #00cccc 100%)';
+                    case 'swiss':
+                    default:
+                        // Keep default Swiss design
+            applyFallbackBranding() {
+                // Use default Swiss corporate design
+                this.applyCompanyBranding({
+                    logo: this.application.company.substring(0, 2).toUpperCase(),
+                    name: this.application.company,
+            setupEventListeners() {
+                // Add any additional event listeners here
+            showError(message) {
+                document.getElementById('coverLetterContent').innerHTML = 
+                    `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+        // Action Functions
+        function scheduleInterview() {
+            alert('Interview-Terminierung wird in einer zukünftigen Version verfügbar sein.');
+        function acceptApplication() {
+            alert('Bewerbung wurde als angenommen markiert.');
+        function downloadCV() {
+            // Create a link to download the CV
+            const link = document.createElement('a');
+            link.href = 'Manuel_Weiss_CV.pdf';
+            link.download = 'Manuel_Weiss_CV.pdf';
+            link.click();
+        function sendMessage() {
+            alert('Nachrichtenfunktion wird in einer zukünftigen Version verfügbar sein.');
+        function downloadCertificate(id) {
+            const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+            const certificates = hrDesignData.certificates || [];
+            const cert = certificates.find(c => c.id === id);
+            if (!cert) {
+                alert('Zeugnis nicht gefunden.');
+                return;
+            if (cert.file) {
+                // Download from stored file data
+                const link = document.createElement('a');
+                link.href = cert.file;
+                link.download = cert.fileName || `${cert.title}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (cert.fileName) {
+                // Try to download from server
+                link.href = cert.fileName;
+                link.download = cert.fileName;
+                link.target = '_blank';
+            } else {
+                alert('Keine Datei verfügbar für Download.');
+        // Initialize application viewer when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ApplicationViewer();
+        });
+    </script>
+    <!-- Multi-User File Management System -->
+    <script src="./js/base-logger.js"></script>
+    <section id="userfiles" style="margin: 3rem auto; max-width: 1200px; padding: 0 1rem;">
+      <div style="background: var(--white); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: 2rem; border: 1px solid var(--neutral-200);">
+        <h3 style="color: var(--neutral-800); font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-cloud-upload-alt" style="color: var(--primary);"></i>
+          Meine Dokumente
+        </h3>
+        
+        <div id="authbar" style="margin-bottom: 2rem; padding: 1rem; background: var(--neutral-50); border-radius: var(--radius-lg); border: 1px solid var(--neutral-200);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <button id="loginBtn" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-sign-in-alt"></i> Anmelden
+              </button>
+              <button id="logoutBtn" style="display:none; background: var(--accent); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Abmelden
+            <span id="whoami" style="color: var(--neutral-600); font-weight: 500;"></span>
+          </div>
+        <div id="uploader" style="display:none; margin-bottom: 2rem; padding: 1.5rem; background: var(--neutral-50); border-radius: var(--radius-lg); border: 2px dashed var(--neutral-300);">
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <input type="file" id="docFile" style="flex: 1; padding: 0.75rem; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); background: white;" />
+            <button id="btnUpload" style="background: var(--secondary); color: white; border: none; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-upload"></i> Hochladen
+            </button>
+        <table id="docTable" style="display:none; width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+          <thead>
+            <tr style="background: var(--neutral-100);">
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Name</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Typ</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Größe</th>
+              <th style="padding: 1rem; text-align: left; font-weight: 600; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-200);">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="msg" style="margin-top: 1rem; padding: 1rem; border-radius: var(--radius-md); background: var(--neutral-100); color: var(--neutral-700); text-align: center; display: none;"></div>
+      </div>
+    </section>
+    <script src="js/aws-upload-config.js"></script>
+    <script src="js/smart-api-system.js"></script>
+    <script type="module">
+      import { initAuth, isLoggedIn, getUser } from './js/auth.js';
+      import { uploadDocument, listDocuments, deleteDocument, getDownloadUrl } from './js/docs.js';
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const whoami = document.getElementById('whoami');
+      const uploader = document.getElementById('uploader');
+      const docTable = document.getElementById('docTable');
+      const tbody = docTable.querySelector('tbody');
+      const msg = document.getElementById('msg');
+      // 🔧 Flexible Auth URLs - Fallback System
+      const LOGIN_URL  = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/login?client_id=7kc5tt6a23fgh53d60vkefm812&response_type=code&scope=email+openid+profile&redirect_uri=' + encodeURIComponent(window.location.origin + '/bewerbung.html');
+      const LOGOUT_URL = 'https://manuel-weiss-userfiles-auth-038333965110.auth.eu-central-1.amazoncognito.com/logout?client_id=7kc5tt6a23fgh53d60vkefm812&logout_uri=' + encodeURIComponent(window.location.origin);
+      
+      // 🔧 Auth Fallback - Simple Login System
+      function createSimpleAuth() {
+        return {
+          isLoggedIn: () => {
+            const user = localStorage.getItem('simple_user');
+            return user && JSON.parse(user).userId;
+          },
+          getUser: () => {
+            return user ? JSON.parse(user) : null;
+          login: (email, password) => {
+            // Simple mock login for testing
+            const user = {
+              userId: 'user_' + Date.now(),
+              email: email,
+              name: email.split('@')[0],
+              idToken: 'mock_token_' + Date.now()
+            };
+            localStorage.setItem('simple_user', JSON.stringify(user));
+            return user;
+          logout: () => {
+            localStorage.removeItem('simple_user');
+          }
+        };
+      }
+      // Use simple auth as fallback
+      const simpleAuth = createSimpleAuth();
+      // 🔧 Simple Login Function for Testing
+      function showSimpleLogin() {
+        const email = prompt('E-Mail für Test-Login:');
+        if (email) {
+          const user = simpleAuth.login(email, 'test');
+          console.log('✅ Simple login successful:', user);
+          refreshUI();
+          showMessage('Erfolgreich angemeldet als: ' + user.email, 'success');
+      // 🔧 Simple Logout Function
+      function doSimpleLogout() {
+        simpleAuth.logout();
+        console.log('✅ Simple logout successful');
+        refreshUI();
+        showMessage('Erfolgreich abgemeldet', 'info');
+      initAuth();
+      refreshUI();
+      // Clean up any existing event listeners to prevent duplicates
+      function cleanupEventListeners() {
+        console.log('🧹 Cleaning up event listeners...');
+        // Remove existing listeners from buttons
+        const buttons = [
+          'btnUpload', 'btnCvUpload', 'btnCertificateUpload', 
+          'startAnalysisBtn', 'startOcrAnalysis'
+        ];
+        buttons.forEach(buttonId => {
+          const button = document.getElementById(buttonId);
+          if (button) {
+            // Clone the button to remove all event listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            console.log(`✅ Cleaned up ${buttonId}`);
+        console.log('✅ Event listeners cleaned up');
+      cleanupEventListeners();
+      // Initialize analysis functionality
+      initializeAnalysis();
+      // Initialize OCR functionality
+      initializeOCR();
+      // 🔧 Smart Login/Logout with Fallback
+      loginBtn.onclick = () => {
+        console.log('🔐 Login button clicked');
+        try {
+          // Try Cognito login first
+          location.href = LOGIN_URL;
+        } catch (error) {
+          console.warn('⚠️ Cognito login failed, using simple login:', error);
+          showSimpleLogin();
+      };
+      logoutBtn.onclick = () => {
+        console.log('🚪 Logout button clicked');
+          // Try Cognito logout first
+          location.href = LOGOUT_URL;
+          console.warn('⚠️ Cognito logout failed, using simple logout:', error);
+          doSimpleLogout();
+      // Get fresh button references after cleanup
+      const btnUpload = document.getElementById('btnUpload');
+      if (btnUpload) {
+        btnUpload.onclick = async () => {
+        const f = document.getElementById('docFile').files[0];
+        if (!f) return showMessage('Bitte Datei wählen', 'warning');
+        const btn = document.getElementById('btnUpload');
+        const originalText = btn.textContent;
+          btn.textContent = 'Lade hoch...';
+          btn.disabled = true;
+          showMessage('📤 Dokument wird hochgeladen...', 'info');
+          
+          const result = await uploadDocument(f);
+          if (result.storage === 'local') {
+            showMessage('✅ Dokument lokal gespeichert (Cloud nicht verfügbar)', 'success');
+          } else {
+            showMessage('✅ Dokument erfolgreich hochgeladen', 'success');
+          document.getElementById('docFile').value = '';
+          await loadList();
+        } catch(e){ 
+          console.error(e); 
+          showMessage('❌ Upload fehlgeschlagen: ' + e.message, 'error'); 
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+      // CV Upload Handler
+      const btnCvUpload = document.getElementById('btnCvUpload');
+      if (btnCvUpload) {
+        btnCvUpload.onclick = async () => {
+        const f = document.getElementById('cvUpload').files[0];
+        if (!f) return showMessage('Bitte Lebenslauf-Datei wählen', 'warning');
+        const btn = document.getElementById('btnCvUpload');
+          showMessage('📤 Lebenslauf wird hochgeladen...', 'info');
+          let result;
+          try {
+            // Try server upload first
+            result = await uploadToServer(f, 'cv');
+            showMessage('✅ Lebenslauf erfolgreich auf Server hochgeladen', 'success');
+          } catch (serverError) {
+            console.warn('Server upload failed, using local storage:', serverError);
+            // Fallback to local storage
+            result = await uploadDocument(f);
+            showMessage('✅ Lebenslauf lokal gespeichert (Server nicht verfügbar)', 'success');
+          // Add to HR Design data
+          addToHRDesignData('cv', f.name, result);
+          document.getElementById('cvUpload').value = '';
+          showMessage('❌ Lebenslauf-Upload fehlgeschlagen: ' + e.message, 'error'); 
+      // Certificate Upload Handler
+      const btnCertificateUpload = document.getElementById('btnCertificateUpload');
+      if (btnCertificateUpload) {
+        btnCertificateUpload.onclick = async () => {
+        const files = document.getElementById('certificateUpload').files;
+        if (!files || files.length === 0) return showMessage('Bitte Zeugnis-Dateien wählen', 'warning');
+        const btn = document.getElementById('btnCertificateUpload');
+          showMessage(`📤 ${files.length} Zeugnis(se) werden hochgeladen...`, 'info');
+          // Try server upload first, fallback to local
+          const uploadPromises = Array.from(files).map(async (file) => {
+            try {
+              // Try server upload
+              const result = await uploadToServer(file, 'certificate');
+              return { file, result, success: true };
+            } catch (serverError) {
+              console.warn('Server upload failed, using local storage:', serverError);
+              // Fallback to local storage
+              const result = await uploadDocument(file);
+          });
+          const results = await Promise.all(uploadPromises);
+          let successCount = 0;
+          results.forEach(({ file, result, success }) => {
+            if (success) {
+              addToHRDesignData('certificate', file.name, result);
+              successCount++;
+          if (successCount === files.length) {
+            showMessage(`✅ ${successCount} Zeugnis(se) erfolgreich hochgeladen`, 'success');
+            showMessage(`⚠️ ${successCount} von ${files.length} Zeugnisse hochgeladen`, 'warning');
+          document.getElementById('certificateUpload').value = '';
+          showMessage('❌ Zeugnis-Upload fehlgeschlagen: ' + e.message, 'error'); 
+      // Add to HR Design Data
+      function addToHRDesignData(type, fileName, uploadResult) {
+        const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+        console.log('💾 Adding to HR Design Data:', { type, fileName, uploadResult });
+        if (type === 'cv') {
+          if (!hrDesignData.documents) hrDesignData.documents = {};
+          hrDesignData.documents.cv = {
+            name: fileName,
+            uploadedAt: new Date().toISOString(),
+            storage: uploadResult.storage,
+            id: uploadResult.id
+          };
+          console.log('✅ CV added to HR Design Data:', hrDesignData.documents.cv);
+        } else if (type === 'certificate') {
+          if (!hrDesignData.certificates) hrDesignData.certificates = [];
+          const certificateData = {
+            id: uploadResult.id,
+            title: fileName.replace(/\.[^/.]+$/, ""), // Remove file extension
+            fileName: fileName,
+            institution: 'Hochgeladenes Zeugnis',
+            year: new Date().getFullYear(),
+            description: 'Hochgeladenes Zeugnis'
+          hrDesignData.certificates.push(certificateData);
+          console.log('✅ Certificate added to HR Design Data:', certificateData);
+        // Save back to localStorage
+        localStorage.setItem('hrDesignData', JSON.stringify(hrDesignData));
+        console.log('💾 HR Design Data saved to localStorage');
+      // ANALYSIS FUNCTIONALITY
+      function initializeAnalysis() {
+        console.log('🔍 Initializing analysis functionality...');
+        const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+        if (startAnalysisBtn && !startAnalysisBtn.hasAttribute('data-listener-added')) {
+          startAnalysisBtn.addEventListener('click', startAnalysis);
+          startAnalysisBtn.setAttribute('data-listener-added', 'true');
+          console.log('✅ Analysis button listener added');
+        // Show analysis section if cover letter is loaded
+        const coverLetterContent = document.getElementById('coverLetterContent');
+        if (coverLetterContent && coverLetterContent.textContent.trim() !== 'Lade Anschreiben...') {
+          document.getElementById('analysisSection').style.display = 'block';
+      function startAnalysis() {
+        console.log('🚀 Starting cover letter analysis...');
+        const btn = document.getElementById('startAnalysisBtn');
+          btn.textContent = 'Analysiere...';
+          // Get cover letter content
+          const coverLetterText = document.getElementById('coverLetterContent').textContent.trim();
+          if (!coverLetterText || coverLetterText === 'Lade Anschreiben...') {
+            showMessage('❌ Kein Anschreiben zum Analysieren gefunden', 'error');
+            return;
+          // Simulate analysis (in real implementation, this would call an AI service)
+          setTimeout(() => {
+            const analysisResults = performAnalysis(coverLetterText);
+            displayAnalysisResults(analysisResults);
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }, 2000);
+          console.error('Analysis error:', error);
+          showMessage('❌ Analyse fehlgeschlagen: ' + error.message, 'error');
+      function performAnalysis(text) {
+        // Simulate AI analysis
+        const wordCount = text.split(/\s+/).length;
+        const sentenceCount = text.split(/[.!?]+/).length;
+        const paragraphCount = text.split(/\n\s*\n/).length;
+        // Check for key elements
+        const hasGreeting = /^(sehr geehrte|liebe|hallo)/i.test(text);
+        const hasClosing = /(mit freundlichen grüßen|herzlichst|freundliche grüße)/i.test(text);
+        const hasMotivation = /(motiviert|interesse|begeistert|leidenschaft)/i.test(text);
+        const hasSkills = /(erfahrung|kenntnisse|fähigkeiten|qualifikationen)/i.test(text);
+        // Calculate scores
+        const structureScore = (hasGreeting ? 25 : 0) + (hasClosing ? 25 : 0) + (paragraphCount >= 3 ? 25 : 0) + (sentenceCount >= 5 ? 25 : 0);
+        const contentScore = (hasMotivation ? 50 : 0) + (hasSkills ? 50 : 0);
+        const overallScore = Math.round((structureScore + contentScore) / 2);
+          wordCount,
+          sentenceCount,
+          paragraphCount,
+          structureScore,
+          contentScore,
+          overallScore,
+          hasGreeting,
+          hasClosing,
+          hasMotivation,
+          hasSkills,
+          suggestions: generateSuggestions(text, overallScore)
+      function generateSuggestions(text, score) {
+        const suggestions = [];
+        if (score < 70) {
+          suggestions.push('Erwähnen Sie spezifische Fähigkeiten und Erfahrungen');
+        if (text.length < 200) {
+          suggestions.push('Das Anschreiben könnte ausführlicher sein');
+        if (text.length > 500) {
+          suggestions.push('Das Anschreiben könnte prägnanter sein');
+        if (!/sehr geehrte/i.test(text)) {
+          suggestions.push('Beginnen Sie mit einer formellen Anrede');
+        return suggestions;
+      function displayAnalysisResults(results) {
+        const resultsDiv = document.getElementById('analysisResults');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: white; padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+              <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">${results.overallScore}%</div>
+              <div style="color: var(--neutral-600); font-size: 0.875rem;">Gesamtbewertung</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--secondary);">${results.wordCount}</div>
+              <div style="color: var(--neutral-600); font-size: 0.875rem;">Wörter</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">${results.paragraphCount}</div>
+              <div style="color: var(--neutral-600); font-size: 0.875rem;">Absätze</div>
+          <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+            <h5 style="margin: 0 0 1rem 0; color: var(--neutral-800);">Struktur-Analyse</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas ${results.hasGreeting ? 'fa-check-circle' : 'fa-times-circle'}" style="color: ${results.hasGreeting ? 'var(--success)' : 'var(--danger)'};"></i>
+                <span>Anrede vorhanden</span>
+              </div>
+                <i class="fas ${results.hasClosing ? 'fa-check-circle' : 'fa-times-circle'}" style="color: ${results.hasClosing ? 'var(--success)' : 'var(--danger)'};"></i>
+                <span>Grußformel vorhanden</span>
+                <i class="fas ${results.hasMotivation ? 'fa-check-circle' : 'fa-times-circle'}" style="color: ${results.hasMotivation ? 'var(--success)' : 'var(--danger)'};"></i>
+                <span>Motivation erwähnt</span>
+                <i class="fas ${results.hasSkills ? 'fa-check-circle' : 'fa-times-circle'}" style="color: ${results.hasSkills ? 'var(--success)' : 'var(--danger)'};"></i>
+                <span>Fähigkeiten erwähnt</span>
+          ${results.suggestions.length > 0 ? `
+            <div style="background: var(--warning-light); padding: 1.5rem; border-radius: var(--radius-md); border-left: 4px solid var(--warning);">
+              <h5 style="margin: 0 0 1rem 0; color: var(--neutral-800);">Verbesserungsvorschläge</h5>
+              <ul style="margin: 0; padding-left: 1.5rem;">
+                ${results.suggestions.map(suggestion => `<li style="margin-bottom: 0.5rem;">${suggestion}</li>`).join('')}
+              </ul>
+          ` : ''}
+        `;
+        showMessage('✅ Analyse abgeschlossen', 'success');
+      // ENHANCED OCR WITH AI INTEGRATION
+      function initializeOCR() {
+        console.log('🔍 Initializing Enhanced OCR with AI integration...');
+        const startOcrBtn = document.getElementById('startOcrAnalysis');
+        if (startOcrBtn && !startOcrBtn.hasAttribute('data-listener-added')) {
+          startOcrBtn.addEventListener('click', startEnhancedOCRAnalysis);
+          startOcrBtn.setAttribute('data-listener-added', 'true');
+          console.log('✅ OCR analysis button listener added');
+        // Add test function to window for debugging
+        window.testDocumentDetection = function() {
+          console.log('🧪 Testing document detection...');
+          const hrDesignData = JSON.parse(localStorage.getItem('hrDesignData') || '{}');
+          console.log('HR Design Data:', hrDesignData);
+          console.log('Documents:', hrDesignData.documents);
+          console.log('Certificates:', hrDesignData.certificates);
+          // Test document collection
+          const documents = [];
+          if (hrDesignData.documents && hrDesignData.documents.cv) {
+            documents.push({
+              name: hrDesignData.documents.cv.name,
+              type: 'cv',
+              data: hrDesignData.documents.cv
+            });
+            console.log('✅ CV document found:', hrDesignData.documents.cv.name);
+          if (hrDesignData.certificates && hrDesignData.certificates.length > 0) {
+            hrDesignData.certificates.forEach(cert => {
+              documents.push({
+                name: cert.fileName || cert.title,
+                type: 'certificate',
+                data: cert
+              });
+              console.log('✅ Certificate found:', cert.fileName || cert.title);
+          console.log(`📊 Total documents found: ${documents.length}`);
+          return documents;
+        console.log('🧪 Test function available: window.testDocumentDetection()');
+        // Initialize AI Coach for document analysis (simplified)
+        console.log('🤖 AI Coach initialized for document analysis');
+      async function startEnhancedOCRAnalysis() {
+        console.log('🚀 Starting Enhanced OCR with AI analysis...');
+        const btn = document.getElementById('startOcrAnalysis');
+          btn.textContent = 'AI analysiert...';
+          // Get uploaded documents from multiple sources
+          console.log('📋 Checking for uploaded documents...');
+          // Debug: Show structure of hrDesignData
+          console.log('📊 HR Design Data Structure:', {
+            hasDocuments: !!hrDesignData.documents,
+            hasCertificates: !!hrDesignData.certificates,
+            documents: hrDesignData.documents,
+            certificates: hrDesignData.certificates
+          // Debug: Show all localStorage keys
+          console.log('🔍 All localStorage keys:', Object.keys(localStorage));
+          // Debug: Check for any document-related data
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.includes('document') || key.includes('cv') || key.includes('certificate') || key.includes('hr'))) {
+              console.log(`📄 Found document key: ${key}`, localStorage.getItem(key));
+          // Debug: Show current localStorage state
+          console.log('🔍 Current localStorage state:');
+            console.log(`  ${key}:`, localStorage.getItem(key));
+          // Collect CV documents
+          // Collect certificate documents
+          // Also check for documents in localStorage directly
+          const userId = getUser()?.userId || 'anonymous';
+          const userDocuments = JSON.parse(localStorage.getItem(`user_documents_${userId}`) || '[]');
+          if (userDocuments.length > 0) {
+            console.log('📄 Found documents in localStorage:', userDocuments.length);
+            userDocuments.forEach(doc => {
+              if (doc.name && !documents.find(d => d.name === doc.name)) {
+                documents.push({
+                  name: doc.name,
+                  type: doc.name.toLowerCase().includes('lebenslauf') || doc.name.toLowerCase().includes('cv') ? 'cv' : 'certificate',
+                  data: doc
+                console.log('✅ Additional document found:', doc.name);
+              }
+          // Check for documents in the main document list
+            const mainDocuments = await listDocuments();
+            console.log('📄 Found documents in main list:', mainDocuments.length);
+            mainDocuments.forEach(doc => {
+                console.log('✅ Main document found:', doc.name);
+          } catch (error) {
+            console.warn('Could not fetch main documents:', error);
+          if (documents.length === 0) {
+            // Fallback: Create demo documents for testing
+            console.log('🔄 No documents found, creating demo documents for testing...');
+              name: 'Demo Lebenslauf.pdf',
+              data: { name: 'Demo Lebenslauf.pdf', type: 'cv' }
+              name: 'Demo Zeugnis.pdf',
+              type: 'certificate',
+              data: { name: 'Demo Zeugnis.pdf', type: 'certificate' }
+            showMessage('⚠️ Keine hochgeladenen Dokumente gefunden. Bitte laden Sie zuerst Lebenslauf oder Zeugnisse hoch, oder verwenden Sie Demo-Dokumente für die Analyse.', 'warning');
+            console.log(`✅ Found ${documents.length} document(s) for analysis:`, documents.map(d => d.name));
+          showMessage(`🤖 AI analysiert ${documents.length} Dokument(e)...`, 'info');
+          // Process each document with AI enhancement
+          const results = [];
+          for (const doc of documents) {
+              const ocrResult = await performEnhancedOCR(doc);
+              results.push(ocrResult);
+            } catch (error) {
+              console.error(`Enhanced OCR failed for ${doc.name}:`, error);
+              results.push({
+                name: doc.name,
+                type: doc.type,
+                error: error.message,
+                success: false
+          // Display enhanced results
+          displayEnhancedOCRResults(results);
+          console.error('Enhanced OCR analysis error:', error);
+          showMessage('❌ AI-OCR-Analyse fehlgeschlagen: ' + error.message, 'error');
+      async function performEnhancedOCR(document) {
+        console.log('🤖 Performing Enhanced OCR with AI on:', document.name);
+          // Step 1: Basic OCR extraction
+          let ocrText = '';
+          let ocrSource = '';
+          // Try server-side OCR first
+            const serverResult = await performServerOCR(document);
+            if (serverResult.success) {
+              ocrText = serverResult.text;
+              ocrSource = serverResult.source;
+            console.warn('Server OCR failed, trying client-side:', serverError);
+          // Fallback to client-side OCR simulation
+          if (!ocrText) {
+            const clientResult = await performClientOCR(document);
+            ocrText = clientResult.text;
+            ocrSource = 'client-simulation';
+          // Step 2: AI-Enhanced Analysis
+          const aiAnalysis = await performAIAnalysis(ocrText, document.type);
+          // Step 3: Smart Document Parsing
+          const smartParsing = await performSmartParsing(ocrText, document.type);
+          // Step 4: AI-Generated Insights
+          const aiInsights = await generateAIInsights(ocrText, document.type, aiAnalysis, smartParsing);
+          return {
+            name: document.name,
+            type: document.type,
+            text: ocrText,
+            source: ocrSource,
+            success: true,
+            analysis: aiAnalysis,
+            smartParsing: smartParsing,
+            aiInsights: aiInsights,
+            enhancedScore: calculateEnhancedScore(aiAnalysis, smartParsing, aiInsights)
+          console.error('Enhanced OCR failed:', error);
+          throw error;
+      async function performServerOCR(document) {
+        // Try multiple OCR endpoints
+        const endpoints = [
+          'https://api.manuel-weiss.com/ocr',
+          '/api/ocr',
+          'https://manuel-weiss.com/api/ocr'
+        for (const endpoint of endpoints) {
+            const formData = new FormData();
+            // In a real implementation, you would need the actual file data
+            formData.append('file', new Blob(['dummy data'], { type: 'application/pdf' }));
+            formData.append('type', document.type);
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'Authorization': `Bearer ${getUser()?.idToken || ''}`
+            if (response.ok) {
+              const result = await response.json();
+              return {
+                success: true,
+                text: result.text,
+                source: result.source || 'server-ocr'
+              };
+            console.warn(`Endpoint ${endpoint} failed:`, error);
+            continue;
+        throw new Error('All server endpoints failed');
+      async function performClientOCR(document) {
+        // Simulate client-side OCR processing
+        console.log('🖥️ Performing client-side OCR simulation for:', document.name);
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Generate realistic OCR text based on document type
+        let simulatedText = '';
+        if (document.type === 'cv') {
+          simulatedText = `Manuel Weiss
+Softwareentwickler & Persönlichkeitsentwicklungsberater
+Kontakt:
+E-Mail: manuel.weiss@example.com
+Telefon: +49 123 456789
+LinkedIn: linkedin.com/in/manuelweiss
+Berufserfahrung:
+2020 - heute: Freiberuflicher Berater für Persönlichkeitsentwicklung
+2018 - 2020: Softwareentwickler bei TechCorp GmbH
+2016 - 2018: Junior Developer bei StartupXYZ
+Ausbildung:
+2012 - 2016: Bachelor Informatik, Universität München
+2010 - 2012: Abitur, Gymnasium München
+Fähigkeiten:
+- JavaScript, React, Node.js
+- Persönlichkeitsentwicklung
+- Coaching und Beratung
+- Projektmanagement`;
+        } else if (document.type === 'certificate') {
+          simulatedText = `Zeugnis
+Manuel Weiss hat erfolgreich den Kurs "Persönlichkeitsentwicklung" 
+an der Akademie für Lebensberatung absolviert.
+Datum: 15. März 2023
+Note: Sehr gut (1,0)
+Der Teilnehmer hat sich durch besondere Leistungen und Engagement 
+ausgezeichnet.
+Unterschrift: Dr. Maria Schmidt
+Akademie für Lebensberatung`;
+        } else {
+          // Generic document text
+          simulatedText = `Dokument: ${document.name}
+Dieses Dokument wurde erfolgreich analysiert.
+Typ: ${document.type}
+Hochgeladen: ${new Date().toLocaleDateString('de-DE')}
+Inhalt:
+Das Dokument enthält relevante Informationen für die Bewerbung.
+Alle wichtigen Daten wurden erkannt und verarbeitet.`;
+          text: simulatedText,
+          source: 'client-simulation'
+      function analyzeExtractedText(text, documentType) {
+        console.log('📊 Analyzing extracted text for:', documentType);
+        const analysis = {
+          wordCount: text.split(/\s+/).length,
+          characterCount: text.length,
+          extractedEntities: extractEntities(text),
+          documentScore: calculateDocumentScore(text, documentType),
+          suggestions: generateDocumentSuggestions(text, documentType)
+        return analysis;
+      function extractEntities(text) {
+        const entities = {
+          emails: [],
+          phones: [],
+          dates: [],
+          skills: [],
+          companies: []
+        // Extract emails
+        const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+        entities.emails = text.match(emailRegex) || [];
+        // Extract phone numbers
+        const phoneRegex = /(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/g;
+        entities.phones = text.match(phoneRegex) || [];
+        // Extract dates
+        const dateRegex = /\b(\d{1,2}\.?\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s?\d{4}|\d{1,2}\.\d{1,2}\.\d{4})\b/g;
+        entities.dates = text.match(dateRegex) || [];
+        // Extract skills (common keywords)
+        const skillKeywords = ['JavaScript', 'React', 'Node.js', 'Python', 'Java', 'SQL', 'HTML', 'CSS', 'Coaching', 'Beratung', 'Projektmanagement'];
+        entities.skills = skillKeywords.filter(skill => 
+          text.toLowerCase().includes(skill.toLowerCase())
+        );
+        // Extract companies
+        const companyRegex = /\b[A-Z][a-z]+ (GmbH|AG|Corp|Inc|Ltd|Company)\b/g;
+        entities.companies = text.match(companyRegex) || [];
+        return entities;
+      function calculateDocumentScore(text, documentType) {
+        let score = 0;
+        const maxScore = 100;
+        // Basic structure score
+        if (text.length > 100) score += 20;
+        if (text.split('\n').length > 5) score += 20;
+        // Content quality score
+        const hasEmail = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(text);
+        const hasPhone = /(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/.test(text);
+        const hasSkills = /(JavaScript|React|Node\.js|Python|Java|SQL|HTML|CSS)/i.test(text);
+        if (hasEmail) score += 15;
+        if (hasPhone) score += 15;
+        if (hasSkills) score += 15;
+        // Document type specific scoring
+        if (documentType === 'cv') {
+          const hasExperience = /(Berufserfahrung|Erfahrung|Arbeit|Job)/i.test(text);
+          const hasEducation = /(Ausbildung|Studium|Universität|Schule)/i.test(text);
+          if (hasExperience) score += 10;
+          if (hasEducation) score += 10;
+        } else if (documentType === 'certificate') {
+          const hasGrade = /(Note|Bewertung|Sehr gut|Gut|Befriedigend)/i.test(text);
+          const hasInstitution = /(Akademie|Universität|Institut|Schule)/i.test(text);
+          if (hasGrade) score += 15;
+          if (hasInstitution) score += 15;
+        return Math.min(score, maxScore);
+      function generateDocumentSuggestions(text, documentType) {
+        if (text.length < 100) {
+          suggestions.push('Das Dokument scheint zu kurz zu sein. Stellen Sie sicher, dass alle wichtigen Informationen enthalten sind.');
+        if (!/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(text)) {
+          suggestions.push('Keine E-Mail-Adresse gefunden. Fügen Sie Kontaktinformationen hinzu.');
+        if (documentType === 'cv' && !/(Berufserfahrung|Erfahrung|Arbeit)/i.test(text)) {
+          suggestions.push('Keine Berufserfahrung gefunden. Fügen Sie relevante Arbeitserfahrung hinzu.');
+        if (documentType === 'certificate' && !/(Note|Bewertung|Note)/i.test(text)) {
+          suggestions.push('Keine Bewertung/Note gefunden. Stellen Sie sicher, dass die Bewertung sichtbar ist.');
+      function displayEnhancedOCRResults(results) {
+        const resultsDiv = document.getElementById('ocrResults');
+        let html = '<h5 style="margin: 0 0 1rem 0; color: white;">🤖 AI-Enhanced OCR-Analyseergebnisse</h5>';
+        results.forEach((result, index) => {
+          if (result.success) {
+            html += `
+              <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.2);">
+                <h6 style="margin: 0 0 1rem 0; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                  📄 ${result.name}
+                  <span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem;">
+                    AI-Analysiert
+                  </span>
+                </h6>
+                <!-- Enhanced Score Display -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                  <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
+                    <div style="font-size: 2rem; font-weight: bold; color: #4ade80;">${result.enhancedScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">AI-Score</div>
+                  </div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #60a5fa;">${result.analysis.readabilityScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Lesbarkeit</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #f472b6;">${result.analysis.sentimentScore}%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Sentiment</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #a78bfa;">${result.smartParsing.skills.length}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Skills</div>
+                <!-- AI Insights -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                  <!-- Strengths -->
+                  ${result.aiInsights.strengths.length > 0 ? `
+                    <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #4ade80;">
+                      <h7 style="color: #4ade80; font-weight: 600; margin-bottom: 0.5rem; display: block;">💪 Stärken</h7>
+                      <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                        ${result.aiInsights.strengths.map(s => `<li style="margin-bottom: 0.25rem;">${s}</li>`).join('')}
+                      </ul>
+                  ` : ''}
+                  
+                  <!-- Weaknesses -->
+                  ${result.aiInsights.weaknesses.length > 0 ? `
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #f87171;">
+                      <h7 style="color: #f87171; font-weight: 600; margin-bottom: 0.5rem; display: block;">⚠️ Schwächen</h7>
+                        ${result.aiInsights.weaknesses.map(w => `<li style="margin-bottom: 0.25rem;">${w}</li>`).join('')}
+                <!-- Market Fit -->
+                ${result.aiInsights.marketFit.score > 0 ? `
+                  <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border-left: 4px solid #3b82f6;">
+                    <h7 style="color: #3b82f6; font-weight: 600; margin-bottom: 0.5rem; display: block;">🎯 Markt-Fit: ${result.aiInsights.marketFit.score}%</h7>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">
+                      ${result.aiInsights.marketFit.factors.join(', ')}
+                ` : ''}
+                <!-- AI Recommendations -->
+                ${result.aiInsights.recommendations.length > 0 ? `
+                  <div style="background: rgba(251, 191, 36, 0.1); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border-left: 4px solid #fbbf24;">
+                    <h7 style="color: #fbbf24; font-weight: 600; margin-bottom: 0.5rem; display: block;">💡 AI-Empfehlungen</h7>
+                    <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                      ${result.aiInsights.recommendations.map(r => `<li style="margin-bottom: 0.25rem;">${r}</li>`).join('')}
+                    </ul>
+                <!-- Next Steps -->
+                ${result.aiInsights.nextSteps.length > 0 ? `
+                  <div style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #a855f7;">
+                    <h7 style="color: #a855f7; font-weight: 600; margin-bottom: 0.5rem; display: block;">🚀 Nächste Schritte</h7>
+                      ${result.aiInsights.nextSteps.map(s => `<li style="margin-bottom: 0.25rem;">${s}</li>`).join('')}
+            `;
+              <div style="background: rgba(239, 68, 68, 0.2); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                <h6 style="margin: 0 0 0.5rem 0; color: #fca5a5;">❌ ${result.name}</h6>
+                <div style="color: #fca5a5; font-size: 0.875rem;">Fehler: ${result.error}</div>
+        resultsDiv.innerHTML = html;
+        showMessage('✅ AI-Enhanced OCR-Analyse abgeschlossen', 'success');
+      // AI-ENHANCED ANALYSIS FUNCTIONS
+      async function performAIAnalysis(text, documentType) {
+        console.log('🤖 Performing AI analysis on:', documentType);
+        // Simulate AI analysis with enhanced logic
+          readabilityScore: calculateReadabilityScore(text),
+          sentimentScore: analyzeSentiment(text),
+          keyPhrases: extractKeyPhrases(text),
+          entities: extractAdvancedEntities(text),
+          documentStructure: analyzeDocumentStructure(text, documentType),
+          qualityMetrics: calculateQualityMetrics(text, documentType)
+      async function performSmartParsing(text, documentType) {
+        console.log('🧠 Performing smart parsing on:', documentType);
+        const parsing = {
+          sections: parseDocumentSections(text, documentType),
+          timeline: extractTimeline(text),
+          skills: extractSkills(text),
+          experience: extractExperience(text, documentType),
+          education: extractEducation(text),
+          achievements: extractAchievements(text),
+          contactInfo: extractContactInfo(text),
+          recommendations: extractRecommendations(text)
+        return parsing;
+      async function generateAIInsights(text, documentType, analysis, parsing) {
+        console.log('💡 Generating AI insights for:', documentType);
+        const insights = {
+          strengths: identifyStrengths(analysis, parsing),
+          weaknesses: identifyWeaknesses(analysis, parsing),
+          recommendations: generateRecommendations(analysis, parsing, documentType),
+          marketFit: assessMarketFit(analysis, parsing),
+          improvementAreas: identifyImprovementAreas(analysis, parsing),
+          nextSteps: suggestNextSteps(analysis, parsing, documentType)
+        return insights;
+      function calculateReadabilityScore(text) {
+        // Simplified readability calculation
+        const sentences = text.split(/[.!?]+/).length;
+        const words = text.split(/\s+/).length;
+        const syllables = text.split(/\s+/).reduce((acc, word) => {
+          return acc + (word.match(/[aeiouäöü]/gi) || []).length;
+        }, 0);
+        if (sentences === 0 || words === 0) return 0;
+        const avgWordsPerSentence = words / sentences;
+        const avgSyllablesPerWord = syllables / words;
+        // Simplified Flesch Reading Ease
+        const score = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
+        return Math.max(0, Math.min(100, score));
+      function analyzeSentiment(text) {
+        const positiveWords = ['erfolgreich', 'ausgezeichnet', 'hervorragend', 'exzellent', 'stark', 'kompetent', 'erfahren', 'qualifiziert'];
+        const negativeWords = ['schwach', 'unzureichend', 'problematisch', 'schlecht', 'mangelhaft'];
+        const words = text.toLowerCase().split(/\s+/);
+        const positiveCount = words.filter(word => positiveWords.includes(word)).length;
+        const negativeCount = words.filter(word => negativeWords.includes(word)).length;
+        const total = positiveCount + negativeCount;
+        if (total === 0) return 50; // Neutral
+        return Math.round((positiveCount / total) * 100);
+      function extractKeyPhrases(text) {
+        const phrases = [];
+        const commonPhrases = [
+          'Projektmanagement', 'Teamführung', 'Kundenbetreuung', 'Qualitätssicherung',
+          'Problemlösung', 'Kommunikation', 'Analytisches Denken', 'Kreativität',
+          'Zeitmanagement', 'Flexibilität', 'Lernbereitschaft', 'Verantwortung'
+        commonPhrases.forEach(phrase => {
+          if (text.toLowerCase().includes(phrase.toLowerCase())) {
+            phrases.push(phrase);
+        return phrases;
+      function extractAdvancedEntities(text) {
+          emails: (text.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g) || []),
+          phones: (text.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/g) || []),
+          dates: (text.match(/\b(\d{1,2}\.?\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s?\d{4}|\d{1,2}\.\d{1,2}\.\d{4})\b/g) || []),
+          companies: (text.match(/\b[A-Z][a-z]+ (GmbH|AG|Corp|Inc|Ltd|Company|GmbH|AG)\b/g) || []),
+          locations: (text.match(/\b[A-Z][a-z]+(?: [A-Z][a-z]+)*\b/g) || []).filter(loc => 
+            loc.length > 3 && !loc.match(/^(GmbH|AG|Corp|Inc|Ltd|Company)$/)
+          )
+      function analyzeDocumentStructure(text, documentType) {
+        const structure = {
+          hasHeader: /^(name|cv|lebenslauf|curriculum vitae)/i.test(text),
+          hasSections: /(berufserfahrung|ausbildung|skills|fähigkeiten|erfahrung|bildung)/i.test(text),
+          hasContact: /(email|telefon|adresse|kontakt)/i.test(text),
+          hasSummary: /(zusammenfassung|summary|profil|über mich)/i.test(text),
+          sectionCount: (text.match(/\n\s*[A-ZÄÖÜ][a-zäöüß\s]+:/g) || []).length,
+          paragraphCount: text.split(/\n\s*\n/).length
+        return structure;
+      function calculateQualityMetrics(text, documentType) {
+        const metrics = {
+          completeness: calculateCompleteness(text, documentType),
+          professionalism: calculateProfessionalism(text),
+          clarity: calculateClarity(text),
+          relevance: calculateRelevance(text, documentType)
+        return metrics;
+      function parseDocumentSections(text, documentType) {
+        const sections = {};
+          sections.personalInfo = extractPersonalInfo(text);
+          sections.experience = extractExperience(text, documentType);
+          sections.education = extractEducation(text);
+          sections.skills = extractSkills(text);
+          sections.achievements = extractAchievements(text);
+          sections.institution = extractInstitution(text);
+          sections.course = extractCourse(text);
+          sections.grade = extractGrade(text);
+          sections.date = extractDate(text);
+          sections.instructor = extractInstructor(text);
+        return sections;
+      function extractTimeline(text) {
+        const dates = text.match(/\b(\d{4}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}\s+(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4})\b/g) || [];
+        return dates.sort();
+      function extractSkills(text) {
+        const skillKeywords = [
+          'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'SQL', 'HTML', 'CSS',
+          'Coaching', 'Beratung', 'Projektmanagement', 'Teamführung', 'Kommunikation',
+          'Microsoft Office', 'Excel', 'PowerPoint', 'Word', 'Photoshop', 'Illustrator'
+        return skillKeywords.filter(skill => 
+      function extractExperience(text, documentType) {
+        if (documentType !== 'cv') return [];
+        const experience = [];
+        const lines = text.split('\n');
+        lines.forEach(line => {
+          if (line.match(/\d{4}.*\d{4}|seit \d{4}|ab \d{4}/)) {
+            experience.push(line.trim());
+        return experience;
+      function extractEducation(text) {
+        const education = [];
+          if (line.match(/(universität|hochschule|schule|studium|ausbildung|abitur|realschule)/i)) {
+            education.push(line.trim());
+        return education;
+      function extractAchievements(text) {
+        const achievements = [];
+          if (line.match(/(erfolg|auszeichnung|preis|zertifikat|zertifizierung|diplom)/i)) {
+            achievements.push(line.trim());
+        return achievements;
+      function extractContactInfo(text) {
+          addresses: (text.match(/\b\d{5}\s+[A-Za-zäöüß\s]+/g) || [])
+      function extractRecommendations(text) {
+        const recommendations = [];
+          if (line.match(/(empfehlung|referenz|referenzschreiben)/i)) {
+            recommendations.push(line.trim());
+        return recommendations;
+      function identifyStrengths(analysis, parsing) {
+        const strengths = [];
+        if (analysis.readabilityScore > 70) strengths.push('Gute Lesbarkeit');
+        if (analysis.sentimentScore > 70) strengths.push('Positive Formulierung');
+        if (parsing.skills.length > 5) strengths.push('Vielfältige Fähigkeiten');
+        if (parsing.experience.length > 2) strengths.push('Relevante Erfahrung');
+        if (parsing.achievements.length > 0) strengths.push('Nachweisbare Erfolge');
+        return strengths;
+      function identifyWeaknesses(analysis, parsing) {
+        const weaknesses = [];
+        if (analysis.readabilityScore < 50) weaknesses.push('Schwierige Lesbarkeit');
+        if (analysis.sentimentScore < 50) weaknesses.push('Negative Formulierung');
+        if (parsing.skills.length < 3) weaknesses.push('Wenige Fähigkeiten');
+        if (parsing.experience.length < 1) weaknesses.push('Keine Erfahrung');
+        if (parsing.contactInfo.emails.length === 0) weaknesses.push('Keine Kontaktdaten');
+        return weaknesses;
+      function generateRecommendations(analysis, parsing, documentType) {
+        if (analysis.readabilityScore < 60) {
+          recommendations.push('Verbessern Sie die Lesbarkeit durch kürzere Sätze');
+        if (parsing.skills.length < 5) {
+          recommendations.push('Ergänzen Sie weitere relevante Fähigkeiten');
+        if (documentType === 'cv' && parsing.experience.length < 2) {
+          recommendations.push('Fügen Sie detailliertere Berufserfahrung hinzu');
+        if (parsing.contactInfo.emails.length === 0) {
+          recommendations.push('Fügen Sie Kontaktinformationen hinzu');
+      function assessMarketFit(analysis, parsing) {
+        const marketFit = {
+          score: 0,
+          factors: []
+        // Calculate market fit score
+        if (parsing.skills.length > 5) {
+          marketFit.score += 20;
+          marketFit.factors.push('Vielfältige Fähigkeiten');
+        if (parsing.experience.length > 2) {
+          marketFit.factors.push('Relevante Erfahrung');
+        if (analysis.sentimentScore > 70) {
+          marketFit.score += 15;
+          marketFit.factors.push('Positive Darstellung');
+        if (parsing.achievements.length > 0) {
+          marketFit.factors.push('Nachweisbare Erfolge');
+        if (analysis.readabilityScore > 60) {
+          marketFit.score += 10;
+          marketFit.factors.push('Gute Lesbarkeit');
+        return marketFit;
+      function identifyImprovementAreas(analysis, parsing) {
+        const areas = [];
+        if (analysis.readabilityScore < 60) areas.push('Lesbarkeit verbessern');
+        if (parsing.skills.length < 5) areas.push('Fähigkeiten erweitern');
+        if (parsing.experience.length < 2) areas.push('Erfahrung detaillieren');
+        if (parsing.contactInfo.emails.length === 0) areas.push('Kontaktdaten hinzufügen');
+        return areas;
+      function suggestNextSteps(analysis, parsing, documentType) {
+        const steps = [];
+          steps.push('Lebenslauf mit aktuellen Projekten ergänzen');
+          steps.push('Skills-Bereich mit spezifischen Technologien erweitern');
+          steps.push('Erfolge mit konkreten Zahlen belegen');
+          steps.push('Zusätzliche Zertifikate sammeln');
+          steps.push('Praktische Anwendung der erlernten Fähigkeiten');
+        return steps;
+      function calculateEnhancedScore(analysis, parsing, insights) {
+        // Base score from analysis
+        score += Math.round(analysis.readabilityScore * 0.3);
+        score += Math.round(analysis.sentimentScore * 0.2);
+        // Skills score
+        score += Math.min(parsing.skills.length * 2, 20);
+        // Experience score
+        score += Math.min(parsing.experience.length * 5, 15);
+        // Contact info score
+        if (parsing.contactInfo.emails.length > 0) score += 10;
+        if (parsing.contactInfo.phones.length > 0) score += 5;
+        // Achievements score
+        score += Math.min(parsing.achievements.length * 3, 15);
+        return Math.min(score, 100);
+      // HELPER FUNCTIONS FOR AI ANALYSIS
+      function calculateCompleteness(text, documentType) {
+          if (text.includes('Berufserfahrung') || text.includes('Erfahrung')) score += 25;
+          if (text.includes('Ausbildung') || text.includes('Bildung')) score += 25;
+          if (text.includes('Fähigkeiten') || text.includes('Skills')) score += 25;
+          if (text.includes('@') || text.includes('E-Mail')) score += 25;
+          if (text.includes('Note') || text.includes('Bewertung')) score += 30;
+          if (text.includes('Datum') || text.includes('Jahr')) score += 30;
+          if (text.includes('Institution') || text.includes('Akademie')) score += 40;
+        return score;
+      function calculateProfessionalism(text) {
+        // Check for professional language
+        const professionalWords = ['erfolgreich', 'kompetent', 'erfahren', 'qualifiziert', 'professionell'];
+        const unprofessionalWords = ['cool', 'mega', 'super', 'krass'];
+        const professionalCount = words.filter(word => professionalWords.includes(word)).length;
+        const unprofessionalCount = words.filter(word => unprofessionalWords.includes(word)).length;
+        score += Math.min(professionalCount * 10, 50);
+        score -= Math.min(unprofessionalCount * 20, 30);
+        // Check for proper structure
+        if (text.includes('\n\n')) score += 20;
+        if (text.match(/[A-ZÄÖÜ][a-zäöüß\s]+:/)) score += 30;
+      function calculateClarity(text) {
+        // Optimal: 15-20 words per sentence
+        if (avgWordsPerSentence >= 15 && avgWordsPerSentence <= 20) return 100;
+        if (avgWordsPerSentence >= 10 && avgWordsPerSentence <= 25) return 80;
+        if (avgWordsPerSentence >= 5 && avgWordsPerSentence <= 30) return 60;
+        return 40;
+      function calculateRelevance(text, documentType) {
+          const relevantKeywords = ['Projekt', 'Management', 'Erfahrung', 'Fähigkeiten', 'Qualifikation'];
+          relevantKeywords.forEach(keyword => {
+            if (text.toLowerCase().includes(keyword.toLowerCase())) score += 20;
+          const relevantKeywords = ['Zertifikat', 'Qualifikation', 'Kompetenz', 'Fähigkeit'];
+            if (text.toLowerCase().includes(keyword.toLowerCase())) score += 25;
+      function extractPersonalInfo(text) {
+        const personalInfo = {};
+          if (line.includes('@')) {
+            const email = line.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
+            if (email) personalInfo.email = email[0];
+          if (line.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/)) {
+            const phone = line.match(/(\+49\s?)?(\d{2,4}\s?\d{2,4}\s?\d{2,4})/);
+            if (phone) personalInfo.phone = phone[0];
+        return personalInfo;
+      function extractInstitution(text) {
+        for (const line of lines) {
+          if (line.match(/(universität|hochschule|akademie|institut|schule)/i)) {
+            return line.trim();
+        return '';
+      function extractCourse(text) {
+          if (line.match(/(kurs|seminar|workshop|schulung|ausbildung)/i)) {
+      function extractGrade(text) {
+        const gradeMatch = text.match(/(note|bewertung|note):\s*([1-6](?:[,.]\d+)?|sehr gut|gut|befriedigend|ausreichend|mangelhaft|ungenügend)/i);
+        return gradeMatch ? gradeMatch[2] : '';
+      function extractDate(text) {
+        const dateMatch = text.match(/(\d{1,2}\.?\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s?\d{4}|\d{1,2}\.\d{1,2}\.\d{4})/);
+        return dateMatch ? dateMatch[0] : '';
+      function extractInstructor(text) {
+          if (line.match(/(dozent|lehrer|trainer|ausbilder|professor|dr\.|prof\.)/i)) {
+      // Helper function to convert file to base64
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            const base64 = reader.result.split(',')[1]; // Remove data:type;base64, prefix
+            resolve(base64);
+          reader.onerror = error => reject(error);
+      // Helper function to create FormData for local endpoints
+      function createFormData(file, type) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', type);
+        formData.append('userId', getUser()?.userId || 'anonymous');
+        return formData;
+      // 🚀 SMART API SYSTEM - Intelligentes Upload-System
+      async function uploadToServer(file, type = 'document') {
+        console.log('🚀 Smart API System: Starting upload for', file.name, 'Type:', type);
+          // Check if user is logged in (try both auth systems)
+          let user = getUser();
+          let isLoggedIn = user && user.userId;
+          // Fallback to simple auth if main auth fails
+          if (!isLoggedIn) {
+            user = simpleAuth.getUser();
+            isLoggedIn = simpleAuth.isLoggedIn();
+          // Use Smart API System if available
+          if (window.smartAPI) {
+            console.log('🌐 Using Smart API System');
+            return await uploadWithSmartAPI(file, type, user, isLoggedIn);
+          // Fallback to original system
+          console.log('🔄 Using fallback upload system');
+          if (isLoggedIn) {
+            console.log('👤 User logged in - storing user-specific:', user.userId);
+            return await uploadToUserStorage(file, type, user);
+            console.log('🌐 User not logged in - storing centrally');
+            return await uploadToCentralStorage(file, type);
+          console.error('❌ Upload failed:', error);
+      // 🚀 Smart API Upload Function
+      async function uploadWithSmartAPI(file, type, user, isLoggedIn) {
+          // Convert file to base64 for Smart API
+          const base64Data = await fileToBase64(file);
+          const uploadData = {
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: base64Data
+            },
+            type: type,
+            userId: isLoggedIn ? user.userId : 'anonymous',
+            storageType: isLoggedIn ? 'user-specific' : 'central',
+            options: {
+              enableProgress: true,
+              enableCaching: true,
+              retryOnError: true
+          // Use Smart API for upload
+          const result = await window.smartAPI.uploadFile(uploadData.file, uploadData);
+          console.log('✅ Smart API upload successful:', result);
+            id: result.id,
+            name: result.name,
+            size: result.size,
+            type: result.type,
+            uploadedAt: result.uploadedAt,
+            storage: result.storage || 'aws-s3',
+            url: result.url,
+            s3Key: result.s3Key,
+            userId: uploadData.userId,
+            storageType: uploadData.storageType
+          console.error('❌ Smart API upload failed:', error);
+      // USER-SPECIFIC STORAGE (for logged-in users)
+      async function uploadToUserStorage(file, type, user) {
+        console.log('👤 Uploading to user storage:', user.userId);
+          // Use AWS Upload Service if available
+          if (window.awsUploadService) {
+            console.log('🌐 Using AWS Upload Service for user');
+            return await window.awsUploadService.uploadFile(file, type);
+          // Fallback to original implementation with user ID
+          console.log('🔄 Using fallback upload method for user');
+          // Convert file to base64 for AWS Lambda
+            userId: user.userId,
+            storageType: 'user-specific'
+          // Try AWS endpoints first, then fallback to local server
+          const endpoints = [
+            'https://api.manuel-weiss.com/upload',  // AWS API Gateway
+            'https://manuel-weiss.com/api/upload', // AWS API Gateway
+            'https://d1234567890.execute-api.eu-central-1.amazonaws.com/api/upload', // AWS Lambda
+            'http://localhost:3001/api/upload',    // Local fallback
+            '/api/upload'                          // Relative fallback
+          ];
+          for (const endpoint of endpoints) {
+              console.log(`🔄 Trying endpoint: ${endpoint}`);
+              
+              // Check if it's AWS endpoint (JSON) or local endpoint (FormData)
+              const isAWSEndpoint = endpoint.includes('api.manuel-weiss.com') || endpoint.includes('manuel-weiss.com') || endpoint.includes('execute-api');
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                body: isAWSEndpoint ? JSON.stringify(uploadData) : createFormData(file, type),
+                headers: {
+                  'Content-Type': isAWSEndpoint ? 'application/json' : 'multipart/form-data',
+                  'Authorization': `Bearer ${user.idToken || ''}`
+              if (response.ok) {
+                const result = await response.json();
+                console.log('✅ User upload successful:', result);
+                  success: true,
+                  id: result.id,
+                  name: result.name,
+                  size: result.size,
+                  type: result.type,
+                  uploadedAt: result.uploadedAt,
+                  storage: result.storage || 'aws-s3',
+                  url: result.url,
+                  s3Key: result.s3Key,
+                  userId: user.userId,
+                  storageType: 'user-specific'
+              console.warn(`⚠️ Endpoint failed: ${endpoint}`, error);
+              continue;
+          throw new Error('All user upload endpoints failed');
+          console.error('❌ User upload failed:', error);
+      // CENTRAL STORAGE (for non-logged-in users)
+      async function uploadToCentralStorage(file, type) {
+        console.log('🌐 Uploading to central storage');
+            userId: 'anonymous',
+            storageType: 'central'
+                  'Authorization': `Bearer ${getUser()?.idToken || ''}`
+                console.log('✅ Server upload successful:', result);
+                  id: result.id || result.key || Date.now().toString(),
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                  uploadedAt: new Date().toISOString(),
+                  storage: 'server',
+                  url: result.url || result.downloadUrl || `${endpoint.replace('/upload', '')}/download/${result.id}`
+              } else {
+                console.warn(`Endpoint ${endpoint} returned ${response.status}: ${response.statusText}`);
+            } catch (endpointError) {
+              console.warn(`Endpoint ${endpoint} failed:`, endpointError);
+          throw new Error('Alle Server-Endpoints sind nicht verfügbar');
+          console.error('Server upload failed:', error);
+      async function loadList(){
+          const rows = await listDocuments();
+          tbody.innerHTML = '';
+          for (const r of rows) {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--neutral-200)';
+            // Determine storage type and display accordingly
+            const storageType = r.storage || 'cloud';
+            const storageIcon = storageType === 'local' ? '💾' : '☁️';
+            const storageText = storageType === 'local' ? ' (Lokal)' : ' (Cloud)';
+            tr.innerHTML = `
+              <td style="padding: 1rem; color: var(--neutral-800);">
+                ${storageIcon} ${r.name}${storageText}
+              </td>
+              <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${r.type||''}</td>
+              <td style="padding: 1rem; color: var(--neutral-600); font-size: 0.875rem;">${(r.size/1024).toFixed(1)} KB</td>
+              <td style="padding: 1rem;">
+                <button data-act="dl" style="background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; cursor: pointer; margin-right: 0.5rem; font-size: 0.875rem;">
+                  <i class="fas fa-eye"></i> Ansehen
+                </button>
+                <button data-act="del" style="background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem;">
+                  <i class="fas fa-trash"></i> Löschen
+              </td>`;
+            tr.querySelector('[data-act="dl"]').onclick = async () => {
+              try {
+                if (r.storage === 'local' && r.data) {
+                  // For local documents, use the data directly
+                  const link = document.createElement('a');
+                  link.href = r.data;
+                  link.download = r.name;
+                  link.click();
+                  // For cloud documents, get download URL
+                  const { url } = await getDownloadUrl(r.key || r.id);
+                window.open(url, '_blank');
+              } catch(e) {
+                showMessage('❌ Download fehlgeschlagen', 'error');
+            tr.querySelector('[data-act="del"]').onclick = async () => {
+              if (!confirm('Wirklich löschen?')) return;
+                await deleteDocument(r.id);
+                showMessage('✅ Gelöscht', 'success');
+                await loadList();
+                showMessage('❌ Löschen fehlgeschlagen', 'error');
+            tbody.appendChild(tr);
+          docTable.style.display = rows.length ? '' : 'none';
+          showMessage('❌ Liste konnte nicht geladen werden', 'error'); 
+      function refreshUI(){
+        // Check both auth systems
+        let logged = isLoggedIn();
+        if (!logged) {
+          logged = simpleAuth.isLoggedIn();
+        loginBtn.style.display = logged ? 'none' : '';
+        logoutBtn.style.display = logged ? '' : 'none';
+        uploader.style.display = logged ? '' : 'none';
+        // Show user info
+        if (logged) {
+          const user = getUser() || simpleAuth.getUser();
+          if (user) {
+            whoami.textContent = `Angemeldet als: ${user.email || user.name || 'User'}`;
+          whoami.textContent = 'Nicht angemeldet';
+        if (logged) loadList();
+        // Load analytics if Smart API is available
+        if (window.smartAPI && logged) {
+          loadAnalytics();
+          loadCentralMediaLibrary();
+      // 📁 CENTRAL MEDIA LIBRARY INTEGRATION
+      async function loadCentralMediaLibrary() {
+          console.log('📁 Loading central media library...');
+          // Get user documents from central media management
+          const userDocs = await window.smartAPI.getUserDocuments(getCurrentUserId());
+          console.log('📁 Central media library:', userDocs);
+          // Filter for application-related documents
+          const applicationDocs = userDocs.documents.filter(doc => 
+            doc.category === 'application' || 
+            doc.documentType === 'cv' || 
+            doc.documentType === 'certificate' ||
+            doc.documentType === 'cover-letter'
+          );
+          console.log('📄 Application documents:', applicationDocs);
+          // Update UI with available documents
+          updateApplicationDocumentSelector(applicationDocs);
+          console.error('❌ Central media library loading failed:', error);
+      // 📄 Update Application Document Selector
+      function updateApplicationDocumentSelector(documents) {
+        // Create document selector if it doesn't exist
+        let selectorDiv = document.getElementById('central-media-selector');
+        if (!selectorDiv) {
+          selectorDiv = document.createElement('div');
+          selectorDiv.id = 'central-media-selector';
+          selectorDiv.style.cssText = `
+          `;
+          selectorDiv.innerHTML = `
+            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-700); display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-folder-open"></i>
+              Zentrale Medienverwaltung
+            </h4>
+            <div id="central-documents-list"></div>
+          document.getElementById('msg').parentNode.insertBefore(selectorDiv, document.getElementById('msg'));
+        const documentsList = document.getElementById('central-documents-list');
+        if (documentsList) {
+            documentsList.innerHTML = `
+              <div style="text-align: center; padding: 2rem; color: var(--neutral-500);">
+                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin: 0;">Keine Dokumente in der zentralen Medienverwaltung gefunden</p>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Laden Sie Dokumente über das Admin Panel hoch</p>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                ${documents.map(doc => `
+                  <div class="document-card" style="
+                    padding: 1rem;
+                    background: white;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--neutral-200);
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                  " onclick="selectCentralDocument('${doc.id}', '${doc.originalName}', '${doc.documentType}')">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                      <i class="fas fa-file-${getFileIcon(doc.originalName)}" style="color: var(--primary); font-size: 1.25rem;"></i>
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; color: var(--neutral-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          ${doc.originalName}
+                        <div style="font-size: 0.875rem; color: var(--neutral-500);">
+                          ${formatFileSize(doc.size)} • ${doc.documentType}
+                      </div>
+                    <div style="font-size: 0.75rem; color: var(--neutral-400);">
+                      ${formatDate(doc.uploadedAt)}
+                `).join('')}
+      // 📄 Select Central Document
+      function selectCentralDocument(docId, docName, docType) {
+        console.log('📄 Selecting central document:', { docId, docName, docType });
+        // Add to HR Design Data
+        addToHRDesignData({
+          id: docId,
+          name: docName,
+          type: docType,
+          source: 'central-media',
+          selectedAt: new Date().toISOString()
+        // Show success message
+        showMessage(`Dokument "${docName}" aus zentraler Medienverwaltung ausgewählt`, 'success');
+        // Update UI
+        updateSelectedDocuments();
+      // 📄 Get File Icon
+      function getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const iconMap = {
+          'pdf': 'pdf',
+          'doc': 'word',
+          'docx': 'word',
+          'jpg': 'image',
+          'jpeg': 'image',
+          'png': 'image',
+          'gif': 'image'
+        return iconMap[ext] || 'file';
+      // 📄 Format File Size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      // 📄 Format Date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('de-DE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+      // 📄 Update Selected Documents
+      function updateSelectedDocuments() {
+        const selectedDocs = hrDesignData.documents || {};
+        console.log('📄 Selected documents:', selectedDocs);
+        // Update UI to show selected documents
+        const selectorDiv = document.getElementById('central-media-selector');
+        if (selectorDiv) {
+          const selectedCount = Object.keys(selectedDocs).length;
+          const title = selectorDiv.querySelector('h4');
+          if (title) {
+            title.innerHTML = `
+              <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; margin-left: 0.5rem;">
+                ${selectedCount} ausgewählt
+              </span>
+      // 📊 ANALYTICS FUNCTIONS
+      async function loadAnalytics() {
+          console.log('📊 Loading analytics...');
+          // Get upload statistics
+          const uploadStats = await window.smartAPI.getUploadStats({ timeRange: '7d' });
+          console.log('📈 Upload stats:', uploadStats);
+          // Get storage statistics
+          const storageStats = await window.smartAPI.getStorageStats();
+          console.log('💾 Storage stats:', storageStats);
+          // Get user documents
+          const userDocs = await window.smartAPI.getUserDocuments(user.userId);
+          console.log('📁 User documents:', userDocs);
+          // Update UI with analytics
+          updateAnalyticsDisplay(uploadStats, storageStats, userDocs);
+          console.error('❌ Analytics loading failed:', error);
+      function updateAnalyticsDisplay(uploadStats, storageStats, userDocs) {
+        // Create analytics display if it doesn't exist
+        let analyticsDiv = document.getElementById('analytics');
+        if (!analyticsDiv) {
+          analyticsDiv = document.createElement('div');
+          analyticsDiv.id = 'analytics';
+          analyticsDiv.style.cssText = `
+          analyticsDiv.innerHTML = `
+            <h4 style="margin: 0 0 1rem 0; color: var(--neutral-700);">📊 Analytics</h4>
+            <div id="analytics-content"></div>
+          document.getElementById('msg').parentNode.insertBefore(analyticsDiv, document.getElementById('msg'));
+        const content = document.getElementById('analytics-content');
+        content.innerHTML = `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div style="padding: 0.75rem; background: white; border-radius: var(--radius-sm); border: 1px solid var(--neutral-200);">
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary);">${uploadStats.stats.totalUploads}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Uploads (7d)</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--success);">${storageStats.storage.storageUsed}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Storage Used</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--warning);">${userDocs.documents.length}</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Total Documents</div>
+              <div style="font-size: 1.5rem; font-weight: 600; color: var(--info);">${Math.round(storageStats.storage.averageFileSize / 1024)}KB</div>
+              <div style="font-size: 0.875rem; color: var(--neutral-600);">Avg File Size</div>
+      function showMessage(text, type = 'info') {
+        msg.textContent = text;
+        msg.style.display = '';
+        // Styling based on type
+        switch(type) {
+          case 'success':
+            msg.style.background = '#dcfce7';
+            msg.style.color = '#166534';
+            msg.style.border = '1px solid #bbf7d0';
+            break;
+          case 'error':
+            msg.style.background = '#fef2f2';
+            msg.style.color = '#dc2626';
+            msg.style.border = '1px solid #fecaca';
+          case 'warning':
+            msg.style.background = '#fef3c7';
+            msg.style.color = '#92400e';
+            msg.style.border = '1px solid #fde68a';
+          default:
+            msg.style.background = 'var(--neutral-100)';
+            msg.style.color = 'var(--neutral-700)';
+            msg.style.border = '1px solid var(--neutral-200)';
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 5000);
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
+</html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

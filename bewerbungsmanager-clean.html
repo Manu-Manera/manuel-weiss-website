@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 KI-gestützter Bewerbungsmanager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
+            <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
+            <button class="main-cta" onclick="direktWorkflowStarten()" id="mainStartButton">
+                <i class="fas fa-play-circle"></i>
+                Neue Bewerbung starten
+            </button>
+        </section>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loading">
+            <div class="spinner"></div>
+            <p>Bewerbungsmanager wird initialisiert...</p>
+        </div>
+
+        <!-- Workflow Preview Section -->
+        <section class="workflow-preview">
+            <h3>6-Schritte Bewerbungsworkflow</h3>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-number">0</div>
+                    <h4>Bewerbungsart</h4>
+                    <p>Wählen Sie Ihre Bewerbungsart</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <h4>Stellenanalyse</h4>
+                    <p>KI-Analyse der Stellenausschreibung</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <h4>Matching</h4>
+                    <p>Anforderungsabgleich & Skill-Gap</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <h4>Anschreiben</h4>
+                    <p>Personalisierte Texterstellung</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <h4>Dokumente</h4>
+                    <p>CV & Zusatzdokumente</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">5</div>
+                    <h4>Design</h4>
+                    <p>Layout & Formatierung</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">6</div>
+                    <h4>Export</h4>
+                    <p>Finales Bewerbungspaket</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="main-cta" onclick="direktWorkflowStarten()" id="workflowStartButton">
+                    <i class="fas fa-rocket"></i>
+                    Workflow jetzt starten
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/complete-workflow-system.js"></script>
+    
+    <script>
+        // EINFACHE WORKFLOW-START FUNKTION - NUR NEUES SYSTEM!
+        function direktWorkflowStarten() {
+            console.log('🚀 STARTE WORKFLOW - NUR NEUES SYSTEM!');
+            
+            // Verstecke Loading
+            const loadingSection = document.getElementById('loadingSection');
+            if (loadingSection) loadingSection.classList.remove('active');
+            
+            // Erstelle und starte Workflow System
+            if (!window.completeWorkflowSystem) {
+                console.log('🔧 Creating Complete Workflow System...');
+                window.completeWorkflowSystem = new CompleteWorkflowSystem();
+            }
+            
+            console.log('🎯 Starting Complete Workflow System with Step 0');
+            window.completeWorkflowSystem.start();
+        }
+        
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Ready - Bewerbungsmanager geladen');
+            
+            // Verstecke Loading nach kurzer Zeit
+            setTimeout(() => {
+                const loadingSection = document.getElementById('loadingSection');
+                if (loadingSection) loadingSection.classList.remove('active');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
