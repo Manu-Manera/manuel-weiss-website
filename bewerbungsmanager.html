@@ -1194,28 +1194,49 @@
         // Ensure Complete Workflow System is available
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 DOM Content Loaded - Checking Complete Workflow System...');
-            console.log('completeWorkflowSystem available:', !!window.completeWorkflowSystem);
+            console.log('CompleteWorkflowSystem class available:', typeof CompleteWorkflowSystem);
+            console.log('completeWorkflowSystem instance available:', !!window.completeWorkflowSystem);
             
-            if (!window.completeWorkflowSystem) {
-                console.log('⏳ Complete Workflow System not yet loaded, waiting...');
-                setTimeout(() => {
-                    console.log('completeWorkflowSystem available after wait:', !!window.completeWorkflowSystem);
-                }, 1000);
+            // Test if we can create the system
+            try {
+                const testSystem = new CompleteWorkflowSystem();
+                console.log('✅ Complete Workflow System can be created successfully');
+            } catch (error) {
+                console.error('❌ Cannot create Complete Workflow System:', error);
             }
         });
+        
+        // Test function for debugging
+        window.testWorkflowSystem = function() {
+            console.log('🧪 Testing Workflow System...');
+            try {
+                const system = new CompleteWorkflowSystem();
+                console.log('✅ System created successfully');
+                system.start();
+                console.log('✅ System started successfully');
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+            }
+        };
         
         // FUNKTIONIERENDE DIREKTE WORKFLOW-START FUNKTION 
         function direktWorkflowStarten() {
             console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
             
             // FORCE CREATE AND START WORKFLOW SYSTEM
-            if (!window.completeWorkflowSystem) {
-                console.log('🔧 Creating Complete Workflow System...');
-                window.completeWorkflowSystem = new CompleteWorkflowSystem();
-            }
+            console.log('🔧 Creating Complete Workflow System...');
+            console.log('CompleteWorkflowSystem available:', typeof CompleteWorkflowSystem);
             
-            console.log('🎯 Starting Complete Workflow System with Step 0');
-            window.completeWorkflowSystem.start();
+            try {
+                window.completeWorkflowSystem = new CompleteWorkflowSystem();
+                console.log('✅ Complete Workflow System created successfully');
+                
+                console.log('🎯 Starting Complete Workflow System with Step 0');
+                window.completeWorkflowSystem.start();
+            } catch (error) {
+                console.error('❌ Error creating Complete Workflow System:', error);
+                alert('❌ Fehler beim Erstellen des Workflow-Systems: ' + error.message);
+            }
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
