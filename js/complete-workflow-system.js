@@ -719,11 +719,13 @@ class CompleteWorkflowSystem {
         this.workflowData.position = position || 'Unbekannte Position';
         this.workflowData.jobDescription = jobDescription;
         
-        // Simulate AI analysis
-        this.simulateAIAnalysis();
+        // Starte echte KI-Analyse
+        this.performRealAIAnalysis();
     }
     
-    simulateAIAnalysis() {
+    // ENTFERNT: simulateAIAnalysis() - wird durch performRealAIAnalysis() ersetzt
+    
+    performRealAIAnalysis() {
         const resultsContainer = document.getElementById('analysisResults');
         if (!resultsContainer) return;
         
@@ -736,63 +738,63 @@ class CompleteWorkflowSystem {
             </div>
         `;
         
-        // Simuliere KI-Analyse mit echten Daten
+        // Analysiere die ECHTE Stellenausschreibung nach kurzer Verzögerung
         setTimeout(() => {
-            this.performRealAIAnalysis();
-        }, 1500);
-    }
-    
-    performRealAIAnalysis() {
-        const resultsContainer = document.getElementById('analysisResults');
-        if (!resultsContainer) return;
-        
-        // Analysiere die echte Stellenausschreibung
-        const jobDescription = this.workflowData.jobDescription;
-        const extractedRequirements = this.extractRequirements(jobDescription);
-        const keywords = this.extractKeywords(jobDescription);
-        const industry = this.detectIndustry(jobDescription);
-        
-        // Speichere die analysierten Daten
-        this.workflowData.requirements = extractedRequirements;
-        this.workflowData.keywords = keywords;
-        this.workflowData.industry = industry;
-        
-        resultsContainer.innerHTML = `
-            <div class="analysis-card">
-                <h4>🔍 KI-Analyse Ergebnisse</h4>
-                <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <strong>Erkannte Anforderungen (${extractedRequirements.length}):</strong>
-                        <div class="requirements-list">
-                            ${extractedRequirements.map((req, index) => `
-                                <div class="requirement-item priority-${req.priority}">
-                                    <span class="priority-badge">${req.priority}</span>
-                                    <span class="requirement-text">${req.text}</span>
-                                    <span class="requirement-type">${req.type}</span>
-                                </div>
-                            `).join('')}
+            const jobDescription = this.workflowData.jobDescription;
+            console.log('🔍 Analysiere echte Stellenausschreibung:', jobDescription.substring(0, 100) + '...');
+            
+            const extractedRequirements = this.extractRequirements(jobDescription);
+            const keywords = this.extractKeywords(jobDescription);
+            const industry = this.detectIndustry(jobDescription);
+            
+            console.log('📋 Gefundene Anforderungen:', extractedRequirements);
+            console.log('🔑 Gefundene Keywords:', keywords);
+            console.log('🏢 Erkannte Branche:', industry);
+            
+            // Speichere die analysierten Daten
+            this.workflowData.requirements = extractedRequirements;
+            this.workflowData.keywords = keywords;
+            this.workflowData.industry = industry;
+            
+            resultsContainer.innerHTML = `
+                <div class="analysis-card">
+                    <h4>🔍 KI-Analyse Ergebnisse</h4>
+                    <div class="analysis-grid">
+                        <div class="analysis-item">
+                            <strong>Erkannte Anforderungen (${extractedRequirements.length}):</strong>
+                            <div class="requirements-list">
+                                ${extractedRequirements.length > 0 ? extractedRequirements.map((req, index) => `
+                                    <div class="requirement-item priority-${req.priority.toLowerCase()}">
+                                        <div class="requirement-header">
+                                            <span class="priority-badge priority-${req.priority.toLowerCase()}">${req.priority}</span>
+                                            <span class="requirement-type">${req.type}</span>
+                                        </div>
+                                        <div class="requirement-text">${req.text}</div>
+                                    </div>
+                                `).join('') : '<p style="color: #6b7280; font-style: italic;">Keine Anforderungen erkannt</p>'}
+                            </div>
                         </div>
-                    </div>
-                    <div class="analysis-item">
-                        <strong>Schlüsselwörter (${keywords.length}):</strong>
-                        <div class="keywords">
-                            ${keywords.map(keyword => `
-                                <span class="keyword">${keyword}</span>
-                            `).join('')}
+                        <div class="analysis-item">
+                            <strong>Schlüsselwörter (${keywords.length}):</strong>
+                            <div class="keywords">
+                                ${keywords.length > 0 ? keywords.map(keyword => `
+                                    <span class="keyword">${keyword}</span>
+                                `).join('') : '<p style="color: #6b7280; font-style: italic;">Keine Schlüsselwörter erkannt</p>'}
+                            </div>
                         </div>
-                    </div>
-                    <div class="analysis-item">
-                        <strong>Branche:</strong>
-                        <span class="industry-tag">${industry}</span>
+                        <div class="analysis-item">
+                            <strong>Branche:</strong>
+                            <span class="industry-tag">${industry}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-        
-        // Auto-advance to next step after analysis
-        setTimeout(() => {
-            this.nextStep();
-        }, 2000);
+            `;
+            
+            // Auto-advance to next step after analysis
+            setTimeout(() => {
+                this.nextStep();
+            }, 2000);
+        }, 1500);
     }
     
     extractRequirements(jobDescription) {
