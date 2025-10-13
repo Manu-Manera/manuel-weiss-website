@@ -285,37 +285,33 @@ const apiConfig = {
 ## 🚀 Installation & Setup
 
 ### 📋 **Voraussetzungen**
-- **Node.js** 18+
-- **Git** für Version Control
-- **AWS CLI** für Backend-Entwicklung
+- **GitHub Desktop** für Version Control
+- **Cursor IDE** für Entwicklung
+- **Netlify Account** für Deployment
 - **OpenAI API Key** für KI-Features
 
-### 🔧 **Lokale Entwicklung**
+### 🔧 **Entwicklungsworkflow**
 
-#### 1. Repository klonen
+#### 1. Repository Setup
 ```bash
-git clone https://github.com/Manu-Manera/manuel-weiss-website.git
-cd manuel-weiss-website
+# Repository bereits geklont über GitHub Desktop
+# Keine zusätzlichen Dependencies erforderlich
 ```
 
-#### 2. Dependencies installieren
-```bash
-# Hauptdependencies
-npm install
+#### 2. Entwicklung in Cursor
+- **Dateien bearbeiten** in Cursor IDE
+- **Automatische Erkennung** von Änderungen
+- **Live Preview** verfügbar
 
-# React Components (optional)
-npm run components:install
-```
+#### 3. Deployment über GitHub Desktop
+1. **Änderungen committen** in GitHub Desktop
+2. **Push zu GitHub** Repository
+3. **Netlify** deployt automatisch (1-2 Minuten)
+4. **Live Website** unter [https://mawps.netlify.app](https://mawps.netlify.app)
 
-#### 3. Lokal starten
-```bash
-# Einfach die HTML-Datei öffnen
-open index.html
-
-# Oder mit Python Server
-npm start
-# Website: http://localhost:8000
-```
+### 🌐 **Live URLs**
+- **Primär**: [https://mawps.netlify.app](https://mawps.netlify.app)
+- **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 
 ### 🔑 **API-Konfiguration**
 
@@ -652,7 +648,8 @@ gh run view --log
 - **Code Examples**: Beispiele in den JavaScript-Dateien
 
 ### 📧 **Kontakt**
-- **Website**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+- **Website**: [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
+- **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 - **Email**: info@manuel-weiss.com
 - **GitHub**: [@Manu-Manera](https://github.com/Manu-Manera)
 
@@ -688,6 +685,12 @@ Diese Website bietet eine **vollständige Business-Lösung** mit:
 - ✅ **Performance-optimiert** (Lighthouse 95+)
 - ✅ **Sicher** und barrierefrei
 - ✅ **Fallback-Systeme** für maximale Verfügbarkeit
+- ✅ **Netlify Deployment** - Automatisches Deployment
+- ✅ **GitHub Desktop Workflow** - Einfache Entwicklung
+
+### 🌐 **Live URLs**
+- **Primär**: [https://mawps.netlify.app](https://mawps.netlify.app)
+- **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 
 **Entwickelt mit ❤️ von Manuel Weiss**
 
