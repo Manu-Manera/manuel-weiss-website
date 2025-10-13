@@ -6,7 +6,7 @@
 const CACHE_NAME = 'bewerbungsmanager-v1.0.0';
 const urlsToCache = [
     '/',
-    '/bewerbungsmanager-modern.html',
+    '/bewerbungsmanager-coverlettergpt.html',
     '/css/advanced-features.css',
     '/js/complete-workflow-system.js',
     '/js/advanced-workflow-features.js',
@@ -101,7 +101,7 @@ self.addEventListener('fetch', (event) => {
                     .catch(() => {
                         // Return offline page for navigation requests
                         if (event.request.destination === 'document') {
-                            return caches.match('/bewerbungsmanager-modern.html');
+                            return caches.match('/bewerbungsmanager-coverlettergpt.html');
                         }
                     });
             })
@@ -159,7 +159,7 @@ self.addEventListener('notificationclick', (event) => {
     
     if (event.action === 'explore') {
         event.waitUntil(
-            clients.openWindow('/bewerbungsmanager-modern.html')
+            clients.openWindow('/bewerbungsmanager-coverlettergpt.html')
         );
     }
 });
