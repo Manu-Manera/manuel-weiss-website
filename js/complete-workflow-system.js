@@ -105,7 +105,7 @@ class CompleteWorkflowSystem {
                         <h2>🚀 Smart Bewerbungsmanager</h2>
                         <p>Erstellen Sie professionelle Bewerbungsunterlagen in 6 Schritten</p>
                     </div>
-                    <button class="close-btn" onclick="completeWorkflowSystem.close()">×</button>
+                    <button class="close-btn" onclick="window.completeWorkflowSystem.close()">×</button>
                 </div>
                 
                 <div class="workflow-progress">
@@ -136,8 +136,8 @@ class CompleteWorkflowSystem {
     }
     
     setupEventListeners() {
-        document.getElementById('prevStepBtn')?.addEventListener('click', () => this.prevStep());
-        document.getElementById('nextStepBtn')?.addEventListener('click', () => this.nextStep());
+        // Event listeners werden dynamisch gesetzt, wenn die Elemente erstellt werden
+        console.log('🔗 Event listeners werden dynamisch gesetzt');
     }
     
     start() {
@@ -159,7 +159,10 @@ class CompleteWorkflowSystem {
         document.querySelectorAll('.type-option').forEach(option => {
             option.classList.remove('selected');
         });
-        document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+        const selectedOption = document.querySelector(`[data-type="${type}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+        }
         
         // Show info
         const typeInfo = document.getElementById('typeInfo');
@@ -186,6 +189,15 @@ class CompleteWorkflowSystem {
     showStep(stepNumber) {
         const container = document.getElementById('workflowStepContainer');
         if (!container) return;
+        
+        // Für Schritt 0 (Bewerbungsart) verwenden wir den speziellen Fall
+        if (stepNumber === 0) {
+            container.innerHTML = this.generateStep0();
+            this.updateProgress();
+            this.updateNavigation();
+            this.initializeStep0();
+            return;
+        }
         
         const step = this.steps[stepNumber - 1];
         if (!step) return;
@@ -231,7 +243,7 @@ class CompleteWorkflowSystem {
                 
                 <div class="application-type-selection">
                     <div class="type-options">
-                        <div class="type-option" data-type="job-posting" onclick="completeWorkflowSystem.selectApplicationType('job-posting')">
+                        <div class="type-option" data-type="job-posting" onclick="window.completeWorkflowSystem.selectApplicationType('job-posting')">
                             <div class="type-icon">📄</div>
                             <h4>Stellenausschreibung</h4>
                             <p>Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
@@ -242,7 +254,7 @@ class CompleteWorkflowSystem {
                             </div>
                         </div>
                         
-                        <div class="type-option" data-type="initiative" onclick="completeWorkflowSystem.selectApplicationType('initiative')">
+                        <div class="type-option" data-type="initiative" onclick="window.completeWorkflowSystem.selectApplicationType('initiative')">
                             <div class="type-icon">🚀</div>
                             <h4>Initiativbewerbung</h4>
                             <p>Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
@@ -291,7 +303,7 @@ class CompleteWorkflowSystem {
                         <textarea id="jobDescriptionInput" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein..."></textarea>
                     </div>
                     
-                    <button class="btn-primary" onclick="completeWorkflowSystem.analyzeJobDescription()">
+                    <button class="btn-primary" onclick="window.completeWorkflowSystem.analyzeJobDescription()">
                         <i class="fas fa-robot"></i> KI-Analyse starten
                     </button>
                 </div>
@@ -325,7 +337,7 @@ class CompleteWorkflowSystem {
                         <h4>Ihre Skills</h4>
                         <div class="skills-input">
                             <input type="text" id="skillInput" placeholder="Skill hinzufügen...">
-                            <button onclick="completeWorkflowSystem.addSkill()">Hinzufügen</button>
+                            <button onclick="window.completeWorkflowSystem.addSkill()">Hinzufügen</button>
                         </div>
                         <div id="skillsList" class="skills-list">
                             <!-- Skills will be displayed here -->
@@ -381,10 +393,10 @@ class CompleteWorkflowSystem {
                     </div>
                     
                     <div class="letter-actions">
-                        <button class="btn-secondary" onclick="completeWorkflowSystem.generateCoverLetter()">
+                        <button class="btn-secondary" onclick="window.completeWorkflowSystem.generateCoverLetter()">
                             <i class="fas fa-magic"></i> KI-Anschreiben generieren
                         </button>
-                        <button class="btn-primary" onclick="completeWorkflowSystem.optimizeCoverLetter()">
+                        <button class="btn-primary" onclick="window.completeWorkflowSystem.optimizeCoverLetter()">
                             <i class="fas fa-edit"></i> Optimieren
                         </button>
                     </div>
@@ -422,7 +434,7 @@ class CompleteWorkflowSystem {
                             <label><input type="checkbox" id="optimizeFormat"> Format optimieren</label>
                             <label><input type="checkbox" id="addSkills"> Skills hinzufügen</label>
                         </div>
-                        <button class="btn-primary" onclick="completeWorkflowSystem.optimizeCV()">
+                        <button class="btn-primary" onclick="window.completeWorkflowSystem.optimizeCV()">
                             <i class="fas fa-cogs"></i> CV optimieren
                         </button>
                     </div>
@@ -500,7 +512,7 @@ class CompleteWorkflowSystem {
                         </div>
                     </div>
                     
-                    <button class="btn-primary" onclick="completeWorkflowSystem.applyDesign()">
+                    <button class="btn-primary" onclick="window.completeWorkflowSystem.applyDesign()">
                         <i class="fas fa-paint-brush"></i> Design anwenden
                     </button>
                 </div>
@@ -543,20 +555,20 @@ class CompleteWorkflowSystem {
                     <div class="export-options">
                         <h4>Export-Optionen</h4>
                         <div class="export-buttons">
-                            <button class="btn-primary" onclick="completeWorkflowSystem.exportPDF()">
+                            <button class="btn-primary" onclick="window.completeWorkflowSystem.exportPDF()">
                                 <i class="fas fa-file-pdf"></i> Als PDF exportieren
                             </button>
-                            <button class="btn-secondary" onclick="completeWorkflowSystem.exportZIP()">
+                            <button class="btn-secondary" onclick="window.completeWorkflowSystem.exportZIP()">
                                 <i class="fas fa-file-archive"></i> Als ZIP exportieren
                             </button>
-                            <button class="btn-secondary" onclick="completeWorkflowSystem.exportDOCX()">
+                            <button class="btn-secondary" onclick="window.completeWorkflowSystem.exportDOCX()">
                                 <i class="fas fa-file-word"></i> Als DOCX exportieren
                             </button>
                         </div>
                     </div>
                     
                     <div class="final-actions">
-                        <button class="btn-success" onclick="completeWorkflowSystem.completeWorkflow()">
+                        <button class="btn-success" onclick="window.completeWorkflowSystem.completeWorkflow()">
                             <i class="fas fa-check"></i> Bewerbung abschließen
                         </button>
                     </div>
@@ -800,6 +812,8 @@ Mit freundlichen Grüßen
         
         if (prevBtn) {
             prevBtn.disabled = this.currentStep === 0;
+            // Event listener dynamisch hinzufügen
+            prevBtn.onclick = () => this.prevStep();
         }
         
         if (nextBtn) {
@@ -809,6 +823,8 @@ Mit freundlichen Grüßen
                 nextBtn.style.display = 'inline-flex';
                 nextBtn.disabled = this.currentStep === 6;
             }
+            // Event listener dynamisch hinzufügen
+            nextBtn.onclick = () => this.nextStep();
         }
     }
     

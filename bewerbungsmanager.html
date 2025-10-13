@@ -1203,15 +1203,36 @@
             }
         });
         
-        // NEUE EINFACHE WORKFLOW FUNKTION
+        // KORRIGIERTE WORKFLOW FUNKTION - Verwendet das Complete Workflow System
         function startNewWorkflow() {
-            console.log('🚀 STARTE NEUEN WORKFLOW - BEWERBUNGSART AUSWAHL');
+            console.log('🚀 STARTE NEUEN WORKFLOW - Complete Workflow System');
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
             if (loadingSection) loadingSection.classList.remove('active');
             
-            // Erstelle Modal
+            // Prüfe ob Complete Workflow System verfügbar ist
+            if (window.completeWorkflowSystem) {
+                console.log('✅ Complete Workflow System verfügbar - starte direkt');
+                window.completeWorkflowSystem.start();
+            } else {
+                console.log('⏳ Complete Workflow System noch nicht geladen - warte kurz...');
+                setTimeout(() => {
+                    if (window.completeWorkflowSystem) {
+                        console.log('✅ Complete Workflow System jetzt verfügbar');
+                        window.completeWorkflowSystem.start();
+                    } else {
+                        console.error('❌ Complete Workflow System nicht verfügbar - Fallback');
+                        startFallbackWorkflow();
+                    }
+                }, 500);
+            }
+        }
+        
+        // Fallback Workflow falls Complete System nicht verfügbar
+        function startFallbackWorkflow() {
+            console.log('🔄 Starte Fallback Workflow');
+            
             const modal = document.createElement('div');
             modal.id = 'workflow-modal';
             modal.style.cssText = `
@@ -1360,33 +1381,6 @@
                 alert('✅ Bewerbungsart gewählt! Workflow wird fortgesetzt...');
                 document.getElementById('complete-workflow-modal').remove();
             }, 1000);
-        }
-            
-            // Verstecke Loading
-            const loadingSection = document.getElementById('loadingSection');
-            if (loadingSection) loadingSection.classList.remove('active');
-            
-            // Fallback to old system
-            if (typeof window.showSmartWorkflowModal === 'function') {
-                const modal = window.showSmartWorkflowModal();
-                
-                // Warte kurz und starte dann Step 0
-                setTimeout(() => {
-                    if (typeof window.generateStep0 === 'function') {
-                        const content = window.generateStep0();
-                        const workflowContent = document.getElementById('workflowContent');
-                        if (workflowContent) {
-                            workflowContent.innerHTML = content;
-                        }
-                    }
-                }, 100);
-                
-            } else {
-                // Fallback - warte auf Module
-                setTimeout(() => {
-                    direktWorkflowStarten();
-                }, 300);
-            }
         }
         
         // ALTE FUNKTION ALS BACKUP
