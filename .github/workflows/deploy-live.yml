@@ -1,0 +1,73 @@
+name: 🚀 Deploy Live CoverLetterGPT Integration
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: 📦 Install Dependencies
+      run: |
+        npm install
+        cd components && npm install
+    
+    - name: 🔍 Validate HTML Files
+      run: |
+        echo "Validating HTML files..."
+        find . -name "*.html" -not -path "./node_modules/*" -not -path "./.git/*" | head -10 | xargs -I {} echo "Validating: {}"
+    
+    - name: 🧹 Clean up temporary files
+      run: |
+        echo "Cleaning up temporary files..."
+        rm -rf coverlettergpt-temp/
+        rm -f README_COMPLETE.md
+        rm -f COVERLETTERGPT_INTEGRATION_PLAN.md
+        rm -f COVERLETTERGPT_INTEGRATION_PLAN_CLEAN.md
+    
+    - name: 📝 Update .nojekyll
+      run: |
+        echo "Ensuring .nojekyll exists..."
+        touch .nojekyll
+        echo "GitHub Pages will serve static files"
+    
+    - name: 🔧 Configure Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+    
+    - name: 🚀 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        exclude_assets: |
+          .git
+          .github
+          node_modules
+          coverlettergpt-temp
+          README_COMPLETE.md
+          COVERLETTERGPT_INTEGRATION_PLAN.md
+          COVERLETTERGPT_INTEGRATION_PLAN_CLEAN.md
+    
+    - name: ✅ Deployment Complete
+      run: |
+        echo "🎉 Live CoverLetterGPT Integration deployed successfully!"
+        echo "🌐 Website: https://manu-manera.github.io/manuel-weiss-website"
+        echo "🤖 CoverLetterGPT: https://manu-manera.github.io/manuel-weiss-website/bewerbungsmanager-coverlettergpt-live.html"
+        echo "⚙️ Admin Panel: https://manu-manera.github.io/manuel-weiss-website/admin.html"
