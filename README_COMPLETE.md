@@ -299,7 +299,8 @@ cd manuel-weiss-website
 npm install
 
 # React Components (optional)
-npm run components:install
+cd components/
+npm install
 ```
 
 #### 3. Lokal starten
@@ -308,7 +309,7 @@ npm run components:install
 open index.html
 
 # Oder mit Python Server
-npm start
+python -m http.server 8000
 # Website: http://localhost:8000
 ```
 

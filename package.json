@@ -1,7 +1,7 @@
 {
   "name": "manuel-weiss-website",
-  "version": "1.0.0",
-  "description": "Professionelle Website für Bewerbungscoaching, Personal Training, Ernährungsberatung und Business Consulting",
+  "version": "2.0.0",
+  "description": "Professionelle Website mit KI-gestütztem Bewerbungsmanager, AWS-Backend und vollständiger Business-Lösung",
   "main": "index.html",
   "scripts": {
     "start": "python -m http.server 8000",
@@ -9,7 +9,13 @@
     "build": "echo 'Static site - no build required'",
     "deploy": "echo 'Deployment handled by GitHub Actions'",
     "test": "echo 'No tests specified'",
-    "lint": "echo 'No linting configured'"
+    "lint": "echo 'No linting configured'",
+    "components:install": "cd components && npm install",
+    "components:build": "cd components && npm run build",
+    "components:dev": "cd components && npm run dev",
+    "lambda:deploy": "echo 'Lambda deployment handled by AWS Amplify'",
+    "analytics": "echo 'Analytics dashboard available at analytics-dashboard.html'",
+    "admin": "echo 'Admin panel available at admin.html'"
   },
   "keywords": [
     "bewerbung",
@@ -20,7 +26,16 @@
     "coverlettergpt",
     "ai",
     "aws",
-    "github-pages"
+    "github-pages",
+    "react",
+    "chakra-ui",
+    "openai",
+    "sendgrid",
+    "lambda",
+    "dynamodb",
+    "s3",
+    "cognito",
+    "api-gateway"
   ],
   "author": "Manuel Weiss",
   "license": "UNLICENSED",
@@ -35,11 +50,68 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "devDependencies": {},
-  "dependencies": {},
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "font-awesome": "^6.0.0"
+  },
+  "browserslist": {
+    "production": [
+      "> 1%",
+      "last 2 versions",
+      "not dead"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "workspaces": [
+    "components"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{html,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "warn"
+    }
+  }
 }
