@@ -22,6 +22,13 @@ class CompleteWorkflowSystem {
         
         this.steps = [
             {
+                id: 0,
+                title: "Bewerbungsart",
+                subtitle: "Wählen Sie Ihre Bewerbungsart",
+                icon: "📋",
+                description: "Entscheiden Sie, ob Sie sich auf eine Stellenausschreibung bewerben oder eine Initiativbewerbung erstellen möchten."
+            },
+            {
                 id: 1,
                 title: "Stellenanalyse",
                 subtitle: "KI-Analyse der Stellenausschreibung",
@@ -135,13 +142,45 @@ class CompleteWorkflowSystem {
     
     start() {
         console.log('🚀 Starting Complete Workflow...');
-        this.currentStep = 1;
-        this.showStep(1);
+        this.currentStep = 0;
+        this.showStep(0);
         
         const modal = document.getElementById('complete-workflow-modal');
         if (modal) {
             modal.style.display = 'flex';
         }
+    }
+    
+    selectApplicationType(type) {
+        console.log('📋 Selected application type:', type);
+        this.workflowData.applicationType = type;
+        
+        // Update UI
+        document.querySelectorAll('.type-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+        
+        // Show info
+        const typeInfo = document.getElementById('typeInfo');
+        const infoTitle = document.getElementById('infoTitle');
+        const infoDescription = document.getElementById('infoDescription');
+        
+        if (typeInfo && infoTitle && infoDescription) {
+            if (type === 'job-posting') {
+                infoTitle.textContent = 'Stellenausschreibung gewählt';
+                infoDescription.textContent = 'Perfekt! Sie werden nun durch die KI-Analyse der Stellenausschreibung geführt, um die besten Bewerbungsunterlagen zu erstellen.';
+            } else {
+                infoTitle.textContent = 'Initiativbewerbung gewählt';
+                infoDescription.textContent = 'Ausgezeichnet! Wir helfen Ihnen dabei, eine strategische Initiativbewerbung zu erstellen, die das Unternehmen überzeugt.';
+            }
+            typeInfo.style.display = 'block';
+        }
+        
+        // Auto-advance after 2 seconds
+        setTimeout(() => {
+            this.nextStep();
+        }, 2000);
     }
     
     showStep(stepNumber) {
@@ -161,6 +200,8 @@ class CompleteWorkflowSystem {
     
     generateStepContent(stepNumber, step) {
         switch(stepNumber) {
+            case 0:
+                return this.generateStep0();
             case 1:
                 return this.generateStep1();
             case 2:
@@ -174,8 +215,52 @@ class CompleteWorkflowSystem {
             case 6:
                 return this.generateStep6();
             default:
-                return this.generateStep1();
+                return this.generateStep0();
         }
+    }
+    
+    generateStep0() {
+        return `
+            <div class="step-content">
+                <div class="step-header">
+                    <div class="step-icon">📋</div>
+                    <h3>Bewerbungsart wählen</h3>
+                    <p class="step-subtitle">Wählen Sie Ihre Bewerbungsart</p>
+                    <p class="step-description">Entscheiden Sie, ob Sie sich auf eine Stellenausschreibung bewerben oder eine Initiativbewerbung erstellen möchten.</p>
+                </div>
+                
+                <div class="application-type-selection">
+                    <div class="type-option" data-type="job-posting" onclick="completeWorkflowSystem.selectApplicationType('job-posting')">
+                        <div class="type-icon">📄</div>
+                        <h4>Stellenausschreibung</h4>
+                        <p>Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
+                        <ul class="type-features">
+                            <li>KI-Analyse der Stellenausschreibung</li>
+                            <li>Automatisches Matching</li>
+                            <li>Personalisierte Anschreiben</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="type-option" data-type="initiative" onclick="completeWorkflowSystem.selectApplicationType('initiative')">
+                        <div class="type-icon">🚀</div>
+                        <h4>Initiativbewerbung</h4>
+                        <p>Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
+                        <ul class="type-features">
+                            <li>Unternehmen-spezifische Anpassung</li>
+                            <li>Branchenanalyse</li>
+                            <li>Strategische Positionierung</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="typeInfo" class="type-info" style="display: none;">
+                    <div class="info-card">
+                        <h4 id="infoTitle"></h4>
+                        <p id="infoDescription"></p>
+                    </div>
+                </div>
+            </div>
+        `;
     }
     
     generateStep1() {
@@ -480,6 +565,9 @@ class CompleteWorkflowSystem {
     
     initializeStep(stepNumber) {
         switch(stepNumber) {
+            case 0:
+                this.initializeStep0();
+                break;
             case 1:
                 this.initializeStep1();
                 break;
@@ -499,6 +587,11 @@ class CompleteWorkflowSystem {
                 this.initializeStep6();
                 break;
         }
+    }
+    
+    initializeStep0() {
+        // Initialize application type selection
+        console.log('Initializing Step 0: Application Type Selection');
     }
     
     initializeStep1() {
@@ -691,7 +784,11 @@ Mit freundlichen Grüßen
         }
         
         if (progressText) {
-            progressText.textContent = `Schritt ${this.currentStep} von 6`;
+            if (this.currentStep === 0) {
+                progressText.textContent = 'Bewerbungsart wählen';
+            } else {
+                progressText.textContent = `Schritt ${this.currentStep} von 6`;
+            }
         }
     }
     
@@ -700,11 +797,16 @@ Mit freundlichen Grüßen
         const nextBtn = document.getElementById('nextStepBtn');
         
         if (prevBtn) {
-            prevBtn.disabled = this.currentStep === 1;
+            prevBtn.disabled = this.currentStep === 0;
         }
         
         if (nextBtn) {
-            nextBtn.disabled = this.currentStep === 6;
+            if (this.currentStep === 0) {
+                nextBtn.style.display = 'none'; // Hide next button on step 0
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                nextBtn.disabled = this.currentStep === 6;
+            }
         }
     }
     
