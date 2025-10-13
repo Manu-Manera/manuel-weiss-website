@@ -1167,7 +1167,7 @@ export const ProgressBar: React.FC<{
       <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
         <div
           className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
-          style={{ width: `${progress * 100}%` }}
+          style={{ width: progress * 100 + '%' }}
         />
       </div>
       
