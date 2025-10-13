@@ -174,6 +174,32 @@
             color: #666;
             line-height: 1.6;
         }
+
+        .feature-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-btn i {
+            font-size: 1rem;
+        }
         
         .stats-section {
             background: rgba(255, 255, 255, 0.95);
@@ -1917,6 +1943,36 @@
                 window.completeWorkflowSystem = new CompleteWorkflowSystem();
                 window.completeWorkflowSystem.start();
             }
+        };
+
+        // ECHTE BUTTON-FUNKTIONEN IMPLEMENTIEREN
+        window.startKIWorkflow = function() {
+            console.log('🚀 Starting KI Workflow...');
+            if (window.completeWorkflowSystem) {
+                window.completeWorkflowSystem.start();
+            } else {
+                alert('Workflow-System wird geladen...');
+                setTimeout(() => {
+                    if (window.completeWorkflowSystem) {
+                        window.completeWorkflowSystem.start();
+                    }
+                }, 1000);
+            }
+        };
+
+        window.openAnalytics = function() {
+            console.log('📊 Opening Analytics Dashboard...');
+            window.open('analytics-dashboard.html', '_blank');
+        };
+
+        window.openUIDemo = function() {
+            console.log('🎨 Opening UI Demo...');
+            window.open('bewerbungsmanager-coverlettergpt.html', '_blank');
+        };
+
+        window.openEmailService = function() {
+            console.log('📧 Opening Email Service...');
+            window.open('admin.html#email-service', '_blank');
         };
         
         // Falls nach 2 Sekunden noch nichts geladen ist - Notfall-Button anzeigen
