@@ -1,0 +1,118 @@
+# GitHub Pages Configuration
+# Minimal Jekyll config for static HTML site
+
+# Disable Jekyll processing
+plugins: []
+
+# Exclude problematic files
+exclude:
+  - README.md
+  - .gitignore
+  - .nojekyll
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - yarn.lock
+  - .env*
+  - lambda/
+  - components/
+  - styles/
+  - backend/
+  - amplify/
+  - src/
+  - docs/
+  - tests/
+  - .github/
+  - .git/
+  - .vscode/
+  - .idea/
+  - *.log
+  - *.tmp
+  - *.temp
+  - .DS_Store
+  - Thumbs.db
+
+# Site settings
+title: "Manuel Weiss - Professional Services"
+description: "Professionelle Dienstleistungen für Bewerbungen, Coaching und Business Consulting"
+author: "Manuel Weiss"
+email: "info@manuel-weiss.com"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: jekyll-theme-primer
+
+# Safe mode
+safe: false
+
+# Future posts
+future: false
+
+# Timezone
+timezone: Europe/Berlin
+
+# Encoding
+encoding: utf-8
+
+# Permalinks
+permalink: pretty
+
+# Pagination
+paginate: 10
+paginate_path: "/page:num/"
+
+# Feed settings
+feed:
+  path: atom.xml
+  limit: 20
+
+# SEO settings
+seo:
+  type: "WebSite"
+  name: "Manuel Weiss"
+  description: "Professionelle Dienstleistungen für Bewerbungen, Coaching und Business Consulting"
+  url: "https://manu-manera.github.io/manuel-weiss-website"
+  image: "https://manu-manera.github.io/manuel-weiss-website/manuel-weiss-photo.svg"
+  author: "Manuel Weiss"
+  twitter:
+    card: "summary_large_image"
+    creator: "@manuelweiss"
+  facebook:
+    app_id: ""
+    publisher: ""
+  google:
+    site_verification: ""
+    analytics: ""
+
+# Social links
+social:
+  name: "Manuel Weiss"
+  links:
+    - "https://github.com/Manu-Manera"
+    - "https://linkedin.com/in/manuel-weiss"
+    - "https://twitter.com/manuelweiss"
+
+# Navigation
+navigation:
+  - title: "Home"
+    url: "/"
+  - title: "Services"
+    url: "/#services"
+  - title: "Projekte"
+    url: "/#projects"
+  - title: "Über mich"
+    url: "/#about"
+  - title: "Kontakt"
+    url: "/#contact"
+
+# Footer
+footer:
+  message: "© 2024 Manuel Weiss. Alle Rechte vorbehalten."
+  links:
+    - title: "Impressum"
+      url: "/impressum.html"
+    - title: "Datenschutz"
+      url: "/datenschutz.html"
+    - title: "AGB"
+      url: "/agb.html"

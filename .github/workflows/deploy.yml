@@ -2,9 +2,9 @@ name: 🚀 Deploy Manuel Weiss Website
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -22,67 +22,75 @@ jobs:
         
     - name: 📦 Install Dependencies
       run: |
-        echo "🔧 Installing dependencies..."
-        npm install || echo "No package.json found, continuing..."
+        if [ -f package.json ]; then
+          npm ci
+        else
+          echo "No package.json found, skipping npm install"
+        fi
         
-    - name: 🧪 Run Tests
+    - name: 🧹 Clean Build Directory
       run: |
-        echo "🧪 Running basic tests..."
-        # Test if critical files exist
-        test -f index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
-        test -f admin.html && echo "✅ admin.html exists" || echo "❌ admin.html missing"
-        test -f bewerbung.html && echo "✅ bewerbung.html exists" || echo "❌ bewerbung.html missing"
-        test -d js/ && echo "✅ js/ directory exists" || echo "❌ js/ directory missing"
-        test -d css/ && echo "✅ css/ directory exists" || echo "❌ css/ directory missing"
+        rm -rf _site/
+        rm -rf dist/
+        rm -rf build/
+        rm -rf out/
         
-    - name: 🔧 Fix Auth Integration
+    - name: 📝 Create .nojekyll
       run: |
-        echo "🔧 Applying auth fixes..."
+        touch .nojekyll
+        echo "# Disable Jekyll processing for GitHub Pages" > .nojekyll
+        echo "# This file tells GitHub Pages to treat this as a static site" >> .nojekyll
         
-        # Create unified auth integration
-        cat > components/unified-auth-integration.html << 'EOF'
-        <!-- 🔧 UNIFIED AUTH INTEGRATION -->
-        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-        <script src="js/redirect-url-config.js"></script>
-        <script src="js/fixed-auth-system.js"></script>
-        <script src="js/error-handler.js"></script>
-        <script src="js/global-auth-system.js"></script>
-        <script src="js/auth-modals.js"></script>
-        EOF
-        
-        # Update HTML files with auth integration
-        find . -name "*.html" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
-          if ! grep -q "UNIFIED AUTH INTEGRATION" "$file"; then
-            echo "🔄 Updating: $file"
-            sed -i "s|</body>|$(cat components/unified-auth-integration.html)\n</body>|" "$file"
+    - name: 🔍 Validate HTML Files
+      run: |
+        echo "Validating HTML files..."
+        for file in *.html; do
+          if [ -f "$file" ]; then
+            echo "Checking $file"
+            # Basic HTML validation
+            if grep -q "<!DOCTYPE html>" "$file"; then
+              echo "✅ $file has valid DOCTYPE"
+            else
+              echo "⚠️  $file missing DOCTYPE"
+            fi
           fi
         done
         
-    - name: 🌐 Deploy to Netlify
-      uses: nwtgck/actions-netlify@v2.0
-      with:
-        publish-dir: '.'
-        production-branch: main
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        deploy-message: "🚀 Deploy from GitHub Actions"
-        enable-pull-request-comment: false
-        enable-commit-comment: true
-        overwrites-pull-request-comment: true
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        
-    - name: 📊 Deployment Summary
+    - name: 📊 Check File Sizes
       run: |
-        echo "🎉 Deployment completed successfully!"
-        echo "📊 Website Statistics:"
-        echo "   📄 HTML files: $(find . -name '*.html' | wc -l)"
-        echo "   📜 JS modules: $(find js/ -name '*.js' | wc -l)"
-        echo "   🧠 Method pages: $(find methods/ -name '*.html' | wc -l)"
-        echo "   🎨 CSS files: $(find . -name '*.css' | wc -l)"
-        echo "   🖼️ Images: $(find images/ -type f | wc -l)"
-        echo ""
-        echo "🔗 Live URLs:"
-        echo "   🌐 Main site: https://mawps.netlify.app"
-        echo "   🔧 Admin panel: https://mawps.netlify.app/admin.html"
-        echo "   📝 Bewerbung: https://mawps.netlify.app/bewerbung.html"
+        echo "Checking file sizes..."
+        find . -name "*.html" -o -name "*.css" -o -name "*.js" | head -20 | xargs ls -lh
+        
+    - name: 🚀 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        exclude_assets: |
+          .git/
+          .github/
+          node_modules/
+          lambda/
+          backend/
+          amplify/
+          components/
+          styles/
+          docs/
+          tests/
+          .env*
+          *.log
+          *.tmp
+          *.temp
+          .DS_Store
+          Thumbs.db
+          
+    - name: 📧 Notify Deployment
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+          echo "🌐 Website: https://manu-manera.github.io/manuel-weiss-website"
+        else
+          echo "❌ Deployment failed!"
+        fi
