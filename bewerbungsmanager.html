@@ -1017,6 +1017,99 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+        
+        /* Requirements and Priority Styles */
+        .requirement-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .requirement-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .requirement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .priority-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-badge.priority-hoch {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .priority-badge.priority-mittel {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fed7aa;
+        }
+        
+        .priority-badge.priority-niedrig {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .requirement-type {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .requirement-text {
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .analysis-loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .analysis-loading .spinner {
+            margin-bottom: 1rem;
+        }
+        
+        .industry-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        /* Matching Score Colors */
+        .score-circle.score-excellent {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .score-circle.score-good {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        
+        .score-circle.score-fair {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .score-circle.score-poor {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
     </style>
 </head>
 <body>

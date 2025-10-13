@@ -612,6 +612,75 @@ class CompleteWorkflowSystem {
     initializeStep2() {
         // Initialize matching system
         console.log('Initializing Step 2: Matching');
+        this.loadRequirements();
+        this.calculateMatchingScore();
+    }
+    
+    loadRequirements() {
+        const requirementsList = document.getElementById('requirementsList');
+        if (!requirementsList) return;
+        
+        const requirements = this.workflowData.requirements || [];
+        
+        if (requirements.length === 0) {
+            requirementsList.innerHTML = '<p style="color: #6b7280; font-style: italic;">Keine Anforderungen analysiert</p>';
+            return;
+        }
+        
+        requirementsList.innerHTML = requirements.map((req, index) => `
+            <div class="requirement-item priority-${req.priority.toLowerCase()}">
+                <div class="requirement-header">
+                    <span class="priority-badge priority-${req.priority.toLowerCase()}">${req.priority}</span>
+                    <span class="requirement-type">${req.type}</span>
+                </div>
+                <div class="requirement-text">${req.text}</div>
+            </div>
+        `).join('');
+    }
+    
+    calculateMatchingScore() {
+        const requirements = this.workflowData.requirements || [];
+        const userSkills = this.workflowData.userSkills || [];
+        
+        if (requirements.length === 0) {
+            this.updateMatchingScore(0);
+            return;
+        }
+        
+        let matches = 0;
+        requirements.forEach(req => {
+            const skillText = req.text.toLowerCase();
+            const hasMatch = userSkills.some(skill => 
+                skill.toLowerCase().includes(skillText) || 
+                skillText.includes(skill.toLowerCase())
+            );
+            if (hasMatch) matches++;
+        });
+        
+        const score = Math.round((matches / requirements.length) * 100);
+        this.updateMatchingScore(score);
+    }
+    
+    updateMatchingScore(score) {
+        const scoreElement = document.getElementById('matchingScore');
+        if (scoreElement) {
+            scoreElement.textContent = `${score}%`;
+            
+            // Farbe basierend auf Score
+            const scoreCircle = scoreElement.closest('.score-circle');
+            if (scoreCircle) {
+                scoreCircle.className = 'score-circle';
+                if (score >= 80) {
+                    scoreCircle.classList.add('score-excellent');
+                } else if (score >= 60) {
+                    scoreCircle.classList.add('score-good');
+                } else if (score >= 40) {
+                    scoreCircle.classList.add('score-fair');
+                } else {
+                    scoreCircle.classList.add('score-poor');
+                }
+            }
+        }
     }
     
     initializeStep3() {
@@ -658,32 +727,63 @@ class CompleteWorkflowSystem {
         const resultsContainer = document.getElementById('analysisResults');
         if (!resultsContainer) return;
         
+        // Zeige Loading-Animation
         resultsContainer.style.display = 'block';
+        resultsContainer.innerHTML = `
+            <div class="analysis-loading">
+                <div class="spinner"></div>
+                <p>KI analysiert die Stellenausschreibung...</p>
+            </div>
+        `;
+        
+        // Simuliere KI-Analyse mit echten Daten
+        setTimeout(() => {
+            this.performRealAIAnalysis();
+        }, 1500);
+    }
+    
+    performRealAIAnalysis() {
+        const resultsContainer = document.getElementById('analysisResults');
+        if (!resultsContainer) return;
+        
+        // Analysiere die echte Stellenausschreibung
+        const jobDescription = this.workflowData.jobDescription;
+        const extractedRequirements = this.extractRequirements(jobDescription);
+        const keywords = this.extractKeywords(jobDescription);
+        const industry = this.detectIndustry(jobDescription);
+        
+        // Speichere die analysierten Daten
+        this.workflowData.requirements = extractedRequirements;
+        this.workflowData.keywords = keywords;
+        this.workflowData.industry = industry;
+        
         resultsContainer.innerHTML = `
             <div class="analysis-card">
                 <h4>🔍 KI-Analyse Ergebnisse</h4>
                 <div class="analysis-grid">
                     <div class="analysis-item">
-                        <strong>Erkannte Anforderungen:</strong>
-                        <ul>
-                            <li>3+ Jahre Berufserfahrung</li>
-                            <li>JavaScript, React, Node.js</li>
-                            <li>Teamarbeit und Kommunikation</li>
-                            <li>Problemlösungsfähigkeiten</li>
-                        </ul>
+                        <strong>Erkannte Anforderungen (${extractedRequirements.length}):</strong>
+                        <div class="requirements-list">
+                            ${extractedRequirements.map((req, index) => `
+                                <div class="requirement-item priority-${req.priority}">
+                                    <span class="priority-badge">${req.priority}</span>
+                                    <span class="requirement-text">${req.text}</span>
+                                    <span class="requirement-type">${req.type}</span>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                     <div class="analysis-item">
-                        <strong>Schlüsselwörter:</strong>
+                        <strong>Schlüsselwörter (${keywords.length}):</strong>
                         <div class="keywords">
-                            <span class="keyword">JavaScript</span>
-                            <span class="keyword">React</span>
-                            <span class="keyword">Node.js</span>
-                            <span class="keyword">Teamarbeit</span>
+                            ${keywords.map(keyword => `
+                                <span class="keyword">${keyword}</span>
+                            `).join('')}
                         </div>
                     </div>
                     <div class="analysis-item">
                         <strong>Branche:</strong>
-                        <span>IT/Software</span>
+                        <span class="industry-tag">${industry}</span>
                     </div>
                 </div>
             </div>
@@ -695,11 +795,127 @@ class CompleteWorkflowSystem {
         }, 2000);
     }
     
+    extractRequirements(jobDescription) {
+        // KI-Algorithmus zur Extraktion von Anforderungen
+        const requirements = [];
+        const text = jobDescription.toLowerCase();
+        
+        // Technische Skills
+        const techSkills = ['javascript', 'python', 'java', 'react', 'angular', 'vue', 'node.js', 'php', 'sql', 'html', 'css', 'typescript', 'c++', 'c#', '.net'];
+        techSkills.forEach(skill => {
+            if (text.includes(skill)) {
+                requirements.push({
+                    text: skill.charAt(0).toUpperCase() + skill.slice(1),
+                    type: 'Technische Fähigkeit',
+                    priority: 'Hoch'
+                });
+            }
+        });
+        
+        // Berufserfahrung
+        const experiencePatterns = [
+            /(\d+)\+?\s*jahre?\s*berufserfahrung/i,
+            /(\d+)\+?\s*jahre?\s*erfahrung/i,
+            /mindestens\s*(\d+)\s*jahre/i,
+            /(\d+)\s*bis\s*(\d+)\s*jahre/i
+        ];
+        
+        experiencePatterns.forEach(pattern => {
+            const match = text.match(pattern);
+            if (match) {
+                requirements.push({
+                    text: `${match[1]}+ Jahre Berufserfahrung`,
+                    type: 'Erfahrung',
+                    priority: 'Hoch'
+                });
+            }
+        });
+        
+        // Soft Skills
+        const softSkills = ['teamarbeit', 'kommunikation', 'problemlösung', 'kreativität', 'flexibilität', 'selbstständigkeit', 'belastbarkeit'];
+        softSkills.forEach(skill => {
+            if (text.includes(skill)) {
+                requirements.push({
+                    text: skill.charAt(0).toUpperCase() + skill.slice(1),
+                    type: 'Soft Skill',
+                    priority: 'Mittel'
+                });
+            }
+        });
+        
+        // Bildung
+        if (text.includes('studium') || text.includes('abschluss') || text.includes('bachelor') || text.includes('master')) {
+            requirements.push({
+                text: 'Hochschulabschluss',
+                type: 'Bildung',
+                priority: 'Mittel'
+            });
+        }
+        
+        // Führungsqualitäten
+        if (text.includes('führung') || text.includes('leitung') || text.includes('management')) {
+            requirements.push({
+                text: 'Führungsqualitäten',
+                type: 'Führung',
+                priority: 'Hoch'
+            });
+        }
+        
+        return requirements;
+    }
+    
+    extractKeywords(jobDescription) {
+        // Extrahiere wichtige Schlüsselwörter
+        const keywords = [];
+        const text = jobDescription.toLowerCase();
+        
+        const keywordPatterns = [
+            'agile', 'scrum', 'kanban', 'devops', 'ci/cd', 'microservices',
+            'cloud', 'aws', 'azure', 'docker', 'kubernetes', 'api',
+            'machine learning', 'ai', 'data science', 'analytics',
+            'frontend', 'backend', 'fullstack', 'mobile', 'responsive'
+        ];
+        
+        keywordPatterns.forEach(keyword => {
+            if (text.includes(keyword)) {
+                keywords.push(keyword.charAt(0).toUpperCase() + keyword.slice(1));
+            }
+        });
+        
+        return keywords;
+    }
+    
+    detectIndustry(jobDescription) {
+        const text = jobDescription.toLowerCase();
+        
+        if (text.includes('software') || text.includes('entwicklung') || text.includes('programmierung')) {
+            return 'IT/Software';
+        } else if (text.includes('marketing') || text.includes('werbung') || text.includes('kommunikation')) {
+            return 'Marketing/Kommunikation';
+        } else if (text.includes('verkauf') || text.includes('sales') || text.includes('vertrieb')) {
+            return 'Vertrieb/Sales';
+        } else if (text.includes('finanz') || text.includes('controlling') || text.includes('buchhaltung')) {
+            return 'Finanzen';
+        } else if (text.includes('hr') || text.includes('personal') || text.includes('recruiting')) {
+            return 'HR/Personal';
+        } else {
+            return 'Allgemein';
+        }
+    }
+    
     addSkill() {
         const skillInput = document.getElementById('skillInput');
         const skill = skillInput.value.trim();
         
         if (!skill) return;
+        
+        // Initialisiere userSkills Array falls nicht vorhanden
+        if (!this.workflowData.userSkills) {
+            this.workflowData.userSkills = [];
+        }
+        
+        // Füge Skill hinzu
+        this.workflowData.userSkills.push(skill);
         
         const skillsList = document.getElementById('skillsList');
         if (!skillsList) return;
@@ -708,11 +924,27 @@ class CompleteWorkflowSystem {
         skillItem.className = 'skill-item';
         skillItem.innerHTML = `
             <span>${skill}</span>
-            <button onclick="this.parentElement.remove()">×</button>
+            <button onclick="completeWorkflowSystem.removeSkill('${skill}')">×</button>
         `;
         
         skillsList.appendChild(skillItem);
         skillInput.value = '';
+        
+        // Aktualisiere Matching Score
+        this.calculateMatchingScore();
+    }
+    
+    removeSkill(skill) {
+        // Entferne Skill aus Array
+        if (this.workflowData.userSkills) {
+            const index = this.workflowData.userSkills.indexOf(skill);
+            if (index > -1) {
+                this.workflowData.userSkills.splice(index, 1);
+            }
+        }
+        
+        // Aktualisiere Matching Score
+        this.calculateMatchingScore();
     }
     
     generateCoverLetter() {
