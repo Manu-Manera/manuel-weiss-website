@@ -231,7 +231,7 @@ class CompleteWorkflowSystem {
                 
                 <div class="application-type-selection">
                     <div class="type-options">
-                        <div class="type-option" data-type="job-posting" onclick="completeWorkflowSystem.selectApplicationType('job-posting')">
+                        <div class="type-option" data-type="job-posting" id="job-posting-option">
                             <div class="type-icon">📄</div>
                             <h4>Stellenausschreibung</h4>
                             <p>Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
@@ -242,7 +242,7 @@ class CompleteWorkflowSystem {
                             </div>
                         </div>
                         
-                        <div class="type-option" data-type="initiative" onclick="completeWorkflowSystem.selectApplicationType('initiative')">
+                        <div class="type-option" data-type="initiative" id="initiative-option">
                             <div class="type-icon">🚀</div>
                             <h4>Initiativbewerbung</h4>
                             <p>Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
@@ -594,6 +594,26 @@ class CompleteWorkflowSystem {
     initializeStep0() {
         // Initialize application type selection
         console.log('Initializing Step 0: Application Type Selection');
+        
+        // Add event listeners for type selection
+        setTimeout(() => {
+            const jobPostingOption = document.getElementById('job-posting-option');
+            const initiativeOption = document.getElementById('initiative-option');
+            
+            if (jobPostingOption) {
+                jobPostingOption.addEventListener('click', () => {
+                    console.log('📄 Job posting option clicked');
+                    this.selectApplicationType('job-posting');
+                });
+            }
+            
+            if (initiativeOption) {
+                initiativeOption.addEventListener('click', () => {
+                    console.log('🚀 Initiative option clicked');
+                    this.selectApplicationType('initiative');
+                });
+            }
+        }, 100);
     }
     
     initializeStep1() {
