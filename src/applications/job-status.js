@@ -19,7 +19,7 @@ export class JobStatusManager {
   }
 
   /**
-   * Job-Status abrufen
+   * Job-Status mit erweiterten Features abrufen
    */
   async getJobStatus(jobId) {
     try {
@@ -27,7 +27,9 @@ export class JobStatusManager {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${await this.getAuthToken()}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Request-ID': this.generateRequestId(),
+          'X-Client-Version': '2.0.0'
         }
       });
 
@@ -37,9 +39,12 @@ export class JobStatusManager {
 
       const jobStatus = await response.json();
       
+      // Job-Status erweitern
+      const enhancedStatus = this.enhanceJobStatus(jobStatus);
+      
       return {
         success: true,
-        job: jobStatus
+        job: enhancedStatus
       };
     } catch (error) {
       console.error('Job-Status-Fehler:', error);
@@ -48,6 +53,172 @@ export class JobStatusManager {
         error: error.message || 'Job-Status konnte nicht abgerufen werden'
       };
     }
+  }
+
+  /**
+   * Job-Status erweitern
+   */
+  enhanceJobStatus(jobStatus) {
+    return {
+      ...jobStatus,
+      estimatedCompletion: this.calculateEstimatedCompletion(jobStatus),
+      progressHistory: this.getProgressHistory(jobStatus.id),
+      errorDetails: this.parseErrorDetails(jobStatus.error),
+      retryInfo: this.getRetryInfo(jobStatus),
+      performanceMetrics: this.calculatePerformanceMetrics(jobStatus),
+      resourceUsage: this.getResourceUsage(jobStatus),
+      dependencies: this.getJobDependencies(jobStatus),
+      notifications: this.getJobNotifications(jobStatus.id),
+      logs: this.getJobLogs(jobStatus.id)
+    };
+  }
+
+  /**
+   * Geschätzte Fertigstellung berechnen
+   */
+  calculateEstimatedCompletion(jobStatus) {
+    if (jobStatus.status === 'COMPLETED' || jobStatus.status === 'FAILED') {
+      return null;
+    }
+
+    const startTime = new Date(jobStatus.createdAt).getTime();
+    const now = Date.now();
+    const elapsed = now - startTime;
+    const progress = jobStatus.progress || 0;
+
+    if (progress > 0) {
+      const estimatedTotal = elapsed / (progress / 100);
+      const remaining = estimatedTotal - elapsed;
+      return new Date(now + remaining).toISOString();
+    }
+
+    return null;
+  }
+
+  /**
+   * Progress History abrufen
+   */
+  getProgressHistory(jobId) {
+    // Hier würde die Progress History aus dem Cache oder Server abgerufen
+    return this.progressHistory.get(jobId) || [];
+  }
+
+  /**
+   * Error Details parsen
+   */
+  parseErrorDetails(error) {
+    if (!error) return null;
+
+    try {
+      const parsed = JSON.parse(error);
+      return {
+        type: parsed.type || 'unknown',
+        message: parsed.message || error,
+        stack: parsed.stack,
+        timestamp: parsed.timestamp || new Date().toISOString(),
+        retryable: parsed.retryable || false
+      };
+    } catch (e) {
+      return {
+        type: 'string',
+        message: error,
+        timestamp: new Date().toISOString(),
+        retryable: false
+      };
+    }
+  }
+
+  /**
+   * Retry Info abrufen
+   */
+  getRetryInfo(jobStatus) {
+    return {
+      maxRetries: jobStatus.maxRetries || 3,
+      currentRetries: jobStatus.currentRetries || 0,
+      retryDelay: jobStatus.retryDelay || 1000,
+      nextRetry: jobStatus.nextRetry || null,
+      retryReason: jobStatus.retryReason || null
+    };
+  }
+
+  /**
+   * Performance Metrics berechnen
+   */
+  calculatePerformanceMetrics(jobStatus) {
+    const startTime = new Date(jobStatus.createdAt).getTime();
+    const now = Date.now();
+    const elapsed = now - startTime;
+
+    return {
+      elapsedTime: elapsed,
+      averageProgressPerMinute: (jobStatus.progress || 0) / (elapsed / 60000),
+      estimatedTotalTime: this.calculateEstimatedTotalTime(jobStatus),
+      efficiency: this.calculateEfficiency(jobStatus)
+    };
+  }
+
+  /**
+   * Resource Usage abrufen
+   */
+  getResourceUsage(jobStatus) {
+    return {
+      cpu: jobStatus.cpuUsage || 0,
+      memory: jobStatus.memoryUsage || 0,
+      disk: jobStatus.diskUsage || 0,
+      network: jobStatus.networkUsage || 0
+    };
+  }
+
+  /**
+   * Job Dependencies abrufen
+   */
+  getJobDependencies(jobStatus) {
+    return jobStatus.dependencies || [];
+  }
+
+  /**
+   * Job Notifications abrufen
+   */
+  getJobNotifications(jobId) {
+    return this.notifications.get(jobId) || [];
+  }
+
+  /**
+   * Job Logs abrufen
+   */
+  getJobLogs(jobId) {
+    return this.logs.get(jobId) || [];
+  }
+
+  /**
+   * Request ID generieren
+   */
+  generateRequestId() {
+    return `job_req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Geschätzte Gesamtzeit berechnen
+   */
+  calculateEstimatedTotalTime(jobStatus) {
+    const progress = jobStatus.progress || 0;
+    if (progress === 0) return null;
+
+    const startTime = new Date(jobStatus.createdAt).getTime();
+    const now = Date.now();
+    const elapsed = now - startTime;
+    
+    return (elapsed / progress) * 100;
+  }
+
+  /**
+   * Effizienz berechnen
+   */
+  calculateEfficiency(jobStatus) {
+    const expectedTime = jobStatus.expectedDuration || 300000; // 5 Minuten
+    const actualTime = Date.now() - new Date(jobStatus.createdAt).getTime();
+    
+    return Math.min(1, expectedTime / actualTime);
   }
 
   /**

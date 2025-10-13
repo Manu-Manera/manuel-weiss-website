@@ -292,7 +292,7 @@ export class ApplicationsAPI {
   }
 
   /**
-   * Auto-Save für Entwürfe
+   * Auto-Save für Entwürfe mit erweiterten Features
    */
   async autoSave(applicationId, data) {
     try {
@@ -305,17 +305,159 @@ export class ApplicationsAPI {
         const result = await this.updateApplication(applicationId, {
           ...data,
           status: 'DRAFT',
-          autoSaved: true
+          autoSaved: true,
+          lastAutoSave: new Date().toISOString()
         });
 
         if (result.success) {
           this.showAutoSaveIndicator('Entwurf gespeichert');
+          this.trackAutoSave(applicationId, data);
         } else {
           this.showAutoSaveIndicator('Speichern fehlgeschlagen', 'error');
+          this.handleAutoSaveFailure(applicationId, data, result.error);
         }
       }, 2000); // 2 Sekunden Debounce
     } catch (error) {
       console.error('Auto-Save-Fehler:', error);
+      this.handleAutoSaveError(applicationId, data, error);
+    }
+  }
+
+  /**
+   * Auto-Save Tracking
+   */
+  trackAutoSave(applicationId, data) {
+    const autoSaveData = {
+      applicationId,
+      timestamp: new Date().toISOString(),
+      dataSize: JSON.stringify(data).length,
+      fieldsChanged: Object.keys(data).length
+    };
+
+    // Analytics Event
+    this.sendAnalyticsEvent('auto_save', autoSaveData);
+  }
+
+  /**
+   * Auto-Save Failure Handler
+   */
+  handleAutoSaveFailure(applicationId, data, error) {
+    console.error('Auto-Save failed:', error);
+    
+    // Offline-Fallback
+    this.saveToOfflineStorage(applicationId, data);
+    
+    // Retry-Mechanismus
+    this.scheduleAutoSaveRetry(applicationId, data);
+  }
+
+  /**
+   * Auto-Save Error Handler
+   */
+  handleAutoSaveError(applicationId, data, error) {
+    console.error('Auto-Save error:', error);
+    
+    // Error Reporting
+    this.reportError('auto_save_error', {
+      applicationId,
+      error: error.message,
+      data: data
+    });
+  }
+
+  /**
+   * Offline Storage für Auto-Save
+   */
+  saveToOfflineStorage(applicationId, data) {
+    try {
+      const offlineData = {
+        applicationId,
+        data,
+        timestamp: new Date().toISOString(),
+        version: this.getOfflineVersion(applicationId) + 1
+      };
+
+      localStorage.setItem(`offline_${applicationId}`, JSON.stringify(offlineData));
+      this.showAutoSaveIndicator('Offline gespeichert', 'warning');
+    } catch (error) {
+      console.error('Offline storage failed:', error);
+    }
+  }
+
+  /**
+   * Offline Version abrufen
+   */
+  getOfflineVersion(applicationId) {
+    try {
+      const offlineData = localStorage.getItem(`offline_${applicationId}`);
+      if (offlineData) {
+        return JSON.parse(offlineData).version || 0;
+      }
+    } catch (error) {
+      console.error('Offline version check failed:', error);
+    }
+    return 0;
+  }
+
+  /**
+   * Auto-Save Retry planen
+   */
+  scheduleAutoSaveRetry(applicationId, data) {
+    if (this.retryCount >= this.maxRetries) {
+      console.error('Max retries reached for auto-save');
+      return;
+    }
+
+    this.retryCount++;
+    const delay = Math.pow(2, this.retryCount) * 1000; // Exponential backoff
+
+    setTimeout(() => {
+      this.autoSave(applicationId, data);
+    }, delay);
+  }
+
+  /**
+   * Offline Data synchronisieren
+   */
+  async syncOfflineData() {
+    try {
+      const offlineKeys = Object.keys(localStorage).filter(key => key.startsWith('offline_'));
+      
+      for (const key of offlineKeys) {
+        const offlineData = JSON.parse(localStorage.getItem(key));
+        const result = await this.updateApplication(offlineData.applicationId, offlineData.data);
+        
+        if (result.success) {
+          localStorage.removeItem(key);
+          this.showAutoSaveIndicator('Offline-Daten synchronisiert');
+        }
+      }
+    } catch (error) {
+      console.error('Offline sync failed:', error);
+    }
+  }
+
+  /**
+   * Analytics Event senden
+   */
+  sendAnalyticsEvent(eventName, data) {
+    try {
+      // Hier würde die Analytics-Integration implementiert werden
+      console.log('Analytics event:', eventName, data);
+    } catch (error) {
+      console.error('Analytics event failed:', error);
+    }
+  }
+
+  /**
+   * Error Reporting
+   */
+  reportError(errorType, data) {
+    try {
+      // Hier würde das Error Reporting implementiert werden
+      console.log('Error reported:', errorType, data);
+    } catch (error) {
+      console.error('Error reporting failed:', error);
     }
   }
 
