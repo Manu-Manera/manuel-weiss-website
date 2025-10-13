@@ -3,3 +3,18 @@
 /admin-panel        /admin.html           200  
 /user-management    /admin.html           200
 /users              /admin.html           200
+
+# API Documentation
+/api-docs           /api-documentation.html   200
+/api-docs/          /api-documentation.html   200
+/docs/api           /docs/api/openapi.yaml    200
+
+# PWA Routes
+/manifest.json      /public/manifest.json     200
+/sw.js             /public/sw.js             200
+
+# Media Routes (für CloudFront)
+/media/*            https://d1234567890.cloudfront.net/media/:splat    200
+
+# SPA Fallback für React-Routen
+/*                 /index.html               200

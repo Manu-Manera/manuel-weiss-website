@@ -7,6 +7,14 @@
   # Node.js Version für eventuelle Build-Tools
   NODE_VERSION = "18"
   
+  # AWS Environment Variables (werden in Netlify UI gesetzt)
+  # AWS_REGION = "eu-central-1"
+  # COGNITO_USER_POOL_ID = "eu-central-1_xxxxx"
+  # COGNITO_CLIENT_ID = "xxxxxxxxxx"
+  # API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/api"
+  # S3_MEDIA_BUCKET = "mw-prod-media"
+  # CLOUDFRONT_URL = "https://d1234567890.cloudfront.net"
+  
 # Redirects für bessere SEO
 [[redirects]]
   from = "/admin"
