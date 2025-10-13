@@ -143,14 +143,21 @@ class CompleteWorkflowSystem {
                         <h2>🚀 Smart Bewerbungsmanager</h2>
                         <p>Erstellen Sie professionelle Bewerbungsunterlagen in 6 Schritten</p>
                     </div>
-                    <button class="close-btn" onclick="completeWorkflowSystem.close()">×</button>
+                    <button class="close-btn" onclick="completeWorkflowSystem.close()" aria-label="Schließen">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
                 
                 <div class="workflow-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 0%"></div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="workflowProgressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text" id="workflowProgressText">Schritt 1 von 6</div>
                     </div>
-                    <div class="progress-text">Schritt 1 von 6</div>
                 </div>
                 
                 <div class="workflow-content">
@@ -160,12 +167,20 @@ class CompleteWorkflowSystem {
                 </div>
                 
                 <div class="workflow-navigation">
-                    <button id="prevStepBtn" class="btn-secondary" disabled>
-                        <i class="fas fa-arrow-left"></i> Zurück
-                    </button>
-                    <button id="nextStepBtn" class="btn-primary">
-                        Weiter <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <div class="nav-buttons">
+                        <button id="prevStepBtn" class="btn-secondary" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15,18 9,12 15,6"></polyline>
+                            </svg>
+                            Zurück
+                        </button>
+                        <button id="nextStepBtn" class="btn-primary">
+                            Weiter
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,18 15,12 9,6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -261,42 +276,32 @@ class CompleteWorkflowSystem {
         return `
             <div class="step-content">
                 <div class="step-header">
-                    <div class="step-icon">📋</div>
-                    <h3>Bewerbungsart wählen</h3>
+                    <h3 class="step-title">Bewerbungsart wählen</h3>
                     <p class="step-subtitle">Wählen Sie Ihre Bewerbungsart</p>
                     <p class="step-description">Entscheiden Sie, ob Sie sich auf eine Stellenausschreibung bewerben oder eine Initiativbewerbung erstellen möchten.</p>
                 </div>
                 
                 <div class="application-type-selection">
-                    <div class="type-options">
-                        <div class="type-option" data-type="job-posting" id="job-posting-option">
-                            <div class="type-icon">📄</div>
-                            <h4>Stellenausschreibung</h4>
-                            <p>Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
-                            <div class="type-features">
-                                <span class="feature">✓ KI-Analyse der Stellenausschreibung</span>
-                                <span class="feature">✓ Automatisches Matching</span>
-                                <span class="feature">✓ Personalisierte Anschreiben</span>
-                            </div>
-                        </div>
-                        
-                        <div class="type-option" data-type="initiative" id="initiative-option">
-                            <div class="type-icon">🚀</div>
-                            <h4>Initiativbewerbung</h4>
-                            <p>Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
-                            <div class="type-features">
-                                <span class="feature">✓ Unternehmen-spezifische Anpassung</span>
-                                <span class="feature">✓ Branchenanalyse</span>
-                                <span class="feature">✓ Strategische Positionierung</span>
-                            </div>
-                        </div>
+                    <div class="type-option" data-type="job-posting" id="job-posting-option">
+                        <div class="type-icon">📄</div>
+                        <h4 class="type-title">Stellenausschreibung</h4>
+                        <p class="type-description">Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
+                        <ul class="type-features">
+                            <li class="feature">KI-Analyse der Stellenausschreibung</li>
+                            <li class="feature">Automatisches Matching</li>
+                            <li class="feature">Personalisierte Anschreiben</li>
+                        </ul>
                     </div>
                     
-                    <div class="type-info" id="typeInfo" style="display: none;">
-                        <div class="info-card">
-                            <h4 id="infoTitle">Informationen zur gewählten Bewerbungsart</h4>
-                            <p id="infoDescription">Hier erhalten Sie weitere Informationen zu Ihrer gewählten Bewerbungsart.</p>
-                        </div>
+                    <div class="type-option" data-type="initiative" id="initiative-option">
+                        <div class="type-icon">🚀</div>
+                        <h4 class="type-title">Initiativbewerbung</h4>
+                        <p class="type-description">Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
+                        <ul class="type-features">
+                            <li class="feature">Unternehmen-spezifische Anpassung</li>
+                            <li class="feature">Branchenanalyse</li>
+                            <li class="feature">Strategische Positionierung</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -307,8 +312,7 @@ class CompleteWorkflowSystem {
         return `
             <div class="step-content">
                 <div class="step-header">
-                    <div class="step-icon">🔍</div>
-                    <h3>Stellenanalyse</h3>
+                    <h3 class="step-title">Stellenanalyse</h3>
                     <p class="step-subtitle">KI-Analyse der Stellenausschreibung</p>
                     <p class="step-description">Fügen Sie die Stellenausschreibung ein und lassen Sie sie von KI analysieren</p>
                 </div>
