@@ -357,11 +357,40 @@ class AdvancedWorkflowFeatures {
     }
     
     setupWebSocketConnection() {
-        // Simulate WebSocket connection
+        // Use Socket.IO if available, otherwise fallback
+        if (window.io) {
+            try {
+                this.socket = window.io('ws://localhost:3000', {
+                    transports: ['websocket', 'polling'],
+                    autoConnect: false
+                });
+                
+                this.socket.on('connect', () => {
+                    console.log('🔌 Connected to collaboration server');
+                    this.wsConnection = { connected: true, socket: this.socket };
+                });
+                
+                this.socket.on('disconnect', () => {
+                    console.log('🔌 Disconnected from collaboration server');
+                    this.wsConnection = { connected: false, socket: null };
+                });
+                
+                this.socket.connect();
+            } catch (error) {
+                console.error('WebSocket connection error:', error);
+                this.setupFallbackWebSocket();
+            }
+        } else {
+            this.setupFallbackWebSocket();
+        }
+    }
+    
+    setupFallbackWebSocket() {
+        // Fallback WebSocket simulation
         this.wsConnection = {
             connected: false,
             connect: () => {
-                console.log('🔌 Connecting to collaboration server...');
+                console.log('🔌 Connecting to collaboration server (fallback)...');
                 this.wsConnection.connected = true;
             },
             send: (data) => {
@@ -644,6 +673,25 @@ class AdvancedWorkflowFeatures {
     // =================== 8. ERWEITERTE EXPORT-OPTIONEN ===================
     
     async exportApplication(format, options = {}) {
+        // Use optimized export libraries if available
+        if (window.ExportLibraries) {
+            const exportLib = new window.ExportLibraries();
+            const exportMethods = {
+                'pdf': () => exportLib.exportToPDF(options),
+                'docx': () => exportLib.exportToDOCX(options),
+                'html': () => exportLib.exportToHTML(options),
+                'zip': () => exportLib.exportToZIP(options)
+            };
+            
+            const exportMethod = exportMethods[format];
+            if (!exportMethod) {
+                throw new Error(`Unsupported export format: ${format}`);
+            }
+            
+            return await exportMethod();
+        }
+        
+        // Fallback to original methods
         const exportMethods = {
             'pdf': () => this.exportToPDF(options),
             'docx': () => this.exportToDOCX(options),
@@ -813,15 +861,26 @@ class AdvancedWorkflowFeatures {
     }
     
     setupPWA() {
-        // Service Worker registration
+        // Enhanced Service Worker registration with Workbox
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('PWA Service Worker registered');
-                })
-                .catch(error => {
-                    console.error('PWA Service Worker registration failed:', error);
-                });
+            // Try to register with Workbox if available
+            if (window.workbox) {
+                window.workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+                window.workbox.routing.registerRoute(
+                    ({ request }) => request.destination === 'document',
+                    new window.workbox.strategies.StaleWhileRevalidate()
+                );
+                console.log('✅ Workbox Service Worker registered');
+            } else {
+                // Fallback to standard Service Worker
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ PWA Service Worker registered');
+                    })
+                    .catch(error => {
+                        console.error('❌ PWA Service Worker registration failed:', error);
+                    });
+            }
         }
     }
     
