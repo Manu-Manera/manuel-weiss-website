@@ -237,18 +237,57 @@ class CompleteWorkflowSystem {
     }
     
     showStep(stepNumber) {
+        console.log('🔍 Showing step:', stepNumber);
         const container = document.getElementById('workflowStepContainer');
-        if (!container) return;
+        if (!container) {
+            console.error('❌ Container not found:', 'workflowStepContainer');
+            return;
+        }
         
         const step = this.steps[stepNumber - 1];
-        if (!step) return;
+        if (!step) {
+            console.error('❌ Step not found:', stepNumber);
+            return;
+        }
         
-        container.innerHTML = this.generateStepContent(stepNumber, step);
+        console.log('📝 Generating content for step:', step);
+        const content = this.generateStepContent(stepNumber, step);
+        console.log('📄 Generated content:', content);
+        
+        container.innerHTML = content;
         this.updateProgress();
         this.updateNavigation();
         
         // Initialize step-specific functionality
         this.initializeStep(stepNumber);
+    }
+    
+    initializeStep(stepNumber) {
+        console.log('🔧 Initializing step:', stepNumber);
+        
+        switch(stepNumber) {
+            case 0:
+                this.initializeStep0();
+                break;
+            case 1:
+                this.initializeStep1();
+                break;
+            case 2:
+                this.initializeStep2();
+                break;
+            case 3:
+                this.initializeStep3();
+                break;
+            case 4:
+                this.initializeStep4();
+                break;
+            case 5:
+                this.initializeStep5();
+                break;
+            case 6:
+                this.initializeStep6();
+                break;
+        }
     }
     
     generateStepContent(stepNumber, step) {
@@ -702,6 +741,24 @@ class CompleteWorkflowSystem {
     initializeStep1() {
         // Initialize job description analysis
         console.log('Initializing Step 1: Job Analysis');
+        
+        // Initialize real-time analysis
+        setTimeout(() => {
+            const jobDescriptionInput = document.getElementById('jobDescriptionInput');
+            if (jobDescriptionInput) {
+                jobDescriptionInput.addEventListener('input', (e) => {
+                    this.handleRealTimeAnalysis(e.target.value);
+                });
+            }
+            
+            // Initialize analyze button
+            const analyzeButton = document.querySelector('.btn-primary');
+            if (analyzeButton) {
+                analyzeButton.addEventListener('click', () => {
+                    this.analyzeJobDescription();
+                });
+            }
+        }, 100);
     }
     
     initializeStep2() {
@@ -727,6 +784,41 @@ class CompleteWorkflowSystem {
     initializeStep6() {
         // Initialize export system
         console.log('Initializing Step 6: Export');
+    }
+    
+    handleRealTimeAnalysis(text) {
+        console.log('🔍 Real-time analysis triggered:', text.length, 'characters');
+        
+        if (text.length < 50) {
+            const analysisDiv = document.getElementById('realTimeAnalysis');
+            if (analysisDiv) {
+                analysisDiv.style.display = 'none';
+            }
+            return;
+        }
+        
+        // Show real-time analysis
+        const analysisDiv = document.getElementById('realTimeAnalysis');
+        if (analysisDiv) {
+            analysisDiv.style.display = 'block';
+            analysisDiv.innerHTML = `
+                <div class="analysis-preview">
+                    <h4>🔍 Live-Analyse</h4>
+                    <p>Textlänge: ${text.length} Zeichen</p>
+                    <p>Geschätzte Schlüsselwörter: ${this.extractKeywords(text).length}</p>
+                    <div class="analysis-status">
+                        <span class="status-indicator">🟢 Analysiere...</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    extractKeywords(text) {
+        // Simple keyword extraction
+        const words = text.toLowerCase().match(/\b\w{4,}\b/g) || [];
+        const commonWords = ['der', 'die', 'das', 'und', 'oder', 'mit', 'für', 'von', 'auf', 'in', 'an', 'zu', 'ist', 'sind', 'werden', 'haben', 'können', 'müssen', 'sollen'];
+        return [...new Set(words)].filter(word => !commonWords.includes(word)).slice(0, 10);
     }
     
     analyzeJobDescription() {
