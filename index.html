@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuel Weiss - HR Berater für AI & Transformation</title>
+    <title>Manuel Weiss - HR Berater für Prozessmanagement & Digital Transformation</title>
     
     <!-- Meta Tags -->
-    <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
-    <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
+    <meta name="description" content="Manuel Weiss - HR Berater für Prozessmanagement, Digital Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
+    <meta name="keywords" content="HR Berater, Prozessmanagement, Digital Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
     <meta name="author" content="Manuel Weiss">
     
     <!-- Open Graph -->
     <meta property="og:title" content="Manuel Weiss - Professional Services">
-    <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
+    <meta property="og:description" content="HR Berater für Prozessmanagement, Digital Transformation und Geschäftsprozesse">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app">
     
@@ -71,11 +71,11 @@
             <div class="hero-content">
                 <h1 class="hero-title">
                     <span data-de="HR Berater für" data-en="HR Consultant for">HR Berater für</span> 
-                    <span class="gradient-text" data-de="AI & Transformation" data-en="AI & Transformation">AI & Transformation</span>
+                    <span class="gradient-text" data-de="Prozessmanagement & Digital Transformation" data-en="Process Management & Digital Transformation">Prozessmanagement & Digital Transformation</span>
                 </h1>
-                <p class="hero-subtitle" data-de="Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen." data-en="Innovative solutions for modern companies. Digitalization, business processes and human resources.">
+                <p class="hero-subtitle" data-de="Innovative Lösungen für moderne Unternehmen. Geschäftsprozesse, Digitalisierung und Personalwesen." data-en="Innovative solutions for modern companies. Business processes, digitalization and human resources.">
                     Innovative Lösungen für moderne Unternehmen. 
-                    Digitalisierung, Geschäftsprozesse und Personalwesen.
+                    Geschäftsprozesse, Digitalisierung und Personalwesen.
                 </p>
                 <div class="hero-actions">
                     <a href="#services" class="btn btn-primary" data-de="Services entdecken" data-en="Discover Services">Services entdecken</a>
@@ -166,7 +166,7 @@
                     </div>
                 </div>
                 
-                <div class="service-card modern-highlight" onclick="window.location.href='bewerbungsmanager-coverlettergpt-live.html'">
+                <div class="service-card modern-highlight" onclick="window.location.href='bewerbungsmanager-coverlettergpt.html'">
                     <div class="service-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
@@ -179,7 +179,7 @@
                         <li>📱 Mobile-optimierte Benutzeroberfläche</li>
                         <li>🔄 Offline-Funktionalität mit Sync</li>
                     </ul>
-                    <a href="bewerbungsmanager-coverlettergpt-live.html" class="btn btn-primary modern-btn">
+                    <a href="bewerbungsmanager-coverlettergpt.html" class="btn btn-primary modern-btn">
                         <i class="fas fa-rocket"></i>
                         Bewerbungen verwalten
                     </a>
@@ -729,10 +729,10 @@
                     if (data.title) {
                         const heroTitle = document.querySelector('.hero-title');
                         if (heroTitle) {
-                            // Titel mit Gradient-Text für "AI & Transformation" formatieren
+                            // Titel mit Gradient-Text für "Prozessmanagement & Digital Transformation" formatieren
                             let titleText = data.title;
-                            if (titleText.includes('AI & Transformation')) {
-                                titleText = titleText.replace('AI & Transformation', '<span class="gradient-text">AI & Transformation</span>');
+                            if (titleText.includes('Prozessmanagement & Digital Transformation')) {
+                                titleText = titleText.replace('Prozessmanagement & Digital Transformation', '<span class="gradient-text">Prozessmanagement & Digital Transformation</span>');
                             }
                             heroTitle.innerHTML = titleText;
                         }
