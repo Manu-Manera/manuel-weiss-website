@@ -182,16 +182,22 @@ class CompleteWorkflowSystem {
         
         // Auto-advance after 2 seconds
         setTimeout(() => {
+            console.log('🚀 Gehe zum nächsten Schritt...');
             this.nextStep();
         }, 2000);
     }
     
     showStep(stepNumber) {
+        console.log('📋 Showing step:', stepNumber);
         const container = document.getElementById('workflowStepContainer');
-        if (!container) return;
+        if (!container) {
+            console.error('❌ Workflow container not found');
+            return;
+        }
         
         // Für Schritt 0 (Bewerbungsart) verwenden wir den speziellen Fall
         if (stepNumber === 0) {
+            console.log('📋 Generating step 0 (Application Type Selection)');
             container.innerHTML = this.generateStep0();
             this.updateProgress();
             this.updateNavigation();
@@ -200,8 +206,12 @@ class CompleteWorkflowSystem {
         }
         
         const step = this.steps[stepNumber - 1];
-        if (!step) return;
+        if (!step) {
+            console.error('❌ Step not found:', stepNumber);
+            return;
+        }
         
+        console.log('📋 Generating step content for:', step.title);
         container.innerHTML = this.generateStepContent(stepNumber, step);
         this.updateProgress();
         this.updateNavigation();
@@ -606,6 +616,21 @@ class CompleteWorkflowSystem {
     initializeStep0() {
         // Initialize application type selection
         console.log('Initializing Step 0: Application Type Selection');
+        
+        // Ensure event handlers are properly set
+        setTimeout(() => {
+            const typeOptions = document.querySelectorAll('.type-option');
+            typeOptions.forEach(option => {
+                const type = option.getAttribute('data-type');
+                if (type) {
+                    option.onclick = () => {
+                        console.log('🖱️ Type option clicked:', type);
+                        this.selectApplicationType(type);
+                    };
+                }
+            });
+            console.log('✅ Event handlers set for', typeOptions.length, 'type options');
+        }, 100);
     }
     
     initializeStep1() {
@@ -775,9 +800,13 @@ Mit freundlichen Grüßen
     }
     
     nextStep() {
+        console.log('🔄 Next step called, current step:', this.currentStep);
         if (this.currentStep < 6) {
             this.currentStep++;
+            console.log('✅ Moving to step:', this.currentStep);
             this.showStep(this.currentStep);
+        } else {
+            console.log('⚠️ Already at final step');
         }
     }
     
