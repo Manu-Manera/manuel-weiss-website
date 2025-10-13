@@ -4,7 +4,8 @@
 
 ## 🌐 Live Website
 
-**Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+**Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)  
+**Netlify:** [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
 
 ---
 
@@ -40,7 +41,8 @@ Diese professionelle Website kombiniert **Business-Services**, **KI-gestützte B
 - **Frontend**: HTML5, CSS3, JavaScript ES6+, React, Chakra UI
 - **Backend**: AWS Lambda, DynamoDB, S3, Cognito, API Gateway
 - **AI Integration**: OpenAI GPT-3.5/GPT-4, CoverLetterGPT Prompts
-- **Deployment**: GitHub Pages, GitHub Actions CI/CD
+- **Deployment**: Netlify (Primär), GitHub Pages (Backup)
+- **Version Control**: GitHub Desktop + GitHub Repository
 
 ---
 
@@ -547,20 +549,22 @@ const secureStorage = {
 
 ## 🚀 Deployment
 
-### 🌐 **GitHub Pages (Automatisch)**
-```yaml
-# .github/workflows/deploy.yml
-name: 🚀 Deploy Manuel Weiss Website
-on:
-  push:
-    branches: [ main ]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+### 🌐 **Netlify (Primär)**
+- **URL**: [https://mawps.netlify.app](https://mawps.netlify.app)
+- **Automatisches Deployment**: Bei jedem Push auf `main` Branch
+- **Build Command**: Kein Build erforderlich (statische Website)
+- **Publish Directory**: `/` (Root)
+- **Custom Headers**: Für bessere Performance und Sicherheit
+
+### 📱 **GitHub Desktop Workflow**
+1. **Änderungen in Cursor** → Dateien werden automatisch erkannt
+2. **GitHub Desktop** → Commits und Push zu GitHub
+3. **Netlify** → Automatisches Deployment (1-2 Minuten)
+4. **Live Website** → Sofort verfügbar
+
+### 🔄 **Deployment-Pipeline**
+```
+Cursor (Änderungen) → GitHub Desktop → GitHub → Netlify → Live Website
 ```
 
 ### ☁️ **AWS Amplify (Backend)**
@@ -573,12 +577,10 @@ amplify add api
 amplify push
 ```
 
-### 🔄 **CI/CD Pipeline**
-1. **Push to main** → GitHub Actions
-2. **Build & Test** → Automatische Validierung
-3. **Deploy Frontend** → GitHub Pages
-4. **Deploy Backend** → AWS Lambda
-5. **Notify** → Deployment-Benachrichtigung
+### 🌐 **GitHub Pages (Backup)**
+- **URL**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+- **Automatisches Deployment**: Über GitHub Actions
+- **Fallback**: Falls Netlify nicht verfügbar ist
 
 ---
 
