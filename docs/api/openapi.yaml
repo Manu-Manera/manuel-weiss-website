@@ -1,0 +1,827 @@
+openapi: 3.1.0
+info:
+  title: Manuel Weiss Enterprise Platform API
+  description: |
+    Vollständige API für die Manuel Weiss Enterprise Platform mit:
+    - Benutzerverwaltung (Cognito)
+    - Bewerbungsmanagement (CRUD)
+    - Medien-Upload (S3 + CloudFront)
+    - Workflow-Orchestrierung (Step Functions)
+    - Analytics & Monitoring
+  version: 2.0.0
+  contact:
+    name: Manuel Weiss
+    email: info@manuel-weiss.com
+    url: https://mawps.netlify.app
+  license:
+    name: Proprietary
+    url: https://mawps.netlify.app/terms
+
+servers:
+  - url: https://api-gateway.execute-api.eu-central-1.amazonaws.com/api
+    description: Production API
+  - url: https://api-gateway-staging.execute-api.eu-central-1.amazonaws.com/api
+    description: Staging API
+  - url: http://localhost:3000/api
+    description: Development API
+
+security:
+  - CognitoAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Benutzer anmelden
+      description: Authentifizierung über Cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "SecurePassword123!"
+      responses:
+        '200':
+          description: Anmeldung erfolgreich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Benutzer registrieren
+      description: Neue Benutzerregistrierung
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  minLength: 8
+                  example: "SecurePassword123!"
+                name:
+                  type: string
+                  example: "Max Mustermann"
+                role:
+                  type: string
+                  enum: [user, admin]
+                  default: user
+      responses:
+        '201':
+          description: Registrierung erfolgreich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '409':
+          description: Benutzer bereits vorhanden
+
+  # Applications Endpoints
+  /applications:
+    get:
+      tags: [Applications]
+      summary: Bewerbungen auflisten
+      description: Alle Bewerbungen des eingeloggten Benutzers
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [DRAFT, SUBMITTED, IN_PROGRESS, COMPLETED, FAILED]
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, title]
+            default: updatedAt
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Bewerbungen erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationsListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags: [Applications]
+      summary: Neue Bewerbung erstellen
+      description: Erstellt eine neue Bewerbung als Entwurf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationCreateRequest'
+      responses:
+        '201':
+          description: Bewerbung erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /applications/{id}:
+    get:
+      tags: [Applications]
+      summary: Bewerbung abrufen
+      description: Einzelne Bewerbung nach ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bewerbung erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      tags: [Applications]
+      summary: Bewerbung aktualisieren
+      description: Bewerbung mit Optimistic Concurrency Control
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationUpdateRequest'
+      responses:
+        '200':
+          description: Bewerbung erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Konflikt - Bewerbung wurde von anderem Benutzer geändert
+
+    delete:
+      tags: [Applications]
+      summary: Bewerbung löschen
+      description: Bewerbung permanent löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Bewerbung erfolgreich gelöscht
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /applications/{id}/submit:
+    post:
+      tags: [Applications]
+      summary: Bewerbung einreichen
+      description: Startet den Workflow für eine Bewerbung
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workflow erfolgreich gestartet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    format: uuid
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Media Endpoints
+  /media/presign:
+    post:
+      tags: [Media]
+      summary: Presigned URL für Upload
+      description: Erstellt presigned URL für direkten S3-Upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [filename, type, size]
+              properties:
+                filename:
+                  type: string
+                  example: "document.pdf"
+                type:
+                  type: string
+                  example: "application/pdf"
+                size:
+                  type: integer
+                  example: 1024000
+                purpose:
+                  type: string
+                  enum: [avatar, document, image]
+                  default: document
+      responses:
+        '200':
+          description: Presigned URL erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresignedUrlResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /media/complete:
+    post:
+      tags: [Media]
+      summary: Upload abschließen
+      description: Medien-Metadaten nach erfolgreichem Upload speichern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaCompleteRequest'
+      responses:
+        '200':
+          description: Upload erfolgreich abgeschlossen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /media:
+    get:
+      tags: [Media]
+      summary: Medien auflisten
+      description: Alle Medien des eingeloggten Benutzers
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [image, document, video, audio]
+      responses:
+        '200':
+          description: Medien erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /media/{id}:
+    delete:
+      tags: [Media]
+      summary: Medium löschen
+      description: Medium und zugehörige S3-Datei löschen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Medium erfolgreich gelöscht
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Job Status Endpoints
+  /jobs/{id}:
+    get:
+      tags: [Jobs]
+      summary: Job-Status abrufen
+      description: Aktueller Status eines Workflow-Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job-Status erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /jobs/{id}/retry:
+    post:
+      tags: [Jobs]
+      summary: Job erneut versuchen
+      description: Fehlgeschlagene Jobs erneut starten
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job-Retry erfolgreich gestartet
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /jobs/{id}/cancel:
+    post:
+      tags: [Jobs]
+      summary: Job abbrechen
+      description: Laufende Jobs abbrechen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job erfolgreich abgebrochen
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Analytics Endpoints
+  /analytics/overview:
+    get:
+      tags: [Analytics]
+      summary: Analytics-Übersicht
+      description: Gesamtstatistiken für Dashboard
+      responses:
+        '200':
+          description: Analytics erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsOverviewResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    CognitoAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token von AWS Cognito
+
+  schemas:
+    # Authentication Schemas
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+
+    RegistrationResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        message:
+          type: string
+        nextStep:
+          type: string
+          enum: [CONFIRM_SIGN_UP, DONE]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin, superadmin]
+        createdAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type: string
+          format: date-time
+
+    # Application Schemas
+    ApplicationCreateRequest:
+      type: object
+      required: [title, company, position]
+      properties:
+        title:
+          type: string
+          example: "Bewerbung als Software Engineer"
+        company:
+          type: string
+          example: "Google Inc."
+        position:
+          type: string
+          example: "Senior Software Engineer"
+        jobDescription:
+          type: string
+          example: "Wir suchen einen erfahrenen Software Engineer..."
+        userSkills:
+          type: array
+          items:
+            type: string
+          example: ["JavaScript", "React", "Node.js"]
+        customFields:
+          type: object
+          additionalProperties: true
+
+    ApplicationUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        position:
+          type: string
+        jobDescription:
+          type: string
+        userSkills:
+          type: array
+          items:
+            type: string
+        customFields:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+          enum: [DRAFT, SUBMITTED, IN_PROGRESS, COMPLETED, FAILED]
+
+    ApplicationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        company:
+          type: string
+        position:
+          type: string
+        jobDescription:
+          type: string
+        userSkills:
+          type: array
+          items:
+            type: string
+        customFields:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+          enum: [DRAFT, SUBMITTED, IN_PROGRESS, COMPLETED, FAILED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        version:
+          type: integer
+
+    ApplicationsListResponse:
+      type: object
+      properties:
+        applications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        total:
+          type: integer
+
+    # Media Schemas
+    PresignedUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        fields:
+          type: object
+          additionalProperties: true
+        key:
+          type: string
+        contentType:
+          type: string
+
+    MediaCompleteRequest:
+      type: object
+      required: [key, filename, type, size]
+      properties:
+        key:
+          type: string
+        filename:
+          type: string
+        type:
+          type: string
+        size:
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+
+    MediaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        filename:
+          type: string
+        type:
+          type: string
+        size:
+          type: integer
+        width:
+          type: integer
+        height:
+          type: integer
+        cdnUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+
+    MediaListResponse:
+      type: object
+      properties:
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        total:
+          type: integer
+
+    # Job Schemas
+    JobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        applicationId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, RUNNING, COMPLETED, FAILED, CANCELLED]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        lastUpdate:
+          type: string
+          format: date-time
+        error:
+          type: string
+        result:
+          type: object
+          additionalProperties: true
+
+    # Analytics Schemas
+    AnalyticsOverviewResponse:
+      type: object
+      properties:
+        totalApplications:
+          type: integer
+        completedApplications:
+          type: integer
+        successRate:
+          type: number
+          format: float
+        averageProcessingTime:
+          type: integer
+        recentActivity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityItem'
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [application_created, application_completed, job_failed]
+        timestamp:
+          type: string
+          format: date-time
+        description:
+          type: string
+
+    # Common Schemas
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        totalPages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    BadRequestError:
+      description: Ungültige Anfrage
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    UnauthorizedError:
+      description: Nicht autorisiert
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Ressource nicht gefunden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Interner Serverfehler
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+tags:
+  - name: Authentication
+    description: Benutzerauthentifizierung und -verwaltung
+  - name: Applications
+    description: Bewerbungsmanagement (CRUD)
+  - name: Media
+    description: Medien-Upload und -verwaltung
+  - name: Jobs
+    description: Workflow-Job-Status und -verwaltung
+  - name: Analytics
+    description: Statistiken und Monitoring
