@@ -15,20 +15,29 @@ export class ProfileManager {
   }
 
   /**
-   * Profil vom Server laden
+   * Profil vom Server laden mit erweiterten Features
    */
   async loadProfile(userId) {
     try {
       // Cache prüfen
       if (this.profileCache.has(userId)) {
-        return this.profileCache.get(userId);
+        const cached = this.profileCache.get(userId);
+        // Cache-Validität prüfen (5 Minuten)
+        if (Date.now() - cached.timestamp < 5 * 60 * 1000) {
+          return {
+            success: true,
+            profile: cached.data,
+            fromCache: true
+          };
+        }
       }
 
       const response = await fetch(`/api/users/${userId}/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${await this.getAuthToken()}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Request-ID': this.generateRequestId()
         }
       });
 
@@ -38,20 +47,215 @@ export class ProfileManager {
 
       const profile = await response.json();
       
-      // Cache speichern
-      this.profileCache.set(userId, profile);
+      // Cache speichern mit Timestamp
+      this.profileCache.set(userId, {
+        data: profile,
+        timestamp: Date.now()
+      });
       
       return {
         success: true,
-        profile: profile
+        profile: profile,
+        fromCache: false
       };
     } catch (error) {
       console.error('Profil-Ladefehler:', error);
+      
+      // Fallback auf Cache
+      if (this.profileCache.has(userId)) {
+        const cached = this.profileCache.get(userId);
+        return {
+          success: true,
+          profile: cached.data,
+          fromCache: true,
+          warning: 'Daten aus Cache (offline)'
+        };
+      }
+      
       return {
         success: false,
         error: error.message || 'Profil konnte nicht geladen werden'
       };
     }
+  }
+
+  /**
+   * Request ID generieren
+   */
+  generateRequestId() {
+    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Profil mit Optimistic Updates speichern
+   */
+  async saveProfileOptimistic(profileData) {
+    try {
+      const user = authManager.currentUser;
+      if (!user) {
+        throw new Error('Benutzer nicht angemeldet');
+      }
+
+      // Optimistic Update - sofort im Cache
+      const optimisticProfile = {
+        ...this.getCurrentProfile(),
+        ...profileData,
+        updatedAt: new Date().toISOString(),
+        version: (this.getCurrentProfile()?.version || 0) + 1
+      };
+
+      this.profileCache.set(user.id, {
+        data: optimisticProfile,
+        timestamp: Date.now()
+      });
+
+      // Server-Update im Hintergrund
+      const response = await fetch(`/api/users/${user.id}/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${await this.getAuthToken()}`,
+          'Content-Type': 'application/json',
+          'X-Request-ID': this.generateRequestId()
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      if (!response.ok) {
+        // Rollback bei Fehler
+        this.rollbackProfile(user.id);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const updatedProfile = await response.json();
+      
+      // Cache mit Server-Daten aktualisieren
+      this.profileCache.set(user.id, {
+        data: updatedProfile,
+        timestamp: Date.now()
+      });
+      
+      return {
+        success: true,
+        profile: updatedProfile,
+        message: 'Profil erfolgreich gespeichert'
+      };
+    } catch (error) {
+      console.error('Profil-Speicherfehler:', error);
+      return {
+        success: false,
+        error: error.message || 'Profil konnte nicht gespeichert werden'
+      };
+    }
+  }
+
+  /**
+   * Profil-Rollback bei Fehler
+   */
+  rollbackProfile(userId) {
+    // Hier würde der Rollback-Mechanismus implementiert werden
+    console.log('Rolling back profile for user:', userId);
+  }
+
+  /**
+   * Profil-Validierung mit erweiterten Regeln
+   */
+  validateProfileAdvanced(profileData) {
+    const errors = [];
+    const warnings = [];
+    
+    // Basis-Validierung
+    const basicValidation = this.validateProfile(profileData);
+    if (!basicValidation.isValid) {
+      errors.push(...basicValidation.errors);
+    }
+    
+    // Erweiterte Validierung
+    if (profileData.email) {
+      // E-Mail-Domain-Validierung
+      const allowedDomains = ['gmail.com', 'outlook.com', 'company.com'];
+      const domain = profileData.email.split('@')[1];
+      if (!allowedDomains.includes(domain)) {
+        warnings.push('E-Mail-Domain nicht in der Whitelist');
+      }
+    }
+    
+    // Telefonnummer-Format prüfen
+    if (profileData.phone) {
+      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+      if (!phoneRegex.test(profileData.phone.replace(/\s/g, ''))) {
+        errors.push('Telefonnummer hat ungültiges Format');
+      }
+    }
+    
+    // Passwort-Stärke prüfen
+    if (profileData.password) {
+      const passwordStrength = this.checkPasswordStrength(profileData.password);
+      if (passwordStrength.score < 3) {
+        warnings.push('Passwort ist schwach. Verwenden Sie mindestens 8 Zeichen mit Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen.');
+      }
+    }
+    
+    // Profil-Vollständigkeit prüfen
+    const completeness = this.checkProfileCompleteness(profileData);
+    if (completeness < 0.8) {
+      warnings.push(`Profil ist nur zu ${Math.round(completeness * 100)}% vollständig`);
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors: errors,
+      warnings: warnings,
+      completeness: completeness
+    };
+  }
+
+  /**
+   * Passwort-Stärke prüfen
+   */
+  checkPasswordStrength(password) {
+    let score = 0;
+    const checks = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      numbers: /\d/.test(password),
+      symbols: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+    
+    Object.values(checks).forEach(check => {
+      if (check) score++;
+    });
+    
+    return {
+      score: score,
+      maxScore: 5,
+      checks: checks
+    };
+  }
+
+  /**
+   * Profil-Vollständigkeit prüfen
+   */
+  checkProfileCompleteness(profileData) {
+    const requiredFields = ['name', 'email'];
+    const optionalFields = ['phone', 'address', 'company', 'position', 'bio'];
+    
+    let completedFields = 0;
+    let totalFields = requiredFields.length + optionalFields.length;
+    
+    requiredFields.forEach(field => {
+      if (profileData[field] && profileData[field].trim()) {
+        completedFields++;
+      }
+    });
+    
+    optionalFields.forEach(field => {
+      if (profileData[field] && profileData[field].trim()) {
+        completedFields++;
+      }
+    });
+    
+    return completedFields / totalFields;
   }
 
   /**

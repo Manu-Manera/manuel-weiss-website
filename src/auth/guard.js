@@ -62,7 +62,7 @@ export class RouteGuard {
   }
 
   /**
-   * Route Guard Middleware
+   * Route Guard Middleware mit erweiterten Checks
    */
   async checkAccess(path, user) {
     // Öffentliche Routen
@@ -75,7 +75,18 @@ export class RouteGuard {
       return {
         allowed: false,
         redirect: '/login.html',
-        message: 'Bitte melden Sie sich an'
+        message: 'Bitte melden Sie sich an',
+        code: 'AUTH_REQUIRED'
+      };
+    }
+
+    // Session-Timeout prüfen
+    if (this.isSessionExpired(user)) {
+      return {
+        allowed: false,
+        redirect: '/login.html',
+        message: 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
+        code: 'SESSION_EXPIRED'
       };
     }
 
@@ -85,12 +96,143 @@ export class RouteGuard {
         return {
           allowed: false,
           redirect: '/index.html',
-          message: 'Keine Berechtigung für Admin-Bereich'
+          message: 'Keine Berechtigung für Admin-Bereich',
+          code: 'INSUFFICIENT_PERMISSIONS'
         };
       }
     }
 
+    // Spezielle Berechtigungen prüfen
+    const specialPermission = this.getSpecialPermission(path);
+    if (specialPermission && !this.hasSpecialPermission(user, specialPermission)) {
+      return {
+        allowed: false,
+        redirect: '/index.html',
+        message: `Keine Berechtigung für ${specialPermission}`,
+        code: 'SPECIAL_PERMISSION_REQUIRED'
+      };
+    }
+
+    // Rate Limiting prüfen
+    if (this.isRateLimited(user, path)) {
+      return {
+        allowed: false,
+        redirect: '/rate-limit.html',
+        message: 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+        code: 'RATE_LIMITED'
+      };
+    }
+
+    // IP-Whitelist prüfen (für Admin)
+    if (this.isAdminRoute(path) && !this.isIPWhitelisted(user)) {
+      return {
+        allowed: false,
+        redirect: '/index.html',
+        message: 'Zugriff von dieser IP nicht erlaubt',
+        code: 'IP_NOT_WHITELISTED'
+      };
+    }
+
     return { allowed: true };
+  }
+
+  /**
+   * Session-Timeout prüfen
+   */
+  isSessionExpired(user) {
+    if (!user.lastActivity) return false;
+    const sessionTimeout = 30 * 60 * 1000; // 30 Minuten
+    return Date.now() - user.lastActivity > sessionTimeout;
+  }
+
+  /**
+   * Spezielle Berechtigung für Route abrufen
+   */
+  getSpecialPermission(path) {
+    const specialRoutes = {
+      '/admin/user-management': 'USER_MANAGEMENT',
+      '/admin/analytics': 'ANALYTICS_ACCESS',
+      '/admin/media': 'MEDIA_MANAGEMENT',
+      '/admin/settings': 'SYSTEM_SETTINGS'
+    };
+    return specialRoutes[path];
+  }
+
+  /**
+   * Spezielle Berechtigung prüfen
+   */
+  hasSpecialPermission(user, permission) {
+    const userPermissions = user.permissions || [];
+    return userPermissions.includes(permission) || user.role === 'superadmin';
+  }
+
+  /**
+   * Rate Limiting prüfen
+   */
+  isRateLimited(user, path) {
+    const userRequests = this.getUserRequests(user.id);
+    const now = Date.now();
+    const window = 60 * 1000; // 1 Minute
+    const maxRequests = 60; // 60 Requests pro Minute
+    
+    // Alte Requests entfernen
+    this.cleanupOldRequests(user.id, now - window);
+    
+    // Aktuelle Requests zählen
+    const recentRequests = this.getUserRequests(user.id).filter(
+      req => req.timestamp > now - window
+    );
+    
+    return recentRequests.length >= maxRequests;
+  }
+
+  /**
+   * IP-Whitelist prüfen
+   */
+  isIPWhitelisted(user) {
+    const whitelistedIPs = [
+      '127.0.0.1',
+      '::1',
+      // Weitere vertrauenswürdige IPs hier hinzufügen
+    ];
+    
+    return whitelistedIPs.includes(user.ipAddress) || user.role === 'superadmin';
+  }
+
+  /**
+   * Benutzer-Requests abrufen
+   */
+  getUserRequests(userId) {
+    if (!this.userRequests) {
+      this.userRequests = new Map();
+    }
+    return this.userRequests.get(userId) || [];
+  }
+
+  /**
+   * Request für Benutzer hinzufügen
+   */
+  addUserRequest(userId, path) {
+    if (!this.userRequests) {
+      this.userRequests = new Map();
+    }
+    
+    const requests = this.getUserRequests(userId);
+    requests.push({
+      path,
+      timestamp: Date.now()
+    });
+    
+    this.userRequests.set(userId, requests);
+  }
+
+  /**
+   * Alte Requests bereinigen
+   */
+  cleanupOldRequests(userId, cutoffTime) {
+    const requests = this.getUserRequests(userId);
+    const filteredRequests = requests.filter(req => req.timestamp > cutoffTime);
+    this.userRequests.set(userId, filteredRequests);
   }
 
   /**

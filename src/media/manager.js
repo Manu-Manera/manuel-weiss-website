@@ -22,16 +22,16 @@ export class MediaManager {
   }
 
   /**
-   * Uppy Uploader initialisieren
+   * Uppy Uploader mit erweiterten Features initialisieren
    */
-  initializeUploader(containerId) {
+  initializeUploader(containerId, options = {}) {
     const container = document.getElementById(containerId);
     if (!container) {
       console.error('Upload-Container nicht gefunden:', containerId);
       return;
     }
 
-    this.uppy = new Uppy({
+    const defaultOptions = {
       restrictions: {
         maxFileSize: 100 * 1024 * 1024, // 100MB
         maxNumberOfFiles: 10,
@@ -44,8 +44,203 @@ export class MediaManager {
         ]
       },
       autoProceed: false,
-      allowMultipleUploadBatches: true
+      allowMultipleUploadBatches: true,
+      debug: false,
+      meta: {
+        uploader: 'Manuel Weiss Platform',
+        version: '2.0.0'
+      }
+    };
+
+    this.uppy = new Uppy({
+      ...defaultOptions,
+      ...options
     });
+
+    // Erweiterte Konfiguration
+    this.setupAdvancedFeatures();
+    this.setupProgressTracking();
+    this.setupErrorHandling();
+    this.setupRetryMechanism();
+    this.setupCompression();
+    this.setupThumbnails();
+    this.setupMetadataExtraction();
+    this.setupVirusScanning();
+    this.setupWatermarking();
+    this.setupBatchProcessing();
+  }
+
+  /**
+   * Erweiterte Features einrichten
+   */
+  setupAdvancedFeatures() {
+    // Drag & Drop Verbesserungen
+    this.uppy.on('drag-over', (data) => {
+      this.handleDragOver(data);
+    });
+
+    this.uppy.on('drag-leave', (data) => {
+      this.handleDragLeave(data);
+    });
+
+    // Datei-Vorschau
+    this.uppy.on('file-added', (file) => {
+      this.handleFileAdded(file);
+    });
+
+    // Upload-Queue Management
+    this.uppy.on('upload', (data) => {
+      this.handleUploadStart(data);
+    });
+
+    // Batch-Processing
+    this.uppy.on('upload-success', (file, response) => {
+      this.handleUploadSuccess(file, response);
+    });
+
+    this.uppy.on('upload-error', (file, error) => {
+      this.handleUploadError(file, error);
+    });
+  }
+
+  /**
+   * Progress Tracking einrichten
+   */
+  setupProgressTracking() {
+    this.uploadProgress = {
+      total: 0,
+      completed: 0,
+      failed: 0,
+      current: null
+    };
+
+    this.uppy.on('upload-progress', (file, progress) => {
+      this.updateProgress(file, progress);
+    });
+
+    this.uppy.on('upload-success', (file, response) => {
+      this.uploadProgress.completed++;
+      this.updateOverallProgress();
+    });
+
+    this.uppy.on('upload-error', (file, error) => {
+      this.uploadProgress.failed++;
+      this.updateOverallProgress();
+    });
+  }
+
+  /**
+   * Error Handling einrichten
+   */
+  setupErrorHandling() {
+    this.errorHandlers = {
+      network: this.handleNetworkError.bind(this),
+      server: this.handleServerError.bind(this),
+      validation: this.handleValidationError.bind(this),
+      quota: this.handleQuotaError.bind(this),
+      virus: this.handleVirusError.bind(this)
+    };
+
+    this.uppy.on('upload-error', (file, error) => {
+      this.handleUploadError(file, error);
+    });
+  }
+
+  /**
+   * Retry-Mechanismus einrichten
+   */
+  setupRetryMechanism() {
+    this.retryConfig = {
+      maxRetries: 3,
+      retryDelay: 1000,
+      exponentialBackoff: true
+    };
+
+    this.uppy.on('upload-error', (file, error) => {
+      this.scheduleRetry(file, error);
+    });
+  }
+
+  /**
+   * Kompression einrichten
+   */
+  setupCompression() {
+    this.compressionConfig = {
+      enabled: true,
+      quality: 0.8,
+      maxWidth: 1920,
+      maxHeight: 1080,
+      formats: ['image/jpeg', 'image/png', 'image/webp']
+    };
+
+    this.uppy.on('file-added', (file) => {
+      if (this.shouldCompress(file)) {
+        this.compressFile(file);
+      }
+    });
+  }
+
+  /**
+   * Thumbnails einrichten
+   */
+  setupThumbnails() {
+    this.uppy.on('file-added', (file) => {
+      if (file.type.startsWith('image/')) {
+        this.generateThumbnail(file);
+      }
+    });
+  }
+
+  /**
+   * Metadaten-Extraktion einrichten
+   */
+  setupMetadataExtraction() {
+    this.uppy.on('file-added', (file) => {
+      this.extractMetadata(file);
+    });
+  }
+
+  /**
+   * Virus-Scanning einrichten
+   */
+  setupVirusScanning() {
+    this.uppy.on('file-added', (file) => {
+      this.scanForVirus(file);
+    });
+  }
+
+  /**
+   * Watermarking einrichten
+   */
+  setupWatermarking() {
+    this.watermarkConfig = {
+      enabled: false,
+      text: 'Manuel Weiss Platform',
+      position: 'bottom-right',
+      opacity: 0.5
+    };
+
+    this.uppy.on('file-added', (file) => {
+      if (this.shouldAddWatermark(file)) {
+        this.addWatermark(file);
+      }
+    });
+  }
+
+  /**
+   * Batch-Processing einrichten
+   */
+  setupBatchProcessing() {
+    this.batchConfig = {
+      maxConcurrent: 3,
+      delay: 1000,
+      priority: 'fifo'
+    };
+
+    this.uppy.on('upload', (data) => {
+      this.processBatch(data);
+    });
+  }
 
     // AWS S3 Plugin
     this.uppy.use(AwsS3, {

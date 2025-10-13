@@ -1,7 +1,6 @@
 /**
  * AWS Cognito Authentication System
  * Vollständige Integration mit Amplify Auth
- * Erweiterte Features: Token Refresh, Session Management, Multi-Factor Auth
  */
 
 import { Amplify } from 'aws-amplify';
@@ -13,16 +12,8 @@ import {
   confirmSignUp,
   resendSignUpCode,
   forgotPassword,
-  confirmResetPassword,
-  updatePassword,
-  updateUserAttributes,
-  deleteUser,
-  fetchUserAttributes,
-  fetchAuthSession,
-  signInWithRedirect,
-  signOut as signOutRedirect
+  confirmResetPassword
 } from 'aws-amplify/auth';
-import { Hub } from 'aws-amplify/utils';
 
 // AWS Amplify Konfiguration
 const awsConfig = {
@@ -251,6 +242,113 @@ export class AuthManager {
         error: error.message || 'Passwort-Bestätigung fehlgeschlagen'
       };
     }
+  }
+
+  /**
+   * Token Refresh Timer starten
+   */
+  startTokenRefreshTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+    
+    // Token 5 Minuten vor Ablauf erneuern
+    const refreshTime = (this.sessionData?.expiresIn || 3600) * 1000 - 5 * 60 * 1000;
+    
+    this.refreshTimer = setTimeout(() => {
+      this.refreshToken();
+    }, refreshTime);
+  }
+
+  /**
+   * Token Refresh Timer stoppen
+   */
+  stopTokenRefreshTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  /**
+   * Token manuell erneuern
+   */
+  async refreshToken() {
+    try {
+      const result = await fetchAuthSession({ forceRefresh: true });
+      this.sessionData = result;
+      this.startTokenRefreshTimer();
+      this.notifyListeners();
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      this.handleTokenRefreshFailure(error);
+    }
+  }
+
+  /**
+   * Pending Requests verarbeiten
+   */
+  processPendingRequests() {
+    while (this.pendingRequests.length > 0) {
+      const { resolve, reject, request } = this.pendingRequests.shift();
+      this.executeRequest(request)
+        .then(resolve)
+        .catch(reject);
+    }
+  }
+
+  /**
+   * Request mit Retry ausführen
+   */
+  async executeRequest(request) {
+    try {
+      const response = await fetch(request.url, {
+        ...request.options,
+        headers: {
+          ...request.options.headers,
+          'Authorization': `Bearer ${await this.getAuthToken()}`
+        }
+      });
+      
+      if (response.status === 401) {
+        // Token abgelaufen, erneuern und erneut versuchen
+        await this.refreshToken();
+        return this.executeRequest(request);
+      }
+      
+      return response;
+    } catch (error) {
+      if (this.retryCount < this.maxRetries) {
+        this.retryCount++;
+        await new Promise(resolve => setTimeout(resolve, 1000 * this.retryCount));
+        return this.executeRequest(request);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Request mit Auth-Token ausführen
+   */
+  async authenticatedRequest(url, options = {}) {
+    const request = {
+      url,
+      options: {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        }
+      }
+    };
+
+    if (!this.isAuthenticated) {
+      return new Promise((resolve, reject) => {
+        this.pendingRequests.push({ resolve, reject, request });
+      });
+    }
+
+    return this.executeRequest(request);
   }
 
   /**
