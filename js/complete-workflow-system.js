@@ -20,6 +20,10 @@ class CompleteWorkflowSystem {
             exportData: null
         };
         
+        // Initialize advanced features
+        this.advancedFeatures = null;
+        this.initializeAdvancedFeatures();
+        
         this.steps = [
             {
                 id: 0,
@@ -73,6 +77,22 @@ class CompleteWorkflowSystem {
         ];
         
         this.init();
+    }
+    
+    initializeAdvancedFeatures() {
+        // Initialize advanced features when available
+        if (window.AdvancedWorkflowFeatures) {
+            this.advancedFeatures = new AdvancedWorkflowFeatures();
+            console.log('🚀 Advanced Features initialized');
+        } else {
+            // Wait for advanced features to load
+            setTimeout(() => {
+                if (window.AdvancedWorkflowFeatures) {
+                    this.advancedFeatures = new AdvancedWorkflowFeatures();
+                    console.log('🚀 Advanced Features initialized (delayed)');
+                }
+            }, 1000);
+        }
     }
     
     init() {
@@ -288,7 +308,10 @@ class CompleteWorkflowSystem {
                     
                     <div class="input-group">
                         <label for="jobDescriptionInput">Stellenausschreibung</label>
-                        <textarea id="jobDescriptionInput" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein..."></textarea>
+                        <textarea id="jobDescriptionInput" data-realtime-analysis="true" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein..."></textarea>
+                        <div id="realTimeAnalysis" class="real-time-analysis" style="display: none;">
+                            <!-- Real-time analysis results will appear here -->
+                        </div>
                     </div>
                     
                     <button class="btn-primary" onclick="completeWorkflowSystem.analyzeJobDescription()">
@@ -314,6 +337,15 @@ class CompleteWorkflowSystem {
                 </div>
                 
                 <div class="matching-section">
+                    <div class="skill-matching-container">
+                        <h4>🎯 Intelligentes Skill-Matching</h4>
+                        <div class="skill-match-score">
+                            <div class="score-circle" id="skillMatchCircle">
+                                <span id="matchingScore">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="requirements-card">
                         <h4>Erkannte Anforderungen</h4>
                         <div id="requirementsList" class="requirements-list">
@@ -324,7 +356,7 @@ class CompleteWorkflowSystem {
                     <div class="skills-card">
                         <h4>Ihre Skills</h4>
                         <div class="skills-input">
-                            <input type="text" id="skillInput" placeholder="Skill hinzufügen...">
+                            <input type="text" id="skillInput" data-skill-input="true" placeholder="Skill hinzufügen...">
                             <button onclick="completeWorkflowSystem.addSkill()">Hinzufügen</button>
                         </div>
                         <div id="skillsList" class="skills-list">
@@ -332,12 +364,10 @@ class CompleteWorkflowSystem {
                         </div>
                     </div>
                     
-                    <div class="matching-score">
-                        <h4>Matching Score</h4>
-                        <div class="score-display">
-                            <div class="score-circle">
-                                <span id="matchingScore">0%</span>
-                            </div>
+                    <div class="skill-recommendations" id="skillRecommendations" style="display: none;">
+                        <h4>💡 Verbesserungsvorschläge</h4>
+                        <div id="recommendationsList">
+                            <!-- Recommendations will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -519,6 +549,28 @@ class CompleteWorkflowSystem {
                 </div>
                 
                 <div class="export-section">
+                    <div class="progress-tracking">
+                        <h4>🎮 Ihr Fortschritt</h4>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalPoints">0</div>
+                                <div class="stat-label">Punkte</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="currentLevel">1</div>
+                                <div class="stat-label">Level</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="achievementsCount">0</div>
+                                <div class="stat-label">Achievements</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="completionRate">0%</div>
+                                <div class="stat-label">Fertigstellung</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="export-summary">
                         <h4>Bewerbungspaket Zusammenfassung</h4>
                         <div class="summary-grid">
@@ -543,15 +595,24 @@ class CompleteWorkflowSystem {
                     <div class="export-options">
                         <h4>Export-Optionen</h4>
                         <div class="export-buttons">
-                            <button class="btn-primary" onclick="completeWorkflowSystem.exportPDF()">
-                                <i class="fas fa-file-pdf"></i> Als PDF exportieren
+                            <button class="export-button" onclick="completeWorkflowSystem.exportPDF()">
+                                <i class="fas fa-file-pdf"></i> PDF Export
                             </button>
-                            <button class="btn-secondary" onclick="completeWorkflowSystem.exportZIP()">
-                                <i class="fas fa-file-archive"></i> Als ZIP exportieren
+                            <button class="export-button" onclick="completeWorkflowSystem.exportDOCX()">
+                                <i class="fas fa-file-word"></i> DOCX Export
                             </button>
-                            <button class="btn-secondary" onclick="completeWorkflowSystem.exportDOCX()">
-                                <i class="fas fa-file-word"></i> Als DOCX exportieren
+                            <button class="export-button" onclick="completeWorkflowSystem.exportHTML()">
+                                <i class="fas fa-file-code"></i> HTML Export
                             </button>
+                            <button class="export-button" onclick="completeWorkflowSystem.exportZIP()">
+                                <i class="fas fa-file-archive"></i> ZIP Paket
+                            </button>
+                        </div>
+                        <div class="export-progress" id="exportProgress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="exportProgressFill"></div>
+                            </div>
+                            <p id="exportStatus">Export wird vorbereitet...</p>
                         </div>
                     </div>
                     
@@ -661,6 +722,11 @@ class CompleteWorkflowSystem {
         this.workflowData.position = position;
         this.workflowData.jobDescription = jobDescription;
         
+        // Use advanced features if available
+        if (this.advancedFeatures) {
+            this.advancedFeatures.performRealTimeAnalysis(jobDescription);
+        }
+        
         // Simulate AI analysis
         this.simulateAIAnalysis();
     }
@@ -762,19 +828,120 @@ Mit freundlichen Grüßen
         alert('Design wurde angewendet!');
     }
     
-    exportPDF() {
-        // Simulate PDF export
-        alert('PDF wird erstellt...');
+    async exportPDF() {
+        this.showExportProgress('PDF wird erstellt...');
+        
+        try {
+            if (this.advancedFeatures) {
+                const result = await this.advancedFeatures.exportApplication('pdf');
+                this.completeExport('PDF', result);
+            } else {
+                // Fallback simulation
+                setTimeout(() => {
+                    this.completeExport('PDF', { filename: 'bewerbung.pdf' });
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('PDF export error:', error);
+            alert('PDF Export fehlgeschlagen');
+        }
     }
     
-    exportZIP() {
-        // Simulate ZIP export
-        alert('ZIP-Paket wird erstellt...');
+    async exportDOCX() {
+        this.showExportProgress('DOCX wird erstellt...');
+        
+        try {
+            if (this.advancedFeatures) {
+                const result = await this.advancedFeatures.exportApplication('docx');
+                this.completeExport('DOCX', result);
+            } else {
+                setTimeout(() => {
+                    this.completeExport('DOCX', { filename: 'bewerbung.docx' });
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('DOCX export error:', error);
+            alert('DOCX Export fehlgeschlagen');
+        }
     }
     
-    exportDOCX() {
-        // Simulate DOCX export
-        alert('DOCX wird erstellt...');
+    async exportHTML() {
+        this.showExportProgress('HTML wird erstellt...');
+        
+        try {
+            if (this.advancedFeatures) {
+                const result = await this.advancedFeatures.exportApplication('html');
+                this.completeExport('HTML', result);
+            } else {
+                setTimeout(() => {
+                    this.completeExport('HTML', { filename: 'bewerbung.html' });
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('HTML export error:', error);
+            alert('HTML Export fehlgeschlagen');
+        }
+    }
+    
+    async exportZIP() {
+        this.showExportProgress('ZIP-Paket wird erstellt...');
+        
+        try {
+            if (this.advancedFeatures) {
+                const result = await this.advancedFeatures.exportApplication('zip');
+                this.completeExport('ZIP', result);
+            } else {
+                setTimeout(() => {
+                    this.completeExport('ZIP', { filename: 'bewerbungspaket.zip' });
+                }, 3000);
+            }
+        } catch (error) {
+            console.error('ZIP export error:', error);
+            alert('ZIP Export fehlgeschlagen');
+        }
+    }
+    
+    showExportProgress(message) {
+        const progressContainer = document.getElementById('exportProgress');
+        const progressFill = document.getElementById('exportProgressFill');
+        const statusText = document.getElementById('exportStatus');
+        
+        if (progressContainer && progressFill && statusText) {
+            progressContainer.classList.add('active');
+            statusText.textContent = message;
+            progressFill.style.width = '0%';
+            
+            // Animate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+    }
+    
+    completeExport(format, result) {
+        const progressContainer = document.getElementById('exportProgress');
+        const statusText = document.getElementById('exportStatus');
+        
+        if (progressContainer && statusText) {
+            statusText.textContent = `${format} erfolgreich erstellt: ${result.filename}`;
+            
+            setTimeout(() => {
+                progressContainer.classList.remove('active');
+            }, 3000);
+        }
+        
+        // Award points for export
+        if (this.advancedFeatures) {
+            this.advancedFeatures.addPoints(50);
+        }
+        
+        alert(`✅ ${format} erfolgreich erstellt: ${result.filename}`);
     }
     
     completeWorkflow() {

@@ -1,0 +1,677 @@
+/**
+ * Advanced Features CSS
+ * Styles für erweiterte Workflow-Funktionen
+ */
+
+/* =================== REAL-TIME ANALYSIS STYLES =================== */
+
+.real-time-analysis {
+    position: relative;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #0ea5e9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    animation: slideIn 0.3s ease-out;
+}
+
+.analysis-results {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.analysis-item {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #0ea5e9;
+}
+
+.keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.keyword {
+    background: #0ea5e9;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.industry-badge {
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.sentiment.positive {
+    color: #10b981;
+}
+
+.sentiment.negative {
+    color: #ef4444;
+}
+
+.experience-level {
+    background: #8b5cf6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* =================== SKILL MATCHING STYLES =================== */
+
+.skill-matching-container {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #10b981;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.skill-match-score {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#10b981 var(--score, 0%), #e5e7eb var(--score, 0%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-text {
+    position: relative;
+    z-index: 1;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.skill-recommendations {
+    margin-top: 1rem;
+}
+
+.recommendation-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #f59e0b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recommendation-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+}
+
+.recommendation-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.priority-badge {
+    background: #f59e0b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* =================== GAMIFICATION STYLES =================== */
+
+.achievement-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 1000;
+    animation: slideInRight 0.5s ease-out;
+    max-width: 300px;
+}
+
+.achievement-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    animation: bounce 1s infinite;
+}
+
+.achievement-text h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.achievement-text p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.achievement-points {
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.progress-tracking {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    border: 1px solid #8b5cf6;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #8b5cf6;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.level-indicator {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+    margin: 0.5rem 0;
+}
+
+/* =================== COLLABORATION STYLES =================== */
+
+.collaboration-panel {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 1px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.team-member {
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.member-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f59e0b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.member-role {
+    background: #f59e0b;
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.feedback-container {
+    margin-top: 1rem;
+}
+
+.feedback-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #f59e0b;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.feedback-type {
+    background: #f59e0b;
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.feedback-time {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.feedback-content {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.feedback-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.feedback-actions button {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.feedback-actions button:hover {
+    background: #059669;
+}
+
+.feedback-actions button:last-child {
+    background: #ef4444;
+}
+
+.feedback-actions button:last-child:hover {
+    background: #dc2626;
+}
+
+/* =================== EXPORT OPTIONS STYLES =================== */
+
+.export-options {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #10b981;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.export-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.export-button {
+    background: white;
+    border: 2px solid #10b981;
+    color: #10b981;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.export-button:hover {
+    background: #10b981;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.export-button i {
+    font-size: 1.25rem;
+}
+
+.export-progress {
+    margin-top: 1rem;
+    display: none;
+}
+
+.export-progress.active {
+    display: block;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    transition: width 0.3s ease;
+}
+
+/* =================== MOBILE FEATURES STYLES =================== */
+
+.voice-input-button {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.voice-input-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.voice-input-button.recording {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    animation: pulse 1s infinite;
+}
+
+.voice-input-status {
+    margin-top: 0.5rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.offline-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: #f59e0b;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 1000;
+    display: none;
+}
+
+.offline-indicator.show {
+    display: block;
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* =================== ANIMATIONS =================== */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* =================== RESPONSIVE DESIGN =================== */
+
+@media (max-width: 768px) {
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .export-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-members {
+        flex-direction: column;
+    }
+    
+    .achievement-notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .collaboration-panel,
+    .real-time-analysis,
+    .skill-matching-container,
+    .export-options {
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-item {
+        padding: 0.75rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .achievement-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .achievement-icon {
+        font-size: 1.5rem;
+    }
+}
+
+/* =================== ACCESSIBILITY =================== */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus styles for keyboard navigation */
+.export-button:focus,
+.voice-input-button:focus,
+.feedback-actions button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .keyword,
+    .industry-badge,
+    .experience-level {
+        border: 1px solid currentColor;
+    }
+    
+    .achievement-notification {
+        border: 2px solid white;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .real-time-analysis {
+        background: linear-gradient(135deg, #1e3a8a, #1e40af);
+        border-color: #3b82f6;
+    }
+    
+    .analysis-item {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .skill-matching-container {
+        background: linear-gradient(135deg, #064e3b, #065f46);
+        border-color: #10b981;
+    }
+    
+    .collaboration-panel {
+        background: linear-gradient(135deg, #92400e, #b45309);
+        border-color: #f59e0b;
+    }
+    
+    .export-options {
+        background: linear-gradient(135deg, #064e3b, #065f46);
+        border-color: #10b981;
+    }
+}
