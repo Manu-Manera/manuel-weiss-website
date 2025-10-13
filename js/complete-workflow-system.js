@@ -280,23 +280,23 @@ class CompleteWorkflowSystem {
                     <div class="step-icon">🔍</div>
                     <h3>Stellenanalyse</h3>
                     <p class="step-subtitle">KI-Analyse der Stellenausschreibung</p>
-                    <p class="step-description">Fügen Sie die Stellenausschreibung ein und lassen Sie sie von KI analysieren</p>
+                    <p class="step-description">Fügen Sie die Stellenausschreibung ein und lassen Sie sie von KI analysieren. Unternehmen und Position sind optional.</p>
                 </div>
                 
                 <div class="input-section">
                     <div class="input-group">
-                        <label for="companyInput">Unternehmen</label>
-                        <input type="text" id="companyInput" placeholder="z.B. Google, Microsoft, Startup XYZ">
+                        <label for="companyInput">Unternehmen <span style="color: #6b7280; font-weight: normal;">(optional)</span></label>
+                        <input type="text" id="companyInput" placeholder="z.B. Google, Microsoft, Startup XYZ (optional)">
                     </div>
                     
                     <div class="input-group">
-                        <label for="positionInput">Position</label>
-                        <input type="text" id="positionInput" placeholder="z.B. Software Engineer, Marketing Manager">
+                        <label for="positionInput">Position <span style="color: #6b7280; font-weight: normal;">(optional)</span></label>
+                        <input type="text" id="positionInput" placeholder="z.B. Software Engineer, Marketing Manager (optional)">
                     </div>
                     
                     <div class="input-group">
-                        <label for="jobDescriptionInput">Stellenausschreibung</label>
-                        <textarea id="jobDescriptionInput" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein..."></textarea>
+                        <label for="jobDescriptionInput">Stellenausschreibung <span style="color: #dc2626; font-weight: normal;">*</span></label>
+                        <textarea id="jobDescriptionInput" rows="10" placeholder="Fügen Sie hier die komplette Stellenausschreibung ein... (Pflichtfeld)"></textarea>
                     </div>
                     
                     <button class="btn-primary" onclick="completeWorkflowSystem.analyzeJobDescription()">
@@ -639,14 +639,15 @@ class CompleteWorkflowSystem {
         const position = document.getElementById('positionInput').value;
         const jobDescription = document.getElementById('jobDescriptionInput').value;
         
-        if (!company || !position || !jobDescription) {
-            alert('Bitte füllen Sie alle Felder aus.');
+        // Nur Stellenausschreibung ist Pflichtfeld
+        if (!jobDescription) {
+            alert('Bitte geben Sie die Stellenausschreibung ein.');
             return;
         }
         
-        // Store data
-        this.workflowData.company = company;
-        this.workflowData.position = position;
+        // Store data (auch wenn leer)
+        this.workflowData.company = company || 'Unbekanntes Unternehmen';
+        this.workflowData.position = position || 'Unbekannte Position';
         this.workflowData.jobDescription = jobDescription;
         
         // Simulate AI analysis
