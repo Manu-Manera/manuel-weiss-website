@@ -22,7 +22,9 @@ class CompleteWorkflowSystem {
         
         // Initialize advanced features
         this.advancedFeatures = null;
+        this.exportLibraries = null;
         this.initializeAdvancedFeatures();
+        this.initializeExportLibraries();
         
         this.steps = [
             {
@@ -90,6 +92,22 @@ class CompleteWorkflowSystem {
                 if (window.AdvancedWorkflowFeatures) {
                     this.advancedFeatures = new AdvancedWorkflowFeatures();
                     console.log('🚀 Advanced Features initialized (delayed)');
+                }
+            }, 1000);
+        }
+    }
+    
+    initializeExportLibraries() {
+        // Initialize optimized export libraries when available
+        if (window.ExportLibraries) {
+            this.exportLibraries = new ExportLibraries();
+            console.log('📚 Export Libraries initialized');
+        } else {
+            // Wait for export libraries to load
+            setTimeout(() => {
+                if (window.ExportLibraries) {
+                    this.exportLibraries = new ExportLibraries();
+                    console.log('📚 Export Libraries initialized (delayed)');
                 }
             }, 1000);
         }
@@ -832,7 +850,13 @@ Mit freundlichen Grüßen
         this.showExportProgress('PDF wird erstellt...');
         
         try {
-            if (this.advancedFeatures) {
+            if (this.exportLibraries) {
+                const result = await this.exportLibraries.exportToPDF({
+                    filename: `bewerbung_${Date.now()}.pdf`,
+                    author: 'Bewerbungsmanager Pro'
+                });
+                this.completeExport('PDF', result);
+            } else if (this.advancedFeatures) {
                 const result = await this.advancedFeatures.exportApplication('pdf');
                 this.completeExport('PDF', result);
             } else {
@@ -851,7 +875,13 @@ Mit freundlichen Grüßen
         this.showExportProgress('DOCX wird erstellt...');
         
         try {
-            if (this.advancedFeatures) {
+            if (this.exportLibraries) {
+                const result = await this.exportLibraries.exportToDOCX({
+                    filename: `bewerbung_${Date.now()}.docx`,
+                    author: 'Bewerbungsmanager Pro'
+                });
+                this.completeExport('DOCX', result);
+            } else if (this.advancedFeatures) {
                 const result = await this.advancedFeatures.exportApplication('docx');
                 this.completeExport('DOCX', result);
             } else {
@@ -869,7 +899,13 @@ Mit freundlichen Grüßen
         this.showExportProgress('HTML wird erstellt...');
         
         try {
-            if (this.advancedFeatures) {
+            if (this.exportLibraries) {
+                const result = await this.exportLibraries.exportToHTML({
+                    filename: `bewerbung_${Date.now()}.html`,
+                    includeStyles: true
+                });
+                this.completeExport('HTML', result);
+            } else if (this.advancedFeatures) {
                 const result = await this.advancedFeatures.exportApplication('html');
                 this.completeExport('HTML', result);
             } else {
@@ -887,7 +923,13 @@ Mit freundlichen Grüßen
         this.showExportProgress('ZIP-Paket wird erstellt...');
         
         try {
-            if (this.advancedFeatures) {
+            if (this.exportLibraries) {
+                const result = await this.exportLibraries.exportToZIP({
+                    filename: `bewerbungspaket_${Date.now()}.zip`,
+                    includeAll: true
+                });
+                this.completeExport('ZIP', result);
+            } else if (this.advancedFeatures) {
                 const result = await this.advancedFeatures.exportApplication('zip');
                 this.completeExport('ZIP', result);
             } else {
