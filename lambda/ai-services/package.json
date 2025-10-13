@@ -1,0 +1,22 @@
+{
+  "name": "ai-services",
+  "version": "1.0.0",
+  "description": "Enhanced AI Services für Manuel Weiss Bewerbungsmanager",
+  "main": "enhanced-ai-handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1490.0"
+  },
+  "keywords": [
+    "ai",
+    "openai",
+    "bewerbung",
+    "cv",
+    "interview",
+    "lambda"
+  ],
+  "author": "Manuel Weiss",
+  "license": "UNLICENSED"
+}
