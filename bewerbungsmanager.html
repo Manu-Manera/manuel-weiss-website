@@ -1534,6 +1534,9 @@
                 </div>
                 <h3>KI-Stellenanalyse</h3>
                 <p>Intelligente Analyse von Stellenausschreibungen mit automatischer Erkennung von Anforderungen und Schlüsselwörtern für optimale Bewerbungsstrategien.</p>
+                <button class="feature-btn" onclick="startKIWorkflow()">
+                    <i class="fas fa-robot"></i> KI-Workflow starten
+                </button>
             </div>
 
             <div class="feature-card">
@@ -1558,6 +1561,9 @@
                 </div>
                 <h3>Live Analytics Dashboard</h3>
                 <p>Echtzeit-Bewertung Ihrer Bewerbungsqualität mit Matching-Scores, Lesbarkeitsindex und Optimierungsvorschlägen.</p>
+                <button class="feature-btn" onclick="openAnalytics()">
+                    <i class="fas fa-chart-bar"></i> Analytics öffnen
+                </button>
             </div>
 
             <div class="feature-card">
@@ -1566,6 +1572,9 @@
                 </div>
                 <h3>Design & Layout Engine</h3>
                 <p>Professionelle Gestaltung mit branchenspezifischen Templates und automatischer Layout-Optimierung für maximale Wirkung.</p>
+                <button class="feature-btn" onclick="openUIDemo()">
+                    <i class="fas fa-paint-brush"></i> UI Demo
+                </button>
             </div>
 
             <div class="feature-card">
@@ -1895,34 +1904,19 @@
             }
         });
         
-        // NOTFALL-BACKUP WORKFLOW STARTER - FUNKTIONIERT IMMER!
+        // ECHTER WORKFLOW STARTER - STARTET DEN KOMPLETTEN WORKFLOW
         window.notfallWorkflowStart = function() {
-            alert('NOTFALL-WORKFLOW wird gestartet...');
+            console.log('🚀 Starting Complete Workflow System...');
             
-            // Erstelle einfaches Modal manuell
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.8); display: flex; align-items: center; 
-                justify-content: center; z-index: 10000;
-            `;
-            modal.innerHTML = `
-                <div style="background: white; padding: 2rem; border-radius: 10px; max-width: 600px; text-align: center;">
-                    <h2>🚀 Bewerbungs-Workflow</h2>
-                    <p>Wählen Sie Ihren Bewerbungstyp:</p>
-                    <button onclick="alert('Stellenausschreibung-Workflow startet...')" style="margin: 0.5rem; padding: 1rem 2rem; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        Mit Stellenausschreibung
-                    </button>
-                    <button onclick="alert('Initiativbewerbung-Workflow startet...')" style="margin: 0.5rem; padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        Initiativbewerbung
-                    </button>
-                    <br><br>
-                    <button onclick="this.closest('div').parentNode.remove()" style="background: #6b7280; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
-                        Schließen
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(modal);
+            // Use the complete workflow system
+            if (window.completeWorkflowSystem) {
+                window.completeWorkflowSystem.start();
+            } else {
+                // Fallback: Create workflow system
+                console.log('📦 Creating Complete Workflow System...');
+                window.completeWorkflowSystem = new CompleteWorkflowSystem();
+                window.completeWorkflowSystem.start();
+            }
         };
         
         // Falls nach 2 Sekunden noch nichts geladen ist - Notfall-Button anzeigen
