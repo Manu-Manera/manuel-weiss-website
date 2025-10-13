@@ -177,6 +177,13 @@ class CompleteWorkflowSystem {
             typeInfo.style.display = 'block';
         }
         
+        // Aktiviere "Weiter" Button sofort
+        const nextBtn = document.getElementById('nextStepBtn');
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
+        }
+        
         // Auto-advance after 2 seconds
         setTimeout(() => {
             this.nextStep();
@@ -187,7 +194,8 @@ class CompleteWorkflowSystem {
         const container = document.getElementById('workflowStepContainer');
         if (!container) return;
         
-        const step = this.steps[stepNumber - 1];
+        // Fix: Für Schritt 0 verwende stepNumber direkt, für andere Schritte stepNumber - 1
+        const step = stepNumber === 0 ? this.steps[0] : this.steps[stepNumber - 1];
         if (!step) return;
         
         container.innerHTML = this.generateStepContent(stepNumber, step);
@@ -803,11 +811,14 @@ Mit freundlichen Grüßen
         }
         
         if (nextBtn) {
+            // Fix: Zeige "Weiter" Button auch bei Schritt 0, aber deaktiviere ihn
+            nextBtn.style.display = 'inline-flex';
             if (this.currentStep === 0) {
-                nextBtn.style.display = 'none'; // Hide next button on step 0
+                nextBtn.disabled = true; // Deaktiviert bis Bewerbungsart gewählt
+                nextBtn.textContent = 'Bewerbungsart wählen';
             } else {
-                nextBtn.style.display = 'inline-flex';
                 nextBtn.disabled = this.currentStep === 6;
+                nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
             }
         }
     }
