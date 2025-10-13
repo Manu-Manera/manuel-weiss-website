@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel Weiss - Interaktive Bewerbungsmappe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        .book-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            perspective: 1500px;
+        .book {
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .page {
+            position: absolute;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transform-origin: left center;
+            display: flex;
+            flex-direction: column;
+        .page.flipped {
+            transform: rotateY(-180deg);
+        .page-content {
+            padding: 40px;
+            overflow-y: auto;
+        .page-front {
+        .page-front .page-content {
+            justify-content: center;
+            align-items: center;
+        .profile-section {
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        .profile-name {
+        .profile-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        .profile-description {
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.6;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        .stat-number {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 5px;
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        .cta-buttons {
+            gap: 20px;
+            flex-wrap: wrap;
+        .cta-btn {
+            padding: 15px 30px;
+            border: 2px solid white;
+            background: transparent;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            gap: 10px;
+        .cta-btn:hover {
+            color: #667eea;
+            transform: translateY(-2px);
+        .cta-btn.primary {
+        .cta-btn.primary:hover {
+            background: #f8f9fa;
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            gap: 15px;
+            z-index: 1000;
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .nav-btn:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        .page-indicator {
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        .expertise-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        .expertise-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        .expertise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        .expertise-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        .expertise-card p {
+            color: #64748b;
+        .project-item {
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .project-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        .project-title {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        .project-company {
+            font-size: 1rem;
+            font-weight: 500;
+        .project-description {
+        .tech-tags {
+            gap: 8px;
+        .tech-tag {
+            background: #667eea;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        .contact-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        .contact-item {
+        .contact-item:hover {
+        .contact-item i {
+            width: 30px;
+        .certifications {
+        .certification {
+            padding: 12px 20px;
+        .certification:hover {
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        .floating-action {
+            left: 30px;
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+        .floating-btn:hover {
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .profile-name {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            .expertise-grid {
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            .page-content {
+                padding: 20px;
+        .page-number {
+            bottom: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 5px 10px;
+    </style>
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Interaktive Bewerbungsmappe</h1>
+            <p>Manuel Weiss - Senior HR-Tech Consultant & Digitalisierungsexperte</p>
+        </div>
+        <div class="page-indicator">
+            <span id="current-page">1</span> / <span id="total-pages">5</span>
+        <div class="floating-action">
+            <button class="floating-btn" data-action="download-p-d-f" title="PDF herunterladen">
+                <i class="fas fa-download"></i>
+            </button>
+        <div class="book-container">
+            <div class="book" id="book">
+                <!-- Seite 1: Titel & Profil -->
+                <div class="page page-front" id="page-1">
+                    <div class="page-content">
+                        <div class="profile-section">
+                            <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YWFhYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hbnVlbCBXZWlzcw==';">
+                            <div class="profile-name">Manuel Weiss</div>
+                            <div class="profile-title">Senior HR-Tech Consultant & Digitalisierungsexperte</div>
+                            <div class="profile-description">
+                                Erfahrener Berater für digitale Transformation, Prozessmanagement und HR-Tech Implementierungen. 
+                                Spezialisiert auf UKG HRSD, BPMN 2.0 und agile Projektmethoden.
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number">6+</span>
+                                <span class="stat-label">Jahre Erfahrung</span>
+                                <span class="stat-number">30+</span>
+                                <span class="stat-label">Projekte geleitet</span>
+                                <span class="stat-number">100%</span>
+                                <span class="stat-label">Kundenzufriedenheit</span>
+                        <div class="cta-buttons">
+                            <button class="cta-btn primary" data-action="next-page">
+                                <i class="fas fa-arrow-right"></i>
+                                Bewerbung starten
+                            </button>
+                            <a href="mailto:weiss-manuel@gmx.de" class="cta-btn">
+                                <i class="fas fa-envelope"></i>
+                                Kontakt aufnehmen
+                            </a>
+                        <div class="page-number">1</div>
+                    </div>
+                </div>
+                <!-- Seite 2: Expertise & Kompetenzen -->
+                <div class="page" id="page-2">
+                        <h2 class="section-title">Expertise & Kernkompetenzen</h2>
+                        
+                        <div class="expertise-grid">
+                            <div class="expertise-card">
+                                <h3><i class="fas fa-users"></i> HR-Tech Beratung</h3>
+                                <p>Spezialisierung auf UKG HRSD, Service Delivery Optimierung und HR-Systeme Implementierung mit Fokus auf Change Management.</p>
+                                <h3><i class="fas fa-cogs"></i> Prozessmanagement</h3>
+                                <p>BPMN 2.0, ADONIS Implementierung, Workflow-Design und Prozessoptimierung für nachhaltige Effizienzsteigerungen.</p>
+                                <h3><i class="fas fa-lightbulb"></i> Digitale Transformation</h3>
+                                <p>Strategische Beratung und Implementierung von Digitalisierungsroadmaps mit Design Thinking und agilen Methoden.</p>
+                                <h3><i class="fas fa-project-diagram"></i> Projektmanagement</h3>
+                                <p>Scrum Master, Prince2 Agile, Stakeholder-Management und erfolgreiche Projektleitung in internationalen Teams.</p>
+                        <h3 style="margin-bottom: 20px; color: #1e293b;">Zertifikate & Qualifikationen</h3>
+                        <div class="certifications">
+                            <span class="certification">Scrum Master</span>
+                            <span class="certification">Prince2 Agile</span>
+                            <span class="certification">BPMN 2.0</span>
+                            <span class="certification">Bachelor HR Management</span>
+                            <span class="certification">Supply Chain Management</span>
+                            <span class="certification">Service Management</span>
+                        <div class="page-number">2</div>
+                <!-- Seite 3: Projekte -->
+                <div class="page" id="page-3">
+                        <h2 class="section-title">Ausgewählte Projekte & Erfolge</h2>
+                        <div class="project-item">
+                            <div class="project-title">Digitalisierung HR-Prozesse</div>
+                            <div class="project-company">Internationaler Konzern (500+ Mitarbeiter)</div>
+                            <div class="project-description">
+                                Implementierung von UKG HRSD für einen internationalen Konzern. Entwicklung einer Digitalisierungsroadmap, 
+                                Prozessanalyse und -optimierung des gesamten Employee Lifecycle. Erfolgreiche Einführung von Self-Service 
+                                Funktionen und Case Management.
+                            <div class="tech-tags">
+                                <span class="tech-tag">UKG HRSD</span>
+                                <span class="tech-tag">BPMN 2.0</span>
+                                <span class="tech-tag">Change Management</span>
+                                <span class="tech-tag">Process Mining</span>
+                            <div class="project-title">Prozessoptimierung mit ADONIS</div>
+                            <div class="project-company">Schweizer Bank</div>
+                                Einführung eines ganzheitlichen Prozessmanagements für eine Schweizer Bank. Implementierung von ADONIS, 
+                                Erstellung von Prozesslandkarten und Schulung der Mitarbeiter in BPMN 2.0. Aufbau einer Wissensdatenbank 
+                                für nachhaltige Prozessdokumentation.
+                                <span class="tech-tag">ADONIS</span>
+                                <span class="tech-tag">Banking</span>
+                                <span class="tech-tag">Knowledge Management</span>
+                            <div class="project-title">HR Service Center Digitalisierung</div>
+                            <div class="project-company">Diverse Kunden</div>
+                                Beratung und Implementierung von digitalen HR Service Centers. Optimierung von Service Delivery Prozessen, 
+                                Einführung von Self-Service Portalen und Integration verschiedener HR-Systeme für eine nahtlose 
+                                Mitarbeitererfahrung.
+                                <span class="tech-tag">Service Delivery</span>
+                                <span class="tech-tag">Self-Service</span>
+                                <span class="tech-tag">Integration</span>
+                                <span class="tech-tag">UX Design</span>
+                        <div class="page-number">3</div>
+                <!-- Seite 4: Technologien & Methoden -->
+                <div class="page" id="page-4">
+                        <h2 class="section-title">Technologien & Methoden</h2>
+                                <h3><i class="fas fa-tools"></i> HR-Systeme</h3>
+                                <p>UKG HRSD, ServiceNow, SAP SuccessFactors, Workday, und andere moderne HR-Plattformen.</p>
+                                <h3><i class="fas fa-sitemap"></i> Prozessmanagement</h3>
+                                <p>ADONIS, BPMN 2.0, ARIS, Signavio, und andere BPM-Tools für professionelle Prozessmodellierung.</p>
+                                <h3><i class="fas fa-rocket"></i> Agile Methoden</h3>
+                                <p>Scrum, Kanban, Design Thinking, Lean Management und andere agile Frameworks.</p>
+                                <h3><i class="fas fa-chart-line"></i> Analytics & Reporting</h3>
+                                <p>Process Mining, KPI-Dashboards, Business Intelligence und datengetriebene Entscheidungsfindung.</p>
+                        <h3 style="margin-bottom: 20px; color: #1e293b;">Technologie-Stack</h3>
+                        <div class="tech-tags" style="margin-bottom: 30px;">
+                            <span class="tech-tag">UKG HRSD</span>
+                            <span class="tech-tag">ADONIS</span>
+                            <span class="tech-tag">BPMN 2.0</span>
+                            <span class="tech-tag">Scrum</span>
+                            <span class="tech-tag">Prince2</span>
+                            <span class="tech-tag">Design Thinking</span>
+                            <span class="tech-tag">Process Mining</span>
+                            <span class="tech-tag">Change Management</span>
+                            <span class="tech-tag">Service Delivery</span>
+                            <span class="tech-tag">Digital Transformation</span>
+                            <span class="tech-tag">HR-Tech</span>
+                            <span class="tech-tag">Agile Methoden</span>
+                        <h3 style="margin-bottom: 20px; color: #1e293b;">Sprachen & Verfügbarkeit</h3>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <i class="fas fa-language"></i>
+                                <span>Deutsch (Muttersprache)</span>
+                                <span>Englisch (C1)</span>
+                                <i class="fas fa-clock"></i>
+                                <span>Sofort verfügbar</span>
+                                <i class="fas fa-location-arrow"></i>
+                                <span>Remote & On-Site</span>
+                        <div class="page-number">4</div>
+                <!-- Seite 5: Kontakt & Call-to-Action -->
+                <div class="page" id="page-5">
+                        <h2 class="section-title">Kontakt & Nächste Schritte</h2>
+                                <div>
+                                    <strong>E-Mail</strong><br>
+                                    weiss-manuel@gmx.de
+                                </div>
+                                <i class="fas fa-phone"></i>
+                                    <strong>Telefon</strong><br>
+                                    +49 173 3993407
+                                <i class="fas fa-map-marker-alt"></i>
+                                    <strong>Standort</strong><br>
+                                    Schweiz
+                                <i class="fas fa-globe"></i>
+                                    <strong>Verfügbarkeit</strong><br>
+                                    Remote & On-Site
+                        <div style="text-align: center; margin: 40px 0;">
+                            <h3 style="color: #1e293b; margin-bottom: 20px;">Bereit für die Zusammenarbeit?</h3>
+                            <p style="color: #64748b; margin-bottom: 30px; font-size: 1.1rem;">
+                                Lassen Sie uns gemeinsam Ihre digitale Transformation vorantreiben und nachhaltige Lösungen entwickeln.
+                            </p>
+                        <div class="cta-buttons" style="justify-content: center;">
+                            <a href="mailto:weiss-manuel@gmx.de?subject=Bewerbung%20Manuel%20Weiss" class="cta-btn primary">
+                                Direkt bewerben
+                            <a href="tel:+491733993407" class="cta-btn">
+                                Anrufen
+                            <a href="beraterprofil.html" class="cta-btn">
+                                <i class="fas fa-file-alt"></i>
+                                Detailliertes Profil
+                        <div style="text-align: center; margin-top: 40px; color: #64748b;">
+                            <p><i class="fas fa-heart" style="color: #667eea;"></i> Vielen Dank für Ihr Interesse!</p>
+                        <div class="page-number">5</div>
+            </div>
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" data-action="prev-page" disabled>
+                <i class="fas fa-chevron-left"></i>
+            <button class="nav-btn" id="next-btn" data-action="next-page">
+                <i class="fas fa-chevron-right"></i>
+    </div>
+    <script>
+        let currentPage = 1;
+        const totalPages = 5;
+        function updatePageIndicator() {
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('total-pages').textContent = totalPages;
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        function showPage(pageNum) {
+            // Alle Seiten ausblenden
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                page.style.display = 'none';
+            // Aktuelle Seite anzeigen
+            const currentPageElement = document.getElementById(`page-${pageNum}`);
+            currentPageElement.style.display = 'flex';
+            // Animation für Seitenwechsel
+            currentPageElement.style.animation = 'none';
+            currentPageElement.offsetHeight; // Trigger reflow
+            currentPageElement.style.animation = 'fadeIn 0.5s ease-in-out';
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+                updatePageIndicator();
+                updateNavigation();
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+        function downloadPDF() {
+            window.print();
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextPage();
+            } else if (e.key === 'ArrowLeft') {
+                prevPage();
+        });
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next page
+                    nextPage();
+                } else {
+                    // Swipe right - previous page
+                    prevPage();
+                }
+        // Load saved profile image if available
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const profileImage = document.getElementById('profile-photo');
+                if (profileImage) {
+                    profileImage.src = savedImage;
+            // Initialize first page
+            showPage(1);
+            updatePageIndicator();
+            updateNavigation();
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
+</html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
