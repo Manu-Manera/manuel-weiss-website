@@ -1,31 +1,45 @@
 {
-  "name": "manuel-weiss-professional-services",
+  "name": "manuel-weiss-website",
   "version": "1.0.0",
-  "type": "module",
-  "description": "Professionelle Website für Manuel Weiss - Beratung, Vermietung und IT-Projekte",
+  "description": "Professionelle Website für Bewerbungscoaching, Personal Training, Ernährungsberatung und Business Consulting",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 8000",
-    "dev": "python3 -m http.server 8000",
-    "build": "echo 'Static site - no build required'"
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "echo 'Deployment handled by GitHub Actions'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'"
   },
   "keywords": [
-    "website",
-    "beratung",
-    "vermietung",
-    "digitalisierung",
-    "prozessmanagement"
+    "bewerbung",
+    "coaching",
+    "personal-training",
+    "ernaehrungsberatung",
+    "business-consulting",
+    "coverlettergpt",
+    "ai",
+    "aws",
+    "github-pages"
   ],
   "author": "Manuel Weiss",
   "license": "UNLICENSED",
+  "homepage": "https://manu-manera.github.io/manuel-weiss-website",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/manuel-weiss-website.git"
+    "url": "https://github.com/Manu-Manera/manuel-weiss-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Manu-Manera/manuel-weiss-website/issues"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
-  "dependencies": {
-    "aws-amplify": "^4.3.46"
-  }
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

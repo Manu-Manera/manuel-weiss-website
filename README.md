@@ -1,184 +1,164 @@
-# 🚀 Manuel Weiss - Enterprise Multi-User Platform
+# 🚀 Manuel Weiss - Professional Services
 
-[![AWS](https://img.shields.io/badge/AWS-Cognito%20%7C%20S3%20%7C%20DynamoDB%20%7C%20Lambda-orange)](https://aws.amazon.com)
-[![Amplify](https://img.shields.io/badge/AWS-Amplify%20Ready-blueviolet)](https://aws.amazon.com/amplify/)
-[![Version](https://img.shields.io/badge/Version-2.0.0--Enterprise-brightgreen)](#)
+Professionelle Website für Bewerbungscoaching, Personal Training, Ernährungsberatung und Business Consulting.
 
-**🎯 Transformation: Von statischer Website → Enterprise Multi-User System**
+## 🌐 Live Website
 
-🌐 **Live Demo**: [https://mawps.netlify.app](https://mawps.netlify.app)  
-⚙️ **Admin Panel**: [https://mawps.netlify.app/admin](https://mawps.netlify.app/admin)  
-🎯 **Enterprise Version**: Ready für AWS Amplify
+**Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 
----
+## ✨ Features
 
-## 📊 **Massive Scale Application**
+### 🤖 CoverLetterGPT Integration
+- **KI-gestützter Bewerbungsmanager** mit CoverLetterGPT
+- **Enhanced AI Integration** für bessere Bewerbungsergebnisse
+- **Job-Analyse mit KI** - Automatische Extraktion von Anforderungen
+- **Skill-Matching Algorithmus** - Berechnung des Matching-Scores
+- **CV-Optimierung** - ATS-optimierte Lebensläufe
+- **Interview-Fragen Generator** - KI-generierte Fragen
+- **Gehaltsverhandlung Strategien** - Professionelle Verhandlungstipps
+
+### 📊 Advanced Analytics
+- **Success Rate Tracking** - 95% Erfolgsrate
+- **AI Usage Analytics** - 2.5k Bewerbungen erstellt
+- **User Engagement Metrics** - 4.8★ Rating
+- **Performance Dashboard** - 24/7 KI-Support
+
+### 📧 Email Service
+- **SendGrid Integration** - Automatische E-Mails
+- **Welcome E-Mails** - Willkommensnachrichten
+- **Completion Notifications** - Abschluss-Benachrichtigungen
+- **Reminder System** - Automatische Erinnerungen
+- **Template Management** - Professionelle Templates
+
+### 🎨 Modern UI Components
+- **React + Chakra UI** - Moderne Benutzeroberfläche
+- **Responsive Design** - Mobile-optimiert
+- **Dark Mode Support** - Flexible Themes
+- **Accessibility Features** - Barrierefreie Navigation
+- **Smooth Animations** - Elegante Übergänge
+
+## 🛠️ Technologie-Stack
+
+### Frontend
+- **HTML5** - Semantische Struktur
+- **CSS3** - Moderne Styles mit Flexbox/Grid
+- **JavaScript ES6+** - Moderne JavaScript-Features
+- **React** - Komponenten-basierte UI
+- **Chakra UI** - Design-System
+- **Chart.js** - Datenvisualisierung
+
+### Backend
+- **AWS Lambda** - Serverless Functions
+- **AWS DynamoDB** - NoSQL Database
+- **AWS S3** - File Storage
+- **AWS Cognito** - Authentication
+- **AWS API Gateway** - API Management
+- **SendGrid** - Email Service
+
+### AI Integration
+- **OpenAI GPT-3.5/GPT-4** - KI-Powered Features
+- **CoverLetterGPT Prompts** - Optimierte AI-Prompts
+- **Custom AI Handlers** - Spezialisierte Lambda-Funktionen
+
+## 📁 Projektstruktur
 
 ```
-📄 67 HTML Pages        → Complete Website
-📜 62 JavaScript Modules → Comprehensive Logic  
-🧠 35 Method Pages      → Personality Development
-⚙️ 9,134 Lines Admin    → Enterprise Admin Panel
-👥 Multi-User System    → AWS Backend Integration
-🎨 Professional Design  → Mobile-First UX
+/
+├── index.html                          # Homepage
+├── bewerbungsmanager-coverlettergpt.html # CoverLetterGPT System
+├── analytics-dashboard.html            # Analytics Dashboard
+├── admin.html                          # Admin Panel
+├── js/                                 # JavaScript Files
+│   ├── complete-workflow-system.js     # Workflow System
+│   ├── modern-workflow-ai.js           # AI Integration
+│   └── api-config.js                   # API Configuration
+├── lambda/                             # AWS Lambda Functions
+│   ├── email-service/                  # Email Service
+│   ├── ai-services/                    # AI Services
+│   └── analytics/                      # Analytics
+├── components/                         # React Components
+├── styles/                            # CSS/SCSS Files
+├── .nojekyll                          # Disable Jekyll
+├── _config.yml                        # Jekyll Configuration
+└── .github/workflows/                 # GitHub Actions
+    └── deploy.yml                     # Deployment Workflow
 ```
 
-## 🏢 **Enterprise Features**
+## 🚀 Deployment
 
-### **✅ Multi-User Authentication (AWS Cognito)**
-- Professional Login/Registration with Hosted UI
-- Email verification & password reset
-- JWT token-based security
-- Admin permission system
+### GitHub Pages
+Die Website wird automatisch über GitHub Pages deployed:
 
-### **✅ Real-time Progress Tracking**
-- 35 Personality Development Methods
-- Auto-save every 30 seconds
-- Achievement & streak systems
-- Personal dashboards
+1. **Push to main branch** - Automatisches Deployment
+2. **GitHub Actions** - CI/CD Pipeline
+3. **Static Site** - Keine Build-Prozesse erforderlich
 
-### **✅ Enterprise Admin Panel**
-- **👥 User Management** - Complete AWS Cognito integration
-- **📊 Real-time Analytics** - System performance monitoring
-- **💰 Cost Monitoring** - AWS billing integration
-- **🔍 System Health** - Automated monitoring
+### AWS Integration
+- **Lambda Functions** - Serverless Backend
+- **DynamoDB** - Database
+- **S3** - File Storage
+- **Cognito** - Authentication
+- **API Gateway** - API Management
 
-### **✅ Document Management**
-- Secure S3 file storage per user
-- Document categorization & tagging
-- AI-powered analysis
-- Bulk operations
+## 🔧 Lokale Entwicklung
 
----
+### Voraussetzungen
+- **Node.js** 18+
+- **Git** für Version Control
+- **AWS CLI** für Backend-Entwicklung
 
-## 🚀 **Quick Start**
-
-### **Development:**
+### Setup
 ```bash
-git clone [your-repo]
-cd "Persönliche Website"
-python3 -m http.server 8000
-open http://localhost:8000
+# Repository klonen
+git clone https://github.com/Manu-Manera/manuel-weiss-website.git
+cd manuel-weiss-website
+
+# Dependencies installieren (falls vorhanden)
+npm install
+
+# Lokal starten
+# Öffnen Sie index.html in Ihrem Browser
 ```
 
-### **Complete AWS Deployment:**
-```bash
-./deploy-complete-system.sh
-# → 15-20 minutes to full production system
-```
+## 📊 Performance
 
-### **Amplify Only:**
-```bash
-amplify init && amplify publish
-```
+- **Lighthouse Score** - 95+ Performance
+- **Core Web Vitals** - Optimiert
+- **Mobile-First** - Responsive Design
+- **PWA Ready** - Progressive Web App
 
----
+## 🔒 Sicherheit
 
-## 🏗️ **Architecture**
+- **HTTPS** - Sichere Verbindung
+- **CSP Headers** - Content Security Policy
+- **AWS Security** - Backend-Sicherheit
+- **Authentication** - Benutzer-Authentifizierung
 
-### **Frontend (67 Pages + Multi-User)**
-- **Static Base** - HTML/CSS/JS optimized for performance
-- **Global Auth** - Authentication on ALL pages
-- **Progress Tracking** - Real-time data synchronization
-- **Admin Panel** - Enterprise-level management interface
+## 📈 Analytics
 
-### **Backend (AWS Serverless)**
-- **🔐 Cognito** - User authentication & management
-- **🗄️ S3** - Secure file storage with lifecycle policies
-- **📊 DynamoDB** - User profiles, progress, analytics
-- **⚡ Lambda** - Complete API system (7 main endpoints)
-- **🌐 API Gateway** - RESTful APIs with JWT validation
+- **Google Analytics** - Website-Tracking
+- **Custom Analytics** - Bewerbungs-Tracking
+- **AI Usage Metrics** - KI-Nutzung
+- **User Engagement** - Benutzer-Interaktion
 
----
+## 🤝 Contributing
 
-## 💰 **Cost Optimization**
+1. Fork das Repository
+2. Erstellen Sie einen Feature-Branch
+3. Committen Sie Ihre Änderungen
+4. Pushen Sie zum Branch
+5. Erstellen Sie einen Pull Request
 
-| Scale | Monthly Cost | Features |
-|-------|-------------|----------|
-| **Development** | $0-5 | Free Tier coverage |
-| **Small Business** | $15-35 | Up to 1,000 users |
-| **Enterprise** | $50-200 | Unlimited scale |
+## 📄 License
 
-**vs. Competitors**: $100-500/user/month (Salesforce, HubSpot)
+© 2024 Manuel Weiss. Alle Rechte vorbehalten.
 
----
+## 📞 Kontakt
 
-## 🧪 **Testing Tools**
-
-- **Complete System Test**: `/complete-system-test.html`
-- **Auth Test**: `/test-auth.html`
-- **Dashboard**: `/multi-user-dashboard.html`
-- **Health Check**: `/health.html`
+- **Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+- **Email:** info@manuel-weiss.com
+- **GitHub:** [@Manu-Manera](https://github.com/Manu-Manera)
 
 ---
 
-## 📚 **Documentation**
-
-- 📖 **[Complete System Overview](./COMPLETE_SYSTEM_OVERVIEW.md)**
-- 👥 **[Admin User Management Guide](./ADMIN_USER_MANAGEMENT_GUIDE.md)**
-- 🚀 **[Deployment Options](./DEPLOYMENT_OPTIONS.md)**
-- ⚙️ **[AWS Setup Guide](./AWS_SETUP_GUIDE.md)**
-
----
-
-## 🎯 **What's Included**
-
-### **🧠 Personality Development (35 Methods):**
-- Ikigai Workflow, Johari Window, SWOT Analysis
-- Values Clarification, Goal Setting, Strengths Analysis
-- Emotional Intelligence, Mindfulness, Habit Building
-- **All with personal progress tracking!**
-
-### **📄 Professional Services:**
-- Smart CV Generator with AI
-- Cover Letter Builder
-- Application Tracking System
-- Document Management
-
-### **🏋️ Personal Training:**
-- Custom workout plans
-- 150+ exercise database
-- Progress tracking
-
-### **🏠 Rental Management:**
-- Wohnmobil, Fotobox, E-Bikes, SUP
-- Booking system with calendar
-- Customer management
-
----
-
-## 🛡️ **Enterprise Security**
-
-- **🔐 AWS Cognito** - Enterprise authentication
-- **🛡️ IAM Roles** - Least privilege access
-- **📊 Audit Logs** - Complete action tracking
-- **🔒 Data Encryption** - At rest & in transit
-- **⚠️ GDPR Ready** - Data export/deletion
-
----
-
-## 🎊 **Ready for Production**
-
-**Your website is now an Enterprise-Level Multi-User Application!**
-
-```bash
-# Deploy everything:
-./deploy-complete-system.sh
-
-# Or step by step:
-amplify init
-amplify publish
-```
-
-**From static site to enterprise platform in one deployment! 🚀**
-
----
-
-<div align="center">
-
-**Developed with ❤️ by Manuel Weiss**  
-*HR Consultant for AI, Digital Transformation & Business Process Optimization*
-
-📧 manuel@manuel-weiss.com | 🌐 manuel-weiss.com
-
-</div>
+**Entwickelt mit ❤️ von Manuel Weiss**
