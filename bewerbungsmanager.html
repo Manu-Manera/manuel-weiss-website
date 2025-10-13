@@ -1045,7 +1045,7 @@
         <section class="hero-section">
             <h2>🚀 KI-gestützter Bewerbungsmanager</h2>
             <p>Erstellen Sie in wenigen Minuten professionelle Bewerbungsunterlagen mit künstlicher Intelligenz und modernster Technologie. Von der Stellenanalyse bis zum fertigen Bewerbungspaket.</p>
-            <button class="main-cta" onclick="startNewWorkflow()" id="mainStartButton">
+            <button class="main-cta" onclick="direktWorkflowStarten()" id="mainStartButton">
                 <i class="fas fa-play-circle"></i>
                 Neue Bewerbung starten
             </button>
@@ -1168,7 +1168,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 2rem;">
-                <button class="main-cta" onclick="startNewWorkflow()" id="workflowStartButton">
+                <button class="main-cta" onclick="direktWorkflowStarten()" id="workflowStartButton">
                     <i class="fas fa-rocket"></i>
                     Workflow jetzt starten
                 </button>
@@ -1183,8 +1183,9 @@
     <!-- Complete Workflow System - MUST LOAD FIRST -->
     <script src="js/complete-workflow-system.js"></script>
     
-    <!-- OLD SYSTEM DISABLED - Using Complete Workflow System -->
-    <!-- <script src="js/workflow-steps/workflow-loader.js"></script> -->
+    <!-- Backup: Static Script Loading für Zuverlässigkeit -->
+    <!-- MODULARER WORKFLOW LOADER - Lädt alle Step-Module automatisch -->
+    <script src="js/workflow-steps/workflow-loader.js"></script>
     
     <script>
         // Global flag to track workflow status
@@ -1203,174 +1204,18 @@
             }
         });
         
-        // NEUE EINFACHE WORKFLOW FUNKTION
-        function startNewWorkflow() {
-            console.log('🚀 STARTE NEUEN WORKFLOW - BEWERBUNGSART AUSWAHL');
-            
-            // Verstecke Loading
-            const loadingSection = document.getElementById('loadingSection');
-            if (loadingSection) loadingSection.classList.remove('active');
-            
-            // Erstelle Modal
-            const modal = document.createElement('div');
-            modal.id = 'workflow-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: white; width: 90%; max-width: 800px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 2rem; text-align: center;">
-                        <h2 style="margin: 0; font-size: 1.8rem;">🚀 Smart Bewerbungsmanager</h2>
-                        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Wählen Sie Ihre Bewerbungsart</p>
-                    </div>
-                    
-                    <div style="padding: 2rem;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                            <div onclick="selectType('job-posting')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; text-align: center; transition: all 0.3s;">
-                                <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-                                <h3 style="margin: 0 0 0.5rem 0; color: #1f2937;">Stellenausschreibung</h3>
-                                <p style="color: #6b7280; margin: 0 0 1rem 0;">Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
-                                <div style="background: #f8fafc; padding: 0.5rem; border-radius: 8px; font-size: 0.9rem; color: #374151;">✓ KI-Analyse der Stellenausschreibung</div>
-                            </div>
-                            
-                            <div onclick="selectType('initiative')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; text-align: center; transition: all 0.3s;">
-                                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
-                                <h3 style="margin: 0 0 0.5rem 0; color: #1f2937;">Initiativbewerbung</h3>
-                                <p style="color: #6b7280; margin: 0 0 1rem 0;">Ich sende eine unaufgeforderte Bewerbung</p>
-                                <div style="background: #f8fafc; padding: 0.5rem; border-radius: 8px; font-size: 0.9rem; color: #374151;">✓ Unternehmen-spezifische Anpassung</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-        }
-        
-        function selectType(type) {
-            console.log('📋 Gewählt:', type);
-            
-            // Entferne das einfache Modal
-            document.getElementById('workflow-modal').remove();
-            
-            // Starte den vollständigen Workflow
-            if (window.completeWorkflowSystem) {
-                console.log('✅ Starte vollständigen Workflow mit Typ:', type);
-                window.completeWorkflowSystem.startWorkflow(type);
-            } else {
-                console.error('❌ Complete Workflow System nicht verfügbar');
-                alert('❌ Workflow-System nicht verfügbar. Bitte Seite neu laden.');
-            }
-        }
-        
-        // ALTE FUNKTION ALS BACKUP
+        // FUNKTIONIERENDE DIREKTE WORKFLOW-START FUNKTION 
         function direktWorkflowStarten() {
-            console.log('🚀 STARTE WORKFLOW MIT SCHRITT 0');
+            console.log('🚀 DIREKTER WORKFLOW START - FUNKTIONIERT GARANTIERT!');
             
-            // Verstecke Loading
-            const loadingSection = document.getElementById('loadingSection');
-            if (loadingSection) loadingSection.classList.remove('active');
+            // FORCE CREATE AND START WORKFLOW SYSTEM
+            if (!window.completeWorkflowSystem) {
+                console.log('🔧 Creating Complete Workflow System...');
+                window.completeWorkflowSystem = new CompleteWorkflowSystem();
+            }
             
-            // Erstelle Modal direkt
-            const modal = document.createElement('div');
-            modal.id = 'complete-workflow-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Inter', Arial, sans-serif;
-            `;
-            
-            modal.innerHTML = `
-                <div class="workflow-modal" style="background: white; width: 95%; max-width: 1000px; height: 90%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                    <div class="workflow-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 2rem; display: flex; justify-content: space-between; align-items: center;">
-                        <div class="workflow-title">
-                            <h2 style="margin: 0; font-size: 1.8rem; font-weight: 700;">🚀 Smart Bewerbungsmanager</h2>
-                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Erstellen Sie professionelle Bewerbungsunterlagen in 6 Schritten</p>
-                        </div>
-                        <button class="close-btn" onclick="this.closest('#complete-workflow-modal').remove()" style="background: none; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: background 0.3s;">×</button>
-                    </div>
-                    
-                    <div class="workflow-progress" style="padding: 1rem 2rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                        <div class="progress-bar" style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 0.5rem;">
-                            <div class="progress-fill" style="height: 100%; background: linear-gradient(135deg, #667eea, #764ba2); transition: width 0.3s ease; width: 0%;"></div>
-                        </div>
-                        <div class="progress-text" style="text-align: center; font-weight: 600; color: #64748b;">Bewerbungsart wählen</div>
-                    </div>
-                    
-                    <div class="workflow-content" style="flex: 1; padding: 2rem; overflow-y: auto;">
-                        <div class="step-content" style="max-width: 800px; margin: 0 auto;">
-                            <div class="step-header" style="text-align: center; margin-bottom: 2rem;">
-                                <div class="step-icon" style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
-                                <h3 style="font-size: 2rem; margin-bottom: 0.5rem; color: #1f2937;">Bewerbungsart wählen</h3>
-                                <p class="step-subtitle" style="font-size: 1.2rem; color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">Wählen Sie Ihre Bewerbungsart</p>
-                                <p class="step-description" style="color: #6b7280; font-size: 1.1rem;">Entscheiden Sie, ob Sie sich auf eine Stellenausschreibung bewerben oder eine Initiativbewerbung erstellen möchten.</p>
-                            </div>
-                            
-                            <div class="application-type-selection" style="margin-bottom: 2rem;">
-                                <div class="type-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-                                    <div class="type-option" data-type="job-posting" onclick="selectApplicationType('job-posting')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
-                                        <div class="type-icon" style="font-size: 3rem; margin-bottom: 1rem; display: block;">📄</div>
-                                        <h4 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #1f2937; font-weight: 700;">Stellenausschreibung</h4>
-                                        <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 1.1rem;">Ich bewerbe mich auf eine konkrete Stellenausschreibung</p>
-                                        <div class="type-features" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ KI-Analyse der Stellenausschreibung</span>
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ Automatisches Matching</span>
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ Personalisierte Anschreiben</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="type-option" data-type="initiative" onclick="selectApplicationType('initiative')" style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden;">
-                                        <div class="type-icon" style="font-size: 3rem; margin-bottom: 1rem; display: block;">🚀</div>
-                                        <h4 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #1f2937; font-weight: 700;">Initiativbewerbung</h4>
-                                        <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 1.1rem;">Ich sende eine unaufgeforderte Bewerbung an ein Unternehmen</p>
-                                        <div class="type-features" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ Unternehmen-spezifische Anpassung</span>
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ Branchenanalyse</span>
-                                            <span class="feature" style="background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; color: #374151; border: 1px solid #e2e8f0;">✓ Strategische Positionierung</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-        }
-        
-        function selectApplicationType(type) {
-            console.log('📋 Selected:', type);
-            document.querySelectorAll('.type-option').forEach(option => {
-                option.style.borderColor = '#e2e8f0';
-                option.style.background = 'white';
-            });
-            document.querySelector(`[data-type="${type}"]`).style.borderColor = '#667eea';
-            document.querySelector(`[data-type="${type}"]`).style.background = 'linear-gradient(135deg, #f0f4ff, #e0e7ff)';
-            
-            setTimeout(() => {
-                alert('✅ Bewerbungsart gewählt! Workflow wird fortgesetzt...');
-                document.getElementById('complete-workflow-modal').remove();
-            }, 1000);
-        }
+            console.log('🎯 Starting Complete Workflow System with Step 0');
+            window.completeWorkflowSystem.start();
             
             // Verstecke Loading
             const loadingSection = document.getElementById('loadingSection');
