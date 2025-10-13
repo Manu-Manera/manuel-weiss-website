@@ -6,7 +6,7 @@
 
 class ModernWorkflowAI {
     constructor() {
-        this.apiKey = this.getAPIKey();
+        this.apiKey = null;
         this.baseURL = 'https://api.openai.com/v1';
         this.workflowData = {
             currentStep: 1,
@@ -24,29 +24,81 @@ class ModernWorkflowAI {
         this.init();
     }
     
-    init() {
+    async init() {
         console.log('🚀 Modern Workflow AI System initialisiert');
+        this.apiKey = await this.getAPIKey();
         this.setupEventListeners();
         this.loadSavedData();
+        
+        // Zeige API Key Status
+        if (this.apiKey) {
+            console.log('✅ OpenAI API Key geladen - KI-Funktionen verfügbar');
+        } else {
+            console.warn('⚠️ OpenAI API Key nicht verfügbar - Fallback-Modus aktiviert');
+            this.showAPIKeyDialog();
+        }
     }
     
-    getAPIKey() {
+    async getAPIKey() {
         // Versuche API Key aus verschiedenen Quellen zu laden
         const sources = [
             () => localStorage.getItem('openai_api_key'),
+            () => sessionStorage.getItem('openai_api_key'),
             () => window.OPENAI_API_KEY,
-            () => process.env.OPENAI_API_KEY
+            () => process.env.OPENAI_API_KEY,
+            () => this.getAPIKeyFromAdminPanel()
         ];
         
         for (const source of sources) {
             try {
-                const key = source();
+                const key = await source();
                 if (key && key.startsWith('sk-')) {
+                    console.log('✅ OpenAI API Key gefunden');
                     return key;
                 }
             } catch (e) {
                 // Ignoriere Fehler
             }
+        }
+        
+        console.warn('⚠️ OpenAI API Key nicht gefunden - Fallback-Modus aktiviert');
+        return null;
+    }
+    
+    async getAPIKeyFromAdminPanel() {
+        try {
+            // Versuche API Key aus dem Admin Panel zu laden
+            const response = await fetch('/api/admin/openai-key', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.apiKey && data.apiKey.startsWith('sk-')) {
+                    // Speichere den Key lokal für bessere Performance
+                    localStorage.setItem('openai_api_key', data.apiKey);
+                    return data.apiKey;
+                }
+            }
+        } catch (error) {
+            console.warn('Admin Panel API Key nicht verfügbar:', error);
+        }
+        
+        // Fallback: Versuche aus der Website-Konfiguration zu laden
+        try {
+            const response = await fetch('/data/website-content.json');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.openai && data.openai.apiKey && data.openai.apiKey.startsWith('sk-')) {
+                    localStorage.setItem('openai_api_key', data.openai.apiKey);
+                    return data.openai.apiKey;
+                }
+            }
+        } catch (error) {
+            console.warn('Website-Konfiguration API Key nicht verfügbar:', error);
         }
         
         return null;
@@ -512,15 +564,80 @@ Mit freundlichen Grüßen
         // Hier könnte eine detaillierte Matching-Analyse angezeigt werden
         console.log('Matching Details:', matching);
     }
+    
+    showAPIKeyDialog() {
+        // Erstelle einen Dialog für API Key Eingabe
+        const dialog = document.createElement('div');
+        dialog.id = 'openai-api-dialog';
+        dialog.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        dialog.innerHTML = `
+            <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                <h3 style="margin-bottom: 1rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-robot" style="color: #667eea;"></i>
+                    OpenAI API Key konfigurieren
+                </h3>
+                <p style="color: #6b7280; margin-bottom: 1.5rem;">
+                    Für die KI-Funktionen benötigen wir Ihren OpenAI API Key. 
+                    Sie können ihn kostenlos auf <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #667eea;">platform.openai.com</a> erstellen.
+                </p>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">API Key:</label>
+                    <input type="password" id="openai-api-input" placeholder="sk-..." style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-family: monospace;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button id="skip-openai-key" style="padding: 0.75rem 1.5rem; background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                        Überspringen
+                    </button>
+                    <button id="save-openai-key" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Speichern
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        
+        // Event Listeners
+        document.getElementById('save-openai-key').addEventListener('click', () => {
+            const apiKey = document.getElementById('openai-api-input').value;
+            if (apiKey && apiKey.startsWith('sk-')) {
+                this.apiKey = apiKey;
+                localStorage.setItem('openai_api_key', apiKey);
+                dialog.remove();
+                console.log('✅ OpenAI API Key gespeichert');
+                alert('✅ OpenAI API Key erfolgreich gespeichert! KI-Funktionen sind jetzt verfügbar.');
+            } else {
+                alert('Bitte geben Sie einen gültigen OpenAI API Key ein (beginnt mit "sk-").');
+            }
+        });
+        
+        document.getElementById('skip-openai-key').addEventListener('click', () => {
+            dialog.remove();
+            console.log('⚠️ OpenAI API Key übersprungen - Fallback-Modus aktiviert');
+        });
+    }
 }
 
 // Global initialisieren
 window.ModernWorkflowAI = ModernWorkflowAI;
 
 // Auto-initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (typeof window.workflowAI === 'undefined') {
         window.workflowAI = new ModernWorkflowAI();
+        await window.workflowAI.init();
     }
 });
 
