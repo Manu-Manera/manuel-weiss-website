@@ -6,6 +6,11 @@
     <title>CoverLetterGPT - KI-gestützter Bewerbungsmanager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Modern Workflow AI System -->
+    <script src="js/modern-workflow-ai.js"></script>
+    <script src="js/api-config.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -548,65 +553,152 @@
         // CoverLetterGPT Integration
         class CoverLetterGPT {
             constructor() {
-                this.apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with actual API key
+                this.apiKey = null;
                 this.baseUrl = 'https://api.openai.com/v1';
+                this.workflowAI = null;
+                this.init();
+            }
+            
+            async init() {
+                // Lade API Key aus verschiedenen Quellen
+                this.apiKey = await this.loadAPIKey();
+                
+                // Warte auf ModernWorkflowAI Initialisierung
+                if (window.workflowAI) {
+                    this.workflowAI = window.workflowAI;
+                } else {
+                    // Warte auf Initialisierung
+                    const checkInterval = setInterval(() => {
+                        if (window.workflowAI) {
+                            this.workflowAI = window.workflowAI;
+                            clearInterval(checkInterval);
+                        }
+                    }, 100);
+                }
+            }
+            
+            async loadAPIKey() {
+                // Versuche API Key aus verschiedenen Quellen zu laden
+                const sources = [
+                    () => localStorage.getItem('openai_api_key'),
+                    () => sessionStorage.getItem('openai_api_key'),
+                    () => window.OPENAI_API_KEY,
+                    () => this.getAPIKeyFromAdminPanel()
+                ];
+                
+                for (const source of sources) {
+                    try {
+                        const key = await source();
+                        if (key && key.startsWith('sk-')) {
+                            console.log('✅ OpenAI API Key gefunden');
+                            return key;
+                        }
+                    } catch (e) {
+                        // Ignoriere Fehler
+                    }
+                }
+                
+                console.warn('⚠️ OpenAI API Key nicht gefunden - Fallback-Modus aktiviert');
+                return null;
+            }
+            
+            async getAPIKeyFromAdminPanel() {
+                try {
+                    // Versuche API Key aus dem Admin Panel zu laden
+                    const response = await fetch('/api/admin/openai-key', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.apiKey && data.apiKey.startsWith('sk-')) {
+                            localStorage.setItem('openai_api_key', data.apiKey);
+                            return data.apiKey;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Admin Panel API Key nicht verfügbar:', error);
+                }
+                
+                return null;
             }
             
             async analyzeJob(company, position, description) {
-                const prompt = `
-                    Analysiere die folgende Stellenausschreibung und extrahiere strukturierte Informationen:
-                    
-                    Stelle: ${position}
-                    Unternehmen: ${company}
-                    Beschreibung: ${description}
-                    
-                    Extrahiere folgende Informationen:
-                    1. Hauptanforderungen (mindestens 5 konkrete Anforderungen)
-                    2. Schlüsselwörter (mindestens 10 relevante Keywords)
-                    3. Gewünschte Soft Skills (Kommunikation, Teamarbeit, etc.)
-                    4. Technische Anforderungen (Programmiersprachen, Tools, etc.)
-                    5. Erfahrungslevel (Junior, Mid-Level, Senior, etc.)
-                    6. Branche/Typ (IT, Marketing, Finance, etc.)
-                    7. Gehaltsbereich (falls erwähnt)
-                    8. Standort/Remote-Möglichkeiten
-                    
-                    Antworte im JSON-Format mit detaillierter Analyse.
-                `;
-                
-                try {
-                    const response = await fetch(`${this.baseUrl}/chat/completions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: 'gpt-3.5-turbo',
-                            messages: [
-                                {
-                                    role: 'system',
-                                    content: 'Du bist ein Experte für Bewerbungen und Karriereberatung. Erstelle professionelle, überzeugende Bewerbungsunterlagen und Analysen.'
-                                },
-                                {
-                                    role: 'user',
-                                    content: prompt
-                                }
-                            ],
-                            max_tokens: 2000,
-                            temperature: 0.7
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API Fehler: ${response.status}`);
+                // Versuche zuerst die ModernWorkflowAI zu verwenden
+                if (this.workflowAI && this.workflowAI.apiKey) {
+                    try {
+                        console.log('🤖 Verwende ModernWorkflowAI für KI-Analyse');
+                        const analysis = await this.workflowAI.analyzeJobDescription(description, company, position);
+                        return analysis;
+                    } catch (error) {
+                        console.error('Fehler bei ModernWorkflowAI:', error);
                     }
-                    
-                    const data = await response.json();
-                    return data.choices[0].message.content;
-                } catch (error) {
-                    console.error('CoverLetterGPT API Fehler:', error);
-                    return this.getFallbackAnalysis(company, position, description);
                 }
+                
+                // Fallback: Direkte OpenAI API
+                if (this.apiKey) {
+                    try {
+                        console.log('🤖 Verwende direkte OpenAI API');
+                        const prompt = `
+                            Analysiere die folgende Stellenausschreibung und extrahiere strukturierte Informationen:
+                            
+                            Stelle: ${position}
+                            Unternehmen: ${company}
+                            Beschreibung: ${description}
+                            
+                            Extrahiere folgende Informationen:
+                            1. Hauptanforderungen (mindestens 5 konkrete Anforderungen)
+                            2. Schlüsselwörter (mindestens 10 relevante Keywords)
+                            3. Gewünschte Soft Skills (Kommunikation, Teamarbeit, etc.)
+                            4. Technische Anforderungen (Programmiersprachen, Tools, etc.)
+                            5. Erfahrungslevel (Junior, Mid-Level, Senior, etc.)
+                            6. Branche/Typ (IT, Marketing, Finance, etc.)
+                            7. Gehaltsbereich (falls erwähnt)
+                            8. Standort/Remote-Möglichkeiten
+                            
+                            Antworte im JSON-Format mit detaillierter Analyse.
+                        `;
+                        
+                        const response = await fetch(`${this.baseUrl}/chat/completions`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${this.apiKey}`
+                            },
+                            body: JSON.stringify({
+                                model: 'gpt-3.5-turbo',
+                                messages: [
+                                    {
+                                        role: 'system',
+                                        content: 'Du bist ein Experte für Bewerbungen und Karriereberatung. Erstelle professionelle, überzeugende Bewerbungsunterlagen und Analysen.'
+                                    },
+                                    {
+                                        role: 'user',
+                                        content: prompt
+                                    }
+                                ],
+                                max_tokens: 2000,
+                                temperature: 0.7
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`API Fehler: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        return data.choices[0].message.content;
+                    } catch (error) {
+                        console.error('CoverLetterGPT API Fehler:', error);
+                    }
+                }
+                
+                // Fallback: Mock-Daten
+                console.warn('⚠️ Verwende Fallback-Analyse');
+                return this.getFallbackAnalysis(company, position, description);
             }
             
             getFallbackAnalysis(company, position, description) {

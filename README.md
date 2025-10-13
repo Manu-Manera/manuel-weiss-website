@@ -194,6 +194,9 @@ const apiConfig = {
 - **CoverLetterGPT Prompts**: Optimierte AI-Prompts
 - **Custom AI Handlers**: Spezialisierte Lambda-Funktionen
 - **Fallback Systems**: Funktioniert auch ohne API Key
+- **Automatische API Key Erkennung**: Lädt Keys aus Admin Panel
+- **Echte KI-Analyse**: Keine hart codierten Mock-Daten mehr
+- **Intelligente Fallbacks**: Mehrere API-Quellen für maximale Verfügbarkeit
 
 ### 📧 **Email Service**
 - **SendGrid**: E-Mail-Service
@@ -322,9 +325,21 @@ localStorage.setItem('openai_api_key', 'sk-your-api-key-here');
 // Option 2: Über Umgebungsvariable
 window.OPENAI_API_KEY = 'sk-your-api-key-here';
 
-// Option 3: Über den integrierten Dialog
+// Option 3: Über Admin Panel (https://mawps.netlify.app/admin)
+// KI-Einstellungen → OpenAI API Key konfigurieren
+
+// Option 4: Über den integrierten Dialog
 // Der Dialog erscheint automatisch beim ersten Besuch
 ```
+
+#### **Automatische API Key Erkennung**
+Das System lädt den API Key automatisch aus folgenden Quellen (in dieser Reihenfolge):
+1. **localStorage** - Lokal gespeicherter Key
+2. **sessionStorage** - Session-spezifischer Key  
+3. **Admin Panel** - Zentral verwalteter Key
+4. **Website-Konfiguration** - Fallback aus data/website-content.json
+5. **Umgebungsvariablen** - System-spezifische Keys
+6. **Benutzer-Dialog** - Interaktive Eingabe
 
 #### AWS-Konfiguration
 ```javascript
@@ -335,6 +350,72 @@ window.OPENAI_API_KEY = 'sk-your-api-key-here';
   "userPoolWebClientId": "xxxxxxxxxx",
   "apiEndpoint": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/api"
 }
+```
+
+---
+
+## 🤖 AI-Integration Details
+
+### 🔄 **Intelligente API Key Verwaltung**
+
+Das System implementiert eine mehrstufige API Key Erkennung:
+
+```javascript
+// 1. Lokale Speicherung (höchste Priorität)
+localStorage.getItem('openai_api_key')
+
+// 2. Session-Speicherung
+sessionStorage.getItem('openai_api_key')
+
+// 3. Admin Panel Integration
+fetch('/api/admin/openai-key')
+
+// 4. Website-Konfiguration
+fetch('/data/website-content.json')
+
+// 5. Umgebungsvariablen
+window.OPENAI_API_KEY
+
+// 6. Benutzer-Dialog (Fallback)
+showAPIKeyDialog()
+```
+
+### 🧠 **Echte KI-Analyse**
+
+**Vorher (Hart codiert):**
+```javascript
+// Mock-Daten ohne echte KI
+return {
+    requirements: ['3+ Jahre Erfahrung', 'JavaScript'],
+    keywords: ['React', 'Node.js']
+};
+```
+
+**Jetzt (Echte OpenAI Integration):**
+```javascript
+// Echte KI-Analyse mit OpenAI GPT-3.5/GPT-4
+const analysis = await this.workflowAI.analyzeJobDescription(
+    jobDescription, company, position
+);
+```
+
+### 🔧 **Fallback-Systeme**
+
+1. **ModernWorkflowAI** (Primär)
+2. **Direkte OpenAI API** (Sekundär)  
+3. **Mock-Daten** (Fallback)
+
+### 📊 **AI-Performance Tracking**
+
+```javascript
+// Automatisches Tracking der AI-Nutzung
+const aiMetrics = {
+    totalTokens: 15600,
+    totalCost: 23.40,
+    features: ['jobAnalysis', 'coverLetter', 'skillMatching'],
+    usageCount: 45,
+    successRate: 95.2
+};
 ```
 
 ---
@@ -594,6 +675,8 @@ Diese Website bietet eine **vollständige Business-Lösung** mit:
 
 - ✅ **67 professionelle HTML-Seiten**
 - ✅ **KI-gestützter Bewerbungsmanager** (CoverLetterGPT)
+- ✅ **Echte OpenAI Integration** - Keine Mock-Daten mehr
+- ✅ **Intelligente API Key Verwaltung** - Automatische Erkennung
 - ✅ **AWS-Backend** mit Lambda, DynamoDB, S3
 - ✅ **Modern UI** mit React + Chakra UI
 - ✅ **Email-Service** mit SendGrid
@@ -602,6 +685,7 @@ Diese Website bietet eine **vollständige Business-Lösung** mit:
 - ✅ **Mobile-optimiert** und responsive
 - ✅ **Performance-optimiert** (Lighthouse 95+)
 - ✅ **Sicher** und barrierefrei
+- ✅ **Fallback-Systeme** für maximale Verfügbarkeit
 
 **Entwickelt mit ❤️ von Manuel Weiss**
 
