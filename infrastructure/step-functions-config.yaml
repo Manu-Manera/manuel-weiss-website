@@ -1,0 +1,536 @@
+# AWS Step Functions für zuverlässige Workflows
+# ANALYZE → GENERATE → EXPORT mit Retries, Backoff, DLQ
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Step Functions für Manuel Weiss Workflows'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [production, staging, development]
+    Description: Deployment environment
+
+  ApplicationTableName:
+    Type: String
+    Description: DynamoDB Table für Applications
+    Default: mw-applications
+
+  JobStatusTableName:
+    Type: String
+    Description: DynamoDB Table für Job Status
+    Default: mw-job-status
+
+Resources:
+  # Step Functions State Machine
+  ApplicationWorkflowStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub 'application-workflow-${Environment}'
+      RoleArn: !GetAtt StepFunctionsRole.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "Application Workflow: ANALYZE → GENERATE → EXPORT",
+          "StartAt": "ValidateInput",
+          "States": {
+            "ValidateInput": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${ValidateInputFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.validation",
+              "Next": "CheckJobStatus",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "ValidationFailed",
+                  "ResultPath": "$.error"
+                }
+              ]
+            },
+            "CheckJobStatus": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${CheckJobStatusFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.jobStatus",
+              "Next": "JobStatusChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 1.5
+                }
+              ]
+            },
+            "JobStatusChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.jobStatus.status",
+                  "StringEquals": "completed",
+                  "Next": "WorkflowCompleted"
+                },
+                {
+                  "Variable": "$.jobStatus.status",
+                  "StringEquals": "failed",
+                  "Next": "WorkflowFailed"
+                },
+                {
+                  "Variable": "$.jobStatus.status",
+                  "StringEquals": "in_progress",
+                  "Next": "WaitAndRetry"
+                }
+              ],
+              "Default": "StartAnalysis"
+            },
+            "StartAnalysis": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${StartAnalysisFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.analysis",
+              "Next": "AnalysisChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "AnalysisFailed",
+                  "ResultPath": "$.error"
+                }
+              ]
+            },
+            "AnalysisChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.analysis.status",
+                  "StringEquals": "completed",
+                  "Next": "StartGeneration"
+                },
+                {
+                  "Variable": "$.analysis.status",
+                  "StringEquals": "failed",
+                  "Next": "AnalysisFailed"
+                }
+              ],
+              "Default": "WaitForAnalysis"
+            },
+            "WaitForAnalysis": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "CheckAnalysisStatus"
+            },
+            "CheckAnalysisStatus": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${CheckAnalysisStatusFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.analysisStatus",
+              "Next": "AnalysisStatusChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 1.5
+                }
+              ]
+            },
+            "AnalysisStatusChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.analysisStatus.status",
+                  "StringEquals": "completed",
+                  "Next": "StartGeneration"
+                },
+                {
+                  "Variable": "$.analysisStatus.status",
+                  "StringEquals": "failed",
+                  "Next": "AnalysisFailed"
+                }
+              ],
+              "Default": "WaitForAnalysis"
+            },
+            "StartGeneration": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${StartGenerationFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.generation",
+              "Next": "GenerationChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "GenerationFailed",
+                  "ResultPath": "$.error"
+                }
+              ]
+            },
+            "GenerationChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.generation.status",
+                  "StringEquals": "completed",
+                  "Next": "StartExport"
+                },
+                {
+                  "Variable": "$.generation.status",
+                  "StringEquals": "failed",
+                  "Next": "GenerationFailed"
+                }
+              ],
+              "Default": "WaitForGeneration"
+            },
+            "WaitForGeneration": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "CheckGenerationStatus"
+            },
+            "CheckGenerationStatus": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${CheckGenerationStatusFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.generationStatus",
+              "Next": "GenerationStatusChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 1.5
+                }
+              ]
+            },
+            "GenerationStatusChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.generationStatus.status",
+                  "StringEquals": "completed",
+                  "Next": "StartExport"
+                },
+                {
+                  "Variable": "$.generationStatus.status",
+                  "StringEquals": "failed",
+                  "Next": "GenerationFailed"
+                }
+              ],
+              "Default": "WaitForGeneration"
+            },
+            "StartExport": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${StartExportFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.export",
+              "Next": "ExportChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "ExportFailed",
+                  "ResultPath": "$.error"
+                }
+              ]
+            },
+            "ExportChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.export.status",
+                  "StringEquals": "completed",
+                  "Next": "WorkflowCompleted"
+                },
+                {
+                  "Variable": "$.export.status",
+                  "StringEquals": "failed",
+                  "Next": "ExportFailed"
+                }
+              ],
+              "Default": "WaitForExport"
+            },
+            "WaitForExport": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "CheckExportStatus"
+            },
+            "CheckExportStatus": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${CheckExportStatusFunction}",
+                "Payload.$": "$"
+              },
+              "ResultPath": "$.exportStatus",
+              "Next": "ExportStatusChoice",
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 1.5
+                }
+              ]
+            },
+            "ExportStatusChoice": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.exportStatus.status",
+                  "StringEquals": "completed",
+                  "Next": "WorkflowCompleted"
+                },
+                {
+                  "Variable": "$.exportStatus.status",
+                  "StringEquals": "failed",
+                  "Next": "ExportFailed"
+                }
+              ],
+              "Default": "WaitForExport"
+            },
+            "WaitAndRetry": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "CheckJobStatus"
+            },
+            "WorkflowCompleted": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowCompletedFunction}",
+                "Payload.$": "$"
+              },
+              "End": true,
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 1.5
+                }
+              ]
+            },
+            "ValidationFailed": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowFailedFunction}",
+                "Payload.$": "$"
+              },
+              "Next": "SendToDLQ"
+            },
+            "AnalysisFailed": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowFailedFunction}",
+                "Payload.$": "$"
+              },
+              "Next": "SendToDLQ"
+            },
+            "GenerationFailed": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowFailedFunction}",
+                "Payload.$": "$"
+              },
+              "Next": "SendToDLQ"
+            },
+            "ExportFailed": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowFailedFunction}",
+                "Payload.$": "$"
+              },
+              "Next": "SendToDLQ"
+            },
+            "WorkflowFailed": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${WorkflowFailedFunction}",
+                "Payload.$": "$"
+              },
+              "Next": "SendToDLQ"
+            },
+            "SendToDLQ": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sqs:sendMessage",
+              "Parameters": {
+                "QueueUrl": "${DeadLetterQueue}",
+                "MessageBody.$": "$"
+              },
+              "End": true
+            }
+          }
+        }
+
+  # IAM Role für Step Functions
+  StepFunctionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'step-functions-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StepFunctionsExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                  - lambda:InvokeAsync
+                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*'
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt DeadLetterQueue.Arn
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # Dead Letter Queue für fehlgeschlagene Workflows
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub 'workflow-dlq-${Environment}'
+      MessageRetentionPeriod: 1209600 # 14 Tage
+      VisibilityTimeoutSeconds: 300
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+  # CloudWatch Log Group für Step Functions
+  StepFunctionsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/stepfunctions/application-workflow-${Environment}'
+      RetentionInDays: 14
+
+  # CloudWatch Alarms für Step Functions
+  StepFunctionsExecutionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'step-functions-execution-failures-${Environment}'
+      AlarmDescription: 'Step Functions execution failures'
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !Ref ApplicationWorkflowStateMachine
+      TreatMissingData: notBreaching
+
+  StepFunctionsExecutionDurationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'step-functions-execution-duration-${Environment}'
+      AlarmDescription: 'Step Functions execution duration too long'
+      MetricName: ExecutionTime
+      Namespace: AWS/States
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1800 # 30 Minuten
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !Ref ApplicationWorkflowStateMachine
+      TreatMissingData: notBreaching
+
+Outputs:
+  StateMachineArn:
+    Description: Step Functions State Machine ARN
+    Value: !Ref ApplicationWorkflowStateMachine
+    Export:
+      Name: !Sub '${AWS::StackName}-StateMachineArn'
+
+  StateMachineName:
+    Description: Step Functions State Machine Name
+    Value: !Ref ApplicationWorkflowStateMachine
+    Export:
+      Name: !Sub '${AWS::StackName}-StateMachineName'
+
+  DeadLetterQueueUrl:
+    Description: Dead Letter Queue URL
+    Value: !Ref DeadLetterQueue
+    Export:
+      Name: !Sub '${AWS::StackName}-DeadLetterQueueUrl'
+
+  DeadLetterQueueArn:
+    Description: Dead Letter Queue ARN
+    Value: !GetAtt DeadLetterQueue.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-DeadLetterQueueArn'
