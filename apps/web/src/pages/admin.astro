@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MediaGallery from '../components/MediaGallery.tsx';
+import AuthGuard from '../components/AuthGuard.tsx';
 ---
 
 <BaseLayout 
@@ -8,11 +9,16 @@ import MediaGallery from '../components/MediaGallery.tsx';
   description="Administration und Verwaltung der Manuel Weiss Platform"
   noindex={true}
 >
-  <div class="admin-container">
-    <div class="admin-header">
-      <h1>Admin Panel</h1>
-      <p>Verwaltung und Überwachung der Platform</p>
-    </div>
+  <AuthGuard 
+    client:load
+    requireAuth={true}
+    requireAdmin={true}
+  >
+    <div class="admin-container">
+      <div class="admin-header">
+        <h1>Admin Panel</h1>
+        <p>Verwaltung und Überwachung der Platform</p>
+      </div>
 
     <div class="admin-grid">
       <!-- Media Management -->
@@ -111,7 +117,8 @@ import MediaGallery from '../components/MediaGallery.tsx';
         </div>
       </section>
     </div>
-  </div>
+    </div>
+  </AuthGuard>
 </BaseLayout>
 
 <style>
