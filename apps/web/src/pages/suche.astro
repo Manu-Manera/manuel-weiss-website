@@ -1,0 +1,322 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchInterface from '../components/SearchInterface.tsx';
+---
+
+<BaseLayout 
+  title="Suche - Manuel Weiss Platform"
+  description="Durchsuchen Sie alle Services, Methoden, Blog-Artikel und Case Studies"
+>
+  <div class="search-container">
+    <div class="search-header">
+      <h1>Intelligente Suche</h1>
+      <p>Finden Sie schnell die gewünschten Services, Methoden und Inhalte</p>
+    </div>
+
+    <!-- Search Interface -->
+    <div class="search-interface">
+      <SearchInterface 
+        client:load
+        placeholder="Services, Methoden, Blog-Artikel, Case Studies durchsuchen..."
+        maxResults={15}
+        showFilters={true}
+      />
+    </div>
+
+    <!-- Search Tips -->
+    <div class="search-tips">
+      <h3>Suchtipps</h3>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h4>Verwenden Sie Keywords</h4>
+          <p>Nutzen Sie spezifische Begriffe wie "HR-Beratung", "Digitalisierung" oder "Persönlichkeitsentwicklung"</p>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-tags"></i>
+          </div>
+          <h4>Tags verwenden</h4>
+          <p>Durchsuchen Sie nach Tags wie "Leadership", "Change Management" oder "Agile"</p>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-filter"></i>
+          </div>
+          <h4>Kategorien filtern</h4>
+          <p>Einschränken Sie die Suche auf Services, Methoden, Blog oder Case Studies</p>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-question-circle"></i>
+          </div>
+          <h4>Fragen stellen</h4>
+          <p>Stellen Sie vollständige Fragen wie "Wie führe ich ein Team?" oder "Was ist Digitalisierung?"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Searches -->
+    <div class="popular-searches">
+      <h3>Beliebte Suchbegriffe</h3>
+      <div class="search-tags">
+        <span class="search-tag">HR-Beratung</span>
+        <span class="search-tag">Digitalisierung</span>
+        <span class="search-tag">Persönlichkeitsentwicklung</span>
+        <span class="search-tag">Leadership</span>
+        <span class="search-tag">Change Management</span>
+        <span class="search-tag">Agile</span>
+        <span class="search-tag">Teamführung</span>
+        <span class="search-tag">Strategieentwicklung</span>
+        <span class="search-tag">Prozessoptimierung</span>
+        <span class="search-tag">Kommunikation</span>
+      </div>
+    </div>
+
+    <!-- Search Statistics -->
+    <div class="search-stats">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">67</span>
+          <span class="stat-label">Services & Methoden</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">150+</span>
+          <span class="stat-label">Blog-Artikel</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">25</span>
+          <span class="stat-label">Case Studies</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">FAQ-Einträge</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .search-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .search-header h1 {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .search-header p {
+    font-size: 1.25rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-interface {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 3rem;
+  }
+
+  .search-tips {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 3rem;
+  }
+
+  .search-tips h3 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .tip-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+  }
+
+  .tip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .tip-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+  }
+
+  .tip-card h4 {
+    font-size: 1.125rem;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .tip-card p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .popular-searches {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 3rem;
+  }
+
+  .popular-searches h3 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .search-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .search-tag {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .search-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+  }
+
+  .search-stats {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+  }
+
+  .stat-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .search-container {
+      padding: 1rem;
+    }
+
+    .search-header h1 {
+      font-size: 2rem;
+    }
+
+    .tips-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .search-tags {
+      justify-content: flex-start;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  // Search functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize search interface
+    console.log('Search page loaded');
+    
+    // Add click handlers for popular search tags
+    document.querySelectorAll('.search-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        const searchTerm = this.textContent;
+        // Trigger search with the clicked term
+        const searchInput = document.querySelector('input[placeholder*="durchsuchen"]');
+        if (searchInput) {
+          searchInput.value = searchTerm;
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+    });
+  });
+</script>
