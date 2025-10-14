@@ -5,27 +5,15 @@
   "environments": {
     "production": {
       "domainName": "manuel-weiss.com",
-      "cognitoUserPoolId": "eu-central-1_xxxxx",
-      "cognitoClientId": "xxxxxxxxxx",
-      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod",
-      "s3MediaBucket": "mw-prod-media",
-      "cloudFrontUrl": "https://d1234567890.cloudfront.net"
+      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod"
     },
     "staging": {
       "domainName": "staging.manuel-weiss.com",
-      "cognitoUserPoolId": "eu-central-1_staging_xxxxx",
-      "cognitoClientId": "staging_xxxxxxxxxx",
-      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/staging",
-      "s3MediaBucket": "mw-staging-media",
-      "cloudFrontUrl": "https://d1234567890-staging.cloudfront.net"
+      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/staging"
     },
     "development": {
       "domainName": "dev.manuel-weiss.com",
-      "cognitoUserPoolId": "eu-central-1_dev_xxxxx",
-      "cognitoClientId": "dev_xxxxxxxxxx",
-      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/dev",
-      "s3MediaBucket": "mw-dev-media",
-      "cloudFrontUrl": "https://d1234567890-dev.cloudfront.net"
+      "apiBaseUrl": "https://api-gateway.execute-api.eu-central-1.amazonaws.com/dev"
     }
   },
   "allowedOrigins": [
