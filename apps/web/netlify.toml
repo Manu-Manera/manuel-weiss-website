@@ -1,0 +1,229 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--production=false"
+
+# Environment Variables
+[context.production.environment]
+  NODE_ENV = "production"
+  AWS_REGION = "eu-central-1"
+  COGNITO_USER_POOL_ID = "eu-central-1_xxxxx"
+  COGNITO_CLIENT_ID = "xxxxxxxxxx"
+  API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod"
+  S3_MEDIA_BUCKET = "manuel-weiss-media-prod"
+  CLOUDFRONT_URL = "https://d1234567890.cloudfront.net"
+  OPENAI_API_KEY = "sk-xxxxxxxxxx"
+
+[context.staging.environment]
+  NODE_ENV = "staging"
+  AWS_REGION = "eu-central-1"
+  COGNITO_USER_POOL_ID = "eu-central-1_yyyyy"
+  COGNITO_CLIENT_ID = "yyyyyyyyyy"
+  API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/staging"
+  S3_MEDIA_BUCKET = "manuel-weiss-media-staging"
+  CLOUDFRONT_URL = "https://d0987654321.cloudfront.net"
+  OPENAI_API_KEY = "sk-yyyyyyyyyy"
+
+[context.development.environment]
+  NODE_ENV = "development"
+  AWS_REGION = "eu-central-1"
+  COGNITO_USER_POOL_ID = "eu-central-1_zzzzz"
+  COGNITO_CLIENT_ID = "zzzzzzzzzz"
+  API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/dev"
+  S3_MEDIA_BUCKET = "manuel-weiss-media-dev"
+  CLOUDFRONT_URL = "https://d1122334455.cloudfront.net"
+  OPENAI_API_KEY = "sk-zzzzzzzzzz"
+
+# Redirects
+[[redirects]]
+  from = "/api/*"
+  to = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin"
+  status = 200
+
+[[redirects]]
+  from = "/analytics"
+  to = "/analytics"
+  status = 200
+
+[[redirects]]
+  from = "/bewerbungen"
+  to = "/bewerbungen"
+  status = 200
+
+[[redirects]]
+  from = "/api-docs"
+  to = "/api-docs"
+  status = 200
+
+[[redirects]]
+  from = "/api-docs/"
+  to = "/api-docs"
+  status = 301
+
+[[redirects]]
+  from = "/docs/api"
+  to = "/api-docs"
+  status = 301
+
+[[redirects]]
+  from = "/openapi.yaml"
+  to = "/api-docs/openapi.yaml"
+  status = 301
+
+[[redirects]]
+  from = "/swagger"
+  to = "/api-docs"
+  status = 301
+
+# PWA Routes
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+
+[[redirects]]
+  from = "/sw.js"
+  to = "/sw.js"
+  status = 200
+
+[[redirects]]
+  from = "/service-worker.js"
+  to = "/sw.js"
+  status = 301
+
+# Health & Status
+[[redirects]]
+  from = "/health"
+  to = "/health.html"
+  status = 200
+
+[[redirects]]
+  from = "/status"
+  to = "/health.html"
+  status = 200
+
+[[redirects]]
+  from = "/healthz"
+  to = "/health.html"
+  status = 200
+
+[[redirects]]
+  from = "/readyz"
+  to = "/health.html"
+  status = 200
+
+# Media Routes (CloudFront Integration)
+[[redirects]]
+  from = "/media/*"
+  to = "https://d1234567890.cloudfront.net/media/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/assets/*"
+  to = "https://d1234567890.cloudfront.net/assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/images/*"
+  to = "https://d1234567890.cloudfront.net/images/:splat"
+  status = 200
+  force = true
+
+# SPA Fallback for React Routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api-gateway.execute-api.eu-central-1.amazonaws.com https://api.openai.com;"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api-docs/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=600"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/javascript"
+
+# Functions
+[functions]
+  directory = "../../services/api"

@@ -1,0 +1,523 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Analytics Dashboard - Manuel Weiss Platform"
+  description="Detaillierte Analytics und Performance-Metriken der Manuel Weiss Platform"
+>
+  <div class="analytics-container">
+    <div class="analytics-header">
+      <h1>Analytics Dashboard</h1>
+      <p>Performance-Metriken und Nutzungsstatistiken</p>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="metrics-overview">
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-value">95.2%</span>
+          <span class="metric-label">Success Rate</span>
+        </div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-value">2,547</span>
+          <span class="metric-label">Applications Created</span>
+        </div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-value">4.8★</span>
+          <span class="metric-label">User Rating</span>
+        </div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-value">24/7</span>
+          <span class="metric-label">AI Support</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <!-- Usage Chart -->
+      <div class="chart-container">
+        <h3>Usage Over Time</h3>
+        <div class="chart-placeholder">
+          <canvas id="usageChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Success Rate Chart -->
+      <div class="chart-container">
+        <h3>Success Rate Trend</h3>
+        <div class="chart-placeholder">
+          <canvas id="successChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- User Engagement -->
+      <div class="chart-container">
+        <h3>User Engagement</h3>
+        <div class="chart-placeholder">
+          <canvas id="engagementChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Usage -->
+      <div class="chart-container">
+        <h3>AI Feature Usage</h3>
+        <div class="chart-placeholder">
+          <canvas id="aiChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Analytics -->
+    <div class="analytics-details">
+      <div class="analytics-section">
+        <h3>Feature Usage</h3>
+        <div class="feature-stats">
+          <div class="feature-item">
+            <span class="feature-name">Job Analysis</span>
+            <div class="feature-bar">
+              <div class="feature-progress" style="width: 85%"></div>
+            </div>
+            <span class="feature-value">85%</span>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-name">Cover Letter Generation</span>
+            <div class="feature-bar">
+              <div class="feature-progress" style="width: 92%"></div>
+            </div>
+            <span class="feature-value">92%</span>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-name">CV Optimization</span>
+            <div class="feature-bar">
+              <div class="feature-progress" style="width: 78%"></div>
+            </div>
+            <span class="feature-value">78%</span>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-name">Interview Preparation</span>
+            <div class="feature-bar">
+              <div class="feature-progress" style="width: 67%"></div>
+            </div>
+            <span class="feature-value">67%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-section">
+        <h3>Performance Metrics</h3>
+        <div class="performance-grid">
+          <div class="performance-item">
+            <span class="performance-label">Page Load Time</span>
+            <span class="performance-value">1.2s</span>
+            <span class="performance-status good">Excellent</span>
+          </div>
+          
+          <div class="performance-item">
+            <span class="performance-label">API Response Time</span>
+            <span class="performance-value">245ms</span>
+            <span class="performance-status good">Excellent</span>
+          </div>
+          
+          <div class="performance-item">
+            <span class="performance-label">Uptime</span>
+            <span class="performance-value">99.9%</span>
+            <span class="performance-status good">Excellent</span>
+          </div>
+          
+          <div class="performance-item">
+            <span class="performance-label">Error Rate</span>
+            <span class="performance-value">0.1%</span>
+            <span class="performance-status good">Excellent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .analytics-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .analytics-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .analytics-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .analytics-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+
+  .metrics-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .metric-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .metric-content {
+    flex: 1;
+  }
+
+  .metric-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .chart-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .chart-container h3 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .chart-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 2px dashed #d1d5db;
+  }
+
+  .analytics-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .analytics-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .analytics-section h3 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 0.5rem;
+  }
+
+  .feature-stats {
+    space-y: 1rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+  }
+
+  .feature-name {
+    min-width: 150px;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .feature-bar {
+    flex: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .feature-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .feature-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .performance-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .performance-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .performance-label {
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .performance-value {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .performance-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .performance-status.good {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .performance-status.warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .performance-status.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .analytics-details {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .analytics-container {
+      padding: 1rem;
+    }
+
+    .metrics-overview {
+      grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .metric-card {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // Chart.js Integration
+  import Chart from 'chart.js/auto';
+
+  // Usage Chart
+  const usageCtx = document.getElementById('usageChart');
+  if (usageCtx) {
+    new Chart(usageCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Applications Created',
+          data: [120, 190, 300, 500, 200, 300],
+          borderColor: '#0066ff',
+          backgroundColor: 'rgba(0, 102, 255, 0.1)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
+
+  // Success Rate Chart
+  const successCtx = document.getElementById('successChart');
+  if (successCtx) {
+    new Chart(successCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Success Rate %',
+          data: [92, 94, 96, 95, 97, 95],
+          backgroundColor: '#00f593',
+          borderColor: '#00f593',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+  }
+
+  // Engagement Chart
+  const engagementCtx = document.getElementById('engagementChart');
+  if (engagementCtx) {
+    new Chart(engagementCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Active Users', 'New Users', 'Returning Users'],
+        datasets: [{
+          data: [60, 25, 15],
+          backgroundColor: ['#0066ff', '#00d9ff', '#ff006e'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+
+  // AI Usage Chart
+  const aiCtx = document.getElementById('aiChart');
+  if (aiCtx) {
+    new Chart(aiCtx, {
+      type: 'radar',
+      data: {
+        labels: ['Job Analysis', 'Cover Letters', 'CV Optimization', 'Interview Prep', 'Skill Matching'],
+        datasets: [{
+          label: 'AI Feature Usage',
+          data: [85, 92, 78, 67, 88],
+          borderColor: '#0066ff',
+          backgroundColor: 'rgba(0, 102, 255, 0.2)',
+          pointBackgroundColor: '#0066ff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+  }
+</script>

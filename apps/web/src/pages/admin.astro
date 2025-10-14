@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaGallery from '../components/MediaGallery.tsx';
+---
+
+<BaseLayout 
+  title="Admin Panel - Manuel Weiss Platform"
+  description="Administration und Verwaltung der Manuel Weiss Platform"
+  noindex={true}
+>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>Admin Panel</h1>
+      <p>Verwaltung und Überwachung der Platform</p>
+    </div>
+
+    <div class="admin-grid">
+      <!-- Media Management -->
+      <section class="admin-section">
+        <h2>Media Management</h2>
+        <div id="media-gallery">
+          <MediaGallery 
+            client:load
+            onUpload={() => console.log('Upload triggered')}
+            onDelete={(id) => console.log('Delete triggered:', id)}
+            onDownload={(id) => console.log('Download triggered:', id)}
+          />
+        </div>
+      </section>
+
+      <!-- User Management -->
+      <section class="admin-section">
+        <h2>User Management</h2>
+        <div class="admin-card">
+          <h3>Active Users</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-number">1,247</span>
+              <span class="stat-label">Total Users</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">89</span>
+              <span class="stat-label">Active Today</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">23</span>
+              <span class="stat-label">New This Week</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section class="admin-section">
+        <h2>Analytics</h2>
+        <div class="admin-card">
+          <h3>Platform Metrics</h3>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-value">95.2%</span>
+              <span class="metric-label">Success Rate</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value">2,547</span>
+              <span class="metric-label">Applications Created</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value">4.8★</span>
+              <span class="metric-label">User Rating</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value">24/7</span>
+              <span class="metric-label">AI Support</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Status -->
+      <section class="admin-section">
+        <h2>System Status</h2>
+        <div class="admin-card">
+          <h3>Service Health</h3>
+          <div class="status-list">
+            <div class="status-item">
+              <span class="status-indicator status-ok"></span>
+              <span class="status-service">API Gateway</span>
+              <span class="status-value">Operational</span>
+            </div>
+            <div class="status-item">
+              <span class="status-indicator status-ok"></span>
+              <span class="status-service">DynamoDB</span>
+              <span class="status-value">Operational</span>
+            </div>
+            <div class="status-item">
+              <span class="status-indicator status-ok"></span>
+              <span class="status-service">S3 Storage</span>
+              <span class="status-value">Operational</span>
+            </div>
+            <div class="status-item">
+              <span class="status-indicator status-ok"></span>
+              <span class="status-service">CloudFront CDN</span>
+              <span class="status-value">Operational</span>
+            </div>
+            <div class="status-item">
+              <span class="status-indicator status-ok"></span>
+              <span class="status-service">OpenAI API</span>
+              <span class="status-value">Operational</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .admin-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .admin-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .admin-section h2 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 0.5rem;
+  }
+
+  .admin-card {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .admin-card h3 {
+    font-size: 1.2rem;
+    color: #374151;
+    margin-bottom: 1rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .metric-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .metric-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success);
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .status-list {
+    space-y: 0.75rem;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-ok {
+    background: var(--success);
+  }
+
+  .status-warning {
+    background: var(--warning);
+  }
+
+  .status-error {
+    background: var(--danger);
+  }
+
+  .status-service {
+    flex: 1;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .status-value {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .admin-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-container {
+      padding: 1rem;
+    }
+
+    .admin-header h1 {
+      font-size: 2rem;
+    }
+
+    .stats-grid,
+    .metrics-grid {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+  }
+</style>

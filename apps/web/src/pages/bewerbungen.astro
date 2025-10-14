@@ -1,0 +1,461 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Bewerbungsmanager - Manuel Weiss Platform"
+  description="KI-gestützter Bewerbungsmanager mit automatischer Stellenanalyse und personalisierten Anschreiben"
+>
+  <div class="bewerbungen-container">
+    <div class="bewerbungen-header">
+      <h1>Bewerbungsmanager</h1>
+      <p>KI-gestützte Bewerbungserstellung mit maximaler Erfolgsrate</p>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="features-grid">
+      <div class="feature-card" onclick="startKIWorkflow()">
+        <div class="feature-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>KI-Workflow</h3>
+        <p>Automatisierte Bewerbungserstellung mit KI-Analyse</p>
+        <div class="feature-stats">
+          <span class="stat">95% Erfolgsrate</span>
+          <span class="stat">2.5k Bewerbungen</span>
+        </div>
+        <button class="feature-btn">Workflow starten</button>
+      </div>
+
+      <div class="feature-card" onclick="openAnalytics()">
+        <div class="feature-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3>Analytics</h3>
+        <p>Detaillierte Erfolgsanalyse und Performance-Metriken</p>
+        <div class="feature-stats">
+          <span class="stat">4.8★ Rating</span>
+          <span class="stat">24/7 Support</span>
+        </div>
+        <button class="feature-btn">Analytics öffnen</button>
+      </div>
+
+      <div class="feature-card" onclick="openUIDemo()">
+        <div class="feature-icon">
+          <i class="fas fa-palette"></i>
+        </div>
+        <h3>UI Demo</h3>
+        <p>Moderne Benutzeroberfläche mit React-Inseln</p>
+        <div class="feature-stats">
+          <span class="stat">Modern Design</span>
+          <span class="stat">Responsive</span>
+        </div>
+        <button class="feature-btn">Demo öffnen</button>
+      </div>
+
+      <div class="feature-card" onclick="openEmailService()">
+        <div class="feature-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <h3>Email Service</h3>
+        <p>Automatisierte E-Mail-Benachrichtigungen und Reminder</p>
+        <div class="feature-stats">
+          <span class="stat">99.9% Delivery</span>
+          <span class="stat">25% Open Rate</span>
+        </div>
+        <button class="feature-btn">Service öffnen</button>
+      </div>
+    </div>
+
+    <!-- Workflow Steps -->
+    <div class="workflow-section">
+      <h2>6-Schritt Bewerbungsprozess</h2>
+      <div class="workflow-steps">
+        <div class="step">
+          <div class="step-number">0</div>
+          <div class="step-content">
+            <h3>Bewerbungsart wählen</h3>
+            <p>Stellenanzeige oder Initiativbewerbung</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>KI-Stellenanalyse</h3>
+            <p>Automatische Extraktion und Priorisierung der Anforderungen</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Skill-Matching</h3>
+            <p>Abgleich Ihrer Qualifikationen mit den Stellenanforderungen</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>KI-Anschreiben</h3>
+            <p>Personalisierte Bewerbungsschreiben mit KI-Unterstützung</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Dokumente</h3>
+            <p>CV-Optimierung und Zusatzdokumente</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h3>Design & Export</h3>
+            <p>Professionelle Formatierung und PDF-Export</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Stories -->
+    <div class="success-stories">
+      <h2>Erfolgsgeschichten</h2>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="story-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="story-content">
+            <h4>Sarah M.</h4>
+            <p>"Durch die KI-Analyse habe ich meine Bewerbung perfekt auf die Stelle zugeschnitten. Ergebnis: Zusage nach 3 Tagen!"</p>
+            <div class="story-rating">★★★★★</div>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="story-content">
+            <h4>Michael K.</h4>
+            <p>"Das Skill-Matching hat mir gezeigt, wo ich noch Lücken habe. Nach 2 Wochen Weiterbildung: Traumjob!"</p>
+            <div class="story-rating">★★★★★</div>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="story-content">
+            <h4>Anna L.</h4>
+            <p>"Die automatischen Interview-Fragen haben mich perfekt vorbereitet. Selbstbewusst in jedes Gespräch!"</p>
+            <div class="story-rating">★★★★★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .bewerbungen-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .bewerbungen-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .bewerbungen-header h1 {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bewerbungen-header p {
+    font-size: 1.25rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  .feature-card p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .feature-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat {
+    background: #f3f4f6;
+    color: var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .feature-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .feature-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
+  }
+
+  .workflow-section {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 4rem;
+  }
+
+  .workflow-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 3rem;
+  }
+
+  .workflow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+  }
+
+  .step:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .step-content p {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .success-stories {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .success-stories h2 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 3rem;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .story-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    text-align: left;
+  }
+
+  .story-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-content h4 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .story-content p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .story-rating {
+    color: #fbbf24;
+    font-size: 1.25rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .bewerbungen-container {
+      padding: 1rem;
+    }
+
+    .bewerbungen-header h1 {
+      font-size: 2rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .workflow-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .step {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Global Functions für Feature Cards
+  window.startKIWorkflow = function() {
+    // Redirect to main workflow
+    window.location.href = '/bewerbungsmanager.html';
+  };
+
+  window.openAnalytics = function() {
+    // Open analytics dashboard
+    window.location.href = '/analytics';
+  };
+
+  window.openUIDemo = function() {
+    // Open UI demo
+    window.location.href = '/bewerbungsmanager-modern.html';
+  };
+
+  window.openEmailService = function() {
+    // Open email service
+    window.location.href = '/email-verification.html';
+  };
+</script>

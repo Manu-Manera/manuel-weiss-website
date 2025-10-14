@@ -242,7 +242,7 @@ export class MediaManager {
     });
   }
 
-    // AWS S3 Plugin
+    // AWS S3 Plugin mit erweiterten Features
     this.uppy.use(AwsS3, {
       companionUrl: null,
       getUploadParameters: async (file) => {
@@ -251,20 +251,26 @@ export class MediaManager {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${await this.getAuthToken()}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'X-Request-ID': this.generateRequestId()
             },
             body: JSON.stringify({
               filename: file.name,
               type: file.type,
-              size: file.size
+              size: file.size,
+              userId: await this.getCurrentUserId()
             })
           });
 
           if (!response.ok) {
-            throw new Error('Presigned URL konnte nicht erstellt werden');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Presigned URL konnte nicht erstellt werden');
           }
 
-          const { url, fields } = await response.json();
+          const { url, fields, key, contentType, mediaId } = await response.json();
+          
+          // MediaId für spätere Verwendung speichern
+          file.meta = { ...file.meta, mediaId, key };
           
           return {
             method: 'POST',
@@ -318,29 +324,41 @@ export class MediaManager {
     try {
       // Medien-Metadaten an Server senden
       const mediaData = {
-        key: response.uploadURL.split('/').pop(),
+        mediaId: file.meta?.mediaId,
+        userId: await this.getCurrentUserId(),
+        key: file.meta?.key,
         filename: file.name,
         type: file.type,
         size: file.size,
+        eTag: response.uploadURL?.split('"')[1] || null,
         width: file.meta?.width || null,
         height: file.meta?.height || null,
-        cdnUrl: `${process.env.CLOUDFRONT_URL}/media/${response.uploadURL.split('/').pop()}`
+        tags: file.meta?.tags || []
       };
 
       const completeResponse = await fetch('/api/media/complete', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${await this.getAuthToken()}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Request-ID': this.generateRequestId()
         },
         body: JSON.stringify(mediaData)
       });
 
       if (completeResponse.ok) {
+        const result = await completeResponse.json();
         this.showUploadSuccess(file.name);
+        
+        // Media Processing starten (asynchron)
+        this.startMediaProcessing(result.media.mediaId);
+      } else {
+        const errorData = await completeResponse.json();
+        throw new Error(errorData.message || 'Upload-Completion fehlgeschlagen');
       }
     } catch (error) {
       console.error('Upload-Completion-Fehler:', error);
+      this.showUploadError(file.name, error.message);
     }
   }
 
@@ -607,7 +625,47 @@ export class MediaManager {
    */
   async getAuthToken() {
     // Hier würde der echte JWT Token abgerufen werden
-    return 'demo-jwt-token';
+    return localStorage.getItem('auth_token') || 'demo-jwt-token';
+  }
+
+  /**
+   * Current User ID abrufen
+   */
+  async getCurrentUserId() {
+    // Hier würde die echte User ID abgerufen werden
+    return localStorage.getItem('user_id') || 'demo-user-id';
+  }
+
+  /**
+   * Request ID generieren
+   */
+  generateRequestId() {
+    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Media Processing starten
+   */
+  async startMediaProcessing(mediaId) {
+    try {
+      const response = await fetch('/api/media/process', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${await this.getAuthToken()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mediaId: mediaId,
+          userId: await this.getCurrentUserId()
+        })
+      });
+
+      if (response.ok) {
+        console.log('Media Processing gestartet für:', mediaId);
+      }
+    } catch (error) {
+      console.error('Media Processing Fehler:', error);
+    }
   }
 
   /**
