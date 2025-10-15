@@ -10814,17 +10814,37 @@
             
             showStatus('🧪 Teste OpenAI Verbindung...', 'info');
             
-            // CORS-Problem: Verwende Format-Validierung als Test
-            if (apiKey.startsWith('sk-') && apiKey.length > 20) {
-                showStatus('✅ OpenAI API Key Format ist korrekt!', 'success');
-                console.log('API Key validiert:', apiKey.substring(0, 10) + '...');
+            // SICHERE LÖSUNG: Verwende den eingegebenen Key
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: 'Test'
+                            }
+                        ],
+                        max_tokens: 5
+                    })
+                });
                 
-                // Simuliere erfolgreichen Test
-                setTimeout(() => {
-                    showStatus('✅ API Key ist gültig und funktionsfähig!', 'success');
-                }, 1000);
-            } else {
-                showStatus('❌ API Key Format ist ungültig. Muss mit "sk-" beginnen und mindestens 20 Zeichen haben.', 'error');
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
+                    console.log('OpenAI Test Response:', data);
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`❌ API Fehler: ${errorData.error?.message || 'Unbekannter Fehler'}`, 'error');
+                }
+            } catch (error) {
+                console.error('OpenAI Test Error:', error);
+                showStatus(`❌ Netzwerkfehler: ${error.message}`, 'error');
             }
         }
         
