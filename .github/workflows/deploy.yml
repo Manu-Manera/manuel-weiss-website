@@ -1,4 +1,4 @@
-name: 🚀 Deploy Manuel Weiss Website
+name: Deploy to Netlify
 
 on:
   push:
@@ -8,89 +8,32 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to Netlify
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Code
       uses: actions/checkout@v4
       
-    - name: 🔧 Setup Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
         
-    - name: 📦 Install Dependencies
-      run: |
-        if [ -f package.json ]; then
-          npm ci
-        else
-          echo "No package.json found, skipping npm install"
-        fi
-        
-    - name: 🧹 Clean Build Directory
-      run: |
-        rm -rf _site/
-        rm -rf dist/
-        rm -rf build/
-        rm -rf out/
-        
-    - name: 📝 Create .nojekyll
-      run: |
-        touch .nojekyll
-        echo "# Disable Jekyll processing for GitHub Pages" > .nojekyll
-        echo "# This file tells GitHub Pages to treat this as a static site" >> .nojekyll
-        
-    - name: 🔍 Validate HTML Files
-      run: |
-        echo "Validating HTML files..."
-        for file in *.html; do
-          if [ -f "$file" ]; then
-            echo "Checking $file"
-            # Basic HTML validation
-            if grep -q "<!DOCTYPE html>" "$file"; then
-              echo "✅ $file has valid DOCTYPE"
-            else
-              echo "⚠️  $file missing DOCTYPE"
-            fi
-          fi
-        done
-        
-    - name: 📊 Check File Sizes
-      run: |
-        echo "Checking file sizes..."
-        find . -name "*.html" -o -name "*.css" -o -name "*.js" | head -20 | xargs ls -lh
-        
-    - name: 🚀 Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Build API Documentation
+      run: npm run build:api-docs
+      
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-        exclude_assets: |
-          .git/
-          .github/
-          node_modules/
-          lambda/
-          backend/
-          amplify/
-          components/
-          styles/
-          docs/
-          tests/
-          .env*
-          *.log
-          *.tmp
-          *.temp
-          .DS_Store
-          Thumbs.db
-          
-    - name: 📧 Notify Deployment
-      if: always()
-      run: |
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "✅ Deployment successful!"
-          echo "🌐 Website: https://manu-manera.github.io/manuel-weiss-website"
-        else
-          echo "❌ Deployment failed!"
-        fi
+        publish-dir: '.'
+        production-branch: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy from GitHub Actions"
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -1,7 +1,7 @@
 [build]
-  # Build für PWA und optimierte Assets
-  command = "npm run build"
-  publish = "dist"
+  # Build für statische Website
+  command = "echo 'Static site - no build required'"
+  publish = "."
   
 [build.environment]
   # Node.js Version für Build-Tools
