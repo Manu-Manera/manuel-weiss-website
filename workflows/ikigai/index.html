@@ -278,18 +278,12 @@
             position: relative;
             width: 350px;
             height: 350px;
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
         
         .ikigai-petal {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50% 0 50% 0;
             transform-origin: center;
             transition: all 0.3s ease;
@@ -303,6 +297,7 @@
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
         
         .ikigai-petal:hover {
@@ -321,21 +316,21 @@
             background: linear-gradient(135deg, #4ecdc4, #44a08d);
             top: 50%;
             right: 0;
-            transform: translateY(-50%);
+            transform: translateY(-50%) rotate(90deg);
         }
         
         .petal-profession {
             background: linear-gradient(135deg, #45b7d1, #96c93d);
             bottom: 0;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) rotate(180deg);
         }
         
         .petal-vocation {
             background: linear-gradient(135deg, #f093fb, #f5576c);
             top: 50%;
             left: 0;
-            transform: translateY(-50%);
+            transform: translateY(-50%) rotate(270deg);
         }
         
         .ikigai-center {
