@@ -24,17 +24,29 @@ class IkigaiWorkflowEN {
     }
     
     setupEventListeners() {
+        console.log('🔧 Setting up event listeners...');
         // Setup initial event listeners for navigation buttons
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
+        console.log('🔍 Previous button found:', !!prevBtn);
+        console.log('🔍 Next button found:', !!nextBtn);
+        
         if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.previousStep());
+            prevBtn.addEventListener('click', () => {
+                console.log('👈 Previous button clicked!');
+                this.previousStep();
+            });
         }
         
         if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextStep());
+            nextBtn.addEventListener('click', () => {
+                console.log('👉 Next button clicked!');
+                this.nextStep();
+            });
         }
+        
+        console.log('✅ Event listeners setup complete');
     }
     
     createWorkflowInterface() {
@@ -97,34 +109,48 @@ class IkigaiWorkflowEN {
     }
     
     loadStep(step) {
+        console.log('📄 loadStep() called with step:', step);
         this.currentStep = step;
+        console.log('📊 Updating progress...');
         this.updateProgress();
         
         const content = document.getElementById('ikigai-content');
-        if (!content) return;
+        console.log('🔍 Content element found:', !!content);
+        if (!content) {
+            console.error('❌ Content element not found!');
+            return;
+        }
         
         let stepContent = '';
         
         switch(step) {
             case 1:
+                console.log('📝 Generating step 1 content...');
                 stepContent = this.generateStep1();
                 break;
             case 2:
+                console.log('📝 Generating step 2 content...');
                 stepContent = this.generateStep2();
                 break;
             case 3:
+                console.log('📝 Generating step 3 content...');
                 stepContent = this.generateStep3();
                 break;
             case 4:
+                console.log('📝 Generating step 4 content...');
                 stepContent = this.generateStep4();
                 break;
             case 5:
+                console.log('📝 Generating step 5 content...');
                 stepContent = this.generateStep5();
                 break;
         }
         
+        console.log('💾 Setting content HTML...');
         content.innerHTML = stepContent;
+        console.log('🔄 Updating navigation...');
         this.updateNavigation();
+        console.log('✅ loadStep() complete');
     }
     
     generateStep1() {
@@ -340,15 +366,24 @@ class IkigaiWorkflowEN {
     }
     
     nextStep() {
+        console.log('🚀 nextStep() called, current step:', this.currentStep, 'total steps:', this.totalSteps);
         if (this.currentStep < this.totalSteps) {
+            console.log('💾 Saving current step...');
             this.saveCurrentStep();
+            console.log('📄 Loading next step:', this.currentStep + 1);
             this.loadStep(this.currentStep + 1);
+        } else {
+            console.log('🏁 Already at last step!');
         }
     }
     
     previousStep() {
+        console.log('🔙 previousStep() called, current step:', this.currentStep);
         if (this.currentStep > 1) {
+            console.log('📄 Loading previous step:', this.currentStep - 1);
             this.loadStep(this.currentStep - 1);
+        } else {
+            console.log('🚫 Already at first step!');
         }
     }
     
