@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- PDF.js für echte PDF-Erstellung -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
 </head>
@@ -329,20 +333,24 @@
         
         // PDF Export Funktion
         function generatePDF() {
+            console.log('🎯 Starte PDF-Generierung...');
+            
             // Sammle alle Daten aus allen Steps
             const allData = {};
             for (let i = 1; i <= 7; i++) {
                 const stepData = localStorage.getItem(`ikigaiStep${i}`);
                 if (stepData) {
                     allData[`step${i}`] = JSON.parse(stepData);
+                    console.log(`✅ Step ${i} Daten gefunden:`, allData[`step${i}`]);
+                } else {
+                    console.log(`⚠️ Keine Daten für Step ${i} gefunden`);
                 }
             }
             
-            // Erstelle PDF-Inhalt
-            const pdfContent = createPDFContent(allData);
+            console.log('📊 Alle gesammelten Daten:', allData);
             
-            // Generiere und lade PDF herunter
-            downloadPDF(pdfContent);
+            // Erstelle PDF mit jsPDF
+            createRealPDF(allData);
         }
         
         function createPDFContent(data) {
