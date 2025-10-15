@@ -1,0 +1,175 @@
+<div class="section-header">
+    <h2>Ernährungsplan-Verwaltung</h2>
+    <p>Verwalte den intelligenten Ernährungsplan-Generator</p>
+</div>
+
+<!-- OpenAI API Verweis -->
+<div class="openai-config" style="margin-bottom: 3rem;">
+    <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+        <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">🤖 OpenAI API Konfiguration</h3>
+        <p style="margin: 0; color: #0c4a6e;">
+            OpenAI Einstellungen wurden entfernt.
+            <br><small>Verwenden Sie die separate KI-Einstellungen-Seite.</small>
+        </p>
+    </div>
+    
+    <div id="api-status" style="padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; display: none;">
+        <span id="api-status-text"></span>
+    </div>
+</div>
+
+<!-- Statistiken Dashboard -->
+<div class="nutrition-stats" style="margin-bottom: 3rem;">
+    <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+        📊 Statistiken
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h4 style="color: #555; margin-bottom: 0.5rem;">Pläne erstellt</h4>
+            <p style="font-size: 2rem; font-weight: bold; color: #6366f1; margin: 0;" id="plans-generated">0</p>
+        </div>
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h4 style="color: #555; margin-bottom: 0.5rem;">AI-Anfragen</h4>
+            <p style="font-size: 2rem; font-weight: bold; color: #10b981; margin: 0;" id="ai-requests">0</p>
+        </div>
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h4 style="color: #555; margin-bottom: 0.5rem;">Exporte heute</h4>
+            <p style="font-size: 2rem; font-weight: bold; color: #f59e0b; margin: 0;" id="exports-today">0</p>
+        </div>
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+            <h4 style="color: #555; margin-bottom: 0.5rem;">Aktive Nutzer</h4>
+            <p style="font-size: 2rem; font-weight: bold; color: #ef4444; margin: 0;" id="active-users">0</p>
+        </div>
+    </div>
+</div>
+
+<!-- AI Rezept-Generator -->
+<div class="ai-recipe-generator" style="margin-bottom: 3rem;">
+    <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+        🤖 AI Rezept-Generator
+    </h3>
+    
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <!-- Rezept-Suche -->
+        <div style="margin-bottom: 2rem;">
+            <h4 style="color: #555; margin-bottom: 1rem;">🔍 Rezept suchen & generieren</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Rezept-Name oder Beschreibung:</label>
+                    <input type="text" id="ai-recipe-search" placeholder="z.B. 'gesunde Quinoa-Bowl mit Gemüse'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                    <select id="ai-recipe-category" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        <option value="frühstück">Frühstück</option>
+                        <option value="mittagessen">Mittagessen</option>
+                        <option value="abendessen">Abendessen</option>
+                        <option value="snack">Snack</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Besondere Anforderungen:</label>
+                    <input type="text" id="ai-recipe-requirements" placeholder="z.B. 'vegan, glutenfrei, unter 400 Kalorien'" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kochzeit (Minuten):</label>
+                    <input type="number" id="ai-recipe-time" placeholder="30" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+            
+            <button data-action="generate-recipe" class="btn btn-primary" style="width: 100%; padding: 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                🤖 Rezept mit AI generieren
+            </button>
+            
+            <!-- AI Progress -->
+            <div id="ai-recipe-progress" style="display: none; margin-bottom: 1rem;">
+                <div style="background: #f3f4f6; border-radius: 6px; padding: 1rem; text-align: center;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="width: 20px; height: 20px; border: 2px solid #6366f1; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <span style="font-weight: 600; color: #6366f1;">AI generiert Rezept...</span>
+                    </div>
+                    <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div id="ai-progress-bar" style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Generiertes Rezept -->
+        <div id="generated-recipe" style="display: none; margin-bottom: 2rem;">
+            <h4 style="color: #555; margin-bottom: 1rem;">✨ Generiertes Rezept</h4>
+            
+            <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Rezept-Name:</label>
+                        <input type="text" id="generated-recipe-name" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                        <select id="generated-recipe-category" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="frühstück">Frühstück</option>
+                            <option value="mittagessen">Mittagessen</option>
+                            <option value="abendessen">Abendessen</option>
+                            <option value="snack">Snack</option>
+                            <option value="dessert">Dessert</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Zutaten:</label>
+                    <textarea id="generated-recipe-ingredients" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 80px; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Zubereitung:</label>
+                    <textarea id="generated-recipe-instructions" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; height: 100px; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kalorien:</label>
+                        <input type="number" id="generated-recipe-calories" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Protein (g):</label>
+                        <input type="number" id="generated-recipe-protein" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kohlenhydrate (g):</label>
+                        <input type="number" id="generated-recipe-carbs" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fett (g):</label>
+                        <input type="number" id="generated-recipe-fat" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button data-action="save-recipe" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        💾 Rezept speichern
+                    </button>
+                    <button data-action="regenerate-recipe" class="btn btn-primary" style="flex: 1; padding: 1rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        🔄 Neu generieren
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rezept-Datenbank -->
+        <div style="border-top: 2px solid #e2e8f0; padding-top: 2rem;">
+            <h4 style="color: #555; margin-bottom: 1rem;">📚 Gespeicherte Rezepte</h4>
+            
+            <div id="saved-recipes-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                <!-- Rezepte werden hier dynamisch geladen -->
+            </div>
+        </div>
+    </div>
+</div>

@@ -129,6 +129,15 @@ class AdminApplication {
         // Dashboard Section
         this.sections.dashboard = new DashboardSection();
         
+        // Content Section
+        this.sections.content = new ContentSection();
+        
+        // Nutrition Section
+        this.sections.nutrition = new NutritionSection();
+        
+        // Translations Section
+        this.sections.translations = new TranslationsSection();
+        
         // API Keys Section
         this.sections.apiKeys = new ApiKeysSection();
         
