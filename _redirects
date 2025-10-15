@@ -10,10 +10,12 @@
 /analytics-dashboard /analytics-dashboard.html 200
 
 # Application Routes
-/bewerbungsmanager  /bewerbungsmanager-coverlettergpt.html 200
-/coverlettergpt     /bewerbungsmanager-coverlettergpt.html 200
+/bewerbungsmanager  /bewerbung.html       200
+/coverlettergpt     /bewerbung.html       200
 /bewerbung          /bewerbung.html       200
-/bewerbungsmappe    /bewerbungsmappe.html 200
+/bewerbungsmappe    /bewerbung.html       200
+/ki-workflow        /bewerbung.html       200
+/workflow           /bewerbung.html       200
 
 # API Documentation & OpenAPI
 /api-docs           /api-documentation.html   200
