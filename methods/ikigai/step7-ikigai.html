@@ -353,116 +353,69 @@
             createRealPDF(allData);
         }
         
-        function createPDFContent(data) {
-            const currentDate = new Date().toLocaleDateString('de-DE');
-            
-            return `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Mein Ikigai - Persönliche Zusammenfassung</title>
-                    <style>
-                        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 40px; }
-                        .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #667eea; padding-bottom: 20px; }
-                        .header h1 { color: #667eea; font-size: 2.5rem; margin: 0; }
-                        .header p { color: #666; font-size: 1.1rem; }
-                        .section { margin-bottom: 30px; }
-                        .section h2 { color: #667eea; font-size: 1.8rem; border-left: 4px solid #667eea; padding-left: 15px; }
-                        .section h3 { color: #333; font-size: 1.3rem; margin-top: 25px; }
-                        .content { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; }
-                        .highlight { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 10px; margin: 20px 0; }
-                        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee; color: #666; }
-                        .ikigai-explanation { background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 25px; border-radius: 15px; margin: 20px 0; border-left: 5px solid #667eea; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>🎯 Mein Ikigai</h1>
-                        <p>Persönliche Zusammenfassung - ${currentDate}</p>
-                    </div>
-                    
-                    <div class="ikigai-explanation">
-                        <h2>Was ist Ikigai?</h2>
-                        <p><strong>Ikigai (生き甲斐)</strong> ist ein japanisches Konzept, das wörtlich "Grund zu leben" oder "Lebenszweck" bedeutet. Es ist der Schnittpunkt zwischen dem, was du liebst, was du gut kannst, was die Welt braucht und womit du Geld verdienen kannst.</p>
-                        <p>Diese uralte japanische Weisheit hilft dir dabei, deinen persönlichen Lebenszweck zu entdecken und ein erfülltes, zielgerichtetes Leben zu führen.</p>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>1. Selbstreflexion</h2>
-                        <div class="content">
-                            ${data.step1 ? Object.values(data.step1).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>2. Passion - Was du liebst</h2>
-                        <div class="content">
-                            ${data.step2 ? Object.values(data.step2).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>3. Mission - Was die Welt braucht</h2>
-                        <div class="content">
-                            ${data.step3 ? Object.values(data.step3).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>4. Profession - Womit du Geld verdienst</h2>
-                        <div class="content">
-                            ${data.step4 ? Object.values(data.step4).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>5. Vocation - Was du gut kannst</h2>
-                        <div class="content">
-                            ${data.step5 ? Object.values(data.step5).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>6. Synthese - Dein Ikigai</h2>
-                        <div class="highlight">
-                            <h3>Dein persönliches Ikigai:</h3>
-                            ${data.step6 ? Object.values(data.step6).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="section">
-                        <h2>7. Aktionsplan - Umsetzung</h2>
-                        <div class="content">
-                            ${data.step7 ? Object.values(data.step7).filter(val => val && val.trim()).join('<br><br>') : 'Noch nicht ausgefüllt'}
-                        </div>
-                    </div>
-                    
-                    <div class="highlight">
-                        <h3>🎯 Dein Ikigai ist der Weg zu einem erfüllten Leben!</h3>
-                        <p>Nutze diese Zusammenfassung als Leitfaden für deine persönliche Entwicklung und deine berufliche Orientierung.</p>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>Erstellt am ${currentDate} mit dem Ikigai-Workflow von Manuel Weiss</p>
-                    </div>
-                    
-                </body>
-                </html>
-            `;
+        // Helper-Funktionen für PDF-Erstellung
+        function getStepTitle(step) {
+            const titles = {
+                1: 'Selbstreflexion',
+                2: 'Passion',
+                3: 'Mission', 
+                4: 'Profession',
+                5: 'Vocation',
+                6: 'Synthese',
+                7: 'Aktionsplan'
+            };
+            return titles[step] || `Step ${step}`;
         }
         
-        function downloadPDF(htmlContent) {
-            // Erstelle ein neues Fenster mit dem PDF-Inhalt
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
-            
-            // Warte kurz und drucke dann
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
+        function getQuestionText(step, key) {
+            const questions = {
+                1: {
+                    'question1': 'Was macht dich wirklich glücklich?',
+                    'question2': 'Wofür brennst du?',
+                    'question3': 'Was würdest du tun, wenn Geld keine Rolle spielen würde?',
+                    'question4': 'Wann fühlst du dich am lebendigsten?',
+                    'question5': 'Was liebst du an dir selbst?',
+                    'question6': 'Was sind deine tiefsten Werte?'
+                },
+                2: {
+                    'passion1': 'Was sind deine größten Leidenschaften?',
+                    'passion2': 'Wofür begeisterst du dich?',
+                    'passion3': 'Was macht dir am meisten Spaß?'
+                },
+                3: {
+                    'mission1': 'Was ist deine Mission im Leben?',
+                    'mission2': 'Wie möchtest du die Welt verändern?',
+                    'mission3': 'Was ist dein Beitrag zur Gesellschaft?'
+                },
+                4: {
+                    'profession1': 'Womit verdienst du dein Geld?',
+                    'profession2': 'Was ist dein Beruf?',
+                    'profession3': 'Welche Fähigkeiten verkaufst du?'
+                },
+                5: {
+                    'vocation1': 'Was kannst du besonders gut?',
+                    'vocation2': 'Welche Talente hast du?',
+                    'vocation3': 'Wo bist du Experte?'
+                },
+                6: {
+                    'synthesis1': 'Wie verbindest du alle Bereiche?',
+                    'synthesis2': 'Was ist dein Ikigai?',
+                    'synthesis3': 'Wie findest du den Schnittpunkt?'
+                },
+                7: {
+                    'shortTermGoals': 'Kurzfristige Ziele (1-3 Monate)',
+                    'mediumTermGoals': 'Mittelfristige Ziele (3-12 Monate)',
+                    'longTermGoals': 'Langfristige Ziele (1+ Jahre)',
+                    'challenges': 'Herausforderungen',
+                    'support': 'Unterstützung'
+                }
+            };
+            return questions[step]?.[key] || key;
         }
+        
+        // Alte HTML-basierte PDF-Funktion entfernt - wird durch echte jsPDF ersetzt
+        
+        // Echte PDF-Erstellung mit jsPDF (bereits implementiert in createRealPDF)
     </script>
 </body>
 </html>
