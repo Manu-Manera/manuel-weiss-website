@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Stages - Transtheoretisches Modell der Verhaltensänderung</title>
+    <link rel="stylesheet" href="../../css/ikigai-planner.css">
+    <link rel="stylesheet" href="change-stages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
+<body>
+    <div class="workflow-header">
+        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+        </button>
+    </div>
+    <div class="workflow-container">
+        <!-- Progress Bar -->
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Precontemplation</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">Contemplation</div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Preparation</div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-title">Action</div>
+            <div class="progress-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-title">Maintenance</div>
+        </div>
+        
+        <!-- Step 1: Precontemplation -->
+        <div class="workflow-step active" data-step="1">
+            <div class="step-header">
+                <h3>Schritt 1: Precontemplation (Vorüberlegung)</h3>
+                <p>Erkenne, dass ein Problem oder eine Veränderung notwendig ist.</p>
+            
+            <div class="change-method">
+                <div class="precontemplation-section">
+                    <h4>🔍 Precontemplation</h4>
+                    <p>In dieser Phase bist du dir des Problems noch nicht bewusst oder leugnest es. Es geht darum, Bewusstsein zu schaffen.</p>
+                    
+                    <div class="precontemplation-form">
+                        <div class="precontemplation-item">
+                            <label>Welches Verhalten oder Problem möchtest du ändern?</label>
+                            <textarea id="target-behavior" placeholder="Beschreibe das Verhalten oder Problem..."></textarea>
+                        </div>
+                        
+                        <div class="awareness-questions">
+                            <h5>🤔 Bewusstseinsfragen</h5>
+                            <div class="questions-list">
+                                <div class="question-item">
+                                    <label>Wie beeinflusst dieses Verhalten dein Leben?</label>
+                                    <textarea id="impact-life" placeholder="Beschreibe die Auswirkungen..."></textarea>
+                                </div>
+                                    <label>Was würde passieren, wenn du nichts änderst?</label>
+                                    <textarea id="consequences-no-change" placeholder="Beschreibe die Konsequenzen..."></textarea>
+                                    <label>Welche Signale zeigen dir, dass eine Änderung nötig ist?</label>
+                                    <textarea id="warning-signs" placeholder="Identifiziere die Warnsignale..."></textarea>
+                            </div>
+                        <div class="resistance-factors">
+                            <h5>🚫 Widerstandsfaktoren</h5>
+                            <div class="factors-list">
+                                <div class="factor-item">
+                                    <input type="checkbox" id="factor-denial">
+                                    <label for="factor-denial">Verleugnung</label>
+                                    <input type="checkbox" id="factor-rationalization">
+                                    <label for="factor-rationalization">Rationalisierung</label>
+                                    <input type="checkbox" id="factor-fear">
+                                    <label for="factor-fear">Angst vor Veränderung</label>
+                                    <input type="checkbox" id="factor-lack-awareness">
+                                    <label for="factor-lack-awareness">Mangelndes Bewusstsein</label>
+                        <div class="precontemplation-practice">
+                            <h5>🎯 Übung: Bewusstsein schaffen</h5>
+                            <div class="practice-exercises">
+                                <div class="exercise-item">
+                                    <label>Übung 1: Kosten-Nutzen-Analyse</label>
+                                    <textarea id="practice-cost-benefit" placeholder="Analysiere die Kosten und den Nutzen des aktuellen Verhaltens..."></textarea>
+                                    <label>Übung 2: Zukunftsprojektion</label>
+                                    <textarea id="practice-future-projection" placeholder="Stelle dir vor, wie dein Leben in 5 Jahren aussehen wird, wenn sich nichts ändert..."></textarea>
+                                    <label>Übung 3: Feedback sammeln</label>
+                                    <textarea id="practice-feedback" placeholder="Frage vertraute Personen nach ihrer Einschätzung..."></textarea>
+                                    <label>Übung 4: Verhaltens-Tracking</label>
+                                    <textarea id="practice-behavior-tracking" placeholder="Führe ein Tagebuch über dein Verhalten..."></textarea>
+                                    <label>Übung 5: Emotionale Auswirkungen</label>
+                                    <textarea id="practice-emotional-impact" placeholder="Analysiere die emotionalen Auswirkungen deines Verhaltens..."></textarea>
+                                    <label>Übung 6: Widerstand reflektieren</label>
+                                    <textarea id="practice-resistance-reflection" placeholder="Reflektiere über deine Widerstände gegen Veränderung..."></textarea>
+                        <div class="precontemplation-tips">
+                            <h5>💡 Tipps für die Precontemplation-Phase</h5>
+                            <div class="tips-list">
+                                <div class="tip-item">
+                                    <div class="tip-icon">📊</div>
+                                    <div class="tip-content">
+                                        <h6>Daten sammeln</h6>
+                                        <p>Sammle objektive Daten über dein Verhalten</p>
+                                    </div>
+                                    <div class="tip-icon">👥</div>
+                                        <h6>Feedback einholen</h6>
+                                        <p>Hole ehrliches Feedback von vertrauten Personen</p>
+                                    <div class="tip-icon">🎯</div>
+                                        <h6>Bewusstsein schärfen</h6>
+                                        <p>Beobachte dein Verhalten bewusst und ohne Urteil</p>
+                                    <div class="tip-icon">🔍</div>
+                                        <h6>Selbstbeobachtung</h6>
+                                        <p>Führe regelmäßige Selbstbeobachtung durch</p>
+                                    <div class="tip-icon">📝</div>
+                                        <h6>Tagebuch führen</h6>
+                                        <p>Führe ein Tagebuch über dein Verhalten und dessen Auswirkungen</p>
+                                    <div class="tip-icon">⏰</div>
+                                        <h6>Geduld haben</h6>
+                                        <p>Bewusstsein entsteht nicht über Nacht - sei geduldig</p>
+                        <div class="precontemplation-scenarios">
+                            <h5>🎭 Precontemplation-Szenarien</h5>
+                            <div class="scenarios-list">
+                                <div class="scenario-item">
+                                    <h6>Gesundheit: Unbewusste Gewohnheiten</h6>
+                                    <p><strong>Situation:</strong> Du isst ungesund, ohne dir dessen bewusst zu sein.</p>
+                                    <textarea id="scenario-health-awareness" placeholder="Wie würdest du Bewusstsein für deine Essgewohnheiten schaffen?"></textarea>
+                                    <h6>Arbeit: Überlastung ignorieren</h6>
+                                    <p><strong>Situation:</strong> Du arbeitest zu viel, siehst aber das Problem nicht.</p>
+                                    <textarea id="scenario-work-overload" placeholder="Wie würdest du erkennen, dass du überlastet bist?"></textarea>
+                                    <h6>Beziehung: Probleme verdrängen</h6>
+                                    <p><strong>Situation:</strong> Du verdrängst Probleme in deiner Beziehung.</p>
+                                    <textarea id="scenario-relationship-denial" placeholder="Wie würdest du die Probleme in deiner Beziehung erkennen?"></textarea>
+                    </div>
+                </div>
+        <!-- Step 2: Contemplation -->
+        <div class="workflow-step" data-step="2">
+                <h3>Schritt 2: Contemplation (Überlegung)</h3>
+                <p>Erkenne das Problem und erwäge eine Veränderung.</p>
+            <div class="contemplation-section">
+                <h4>🤔 Contemplation</h4>
+                <p>Du bist dir des Problems bewusst und erwägst eine Veränderung, bist aber noch unentschlossen.</p>
+                
+                <div class="contemplation-form">
+                    <div class="contemplation-item">
+                        <label>Welche Ambivalenz spürst du bezüglich der Veränderung?</label>
+                        <textarea id="ambivalence" placeholder="Beschreibe deine inneren Konflikte..."></textarea>
+                    <div class="pros-cons-analysis">
+                        <h5>⚖️ Pro-Contra-Analyse</h5>
+                        <div class="analysis-grid">
+                            <div class="pros-column">
+                                <h6>✅ Vorteile der Veränderung</h6>
+                                <div class="pros-list">
+                                    <div class="pro-item">
+                                        <input type="checkbox" id="pro-health">
+                                        <label for="pro-health">Bessere Gesundheit</label>
+                                        <input type="checkbox" id="pro-relationships">
+                                        <label for="pro-relationships">Bessere Beziehungen</label>
+                                        <input type="checkbox" id="pro-career">
+                                        <label for="pro-career">Bessere Karriere</label>
+                                        <input type="checkbox" id="pro-self-esteem">
+                                        <label for="pro-self-esteem">Besseres Selbstwertgefühl</label>
+                            <div class="cons-column">
+                                <h6>❌ Nachteile der Veränderung</h6>
+                                <div class="cons-list">
+                                    <div class="cons-item">
+                                        <input type="checkbox" id="cons-effort">
+                                        <label for="cons-effort">Aufwand und Mühe</label>
+                                        <input type="checkbox" id="cons-comfort">
+                                        <label for="cons-comfort">Verlust der Komfortzone</label>
+                                        <input type="checkbox" id="cons-time">
+                                        <label for="cons-time">Zeitaufwand</label>
+                                        <input type="checkbox" id="cons-uncertainty">
+                                        <label for="cons-uncertainty">Unsicherheit</label>
+                    <div class="contemplation-practice">
+                        <h5>🎯 Übung: Entscheidungsfindung</h5>
+                        <div class="practice-exercises">
+                            <div class="exercise-item">
+                                <label>Übung 1: Entscheidungsmatrix</label>
+                                <textarea id="practice-decision-matrix" placeholder="Erstelle eine Entscheidungsmatrix mit Kriterien und Gewichtungen..."></textarea>
+                                <label>Übung 2: Worst-Case-Szenario</label>
+                                <textarea id="practice-worst-case" placeholder="Was ist das Schlimmste, was passieren könnte?"></textarea>
+                                <label>Übung 3: Best-Case-Szenario</label>
+                                <textarea id="practice-best-case" placeholder="Was ist das Beste, was passieren könnte?"></textarea>
+                                <label>Übung 4: Ambivalenz auflösen</label>
+                                <textarea id="practice-ambivalence-resolution" placeholder="Wie kannst du deine inneren Konflikte auflösen?"></textarea>
+                                <label>Übung 5: Werte-Check</label>
+                                <textarea id="practice-values-check" placeholder="Prüfe, ob die Veränderung mit deinen Werten übereinstimmt..."></textarea>
+                                <label>Übung 6: Unterstützung identifizieren</label>
+                                <textarea id="practice-support-identification" placeholder="Identifiziere Personen, die dich unterstützen könnten..."></textarea>
+                    <div class="contemplation-tips">
+                        <h5>💡 Tipps für die Contemplation-Phase</h5>
+                        <div class="tips-list">
+                            <div class="tip-item">
+                                <div class="tip-icon">⚖️</div>
+                                <div class="tip-content">
+                                    <h6>Ambivalenz akzeptieren</h6>
+                                    <p>Es ist normal, ambivalent zu sein - das ist Teil des Prozesses</p>
+                                <div class="tip-icon">📝</div>
+                                    <h6>Schriftlich reflektieren</h6>
+                                    <p>Schreibe deine Gedanken und Gefühle auf</p>
+                                <div class="tip-icon">⏰</div>
+                                    <h6>Zeit nehmen</h6>
+                                    <p>Nimm dir Zeit für die Entscheidung - dränge dich nicht</p>
+                                <div class="tip-icon">🎯</div>
+                                    <h6>Pro-Contra-Listen</h6>
+                                    <p>Erstelle detaillierte Pro- und Contra-Listen</p>
+                                <div class="tip-icon">🤝</div>
+                                    <h6>Beratung suchen</h6>
+                                    <p>Hole dir professionelle Beratung oder Unterstützung</p>
+                                <div class="tip-icon">💭</div>
+                                    <h6>Visualisierung</h6>
+                                    <p>Visualisiere dein Leben nach der Veränderung</p>
+                    <div class="contemplation-scenarios">
+                        <h5>🎭 Contemplation-Szenarien</h5>
+                        <div class="scenarios-list">
+                            <div class="scenario-item">
+                                <h6>Karriere: Jobwechsel überlegen</h6>
+                                <p><strong>Situation:</strong> Du überlegst, ob du den Job wechseln sollst.</p>
+                                <textarea id="scenario-career-change" placeholder="Wie würdest du die Entscheidung strukturiert angehen?"></textarea>
+                                <h6>Gesundheit: Lebensstil ändern</h6>
+                                <p><strong>Situation:</strong> Du überlegst, ob du deinen Lebensstil ändern sollst.</p>
+                                <textarea id="scenario-lifestyle-change" placeholder="Wie würdest du die Vor- und Nachteile abwägen?"></textarea>
+                                <h6>Beziehung: Trennung erwägen</h6>
+                                <p><strong>Situation:</strong> Du überlegst, ob du dich trennen sollst.</p>
+                                <textarea id="scenario-relationship-decision" placeholder="Wie würdest du diese schwere Entscheidung angehen?"></textarea>
+        <!-- Step 3: Preparation -->
+        <div class="workflow-step" data-step="3">
+                <h3>Schritt 3: Preparation (Vorbereitung)</h3>
+                <p>Bereite dich auf die Veränderung vor und entwickle einen Plan.</p>
+            <div class="preparation-section">
+                <h4>📋 Preparation</h4>
+                <p>Du hast dich entschieden zu handeln und bereitest dich auf die Veränderung vor.</p>
+                <div class="preparation-form">
+                    <div class="preparation-item">
+                        <label>Welchen konkreten Plan hast du für die Veränderung?</label>
+                        <textarea id="change-plan" placeholder="Beschreibe deinen Aktionsplan..."></textarea>
+                    <div class="preparation-elements">
+                        <h5>🎯 Vorbereitungselemente</h5>
+                        <div class="elements-list">
+                            <div class="element-item">
+                                <input type="checkbox" id="element-goals">
+                                <label for="element-goals">Klare Ziele definiert</label>
+                                <input type="checkbox" id="element-strategies">
+                                <label for="element-strategies">Strategien entwickelt</label>
+                                <input type="checkbox" id="element-support">
+                                <label for="element-support">Unterstützung organisiert</label>
+                                <input type="checkbox" id="element-resources">
+                                <label for="element-resources">Ressourcen gesichert</label>
+                    <div class="preparation-practice">
+                        <h5>🎯 Übung: Aktionsplan erstellen</h5>
+                                <label>Übung 1: SMART-Ziele formulieren</label>
+                                <textarea id="practice-smart-goals" placeholder="Formuliere spezifische, messbare, erreichbare, relevante und zeitgebundene Ziele..."></textarea>
+                                <label>Übung 2: Hindernisse identifizieren</label>
+                                <textarea id="practice-obstacles" placeholder="Identifiziere mögliche Hindernisse und Lösungsansätze..."></textarea>
+                                <label>Übung 3: Unterstützungssystem aufbauen</label>
+                                <textarea id="practice-support-system" placeholder="Wer kann dich bei der Veränderung unterstützen?"></textarea>
+                                <label>Übung 4: Ressourcen sammeln</label>
+                                <textarea id="practice-resources" placeholder="Welche Ressourcen brauchst du für die Veränderung?"></textarea>
+                                <label>Übung 5: Zeitplan erstellen</label>
+                                <textarea id="practice-timeline" placeholder="Erstelle einen realistischen Zeitplan für deine Veränderung..."></textarea>
+                                <label>Übung 6: Erfolgsmessung definieren</label>
+                                <textarea id="practice-success-metrics" placeholder="Wie wirst du den Erfolg deiner Veränderung messen?"></textarea>
+                    <div class="preparation-tips">
+                        <h5>💡 Tipps für die Preparation-Phase</h5>
+                                <div class="tip-icon">📅</div>
+                                    <h6>Zeitplan erstellen</h6>
+                                    <p>Erstelle einen realistischen Zeitplan für deine Veränderung</p>
+                                <div class="tip-icon">🛠️</div>
+                                    <h6>Werkzeuge sammeln</h6>
+                                    <p>Sammle alle nötigen Werkzeuge und Ressourcen</p>
+                                    <h6>Kleine Schritte</h6>
+                                    <p>Teile große Ziele in kleine, machbare Schritte auf</p>
+                                    <h6>Unterstützung organisieren</h6>
+                                    <p>Organisiere Unterstützung von Familie, Freunden oder Profis</p>
+                                <div class="tip-icon">📊</div>
+                                    <h6>Fortschritt messen</h6>
+                                    <p>Definiere klare Kriterien für den Erfolg</p>
+                                <div class="tip-icon">🔄</div>
+                                    <h6>Flexibilität einplanen</h6>
+                                    <p>Plane Flexibilität für unvorhergesehene Herausforderungen</p>
+                    <div class="preparation-scenarios">
+                        <h5>🎭 Preparation-Szenarien</h5>
+                                <h6>Fitness: Trainingsplan erstellen</h6>
+                                <p><strong>Situation:</strong> Du möchtest mit dem Training beginnen.</p>
+                                <textarea id="scenario-fitness-plan" placeholder="Wie würdest du dich auf das Training vorbereiten?"></textarea>
+                                <h6>Karriere: Weiterbildung planen</h6>
+                                <p><strong>Situation:</strong> Du möchtest dich beruflich weiterbilden.</p>
+                                <textarea id="scenario-career-development" placeholder="Wie würdest du die Weiterbildung vorbereiten?"></textarea>
+                                <h6>Beziehung: Kommunikation verbessern</h6>
+                                <p><strong>Situation:</strong> Du möchtest die Kommunikation in deiner Beziehung verbessern.</p>
+                                <textarea id="scenario-communication-improvement" placeholder="Wie würdest du die Verbesserung vorbereiten?"></textarea>
+        <!-- Step 4: Action -->
+        <div class="workflow-step" data-step="4">
+                <h3>Schritt 4: Action (Handlung)</h3>
+                <p>Setze deine Veränderung aktiv um.</p>
+            <div class="action-section">
+                <h4>🚀 Action</h4>
+                <p>Du setzt deine Veränderung aktiv um und arbeitest an neuen Verhaltensweisen.</p>
+                <div class="action-form">
+                    <div class="action-item">
+                        <label>Welche konkreten Schritte unternimmst du?</label>
+                        <textarea id="action-steps" placeholder="Beschreibe deine konkreten Handlungen..."></textarea>
+                    <div class="action-strategies">
+                        <h5>💪 Handlungsstrategien</h5>
+                        <div class="strategies-list">
+                            <div class="strategy-item">
+                                <input type="checkbox" id="strategy-replacement">
+                                <label for="strategy-replacement">Verhaltensersatz</label>
+                                <input type="checkbox" id="strategy-environment">
+                                <label for="strategy-environment">Umgebungsänderung</label>
+                                <input type="checkbox" id="strategy-rewards">
+                                <label for="strategy-rewards">Belohnungssystem</label>
+                                <input type="checkbox" id="strategy-monitoring">
+                                <label for="strategy-monitoring">Selbstüberwachung</label>
+                    <div class="action-practice">
+                        <h5>🎯 Übung: Handlung umsetzen</h5>
+                                <label>Übung 1: Tägliche Aktionen</label>
+                                <textarea id="practice-daily-actions" placeholder="Was tust du täglich für deine Veränderung?"></textarea>
+                                <label>Übung 2: Fortschritt tracken</label>
+                                <textarea id="practice-progress-tracking" placeholder="Wie verfolgst du deinen Fortschritt?"></textarea>
+                                <label>Übung 3: Herausforderungen meistern</label>
+                                <textarea id="practice-challenges" placeholder="Wie gehst du mit Herausforderungen um?"></textarea>
+                                <label>Übung 4: Gewohnheiten etablieren</label>
+                                <textarea id="practice-habit-formation" placeholder="Wie etablierst du neue Gewohnheiten?"></textarea>
+                                <label>Übung 5: Motivation aufrechterhalten</label>
+                                <textarea id="practice-motivation-maintenance" placeholder="Wie hältst du deine Motivation aufrecht?"></textarea>
+                                <label>Übung 6: Anpassungen vornehmen</label>
+                                <textarea id="practice-adjustments" placeholder="Wie passt du deinen Plan bei Bedarf an?"></textarea>
+                    <div class="action-tips">
+                        <h5>💡 Tipps für die Action-Phase</h5>
+                                    <p>Verfolge deinen Fortschritt regelmäßig</p>
+                                <div class="tip-icon">🎉</div>
+                                    <h6>Erfolge feiern</h6>
+                                    <p>Feiere auch kleine Erfolge</p>
+                                    <h6>Anpassungen vornehmen</h6>
+                                    <p>Passe deinen Plan bei Bedarf an</p>
+                                    <h6>Fokus behalten</h6>
+                                    <p>Bleibe fokussiert auf deine Ziele</p>
+                                <div class="tip-icon">💪</div>
+                                    <h6>Durchhalten</h6>
+                                    <p>Durchhaltevermögen ist der Schlüssel zum Erfolg</p>
+                                    <h6>Unterstützung nutzen</h6>
+                                    <p>Nutze dein Unterstützungssystem aktiv</p>
+                    <div class="action-scenarios">
+                        <h5>🎭 Action-Szenarien</h5>
+                                <h6>Gesundheit: Ernährung umstellen</h6>
+                                <p><strong>Situation:</strong> Du stellst deine Ernährung um.</p>
+                                <textarea id="scenario-diet-change" placeholder="Wie würdest du die Ernährungsumstellung umsetzen?"></textarea>
+                                <h6>Karriere: Neue Fähigkeiten lernen</h6>
+                                <p><strong>Situation:</strong> Du lernst neue berufliche Fähigkeiten.</p>
+                                <textarea id="scenario-skill-learning" placeholder="Wie würdest du das Lernen strukturiert angehen?"></textarea>
+                                <p><strong>Situation:</strong> Du verbesserst die Kommunikation in deiner Beziehung.</p>
+                                <textarea id="scenario-communication-action" placeholder="Wie würdest du die Kommunikationsverbesserung umsetzen?"></textarea>
+        <!-- Step 5: Maintenance -->
+        <div class="workflow-step" data-step="5">
+                <h3>Schritt 5: Maintenance (Aufrechterhaltung)</h3>
+                <p>Halte deine Veränderung langfristig aufrecht.</p>
+            <div class="maintenance-section">
+                <h4>🔄 Maintenance</h4>
+                <p>Du hast deine Veränderung erfolgreich umgesetzt und arbeitest daran, sie langfristig aufrechtzuerhalten.</p>
+                <div class="maintenance-form">
+                    <div class="maintenance-item">
+                        <label>Wie hältst du deine Veränderung aufrecht?</label>
+                        <textarea id="maintenance-strategies" placeholder="Beschreibe deine Strategien zur Aufrechterhaltung..."></textarea>
+                    <div class="maintenance-elements">
+                        <h5>🛡️ Aufrechterhaltungselemente</h5>
+                                <input type="checkbox" id="element-routine">
+                                <label for="element-routine">Routine etabliert</label>
+                                <input type="checkbox" id="element-triggers">
+                                <label for="element-triggers">Auslöser kontrolliert</label>
+                                <label for="element-support">Unterstützung erhalten</label>
+                                <input type="checkbox" id="element-motivation">
+                                <label for="element-motivation">Motivation aufrechterhalten</label>
+                    <div class="maintenance-practice">
+                        <h5>🎯 Übung: Langfristige Aufrechterhaltung</h5>
+                                <label>Übung 1: Rückfallprävention</label>
+                                <textarea id="practice-relapse-prevention" placeholder="Wie verhinderst du Rückfälle?"></textarea>
+                                <label>Übung 2: Motivation erneuern</label>
+                                <textarea id="practice-motivation-renewal" placeholder="Wie erneuerst du deine Motivation?"></textarea>
+                                <label>Übung 3: Langfristige Ziele</label>
+                                <textarea id="practice-long-term-goals" placeholder="Welche langfristigen Ziele hast du?"></textarea>
+                                <label>Übung 4: Gewohnheiten festigen</label>
+                                <textarea id="practice-habit-solidification" placeholder="Wie festigst du deine neuen Gewohnheiten?"></textarea>
+                                <label>Übung 5: Unterstützungssystem pflegen</label>
+                                <textarea id="practice-support-maintenance" placeholder="Wie pflegst du dein Unterstützungssystem?"></textarea>
+                                <label>Übung 6: Kontinuierliche Verbesserung</label>
+                                <textarea id="practice-continuous-improvement" placeholder="Wie verbesserst du dich kontinuierlich?"></textarea>
+                    <div class="maintenance-tips">
+                        <h5>💡 Tipps für die Maintenance-Phase</h5>
+                                    <h6>Kontinuierlich arbeiten</h6>
+                                    <p>Verhaltensänderung ist ein kontinuierlicher Prozess</p>
+                                    <h6>Ziele anpassen</h6>
+                                    <p>Passe deine Ziele an neue Lebensumstände an</p>
+                                    <h6>Unterstützung suchen</h6>
+                                    <p>Suche weiterhin Unterstützung bei Bedarf</p>
+                                <div class="tip-icon">🛡️</div>
+                                    <h6>Rückfallprävention</h6>
+                                    <p>Identifiziere Risikosituationen und entwickle Strategien</p>
+                                <div class="tip-icon">🌟</div>
+                                    <h6>Motivation erneuern</h6>
+                                    <p>Erneuere regelmäßig deine Motivation und deine Ziele</p>
+                                <div class="tip-icon">📈</div>
+                                    <h6>Fortschritt feiern</h6>
+                                    <p>Feiere deine Erfolge und den Fortschritt</p>
+                    <div class="maintenance-scenarios">
+                        <h5>🎭 Maintenance-Szenarien</h5>
+                                <h6>Gesundheit: Gewicht halten</h6>
+                                <p><strong>Situation:</strong> Du hast erfolgreich abgenommen und möchtest das Gewicht halten.</p>
+                                <textarea id="scenario-weight-maintenance" placeholder="Wie würdest du das Gewicht langfristig halten?"></textarea>
+                                <h6>Karriere: Fähigkeiten weiterentwickeln</h6>
+                                <p><strong>Situation:</strong> Du hast neue Fähigkeiten gelernt und möchtest sie weiterentwickeln.</p>
+                                <textarea id="scenario-skill-development" placeholder="Wie würdest du deine Fähigkeiten kontinuierlich verbessern?"></textarea>
+                                <h6>Beziehung: Verbesserte Kommunikation beibehalten</h6>
+                                <p><strong>Situation:</strong> Du hast die Kommunikation in deiner Beziehung verbessert.</p>
+                                <textarea id="scenario-communication-maintenance" placeholder="Wie würdest du die verbesserte Kommunikation beibehalten?"></textarea>
+                    <div class="change-summary">
+                        <h5>🎉 Veränderungs-Zusammenfassung</h5>
+                        <div class="summary-form">
+                            <div class="summary-item">
+                                <label>Deine Veränderungsreise</label>
+                                <textarea id="change-journey" placeholder="Beschreibe deine komplette Veränderungsreise..."></textarea>
+                                <label>Was hast du gelernt?</label>
+                                <textarea id="change-lessons" placeholder="Welche Lektionen hast du aus dem Prozess gelernt?"></textarea>
+                                <label>Wie geht es weiter?</label>
+                                <textarea id="change-future" placeholder="Wie planst du, deine Veränderung langfristig aufrechtzuerhalten?"></textarea>
+        <!-- Navigation -->
+        <div class="workflow-navigation">
+            <div class="nav-buttons">
+                <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </button>
+                <button class="btn btn-primary" id="next-btn" data-action="next-step">
+                    Weiter <i class="fas fa-arrow-right"></i>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
+    
+    <script src="change-stages.js"></script>
+
+    <!-- Global Auth System -->
+    <script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
+</html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

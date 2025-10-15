@@ -1,0 +1,297 @@
+<div class="workflow-container">
+    <div class="workflow-header">
+        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+        </button>
+    </div>
+    <div class="workflow-intro">
+        <h3>Gewohnheiten aufbauen: Verändere dein Leben nachhaltig</h3>
+        <p>Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen. Mit bewährten Methoden wie Habit-Stacking, der 21-Tage-Regel und wissenschaftlichen Erkenntnissen wirst du dein Leben nachhaltig verändern.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Habit-Stacking</span>
+            <span class="feature-badge">21-Tage-Regel</span>
+            <span class="feature-badge">Progress-Tracking</span>
+            <span class="feature-badge">Gewohnheits-Optimierung</span>
+        </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Gewohnheits-Analyse</div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Habit-Stacking</div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">21-Tage-Challenge</div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Progress-Tracking</div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Gewohnheits-Optimierung</div>
+    <!-- Step 1: Gewohnheits-Analyse -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Gewohnheits-Analyse</h3>
+            <p>Analysiere deine aktuellen Gewohnheiten und identifiziere, welche du ändern möchtest. Verstehe die Gewohnheits-Schleife und deine Auslöser.</p>
+        
+        <div class="habit-analysis">
+            <div class="analysis-intro">
+                <h4>🔍 Deine Gewohnheits-Landkarte</h4>
+                <p>Die Gewohnheits-Schleife besteht aus drei Teilen: Auslöser → Routine → Belohnung. Analysiere deine Gewohnheiten systematisch.</p>
+            </div>
+            
+            <div class="habit-categories">
+                <div class="category-section">
+                    <h5>✅ Positive Gewohnheiten</h5>
+                    <p>Gewohnheiten, die dir gut tun und die du beibehalten möchtest.</p>
+                    <div class="habit-list" id="positive-habits">
+                        <div class="habit-item">
+                            <input type="text" placeholder="z.B. 'Ich trinke morgens ein Glas Wasser'" class="habit-input">
+                            <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" data-action="add-positive-habit">+ Gewohnheit hinzufügen</button>
+                </div>
+                
+                    <h5>❌ Negative Gewohnheiten</h5>
+                    <p>Gewohnheiten, die du ändern oder loswerden möchtest.</p>
+                    <div class="habit-list" id="negative-habits">
+                            <input type="text" placeholder="z.B. 'Ich schaue abends zu lange aufs Handy'" class="habit-input">
+                    <button class="btn btn-secondary" data-action="add-negative-habit">+ Gewohnheit hinzufügen</button>
+                    <h5>🆕 Neue Gewohnheiten</h5>
+                    <p>Gewohnheiten, die du gerne entwickeln möchtest.</p>
+                    <div class="habit-list" id="new-habits">
+                            <input type="text" placeholder="z.B. 'Ich lese täglich 20 Minuten'" class="habit-input">
+                    <button class="btn btn-secondary" data-action="add-new-habit">+ Gewohnheit hinzufügen</button>
+            <div class="habit-evaluation">
+                <h4>📊 Gewohnheits-Bewertung</h4>
+                <p>Bewerte deine Gewohnheiten nach verschiedenen Kriterien.</p>
+                <div class="evaluation-grid">
+                    <div class="evaluation-item">
+                        <h6>Positive Gewohnheiten</h6>
+                        <div class="habit-count" id="positive-count">0</div>
+                        <div class="habit-percentage" id="positive-percentage">0%</div>
+                        <h6>Negative Gewohnheiten</h6>
+                        <div class="habit-count" id="negative-count">0</div>
+                        <div class="habit-percentage" id="negative-percentage">0%</div>
+                        <h6>Neue Gewohnheiten</h6>
+                        <div class="habit-count" id="new-count">0</div>
+                        <div class="habit-percentage" id="new-percentage">0%</div>
+                <div class="habit-insights">
+                    <h5>💡 Erkenntnisse</h5>
+                    <div class="insights-container" id="habit-insights">
+                        <div class="no-insights">
+                            <p>Füge Gewohnheiten hinzu, um Erkenntnisse zu erhalten.</p>
+    <!-- Step 2: Habit-Stacking -->
+    <div class="workflow-step" data-step="2">
+            <h3>Schritt 2: Habit-Stacking</h3>
+            <p>Verwende bestehende Gewohnheiten als Anker für neue Verhaltensweisen. So integrierst du neue Gewohnheiten nahtlos in deinen Alltag.</p>
+        <div class="habit-stacking">
+            <div class="stacking-intro">
+                <h4>🔗 Habit-Stacking Prinzip</h4>
+                <p>Habit-Stacking bedeutet, neue Gewohnheiten an bestehende zu "ankern". Die Formel lautet:</p>
+                <div class="stacking-formula">
+                    <strong>Nach [bestehende Gewohnheit] werde ich [neue Gewohnheit]</strong>
+            <div class="stacking-builder">
+                <h4>🛠️ Habit-Stack Builder</h4>
+                <div class="stack-form">
+                    <div class="form-group">
+                        <label>Bestehende Gewohnheit (Anker):</label>
+                        <select id="anchor-habit">
+                            <option value="">Wähle eine bestehende Gewohnheit...</option>
+                        </select>
+                    
+                        <label>Neue Gewohnheit:</label>
+                        <select id="new-habit-select">
+                            <option value="">Wähle eine neue Gewohnheit...</option>
+                        <label>Habit-Stack Formel:</label>
+                        <div class="stack-preview" id="stack-preview">
+                            Wähle Anker und neue Gewohnheit, um die Formel zu sehen.
+                        <label>Zusätzliche Details:</label>
+                        <textarea id="stack-details" placeholder="Füge spezifische Details hinzu (Zeit, Ort, etc.)..."></textarea>
+                    <button class="btn btn-primary" data-action="create-habit-stack">Habit-Stack erstellen</button>
+            <div class="stacking-results">
+                <h4>📋 Deine Habit-Stacks</h4>
+                <div class="stacks-list" id="habit-stacks-list">
+                    <div class="no-stacks">
+                        <p>Erstelle deine ersten Habit-Stacks, um sie hier zu sehen.</p>
+            <div class="stacking-tips">
+                <h4>💡 Habit-Stacking Tipps</h4>
+                <div class="tips-grid">
+                    <div class="tip-item">
+                        <h6>🎯 Spezifisch sein</h6>
+                        <p>Je spezifischer deine Formel, desto wahrscheinlicher ist der Erfolg.</p>
+                        <h6>⏰ Timing beachten</h6>
+                        <p>Wähle Anker-Gewohnheiten, die zur passenden Zeit stattfinden.</p>
+                        <h6>🔄 Konsistenz</h6>
+                        <p>Wiederhole deine Habit-Stacks täglich zur gleichen Zeit.</p>
+                        <h6>📝 Dokumentieren</h6>
+                        <p>Schreibe deine Habit-Stacks auf und verfolge deinen Fortschritt.</p>
+    <!-- Step 3: 21-Tage-Challenge -->
+    <div class="workflow-step" data-step="3">
+            <h3>Schritt 3: 21-Tage-Challenge</h3>
+            <p>Starte eine 21-Tage-Challenge für deine wichtigste neue Gewohnheit. Die ersten 21 Tage sind entscheidend für die Gewohnheitsbildung.</p>
+        <div class="challenge-setup">
+            <div class="challenge-intro">
+                <h4>🎯 21-Tage-Challenge</h4>
+                <p>Wissenschaftliche Studien zeigen, dass es 21-66 Tage dauert, bis eine neue Gewohnheit automatisch wird. Starte mit 21 Tagen!</p>
+            <div class="challenge-creator">
+                <h4>🚀 Challenge erstellen</h4>
+                <div class="challenge-form">
+                        <label>Gewohnheit für die Challenge:</label>
+                        <select id="challenge-habit">
+                            <option value="">Wähle eine Gewohnheit...</option>
+                        <label>Startdatum:</label>
+                        <input type="date" id="challenge-start-date" value="">
+                        <label>Ziel (optional):</label>
+                        <input type="text" id="challenge-goal" placeholder="z.B. '21 Tage ohne Zucker'">
+                        <label>Belohnung nach 21 Tagen:</label>
+                        <input type="text" id="challenge-reward" placeholder="z.B. 'Ein neues Buch kaufen'">
+                        <label>Erinnerung:</label>
+                        <select id="challenge-reminder">
+                            <option value="morning">Morgens</option>
+                            <option value="evening">Abends</option>
+                            <option value="custom">Benutzerdefiniert</option>
+                    <button class="btn btn-primary" data-action="start-challenge">Challenge starten</button>
+            <div class="active-challenges">
+                <h4>🔥 Aktive Challenges</h4>
+                <div class="challenges-list" id="active-challenges">
+                    <div class="no-challenges">
+                        <p>Starte deine erste 21-Tage-Challenge!</p>
+            <div class="challenge-calendar">
+                <h4>📅 Challenge-Kalender</h4>
+                <div class="calendar-container" id="challenge-calendar">
+                    <div class="calendar-header">
+                        <button class="btn btn-sm btn-outline" data-action="previous-month">‹</button>
+                        <h5 id="calendar-month">Monat</h5>
+                        <button class="btn btn-sm btn-outline" data-action="next-month">›</button>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be generated here -->
+    <!-- Step 4: Progress-Tracking -->
+    <div class="workflow-step" data-step="4">
+            <h3>Schritt 4: Progress-Tracking</h3>
+            <p>Verfolge deinen Fortschritt systematisch und erkenne Muster. Nutze Daten, um deine Gewohnheiten zu optimieren.</p>
+        <div class="progress-tracking">
+            <div class="tracking-dashboard">
+                <h4>📊 Gewohnheits-Dashboard</h4>
+                <div class="dashboard-metrics">
+                    <div class="metric-card">
+                        <h5>Aktive Gewohnheiten</h5>
+                        <div class="metric-value" id="active-habits-count">0</div>
+                        <h5>Erfolgsrate</h5>
+                        <div class="metric-value" id="success-rate">0%</div>
+                        <h5>Längste Streak</h5>
+                        <div class="metric-value" id="longest-streak">0 Tage</div>
+                        <h5>Abgeschlossene Challenges</h5>
+                        <div class="metric-value" id="completed-challenges">0</div>
+            <div class="daily-tracking">
+                <h4>📝 Tägliches Tracking</h4>
+                <div class="tracking-form">
+                        <label>Datum:</label>
+                        <input type="date" id="tracking-date" value="">
+                        <label>Gewohnheiten für heute:</label>
+                        <div class="habits-checklist" id="daily-habits-checklist">
+                            <!-- Habits will be loaded here -->
+                        <label>Notizen (optional):</label>
+                        <textarea id="daily-notes" placeholder="Wie war dein Tag? Was war schwierig? Was hat gut funktioniert?"></textarea>
+                    <button class="btn btn-primary" data-action="save-daily-progress">Fortschritt speichern</button>
+            <div class="progress-analytics">
+                <h4>📈 Fortschritts-Analyse</h4>
+                <div class="analytics-tabs">
+                    <button class="tab-btn active" data-action="show-analytics-tab" data-param="streaks">Streaks</button>
+                    <button class="tab-btn" data-action="show-analytics-tab" data-param="patterns">Muster</button>
+                    <button class="tab-btn" data-action="show-analytics-tab" data-param="insights">Erkenntnisse</button>
+                <div class="analytics-content">
+                    <div class="analytics-tab active" id="streaks-tab">
+                        <h5>🔥 Aktuelle Streaks</h5>
+                        <div class="streaks-list" id="current-streaks">
+                            <p>Starte Gewohnheiten, um Streaks zu sehen.</p>
+                    <div class="analytics-tab" id="patterns-tab">
+                        <h5>📊 Gewohnheits-Muster</h5>
+                        <div class="patterns-analysis" id="patterns-analysis">
+                            <p>Verfolge deine Gewohnheiten, um Muster zu erkennen.</p>
+                    <div class="analytics-tab" id="insights-tab">
+                        <h5>💡 Erkenntnisse</h5>
+                        <div class="insights-analysis" id="insights-analysis">
+                            <p>Analysiere deine Daten für wertvolle Erkenntnisse.</p>
+    <!-- Step 5: Gewohnheits-Optimierung -->
+    <div class="workflow-step" data-step="5">
+            <h3>Schritt 5: Gewohnheits-Optimierung</h3>
+            <p>Optimiere deine Gewohnheiten basierend auf deinen Daten und Erfahrungen. Passe sie an, um bessere Ergebnisse zu erzielen.</p>
+        <div class="habit-optimization">
+            <div class="optimization-intro">
+                <h4>⚡ Gewohnheits-Optimierung</h4>
+                <p>Basierend auf deinen Daten und Erfahrungen kannst du deine Gewohnheiten optimieren und verbessern.</p>
+            <div class="optimization-areas">
+                <div class="area-card">
+                    <h5>🎯 Schwache Gewohnheiten stärken</h5>
+                    <p>Gewohnheiten mit niedriger Erfolgsrate verbessern.</p>
+                    <div class="weak-habits" id="weak-habits">
+                        <p>Analysiere deine Daten, um schwache Gewohnheiten zu identifizieren.</p>
+                    <button class="btn btn-outline" data-action="optimize-weak-habits">Optimieren</button>
+                    <h5>🔄 Gewohnheiten anpassen</h5>
+                    <p>Timing, Umgebung oder Methode ändern.</p>
+                    <div class="adjustment-suggestions" id="adjustment-suggestions">
+                        <p>Erhalte Vorschläge basierend auf deinen Mustern.</p>
+                    <button class="btn btn-outline" data-action="show-adjustment-suggestions">Vorschläge anzeigen</button>
+                    <h5>🚀 Neue Gewohnheiten hinzufügen</h5>
+                    <p>Erweitere dein Gewohnheits-Repertoire.</p>
+                    <div class="new-habit-suggestions" id="new-habit-suggestions">
+                        <p>Basierend auf deinen bestehenden Gewohnheiten.</p>
+                    <button class="btn btn-outline" data-action="show-new-habit-suggestions">Vorschläge anzeigen</button>
+            <div class="optimization-tools">
+                <h4>🛠️ Optimierungs-Tools</h4>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h6>📱 Umgebungs-Design</h6>
+                        <p>Gestalte deine Umgebung für bessere Gewohnheiten.</p>
+                        <button class="btn btn-sm btn-primary" data-action="show-environment-design">Tool öffnen</button>
+                        <h6>⏰ Timing-Optimierung</h6>
+                        <p>Finde die beste Zeit für deine Gewohnheiten.</p>
+                        <button class="btn btn-sm btn-primary" data-action="show-timing-optimization">Tool öffnen</button>
+                        <h6>🎁 Belohnungs-System</h6>
+                        <p>Entwickle ein effektives Belohnungssystem.</p>
+                        <button class="btn btn-sm btn-primary" data-action="show-reward-system">Tool öffnen</button>
+                        <h6>👥 Accountability-Partner</h6>
+                        <p>Finde Unterstützung für deine Gewohnheiten.</p>
+                        <button class="btn btn-sm btn-primary" data-action="show-accountability-partner">Tool öffnen</button>
+            <div class="optimization-results">
+                <h4>📋 Optimierungs-Plan</h4>
+                <div class="optimization-plan" id="optimization-plan">
+                    <p>Erstelle einen Plan basierend auf deinen Optimierungen.</p>
+                <button class="btn btn-primary" data-action="generate-optimization-plan">Plan generieren</button>
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
+                Weiter <i class="fas fa-arrow-right"></i>
+</div>
+
+<!-- Global Auth System -->
+<script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
