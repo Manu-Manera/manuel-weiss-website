@@ -48,115 +48,214 @@
         
         .progress-fill {
             height: 100%;
-            background: white;
-            border-radius: 4px;
-            width: 66.67%;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 60%;
+            transition: width 0.3s ease;
         }
         
-        .documents-section {
+        .content-card {
             background: white;
-            border-radius: 16px;
-            padding: 2.5rem;
+            border-radius: 15px;
+            padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             margin-bottom: 2rem;
         }
         
-        .document-item {
-            background: #f8f9fa;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            padding: 1.5rem;
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+        
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #4CAF50;
+            background: #f0fff0;
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: #667eea;
             margin-bottom: 1rem;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .file-list {
+            margin-top: 2rem;
+        }
+        
+        .file-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
         
-        .document-info {
-            flex: 1;
+        .file-info {
+            display: flex;
+            align-items: center;
         }
         
-        .document-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.5rem;
+        .file-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: #667eea;
         }
         
-        .document-status {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .document-actions {
+        .file-actions {
             display: flex;
             gap: 0.5rem;
         }
         
-        .btn-small {
+        .btn-action {
             padding: 0.5rem 1rem;
-            border-radius: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 0.9rem;
-            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-optimize {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-optimize:hover {
+            background: #45a049;
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #da190b;
+        }
+        
+        .optimization-section {
+            margin-top: 2rem;
+        }
+        
+        .optimization-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
         }
         
-        .btn-edit {
-            background: #667eea;
-            color: white;
-            border: none;
+        .option-card:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
         }
         
-        .btn-download {
-            background: #28a745;
-            color: white;
-            border: none;
+        .option-card.selected {
+            border-color: #4CAF50;
+            background: #f0fff0;
+        }
+        
+        .option-card i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1rem;
         }
         
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
         }
         
-        .btn {
+        .btn-nav {
             padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius: 8px;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
             border: none;
+            cursor: pointer;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background: #5a6268;
+        }
+        
+        .btn-next {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background: linear-gradient(90deg, #45a049, #4CAF50);
+        }
+        
+        .upload-progress {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .progress-bar-upload {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -164,82 +263,233 @@
     <div class="workflow-step-container">
         <div class="step-header">
             <h1 class="step-title">Schritt 4: Dokumente optimieren</h1>
-            <p class="step-description">CV und Zusatzdokumente werden für die Bewerbung optimiert</p>
-        </div>
-        
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        
-        <div class="documents-section">
-            <h3><i class="fas fa-file-alt"></i> Optimierte Dokumente</h3>
-            <p>Ihre Bewerbungsunterlagen wurden KI-optimiert und sind bereit für den Versand:</p>
+            <p class="step-description">Lade deine Bewerbungsunterlagen hoch und optimiere sie für die perfekte Bewerbung.</p>
             
-            <div class="document-item">
-                <div class="document-info">
-                    <div class="document-title">Lebenslauf (CV)</div>
-                    <div class="document-status">✅ ATS-optimiert, Keywords hinzugefügt</div>
-                </div>
-                <div class="document-actions">
-                    <button class="btn-small btn-edit">
-                        <i class="fas fa-edit"></i> Bearbeiten
-                    </button>
-                    <button class="btn-small btn-download">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
-            </div>
-            
-            <div class="document-item">
-                <div class="document-info">
-                    <div class="document-title">Anschreiben</div>
-                    <div class="document-status">✅ Personalisiert, 2 Seiten, A4-Format</div>
-                </div>
-                <div class="document-actions">
-                    <button class="btn-small btn-edit">
-                        <i class="fas fa-edit"></i> Bearbeiten
-                    </button>
-                    <button class="btn-small btn-download">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
-            </div>
-            
-            <div class="document-item">
-                <div class="document-info">
-                    <div class="document-title">Zeugnisse & Zertifikate</div>
-                    <div class="document-status">✅ 3 relevante Dokumente hinzugefügt</div>
-                </div>
-                <div class="document-actions">
-                    <button class="btn-small btn-edit">
-                        <i class="fas fa-edit"></i> Bearbeiten
-                    </button>
-                    <button class="btn-small btn-download">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
             </div>
         </div>
-        
+
+        <div class="content-card">
+            <div class="upload-section">
+                <h3>📄 Lebenslauf hochladen</h3>
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('cv-upload').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Ziehe deinen Lebenslauf hierher oder klicke zum Auswählen</p>
+                    <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(this)">
+                    <button class="upload-btn">
+                        <i class="fas fa-plus"></i> Datei auswählen
+                    </button>
+                </div>
+                
+                <div class="upload-progress" id="upload-progress">
+                    <div class="progress-bar-upload">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+                    <p id="upload-status">Upload läuft...</p>
+                </div>
+            </div>
+
+            <div class="file-list" id="file-list">
+                <!-- Hochgeladene Dateien werden hier angezeigt -->
+            </div>
+
+            <div class="optimization-section">
+                <h3>🔧 Optimierungsoptionen</h3>
+                <div class="optimization-options">
+                    <div class="option-card" onclick="selectOption(this, 'format')">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Format optimieren</h4>
+                        <p>PDF-Format und Layout verbessern</p>
+                    </div>
+                    <div class="option-card" onclick="selectOption(this, 'content')">
+                        <i class="fas fa-edit"></i>
+                        <h4>Inhalt optimieren</h4>
+                        <p>Text und Struktur verbessern</p>
+                    </div>
+                    <div class="option-card" onclick="selectOption(this, 'keywords')">
+                        <i class="fas fa-search"></i>
+                        <h4>Keywords hinzufügen</h4>
+                        <p>Relevante Begriffe einarbeiten</p>
+                    </div>
+                    <div class="option-card" onclick="selectOption(this, 'ats')">
+                        <i class="fas fa-robot"></i>
+                        <h4>ATS-optimieren</h4>
+                        <p>Für Bewerbungssysteme optimieren</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="navigation-buttons">
-            <a href="anschreiben-generieren.html" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Zurück
+            <a href="anschreiben-generieren.html" class="btn-nav btn-back">
+                <i class="fas fa-arrow-left"></i> Zurück zu Schritt 3
             </a>
-            
-            <a href="design-layout.html" class="btn btn-primary">
-                Weiter <i class="fas fa-arrow-right"></i>
+            <a href="design-layout.html" class="btn-nav btn-next">
+                Weiter zu Schritt 5 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
-    
+
     <script>
-        function updateProgress(percentage) {
-            document.getElementById('progressFill').style.width = percentage + '%';
+        // Globale Variablen
+        let uploadedFiles = [];
+        let selectedOptions = [];
+
+        // File Upload Handler
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                console.log('📄 Datei ausgewählt:', file.name);
+                uploadFile(file);
+            }
         }
+
+        // File Upload Simulation
+        function uploadFile(file) {
+            const uploadProgress = document.getElementById('upload-progress');
+            const progressFill = document.getElementById('progress-fill');
+            const uploadStatus = document.getElementById('upload-status');
+            
+            // Upload-Progress anzeigen
+            uploadProgress.style.display = 'block';
+            uploadStatus.textContent = `Lade ${file.name} hoch...`;
+            
+            // Simuliere Upload-Progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    completeUpload(file);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+
+        // Upload abschließen
+        function completeUpload(file) {
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadStatus = document.getElementById('upload-status');
+            
+            // Datei zur Liste hinzufügen
+            uploadedFiles.push({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                id: Date.now()
+            });
+            
+            // UI aktualisieren
+            updateFileList();
+            uploadProgress.style.display = 'none';
+            uploadStatus.textContent = 'Upload abgeschlossen!';
+            
+            console.log('✅ Datei erfolgreich hochgeladen:', file.name);
+        }
+
+        // File List aktualisieren
+        function updateFileList() {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+            
+            uploadedFiles.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <div>
+                            <strong>${file.name}</strong>
+                            <br>
+                            <small>${formatFileSize(file.size)}</small>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-action btn-optimize" onclick="optimizeFile('${file.id}')">
+                            <i class="fas fa-magic"></i> Optimieren
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteFile('${file.id}')">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </div>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // File Size Formatierung
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Option auswählen
+        function selectOption(element, option) {
+            element.classList.toggle('selected');
+            
+            if (element.classList.contains('selected')) {
+                selectedOptions.push(option);
+            } else {
+                selectedOptions = selectedOptions.filter(opt => opt !== option);
+            }
+            
+            console.log('🔧 Ausgewählte Optionen:', selectedOptions);
+        }
+
+        // File optimieren
+        function optimizeFile(fileId) {
+            const file = uploadedFiles.find(f => f.id == fileId);
+            if (file) {
+                console.log('🔧 Optimiere Datei:', file.name);
+                
+                // Simuliere Optimierung
+                setTimeout(() => {
+                    alert(`Datei "${file.name}" wurde optimiert!\n\nAngewendete Optimierungen:\n- Format verbessert\n- Keywords hinzugefügt\n- ATS-optimiert`);
+                }, 1000);
+            }
+        }
+
+        // File löschen
+        function deleteFile(fileId) {
+            if (confirm('Möchtest du diese Datei wirklich löschen?')) {
+                uploadedFiles = uploadedFiles.filter(f => f.id != fileId);
+                updateFileList();
+                console.log('🗑️ Datei gelöscht:', fileId);
+            }
+        }
+
+        // Drag & Drop Handler
+        const uploadArea = document.getElementById('upload-area');
         
-        // Animation beim Laden
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress(66.67);
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload({ files: files });
+            }
+        });
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 Dokumente-Optimierung geladen');
+            console.log('🔧 Upload-Funktionalität aktiviert');
+            console.log('⚡ Optimierungsoptionen verfügbar');
         });
     </script>
 </body>

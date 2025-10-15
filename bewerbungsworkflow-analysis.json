@@ -1,0 +1,295 @@
+{
+  "timestamp": "2025-10-15T10:19:38.595Z",
+  "workflowAnalysis": [
+    {
+      "file": "bewerbungsmanager.html",
+      "exists": true,
+      "size": 60941,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "ki-bewerbungsworkflow.html",
+      "exists": true,
+      "size": 12591,
+      "hasTitle": true,
+      "hasNavigation": false,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": [
+        "Keine Navigation gefunden"
+      ]
+    },
+    {
+      "file": "bewerbungsart-wahl.html",
+      "exists": true,
+      "size": 10470,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "ki-stellenanalyse.html",
+      "exists": true,
+      "size": 18120,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "matching-skillgap.html",
+      "exists": true,
+      "size": 7509,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "anschreiben-generieren.html",
+      "exists": true,
+      "size": 6896,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "dokumente-optimieren.html",
+      "exists": true,
+      "size": 16139,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "design-layout.html",
+      "exists": true,
+      "size": 7885,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "file": "export-versand.html",
+      "exists": true,
+      "size": 10902,
+      "hasTitle": true,
+      "hasNavigation": true,
+      "hasButtons": true,
+      "hasJavaScript": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "functionTests": [
+    {
+      "name": "Bewerbungsmanager öffnet",
+      "status": "PASS",
+      "critical": true,
+      "details": "Bewerbungsmanager vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "KI-Workflow startet",
+      "status": "PASS",
+      "critical": true,
+      "details": "KI-Workflow vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Bewerbungsart-Wahl funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Bewerbungsart-Wahl vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "KI-Stellenanalyse funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "KI-Stellenanalyse vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Matching & Skill-Gap funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Matching & Skill-Gap vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Anschreiben-Generator funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Anschreiben-Generator vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Dokumente-Optimierung funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Dokumente-Optimierung vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Design & Layout funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Design & Layout vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Export & Versand funktioniert",
+      "status": "PASS",
+      "critical": true,
+      "details": "Export & Versand vollständig",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.600Z"
+    },
+    {
+      "name": "Navigation: Bewerbungsmanager → KI-Workflow",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von bewerbungsmanager.html zu ki-bewerbungsworkflow.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: KI-Workflow → Bewerbungsart-Wahl",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von ki-bewerbungsworkflow.html zu bewerbungsart-wahl.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: Bewerbungsart-Wahl → KI-Stellenanalyse",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von bewerbungsart-wahl.html zu ki-stellenanalyse.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: KI-Stellenanalyse → Matching",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von ki-stellenanalyse.html zu matching-skillgap.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: Matching → Anschreiben",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von matching-skillgap.html zu anschreiben-generieren.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: Anschreiben → Dokumente",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von anschreiben-generieren.html zu dokumente-optimieren.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: Dokumente → Design",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von dokumente-optimieren.html zu design-layout.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "Navigation: Design → Export",
+      "status": "PASS",
+      "critical": true,
+      "details": "Navigation von design-layout.html zu export-versand.html funktioniert",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "JavaScript: Bewerbungsmanager JavaScript",
+      "status": "PASS",
+      "critical": true,
+      "details": "bewerbungsmanager.html hat JavaScript",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "JavaScript: KI-Workflow JavaScript",
+      "status": "PASS",
+      "critical": true,
+      "details": "ki-bewerbungsworkflow.html hat JavaScript",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "JavaScript: Bewerbungsart-Wahl JavaScript",
+      "status": "PASS",
+      "critical": true,
+      "details": "bewerbungsart-wahl.html hat JavaScript",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "name": "JavaScript: KI-Stellenanalyse JavaScript",
+      "status": "PASS",
+      "critical": true,
+      "details": "ki-stellenanalyse.html hat JavaScript",
+      "errors": [],
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    }
+  ],
+  "repairs": [
+    {
+      "type": "REPAIR_NAVIGATION",
+      "description": "Navigation zwischen Workflow-Schritten repariert",
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "type": "REPAIR_JAVASCRIPT",
+      "description": "JavaScript-Funktionen repariert",
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    },
+    {
+      "type": "REPAIR_BUTTONS",
+      "description": "Workflow-Buttons repariert",
+      "timestamp": "2025-10-15T10:19:38.601Z"
+    }
+  ],
+  "errors": [],
+  "recommendations": []
+}
