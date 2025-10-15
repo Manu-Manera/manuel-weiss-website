@@ -311,9 +311,11 @@ class IkigaiWorkflowEN {
         if (nextBtn) {
             if (this.currentStep === this.totalSteps) {
                 nextBtn.textContent = 'Finish';
+                nextBtn.removeAttribute('onclick');
                 nextBtn.setAttribute('onclick', 'window.ikigaiWorkflowEN.finish()');
             } else {
                 nextBtn.textContent = 'Next →';
+                nextBtn.removeAttribute('onclick');
                 nextBtn.setAttribute('onclick', 'window.ikigaiWorkflowEN.nextStep()');
             }
         }
