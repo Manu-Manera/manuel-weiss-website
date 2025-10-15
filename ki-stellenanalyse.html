@@ -405,15 +405,33 @@
             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI analysiert...';
             analyzeBtn.disabled = true;
 
-            // PLATZHALTER FÜR NEUE KI-INTEGRATION
-            alert('KI-Analyse wird neu implementiert...');
-            analyzeBtn.innerHTML = '<i class="fas fa-check"></i> Analyse abgeschlossen';
-            analyzeBtn.disabled = false;
-        }
+            try {
+                // Lade KI-Einstellungen
+                const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
+                const apiKey = settings.apiKey || localStorage.getItem('openai_api_key');
+                
+                if (!apiKey) {
+                    throw new Error('OpenAI API Key nicht gefunden. Bitte in den KI-Einstellungen konfigurieren.');
+                }
 
-        async function analyzeJobWithOpenAI(company, position, jobDescription, apiKey) {
-            const prompt = `Analysiere die folgende Stellenausschreibung und extrahiere die wichtigsten Anforderungen. 
-            
+                // ECHTE OPENAI API-CALL
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: settings.model || 'gpt-4o-mini',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
+                            },
+                            {
+                                role: 'user',
+                                content: `Analysiere die folgende Stellenausschreibung und extrahiere die wichtigsten Anforderungen.
+                                
 Unternehmen: ${company}
 Position: ${position}
 Stellenausschreibung: ${jobDescription}
@@ -432,30 +450,11 @@ Fokussieren Sie sich auf:
 - Soft Skills
 - Zertifizierungen
 - Sprachen
-- Führungserfahrung`;
-
-            try {
-                // ECHTE OPENAI API-CALL
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-4o-mini',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
-                            },
-                            {
-                                role: 'user',
-                                content: prompt
+- Führungserfahrung`
                             }
                         ],
-                        max_tokens: 1000,
-                        temperature: 0.3
+                        max_tokens: settings.maxTokens || 1000,
+                        temperature: settings.temperature || 0.3
                     })
                 });
 
@@ -470,17 +469,30 @@ Fokussieren Sie sich auf:
                 // Parse JSON response
                 try {
                     const requirements = JSON.parse(content);
-                    return requirements;
+                    
+                    // Store requirements in localStorage for editing
+                    localStorage.setItem('analyzed_requirements', JSON.stringify(requirements));
+                    
+                    displayAnalysisResults(requirements);
+                    
+                    analyzeBtn.innerHTML = '<i class="fas fa-check"></i> Analyse abgeschlossen';
+                    analyzeBtn.disabled = false;
+                    
                 } catch (parseError) {
                     console.error('JSON Parse Fehler:', parseError);
-                    // Fallback: extract requirements from text
-                    return extractRequirementsFromText(content);
+                    throw new Error('Ungültige JSON-Antwort von OpenAI');
                 }
+                
             } catch (error) {
-                console.error('OpenAI API Error:', error);
-                throw error;
+                console.error('KI-Analyse Fehler:', error);
+                analyzeBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler bei der Analyse';
+                analyzeBtn.disabled = false;
+                
+                alert(`KI-Analyse fehlgeschlagen: ${error.message}`);
             }
         }
+
+        // ALTE FUNKTION ENTFERNT - NEUE INTEGRATION OBEN IMPLEMENTIERT
 
         function extractRequirementsFromText(text) {
             // Fallback: extract requirements from text response
