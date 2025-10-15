@@ -469,16 +469,15 @@ Fokussieren Sie sich auf:
 - Führungserfahrung`;
 
             try {
-                // Verwende CORS-Proxy für OpenAI API
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const targetUrl = 'https://api.openai.com/v1/chat/completions';
+                // Verwende alternativen CORS-Proxy
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const targetUrl = encodeURIComponent('https://api.openai.com/v1/chat/completions');
                 
                 const response = await fetch(proxyUrl + targetUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`,
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
                         model: 'gpt-4',
