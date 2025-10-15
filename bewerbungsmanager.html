@@ -1512,6 +1512,110 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+        
+        /* Modern UI Patterns from bewerbungsmanager-modern.html */
+        .modern-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .btn-modern {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-modern:active {
+            transform: scale(0.95);
+        }
+        
+        /* CoverLetterGPT Styles */
+        .cover-letter-preview {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-family: 'Georgia', serif;
+        }
+        
+        .api-status {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .api-status.success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        
+        .api-status.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+        
+        .modern-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        .modern-toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -1596,6 +1700,20 @@
                 <button class="feature-btn" onclick="openAnalytics()">
                     <i class="fas fa-chart-bar"></i> Analytics öffnen
                 </button>
+            </div>
+            
+            <!-- CoverLetterGPT Integration -->
+            <div class="feature-card modern-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>CoverLetterGPT</h3>
+                <p>KI-gestützte Anschreiben-Generierung mit OpenAI GPT-4</p>
+                <div class="api-status-container"></div>
+                <button class="btn-modern" onclick="coverLetterGPT.generateCoverLetter()">
+                    <i class="fas fa-magic"></i> Anschreiben generieren
+                </button>
+                <div class="cover-letter-preview" style="display: none;"></div>
             </div>
 
             <div class="feature-card">
@@ -1701,6 +1819,16 @@
     <!-- Real AI Analysis System -->
     <script src="js/real-ai-analysis.js"></script>
     <script src="js/requirements-priority-ui.js"></script>
+    
+    <!-- Extracted Features from Duplicates -->
+    <script src="js/modules/cover-letter-gpt.js"></script>
+    <script src="js/modules/modern-ui-patterns.js"></script>
+    
+    <!-- Chakra UI for CoverLetterGPT Integration -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@chakra-ui/react@2.8.2/dist/chakra-ui.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <script>
         // Global flag to track workflow status
