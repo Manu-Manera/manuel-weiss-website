@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 1: Selbstreflexion</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Beginne deinen Ikigai-Workflow mit einer tiefen Selbstreflexion. Entdecke deine Werte, Erfahrungen und den Grundstein für deinen Lebenszweck.">
+    <meta name="keywords" content="ikigai, selbstreflexion, persönlichkeitsentwicklung, werte, erfahrungen, lebenszweck">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step1-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 1: Selbstreflexion</h1>
+                <p class="step-description">Beginne mit einer tiefen Selbstreflexion über dein Leben, deine Werte und deine bisherigen Erfahrungen.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 14.3%"></div>
+                </div>
+                <span class="progress-text">1 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Selbstreflexion</h2>
+                    <p>Nimm dir Zeit für diese Fragen. Es gibt keine richtigen oder falschen Antworten. Sei ehrlich mit dir selbst und schreibe alles auf, was dir einfällt.</p>
+                </div>
+
+                <form class="reflection-form" id="reflectionForm">
+                    <!-- Frage 1: Lebenswerte -->
+                    <div class="form-group">
+                        <label for="values">Was sind deine wichtigsten Lebenswerte?</label>
+                        <p class="question-hint">Überlege, was dir im Leben wirklich wichtig ist. Was sind deine Grundprinzipien?</p>
+                        <textarea id="values" name="values" rows="6" placeholder="Schreibe hier deine wichtigsten Werte auf..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Familie & Beziehungen:</strong> Was bedeutet Familie für dich? Welche Beziehungen sind dir wichtig?</li>
+                                <li><strong>Beruf & Karriere:</strong> Was erwartest du von deinem Beruf? Geld, Anerkennung, Sinn?</li>
+                                <li><strong>Gesundheit & Wohlbefinden:</strong> Wie wichtig ist körperliche und mentale Gesundheit?</li>
+                                <li><strong>Freiheit & Unabhängigkeit:</strong> Wie viel Autonomie brauchst du?</li>
+                                <li><strong>Kreativität & Selbstverwirklichung:</strong> Wo willst du dich ausdrücken?</li>
+                                <li><strong>Spiritualität & Sinn:</strong> Gibt es etwas Größeres, an das du glaubst?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Stärken & Talente -->
+                    <div class="form-group">
+                        <label for="strengths">Was kannst du besonders gut? Wo liegen deine natürlichen Talente?</label>
+                        <p class="question-hint">Denke an Situationen, in denen du dich besonders kompetent gefühlt hast.</p>
+                        <textarea id="strengths" name="strengths" rows="6" placeholder="Beschreibe deine Stärken und Talente..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Technische Fähigkeiten:</strong> Programmierung, Design, Handwerk, Sprachen?</li>
+                                <li><strong>Soziale Kompetenzen:</strong> Kommunikation, Führung, Empathie, Verhandeln?</li>
+                                <li><strong>Kreative Talente:</strong> Schreiben, Malen, Musik, Kochen, Gärtnern?</li>
+                                <li><strong>Analytische Fähigkeiten:</strong> Problemlösung, Strategie, Forschung?</li>
+                                <li><strong>Körperliche Talente:</strong> Sport, Tanz, Handwerk, Koordination?</li>
+                                <li><strong>Intuitive Fähigkeiten:</strong> Menschenkenntnis, Vorhersagen, Mustererkennung?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Leidenschaften & Interessen -->
+                    <div class="form-group">
+                        <label for="passions">Wofür brennst du? Was macht dir wirklich Freude?</label>
+                        <p class="question-hint">Denke an Aktivitäten, bei denen du die Zeit vergisst und voller Energie bist.</p>
+                        <textarea id="passions" name="passions" rows="6" placeholder="Beschreibe deine Leidenschaften und Interessen..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Hobbys & Freizeit:</strong> Was machst du gerne in deiner freien Zeit?</li>
+                                <li><strong>Lernbereiche:</strong> Welche Themen faszinieren dich? Was würdest du gerne lernen?</li>
+                                <li><strong>Kulturelle Interessen:</strong> Musik, Kunst, Literatur, Theater, Film?</li>
+                                <li><strong>Sport & Bewegung:</strong> Welche körperlichen Aktivitäten liebst du?</li>
+                                <li><strong>Gesellschaftliches Engagement:</strong> Wofür würdest du dich einsetzen?</li>
+                                <li><strong>Reisen & Entdeckung:</strong> Welche Orte oder Kulturen faszinieren dich?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 4: Lebenserfahrungen -->
+                    <div class="form-group">
+                        <label for="experiences">Welche Erfahrungen haben dich am meisten geprägt?</label>
+                        <p class="question-hint">Sowohl positive als auch negative Erfahrungen können wichtige Erkenntnisse bringen.</p>
+                        <textarea id="experiences" name="experiences" rows="6" placeholder="Erzähle von prägenden Erfahrungen in deinem Leben..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Kindheit & Jugend:</strong> Welche Erlebnisse haben dich geprägt?</li>
+                                <li><strong>Bildung & Ausbildung:</strong> Was hast du gelernt? Was war wichtig?</li>
+                                <li><strong>Berufliche Erfahrungen:</strong> Erfolge, Misserfolge, Wendepunkte?</li>
+                                <li><strong>Beziehungen:</strong> Freundschaften, Partnerschaften, Familie?</li>
+                                <li><strong>Herausforderungen:</strong> Wie hast du schwere Zeiten gemeistert?</li>
+                                <li><strong>Reisen & Kulturen:</strong> Welche Orte haben dich verändert?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 5: Ziele & Träume -->
+                    <div class="form-group">
+                        <label for="goals">Was sind deine größten Träume und Ziele?</label>
+                        <p class="question-hint">Denke groß! Was würdest du tun, wenn du keine Grenzen hättest?</p>
+                        <textarea id="goals" name="goals" rows="6" placeholder="Beschreibe deine Träume und Ziele..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Berufliche Ziele:</strong> Wo willst du in 5, 10 Jahren stehen?</li>
+                                <li><strong>Persönliche Entwicklung:</strong> Was willst du lernen oder werden?</li>
+                                <li><strong>Beziehungen:</strong> Welche Art von Beziehungen willst du?</li>
+                                <li><strong>Lifestyle:</strong> Wie willst du leben? Wo? Mit wem?</li>
+                                <li><strong>Beitrag zur Welt:</strong> Wie willst du die Welt verändern?</li>
+                                <li><strong>Abenteuer:</strong> Was willst du erleben und entdecken?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 6: Ängste & Hindernisse -->
+                    <div class="form-group">
+                        <label for="fears">Was hält dich zurück? Welche Ängste oder Hindernisse kennst du?</label>
+                        <p class="question-hint">Es ist okay, Ängste zu haben. Sie zu erkennen ist der erste Schritt zur Überwindung.</p>
+                        <textarea id="fears" name="fears" rows="6" placeholder="Schreibe über deine Ängste und Hindernisse..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Versagensängste:</strong> Wovor hast du Angst zu versagen?</li>
+                                <li><strong>Finanzielle Sorgen:</strong> Welche Geldängste hast du?</li>
+                                <li><strong>Soziale Ängste:</strong> Was fürchtest du in Beziehungen?</li>
+                                <li><strong>Veränderungsängste:</strong> Was macht dir Angst vor Veränderung?</li>
+                                <li><strong>Erwartungen:</strong> Welche Erwartungen von anderen belasten dich?</li>
+                                <li><strong>Selbstzweifel:</strong> Welche inneren Stimmen halten dich zurück?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="index.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Passion
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Schreibmethoden</h5>
+                            <ul>
+                                <li><strong>Journaling:</strong> Tägliches Schreiben über Gedanken und Gefühle</li>
+                                <li><strong>Stream of Consciousness:</strong> Ungefiltertes Schreiben ohne Zensur</li>
+                                <li><strong>Gratitude Journal:</strong> Dankbarkeitstagebuch führen</li>
+                                <li><strong>Morning Pages:</strong> 3 Seiten morgens schreiben (Julia Cameron)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Selbstanalyse-Tools</h5>
+                            <ul>
+                                <li><strong>Big Five Persönlichkeitstest:</strong> Grundlegende Persönlichkeitsmerkmale</li>
+                                <li><strong>Myers-Briggs (MBTI):</strong> Kognitive Präferenzen verstehen</li>
+                                <li><strong>Enneagramm:</strong> 9 Persönlichkeitstypen und Entwicklung</li>
+                                <li><strong>StrengthsFinder:</strong> Deine Top 5 Stärken identifizieren</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Feedback-Methoden</h5>
+                            <ul>
+                                <li><strong>360° Feedback:</strong> Rückmeldung von verschiedenen Personen</li>
+                                <li><strong>Johari-Fenster:</strong> Selbst- und Fremdbild vergleichen</li>
+                                <li><strong>Reflecting Team:</strong> Mit anderen über dich sprechen</li>
+                                <li><strong>Life Story Interview:</strong> Lebensgeschichte erzählen lassen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Zielsetzungs-Tools</h5>
+                            <ul>
+                                <li><strong>SMART Goals:</strong> Spezifisch, Messbar, Erreichbar, Relevant, Terminiert</li>
+                                <li><strong>OKR (Objectives & Key Results):</strong> Ziele mit messbaren Ergebnissen</li>
+                                <li><strong>Vision Board:</strong> Visuelle Darstellung deiner Ziele</li>
+                                <li><strong>Backwards Planning:</strong> Vom Ziel rückwärts planen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Ikigai"</strong> von Héctor García & Francesc Miralles</li>
+                                <li><strong>"The Artist's Way"</strong> von Julia Cameron</li>
+                                <li><strong>"Designing Your Life"</strong> von Bill Burnett & Dave Evans</li>
+                                <li><strong>"Find Your Why"</strong> von Simon Sinek</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Online-Tools</h5>
+                            <ul>
+                                <li><strong>16personalities.com:</strong> Kostenloser MBTI-Test</li>
+                                <li><strong>strengthsfinder.com:</strong> Gallup StrengthsFinder</li>
+                                <li><strong>valuesinaction.org:</strong> VIA Character Strengths</li>
+                                <li><strong>mindfulness.org:</strong> Achtsamkeitsübungen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Podcasts & Videos</h5>
+                            <ul>
+                                <li><strong>"The Tim Ferriss Show":</strong> Lebensoptimierung</li>
+                                <li><strong>"The School of Greatness":</strong> Persönlichkeitsentwicklung</li>
+                                <li><strong>"TED Talks":</strong> Inspiration und neue Perspektiven</li>
+                                <li><strong>"MasterClass":</strong> Lernen von Experten</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                values: document.getElementById('values').value,
+                strengths: document.getElementById('strengths').value,
+                passions: document.getElementById('passions').value,
+                experiences: document.getElementById('experiences').value,
+                goals: document.getElementById('goals').value,
+                fears: document.getElementById('fears').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep1', JSON.stringify(formData));
+            
+            // Redirect to step 2
+            window.location.href = 'step2.html';
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('values').value = data.values || '';
+                document.getElementById('strengths').value = data.strengths || '';
+                document.getElementById('passions').value = data.passions || '';
+                document.getElementById('experiences').value = data.experiences || '';
+                document.getElementById('goals').value = data.goals || '';
+                document.getElementById('fears').value = data.fears || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    values: document.getElementById('values').value,
+                    strengths: document.getElementById('strengths').value,
+                    passions: document.getElementById('passions').value,
+                    experiences: document.getElementById('experiences').value,
+                    goals: document.getElementById('goals').value,
+                    fears: document.getElementById('fears').value,
+                    step: 1,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep1', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>
