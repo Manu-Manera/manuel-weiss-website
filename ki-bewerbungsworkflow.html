@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Bewerbungsworkflow - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .workflow-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .workflow-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .workflow-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .workflow-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .workflow-step {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .workflow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .workflow-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .step-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .step-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .step-features li i {
+            color: #667eea;
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+        
+        .start-workflow-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 2rem;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .start-workflow-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .workflow-benefits {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .benefit-item {
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .benefit-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .benefit-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-container {
+                padding: 1rem;
+            }
+            
+            .workflow-header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-container">
+        <div class="workflow-header">
+            <h1><i class="fas fa-robot"></i> KI-Bewerbungsworkflow</h1>
+            <p>Erstellen Sie mit künstlicher Intelligenz die perfekte Bewerbung in 6 einfachen Schritten</p>
+        </div>
+        
+        <div class="workflow-steps">
+            <div class="workflow-step" onclick="startWorkflowStep(0)">
+                <div class="step-number">0</div>
+                <div class="step-title">Bewerbungsart wählen</div>
+                <div class="step-description">Wählen Sie zwischen Stellenanzeige oder Initiativbewerbung</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> Stellenanzeige analysieren</li>
+                    <li><i class="fas fa-check"></i> Initiativbewerbung erstellen</li>
+                    <li><i class="fas fa-check"></i> Automatische Anpassung</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(1)">
+                <div class="step-number">1</div>
+                <div class="step-title">KI-Stellenanalyse</div>
+                <div class="step-description">Künstliche Intelligenz analysiert die Stellenausschreibung</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> OpenAI GPT-4 Integration</li>
+                    <li><i class="fas fa-check"></i> Anforderungen priorisieren</li>
+                    <li><i class="fas fa-check"></i> Drag & Drop Interface</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(2)">
+                <div class="step-number">2</div>
+                <div class="step-title">Matching & Skill-Gap</div>
+                <div class="step-description">Automatischer Abgleich Ihrer Qualifikationen</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> Skill-Matching Algorithmus</li>
+                    <li><i class="fas fa-check"></i> Gap-Analyse</li>
+                    <li><i class="fas fa-check"></i> Verbesserungsvorschläge</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(3)">
+                <div class="step-number">3</div>
+                <div class="step-title">Anschreiben generieren</div>
+                <div class="step-description">KI erstellt personalisiertes Anschreiben</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> Personalisierte Texte</li>
+                    <li><i class="fas fa-check"></i> ATS-optimiert</li>
+                    <li><i class="fas fa-check"></i> Mehrere Varianten</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(4)">
+                <div class="step-number">4</div>
+                <div class="step-title">Dokumente optimieren</div>
+                <div class="step-description">CV und Zusatzdokumente perfektionieren</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> CV-Optimierung</li>
+                    <li><i class="fas fa-check"></i> Zertifikate hinzufügen</li>
+                    <li><i class="fas fa-check"></i> Formatierung</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(5)">
+                <div class="step-number">5</div>
+                <div class="step-title">Design & Layout</div>
+                <div class="step-description">Professionelles Design und Formatierung</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> Professionelle Templates</li>
+                    <li><i class="fas fa-check"></i> Responsive Design</li>
+                    <li><i class="fas fa-check"></i> Branding</li>
+                </ul>
+            </div>
+            
+            <div class="workflow-step" onclick="startWorkflowStep(6)">
+                <div class="step-number">6</div>
+                <div class="step-title">Export & Versand</div>
+                <div class="step-description">Finales Bewerbungspaket erstellen</div>
+                <ul class="step-features">
+                    <li><i class="fas fa-check"></i> PDF-Export</li>
+                    <li><i class="fas fa-check"></i> E-Mail-Versand</li>
+                    <li><i class="fas fa-check"></i> Tracking</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="workflow-benefits">
+            <h2>Warum KI-Bewerbungsworkflow?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-brain"></i></div>
+                    <div class="benefit-title">KI-gestützt</div>
+                    <div class="benefit-description">OpenAI GPT-4 für optimale Ergebnisse</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-clock"></i></div>
+                    <div class="benefit-title">Zeitsparend</div>
+                    <div class="benefit-description">Von Stunden auf Minuten reduziert</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="benefit-title">Erfolgreicher</div>
+                    <div class="benefit-description">Höhere Erfolgsquote bei Bewerbungen</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="benefit-title">Sicher</div>
+                    <div class="benefit-description">Datenschutz und Verschlüsselung</div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="bewerbungsart-wahl.html" class="start-workflow-btn">
+            <i class="fas fa-play"></i> Workflow starten
+        </a>
+    </div>
+    
+    <script>
+        function startWorkflowStep(stepNumber) {
+            const stepUrls = [
+                'bewerbungsart-wahl.html',
+                'ki-stellenanalyse.html',
+                'matching-skillgap.html',
+                'anschreiben-generieren.html',
+                'dokumente-optimieren.html',
+                'design-layout.html',
+                'export-versand.html'
+            ];
+            
+            if (stepUrls[stepNumber]) {
+                window.location.href = stepUrls[stepNumber];
+            }
+        }
+        
+        // Animation beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            const steps = document.querySelectorAll('.workflow-step');
+            steps.forEach((step, index) => {
+                step.style.opacity = '0';
+                step.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    step.style.transition = 'all 0.5s ease';
+                    step.style.opacity = '1';
+                    step.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
