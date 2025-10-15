@@ -289,12 +289,24 @@ class AdminSectionLoader {
     /**
      * Section laden mit Preloading
      */
-    async loadSection(sectionId) {
+    async loadSection(sectionId, route = null) {
         try {
+            let templatePath, scriptPath;
+            
+            if (route) {
+                // Route-basierte Pfade verwenden
+                templatePath = route.template;
+                scriptPath = route.script;
+            } else {
+                // Fallback zu Standard-Pfaden
+                templatePath = `admin/sections/${sectionId}.html`;
+                scriptPath = `js/admin/sections/${sectionId}.js`;
+            }
+            
             // Template und Script parallel laden
             const [templateContent, scriptContent] = await Promise.all([
-                this.loadTemplate(`admin/sections/${sectionId}.html`),
-                this.loadScript(`js/admin/sections/${sectionId}.js`, sectionId)
+                this.loadTemplate(templatePath),
+                this.loadScript(scriptPath, sectionId)
             ]);
             
             // Preload verwandte Sections

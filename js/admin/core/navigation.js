@@ -111,19 +111,14 @@ class AdminNavigation {
             throw new Error(`Route not found for section: ${sectionId}`);
         }
         
-        // Template laden
-        const content = await this.sectionLoader.loadTemplate(route.template);
+        // Section laden mit Route
+        const result = await this.sectionLoader.loadSection(sectionId, route);
         
         // Content in DOM einfügen
         const container = document.getElementById('admin-content');
         if (container) {
-            container.innerHTML = content;
+            container.innerHTML = result.template;
             container.setAttribute('data-section', sectionId);
-        }
-        
-        // JavaScript laden
-        if (route.script) {
-            await this.sectionLoader.loadScript(route.script, sectionId);
         }
         
         // Section als geladen markieren
