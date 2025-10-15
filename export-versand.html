@@ -224,6 +224,24 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
+    
+        @media (max-width: 768px) {
+            .workflow-step-container {
+                padding: 1rem;
+            }
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        .dark-mode {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step {
+            background: #2d2d2d !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -308,8 +326,7 @@
             alert(`Download gestartet: ${type.toUpperCase()}-Paket wird heruntergeladen...`);
             
             // In echter Implementierung würde hier der Download gestartet
-            console.log(`Downloading package type: ${type}`);
-        }
+            }
         
         function sendEmail() {
             const email = document.getElementById('recipientEmail').value;
@@ -324,8 +341,7 @@
             alert(`E-Mail wird gesendet an: ${email}\nBetreff: ${subject}`);
             
             // In echter Implementierung würde hier die E-Mail gesendet
-            console.log(`Sending email to: ${email} with subject: ${subject}`);
-        }
+            }
         
         function updateProgress(percentage) {
             document.getElementById('progressFill').style.width = percentage + '%';
@@ -336,5 +352,7 @@
             updateProgress(100);
         });
     </script>
+    <!-- Workflow Enhancements -->
+    <script src="js/workflow-enhancements.js" async></script>
 </body>
 </html>

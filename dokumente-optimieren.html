@@ -257,6 +257,24 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+    
+        @media (max-width: 768px) {
+            .workflow-step-container {
+                padding: 1rem;
+            }
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        .dark-mode {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step {
+            background: #2d2d2d !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -340,7 +358,6 @@
         function handleFileUpload(input) {
             const file = input.files[0];
             if (file) {
-                console.log('📄 Datei ausgewählt:', file.name);
                 uploadFile(file);
             }
         }
@@ -386,8 +403,7 @@
             uploadProgress.style.display = 'none';
             uploadStatus.textContent = 'Upload abgeschlossen!';
             
-            console.log('✅ Datei erfolgreich hochgeladen:', file.name);
-        }
+            }
 
         // File List aktualisieren
         function updateFileList() {
@@ -438,15 +454,12 @@
                 selectedOptions = selectedOptions.filter(opt => opt !== option);
             }
             
-            console.log('🔧 Ausgewählte Optionen:', selectedOptions);
-        }
+            }
 
         // File optimieren
         function optimizeFile(fileId) {
             const file = uploadedFiles.find(f => f.id == fileId);
             if (file) {
-                console.log('🔧 Optimiere Datei:', file.name);
-                
                 // Simuliere Optimierung
                 setTimeout(() => {
                     alert(`Datei "${file.name}" wurde optimiert!\n\nAngewendete Optimierungen:\n- Format verbessert\n- Keywords hinzugefügt\n- ATS-optimiert`);
@@ -459,8 +472,7 @@
             if (confirm('Möchtest du diese Datei wirklich löschen?')) {
                 uploadedFiles = uploadedFiles.filter(f => f.id != fileId);
                 updateFileList();
-                console.log('🗑️ Datei gelöscht:', fileId);
-            }
+                }
         }
 
         // Drag & Drop Handler
@@ -487,10 +499,9 @@
 
         // Initialisierung
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 Dokumente-Optimierung geladen');
-            console.log('🔧 Upload-Funktionalität aktiviert');
-            console.log('⚡ Optimierungsoptionen verfügbar');
-        });
+            });
     </script>
+    <!-- Workflow Enhancements -->
+    <script src="js/workflow-enhancements.js" async></script>
 </body>
 </html>
