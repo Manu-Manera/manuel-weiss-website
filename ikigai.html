@@ -269,12 +269,14 @@
 <script src="js/translation-manager.js"></script>
     
     <!-- Ikigai Workflow -->
-    <script src="js/ikigai-workflow-en.js"></script>
+    <script src="js/ikigai-workflow-en.js" onload="console.log('✅ Ikigai Workflow script loaded')" onerror="console.error('❌ Ikigai Workflow script failed to load')"></script>
     
     <!-- Ikigai Workflow Starter -->
     <script>
         function startIkigaiWorkflow() {
             console.log('🚀 Starting Ikigai Workflow...');
+            console.log('🔍 IkigaiWorkflowEN available:', typeof window.IkigaiWorkflowEN);
+            console.log('🔍 All window properties:', Object.keys(window).filter(k => k.includes('ikigai') || k.includes('Ikigai')));
             
             // Close existing workflow if open
             const existingWorkflow = document.getElementById('ikigai-workflow-en');
@@ -283,9 +285,23 @@
                 existingWorkflow.remove();
             }
             
+            // Check if class is available
+            if (typeof window.IkigaiWorkflowEN !== 'function') {
+                console.error('❌ IkigaiWorkflowEN class not found!');
+                console.log('🔍 Available classes:', Object.keys(window).filter(k => typeof window[k] === 'function'));
+                alert('Ikigai Workflow class not loaded. Please refresh the page.');
+                return;
+            }
+            
             // Create new workflow instance
             console.log('🆕 Creating new workflow instance...');
-            window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
+            try {
+                window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
+                console.log('✅ Workflow instance created successfully');
+            } catch (error) {
+                console.error('❌ Error creating workflow instance:', error);
+                alert('Error starting Ikigai Workflow: ' + error.message);
+            }
         }
     </script>
     
