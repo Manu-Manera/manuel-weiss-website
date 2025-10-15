@@ -54,58 +54,14 @@
             </div>
             
             <div class="hero-actions-enhanced">
-                <button class="btn-enhanced btn-primary-enhanced" onclick="startIkigaiWorkflow()">
+                <button class="btn-primary-enhanced" onclick="startIkigaiWorkflow()">
                     <i class="fas fa-play"></i>
                     Workflow starten
                 </button>
-                <a href="#about" class="btn-enhanced btn-outline-enhanced">
+                <a href="#workflow" class="btn-secondary-enhanced">
                     <i class="fas fa-info-circle"></i>
                     Mehr erfahren
                 </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Video Section -->
-    <section class="video-section">
-        <div class="video-container">
-            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                📺 Lerne Ikigai mit Experten
-            </h2>
-            <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-bottom: 2rem;">
-                Entdecke die besten YouTube-Videos zur Ikigai-Methode
-            </p>
-            
-            <div class="video-grid">
-                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Qn6urN0Xarc')">
-                    <div class="video-thumbnail">
-                        <div class="play-button">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <h3 class="video-title">Was ist Ikigai? - Die japanische Lebensphilosophie</h3>
-                    <p class="video-description">Ein umfassender Einblick in die Ikigai-Methode und wie sie dir helfen kann, deinen Lebenszweck zu finden.</p>
-                </div>
-                
-                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=8jPQjjsBbIc')">
-                    <div class="video-thumbnail">
-                        <div class="play-button">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <h3 class="video-title">Ikigai in der Praxis - 7 Schritte zur Umsetzung</h3>
-                    <p class="video-description">Lerne, wie du die Ikigai-Methode praktisch anwendest und deinen persönlichen Lebenszweck entdeckst.</p>
-                </div>
-                
-                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=80U0Uq8l3VY')">
-                    <div class="video-thumbnail">
-                        <div class="play-button">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <h3 class="video-title">Ikigai vs. andere Lebensphilosophien</h3>
-                    <p class="video-description">Vergleiche Ikigai mit anderen Methoden der Selbstfindung und verstehe die einzigartigen Vorteile.</p>
-                </div>
             </div>
         </div>
     </section>
@@ -120,28 +76,7 @@
             <div class="ikigai-visual">
                 <div class="ikigai-diagram-enhanced">
                     <div class="ikigai-flower-enhanced">
-                        <!-- Schnittmengen-Bereiche mit Beschriftung -->
-                        <div class="intersection-area intersection-passion-mission">
-                            <div class="intersection-label">Mission + Passion</div>
-                            <div class="intersection-description">Deine Berufung</div>
-                        </div>
-                        
-                        <div class="intersection-area intersection-mission-profession">
-                            <div class="intersection-label">Mission + Profession</div>
-                            <div class="intersection-description">Deine Aufgabe</div>
-                        </div>
-                        
-                        <div class="intersection-area intersection-profession-vocation">
-                            <div class="intersection-label">Profession + Vocation</div>
-                            <div class="intersection-description">Deine Expertise</div>
-                        </div>
-                        
-                        <div class="intersection-area intersection-vocation-passion">
-                            <div class="intersection-label">Vocation + Passion</div>
-                            <div class="intersection-description">Deine Leidenschaft</div>
-                        </div>
-                        
-                        <!-- Pflaumenblüten-Blätter -->
+                        <!-- Ikigai Petals -->
                         <div class="ikigai-petal-enhanced petal-passion" onclick="scrollToSection('passion')">
                             <div class="petal-content">
                                 <div class="petal-icon">❤️</div>
@@ -174,11 +109,13 @@
                             </div>
                         </div>
                         
-                        <!-- Zentrum -->
-                        <div class="ikigai-center-enhanced">
-                            <div class="center-icon">🎯</div>
-                            <h3>Dein Ikigai</h3>
-                            <p>Der Schnittpunkt aller vier Bereiche</p>
+                        <!-- Ikigai Center -->
+                        <div class="ikigai-center-enhanced" onclick="scrollToSection('ikigai')">
+                            <div class="center-content">
+                                <div class="center-icon">🎯</div>
+                                <h3>Dein Ikigai</h3>
+                                <p>Der Schnittpunkt aller vier Bereiche</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,11 +124,10 @@
     </section>
 
     <!-- Workflow Steps -->
-    <section class="workflow-steps-enhanced">
+    <section class="workflow-steps">
         <div class="steps-container">
-            <h2 class="steps-title">7 Schritte zu deinem Ikigai</h2>
-            
-            <div class="steps-grid-enhanced">
+            <h2>7 Schritte zu deinem Ikigai</h2>
+            <div class="steps-grid">
                 <div class="step-card-enhanced">
                     <div class="step-number-enhanced">1</div>
                     <h4>Selbstreflexion</h4>
@@ -249,7 +185,7 @@
                 <div class="step-card-enhanced">
                     <div class="step-number-enhanced">7</div>
                     <h4>Aktionsplan</h4>
-                    <p style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Erstelle einen konkreten Plan zur Umsetzung deines Ikigai im Alltag.</p>
+                    <p>Erstelle einen konkreten Plan zur Umsetzung deines Ikigai im Alltag.</p>
                     <a href="step7-ikigai.html" class="btn-start-step">
                         <i class="fas fa-play"></i> Start
                     </a>
@@ -259,70 +195,14 @@
     </section>
 
     <!-- Scripts -->
-    <script src="js/ikigai-workflow.js"></script>
-    
     <script>
         function startIkigaiWorkflow() {
-            // Redirect to step1.html
             window.location.href = 'step1-ikigai.html';
         }
         
-        // YouTube video function
-        function openVideo(url) {
-            window.open(url, '_blank');
-        }
-        
-        // Scroll to specific section function
         function scrollToSection(section) {
-            const sections = {
-                'passion': 'step2-ikigai',
-                'mission': 'step3-ikigai', 
-                'profession': 'step4-ikigai',
-                'vocation': 'step5-ikigai'
-            };
-            
-            const targetStep = sections[section];
-            if (targetStep) {
-                window.location.href = `${targetStep}.html`;
-            }
+            document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
         }
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Add scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all cards and sections
-        document.querySelectorAll('.step-card-enhanced, .video-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            card.style.transition = 'all 0.6s ease';
-            observer.observe(card);
-        });
     </script>
 </body>
 </html>
