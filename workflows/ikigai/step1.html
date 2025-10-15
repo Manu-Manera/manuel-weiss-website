@@ -84,6 +84,70 @@
             color: #2c3e50;
             font-weight: 600;
         }
+        
+        .tools-box, .resources-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .tools-box h4, .resources-box h4 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .tool-categories, .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .tool-category, .resource-section {
+            background: white;
+            border-radius: 6px;
+            padding: 0.8rem;
+            border-left: 3px solid #667eea;
+        }
+        
+        .tool-category h5, .resource-section h5 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .tool-category ul, .resource-section ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+        
+        .tool-category li, .resource-section li {
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+            font-size: 0.85rem;
+        }
+        
+        .tool-category strong, .resource-section strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .resource-section a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .resource-section a:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
     </style>
     
     <!-- Favicon -->
@@ -338,6 +402,98 @@
                                 <li>Denke an Momente, in denen du dich besonders lebendig gefühlt hast</li>
                                 <li>Frage Freunde und Familie nach ihrer Einschätzung</li>
                             </ul>
+                        </div>
+                        
+                        <!-- Tools & Methods -->
+                        <div class="tools-box">
+                            <h4>🛠️ Hilfreiche Tools & Methoden</h4>
+                            <div class="tool-categories">
+                                <div class="tool-category">
+                                    <h5>📝 Schreibmethoden</h5>
+                                    <ul>
+                                        <li><strong>Journaling:</strong> Tägliches Schreiben über Gedanken und Gefühle</li>
+                                        <li><strong>Morning Pages:</strong> 3 Seiten freies Schreiben am Morgen</li>
+                                        <li><strong>Gratitude Journal:</strong> 3 Dinge, für die du dankbar bist</li>
+                                        <li><strong>Life Timeline:</strong> Chronologische Aufzeichnung deines Lebens</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="tool-category">
+                                    <h5>🧠 Selbstanalyse-Tools</h5>
+                                    <ul>
+                                        <li><strong>SWOT-Analyse:</strong> Stärken, Schwächen, Chancen, Risiken</li>
+                                        <li><strong>Wheel of Life:</strong> 8 Lebensbereiche bewerten</li>
+                                        <li><strong>Values Clarification:</strong> Deine wichtigsten Werte identifizieren</li>
+                                        <li><strong>Strengths Finder:</strong> Gallup-Test für Stärken</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="tool-category">
+                                    <h5>👥 Feedback-Methoden</h5>
+                                    <ul>
+                                        <li><strong>360° Feedback:</strong> Rückmeldung von verschiedenen Personen</li>
+                                        <li><strong>Johari Window:</strong> Bekannte und unbekannte Seiten</li>
+                                        <li><strong>Reflected Best Self:</strong> Positive Rückmeldungen sammeln</li>
+                                        <li><strong>Mentoring:</strong> Gespräche mit erfahrenen Personen</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="tool-category">
+                                    <h5>🎯 Zielsetzungs-Tools</h5>
+                                    <ul>
+                                        <li><strong>SMART Goals:</strong> Spezifisch, Messbar, Erreichbar, Relevant, Terminiert</li>
+                                        <li><strong>Vision Board:</strong> Visuelle Darstellung deiner Ziele</li>
+                                        <li><strong>5-Year Plan:</strong> Langfristige Lebensplanung</li>
+                                        <li><strong>Bucket List:</strong> Dinge, die du erleben möchtest</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resources -->
+                        <div class="resources-box">
+                            <h4>📚 Empfohlene Ressourcen</h4>
+                            <div class="resource-links">
+                                <div class="resource-section">
+                                    <h5>📖 Bücher</h5>
+                                    <ul>
+                                        <li><strong>"Designing Your Life"</strong> - Bill Burnett & Dave Evans</li>
+                                        <li><strong>"The 7 Habits of Highly Effective People"</strong> - Stephen Covey</li>
+                                        <li><strong>"Ikigai: The Japanese Secret to a Long and Happy Life"</strong> - Héctor García</li>
+                                        <li><strong>"StrengthsFinder 2.0"</strong> - Tom Rath</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="resource-section">
+                                    <h5>🌐 Online-Tools</h5>
+                                    <ul>
+                                        <li><strong>16Personalities:</strong> Kostenloser Myers-Briggs Test</li>
+                                        <li><strong>VIA Character Strengths:</strong> Charakterstärken-Test</li>
+                                        <li><strong>Big Five Personality Test:</strong> Persönlichkeitstypen</li>
+                                        <li><strong>Holland Code (RIASEC):</strong> Berufsinteressen-Test</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="resource-section">
+                                    <h5>🎧 Podcasts & Videos</h5>
+                                    <ul>
+                                        <li><strong>"The Tim Ferriss Show"</strong> - Lebensoptimierung</li>
+                                        <li><strong>"Huberman Lab"</strong> - Wissenschaft des Lernens</li>
+                                        <li><strong>TED Talks:</strong> "The Power of Vulnerability" (Brené Brown)</li>
+                                        <li><strong>YouTube:</strong> "How to Find Your Purpose" Kanäle</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="resource-section">
+                                    <h5>🔗 Verwandte Workflows</h5>
+                                    <ul>
+                                        <li><strong><a href="../raisec/" target="_blank">RAISEC-Modell</a>:</strong> Berufsinteressen und Persönlichkeitstypen</li>
+                                        <li><strong><a href="../swot/" target="_blank">SWOT-Analyse</a>:</strong> Stärken, Schwächen, Chancen, Risiken</li>
+                                        <li><strong><a href="../wheel-of-life/" target="_blank">Wheel of Life</a>:</strong> 8 Lebensbereiche bewerten</li>
+                                        <li><strong><a href="../../persoenlichkeitsentwicklung.html" target="_blank">Persönlichkeitsentwicklung</a>:</strong> Weitere Methoden zur Selbstfindung</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Progress -->
