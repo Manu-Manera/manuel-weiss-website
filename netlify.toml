@@ -1,10 +1,11 @@
 [build]
-  # Build für statische Website - keine npm Dependencies
-  command = "echo 'Static site - no build required'"
+  # Build für statische Website mit Netlify Functions
+  command = "echo 'Static site with functions - no build required'"
   publish = "."
+  functions = "netlify/functions"
   ignore = "node_modules"
-  
-# Keine npm Dependencies für statische Website
+
+# Netlify Functions für OpenAI Proxy
   
   # Production Environment Variables
   AWS_REGION = "eu-central-1"
