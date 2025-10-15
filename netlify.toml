@@ -1,12 +1,10 @@
 [build]
-  # Build für statische Website
+  # Build für statische Website - keine npm Dependencies
   command = "echo 'Static site - no build required'"
   publish = "."
+  ignore = "node_modules"
   
-[build.environment]
-  # Node.js Version für Build-Tools
-  NODE_VERSION = "18"
-  NPM_FLAGS = "--production=false"
+# Keine npm Dependencies für statische Website
   
   # Production Environment Variables
   AWS_REGION = "eu-central-1"

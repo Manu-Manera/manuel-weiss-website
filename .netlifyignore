@@ -1,0 +1,14 @@
+# Ignoriere npm Dependencies für statische Website
+node_modules/
+package.json
+package-lock.json
+.npmrc
+
+# Ignoriere Build-Tools
+.github/
+tests/
+playwright.config.ts
+
+# Ignoriere temporäre Dateien
+*.log
+*.tmp
