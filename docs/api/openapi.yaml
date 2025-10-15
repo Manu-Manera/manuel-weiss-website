@@ -8,7 +8,7 @@ info:
     - Medien-Upload (S3 + CloudFront)
     - Workflow-Orchestrierung (Step Functions)
     - Analytics & Monitoring
-  version: 2.0.0
+  version: 3.0.0
   contact:
     name: Manuel Weiss
     email: info@manuel-weiss.com
