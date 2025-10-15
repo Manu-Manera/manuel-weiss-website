@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Schritt 3: Mission</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ikigai Schritt 3: Finde heraus, womit du der Welt helfen kannst">
+    <meta name="keywords" content="ikigai, mission, persönlichkeitsentwicklung, lebenszweck, welt helfen">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="../../ikigai.html">Ikigai</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Step Header -->
+        <section class="step-header">
+            <div class="container">
+                <div class="step-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 42.86%;"></div>
+                    </div>
+                    <span class="progress-text">Schritt 3 von 7</span>
+                </div>
+                
+                <h1 class="step-title">🎯 Mission - Was die Welt braucht</h1>
+                <p class="step-subtitle">Finde heraus, womit du der Welt helfen kannst</p>
+            </div>
+        </section>
+
+        <!-- Step Content -->
+        <section class="step-content">
+            <div class="container">
+                <div class="content-grid">
+                    <div class="content-main">
+                        <div class="step-explanation">
+                            <h2>Deine Mission entdecken</h2>
+                            <p>In diesem Schritt geht es darum, herauszufinden, welche Probleme du in der Welt lösen möchtest. Was bewegt dich? Welche Ungerechtigkeiten siehst du? Wo möchtest du einen Unterschied machen?</p>
+                            
+                            <div class="mission-questions">
+                                <h3>Reflexionsfragen:</h3>
+                                <ul>
+                                    <li>Welche Probleme in der Welt machen dich traurig oder wütend?</li>
+                                    <li>Was würdest du ändern, wenn du die Macht dazu hättest?</li>
+                                    <li>Welche Themen beschäftigen dich regelmäßig?</li>
+                                    <li>Wo siehst du ungenutztes Potenzial in der Gesellschaft?</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="interactive-exercise">
+                            <h3>Mission-Brainstorming</h3>
+                            <div class="exercise-content">
+                                <textarea id="missionInput" placeholder="Schreibe hier deine Gedanken zu den Problemen, die du lösen möchtest..."></textarea>
+                                <button class="btn btn-primary" onclick="saveMission()">Mission speichern</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-sidebar">
+                        <div class="tips-card">
+                            <h3>💡 Tipps für deine Mission</h3>
+                            <ul>
+                                <li>Denke an Probleme, die dich persönlich betreffen</li>
+                                <li>Überlege, wo deine Talente gebraucht werden</li>
+                                <li>Frage dich: "Was würde ich gerne hinterlassen?"</li>
+                                <li>Betrachte lokale und globale Herausforderungen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="examples-card">
+                            <h3>Beispiele für Missionen</h3>
+                            <ul>
+                                <li>Bildung für alle zugänglich machen</li>
+                                <li>Umweltschutz und Nachhaltigkeit</li>
+                                <li>Menschen helfen, ihre Gesundheit zu verbessern</li>
+                                <li>Technologie für soziale Gerechtigkeit nutzen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="step-navigation">
+        <div class="container">
+            <div class="nav-buttons">
+                <a href="step2.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zu Schritt 2
+                </a>
+                <a href="step4.html" class="btn btn-primary">
+                    Weiter zu Schritt 4
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script>
+        function saveMission() {
+            const mission = document.getElementById('missionInput').value;
+            if (mission.trim()) {
+                localStorage.setItem('ikigai_mission', mission);
+                alert('Deine Mission wurde gespeichert!');
+            } else {
+                alert('Bitte gib deine Mission ein.');
+            }
+        }
+        
+        // Load saved mission
+        window.addEventListener('load', function() {
+            const savedMission = localStorage.getItem('ikigai_mission');
+            if (savedMission) {
+                document.getElementById('missionInput').value = savedMission;
+            }
+        });
+    </script>
+</body>
+</html>
