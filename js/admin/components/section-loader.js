@@ -144,20 +144,9 @@ class AdminSectionLoader {
             
             const scriptContent = await response.text();
             
-            // Script ausführen
-            const script = document.createElement('script');
-            script.textContent = scriptContent;
-            script.setAttribute('data-section', sectionId);
-            script.setAttribute('data-script-path', scriptPath);
-            
-            document.head.appendChild(script);
-            
-            // Cleanup nach Ausführung
-            setTimeout(() => {
-                if (script.parentNode) {
-                    script.parentNode.removeChild(script);
-                }
-            }, 100);
+            // Script nicht ausführen, nur zurückgeben
+            // Das Script wird von der Section selbst verwaltet
+            console.log(`Script loaded for section ${sectionId}: ${scriptPath}`);
             
             return true;
             
