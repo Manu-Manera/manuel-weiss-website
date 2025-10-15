@@ -53,6 +53,37 @@
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
+        
+        .detailed-hints {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .detailed-hints h5 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+        
+        .detailed-hints ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+        
+        .detailed-hints li {
+            margin-bottom: 0.6rem;
+            line-height: 1.4;
+        }
+        
+        .detailed-hints strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
     </style>
     
     <!-- Favicon -->
@@ -151,22 +182,45 @@
                                 <div class="form-group">
                                     <label for="life-story">1. Lebensgeschichte und Meilensteine</label>
                                     <p class="question-hint">Erzähle deine Lebensgeschichte in 3-4 Absätzen. Welche waren die wichtigsten Meilensteine, Wendepunkte und Entscheidungen in deinem Leben?</p>
+                                    <div class="detailed-hints">
+                                        <h5>Denkanstöße für deine Lebensgeschichte:</h5>
+                                        <ul>
+                                            <li><strong>Kindheit & Jugend:</strong> Wie war deine Kindheit? Welche Erlebnisse haben dich geprägt? Was hast du gerne gemacht?</li>
+                                            <li><strong>Bildung & Ausbildung:</strong> Welche Schulen, Studiengänge oder Ausbildungen hast du absolviert? Was hat dir Spaß gemacht?</li>
+                                            <li><strong>Berufliche Laufbahn:</strong> Welche Jobs hattest du? Was hat dir gefallen, was nicht? Welche Erfolge und Misserfolge gab es?</li>
+                                            <li><strong>Persönliche Beziehungen:</strong> Welche Menschen haben dich beeinflusst? Familie, Freunde, Mentoren, Partner?</li>
+                                            <li><strong>Wendepunkte:</strong> Welche Ereignisse haben dein Leben verändert? Krankheiten, Umzüge, Trennungen, neue Chancen?</li>
+                                            <li><strong>Hobbys & Interessen:</strong> Womit hast du deine Freizeit verbracht? Welche Hobbys hattest du? Was hat dich fasziniert?</li>
+                                        </ul>
+                                    </div>
                                     <textarea 
                                         id="life-story" 
                                         name="life-story"
                                         placeholder="Beschreibe deine Lebensgeschichte und die wichtigsten Meilensteine... Was hat dich geprägt? Welche Entscheidungen haben dein Leben verändert?"
-                                        rows="4"
+                                        rows="6"
                                     ></textarea>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="values-beliefs">2. Werte und Überzeugungen</label>
                                     <p class="question-hint">Was sind deine tiefsten Werte? Welche Überzeugungen leiten dein Handeln? Was ist dir wirklich wichtig im Leben?</p>
+                                    <div class="detailed-hints">
+                                        <h5>Denkanstöße für deine Werte:</h5>
+                                        <ul>
+                                            <li><strong>Familie & Beziehungen:</strong> Wie wichtig ist dir Familie? Was bedeutet Freundschaft für dich? Wie behandelst du andere?</li>
+                                            <li><strong>Beruf & Karriere:</strong> Was ist dir im Beruf wichtig? Geld, Anerkennung, Sinn, Work-Life-Balance?</li>
+                                            <li><strong>Gesellschaft & Politik:</strong> Welche gesellschaftlichen Themen bewegen dich? Gerechtigkeit, Umwelt, Bildung?</li>
+                                            <li><strong>Spiritualität & Glaube:</strong> Hast du religiöse oder spirituelle Überzeugungen? Was gibt deinem Leben Sinn?</li>
+                                            <li><strong>Persönliche Entwicklung:</strong> Wie wichtig ist dir persönliches Wachstum? Lernen, sich weiterentwickeln?</li>
+                                            <li><strong>Materielle Werte:</strong> Wie wichtig sind dir Besitz, Geld, Status? Was brauchst du wirklich?</li>
+                                            <li><strong>Gesundheit & Wohlbefinden:</strong> Wie wichtig ist dir körperliche und mentale Gesundheit?</li>
+                                        </ul>
+                                    </div>
                                     <textarea 
                                         id="values-beliefs" 
                                         name="values-beliefs"
                                         placeholder="Beschreibe deine wichtigsten Werte und Überzeugungen... Was leitet dein Handeln? Was ist dir wirklich wichtig?"
-                                        rows="4"
+                                        rows="6"
                                     ></textarea>
                                 </div>
                                 
