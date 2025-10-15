@@ -813,29 +813,29 @@
 
 .petal-passion {
     background: linear-gradient(135deg, #ff6b9d, #c44569, #ff8a80);
-    top: 5%;
-    left: 5%;
+    top: 0%;
+    left: 0%;
     transform: rotate(-15deg);
 }
 
 .petal-mission {
     background: linear-gradient(135deg, #4ecdc4, #44a08d, #26d0ce);
-    top: 5%;
-    right: 5%;
+    top: 0%;
+    right: 0%;
     transform: rotate(15deg);
 }
 
 .petal-profession {
     background: linear-gradient(135deg, #a8edea, #fed6e3, #d299c2);
-    bottom: 5%;
-    left: 5%;
+    bottom: 0%;
+    left: 0%;
     transform: rotate(15deg);
 }
 
 .petal-vocation {
     background: linear-gradient(135deg, #ffecd2, #fcb69f, #ff9a9e);
-    bottom: 5%;
-    right: 5%;
+    bottom: 0%;
+    right: 0%;
     transform: rotate(-15deg);
 }
 
@@ -885,29 +885,29 @@
 /* Positionierung der Schnittbereiche */
 .intersection-passion-mission {
     background: linear-gradient(135deg, #ff6b9d, #4ecdc4, #ff8a80);
-    top: 20%;
-    left: 20%;
+    top: 15%;
+    left: 15%;
     transform: rotate(-5deg);
 }
 
 .intersection-mission-profession {
     background: linear-gradient(135deg, #4ecdc4, #a8edea, #26d0ce);
-    top: 20%;
-    right: 20%;
+    top: 15%;
+    right: 15%;
     transform: rotate(5deg);
 }
 
 .intersection-profession-vocation {
     background: linear-gradient(135deg, #a8edea, #ffecd2, #d299c2);
-    bottom: 20%;
-    left: 20%;
+    bottom: 15%;
+    left: 15%;
     transform: rotate(5deg);
 }
 
 .intersection-vocation-passion {
     background: linear-gradient(135deg, #ffecd2, #ff6b9d, #ff9a9e);
-    bottom: 20%;
-    right: 20%;
+    bottom: 15%;
+    right: 15%;
     transform: rotate(-5deg);
 }
 
@@ -920,7 +920,7 @@
     transform: translate(-50%, -50%);
     width: 350px;
     height: 350px;
-    background: linear-gradient(135deg, rgba(102,126,234,0.9), rgba(118,75,162,0.9), rgba(240,147,251,0.9));
+    background: linear-gradient(135deg, rgba(102,126,234,0.6), rgba(118,75,162,0.6), rgba(240,147,251,0.6));
     border-radius: 50%;
     display: flex;
     flex-direction: column;
