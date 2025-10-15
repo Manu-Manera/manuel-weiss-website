@@ -60,7 +60,7 @@
                 </nav>
                 
                 <div class="header-actions">
-                    <button class="btn btn-outline" onclick="window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN()">
+                    <button class="btn btn-outline" onclick="startIkigaiWorkflow()">
                         <i class="fas fa-play"></i>
                         <span data-translate="ikigai.start_workflow">Start Ikigai Workflow</span>
                     </button>
@@ -78,7 +78,7 @@
                     <h1 class="hero-title" data-translate="ikigai.title">Ikigai - Find Your Life Purpose</h1>
                     <p class="hero-subtitle" data-translate="ikigai.subtitle">Discover what you love, what you're good at, what you can be paid for, and what the world needs</p>
                     <div class="hero-actions">
-                        <button class="btn btn-primary" onclick="window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN()">
+                        <button class="btn btn-primary" onclick="startIkigaiWorkflow()">
                             <i class="fas fa-compass"></i>
                             <span data-translate="ikigai.start_workflow">Start Ikigai Workflow</span>
                         </button>
@@ -214,7 +214,7 @@
                 <div class="cta-content">
                     <h2>Ready to Discover Your Ikigai?</h2>
                     <p>Start your journey to finding your life purpose today</p>
-                    <button class="btn btn-primary btn-large" onclick="window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN()">
+                    <button class="btn btn-primary btn-large" onclick="startIkigaiWorkflow()">
                         <i class="fas fa-compass"></i>
                         <span data-translate="ikigai.start_workflow">Start Ikigai Workflow</span>
                     </button>
@@ -270,6 +270,24 @@
     
     <!-- Ikigai Workflow -->
     <script src="js/ikigai-workflow-en.js"></script>
+    
+    <!-- Ikigai Workflow Starter -->
+    <script>
+        function startIkigaiWorkflow() {
+            console.log('🚀 Starting Ikigai Workflow...');
+            
+            // Close existing workflow if open
+            const existingWorkflow = document.getElementById('ikigai-workflow-en');
+            if (existingWorkflow) {
+                console.log('🗑️ Closing existing workflow...');
+                existingWorkflow.remove();
+            }
+            
+            // Create new workflow instance
+            console.log('🆕 Creating new workflow instance...');
+            window.ikigaiWorkflowEN = new window.IkigaiWorkflowEN();
+        }
+    </script>
     
     <!-- Main Script -->
     <script src="script.js"></script>

@@ -429,10 +429,13 @@ class IkigaiWorkflowEN {
     }
     
     close() {
+        console.log('🚪 Closing Ikigai Workflow...');
         const container = document.getElementById('ikigai-workflow-en');
         if (container) {
+            console.log('🗑️ Removing workflow container...');
             container.remove();
         }
+        console.log('✅ Workflow closed');
     }
 }
 
