@@ -135,6 +135,12 @@ class AdminApplication {
         // Applications Section
         this.sections.applications = new ApplicationsSection();
         
+        // Media Section
+        this.sections.media = new MediaSection();
+        
+        // Personality Methods Section
+        this.sections.personalityMethods = new PersonalityMethodsSection();
+        
         // Weitere Sections werden lazy geladen
         console.log('Sections initialized');
     }

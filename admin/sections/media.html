@@ -1,0 +1,157 @@
+<div class="section-header">
+    <h2>📸 Medienverwaltung</h2>
+    <p>Verwalte alle Bilder, Dokumente und Medien zentral</p>
+</div>
+
+<!-- Upload Status -->
+<div class="upload-status" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <i class="fas fa-upload" style="font-size: 1.5rem;"></i>
+        <div>
+            <h4 style="margin: 0; font-size: 1.1rem;">Upload-System aktiv</h4>
+            <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Drag & Drop • Bulk Upload • AWS S3 • LocalStorage</p>
+        </div>
+    </div>
+</div>
+
+<div class="media-categories">
+    <div class="category-tabs">
+        <button class="category-tab active" data-category="profile">
+            <i class="fas fa-user"></i>
+            Profilbilder
+            <span class="tab-count" id="profile-count">0</span>
+        </button>
+        <button class="category-tab" data-category="application">
+            <i class="fas fa-file-alt"></i>
+            Bewerbungsunterlagen
+            <span class="tab-count" id="application-count">0</span>
+        </button>
+        <button class="category-tab" data-category="portfolio">
+            <i class="fas fa-briefcase"></i>
+            Portfolio
+            <span class="tab-count" id="portfolio-count">0</span>
+        </button>
+        <button class="category-tab" data-category="documents">
+            <i class="fas fa-file-pdf"></i>
+            Dokumente
+            <span class="tab-count" id="documents-count">0</span>
+        </button>
+        <button class="category-tab" data-category="gallery">
+            <i class="fas fa-images"></i>
+            Galerie
+            <span class="tab-count" id="gallery-count">0</span>
+        </button>
+        <button class="category-tab" data-category="videos">
+            <i class="fas fa-video"></i>
+            Videos
+            <span class="tab-count" id="videos-count">0</span>
+        </button>
+        <button class="category-tab" data-category="analytics">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
+            <span class="tab-count" id="analytics-count">📊</span>
+        </button>
+    </div>
+    
+    <!-- Smart Search & Filter -->
+    <div class="media-search-bar" style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+        <div style="flex: 1; position: relative;">
+            <input type="text" id="media-search" placeholder="🔍 Medien durchsuchen..." 
+                   style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            <button id="ai-search-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6366f1; cursor: pointer;" title="KI-Suche aktivieren">
+                <i class="fas fa-brain"></i>
+            </button>
+        </div>
+        <select id="media-filter-type" style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;">
+            <option value="">Alle Typen</option>
+            <option value="image">Bilder</option>
+            <option value="video">Videos</option>
+            <option value="document">Dokumente</option>
+            <option value="audio">Audio</option>
+        </select>
+        <button id="bulk-actions-btn" style="padding: 0.75rem 1rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            <i class="fas fa-tasks"></i> Bulk Actions
+        </button>
+    </div>
+</div>
+
+<!-- Upload Section -->
+<div class="upload-section" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+    <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fas fa-cloud-upload-alt"></i>
+        Dateien hochladen
+    </h3>
+    
+    <!-- Upload Methods -->
+    <div class="upload-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <button class="upload-method-btn" onclick="triggerFileUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+            <i class="fas fa-upload" style="font-size: 1.5rem; color: #6366f1; margin-bottom: 0.5rem;"></i>
+            <div style="font-weight: 500; color: #333;">Dateien auswählen</div>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Klicken zum Hochladen</div>
+        </button>
+        
+        <button class="upload-method-btn" onclick="triggerBulkUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+            <i class="fas fa-layer-group" style="font-size: 1.5rem; color: #10b981; margin-bottom: 0.5rem;"></i>
+            <div style="font-weight: 500; color: #333;">Bulk Upload</div>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Mehrere Dateien</div>
+        </button>
+        
+        <button class="upload-method-btn" onclick="triggerCameraUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+            <i class="fas fa-camera" style="font-size: 1.5rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
+            <div style="font-weight: 500; color: #333;">Kamera</div>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Foto aufnehmen</div>
+        </button>
+        
+        <button class="upload-method-btn" onclick="triggerURLUpload()" style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s ease; text-align: center; width: 100%;">
+            <i class="fas fa-link" style="font-size: 1.5rem; color: #8b5cf6; margin-bottom: 0.5rem;"></i>
+            <div style="font-weight: 500; color: #333;">URL Import</div>
+            <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Von URL laden</div>
+        </button>
+    </div>
+    
+    <!-- Drag & Drop Area -->
+    <div class="drag-drop-area" id="dragDropArea" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 3rem; text-align: center; background: #f8fafc; transition: all 0.3s ease;">
+        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+        <h4 style="color: #475569; margin-bottom: 0.5rem;">Dateien hier ablegen</h4>
+        <p style="color: #64748b; margin: 0;">oder klicken zum Auswählen</p>
+    </div>
+    
+    <!-- Upload Progress -->
+    <div class="upload-progress" id="uploadProgress" style="display: none; margin-top: 1rem;">
+        <div class="progress-bar" style="background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden;">
+            <div class="progress-fill" style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        </div>
+        <div class="progress-text" style="text-align: center; margin-top: 0.5rem; color: #64748b; font-size: 0.9rem;">
+            <span id="progress-percentage">0%</span> - <span id="progress-status">Vorbereitung...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Media Gallery -->
+<div class="media-gallery" id="mediaGallery" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div class="gallery-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3 style="color: #333; margin: 0;">Medien-Galerie</h3>
+        <div class="gallery-actions" style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm btn-secondary" onclick="toggleGridView()">
+                <i class="fas fa-th"></i> Grid
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="toggleListView()">
+                <i class="fas fa-list"></i> List
+            </button>
+            <button class="btn btn-sm btn-primary" onclick="refreshGallery()">
+                <i class="fas fa-sync"></i> Aktualisieren
+            </button>
+        </div>
+    </div>
+    
+    <div class="gallery-content" id="galleryContent">
+        <!-- Media items will be loaded here -->
+        <div class="gallery-loading" style="text-align: center; padding: 3rem; color: #64748b;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>Lade Medien...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden File Input -->
+<input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" style="display: none;">
