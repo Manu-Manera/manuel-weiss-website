@@ -288,6 +288,45 @@
     transform: translateY(-10px) scale(1.02);
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     border-color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Klickbare Kacheln */
+.step-card-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.step-card-link:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.4);
+}
+
+.step-card-link:hover .step-number-enhanced {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+}
+
+.step-card-link:hover h4 {
+    color: #4ade80 !important;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.step-card-link:visited {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.step-card-link:active {
+    color: inherit !important;
+    text-decoration: none !important;
 }
 
 .step-number-enhanced {
@@ -320,25 +359,7 @@
     font-size: 1.1rem;
 }
 
-.btn-start-step {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    text-decoration: none;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.btn-start-step:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(45deg, #764ba2, #667eea);
-}
+/* Start-Button CSS entfernt - Kacheln sind jetzt direkt klickbar */
 
 /* ===== STERNE-ANIMATION KEYFRAMES ===== */
 @keyframes starsTwinkle {
@@ -683,34 +704,40 @@
 
 /* Removed all keyframe animations */
 
-/* Simple Clean Ikigai Diagram */
+/* Modern Glass Mandala Ikigai Diagram */
 .ikigai-diagram-enhanced {
     position: relative;
     width: 100%;
-    max-width: 800px;
-    height: 800px;
-    margin: 2rem auto;
+    max-width: 1200px;
+    height: 1200px;
+    margin: 3rem auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
 }
 
 .ikigai-flower-enhanced {
     position: relative;
-    width: 700px;
-    height: 700px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 30px;
+    width: 1000px;
+    height: 1000px;
+    display: flex;
     align-items: center;
-    justify-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
 .ikigai-petal-enhanced {
-    width: 320px;
-    height: 320px;
-    border-radius: 20px;
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -718,11 +745,13 @@
     text-align: center;
     font-weight: 600;
     color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 3px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.1);
 }
 
 .ikigai-petal-enhanced:hover {
@@ -758,30 +787,104 @@
 }
 
 .petal-passion {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    grid-column: 1;
-    grid-row: 1;
+    background: linear-gradient(135deg, #ff6b9d, #c44569, #ff8a80);
+    top: 5%;
+    left: 5%;
+    transform: rotate(-15deg);
 }
 
 .petal-mission {
-    background: linear-gradient(135deg, #4ecdc4, #44a08d);
-    grid-column: 2;
-    grid-row: 1;
+    background: linear-gradient(135deg, #4ecdc4, #44a08d, #26d0ce);
+    top: 5%;
+    right: 5%;
+    transform: rotate(15deg);
 }
 
 .petal-profession {
-    background: linear-gradient(135deg, #45b7d1, #96c93d);
-    grid-column: 1;
-    grid-row: 2;
+    background: linear-gradient(135deg, #a8edea, #fed6e3, #d299c2);
+    bottom: 5%;
+    left: 5%;
+    transform: rotate(15deg);
 }
 
 .petal-vocation {
-    background: linear-gradient(135deg, #f093fb, #f5576c);
-    grid-column: 2;
-    grid-row: 2;
+    background: linear-gradient(135deg, #ffecd2, #fcb69f, #ff9a9e);
+    bottom: 5%;
+    right: 5%;
+    transform: rotate(-15deg);
 }
 
-/* Removed all keyframe animations for clean design */
+/* Glass Schnittbereiche mit Mouseover-Effekten */
+.intersection-area {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 3px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(25px);
+    background: rgba(255,255,255,0.15);
+    z-index: 10;
+}
+
+.intersection-area:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.8);
+}
+
+.intersection-area h5 {
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.intersection-area p {
+    font-size: 0.7rem;
+    margin: 0;
+    opacity: 0.9;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* Positionierung der Schnittbereiche */
+.intersection-passion-mission {
+    background: linear-gradient(135deg, #ff6b9d, #4ecdc4, #ff8a80);
+    top: 20%;
+    left: 20%;
+    transform: rotate(-5deg);
+}
+
+.intersection-mission-profession {
+    background: linear-gradient(135deg, #4ecdc4, #a8edea, #26d0ce);
+    top: 20%;
+    right: 20%;
+    transform: rotate(5deg);
+}
+
+.intersection-profession-vocation {
+    background: linear-gradient(135deg, #a8edea, #ffecd2, #d299c2);
+    bottom: 20%;
+    left: 20%;
+    transform: rotate(5deg);
+}
+
+.intersection-vocation-passion {
+    background: linear-gradient(135deg, #ffecd2, #ff6b9d, #ff9a9e);
+    bottom: 20%;
+    right: 20%;
+    transform: rotate(-5deg);
+}
 
 /* Clean Center - Simple Ikigai */
 
@@ -790,9 +893,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 180px;
-    height: 180px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, rgba(102,126,234,0.8), rgba(118,75,162,0.8), rgba(240,147,251,0.8));
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -800,15 +903,19 @@
     justify-content: center;
     color: white;
     text-align: center;
-    z-index: 10;
-    box-shadow: 0 15px 30px rgba(102,126,234,0.4);
-    border: 3px solid rgba(255,255,255,0.4);
-    transition: all 0.3s ease;
+    z-index: 20;
+    box-shadow: 0 25px 60px rgba(102,126,234,0.6);
+    border: 4px solid rgba(255,255,255,0.5);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(30px);
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
 .ikigai-center-enhanced:hover {
     transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0 20px 40px rgba(102,126,234,0.5);
+    box-shadow: 0 25px 60px rgba(102,126,234,0.6);
+    border-color: rgba(255,255,255,0.8);
 }
 
 .center-icon {

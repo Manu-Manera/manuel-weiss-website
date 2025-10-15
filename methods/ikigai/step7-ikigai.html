@@ -240,9 +240,9 @@
             generateFinalAnalysis();
             
             // Zeige Erfolgsmeldung mit PDF-Download Option
-            const userConfirmed = confirm('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!\n\nMöchtest du jetzt eine schöne PDF-Zusammenfassung deines Ikigai herunterladen?');
+            const userChoice = confirm('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!\n\nMöchtest du jetzt eine schöne PDF-Zusammenfassung deines Ikigai herunterladen?\n\nKlicke "OK" für Ja oder "Abbrechen" für Nein.');
             
-            if (userConfirmed) {
+            if (userChoice) {
                 // Generiere und lade PDF herunter
                 generatePDF();
             }
