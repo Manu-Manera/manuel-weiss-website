@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;">
+    <meta name="keywords" content="Bewerbung, KI, Workflow, Stellenanzeige, Initiativbewerbung, CV, Anschreiben">
+    <meta name="description" content="KI-gestützter Bewerbungsworkflow - Professionelle Bewerbungen erstellen">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schritt 2: Matching & Skill-Gap - KI-Bewerbungsworkflow</title>
     <link rel="stylesheet" href="styles.css">
@@ -255,5 +258,27 @@
     </script>
     <!-- Workflow Enhancements -->
     <script src="js/workflow-enhancements.js" async></script>
+
+    <script>
+        function proceedToNextStep() {
+            const currentStep = window.location.pathname.split('/').pop();
+            const steps = [
+                'bewerbungsart-wahl.html',
+                'ki-stellenanalyse.html', 
+                'matching-skillgap.html',
+                'anschreiben-generieren.html',
+                'dokumente-optimieren.html',
+                'design-layout.html',
+                'export-versand.html'
+            ];
+            
+            const currentIndex = steps.indexOf(currentStep);
+            const nextStep = steps[currentIndex + 1];
+            
+            if (nextStep) {
+                window.location.href = nextStep;
+            }
+        }
+    </script>
 </body>
 </html>

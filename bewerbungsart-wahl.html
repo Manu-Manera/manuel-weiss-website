@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;">
+    <meta name="keywords" content="Bewerbung, KI, Workflow, Stellenanzeige, Initiativbewerbung, CV, Anschreiben">
+    <meta name="description" content="KI-gestützter Bewerbungsworkflow - Professionelle Bewerbungen erstellen">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schritt 0: Bewerbungsart wählen - KI-Bewerbungsworkflow</title>
     <link rel="stylesheet" href="styles.css">
@@ -205,6 +208,19 @@
                 grid-template-columns: 1fr;
             }
         }
+    
+        .dark-mode {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step {
+            background: #2d2d2d !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step-container {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -254,7 +270,7 @@
                 <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
             </a>
             
-            <button class="btn btn-primary" id="nextBtn" onclick="proceedToNextStep()" disabled>
+            <button class="btn btn-primary" id="nextBtn" onclick="proceedToNextStep()" disabled aria-label="Button">
                 Weiter <i class="fas fa-arrow-right"></i>
             </button>
         </div>
