@@ -551,9 +551,64 @@
                 gap: 2rem;
             }
             
-            .ikigai-circle-enhanced {
+            .ikigai-diagram-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .ikigai-flower {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .ikigai-petal {
+                width: 90px;
+                height: 90px;
+                font-size: 0.7rem;
+            }
+            
+            .ikigai-center {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .ikigai-center h3 {
+                font-size: 1rem;
+            }
+            
+            .ikigai-center p {
+                font-size: 0.6rem;
+            }
+            
+            .petal-label {
+                font-size: 0.6rem;
+            }
+            
+            .petal-description {
+                font-size: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ikigai-diagram-container {
                 width: 250px;
                 height: 250px;
+            }
+            
+            .ikigai-flower {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .ikigai-petal {
+                width: 70px;
+                height: 70px;
+                font-size: 0.6rem;
+            }
+            
+            .ikigai-center {
+                width: 70px;
+                height: 70px;
             }
         }
     </style>
@@ -816,6 +871,21 @@
         // YouTube video function
         function openVideo(url) {
             window.open(url, '_blank');
+        }
+        
+        // Scroll to specific section function
+        function scrollToSection(section) {
+            const sections = {
+                'passion': 'step2',
+                'mission': 'step3', 
+                'profession': 'step4',
+                'vocation': 'step5'
+            };
+            
+            const targetStep = sections[section];
+            if (targetStep) {
+                window.location.href = `${targetStep}.html`;
+            }
         }
     </script>
 </body>
