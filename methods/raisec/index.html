@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 RAISEC Workflow - Berufliche Interessen entdecken</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke deine beruflichen Interessen mit dem RAISEC-Modell. Realistische, investigative, künstlerische, soziale, unternehmerische und konventionelle Interessen analysieren.">
+    <meta name="keywords" content="raisec, berufliche interessen, berufswahl, persönlichkeitsentwicklung, karriere, workflow, interaktiv">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="🎯 RAISEC Workflow - Berufliche Interessen entdecken">
+    <meta property="og:description" content="Entdecke deine beruflichen Interessen mit dem RAISEC-Modell - 6 Interessensbereiche analysieren">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app/methods/raisec/">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/raisec-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Enhanced Hero Section -->
+    <section class="hero-enhanced">
+        <div class="hero-content-enhanced">
+            <h1 class="hero-title-enhanced">🎯 RAISEC Workflow</h1>
+            <p class="hero-subtitle-enhanced">Entdecke deine beruflichen Interessen mit dem bewährten RAISEC-Modell</p>
+            <div class="hero-actions-enhanced">
+                <button class="btn-enhanced btn-primary-enhanced" onclick="startRAISECWorkflow()">
+                    <i class="fas fa-play"></i>
+                    Workflow starten
+                </button>
+                <a href="#about" class="btn-enhanced btn-outline-enhanced">
+                    <i class="fas fa-info-circle"></i>
+                    Mehr erfahren
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="video-container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                📺 Lerne RAISEC mit Experten
+            </h2>
+            <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-bottom: 2rem;">
+                Entdecke die besten YouTube-Videos zum RAISEC-Modell
+            </p>
+            
+            <div class="video-grid">
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">Was ist das RAISEC-Modell? - Berufliche Interessen verstehen</h3>
+                    <p class="video-description">Ein umfassender Einblick in die 6 RAISEC-Bereiche und wie sie dir bei der Berufswahl helfen können.</p>
+                </div>
+                
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">RAISEC in der Praxis - Karrierewege finden</h3>
+                    <p class="video-description">Lerne, wie du das RAISEC-Modell praktisch für deine Karriereplanung nutzen kannst.</p>
+                </div>
+                
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">RAISEC vs. andere Berufstests</h3>
+                    <p class="video-description">Vergleiche RAISEC mit anderen Methoden der beruflichen Orientierung.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Method Explanation -->
+    <section class="method-explanation">
+        <div class="explanation-grid">
+            <div class="explanation-content">
+                <h2>Was ist RAISEC?</h2>
+                <p>RAISEC ist ein bewährtes Modell zur Analyse beruflicher Interessen, das auf der Theorie von John Holland basiert. Es unterscheidet sechs grundlegende Interessensbereiche:</p>
+                
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> <strong>R</strong>ealistisch - Praktische, handwerkliche Tätigkeiten</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>A</strong>rtistisch - Kreative, künstlerische Aktivitäten</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>I</strong>nvestigativ - Wissenschaftliche, analytische Arbeit</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>S</strong>ozial - Menschen helfen und unterstützen</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>E</strong>nterprising - Führung und Unternehmertum</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>C</strong>onventional - Strukturierte, organisatorische Aufgaben</li>
+                </ul>
+                
+                <p>Durch die Analyse deiner Interessen in diesen Bereichen kannst du Berufe und Karrierewege finden, die zu dir passen.</p>
+            </div>
+            
+            <div class="raisec-visual">
+                <div class="raisec-hexagon-container">
+                    <div class="raisec-hexagon">
+                        <div class="raisec-area realistic" onclick="scrollToSection('realistic')">
+                            <div class="area-icon">🔧</div>
+                            <div class="area-label">Realistisch</div>
+                            <div class="area-description">Praktisch & Handwerklich</div>
+                        </div>
+                        
+                        <div class="raisec-area artistic" onclick="scrollToSection('artistic')">
+                            <div class="area-icon">🎨</div>
+                            <div class="area-label">Artistic</div>
+                            <div class="area-description">Kreativ & Künstlerisch</div>
+                        </div>
+                        
+                        <div class="raisec-area investigative" onclick="scrollToSection('investigative')">
+                            <div class="area-icon">🔬</div>
+                            <div class="area-label">Investigativ</div>
+                            <div class="area-description">Wissenschaftlich & Analytisch</div>
+                        </div>
+                        
+                        <div class="raisec-area social" onclick="scrollToSection('social')">
+                            <div class="area-icon">👥</div>
+                            <div class="area-label">Sozial</div>
+                            <div class="area-description">Menschen helfen</div>
+                        </div>
+                        
+                        <div class="raisec-area enterprising" onclick="scrollToSection('enterprising')">
+                            <div class="area-icon">💼</div>
+                            <div class="area-label">Enterprising</div>
+                            <div class="area-description">Führung & Unternehmertum</div>
+                        </div>
+                        
+                        <div class="raisec-area conventional" onclick="scrollToSection('conventional')">
+                            <div class="area-icon">📊</div>
+                            <div class="area-label">Conventional</div>
+                            <div class="area-description">Strukturiert & Organisiert</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Steps -->
+    <section class="workflow-steps-enhanced">
+        <div class="steps-container">
+            <h2 class="steps-title">6 Schritte zu deinem RAISEC-Profil</h2>
+            
+            <div class="steps-grid-enhanced">
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">1</div>
+                    <h4>Interessensanalyse</h4>
+                    <p>Analysiere deine Interessen in den 6 RAISEC-Bereichen durch gezielte Fragen und Selbstreflexion.</p>
+                    <a href="step1.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">2</div>
+                    <h4>Fähigkeiten-Bewertung</h4>
+                    <p>Bewerte deine Fähigkeiten und Kompetenzen in jedem RAISEC-Bereich.</p>
+                    <a href="step2.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">3</div>
+                    <h4>Werte-Reflexion</h4>
+                    <p>Reflektiere über deine Werte und wie sie mit den RAISEC-Bereichen übereinstimmen.</p>
+                    <a href="step3.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">4</div>
+                    <h4>Berufsanalyse</h4>
+                    <p>Analysiere verschiedene Berufe und ihre Zuordnung zu den RAISEC-Bereichen.</p>
+                    <a href="step4.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">5</div>
+                    <h4>Profil-Erstellung</h4>
+                    <p>Erstelle dein persönliches RAISEC-Profil basierend auf deinen Antworten.</p>
+                    <a href="step5.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">6</div>
+                    <h4>Karriere-Empfehlungen</h4>
+                    <p>Erhalte personalisierte Karriereempfehlungen basierend auf deinem RAISEC-Profil.</p>
+                    <a href="step6.html" class="btn-start-step">
+                        <i class="fas fa-play"></i> Start
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="js/raisec-workflow.js"></script>
+    
+    <script>
+        function startRAISECWorkflow() {
+            // Redirect to step1.html
+            window.location.href = 'step1.html';
+        }
+        
+        // YouTube video function
+        function openVideo(url) {
+            window.open(url, '_blank');
+        }
+        
+        // Scroll to specific section function
+        function scrollToSection(section) {
+            const sections = {
+                'realistic': 'step1',
+                'artistic': 'step1', 
+                'investigative': 'step1',
+                'social': 'step1',
+                'enterprising': 'step1',
+                'conventional': 'step1'
+            };
+            
+            const targetStep = sections[section];
+            if (targetStep) {
+                window.location.href = `${targetStep}.html`;
+            }
+        }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards and sections
+        document.querySelectorAll('.step-card-enhanced, .video-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

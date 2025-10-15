@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 2: Passion</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke deine Leidenschaften im Ikigai-Workflow. Was macht dir wirklich Freude? Finde heraus, was dich begeistert.">
+    <meta name="keywords" content="ikigai, passion, leidenschaft, freude, begeisterung, lebenszweck">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step1-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 2: Passion</h1>
+                <p class="step-description">Entdecke deine Leidenschaften und was dich wirklich begeistert. Was macht dir Freude?</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 28.6%"></div>
+                </div>
+                <span class="progress-text">2 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Leidenschaften entdecken</h2>
+                    <p>Leidenschaften sind die Dinge, die dir Energie geben und bei denen du die Zeit vergisst. Sie sind der Treibstoff für dein Ikigai.</p>
+                </div>
+
+                <form class="reflection-form" id="passionForm">
+                    <!-- Frage 1: Aktivitäten die Freude bereiten -->
+                    <div class="form-group">
+                        <label for="activities">Welche Aktivitäten machen dir am meisten Freude?</label>
+                        <p class="question-hint">Denke an Momente, in denen du voller Energie und Begeisterung warst.</p>
+                        <textarea id="activities" name="activities" rows="6" placeholder="Beschreibe die Aktivitäten, die dir Freude bereiten..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Hobbys & Freizeit:</strong> Was machst du gerne in deiner freien Zeit?</li>
+                                <li><strong>Kreative Tätigkeiten:</strong> Malen, Schreiben, Musik, Handwerk?</li>
+                                <li><strong>Sport & Bewegung:</strong> Welche körperlichen Aktivitäten liebst du?</li>
+                                <li><strong>Lernen & Entdecken:</strong> Welche Themen faszinieren dich?</li>
+                                <li><strong>Soziale Aktivitäten:</strong> Was machst du gerne mit anderen?</li>
+                                <li><strong>Natur & Umwelt:</strong> Welche Naturerfahrungen begeistern dich?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Interessen und Neugier -->
+                    <div class="form-group">
+                        <label for="interests">Wofür interessierst du dich besonders? Was weckt deine Neugier?</label>
+                        <p class="question-hint">Überlege, welche Themen dich immer wieder beschäftigen und wofür du gerne Zeit investierst.</p>
+                        <textarea id="interests" name="interests" rows="6" placeholder="Schreibe über deine Interessen und was deine Neugier weckt..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Wissenschaft & Forschung:</strong> Welche Bereiche faszinieren dich?</li>
+                                <li><strong>Kunst & Kultur:</strong> Welche kulturellen Bereiche interessieren dich?</li>
+                                <li><strong>Technologie:</strong> Welche technischen Entwicklungen begeistern dich?</li>
+                                <li><strong>Gesellschaft & Politik:</strong> Welche gesellschaftlichen Themen beschäftigen dich?</li>
+                                <li><strong>Geschichte & Tradition:</strong> Welche historischen Epochen faszinieren dich?</li>
+                                <li><strong>Zukunft & Innovation:</strong> Welche Zukunftsvisionen begeistern dich?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Werte und Überzeugungen -->
+                    <div class="form-group">
+                        <label for="values">Was ist dir wirklich wichtig? Welche Werte leitest du?</label>
+                        <p class="question-hint">Deine Werte sind der Kompass für deine Leidenschaften. Was ist dir im Leben wirklich wichtig?</p>
+                        <textarea id="values" name="values" rows="6" placeholder="Beschreibe deine wichtigsten Werte und Überzeugungen..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Gerechtigkeit & Fairness:</strong> Wie wichtig ist dir Gerechtigkeit?</li>
+                                <li><strong>Freiheit & Autonomie:</strong> Wie viel Freiheit brauchst du?</li>
+                                <li><strong>Kreativität & Ausdruck:</strong> Wo willst du dich ausdrücken?</li>
+                                <li><strong>Beziehungen & Liebe:</strong> Was bedeuten Beziehungen für dich?</li>
+                                <li><strong>Wachstum & Entwicklung:</strong> Wie wichtig ist dir persönliches Wachstum?</li>
+                                <li><strong>Beitrag & Sinn:</strong> Wie willst du zur Welt beitragen?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 4: Energie und Flow -->
+                    <div class="form-group">
+                        <label for="energy">Wann fühlst du dich am lebendigsten? Was gibt dir Energie?</label>
+                        <p class="question-hint">Denke an Situationen, in denen du in den Flow gekommen bist und die Zeit wie im Flug vergangen ist.</p>
+                        <textarea id="energy" name="energy" rows="6" placeholder="Beschreibe, wann du dich am lebendigsten fühlst..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Flow-Zustände:</strong> Wann vergisst du die Zeit?</li>
+                                <li><strong>Energiequellen:</strong> Was gibt dir Kraft und Motivation?</li>
+                                <li><strong>Herausforderungen:</strong> Welche Aufgaben begeistern dich?</li>
+                                <li><strong>Erfolgserlebnisse:</strong> Wann fühlst du dich stolz?</li>
+                                <li><strong>Kreative Momente:</strong> Wann bist du am kreativsten?</li>
+                                <li><strong>Soziale Situationen:</strong> Wann fühlst du dich am wohlsten?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="step1.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück zu Selbstreflexion
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Mission
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-heart"></i> Passion-Tools</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Leidenschaft entdecken</h5>
+                            <ul>
+                                <li><strong>Passion Journal:</strong> Täglich aufschreiben, was Freude bereitet</li>
+                                <li><strong>Energy Tracking:</strong> Wann fühlst du dich am energiegeladensten?</li>
+                                <li><strong>Flow Diary:</strong> Momente dokumentieren, in denen Zeit vergessen wird</li>
+                                <li><strong>Values Clarification:</strong> Deine wichtigsten Werte identifizieren</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Interessen erkunden</h5>
+                            <ul>
+                                <li><strong>Curiosity Map:</strong> Alle Bereiche aufschreiben, die dich interessieren</li>
+                                <li><strong>Learning Path:</strong> Welche Themen würdest du gerne vertiefen?</li>
+                                <li><strong>Interest Inventory:</strong> Systematische Interessensanalyse</li>
+                                <li><strong>Passion Project:</strong> Ein Projekt starten, das dich begeistert</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Passion-Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"The Passion Test"</strong> von Janet Attwood</li>
+                                <li><strong>"Find Your Why"</strong> von Simon Sinek</li>
+                                <li><strong>"The Element"</strong> von Ken Robinson</li>
+                                <li><strong>"Flow"</strong> von Mihaly Csikszentmihalyi</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Online-Tools</h5>
+                            <ul>
+                                <li><strong>VIA Character Strengths:</strong> Deine Charakterstärken</li>
+                                <li><strong>StrengthsFinder:</strong> Gallup Stärken-Test</li>
+                                <li><strong>16personalities.com:</strong> Persönlichkeitstyp</li>
+                                <li><strong>MasterClass:</strong> Von Experten lernen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/ikigai-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                activities: document.getElementById('activities').value,
+                interests: document.getElementById('interests').value,
+                values: document.getElementById('values').value,
+                energy: document.getElementById('energy').value,
+                step: 2,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep2', JSON.stringify(formData));
+            
+            // Redirect to step 3
+            window.location.href = 'step3.html';
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep2');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('activities').value = data.activities || '';
+                document.getElementById('interests').value = data.interests || '';
+                document.getElementById('values').value = data.values || '';
+                document.getElementById('energy').value = data.energy || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    activities: document.getElementById('activities').value,
+                    interests: document.getElementById('interests').value,
+                    values: document.getElementById('values').value,
+                    energy: document.getElementById('energy').value,
+                    step: 2,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep2', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>
