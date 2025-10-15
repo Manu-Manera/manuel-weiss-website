@@ -266,6 +266,10 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
+    cursor: pointer;
 }
 
 .step-card-enhanced::before {
@@ -704,40 +708,40 @@
 
 /* Removed all keyframe animations */
 
-/* Modern Glass Mandala Ikigai Diagram */
+/* ECHTES MANDALA DIAGRAMM */
 .ikigai-diagram-enhanced {
     position: relative;
     width: 100%;
-    max-width: 1200px;
-    height: 1200px;
+    max-width: 800px;
+    height: 800px;
     margin: 3rem auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
     border-radius: 50%;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.2);
 }
 
 .ikigai-flower-enhanced {
     position: relative;
-    width: 1000px;
-    height: 1000px;
+    width: 700px;
+    height: 700px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
     border-radius: 50%;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
     backdrop-filter: blur(20px);
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 3px solid rgba(255,255,255,0.3);
 }
 
 .ikigai-petal-enhanced {
     position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
+    width: 280px;
+    height: 280px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -746,12 +750,12 @@
     font-weight: 600;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border: 3px solid rgba(255,255,255,0.3);
-    backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(25px);
+    background: rgba(255,255,255,0.15);
 }
 
 .ikigai-petal-enhanced:hover {
