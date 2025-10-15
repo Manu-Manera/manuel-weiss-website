@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design & Layout - Bewerbungsmanager</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 100%;
+            width: 85.7%;
+            transition: width 0.3s ease;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .template-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .template-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        }
+
+        .template-preview {
+            width: 100%;
+            height: 200px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #94a3b8;
+        }
+
+        .template-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-description {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #333;
+        }
+
+        .preview-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .preview-title {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .preview-document {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-palette"></i> Design & Layout</h1>
+            <p>Wählen Sie ein professionelles Design für Ihre Bewerbungsunterlagen</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <div class="step-card">
+            <h2>Schritt 5: Design auswählen</h2>
+            
+            <div class="template-grid">
+                <div class="template-card" onclick="selectTemplate('modern')" data-template="modern">
+                    <div class="template-preview">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="template-name">Modern</div>
+                    <div class="template-description">Sauberes, zeitgemäßes Design</div>
+                </div>
+
+                <div class="template-card" onclick="selectTemplate('classic')" data-template="classic">
+                    <div class="template-preview">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="template-name">Classic</div>
+                    <div class="template-description">Traditionelles, seriöses Layout</div>
+                </div>
+
+                <div class="template-card" onclick="selectTemplate('creative')" data-template="creative">
+                    <div class="template-preview">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="template-name">Creative</div>
+                    <div class="template-description">Kreatives, auffälliges Design</div>
+                </div>
+
+                <div class="template-card" onclick="selectTemplate('minimal')" data-template="minimal">
+                    <div class="template-preview">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="template-name">Minimal</div>
+                    <div class="template-description">Minimalistisches, fokussiertes Layout</div>
+                </div>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-option" style="background: #1e40af;" onclick="selectColor('#1e40af')" data-color="#1e40af"></div>
+                <div class="color-option" style="background: #059669;" onclick="selectColor('#059669')" data-color="#059669"></div>
+                <div class="color-option" style="background: #dc2626;" onclick="selectColor('#dc2626')" data-color="#dc2626"></div>
+                <div class="color-option" style="background: #7c3aed;" onclick="selectColor('#7c3aed')" data-color="#7c3aed"></div>
+                <div class="color-option" style="background: #ea580c;" onclick="selectColor('#ea580c')" data-color="#ea580c"></div>
+            </div>
+
+            <div class="preview-section">
+                <h3 class="preview-title">Vorschau</h3>
+                <div class="preview-document" id="previewDocument">
+                    <h4 style="color: #1e40af; margin-bottom: 1rem;">Manuel Weiss</h4>
+                    <p style="color: #64748b; margin-bottom: 1rem;">Senior HR-Tech Consultant</p>
+                    <p style="line-height: 1.6;">Erfahrener Berater für digitale Transformation mit über 5 Jahren Berufserfahrung...</p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </button>
+                <button class="continue-btn" onclick="proceedToNextStep()">
+                    <i class="fas fa-arrow-right"></i> Weiter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTemplate = 'modern';
+        let selectedColor = '#1e40af';
+
+        function selectTemplate(template) {
+            // Remove previous selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection to clicked card
+            event.currentTarget.classList.add('selected');
+            selectedTemplate = template;
+
+            updatePreview();
+        }
+
+        function selectColor(color) {
+            // Remove previous selection
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selection to clicked color
+            event.currentTarget.classList.add('selected');
+            selectedColor = color;
+
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('previewDocument');
+            const title = preview.querySelector('h4');
+            title.style.color = selectedColor;
+        }
+
+        function proceedToNextStep() {
+            // Store design choices
+            localStorage.setItem('selectedTemplate', selectedTemplate);
+            localStorage.setItem('selectedColor', selectedColor);
+            
+            window.location.href = 'export-versand.html';
+        }
+
+        function goBack() {
+            window.location.href = 'dokumente-optimieren.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select first template by default
+            document.querySelector('[data-template="modern"]').classList.add('selected');
+            document.querySelector('[data-color="#1e40af"]').classList.add('selected');
+        });
+    </script>
+</body>
+</html>
