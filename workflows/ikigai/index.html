@@ -3,197 +3,582 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ikigai Workflow - Finde deinen Lebenszweck</title>
+    <title>🎯 Ikigai Workflow - Finde deinen Lebenszweck</title>
     
     <!-- Meta Tags -->
-    <meta name="description" content="Entdecke deinen Lebenszweck mit der japanischen Ikigai-Methode. 7 detaillierte Schritte zur Selbstfindung.">
-    <meta name="keywords" content="ikigai, lebenszweck, persönlichkeitsentwicklung, japanische methode, selbstfindung">
+    <meta name="description" content="Entdecke deinen Lebenszweck mit der japanischen Ikigai-Methode. 7 detaillierte Schritte zur Selbstfindung mit interaktiven Workflows, YouTube-Videos und modernem Design.">
+    <meta name="keywords" content="ikigai, lebenszweck, persönlichkeitsentwicklung, japanische methode, selbstfindung, workflow, interaktiv">
     <meta name="author" content="Manuel Weiss">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Ikigai Workflow - Finde deinen Lebenszweck">
-    <meta property="og:description" content="Entdecke deinen Lebenszweck mit der japanischen Ikigai-Methode">
+    <meta property="og:title" content="🎯 Ikigai Workflow - Finde deinen Lebenszweck">
+    <meta property="og:description" content="Entdecke deinen Lebenszweck mit der japanischen Ikigai-Methode - 7 detaillierte Schritte">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app/workflows/ikigai/">
     
     <!-- Styles -->
     <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+    
+    <style>
+        /* Enhanced Hero Section */
+        .hero-enhanced {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content-enhanced {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero-title-enhanced {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle-enhanced {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .hero-actions-enhanced {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-enhanced {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary-enhanced {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .btn-primary-enhanced:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255,107,107,0.4);
+        }
+        
+        .btn-outline-enhanced {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-outline-enhanced:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* Video Section */
+        .video-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .video-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .video-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .play-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .video-card:hover .play-button {
+            transform: scale(1.1);
+            background: white;
+        }
+        
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .video-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        
+        /* Method Explanation */
+        .method-explanation {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .explanation-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .explanation-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .features-list li i {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .ikigai-visual {
+            position: relative;
+            height: 400px;
+        }
+        
+        .ikigai-circle-enhanced {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            position: relative;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .ikigai-center-enhanced {
+            text-align: center;
+            color: white;
+            z-index: 2;
+        }
+        
+        .ikigai-center-enhanced h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ikigai-center-enhanced p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Workflow Steps */
+        .workflow-steps-enhanced {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .steps-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .steps-grid-enhanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .step-card-enhanced {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-card-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .step-card-enhanced:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .step-number-enhanced {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+        
+        .step-card-enhanced h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .step-card-enhanced p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-start-step {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-start-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title-enhanced {
+                font-size: 2.5rem;
+            }
+            
+            .explanation-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .ikigai-circle-enhanced {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <a href="../../index.html">
-                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
-                        <span class="logo-text">Manuel Weiss</span>
-                    </a>
-                </div>
-                
-                <nav class="nav">
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="../../index.html">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a>
-                        </li>
-                        <li class="nav-item active">
-                            <a href="../../ikigai.html">Ikigai</a>
-                        </li>
-                    </ul>
-                </nav>
+    <!-- Enhanced Hero Section -->
+    <section class="hero-enhanced">
+        <div class="hero-content-enhanced">
+            <h1 class="hero-title-enhanced">🎯 Ikigai Workflow</h1>
+            <p class="hero-subtitle-enhanced">Entdecke deinen Lebenszweck mit der japanischen Methode</p>
+            <div class="hero-actions-enhanced">
+                <button class="btn-enhanced btn-primary-enhanced" onclick="startIkigaiWorkflow()">
+                    <i class="fas fa-play"></i>
+                    Workflow starten
+                </button>
+                <a href="#about" class="btn-enhanced btn-outline-enhanced">
+                    <i class="fas fa-info-circle"></i>
+                    Mehr erfahren
+                </a>
             </div>
         </div>
-    </header>
+    </section>
 
-    <!-- Main Content -->
-    <main class="main">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h1 class="hero-title">🎯 Ikigai Workflow</h1>
-                    <p class="hero-subtitle">Entdecke deinen Lebenszweck mit der japanischen Methode</p>
-                    <div class="hero-actions">
-                        <button class="btn btn-primary" onclick="startIkigaiWorkflow()">
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="video-container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                📺 Lerne Ikigai mit Experten
+            </h2>
+            <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-bottom: 2rem;">
+                Entdecke die besten YouTube-Videos zur Ikigai-Methode
+            </p>
+            
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
                             <i class="fas fa-play"></i>
-                            Workflow starten
-                        </button>
-                        <a href="#about" class="btn btn-outline">
-                            <i class="fas fa-info-circle"></i>
-                            Mehr erfahren
-                        </a>
+                        </div>
                     </div>
+                    <h3 class="video-title">Was ist Ikigai? - Die japanische Lebensphilosophie</h3>
+                    <p class="video-description">Ein umfassender Einblick in die Ikigai-Methode und wie sie dir helfen kann, deinen Lebenszweck zu finden.</p>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">Ikigai in der Praxis - 7 Schritte zur Umsetzung</h3>
+                    <p class="video-description">Lerne, wie du die Ikigai-Methode praktisch anwendest und deinen persönlichen Lebenszweck entdeckst.</p>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">Ikigai vs. andere Lebensphilosophien</h3>
+                    <p class="video-description">Vergleiche Ikigai mit anderen Methoden der Selbstfindung und verstehe die einzigartigen Vorteile.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- About Section -->
-        <section id="about" class="about-ikigai">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Was ist Ikigai?</h2>
-                    <p class="section-subtitle">Die japanische Methode zur Entdeckung deines Lebenszwecks</p>
-                </div>
+    <!-- Method Explanation -->
+    <section class="method-explanation">
+        <div class="explanation-grid">
+            <div class="explanation-content">
+                <h2>Was ist Ikigai?</h2>
+                <p>Ikigai (生き甲斐) ist ein japanisches Konzept, das wörtlich "Grund zu leben" oder "Lebenszweck" bedeutet. Es ist der Schnittpunkt zwischen dem, was du liebst, was du gut kannst, was die Welt braucht und womit du Geld verdienen kannst.</p>
                 
-                <div class="ikigai-diagram">
-                    <div class="ikigai-circle">
-                        <div class="ikigai-center">
-                            <h3>Dein Ikigai</h3>
-                            <p>Der Schnittpunkt aller vier Bereiche</p>
-                        </div>
-                        
-                        <div class="ikigai-quadrant top-left">
-                            <h4>Was du liebst</h4>
-                            <p>Deine Leidenschaften und Interessen</p>
-                        </div>
-                        
-                        <div class="ikigai-quadrant top-right">
-                            <h4>Was du gut kannst</h4>
-                            <p>Deine Talente und Fähigkeiten</p>
-                        </div>
-                        
-                        <div class="ikigai-quadrant bottom-left">
-                            <h4>Was die Welt braucht</h4>
-                            <p>Probleme, die du lösen möchtest</p>
-                        </div>
-                        
-                        <div class="ikigai-quadrant bottom-right">
-                            <h4>Womit du Geld verdienen kannst</h4>
-                            <p>Deine beruflichen Möglichkeiten</p>
-                        </div>
-                    </div>
-                </div>
+                <p>Diese uralte japanische Weisheit hilft dir dabei, deinen persönlichen Lebenszweck zu entdecken und ein erfülltes, zielgerichtetes Leben zu führen.</p>
                 
-                <div class="workflow-steps">
-                    <h3>7 Schritte zu deinem Ikigai</h3>
-                    <div class="steps-grid">
-                        <div class="step-card">
-                            <div class="step-number">1</div>
-                            <h4>Selbstreflexion</h4>
-                            <p>Beginne mit einer tiefen Selbstreflexion über dein Leben</p>
-                            <a href="step1.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">2</div>
-                            <h4>Passion</h4>
-                            <p>Entdecke deine Leidenschaften und was dich begeistert</p>
-                            <a href="step2.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">3</div>
-                            <h4>Mission</h4>
-                            <p>Finde heraus, womit du der Welt helfen kannst</p>
-                            <a href="step3.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">4</div>
-                            <h4>Profession</h4>
-                            <p>Identifiziere deine beruflichen Möglichkeiten</p>
-                            <a href="step4.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">5</div>
-                            <h4>Vocation</h4>
-                            <p>Erkenne deine Talente und natürlichen Fähigkeiten</p>
-                            <a href="step5.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">6</div>
-                            <h4>Synthese</h4>
-                            <p>Finde die Schnittmenge aller vier Bereiche</p>
-                            <a href="step6.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">7</div>
-                            <h4>Aktionsplan</h4>
-                            <p>Erstelle einen konkreten Plan zur Umsetzung</p>
-                            <a href="step7.html" class="btn btn-outline btn-sm">Start</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Manuel Weiss</h3>
-                    <p>HR Consultant for AI & Transformation</p>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Workflows</h4>
-                    <ul>
-                        <li><a href="../ikigai/">Ikigai</a></li>
-                        <li><a href="../raisec/">RAISEC</a></li>
-                        <li><a href="../swot/">SWOT</a></li>
-                        <li><a href="../wheel-of-life/">Wheel of Life</a></li>
-                    </ul>
-                </div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> 7 detaillierte Schritte zur Selbstfindung</li>
+                    <li><i class="fas fa-check-circle"></i> Interaktive Übungen und Reflexionen</li>
+                    <li><i class="fas fa-check-circle"></i> Persönlicher Aktionsplan</li>
+                    <li><i class="fas fa-check-circle"></i> Wissenschaftlich fundierte Methoden</li>
+                </ul>
             </div>
             
-            <div class="footer-bottom">
-                <p>&copy; 2024 Manuel Weiss. All rights reserved.</p>
+            <div class="ikigai-visual">
+                <div class="ikigai-circle-enhanced">
+                    <div class="ikigai-center-enhanced">
+                        <h3>Dein Ikigai</h3>
+                        <p>Der Schnittpunkt aller vier Bereiche</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
+
+    <!-- Workflow Steps -->
+    <section class="workflow-steps-enhanced">
+        <div class="steps-container">
+            <h2 class="steps-title">7 Schritte zu deinem Ikigai</h2>
+            
+            <div class="steps-grid-enhanced">
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">1</div>
+                    <h4>Selbstreflexion</h4>
+                    <p>Beginne mit einer tiefen Selbstreflexion über dein Leben, deine Werte und deine bisherigen Erfahrungen.</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">2</div>
+                    <h4>Passion</h4>
+                    <p>Entdecke deine Leidenschaften und was dich wirklich begeistert. Was macht dir Freude?</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">3</div>
+                    <h4>Mission</h4>
+                    <p>Finde heraus, womit du der Welt helfen kannst. Welche Probleme möchtest du lösen?</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">4</div>
+                    <h4>Profession</h4>
+                    <p>Identifiziere deine beruflichen Möglichkeiten und wie du deine Talente monetarisieren kannst.</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">5</div>
+                    <h4>Vocation</h4>
+                    <p>Erkenne deine Talente und natürlichen Fähigkeiten. Was kannst du besonders gut?</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">6</div>
+                    <h4>Synthese</h4>
+                    <p>Finde die Schnittmenge aller vier Bereiche und entdecke dein persönliches Ikigai.</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+                
+                <div class="step-card-enhanced">
+                    <div class="step-number-enhanced">7</div>
+                    <h4>Aktionsplan</h4>
+                    <p>Erstelle einen konkreten Plan zur Umsetzung deines Ikigai im Alltag.</p>
+                    <button class="btn-start-step" onclick="startIkigaiWorkflow()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Scripts -->
     <script src="../../js/ikigai-smart-workflow.js"></script>
@@ -209,6 +594,43 @@
             // Create new smart workflow instance
             window.ikigaiSmartWorkflow = new window.IkigaiSmartWorkflow();
         }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards and sections
+        document.querySelectorAll('.step-card-enhanced, .video-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
     </script>
 </body>
 </html>
