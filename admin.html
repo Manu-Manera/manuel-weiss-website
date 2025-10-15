@@ -10814,24 +10814,37 @@
             
             showStatus('🧪 Teste OpenAI Verbindung...', 'info');
             
-            // EINFACHE LÖSUNG: Simuliere erfolgreichen Test
+            // ECHTE OPENAI API-CALL
             try {
-                // Validiere API Key Format
-                if (!apiKey.startsWith('sk-')) {
-                    throw new Error('Ungültiges API Key Format');
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4o-mini',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: 'Test'
+                            }
+                        ],
+                        max_tokens: 5
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
+                    console.log('OpenAI Test Response:', data);
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`❌ API Fehler: ${errorData.error?.message || 'Unbekannter Fehler'}`, 'error');
                 }
-                
-                if (apiKey.length < 20) {
-                    throw new Error('API Key zu kurz');
-                }
-                
-                // Simuliere erfolgreichen Test
-                showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
-                console.log('API Key validiert:', apiKey.substring(0, 20) + '...');
-                
             } catch (error) {
                 console.error('OpenAI Test Error:', error);
-                showStatus(`❌ ${error.message}`, 'error');
+                showStatus(`❌ Netzwerkfehler: ${error.message}`, 'error');
             }
         }
         
