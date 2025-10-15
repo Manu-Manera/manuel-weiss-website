@@ -268,8 +268,12 @@
             // Store selection in localStorage
             localStorage.setItem('bewerbungsart', selectedOption);
             
-            // Redirect to next step
-            window.location.href = 'ki-stellenanalyse.html';
+            // Redirect based on selection
+            if (selectedOption === 'initiativ') {
+                window.location.href = 'initiativbewerbung-workflow.html';
+            } else {
+                window.location.href = 'ki-stellenanalyse.html';
+            }
         }
 
         function goBack() {
