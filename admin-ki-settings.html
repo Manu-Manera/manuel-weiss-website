@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Einstellungen - Manuel Weiss</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f8fafc; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .header { text-align: center; margin-bottom: 3rem; }
+        .header h1 { color: #1e293b; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { color: #64748b; font-size: 1.1rem; }
+        
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        
+        .settings-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .settings-card h3 { 
+            color: #1e293b; 
+            margin-bottom: 1.5rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-weight: 600; 
+            color: #374151; 
+        }
+        
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus, .form-group select:focus { 
+            outline: none; 
+            border-color: #3b82f6; 
+        }
+        
+        .btn { 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover { background: #2563eb; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        .status { 
+            padding: 1rem; 
+            border-radius: 8px; 
+            margin-top: 1rem; 
+            font-weight: 500;
+        }
+        
+        .status.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .status.info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        
+        .api-key-container { position: relative; }
+        .toggle-visibility { 
+            position: absolute; 
+            right: 10px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            color: #6b7280;
+        }
+        
+        .test-section { 
+            background: #f8fafc; 
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            border: 1px solid #e2e8f0; 
+            margin-top: 1rem;
+        }
+        
+        .test-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
+        
+        .full-width { grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> KI-Einstellungen</h1>
+            <p>Konfigurieren Sie Ihre OpenAI-Integration für die Bewerbungsanalyse</p>
+        </div>
+        
+        <div class="settings-grid">
+            <!-- OpenAI API Konfiguration -->
+            <div class="settings-card">
+                <h3><i class="fas fa-key"></i> OpenAI API</h3>
+                
+                <div class="form-group">
+                    <label for="openai-api-key">API Key</label>
+                    <div class="api-key-container">
+                        <input type="password" id="openai-api-key" placeholder="sk-..." style="padding-right: 3rem;">
+                        <button type="button" class="toggle-visibility" onclick="toggleAPIKeyVisibility()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="openai-model">Model</label>
+                    <select id="openai-model">
+                        <option value="gpt-4o-mini">GPT-4o Mini (Empfohlen)</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="max-tokens">Max Tokens</label>
+                    <input type="number" id="max-tokens" value="1000" min="100" max="4000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="temperature">Temperature</label>
+                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
+                    <span id="temperature-value">0.3</span>
+                </div>
+                
+                <button class="btn btn-success" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Einstellungen speichern
+                </button>
+                
+                <div id="save-status"></div>
+            </div>
+            
+            <!-- API Test -->
+            <div class="settings-card">
+                <h3><i class="fas fa-flask"></i> API Test</h3>
+                
+                <div class="test-section">
+                    <p><strong>Testen Sie Ihre OpenAI-Integration:</strong></p>
+                    
+                    <div class="test-buttons">
+                        <button class="btn" onclick="testConnection()">
+                            <i class="fas fa-plug"></i> Verbindung testen
+                        </button>
+                        <button class="btn btn-success" onclick="testAnalysis()">
+                            <i class="fas fa-brain"></i> Analyse testen
+                        </button>
+                    </div>
+                    
+                    <div id="test-status"></div>
+                </div>
+            </div>
+            
+            <!-- Erweiterte Einstellungen -->
+            <div class="settings-card full-width">
+                <h3><i class="fas fa-cogs"></i> Erweiterte Einstellungen</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="auto-save">Auto-Save</label>
+                            <select id="auto-save">
+                                <option value="true">Aktiviert</option>
+                                <option value="false">Deaktiviert</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="debug-mode">Debug-Modus</label>
+                            <select id="debug-mode">
+                                <option value="false">Deaktiviert</option>
+                                <option value="true">Aktiviert</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="form-group">
+                            <label for="timeout">Timeout (Sekunden)</label>
+                            <input type="number" id="timeout" value="30" min="5" max="120">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="retry-attempts">Wiederholungsversuche</label>
+                            <input type="number" id="retry-attempts" value="3" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="saveAdvancedSettings()">
+                    <i class="fas fa-save"></i> Erweiterte Einstellungen speichern
+                </button>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="admin.html" class="btn" style="text-decoration: none; display: inline-block;">
+                <i class="fas fa-arrow-left"></i> Zurück zum Admin Panel
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Temperature Slider Update
+        document.getElementById('temperature').addEventListener('input', function() {
+            document.getElementById('temperature-value').textContent = this.value;
+        });
+        
+        // Load saved settings
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
+            
+            document.getElementById('openai-api-key').value = settings.apiKey || '';
+            document.getElementById('openai-model').value = settings.model || 'gpt-4o-mini';
+            document.getElementById('max-tokens').value = settings.maxTokens || 1000;
+            document.getElementById('temperature').value = settings.temperature || 0.3;
+            document.getElementById('temperature-value').textContent = settings.temperature || 0.3;
+            document.getElementById('auto-save').value = settings.autoSave || 'true';
+            document.getElementById('debug-mode').value = settings.debugMode || 'false';
+            document.getElementById('timeout').value = settings.timeout || 30;
+            document.getElementById('retry-attempts').value = settings.retryAttempts || 3;
+        }
+        
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                apiKey: document.getElementById('openai-api-key').value,
+                model: document.getElementById('openai-model').value,
+                maxTokens: parseInt(document.getElementById('max-tokens').value),
+                temperature: parseFloat(document.getElementById('temperature').value),
+                autoSave: document.getElementById('auto-save').value === 'true',
+                debugMode: document.getElementById('debug-mode').value === 'true',
+                timeout: parseInt(document.getElementById('timeout').value),
+                retryAttempts: parseInt(document.getElementById('retry-attempts').value)
+            };
+            
+            localStorage.setItem('ki_settings', JSON.stringify(settings));
+            localStorage.setItem('openai_api_key', settings.apiKey);
+            
+            showStatus('save-status', '✅ Einstellungen erfolgreich gespeichert!', 'success');
+        }
+        
+        // Save advanced settings
+        function saveAdvancedSettings() {
+            saveSettings();
+        }
+        
+        // Toggle API key visibility
+        function toggleAPIKeyVisibility() {
+            const input = document.getElementById('openai-api-key');
+            const icon = document.querySelector('.toggle-visibility i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+        
+        // Test connection
+        async function testConnection() {
+            const apiKey = document.getElementById('openai-api-key').value;
+            
+            if (!apiKey) {
+                showStatus('test-status', '❌ Bitte geben Sie einen API Key ein.', 'error');
+                return;
+            }
+            
+            showStatus('test-status', '🧪 Teste Verbindung...', 'info');
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: document.getElementById('openai-model').value,
+                        messages: [{ role: 'user', content: 'Test' }],
+                        max_tokens: 5
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('test-status', '✅ Verbindung erfolgreich!', 'success');
+                    console.log('Test Response:', data);
+                } else {
+                    const error = await response.json();
+                    showStatus('test-status', `❌ API Fehler: ${error.error?.message || 'Unbekannter Fehler'}`, 'error');
+                }
+            } catch (error) {
+                showStatus('test-status', `❌ Netzwerkfehler: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test analysis
+        async function testAnalysis() {
+            const apiKey = document.getElementById('openai-api-key').value;
+            
+            if (!apiKey) {
+                showStatus('test-status', '❌ Bitte geben Sie einen API Key ein.', 'error');
+                return;
+            }
+            
+            showStatus('test-status', '🧪 Teste Analyse...', 'info');
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: document.getElementById('openai-model').value,
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Du bist ein Experte für Stellenausschreibungen. Analysiere und extrahiere Anforderungen.'
+                            },
+                            {
+                                role: 'user',
+                                content: 'Analysiere diese Stellenausschreibung: "Wir suchen einen Softwareentwickler mit 5+ Jahren Erfahrung in JavaScript und React."'
+                            }
+                        ],
+                        max_tokens: parseInt(document.getElementById('max-tokens').value),
+                        temperature: parseFloat(document.getElementById('temperature').value)
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('test-status', '✅ Analyse erfolgreich!', 'success');
+                    console.log('Analysis Test Response:', data);
+                } else {
+                    const error = await response.json();
+                    showStatus('test-status', `❌ Analyse Fehler: ${error.error?.message || 'Unbekannter Fehler'}`, 'error');
+                }
+            } catch (error) {
+                showStatus('test-status', `❌ Netzwerkfehler: ${error.message}`, 'error');
+            }
+        }
+        
+        // Show status
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>
