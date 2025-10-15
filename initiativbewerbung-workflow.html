@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anschreiben generieren - Bewerbungsmanager</title>
+    <title>Initiativbewerbung - KI-Bewerbungsmanager</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -39,6 +39,11 @@
             margin-bottom: 1rem;
         }
 
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
         .progress-bar {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
@@ -50,7 +55,7 @@
         .progress-fill {
             background: linear-gradient(90deg, #4ade80, #22c55e);
             height: 100%;
-            width: 57.1%;
+            width: 33.3%;
             transition: width 0.3s ease;
         }
 
@@ -61,6 +66,81 @@
             padding: 3rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .company-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .company-info h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
         }
 
         .generate-btn {
@@ -177,8 +257,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-edit"></i> Anschreiben generieren</h1>
-            <p>KI-gestützte Erstellung eines personalisierten Anschreibens</p>
+            <h1><i class="fas fa-lightbulb"></i> Initiativbewerbung</h1>
+            <p>Erstellen Sie eine überzeugende Initiativbewerbung für Ihr Wunschunternehmen</p>
         </div>
 
         <div class="progress-bar">
@@ -186,16 +266,58 @@
         </div>
 
         <div class="step-card">
-            <h2>Schritt 3: Anschreiben erstellen</h2>
+            <h2>Unternehmensinformationen</h2>
             
-            <p>Basierend auf der Stellenanalyse und Ihren Qualifikationen wird ein personalisiertes Anschreiben generiert.</p>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="company">Unternehmen</label>
+                    <input type="text" id="company" placeholder="z.B. Microsoft, Google, SAP...">
+                </div>
 
-            <button class="generate-btn" onclick="generateCoverLetter()">
-                <i class="fas fa-magic"></i> Anschreiben generieren
-            </button>
+                <div class="input-group">
+                    <label for="position">Gewünschte Position</label>
+                    <input type="text" id="position" placeholder="z.B. Senior Software Engineer, Product Manager...">
+                </div>
+
+                <div class="input-group">
+                    <label for="companyInfo">Unternehmensinformationen (optional)</label>
+                    <textarea id="companyInfo" placeholder="Was wissen Sie über das Unternehmen? Branche, Größe, Kultur, etc..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="motivation">Ihre Motivation</label>
+                    <textarea id="motivation" placeholder="Warum möchten Sie bei diesem Unternehmen arbeiten? Was reizt Sie besonders?"></textarea>
+                </div>
+
+                <button class="generate-btn" onclick="generateInitiativbewerbung()">
+                    <i class="fas fa-magic"></i> Initiativbewerbung generieren
+                </button>
+            </div>
+
+            <div class="company-info" id="companyInfoDisplay" style="display: none;">
+                <h3><i class="fas fa-building"></i> Unternehmensanalyse</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Branche</div>
+                        <div class="info-value" id="industry">Technologie</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Größe</div>
+                        <div class="info-value" id="size">Großunternehmen (10.000+ MA)</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Standort</div>
+                        <div class="info-value" id="location">International</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kultur</div>
+                        <div class="info-value" id="culture">Innovativ, agil, kollaborativ</div>
+                    </div>
+                </div>
+            </div>
 
             <div class="cover-letter-preview" id="coverLetterPreview">
-                <h3>Ihr generiertes Anschreiben</h3>
+                <h3>Ihre generierte Initiativbewerbung</h3>
                 <div class="cover-letter-content" id="coverLetterContent">
                     <!-- Generated content will appear here -->
                 </div>
@@ -214,56 +336,52 @@
                     <i class="fas fa-arrow-left"></i> Zurück
                 </button>
                 <button class="continue-btn" onclick="proceedToNextStep()">
-                    <i class="fas fa-arrow-right"></i> Weiter
+                    <i class="fas fa-arrow-right"></i> Weiter zu Dokumenten
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        function generateCoverLetter() {
+        function generateInitiativbewerbung() {
+            const company = document.getElementById('company').value;
+            const position = document.getElementById('position').value;
+            const companyInfo = document.getElementById('companyInfo').value;
+            const motivation = document.getElementById('motivation').value;
+
+            if (!company || !position) {
+                alert('Bitte geben Sie mindestens Unternehmen und Position an.');
+                return;
+            }
+
             const generateBtn = document.querySelector('.generate-btn');
-            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI generiert Anschreiben...';
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI generiert Initiativbewerbung...';
             generateBtn.disabled = true;
 
             setTimeout(() => {
-                // Check if this is an initiativbewerbung
-                const bewerbungsart = localStorage.getItem('bewerbungsart');
-                const company = localStorage.getItem('company') || 'Ihrem Unternehmen';
-                const position = localStorage.getItem('position') || 'der gewünschten Position';
+                // Show company analysis
+                document.getElementById('companyInfoDisplay').style.display = 'block';
                 
-                let coverLetter;
-                
-                if (bewerbungsart === 'initiativ') {
-                    coverLetter = `Sehr geehrte Damen und Herren,
+                // Generate cover letter
+                const coverLetter = `Sehr geehrte Damen und Herren,
 
-mit großem Interesse verfolge ich die Entwicklungen bei ${company} und bin beeindruckt von Ihrer innovativen Arbeit. Als erfahrener ${position} mit über 5 Jahren Berufserfahrung möchte ich mich gerne für eine mögliche Zusammenarbeit bei Ihnen bewerben.
+mit großem Interesse verfolge ich die Entwicklungen bei ${company} und bin beeindruckt von Ihrer innovativen Arbeit in der Technologiebranche. Als erfahrener ${position} mit über 5 Jahren Berufserfahrung möchte ich mich gerne für eine mögliche Zusammenarbeit bei Ihnen bewerben.
 
 Meine Expertise umfasst moderne Webtechnologien und agile Entwicklungsmethoden, die ich in verschiedenen Projekten erfolgreich eingesetzt habe. Besonders reizt mich an ${company} die Möglichkeit, an innovativen Lösungen zu arbeiten und gleichzeitig mein technisches Wissen zu erweitern.
+
+${motivation ? `Was mich besonders an ${company} reizt: ${motivation}` : ''}
+
+${companyInfo ? `Basierend auf meinen Recherchen über ${company} (${companyInfo}) bin ich überzeugt, dass meine Qualifikationen und meine Leidenschaft für Technologie eine wertvolle Bereicherung für Ihr Team darstellen könnten.` : ''}
 
 Ich würde mich sehr freuen, in einem persönlichen Gespräch mehr über mögliche Zusammenarbeitsmöglichkeiten zu erfahren und Ihnen zu zeigen, wie ich zu Ihrem Erfolg beitragen kann.
 
 Mit freundlichen Grüßen
 Manuel Weiss`;
-                } else {
-                    coverLetter = `Sehr geehrte Damen und Herren,
-
-mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als Senior Software Engineer gelesen. Als erfahrener Entwickler mit über 5 Jahren Berufserfahrung in der Softwareentwicklung bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
-
-Meine Expertise umfasst moderne Webtechnologien wie JavaScript, React und Node.js, die ich in verschiedenen Projekten erfolgreich eingesetzt habe. Zusätzlich verfüge ich über praktische Erfahrungen mit Cloud-Plattformen, insbesondere AWS, und arbeite gerne in agilen Entwicklungsumgebungen.
-
-Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln und gleichzeitig mein technisches Wissen zu erweitern. Meine Erfahrung in der Zusammenarbeit mit interdisziplinären Teams und meine Fähigkeit, komplexe Probleme strukturiert anzugehen, qualifizieren mich für diese herausfordernde Aufgabe.
-
-Ich freue mich auf die Gelegenheit, in einem persönlichen Gespräch mehr über meine Qualifikationen und Ihre Erwartungen zu erfahren.
-
-Mit freundlichen Grüßen
-Manuel Weiss`;
-                }
 
                 document.getElementById('coverLetterContent').textContent = coverLetter;
                 document.getElementById('coverLetterPreview').style.display = 'block';
                 
-                generateBtn.innerHTML = '<i class="fas fa-check"></i> Anschreiben generiert';
+                generateBtn.innerHTML = '<i class="fas fa-check"></i> Initiativbewerbung generiert';
                 generateBtn.disabled = false;
             }, 3000);
         }
@@ -272,24 +390,32 @@ Manuel Weiss`;
             const content = document.getElementById('coverLetterContent');
             const currentText = content.textContent;
             
-            const newText = prompt('Bearbeiten Sie Ihr Anschreiben:', currentText);
+            const newText = prompt('Bearbeiten Sie Ihre Initiativbewerbung:', currentText);
             if (newText !== null) {
                 content.textContent = newText;
             }
         }
 
         function regenerateCoverLetter() {
-            if (confirm('Möchten Sie das Anschreiben neu generieren? Dies überschreibt die aktuelle Version.')) {
-                generateCoverLetter();
+            if (confirm('Möchten Sie die Initiativbewerbung neu generieren? Dies überschreibt die aktuelle Version.')) {
+                generateInitiativbewerbung();
             }
         }
 
         function proceedToNextStep() {
+            // Store data for next steps
+            const company = document.getElementById('company').value;
+            const position = document.getElementById('position').value;
+            
+            localStorage.setItem('bewerbungsart', 'initiativ');
+            localStorage.setItem('company', company);
+            localStorage.setItem('position', position);
+            
             window.location.href = 'dokumente-optimieren.html';
         }
 
         function goBack() {
-            window.location.href = 'matching-skillgap.html';
+            window.location.href = 'bewerbungsart-wahl.html';
         }
     </script>
 </body>
