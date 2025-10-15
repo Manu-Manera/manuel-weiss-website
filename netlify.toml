@@ -42,12 +42,17 @@
 
 [[redirects]]
   from = "/bewerbungsmanager"
-  to = "/bewerbungsmanager-coverlettergpt.html"
+  to = "/bewerbungsmanager.html"
   status = 301
 
 [[redirects]]
-  from = "/coverlettergpt"
-  to = "/bewerbungsmanager-coverlettergpt.html"
+  from = "/ki-workflow"
+  to = "/ki-bewerbungsworkflow.html"
+  status = 301
+
+[[redirects]]
+  from = "/workflow"
+  to = "/ki-bewerbungsworkflow.html"
   status = 301
 
 # Headers für bessere Performance und Sicherheit
