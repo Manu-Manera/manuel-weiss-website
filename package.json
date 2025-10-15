@@ -95,8 +95,8 @@
     "chart.js": "^4.4.0",
     "font-awesome": "^6.0.0",
     "photoswipe": "^5.4.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.47.0",
     "zod": "^3.22.0",
     "@chakra-ui/react": "^2.8.2",
@@ -116,9 +116,7 @@
       "last 1 safari version"
     ]
   },
-  "workspaces": [
-    "components"
-  ],
+  "workspaces": [],
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
