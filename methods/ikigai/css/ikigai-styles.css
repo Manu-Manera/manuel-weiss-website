@@ -482,23 +482,7 @@
     margin-bottom: 1.5rem;
 }
 
-.btn-start-step {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-start-step:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102,126,234,0.3);
-}
+/* Start-Button CSS entfernt - Kacheln sind jetzt direkt klickbar */
 
 /* Responsive */
 @media (max-width: 768px) {
