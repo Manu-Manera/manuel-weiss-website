@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Schritt 2: Passion - Was du liebst</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ikigai Schritt 2: Entdecke deine Leidenschaften und was dich wirklich begeistert">
+    <meta name="keywords" content="ikigai, passion, leidenschaft, persönlichkeitsentwicklung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../ikigai/">Ikigai Workflow</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="step2.html">Schritt 2</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Step Header -->
+        <section class="step-header">
+            <div class="container">
+                <div class="step-header-content">
+                    <div class="step-breadcrumb">
+                        <a href="../ikigai/">Ikigai Workflow</a> > <span>Schritt 2: Passion</span>
+                    </div>
+                    <h1 class="step-title">Schritt 2: Passion - Was du liebst</h1>
+                    <p class="step-subtitle">Entdecke deine Leidenschaften und was dich wirklich begeistert</p>
+                    <div class="step-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 28.57%;"></div>
+                        </div>
+                        <span class="progress-text">2 von 7 Schritten</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step Content -->
+        <section class="step-content">
+            <div class="container">
+                <div class="step-layout">
+                    <!-- Main Content -->
+                    <div class="step-main">
+                        <!-- Passion Form -->
+                        <div class="passion-form">
+                            <h3>Deine Leidenschaften entdecken</h3>
+                            <form id="passion-form">
+                                <div class="form-group">
+                                    <label for="passion">Was liebst du wirklich? Was macht dich glücklich?</label>
+                                    <textarea 
+                                        id="passion" 
+                                        name="passion"
+                                        placeholder="Beschreibe deine Leidenschaften: Welche Aktivitäten machen dir Spaß? Wofür brennst du? Was würdest du tun, auch wenn du nicht dafür bezahlt würdest? Was bringt dich zum Lächeln?..."
+                                        rows="6"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="saveProgress()">
+                                        <i class="fas fa-save"></i>
+                                        Zwischenspeichern
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="previousStep()">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Zurück
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextStep()">
+                                        <i class="fas fa-arrow-right"></i>
+                                        Weiter zu Schritt 3
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="step-sidebar">
+                        <!-- Tips -->
+                        <div class="tip-box">
+                            <h4>🔥 Passion-Entdeckung:</h4>
+                            <ul>
+                                <li>Denke an deine Kindheitsträume</li>
+                                <li>Was machst du gerne in deiner Freizeit?</li>
+                                <li>Wofür bewundern dich andere?</li>
+                                <li>Was würdest du tun, wenn du unbegrenzt Zeit hättest?</li>
+                            </ul>
+                        </div>
+
+                        <!-- Progress -->
+                        <div class="progress-box">
+                            <h4>Dein Fortschritt</h4>
+                            <div class="progress-steps">
+                                <div class="progress-step completed">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Selbstreflexion</span>
+                                </div>
+                                <div class="progress-step active">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Passion</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Mission</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Profession</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Vocation</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Synthese</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Aktionsplan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="navigation-box">
+                            <h4>Navigation</h4>
+                            <div class="nav-links">
+                                <a href="../ikigai/" class="nav-link">
+                                    <i class="fas fa-home"></i>
+                                    Workflow Übersicht
+                                </a>
+                                <a href="step1.html" class="nav-link">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Vorheriger Schritt
+                                </a>
+                                <a href="step3.html" class="nav-link">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Nächster Schritt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR Consultant for AI & Transformation</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function saveProgress() {
+            const passion = document.getElementById('passion').value;
+            localStorage.setItem('ikigai_step2_passion', passion);
+            
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Gespeichert!';
+            btn.style.background = '#22c55e';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function previousStep() {
+            // Save current progress
+            saveProgress();
+            
+            // Redirect to previous step
+            window.location.href = 'step1.html';
+        }
+
+        function nextStep() {
+            // Save current progress
+            saveProgress();
+            
+            // Redirect to next step
+            window.location.href = 'step3.html';
+        }
+
+        // Load saved progress
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedPassion = localStorage.getItem('ikigai_step2_passion');
+            if (savedPassion) {
+                document.getElementById('passion').value = savedPassion;
+            }
+        });
+    </script>
+</body>
+</html>
