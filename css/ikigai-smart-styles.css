@@ -111,17 +111,10 @@
         transparent
     );
     background-size: 50px 50px;
-    animation: move 2s linear infinite;
+    transition: all 0.3s ease;
 }
 
-@keyframes move {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 50px 50px;
-    }
-}
+/* Removed animations for cleaner design */
 
 /* Tip Box Animations */
 .ikigai-smart-workflow .tip-box {
@@ -146,24 +139,14 @@
 
 /* Step Content Animations */
 .ikigai-smart-workflow .step-content {
-    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* Removed fadeInUp animation */
 
 /* Result Card Animations */
 .ikigai-smart-workflow .result-card {
-    animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    animation-fill-mode: both;
+    transition: all 0.3s ease;
 }
 
 .ikigai-smart-workflow .result-card:nth-child(1) { animation-delay: 0.1s; }
@@ -251,12 +234,10 @@
     border: 3px solid rgba(102, 126, 234, 0.3);
     border-radius: 50%;
     border-top-color: #667eea;
-    animation: spin 1s ease-in-out infinite;
+    transition: all 0.3s ease;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+/* Removed spin animation */
 
 /* Success Animation */
 .ikigai-smart-workflow .success-checkmark {
@@ -269,7 +250,7 @@
     stroke-miterlimit: 10;
     margin: 10% auto;
     box-shadow: inset 0px 0px 0px #4CAF50;
-    animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+    transition: all 0.3s ease;
 }
 
 .ikigai-smart-workflow .success-checkmark circle {
@@ -279,89 +260,63 @@
     stroke-miterlimit: 10;
     stroke: #4CAF50;
     fill: none;
-    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    transition: all 0.3s ease;
 }
 
 .ikigai-smart-workflow .success-checkmark path {
     transform-origin: 50% 50%;
     stroke-dasharray: 48;
     stroke-dashoffset: 48;
-    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    transition: all 0.3s ease;
 }
 
-@keyframes stroke {
-    100% {
-        stroke-dashoffset: 0;
-    }
-}
+/* Removed all keyframe animations */
 
-@keyframes scale {
-    0%, 100% {
-        transform: none;
-    }
-    50% {
-        transform: scale3d(1.1, 1.1, 1);
-    }
-}
-
-@keyframes fill {
-    100% {
-        box-shadow: inset 0px 0px 0px 30px #4CAF50;
-    }
-}
-
-/* Enhanced Ikigai Diagram - Modern Design */
+/* Clean Ikigai Diagram - Simple & Clear */
 .ikigai-diagram-enhanced {
     position: relative;
     width: 100%;
-    max-width: 900px;
-    height: 900px;
-    margin: 3rem auto;
+    max-width: 800px;
+    height: 600px;
+    margin: 2rem auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, rgba(102,126,234,0.05), transparent);
-    border-radius: 50%;
 }
 
 .ikigai-flower-enhanced {
     position: relative;
-    width: 800px;
-    height: 800px;
-    animation: gentle-pulse 4s ease-in-out infinite;
+    width: 600px;
+    height: 600px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+    justify-items: center;
 }
 
 .ikigai-petal-enhanced {
-    position: absolute;
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    transform-origin: center;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
+    width: 280px;
+    height: 280px;
+    border-radius: 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-weight: 600;
     color: white;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-    box-shadow: 
-        0 20px 40px rgba(0,0,0,0.15),
-        0 8px 16px rgba(0,0,0,0.1),
-        inset 0 2px 4px rgba(255,255,255,0.2);
-    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
     border: 3px solid rgba(255,255,255,0.3);
 }
 
 .ikigai-petal-enhanced:hover {
-    transform: scale(1.08);
-    z-index: 10;
-    box-shadow: 
-        0 25px 50px rgba(0,0,0,0.2),
-        0 12px 24px rgba(0,0,0,0.15),
-        inset 0 2px 4px rgba(255,255,255,0.3);
-    border-color: rgba(255,255,255,0.5);
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
 }
 
 .petal-content {
@@ -374,142 +329,48 @@
 }
 
 .petal-icon {
-    font-size: 3.5rem;
-    margin-bottom: 0.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    animation: icon-float 3s ease-in-out infinite;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
 }
 
 .petal-label {
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
     line-height: 1.2;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .petal-description {
-    font-size: 1.1rem;
-    opacity: 0.95;
-    font-weight: 600;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 500;
 }
 
 .petal-passion {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #ff8a80 100%);
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: passion-glow 3s ease-in-out infinite;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    grid-column: 1;
+    grid-row: 1;
 }
 
 .petal-mission {
-    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #26a69a 100%);
-    top: 50%;
-    right: 40px;
-    transform: translateY(-50%);
-    animation: mission-glow 3s ease-in-out infinite 0.5s;
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    grid-column: 2;
+    grid-row: 1;
 }
 
 .petal-profession {
-    background: linear-gradient(135deg, #45b7d1 0%, #96c93d 50%, #4fc3f7 100%);
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: profession-glow 3s ease-in-out infinite 1s;
+    background: linear-gradient(135deg, #45b7d1, #96c93d);
+    grid-column: 1;
+    grid-row: 2;
 }
 
 .petal-vocation {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #e91e63 100%);
-    top: 50%;
-    left: 40px;
-    transform: translateY(-50%);
-    animation: vocation-glow 3s ease-in-out infinite 1.5s;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    grid-column: 2;
+    grid-row: 2;
 }
 
-/* Enhanced Schnittmengen-Bereiche mit modernen Farben */
-.intersection-area {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-    box-shadow: 
-        0 12px 24px rgba(0,0,0,0.2),
-        0 4px 8px rgba(0,0,0,0.1),
-        inset 0 2px 4px rgba(255,255,255,0.3);
-    border: 2px solid rgba(255,255,255,0.4);
-    animation: intersection-pulse 4s ease-in-out infinite;
-}
-
-.intersection-label {
-    font-size: 1rem;
-    font-weight: 800;
-    margin-bottom: 0.3rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-}
-
-.intersection-description {
-    font-size: 0.8rem;
-    opacity: 0.95;
-    font-weight: 600;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-}
-
-.intersection-passion-mission {
-    background: linear-gradient(135deg, 
-        rgba(255, 107, 107, 0.9) 0%, 
-        rgba(78, 205, 196, 0.9) 50%, 
-        rgba(255, 138, 128, 0.9) 100%);
-    top: 180px;
-    right: 180px;
-    width: 140px;
-    height: 140px;
-    animation: intersection-pulse 4s ease-in-out infinite 0.2s;
-}
-
-.intersection-mission-profession {
-    background: linear-gradient(135deg, 
-        rgba(78, 205, 196, 0.9) 0%, 
-        rgba(69, 183, 209, 0.9) 50%, 
-        rgba(38, 166, 154, 0.9) 100%);
-    bottom: 180px;
-    right: 180px;
-    width: 140px;
-    height: 140px;
-    animation: intersection-pulse 4s ease-in-out infinite 0.4s;
-}
-
-.intersection-profession-vocation {
-    background: linear-gradient(135deg, 
-        rgba(69, 183, 209, 0.9) 0%, 
-        rgba(240, 147, 251, 0.9) 50%, 
-        rgba(79, 195, 247, 0.9) 100%);
-    bottom: 180px;
-    left: 180px;
-    width: 140px;
-    height: 140px;
-    animation: intersection-pulse 4s ease-in-out infinite 0.6s;
-}
-
-.intersection-vocation-passion {
-    background: linear-gradient(135deg, 
-        rgba(240, 147, 251, 0.9) 0%, 
-        rgba(255, 107, 107, 0.9) 50%, 
-        rgba(233, 30, 99, 0.9) 100%);
-    top: 180px;
-    left: 180px;
-    width: 140px;
-    height: 140px;
-    animation: intersection-pulse 4s ease-in-out infinite 0.8s;
-}
+/* Clean Center - Simple Ikigai */
 
 .ikigai-center-enhanced {
     position: absolute;
@@ -528,7 +389,7 @@
     text-align: center;
     z-index: 5;
     box-shadow: 0 15px 40px rgba(102,126,234,0.4);
-    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
 }
 
 .center-icon {
