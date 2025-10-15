@@ -309,3 +309,309 @@
         box-shadow: inset 0px 0px 0px 30px #4CAF50;
     }
 }
+
+/* Enhanced Ikigai Diagram */
+.ikigai-diagram-enhanced {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 800px;
+    margin: 3rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ikigai-flower-enhanced {
+    position: relative;
+    width: 700px;
+    height: 700px;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.ikigai-petal-enhanced {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    transform-origin: center;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+.ikigai-petal-enhanced:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+}
+
+.petal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.petal-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.petal-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+}
+
+.petal-description {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.petal-passion {
+    background: radial-gradient(circle, #ff6b6b, #ee5a24);
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.petal-mission {
+    background: radial-gradient(circle, #4ecdc4, #44a08d);
+    top: 50%;
+    right: 50px;
+    transform: translateY(-50%);
+}
+
+.petal-profession {
+    background: radial-gradient(circle, #45b7d1, #96c93d);
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.petal-vocation {
+    background: radial-gradient(circle, #f093fb, #f5576c);
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+}
+
+/* Schnittmengen-Bereiche mit korrekten Farben */
+.intersection-area {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.intersection-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.intersection-description {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.intersection-passion-mission {
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.8), rgba(78, 205, 196, 0.8));
+    top: 150px;
+    right: 150px;
+    width: 120px;
+    height: 120px;
+}
+
+.intersection-mission-profession {
+    background: radial-gradient(circle, rgba(78, 205, 196, 0.8), rgba(69, 183, 209, 0.8));
+    bottom: 150px;
+    right: 150px;
+    width: 120px;
+    height: 120px;
+}
+
+.intersection-profession-vocation {
+    background: radial-gradient(circle, rgba(69, 183, 209, 0.8), rgba(240, 147, 251, 0.8));
+    bottom: 150px;
+    left: 150px;
+    width: 120px;
+    height: 120px;
+}
+
+.intersection-vocation-passion {
+    background: radial-gradient(circle, rgba(240, 147, 251, 0.8), rgba(255, 107, 107, 0.8));
+    top: 150px;
+    left: 150px;
+    width: 120px;
+    height: 120px;
+}
+
+.ikigai-center-enhanced {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    z-index: 5;
+    box-shadow: 0 15px 40px rgba(102,126,234,0.4);
+    animation: pulse 2s infinite;
+}
+
+.center-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.ikigai-center-enhanced h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.ikigai-center-enhanced p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    line-height: 1.2;
+}
+
+/* Responsive für Enhanced Diagram */
+@media (max-width: 768px) {
+    .ikigai-diagram-enhanced {
+        height: 600px;
+        max-width: 600px;
+    }
+    
+    .ikigai-flower-enhanced {
+        width: 500px;
+        height: 500px;
+    }
+    
+    .ikigai-petal-enhanced {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .petal-icon {
+        font-size: 2rem;
+    }
+    
+    .petal-label {
+        font-size: 1rem;
+    }
+    
+    .petal-description {
+        font-size: 0.8rem;
+    }
+    
+    .intersection-area {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .intersection-label {
+        font-size: 0.7rem;
+    }
+    
+    .intersection-description {
+        font-size: 0.6rem;
+    }
+    
+    .ikigai-center-enhanced {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .center-icon {
+        font-size: 2rem;
+    }
+    
+    .ikigai-center-enhanced h3 {
+        font-size: 1.1rem;
+    }
+    
+    .ikigai-center-enhanced p {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ikigai-diagram-enhanced {
+        height: 400px;
+        max-width: 400px;
+    }
+    
+    .ikigai-flower-enhanced {
+        width: 350px;
+        height: 350px;
+    }
+    
+    .ikigai-petal-enhanced {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .petal-icon {
+        font-size: 1.5rem;
+    }
+    
+    .petal-label {
+        font-size: 0.8rem;
+    }
+    
+    .petal-description {
+        font-size: 0.7rem;
+    }
+    
+    .intersection-area {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .ikigai-center-enhanced {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .center-icon {
+        font-size: 1.5rem;
+    }
+    
+    .ikigai-center-enhanced h3 {
+        font-size: 0.9rem;
+    }
+    
+    .ikigai-center-enhanced p {
+        font-size: 0.7rem;
+    }
+}
