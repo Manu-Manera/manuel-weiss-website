@@ -406,13 +406,9 @@
             analyzeBtn.disabled = true;
 
             try {
-                // Get OpenAI API key from localStorage (set in admin panel)
-                const apiKey = localStorage.getItem('openai_api_key');
+                // Verwende den globalen Key Manager
+                const apiKey = window.OpenAIKeyManager.getAPIKey();
                 
-                if (!apiKey) {
-                    throw new Error('OpenAI API Key nicht gefunden. Bitte im Admin-Panel konfigurieren.');
-                }
-
                 // Call OpenAI API
                 const requirements = await analyzeJobWithOpenAI(company, position, jobDescription, apiKey);
                 
@@ -469,35 +465,22 @@ Fokussieren Sie sich auf:
 - Führungserfahrung`;
 
             try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                // Verwende den globalen Key Manager für Chat Completions
+                const data = await window.OpenAIKeyManager.chatCompletions([
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
                     },
-                    body: JSON.stringify({
-                        model: 'gpt-4',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
-                            },
-                            {
-                                role: 'user',
-                                content: prompt
-                            }
-                        ],
-                        max_tokens: 1000,
-                        temperature: 0.3
-                    })
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ], {
+                    model: 'gpt-4',
+                    max_tokens: 1000,
+                    temperature: 0.3
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`OpenAI API Fehler: ${errorData.error?.message || response.status}`);
-                }
-
-                const data = await response.json();
                 const content = data.choices[0].message.content;
                 
                 // Parse JSON response
@@ -707,5 +690,8 @@ Fokussieren Sie sich auf:
             loadExistingRequirements();
         });
     </script>
+    
+    <!-- OpenAI Key Manager -->
+    <script src="js/openai-key-manager.js"></script>
 </body>
 </html>
