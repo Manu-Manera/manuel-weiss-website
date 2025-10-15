@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;">
+    <meta name="keywords" content="Bewerbung, KI, Workflow, Stellenanzeige, Initiativbewerbung, CV, Anschreiben">
+    <meta name="description" content="KI-gestützter Bewerbungsworkflow - Professionelle Bewerbungen erstellen">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KI-Bewerbungsworkflow - Manuel Weiss</title>
     <link rel="stylesheet" href="styles.css">
@@ -189,6 +192,19 @@
                 grid-template-columns: 1fr;
             }
         }
+    
+        .dark-mode {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step {
+            background: #2d2d2d !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .workflow-step-container {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -342,5 +358,13 @@
     
     <!-- Workflow Enhancements -->
     <script src="js/workflow-enhancements.js" async></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(error => console.log('SW registration failed'));
+        }
+    </script>
 </body>
 </html>
