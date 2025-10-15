@@ -1830,6 +1830,9 @@
     <script src="https://unpkg.com/@chakra-ui/react@2.8.2/dist/chakra-ui.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
+    <!-- Workflow Navigation Test -->
+    <script src="test-workflow-navigation.js"></script>
+    
     <script>
         // Global flag to track workflow status
         window.workflowStarted = false;
@@ -2085,16 +2088,24 @@
         // ECHTE BUTTON-FUNKTIONEN IMPLEMENTIEREN
         window.startKIWorkflow = function() {
             console.log('🚀 Starting KI Workflow...');
-            if (window.completeWorkflowSystem) {
-                window.completeWorkflowSystem.start();
-            } else {
-                alert('Workflow-System wird geladen...');
-                setTimeout(() => {
-                    if (window.completeWorkflowSystem) {
-                        window.completeWorkflowSystem.start();
+            console.log('📍 Current URL:', window.location.href);
+            console.log('🎯 Target URL: ki-bewerbungsworkflow.html');
+            
+            // Teste ob die Zielseite existiert
+            fetch('ki-bewerbungsworkflow.html')
+                .then(response => {
+                    if (response.ok) {
+                        console.log('✅ Zielseite erreichbar, leite weiter...');
+                        window.location.href = 'ki-bewerbungsworkflow.html';
+                    } else {
+                        console.error('❌ Zielseite nicht erreichbar:', response.status);
+                        alert('Fehler: KI-Workflow-Seite nicht gefunden. Bitte überprüfen Sie die Datei ki-bewerbungsworkflow.html');
                     }
-                }, 1000);
-            }
+                })
+                .catch(error => {
+                    console.error('❌ Fehler beim Laden der Zielseite:', error);
+                    alert('Fehler beim Laden der KI-Workflow-Seite: ' + error.message);
+                });
         };
 
         window.openAnalytics = function() {
@@ -2106,6 +2117,42 @@
             console.log('🎨 Opening UI Demo...');
             window.open('bewerbungsmanager-coverlettergpt.html', '_blank');
         };
+
+        // DEBUGGING: Workflow-Status prüfen
+        window.debugWorkflow = function() {
+            console.log('🔍 WORKFLOW DEBUG INFORMATION');
+            console.log('============================');
+            console.log('📍 Current URL:', window.location.href);
+            console.log('🔧 startKIWorkflow function:', typeof window.startKIWorkflow);
+            console.log('📄 ki-bewerbungsworkflow.html exists:', document.querySelector('a[href="ki-bewerbungsworkflow.html"]') ? 'YES' : 'NO');
+            
+            // Teste alle Workflow-Dateien
+            const workflowFiles = [
+                'ki-bewerbungsworkflow.html',
+                'bewerbungsart-wahl.html',
+                'ki-stellenanalyse.html',
+                'matching-skillgap.html',
+                'anschreiben-generieren.html',
+                'dokumente-optimieren.html',
+                'design-layout.html',
+                'export-versand.html'
+            ];
+            
+            console.log('\n📋 WORKFLOW FILES STATUS:');
+            workflowFiles.forEach(async (file) => {
+                try {
+                    const response = await fetch(file);
+                    console.log(`${response.ok ? '✅' : '❌'} ${file}: ${response.status}`);
+                } catch (error) {
+                    console.log(`❌ ${file}: ERROR - ${error.message}`);
+                }
+            });
+        };
+
+        // Auto-Debug beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Bewerbungsmanager geladen - Debug verfügbar: window.debugWorkflow()');
+        });
 
         window.openEmailService = function() {
             console.log('📧 Opening Email Service...');

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Test - Manuel Weiss</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .test-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .debug-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 0;
+            text-align: left;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Workflow Test</h1>
+        <p>Teste die KI-Workflow Navigation</p>
+        
+        <button class="test-button" onclick="testKIWorkflow()">
+            🚀 KI-Workflow starten
+        </button>
+        
+        <button class="test-button" onclick="testDirectNavigation()">
+            📍 Direkte Navigation testen
+        </button>
+        
+        <button class="test-button" onclick="runDebugTest()">
+            🔍 Debug-Test ausführen
+        </button>
+        
+        <div class="debug-info" id="debugOutput">
+            Debug-Informationen werden hier angezeigt...
+        </div>
+    </div>
+    
+    <script>
+        function testKIWorkflow() {
+            console.log('🧪 Teste KI-Workflow...');
+            updateDebug('Testing KI-Workflow...');
+            
+            // Simuliere die startKIWorkflow Funktion
+            if (typeof window.startKIWorkflow === 'function') {
+                window.startKIWorkflow();
+            } else {
+                // Fallback: Direkte Navigation
+                window.location.href = 'ki-bewerbungsworkflow.html';
+            }
+        }
+        
+        function testDirectNavigation() {
+            console.log('🧪 Teste direkte Navigation...');
+            updateDebug('Testing direct navigation...');
+            window.location.href = 'ki-bewerbungsworkflow.html';
+        }
+        
+        async function runDebugTest() {
+            console.log('🧪 Führe Debug-Test aus...');
+            updateDebug('Running debug test...');
+            
+            const workflowFiles = [
+                'ki-bewerbungsworkflow.html',
+                'bewerbungsart-wahl.html',
+                'ki-stellenanalyse.html',
+                'matching-skillgap.html',
+                'anschreiben-generieren.html',
+                'dokumente-optimieren.html',
+                'design-layout.html',
+                'export-versand.html'
+            ];
+            
+            let results = [];
+            
+            for (const file of workflowFiles) {
+                try {
+                    const response = await fetch(file);
+                    results.push(`${response.ok ? '✅' : '❌'} ${file}: ${response.status}`);
+                } catch (error) {
+                    results.push(`❌ ${file}: ERROR - ${error.message}`);
+                }
+            }
+            
+            updateDebug(results.join('\n'));
+        }
+        
+        function updateDebug(message) {
+            document.getElementById('debugOutput').textContent = message;
+        }
+        
+        // Auto-Test beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Test-Seite geladen');
+            updateDebug('Test-Seite bereit. Klicken Sie auf einen Button zum Testen.');
+        });
+    </script>
+</body>
+</html>
