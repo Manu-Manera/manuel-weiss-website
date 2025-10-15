@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anschreiben generieren - Bewerbungsmanager</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 100%;
+            width: 57.1%;
+            transition: width 0.3s ease;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .cover-letter-preview {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .cover-letter-preview h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .cover-letter-content {
+            white-space: pre-wrap;
+            color: #555;
+        }
+
+        .edit-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .edit-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-edit"></i> Anschreiben generieren</h1>
+            <p>KI-gestützte Erstellung eines personalisierten Anschreibens</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <div class="step-card">
+            <h2>Schritt 3: Anschreiben erstellen</h2>
+            
+            <p>Basierend auf der Stellenanalyse und Ihren Qualifikationen wird ein personalisiertes Anschreiben generiert.</p>
+
+            <button class="generate-btn" onclick="generateCoverLetter()">
+                <i class="fas fa-magic"></i> Anschreiben generieren
+            </button>
+
+            <div class="cover-letter-preview" id="coverLetterPreview">
+                <h3>Ihr generiertes Anschreiben</h3>
+                <div class="cover-letter-content" id="coverLetterContent">
+                    <!-- Generated content will appear here -->
+                </div>
+                <div class="edit-controls">
+                    <button class="edit-btn" onclick="editCoverLetter()">
+                        <i class="fas fa-edit"></i> Bearbeiten
+                    </button>
+                    <button class="edit-btn" onclick="regenerateCoverLetter()">
+                        <i class="fas fa-redo"></i> Neu generieren
+                    </button>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </button>
+                <button class="continue-btn" onclick="proceedToNextStep()">
+                    <i class="fas fa-arrow-right"></i> Weiter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateCoverLetter() {
+            const generateBtn = document.querySelector('.generate-btn');
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> KI generiert Anschreiben...';
+            generateBtn.disabled = true;
+
+            setTimeout(() => {
+                const coverLetter = `Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als Senior Software Engineer gelesen. Als erfahrener Entwickler mit über 5 Jahren Berufserfahrung in der Softwareentwicklung bin ich überzeugt, dass ich eine wertvolle Bereicherung für Ihr Team darstellen kann.
+
+Meine Expertise umfasst moderne Webtechnologien wie JavaScript, React und Node.js, die ich in verschiedenen Projekten erfolgreich eingesetzt habe. Zusätzlich verfüge ich über praktische Erfahrungen mit Cloud-Plattformen, insbesondere AWS, und arbeite gerne in agilen Entwicklungsumgebungen.
+
+Besonders reizt mich an dieser Position die Möglichkeit, innovative Lösungen zu entwickeln und gleichzeitig mein technisches Wissen zu erweitern. Meine Erfahrung in der Zusammenarbeit mit interdisziplinären Teams und meine Fähigkeit, komplexe Probleme strukturiert anzugehen, qualifizieren mich für diese herausfordernde Aufgabe.
+
+Ich freue mich auf die Gelegenheit, in einem persönlichen Gespräch mehr über meine Qualifikationen und Ihre Erwartungen zu erfahren.
+
+Mit freundlichen Grüßen
+Manuel Weiss`;
+
+                document.getElementById('coverLetterContent').textContent = coverLetter;
+                document.getElementById('coverLetterPreview').style.display = 'block';
+                
+                generateBtn.innerHTML = '<i class="fas fa-check"></i> Anschreiben generiert';
+                generateBtn.disabled = false;
+            }, 3000);
+        }
+
+        function editCoverLetter() {
+            const content = document.getElementById('coverLetterContent');
+            const currentText = content.textContent;
+            
+            const newText = prompt('Bearbeiten Sie Ihr Anschreiben:', currentText);
+            if (newText !== null) {
+                content.textContent = newText;
+            }
+        }
+
+        function regenerateCoverLetter() {
+            if (confirm('Möchten Sie das Anschreiben neu generieren? Dies überschreibt die aktuelle Version.')) {
+                generateCoverLetter();
+            }
+        }
+
+        function proceedToNextStep() {
+            window.location.href = 'dokumente-optimieren.html';
+        }
+
+        function goBack() {
+            window.location.href = 'matching-skillgap.html';
+        }
+    </script>
+</body>
+</html>
