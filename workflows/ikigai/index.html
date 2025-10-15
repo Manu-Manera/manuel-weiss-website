@@ -266,8 +266,8 @@
         
         .ikigai-diagram-container {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 500px;
+            height: 500px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -276,15 +276,15 @@
         
         .ikigai-flower {
             position: relative;
-            width: 350px;
-            height: 350px;
+            width: 450px;
+            height: 450px;
         }
         
         .ikigai-petal {
             position: absolute;
-            width: 140px;
-            height: 140px;
-            border-radius: 50% 0 50% 0;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
             transform-origin: center;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -292,45 +292,90 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            opacity: 0.8;
         }
         
         .ikigai-petal:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
+            opacity: 1;
             z-index: 10;
         }
         
         .petal-passion {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            top: 0;
+            background: radial-gradient(circle, #ff6b6b, #ee5a24);
+            top: 50px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 1;
         }
         
         .petal-mission {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            background: radial-gradient(circle, #4ecdc4, #44a08d);
             top: 50%;
-            right: 0;
-            transform: translateY(-50%) rotate(90deg);
+            right: 50px;
+            transform: translateY(-50%);
+            z-index: 2;
         }
         
         .petal-profession {
-            background: linear-gradient(135deg, #45b7d1, #96c93d);
-            bottom: 0;
+            background: radial-gradient(circle, #45b7d1, #96c93d);
+            bottom: 50px;
             left: 50%;
-            transform: translateX(-50%) rotate(180deg);
+            transform: translateX(-50%);
+            z-index: 3;
         }
         
         .petal-vocation {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+            background: radial-gradient(circle, #f093fb, #f5576c);
             top: 50%;
-            left: 0;
-            transform: translateY(-50%) rotate(270deg);
+            left: 50px;
+            transform: translateY(-50%);
+            z-index: 4;
+        }
+        
+        /* Schnittmengen-Bereiche */
+        .intersection-area {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .intersection-passion-mission {
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.4), rgba(78, 205, 196, 0.4));
+            top: 100px;
+            right: 100px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .intersection-mission-profession {
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.4), rgba(69, 183, 209, 0.4));
+            bottom: 100px;
+            right: 100px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .intersection-profession-vocation {
+            background: radial-gradient(circle, rgba(69, 183, 209, 0.4), rgba(240, 147, 251, 0.4));
+            bottom: 100px;
+            left: 100px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .intersection-vocation-passion {
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.4), rgba(255, 107, 107, 0.4));
+            top: 100px;
+            left: 100px;
+            width: 100px;
+            height: 100px;
         }
         
         .ikigai-center {
@@ -698,6 +743,12 @@
                             <div class="connection-line line-3"></div>
                             <div class="connection-line line-4"></div>
                         </div>
+                        
+                        <!-- Schnittmengen-Bereiche -->
+                        <div class="intersection-area intersection-passion-mission"></div>
+                        <div class="intersection-area intersection-mission-profession"></div>
+                        <div class="intersection-area intersection-profession-vocation"></div>
+                        <div class="intersection-area intersection-vocation-passion"></div>
                         
                         <!-- Pflaumenblüten-Blätter -->
                         <div class="ikigai-petal petal-passion" onclick="scrollToSection('passion')">
