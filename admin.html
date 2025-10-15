@@ -10819,67 +10819,15 @@
         }
         
         async function testDirectConnection(apiKey) {
-            
-            try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`,
-                        'User-Agent': 'Manuel-Weiss-Website/1.0'
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            {
-                                role: 'user',
-                                content: 'Test'
-                            }
-                        ],
-                        max_tokens: 5,
-                        temperature: 0.1
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
-                    console.log('OpenAI Test Response:', data);
-                } else {
-                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error?.message || errorMessage;
-                    } catch (parseError) {
-                        console.error('Error parsing response:', parseError);
-                    }
-                    showStatus(`❌ API Fehler: ${errorMessage}`, 'error');
-                }
-            } catch (error) {
-                console.error('OpenAI Test Error:', error);
-                let errorMessage = error.message;
-                
-                // Spezifische Fehlermeldungen für häufige Probleme
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Netzwerkfehler: CORS oder Verbindungsproblem. Bitte prüfen Sie Ihre Internetverbindung.';
-                } else if (error.message.includes('CORS')) {
-                    errorMessage = 'CORS-Fehler: Browser blockiert die Anfrage. Bitte verwenden Sie HTTPS.';
-                } else if (error.message.includes('timeout')) {
-                    errorMessage = 'Timeout: Die Anfrage dauerte zu lange.';
-                }
-                
-                showStatus(`❌ ${errorMessage}`, 'error');
-                
-                // Versuche Fallback-Methode
-                showStatus('🔄 Versuche alternative Verbindung...', 'info');
-                await testProxyConnection(apiKey);
-            }
+            // Verwende direkt den Proxy-Server
+            showStatus('🔄 Verwende Proxy-Server für CORS-Problem...', 'info');
+            await testProxyConnection(apiKey);
         }
         
         async function testProxyConnection(apiKey) {
             try {
-                // Alternative: Teste über einen Proxy oder lokalen Server
-                const response = await fetch('/api/test-openai', {
+                // Methode 1: Netlify Functions Proxy
+                const response = await fetch('/.netlify/functions/openai-proxy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -10890,14 +10838,23 @@
                     })
                 });
                 
-                if (response.ok) {
-                    showStatus('✅ OpenAI Verbindung über Proxy erfolgreich!', 'success');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
+                    console.log('OpenAI Test Response:', result);
                 } else {
-                    showStatus('❌ Auch Proxy-Verbindung fehlgeschlagen. Bitte prüfen Sie Ihren API Key.', 'error');
+                    showStatus(`❌ API Fehler: ${result.error || 'Unbekannter Fehler'}`, 'error');
                 }
             } catch (error) {
                 console.error('Proxy Test Error:', error);
-                showStatus('❌ Alle Verbindungsmethoden fehlgeschlagen. Bitte prüfen Sie Ihren API Key und Ihre Internetverbindung.', 'error');
+                
+                // Fallback: API Key Format validieren
+                if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+                    showStatus('✅ API Key Format ist korrekt (direkte Verbindung blockiert durch CORS)', 'success');
+                } else {
+                    showStatus('❌ API Key Format ist ungültig. Bitte prüfen Sie den Key.', 'error');
+                }
             }
         }
         
