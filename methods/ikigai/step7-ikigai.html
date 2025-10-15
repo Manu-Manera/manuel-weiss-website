@@ -244,7 +244,7 @@
             generateFinalAnalysis();
             
             // Zeige Erfolgsmeldung mit PDF-Download Option
-            const userChoice = confirm('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!\n\nMöchtest du jetzt eine schöne PDF-Zusammenfassung deines Ikigai herunterladen?');
+            const userChoice = confirm('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!\n\nMöchtest du jetzt eine schöne PDF-Zusammenfassung deines Ikigai herunterladen?\n\nKlicke "OK" für Ja oder "Abbrechen" für Nein.');
             
             if (userChoice) {
                 // Generiere und lade PDF herunter
@@ -331,7 +331,7 @@
             });
         });
         
-        // PDF Export Funktion
+        // PDF Export Funktion - IMMER ERSTELLEN
         function generatePDF() {
             console.log('🎯 Starte PDF-Generierung...');
             
@@ -343,13 +343,15 @@
                     allData[`step${i}`] = JSON.parse(stepData);
                     console.log(`✅ Step ${i} Daten gefunden:`, allData[`step${i}`]);
                 } else {
-                    console.log(`⚠️ Keine Daten für Step ${i} gefunden`);
+                    // Erstelle leere Vorlage wenn keine Daten
+                    allData[`step${i}`] = {};
+                    console.log(`📝 Step ${i} - Leere Vorlage erstellt`);
                 }
             }
             
-            console.log('📊 Alle gesammelten Daten:', allData);
+            console.log('📊 Alle Daten (gefüllt oder leer):', allData);
             
-            // Erstelle PDF mit jsPDF
+            // Erstelle PDF - IMMER, auch wenn leer
             createRealPDF(allData);
         }
         
@@ -411,6 +413,52 @@
                 }
             };
             return questions[step]?.[key] || key;
+        }
+        
+        function getStepQuestions(step) {
+            const allQuestions = {
+                1: [
+                    {key: 'question1', question: 'Was macht dich wirklich glücklich?'},
+                    {key: 'question2', question: 'Wofür brennst du?'},
+                    {key: 'question3', question: 'Was würdest du tun, wenn Geld keine Rolle spielen würde?'},
+                    {key: 'question4', question: 'Wann fühlst du dich am lebendigsten?'},
+                    {key: 'question5', question: 'Was liebst du an dir selbst?'},
+                    {key: 'question6', question: 'Was sind deine tiefsten Werte?'}
+                ],
+                2: [
+                    {key: 'passion1', question: 'Was sind deine größten Leidenschaften?'},
+                    {key: 'passion2', question: 'Wofür begeisterst du dich?'},
+                    {key: 'passion3', question: 'Was macht dir am meisten Spaß?'}
+                ],
+                3: [
+                    {key: 'mission1', question: 'Was ist deine Mission im Leben?'},
+                    {key: 'mission2', question: 'Wie möchtest du die Welt verändern?'},
+                    {key: 'mission3', question: 'Was ist dein Beitrag zur Gesellschaft?'}
+                ],
+                4: [
+                    {key: 'profession1', question: 'Womit verdienst du dein Geld?'},
+                    {key: 'profession2', question: 'Was ist dein Beruf?'},
+                    {key: 'profession3', question: 'Welche Fähigkeiten verkaufst du?'}
+                ],
+                5: [
+                    {key: 'vocation1', question: 'Was kannst du besonders gut?'},
+                    {key: 'vocation2', question: 'Welche Talente hast du?'},
+                    {key: 'vocation3', question: 'Wo bist du Experte?'}
+                ],
+                6: [
+                    {key: 'synthesis1', question: 'Wie verbindest du alle Bereiche?'},
+                    {key: 'synthesis2', question: 'Was ist dein Ikigai?'},
+                    {key: 'synthesis3', question: 'Wie findest du den Schnittpunkt?'}
+                ],
+                7: [
+                    {key: 'shortTermGoals', question: 'Kurzfristige Ziele (1-3 Monate)'},
+                    {key: 'mediumTermGoals', question: 'Mittelfristige Ziele (3-12 Monate)'},
+                    {key: 'longTermGoals', question: 'Langfristige Ziele (1+ Jahre)'},
+                    {key: 'challenges', question: 'Herausforderungen'},
+                    {key: 'support', question: 'Unterstützung'}
+                ]
+            };
+            return allQuestions[step] || [];
         }
         
         // MODERNE PDF-ERSTELLUNG 2025 MIT JSPDF
@@ -496,24 +544,29 @@ Wenn diese vier Bereiche sich überschneiden, findest du dein Ikigai.`;
                     doc.setFont('helvetica', 'normal');
                     
                     // Alle Fragen und Antworten aus diesem Step
-                    Object.keys(stepData).forEach(key => {
-                        if (stepData[key] && stepData[key].trim()) {
-                            const question = getQuestionText(step, key);
-                            const answer = stepData[key];
-                            
-                            doc.setFont('helvetica', 'bold');
-                            doc.text(`${question}:`, 20, yPosition);
-                            yPosition += 8;
-                            
-                            doc.setFont('helvetica', 'normal');
+                    const stepQuestions = getStepQuestions(step);
+                    stepQuestions.forEach(questionData => {
+                        const question = questionData.question;
+                        const answer = stepData[questionData.key] || '________________________';
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${question}:`, 20, yPosition);
+                        yPosition += 8;
+                        
+                        doc.setFont('helvetica', 'normal');
+                        if (answer === '________________________') {
+                            doc.setTextColor(150, 150, 150);
+                            doc.text(answer, 25, yPosition);
+                            doc.setTextColor(50, 50, 50);
+                        } else {
                             const lines = doc.splitTextToSize(answer, 170);
                             doc.text(lines, 25, yPosition);
-                            yPosition += lines.length * 5 + 8;
-                            
-                            if (yPosition > 250) {
-                                doc.addPage();
-                                yPosition = 20;
-                            }
+                        }
+                        yPosition += 8;
+                        
+                        if (yPosition > 250) {
+                            doc.addPage();
+                            yPosition = 20;
                         }
                     });
                     
