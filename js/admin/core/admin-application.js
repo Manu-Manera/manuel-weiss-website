@@ -9,6 +9,8 @@ class AdminApplication {
         this.sectionLoader = null;
         this.sections = {};
         this.initialized = false;
+        this.performanceMonitor = null;
+        this.lazyLoader = null;
     }
     
     /**
@@ -24,9 +26,17 @@ class AdminApplication {
             this.stateManager = new AdminStateManager();
             this.sectionLoader = new AdminSectionLoader();
             this.navigation = new AdminNavigation(this.stateManager);
+            this.performanceMonitor = new AdminPerformanceMonitor();
+            this.lazyLoader = new AdminLazyLoader();
             
             // Section Loader mit Navigation verbinden
             this.navigation.setSectionLoader(this.sectionLoader);
+            
+            // Performance Monitoring starten
+            this.performanceMonitor.startMonitoring();
+            
+            // Lazy Loading initialisieren
+            this.lazyLoader.init();
             
             // Routes registrieren
             this.registerRoutes();

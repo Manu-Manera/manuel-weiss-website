@@ -1,6 +1,6 @@
 /**
  * Admin Panel Section Loader
- * Template und Script Loading mit Caching
+ * Template und Script Loading mit Caching und Performance-Optimierung
  */
 class AdminSectionLoader {
     constructor() {
@@ -8,18 +8,34 @@ class AdminSectionLoader {
         this.scriptCache = new Map();
         this.loadingPromises = new Map();
         this.basePath = '';
+        this.preloadQueue = new Set();
+        this.performanceMetrics = {
+            loadTimes: new Map(),
+            cacheHits: 0,
+            cacheMisses: 0
+        };
+        this.preloadPriority = [
+            'dashboard',
+            'api-keys',
+            'applications',
+            'media'
+        ];
     }
     
     /**
-     * Template laden
+     * Template laden mit Performance-Monitoring
      */
     async loadTemplate(templatePath) {
+        const startTime = performance.now();
         const fullPath = this.basePath + templatePath;
         
         // Cache prüfen
         if (this.templateCache.has(fullPath)) {
+            this.performanceMetrics.cacheHits++;
             return this.templateCache.get(fullPath);
         }
+        
+        this.performanceMetrics.cacheMisses++;
         
         // Loading Promise prüfen
         if (this.loadingPromises.has(fullPath)) {
@@ -34,6 +50,11 @@ class AdminSectionLoader {
             const content = await loadingPromise;
             this.templateCache.set(fullPath, content);
             this.loadingPromises.delete(fullPath);
+            
+            // Performance-Metriken speichern
+            const loadTime = performance.now() - startTime;
+            this.performanceMetrics.loadTimes.set(templatePath, loadTime);
+            
             return content;
         } catch (error) {
             this.loadingPromises.delete(fullPath);
@@ -263,6 +284,113 @@ class AdminSectionLoader {
         } catch {
             return false;
         }
+    }
+    
+    /**
+     * Section laden mit Preloading
+     */
+    async loadSection(sectionId) {
+        try {
+            // Template und Script parallel laden
+            const [templateContent, scriptContent] = await Promise.all([
+                this.loadTemplate(`admin/sections/${sectionId}.html`),
+                this.loadScript(`js/admin/sections/${sectionId}.js`, sectionId)
+            ]);
+            
+            // Preload verwandte Sections
+            this.preloadRelatedSections(sectionId);
+            
+            return {
+                template: templateContent,
+                script: scriptContent
+            };
+            
+        } catch (error) {
+            console.error(`Failed to load section ${sectionId}:`, error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Verwandte Sections preloaden
+     */
+    async preloadRelatedSections(currentSectionId) {
+        const relatedSections = this.getRelatedSections(currentSectionId);
+        
+        // Preload im Hintergrund
+        relatedSections.forEach(sectionId => {
+            if (!this.preloadQueue.has(sectionId)) {
+                this.preloadQueue.add(sectionId);
+                this.preloadSection(sectionId);
+            }
+        });
+    }
+    
+    /**
+     * Verwandte Sections ermitteln
+     */
+    getRelatedSections(sectionId) {
+        const relations = {
+            'dashboard': ['applications', 'api-keys'],
+            'api-keys': ['dashboard', 'applications'],
+            'applications': ['dashboard', 'media'],
+            'media': ['applications', 'content'],
+            'content': ['media', 'translations'],
+            'translations': ['content', 'settings'],
+            'settings': ['translations', 'system-health']
+        };
+        
+        return relations[sectionId] || [];
+    }
+    
+    /**
+     * Section preloaden
+     */
+    async preloadSection(sectionId) {
+        try {
+            await Promise.all([
+                this.loadTemplate(`admin/sections/${sectionId}.html`),
+                this.loadScript(`js/admin/sections/${sectionId}.js`, sectionId)
+            ]);
+            console.log(`Preloaded section: ${sectionId}`);
+        } catch (error) {
+            console.warn(`Preload failed for ${sectionId}:`, error);
+        }
+    }
+    
+    /**
+     * Prioritäts-Sections preloaden
+     */
+    async preloadPrioritySections() {
+        const preloadPromises = this.preloadPriority.map(sectionId => 
+            this.preloadSection(sectionId).catch(err => 
+                console.warn(`Priority preload failed for ${sectionId}:`, err)
+            )
+        );
+        
+        await Promise.allSettled(preloadPromises);
+    }
+    
+    /**
+     * Performance-Metriken abrufen
+     */
+    getPerformanceMetrics() {
+        return {
+            ...this.performanceMetrics,
+            cacheHitRate: this.performanceMetrics.cacheHits / 
+                (this.performanceMetrics.cacheHits + this.performanceMetrics.cacheMisses) * 100,
+            averageLoadTime: Array.from(this.performanceMetrics.loadTimes.values())
+                .reduce((a, b) => a + b, 0) / this.performanceMetrics.loadTimes.size
+        };
+    }
+    
+    /**
+     * Performance-Metriken zurücksetzen
+     */
+    resetPerformanceMetrics() {
+        this.performanceMetrics.loadTimes.clear();
+        this.performanceMetrics.cacheHits = 0;
+        this.performanceMetrics.cacheMisses = 0;
     }
 }
 
