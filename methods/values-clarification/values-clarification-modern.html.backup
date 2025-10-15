@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werte-Klärung - Modern Design | Manuel Weiss</title>
+    <link rel="stylesheet" href="values-clarification-modern.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Modern Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-container">
+            <a href="../../persoenlichkeitsentwicklung-uebersicht.html" class="nav-back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Zurück zur Übersicht</span>
+            </a>
+            <div class="nav-progress">
+                <div class="progress-circle">
+                    <span class="progress-text">0%</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="values-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-heart"></i>
+                    <span>Werte-Klärung</span>
+                </div>
+                <h1 class="hero-title">Entdecke deine <span class="gradient-text">wahren Werte</span></h1>
+                <p class="hero-subtitle">Finde heraus, was dir wirklich wichtig ist und lebe authentisch nach deinen Werten</p>
+                
+                <div class="hero-features">
+                    <div class="feature-card">
+                        <i class="fas fa-database"></i>
+                        <span>200+ Werte-Bibliothek</span>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-search"></i>
+                        <span>KI-gestützte Analyse</span>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Werte-Tracking</span>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Konflikt-Detektor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Progress Steps -->
+    <section class="progress-section">
+        <div class="progress-container">
+            <div class="progress-track">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-indicator">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fas fa-search"></i></div>
+                    </div>
+                    <div class="step-content">
+                        <h3>Werte-Identifikation</h3>
+                        <p>Entdecke deine wichtigsten Werte</p>
+                    </div>
+                </div>
+                
+                <div class="progress-step" data-step="2">
+                    <div class="step-indicator">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fas fa-sort-amount-down"></i></div>
+                    </div>
+                    <div class="step-content">
+                        <h3>Werte-Ranking</h3>
+                        <p>Priorisiere deine Werte</p>
+                    </div>
+                </div>
+                
+                <div class="progress-step" data-step="3">
+                    <div class="step-indicator">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    </div>
+                    <div class="step-content">
+                        <h3>Konflikt-Analyse</h3>
+                        <p>Erkenne Werte-Konflikte</p>
+                    </div>
+                </div>
+                
+                <div class="progress-step" data-step="4">
+                    <div class="step-indicator">
+                        <div class="step-number">4</div>
+                        <div class="step-icon"><i class="fas fa-life-ring"></i></div>
+                    </div>
+                    <div class="step-content">
+                        <h3>Lebensbereiche</h3>
+                        <p>Werte in verschiedenen Bereichen</p>
+                    </div>
+                </div>
+                
+                <div class="progress-step" data-step="5">
+                    <div class="step-indicator">
+                        <div class="step-number">5</div>
+                        <div class="step-icon"><i class="fas fa-chart-line"></i></div>
+                    </div>
+                    <div class="step-content">
+                        <h3>Werte-Tracking</h3>
+                        <p>Verfolge deine Fortschritte</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 1: Werte-Identifikation -->
+    <section class="workflow-step active" data-step="1">
+        <div class="step-container">
+            <div class="step-header">
+                <h2>Schritt 1: Werte-Identifikation</h2>
+                <p>Identifiziere alle Werte, die dir wichtig sind. Nutze unsere umfangreiche Werte-Bibliothek oder füge eigene hinzu.</p>
+            </div>
+
+            <!-- Modern Search & Discovery -->
+            <div class="discovery-section">
+                <div class="search-container">
+                    <div class="search-header">
+                        <h3><i class="fas fa-search"></i> Werte entdecken</h3>
+                        <div class="search-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-database"></i>
+                                200+ Werte verfügbar
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="selectedCount">0</span> ausgewählt
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="modern-search-bar">
+                        <input type="text" id="valuesSearch" placeholder="Suche nach Werten... (z.B. 'Authentizität', 'Freiheit', 'Familie')">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="search-filters">
+                        <button class="filter-btn active" data-category="all">Alle</button>
+                        <button class="filter-btn" data-category="personal">Persönlich</button>
+                        <button class="filter-btn" data-category="professional">Beruflich</button>
+                        <button class="filter-btn" data-category="relationships">Beziehungen</button>
+                        <button class="filter-btn" data-category="spiritual">Spirituell</button>
+                    </div>
+                </div>
+
+                <!-- Values Grid -->
+                <div class="values-grid" id="valuesGrid">
+                    <!-- Values werden dynamisch geladen -->
+                </div>
+
+                <!-- Custom Values -->
+                <div class="custom-values-section">
+                    <h3><i class="fas fa-plus-circle"></i> Eigene Werte hinzufügen</h3>
+                    <div class="custom-input-container">
+                        <input type="text" id="customValue" placeholder="Dein eigener Wert...">
+                        <button class="add-btn" onclick="addCustomValue()">
+                            <i class="fas fa-plus"></i>
+                            Hinzufügen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Values -->
+            <div class="selected-values-section">
+                <h3><i class="fas fa-heart"></i> Deine ausgewählten Werte</h3>
+                <div class="selected-values-container" id="selectedValues">
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <p>Wähle Werte aus, die dir wichtig sind</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="step-actions">
+                <button class="btn-secondary" onclick="skipStep()">
+                    <i class="fas fa-skip-forward"></i>
+                    Überspringen
+                </button>
+                <button class="btn-primary" onclick="nextStep()" disabled id="nextBtn">
+                    <i class="fas fa-arrow-right"></i>
+                    Weiter
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 2: Werte-Ranking -->
+    <section class="workflow-step" data-step="2">
+        <div class="step-container">
+            <div class="step-header">
+                <h2>Schritt 2: Werte-Ranking</h2>
+                <p>Priorisiere deine Werte nach Wichtigkeit. Ziehe die Werte in die richtige Reihenfolge.</p>
+            </div>
+
+            <div class="ranking-container">
+                <div class="ranking-header">
+                    <h3><i class="fas fa-sort-amount-down"></i> Werte nach Wichtigkeit sortieren</h3>
+                    <p>Ziehe die Werte in die richtige Reihenfolge - von wichtigsten zu weniger wichtigen</p>
+                </div>
+                
+                <div class="ranking-list" id="rankingList">
+                    <!-- Ranking items werden dynamisch geladen -->
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-secondary" onclick="prevStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                <button class="btn-primary" onclick="nextStep()">
+                    <i class="fas fa-arrow-right"></i>
+                    Weiter
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 3: Konflikt-Analyse -->
+    <section class="workflow-step" data-step="3">
+        <div class="step-container">
+            <div class="step-header">
+                <h2>Schritt 3: Konflikt-Analyse</h2>
+                <p>Erkenne potentielle Konflikte zwischen deinen Werten und finde Lösungen.</p>
+            </div>
+
+            <div class="conflict-analysis">
+                <div class="conflict-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Werte-Konflikte erkennen</h3>
+                    <p>Unsere KI analysiert deine Werte auf potentielle Konflikte</p>
+                </div>
+                
+                <div class="conflict-results" id="conflictResults">
+                    <!-- Konflikt-Analysen werden hier angezeigt -->
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-secondary" onclick="prevStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                <button class="btn-primary" onclick="nextStep()">
+                    <i class="fas fa-arrow-right"></i>
+                    Weiter
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 4: Lebensbereiche -->
+    <section class="workflow-step" data-step="4">
+        <div class="step-container">
+            <div class="step-header">
+                <h2>Schritt 4: Lebensbereiche</h2>
+                <p>Ordne deine Werte verschiedenen Lebensbereichen zu.</p>
+            </div>
+
+            <div class="life-areas">
+                <div class="areas-grid">
+                    <div class="area-card" data-area="career">
+                        <div class="area-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>Beruf & Karriere</h3>
+                        <div class="area-values" id="careerValues"></div>
+                    </div>
+                    
+                    <div class="area-card" data-area="relationships">
+                        <div class="area-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Beziehungen</h3>
+                        <div class="area-values" id="relationshipValues"></div>
+                    </div>
+                    
+                    <div class="area-card" data-area="health">
+                        <div class="area-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h3>Gesundheit</h3>
+                        <div class="area-values" id="healthValues"></div>
+                    </div>
+                    
+                    <div class="area-card" data-area="personal">
+                        <div class="area-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Persönliche Entwicklung</h3>
+                        <div class="area-values" id="personalValues"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-secondary" onclick="prevStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                <button class="btn-primary" onclick="nextStep()">
+                    <i class="fas fa-arrow-right"></i>
+                    Weiter
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 5: Werte-Tracking -->
+    <section class="workflow-step" data-step="5">
+        <div class="step-container">
+            <div class="step-header">
+                <h2>Schritt 5: Werte-Tracking</h2>
+                <p>Verfolge deine Fortschritte bei der Umsetzung deiner Werte.</p>
+            </div>
+
+            <div class="tracking-dashboard">
+                <div class="tracking-header">
+                    <h3><i class="fas fa-chart-line"></i> Dein Werte-Dashboard</h3>
+                    <p>Überwache deine Fortschritte bei der Umsetzung deiner Werte</p>
+                </div>
+                
+                <div class="tracking-grid">
+                    <div class="tracking-card">
+                        <div class="card-header">
+                            <h4>Werte-Umsetzung</h4>
+                            <span class="progress-percentage">75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-card">
+                        <div class="card-header">
+                            <h4>Konsistenz-Score</h4>
+                            <span class="progress-percentage">88%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn-secondary" onclick="prevStep()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                <button class="btn-primary" onclick="completeWorkflow()">
+                    <i class="fas fa-check"></i>
+                    Abschließen
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Werte-Klärung abgeschlossen!</h2>
+            <p>Du hast erfolgreich deine wichtigsten Werte identifiziert und priorisiert.</p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="downloadResults()">
+                    <i class="fas fa-download"></i>
+                    Ergebnisse herunterladen
+                </button>
+                <button class="btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    Schließen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="values-clarification-modern.js"></script>
+</body>
+</html>
