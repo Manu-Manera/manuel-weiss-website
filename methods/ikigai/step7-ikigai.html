@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 7: Aktionsplan</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Erstelle einen konkreten Aktionsplan zur Umsetzung deines Ikigai im Alltag. Setze deine Erkenntnisse in die Praxis um.">
+    <meta name="keywords" content="ikigai, aktionsplan, umsetzung, ziele, planung, lebenszweck">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step1-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 7: Aktionsplan</h1>
+                <p class="step-description">Erstelle einen konkreten Plan zur Umsetzung deines Ikigai im Alltag.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                <span class="progress-text">7 von 7 - Fertig!</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deinen Ikigai umsetzen</h2>
+                    <p>Jetzt geht es darum, dein Ikigai in die Praxis umzusetzen. Erstelle einen konkreten, umsetzbaren Plan für die nächsten Schritte.</p>
+                </div>
+
+                <form class="reflection-form" id="actionPlanForm">
+                    <!-- Frage 1: Kurzfristige Ziele -->
+                    <div class="form-group">
+                        <label for="shortTerm">Was sind deine kurzfristigen Ziele (nächste 3 Monate)?</label>
+                        <p class="question-hint">Definiere konkrete, messbare Schritte, die du in den nächsten 3 Monaten umsetzen kannst.</p>
+                        <textarea id="shortTerm" name="shortTerm" rows="6" placeholder="Beschreibe deine kurzfristigen Ziele..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Lernen:</strong> Welche Fähigkeiten willst du entwickeln?</li>
+                                <li><strong>Netzwerk:</strong> Mit wem willst du dich vernetzen?</li>
+                                <li><strong>Erfahrung:</strong> Welche praktischen Erfahrungen willst du sammeln?</li>
+                                <li><strong>Ressourcen:</strong> Welche Tools oder Ressourcen brauchst du?</li>
+                                <li><strong>Gewohnheiten:</strong> Welche neuen Routinen willst du etablieren?</li>
+                                <li><strong>Erste Schritte:</strong> Was ist der erste konkrete Schritt?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Mittelfristige Ziele -->
+                    <div class="form-group">
+                        <label for="mediumTerm">Was sind deine mittelfristigen Ziele (6-12 Monate)?</label>
+                        <p class="question-hint">Überlege, wo du in 6-12 Monaten stehen möchtest und welche größeren Veränderungen nötig sind.</p>
+                        <textarea id="mediumTerm" name="mediumTerm" rows="6" placeholder="Beschreibe deine mittelfristigen Ziele..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Berufliche Veränderung:</strong> Jobwechsel, Karrierewechsel, Selbstständigkeit?</li>
+                                <li><strong>Projekte:</strong> Welche größeren Projekte willst du starten?</li>
+                                <li><strong>Bildung:</strong> Welche Ausbildungen oder Zertifikate willst du?</li>
+                                <li><strong>Beziehungen:</strong> Welche neuen Beziehungen willst du aufbauen?</li>
+                                <li><strong>Lifestyle:</strong> Wie willst du leben und arbeiten?</li>
+                                <li><strong>Wirkung:</strong> Welchen Einfluss willst du haben?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Langfristige Vision -->
+                    <div class="form-group">
+                        <label for="longTerm">Was ist deine langfristige Vision (2-5 Jahre)?</label>
+                        <p class="question-hint">Denke groß! Wo willst du in 2-5 Jahren stehen? Wie sieht dein ideales Leben aus?</p>
+                        <textarea id="longTerm" name="longTerm" rows="6" placeholder="Beschreibe deine langfristige Vision..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Karriere:</strong> Wo willst du beruflich stehen?</li>
+                                <li><strong>Finanzen:</strong> Welche finanzielle Situation willst du?</li>
+                                <li><strong>Beziehungen:</strong> Welche Art von Beziehungen willst du?</li>
+                                <li><strong>Gesundheit:</strong> Wie willst du leben und dich fühlen?</li>
+                                <li><strong>Beitrag:</strong> Wie willst du zur Welt beitragen?</li>
+                                <li><strong>Legacy:</strong> Was willst du hinterlassen?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 4: Hindernisse & Lösungen -->
+                    <div class="form-group">
+                        <label for="obstacles">Welche Hindernisse siehst du und wie willst du sie überwinden?</label>
+                        <p class="question-hint">Identifiziere mögliche Herausforderungen und entwickle Strategien zu ihrer Bewältigung.</p>
+                        <textarea id="obstacles" name="obstacles" rows="6" placeholder="Beschreibe Hindernisse und deine Lösungsansätze..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Finanzielle Hindernisse:</strong> Geld, Investitionen, Sicherheit?</li>
+                                <li><strong>Zeitliche Hindernisse:</strong> Zeitmanagement, Prioritäten?</li>
+                                <li><strong>Fähigkeits-Hindernisse:</strong> Skills, Wissen, Erfahrung?</li>
+                                <li><strong>Soziale Hindernisse:</strong> Unterstützung, Netzwerk, Familie?</li>
+                                <li><strong>Psychologische Hindernisse:</strong> Ängste, Selbstzweifel, Motivation?</li>
+                                <li><strong>Externe Hindernisse:</strong> Markt, Konkurrenz, Rahmenbedingungen?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 5: Unterstützung -->
+                    <div class="form-group">
+                        <label for="support">Wer oder was kann dich bei der Umsetzung unterstützen?</label>
+                        <p class="question-hint">Überlege, welche Ressourcen, Menschen und Systeme dir helfen können.</p>
+                        <textarea id="support" name="support" rows="6" placeholder="Beschreibe deine Unterstützungsquellen..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Mentoren:</strong> Wer kann dich beraten und führen?</li>
+                                <li><strong>Netzwerk:</strong> Mit wem kannst du zusammenarbeiten?</li>
+                                <li><strong>Community:</strong> Welche Gruppen können dich unterstützen?</li>
+                                <li><strong>Ressourcen:</strong> Welche Tools, Kurse, Bücher helfen?</li>
+                                <li><strong>Finanzierung:</strong> Wer kann dich finanziell unterstützen?</li>
+                                <li><strong>Emotionale Unterstützung:</strong> Wer gibt dir Kraft und Motivation?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="step6-ikigai.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück zu Synthese
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            <i class="fas fa-check"></i>
+                            Ikigai Workflow abschließen
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-rocket"></i> Aktionsplan-Tools</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Zielsetzung</h5>
+                            <ul>
+                                <li><strong>SMART Goals:</strong> Spezifisch, Messbar, Erreichbar, Relevant, Terminiert</li>
+                                <li><strong>OKR Framework:</strong> Objectives & Key Results</li>
+                                <li><strong>Backwards Planning:</strong> Vom Ziel rückwärts planen</li>
+                                <li><strong>Milestone Planning:</strong> Meilensteine definieren</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Umsetzung</h5>
+                            <ul>
+                                <li><strong>Habit Stacking:</strong> Neue Gewohnheiten etablieren</li>
+                                <li><strong>Time Blocking:</strong> Zeit für wichtige Aufgaben reservieren</li>
+                                <li><strong>Accountability Partner:</strong> Jemanden zur Verantwortung ziehen</li>
+                                <li><strong>Progress Tracking:</strong> Fortschritt messen und dokumentieren</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Aktionsplan-Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Atomic Habits"</strong> von James Clear</li>
+                                <li><strong>"The 7 Habits"</strong> von Stephen Covey</li>
+                                <li><strong>"Getting Things Done"</strong> von David Allen</li>
+                                <li><strong>"The Power of Now"</strong> von Eckhart Tolle</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Tools & Apps</h5>
+                            <ul>
+                                <li><strong>Notion:</strong> All-in-one Workspace</li>
+                                <li><strong>Trello:</strong> Projektmanagement</li>
+                                <li><strong>Habitica:</strong> Gamification von Gewohnheiten</li>
+                                <li><strong>Forest:</strong> Fokus und Produktivität</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index-raisec.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index-wheel.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/ikigai-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                shortTerm: document.getElementById('shortTerm').value,
+                mediumTerm: document.getElementById('mediumTerm').value,
+                longTerm: document.getElementById('longTerm').value,
+                obstacles: document.getElementById('obstacles').value,
+                support: document.getElementById('support').value,
+                step: 7,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep7', JSON.stringify(formData));
+            
+            // Generate final Ikigai analysis
+            generateFinalAnalysis();
+            
+            // Redirect to results or completion page
+            alert('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!');
+            window.location.href = 'index-ikigai.html';
+        }
+        
+        function generateFinalAnalysis() {
+            // Collect all step data
+            const allSteps = {};
+            for (let i = 1; i <= 7; i++) {
+                const stepData = localStorage.getItem(`ikigaiStep${i}`);
+                if (stepData) {
+                    allSteps[`step${i}`] = JSON.parse(stepData);
+                }
+            }
+            
+            // Create final analysis
+            const finalAnalysis = {
+                timestamp: new Date().toISOString(),
+                steps: allSteps,
+                ikigai: {
+                    passion: allSteps.step2 || {},
+                    mission: allSteps.step3 || {},
+                    profession: allSteps.step4 || {},
+                    vocation: allSteps.step5 || {},
+                    synthesis: allSteps.step6 || {},
+                    actionPlan: allSteps.step7 || {}
+                },
+                summary: generateSummary(allSteps)
+            };
+            
+            // Save final analysis
+            localStorage.setItem('ikigaiFinalAnalysis', JSON.stringify(finalAnalysis));
+        }
+        
+        function generateSummary(steps) {
+            return {
+                totalSteps: 7,
+                completedSteps: Object.keys(steps).length,
+                completionDate: new Date().toISOString(),
+                nextReviewDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+            };
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep7');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('shortTerm').value = data.shortTerm || '';
+                document.getElementById('mediumTerm').value = data.mediumTerm || '';
+                document.getElementById('longTerm').value = data.longTerm || '';
+                document.getElementById('obstacles').value = data.obstacles || '';
+                document.getElementById('support').value = data.support || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    shortTerm: document.getElementById('shortTerm').value,
+                    mediumTerm: document.getElementById('mediumTerm').value,
+                    longTerm: document.getElementById('longTerm').value,
+                    obstacles: document.getElementById('obstacles').value,
+                    support: document.getElementById('support').value,
+                    step: 7,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep7', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>

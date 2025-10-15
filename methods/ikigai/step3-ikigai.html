@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 3: Mission</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Finde deine Mission im Ikigai-Workflow. Womit kannst du der Welt helfen? Welche Probleme möchtest du lösen?">
+    <meta name="keywords" content="ikigai, mission, welt helfen, probleme lösen, beitrag, lebenszweck">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step1-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 3: Mission</h1>
+                <p class="step-description">Finde heraus, womit du der Welt helfen kannst. Welche Probleme möchtest du lösen?</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 42.9%"></div>
+                </div>
+                <span class="progress-text">3 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Mission entdecken</h2>
+                    <p>Deine Mission ist dein Beitrag zur Welt. Was kannst du tun, um anderen zu helfen und die Welt zu verbessern?</p>
+                </div>
+
+                <form class="reflection-form" id="missionForm">
+                    <!-- Frage 1: Probleme die dich beschäftigen -->
+                    <div class="form-group">
+                        <label for="problems">Welche Probleme in der Welt beschäftigen dich am meisten?</label>
+                        <p class="question-hint">Denke an gesellschaftliche, ökologische oder soziale Herausforderungen, die dich bewegen.</p>
+                        <textarea id="problems" name="problems" rows="6" placeholder="Beschreibe die Probleme, die dich beschäftigen..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Umwelt & Nachhaltigkeit:</strong> Klimawandel, Umweltschutz, Ressourcen?</li>
+                                <li><strong>Gesellschaft & Gerechtigkeit:</strong> Ungleichheit, Diskriminierung, Armut?</li>
+                                <li><strong>Bildung & Entwicklung:</strong> Zugang zu Bildung, lebenslanges Lernen?</li>
+                                <li><strong>Gesundheit & Wohlbefinden:</strong> Mentale Gesundheit, Prävention, Pflege?</li>
+                                <li><strong>Technologie & Innovation:</strong> Digitale Kluft, KI-Ethik, Datenschutz?</li>
+                                <li><strong>Kultur & Gemeinschaft:</strong> Zusammenhalt, Vielfalt, Tradition?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Dein Beitrag -->
+                    <div class="form-group">
+                        <label for="contribution">Wie möchtest du zur Lösung dieser Probleme beitragen?</label>
+                        <p class="question-hint">Überlege, welche Rolle du spielen könntest und was du konkret tun könntest.</p>
+                        <textarea id="contribution" name="contribution" rows="6" placeholder="Beschreibe deinen möglichen Beitrag..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Direkte Hilfe:</strong> Ehrenamt, Spenden, persönlicher Einsatz?</li>
+                                <li><strong>Bewusstsein schaffen:</strong> Aufklärung, Bildung, Information?</li>
+                                <li><strong>Innovation:</strong> Neue Lösungen entwickeln, Technologie nutzen?</li>
+                                <li><strong>Vernetzung:</strong> Menschen zusammenbringen, Gemeinschaften aufbauen?</li>
+                                <li><strong>Forschung:</strong> Wissen generieren, Studien durchführen?</li>
+                                <li><strong>Politik & Aktivismus:</strong> Strukturen verändern, Einfluss nehmen?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Dein Vermächtnis -->
+                    <div class="form-group">
+                        <label for="legacy">Was möchtest du der Welt hinterlassen? Wie willst du in Erinnerung bleiben?</label>
+                        <p class="question-hint">Denke an dein Vermächtnis und wie du die Welt nachhaltig verbessern möchtest.</p>
+                        <textarea id="legacy" name="legacy" rows="6" placeholder="Beschreibe dein gewünschtes Vermächtnis..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Persönliches Vermächtnis:</strong> Familie, Freunde, persönliche Beziehungen?</li>
+                                <li><strong>Berufliches Vermächtnis:</strong> Innovationen, Teams, Organisationen?</li>
+                                <li><strong>Gesellschaftliches Vermächtnis:</strong> Soziale Veränderungen, Bewegungen?</li>
+                                <li><strong>Kulturelles Vermächtnis:</strong> Kunst, Wissen, Traditionen?</li>
+                                <li><strong>Ökologisches Vermächtnis:</strong> Nachhaltigkeit, Umweltschutz?</li>
+                                <li><strong>Spirituelles Vermächtnis:</strong> Werte, Weisheit, Inspiration?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="step2-ikigai.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück zu Passion
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Profession
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-globe"></i> Mission-Tools</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Mission entdecken</h5>
+                            <ul>
+                                <li><strong>Impact Mapping:</strong> Deine Wirkung visualisieren</li>
+                                <li><strong>Problem Tree:</strong> Ursachen und Auswirkungen analysieren</li>
+                                <li><strong>Stakeholder Analysis:</strong> Wer ist betroffen?</li>
+                                <li><strong>Mission Statement:</strong> Deine Mission formulieren</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Beitrag planen</h5>
+                            <ul>
+                                <li><strong>Theory of Change:</strong> Wie führt dein Handeln zu Veränderung?</li>
+                                <li><strong>Impact Measurement:</strong> Erfolg messen und bewerten</li>
+                                <li><strong>Resource Mapping:</strong> Welche Ressourcen brauchst du?</li>
+                                <li><strong>Partnership Building:</strong> Mit wem kannst du zusammenarbeiten?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Mission-Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Start with Why"</strong> von Simon Sinek</li>
+                                <li><strong>"The Purpose Driven Life"</strong> von Rick Warren</li>
+                                <li><strong>"Give and Take"</strong> von Adam Grant</li>
+                                <li><strong>"The Lean Startup"</strong> von Eric Ries</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index-raisec.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index-wheel.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/ikigai-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                problems: document.getElementById('problems').value,
+                contribution: document.getElementById('contribution').value,
+                legacy: document.getElementById('legacy').value,
+                step: 3,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep3', JSON.stringify(formData));
+            
+            // Redirect to step 4
+            window.location.href = 'step4-ikigai.html';
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep3');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('problems').value = data.problems || '';
+                document.getElementById('contribution').value = data.contribution || '';
+                document.getElementById('legacy').value = data.legacy || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    problems: document.getElementById('problems').value,
+                    contribution: document.getElementById('contribution').value,
+                    legacy: document.getElementById('legacy').value,
+                    step: 3,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep3', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>
