@@ -406,32 +406,9 @@
             analyzeBtn.disabled = true;
 
             try {
-                // Lade KI-Einstellungen
-                const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
-                const apiKey = settings.apiKey || localStorage.getItem('openai_api_key');
+                // Verwende globale API Verwaltung
+                const prompt = `Analysiere die folgende Stellenausschreibung und extrahiere die wichtigsten Anforderungen.
                 
-                if (!apiKey) {
-                    throw new Error('OpenAI API Key nicht gefunden. Bitte in den KI-Einstellungen konfigurieren.');
-                }
-
-                // ECHTE OPENAI API-CALL
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: settings.model || 'gpt-4o-mini',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
-                            },
-                            {
-                                role: 'user',
-                                content: `Analysiere die folgende Stellenausschreibung und extrahiere die wichtigsten Anforderungen.
-                                
 Unternehmen: ${company}
 Position: ${position}
 Stellenausschreibung: ${jobDescription}
@@ -450,21 +427,12 @@ Fokussieren Sie sich auf:
 - Soft Skills
 - Zertifizierungen
 - Sprachen
-- Führungserfahrung`
-                            }
-                        ],
-                        max_tokens: settings.maxTokens || 1000,
-                        temperature: settings.temperature || 0.3
-                    })
+- Führungserfahrung`;
+
+                // Verwende globale API Verwaltung für KI-Analyse
+                const content = await window.GlobalAPIManager.performAnalysis(prompt, {
+                    systemPrompt: 'Du bist ein Experte für Stellenausschreibungen und HR-Analyse. Analysiere Stellenausschreibungen und extrahiere die wichtigsten Anforderungen.'
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`OpenAI API Fehler: ${errorData.error?.message || response.statusText}`);
-                }
-
-                const data = await response.json();
-                const content = data.choices[0].message.content;
                 
                 // Parse JSON response
                 try {
@@ -480,7 +448,7 @@ Fokussieren Sie sich auf:
                     
                 } catch (parseError) {
                     console.error('JSON Parse Fehler:', parseError);
-                    throw new Error('Ungültige JSON-Antwort von OpenAI');
+                    throw new Error('Ungültige JSON-Antwort von der KI');
                 }
                 
             } catch (error) {
@@ -488,7 +456,11 @@ Fokussieren Sie sich auf:
                 analyzeBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler bei der Analyse';
                 analyzeBtn.disabled = false;
                 
-                alert(`KI-Analyse fehlgeschlagen: ${error.message}`);
+                if (error.message.includes('Kein aktiver KI-Service')) {
+                    alert('Kein KI-Service konfiguriert. Bitte konfigurieren Sie einen API Key in den API-Einstellungen.');
+                } else {
+                    alert(`KI-Analyse fehlgeschlagen: ${error.message}`);
+                }
             }
         }
 
@@ -686,5 +658,8 @@ Fokussieren Sie sich auf:
             loadExistingRequirements();
         });
     </script>
+    
+    <!-- Global API Manager -->
+    <script src="js/global-api-manager.js"></script>
 </body>
 </html>
