@@ -81,7 +81,7 @@ class AdminApplication {
             { id: 'settings', template: 'admin/sections/settings.html', script: 'js/admin/sections/settings.js' },
             
             // Persönlichkeitsentwicklung Methoden
-            { id: 'ikigai', template: 'admin/sections/personality-methods/ikigai.html', script: 'js/admin/sections/personality-methods.js' },
+            { id: 'ikigai', template: 'admin/sections/personality-methods/ikigai.html', script: 'js/admin/sections/ikigai.js' },
             { id: 'raisec', template: 'admin/sections/personality-methods/raisec.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'values-clarification', template: 'admin/sections/personality-methods/values-clarification.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'strengths-analysis', template: 'admin/sections/personality-methods/strengths-analysis.html', script: 'js/admin/sections/personality-methods.js' },
@@ -162,6 +162,9 @@ class AdminApplication {
         
         // Personality Methods Section
         this.sections.personalityMethods = new PersonalityMethodsSection();
+        
+        // Ikigai Section
+        this.sections.ikigai = new IkigaiSection();
         
         // Weitere Sections werden lazy geladen
         console.log('Sections initialized');
