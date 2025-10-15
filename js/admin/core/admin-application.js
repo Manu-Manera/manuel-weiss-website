@@ -135,6 +135,9 @@ class AdminApplication {
         // Nutrition Section
         this.sections.nutrition = new NutritionSection();
         
+        // Personal Training Section
+        this.sections.personalTraining = new PersonalTrainingSection();
+        
         // Translations Section
         this.sections.translations = new TranslationsSection();
         
