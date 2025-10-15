@@ -264,41 +264,180 @@
             height: 400px;
         }
         
-        .ikigai-circle-enhanced {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        .ikigai-diagram-container {
             position: relative;
+            width: 400px;
+            height: 400px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 20px 40px rgba(102,126,234,0.3);
+        }
+        
+        .ikigai-flower {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .ikigai-petal {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50% 0 50% 0;
+            transform-origin: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .ikigai-petal:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .petal-passion {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .petal-mission {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+        }
+        
+        .petal-profession {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .petal-vocation {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+        
+        .ikigai-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            z-index: 5;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
             animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .ikigai-center-enhanced {
-            text-align: center;
-            color: white;
-            z-index: 2;
-        }
-        
-        .ikigai-center-enhanced h3 {
-            font-size: 1.5rem;
+        .ikigai-center h3 {
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
         
-        .ikigai-center-enhanced p {
-            font-size: 0.9rem;
+        .ikigai-center p {
+            font-size: 0.7rem;
             opacity: 0.9;
+        }
+        
+        .petal-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .petal-description {
+            font-size: 0.6rem;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .ikigai-connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(102,126,234,0.3), rgba(118,75,162,0.3));
+            height: 2px;
+            transform-origin: left center;
+        }
+        
+        .line-1 {
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            transform: rotate(45deg);
+            animation: lineGlow 3s ease-in-out infinite;
+        }
+        
+        .line-2 {
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            transform: rotate(135deg);
+            animation: lineGlow 3s ease-in-out infinite 0.5s;
+        }
+        
+        .line-3 {
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            transform: rotate(225deg);
+            animation: lineGlow 3s ease-in-out infinite 1s;
+        }
+        
+        .line-4 {
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            transform: rotate(315deg);
+            animation: lineGlow 3s ease-in-out infinite 1.5s;
+        }
+        
+        @keyframes lineGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
         }
         
         /* Workflow Steps */
@@ -500,10 +639,50 @@
             </div>
             
             <div class="ikigai-visual">
-                <div class="ikigai-circle-enhanced">
-                    <div class="ikigai-center-enhanced">
-                        <h3>Dein Ikigai</h3>
-                        <p>Der Schnittpunkt aller vier Bereiche</p>
+                <div class="ikigai-diagram-container">
+                    <div class="ikigai-flower">
+                        <!-- Verbindungslinien -->
+                        <div class="ikigai-connection-lines">
+                            <div class="connection-line line-1"></div>
+                            <div class="connection-line line-2"></div>
+                            <div class="connection-line line-3"></div>
+                            <div class="connection-line line-4"></div>
+                        </div>
+                        
+                        <!-- Pflaumenblüten-Blätter -->
+                        <div class="ikigai-petal petal-passion" onclick="scrollToSection('passion')">
+                            <div>
+                                <div class="petal-label">Was du liebst</div>
+                                <div class="petal-description">Passion</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ikigai-petal petal-mission" onclick="scrollToSection('mission')">
+                            <div>
+                                <div class="petal-label">Was die Welt braucht</div>
+                                <div class="petal-description">Mission</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ikigai-petal petal-profession" onclick="scrollToSection('profession')">
+                            <div>
+                                <div class="petal-label">Womit du Geld verdienst</div>
+                                <div class="petal-description">Profession</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ikigai-petal petal-vocation" onclick="scrollToSection('vocation')">
+                            <div>
+                                <div class="petal-label">Was du gut kannst</div>
+                                <div class="petal-description">Vocation</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zentrum -->
+                        <div class="ikigai-center">
+                            <h3>Dein Ikigai</h3>
+                            <p>Der Schnittpunkt aller vier Bereiche</p>
+                        </div>
                     </div>
                 </div>
             </div>
