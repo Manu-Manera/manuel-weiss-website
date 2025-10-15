@@ -303,6 +303,15 @@
             }
         });
         
+        // Initialize workflow
+        window.addEventListener('load', function() {
+            if (typeof IkigaiSmartWorkflow !== 'undefined') {
+                window.ikigaiSmartWorkflow = new IkigaiSmartWorkflow();
+                window.ikigaiSmartWorkflow.currentStep = 1;
+                window.ikigaiSmartWorkflow.updateProgress();
+            }
+        });
+        
         // Auto-save on input
         document.querySelectorAll('textarea').forEach(textarea => {
             textarea.addEventListener('input', function() {
