@@ -1,0 +1,100 @@
+<div class="section-header">
+    <h2>Content Management</h2>
+    <p>Services & Tätigkeiten verwalten</p>
+</div>
+
+<div class="section-toolbar">
+    <div class="toolbar-left">
+        <button class="btn btn-primary" data-action="add-service">
+            <i class="fas fa-plus"></i>
+            Neuen Service hinzufügen
+        </button>
+        <button class="btn btn-outline" data-action="refresh-services">
+            <i class="fas fa-sync"></i>
+            Aktualisieren
+        </button>
+        <button class="btn btn-success" data-action="sync-services">
+            <i class="fas fa-link"></i>
+            Mit Website synchronisieren
+        </button>
+        <button class="btn btn-info" data-action="load-services">
+            <i class="fas fa-download"></i>
+            Von Website laden
+        </button>
+    </div>
+    <div class="toolbar-right">
+        <input type="search" class="search-input" placeholder="Services suchen...">
+        <select class="filter-select">
+            <option>Alle Services</option>
+            <option>Beratung</option>
+            <option>Projekte</option>
+            <option>Vermietung</option>
+            <option>Weitere Tätigkeiten</option>
+        </select>
+    </div>
+</div>
+
+<!-- Service Verwaltung -->
+<div class="services-management" style="margin-bottom: 2rem;">
+    <h3 style="color: #333; margin-bottom: 1.5rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem;">
+        🚀 Services & Tätigkeiten verwalten
+    </h3>
+    
+    <!-- Aktuelle Services -->
+    <div class="current-services" style="margin-bottom: 2rem;">
+        <h4 style="color: #555; margin-bottom: 1rem;">Aktuelle Services:</h4>
+        <div id="servicesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            <!-- Services werden dynamisch geladen -->
+        </div>
+    </div>
+    
+    <!-- Neuen Service hinzufügen -->
+    <div class="add-service-form" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h4 style="color: #555; margin-bottom: 1.5rem;">➕ Neuen Service hinzufügen:</h4>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Service-Name:</label>
+                <input type="text" id="newServiceName" placeholder="z.B. Projektmanagement" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Kategorie:</label>
+                <select id="newServiceCategory" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="beratung">Beratung</option>
+                    <option value="projekte">Projekte</option>
+                    <option value="vermietung">Vermietung</option>
+                    <option value="weitere">Weitere Tätigkeiten</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Beschreibung:</label>
+            <textarea id="newServiceDescription" placeholder="Beschreibe den Service..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Icon (FontAwesome):</label>
+                <input type="text" id="newServiceIcon" placeholder="fas fa-project-diagram" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Farbe:</label>
+                <input type="color" id="newServiceColor" value="#6366f1" style="width: 100%; height: 50px; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bild:</label>
+            <input type="file" id="newServiceImage" accept="image/*" data-category="services" data-subcategory="images" onchange="window.unifiedAWS.uploadMedia(this.files, {category: 'services', subcategory: 'images'})" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+        </div>
+        
+        <button data-action="create-service" class="btn btn-primary" style="padding: 1rem 2rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+            🚀 Service erstellen
+        </button>
+    </div>
+</div>
+
+<div class="content-grid" id="contentGrid">
+    <!-- Content cards will be dynamically loaded here -->
+</div>
