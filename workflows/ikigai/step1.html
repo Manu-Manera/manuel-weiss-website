@@ -14,6 +14,47 @@
     <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <style>
+        .question-hint {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+    </style>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
 </head>
@@ -108,12 +149,68 @@
                             <h3>Deine Selbstreflexion</h3>
                             <form id="self-reflection-form">
                                 <div class="form-group">
-                                    <label for="self-reflection">Was denkst du über dein aktuelles Leben?</label>
+                                    <label for="life-story">1. Lebensgeschichte und Meilensteine</label>
+                                    <p class="question-hint">Erzähle deine Lebensgeschichte in 3-4 Absätzen. Welche waren die wichtigsten Meilensteine, Wendepunkte und Entscheidungen in deinem Leben?</p>
                                     <textarea 
-                                        id="self-reflection" 
-                                        name="self-reflection"
-                                        placeholder="Reflektiere über dein Leben: Was macht dich glücklich? Was belastet dich? Wo siehst du dich in 5 Jahren? Was sind deine größten Träume und Ängste?..."
-                                        rows="6"
+                                        id="life-story" 
+                                        name="life-story"
+                                        placeholder="Beschreibe deine Lebensgeschichte und die wichtigsten Meilensteine... Was hat dich geprägt? Welche Entscheidungen haben dein Leben verändert?"
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="values-beliefs">2. Werte und Überzeugungen</label>
+                                    <p class="question-hint">Was sind deine tiefsten Werte? Welche Überzeugungen leiten dein Handeln? Was ist dir wirklich wichtig im Leben?</p>
+                                    <textarea 
+                                        id="values-beliefs" 
+                                        name="values-beliefs"
+                                        placeholder="Beschreibe deine wichtigsten Werte und Überzeugungen... Was leitet dein Handeln? Was ist dir wirklich wichtig?"
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="strengths-weaknesses">3. Stärken und Schwächen</label>
+                                    <p class="question-hint">Wo liegen deine größten Stärken? Was sind deine Schwächen? Wie gehst du mit Herausforderungen um?</p>
+                                    <textarea 
+                                        id="strengths-weaknesses" 
+                                        name="strengths-weaknesses"
+                                        placeholder="Analysiere deine Stärken und Schwächen ehrlich... Was kannst du besonders gut? Wo hast du Schwierigkeiten?"
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dreams-fears">4. Träume und Ängste</label>
+                                    <p class="question-hint">Was sind deine größten Träume? Was sind deine tiefsten Ängste? Was hält dich zurück?</p>
+                                    <textarea 
+                                        id="dreams-fears" 
+                                        name="dreams-fears"
+                                        placeholder="Schreibe über deine Träume und Ängste... Was möchtest du erreichen? Was macht dir Angst?"
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="relationships">5. Beziehungen und Einflüsse</label>
+                                    <p class="question-hint">Wer hat dich am meisten geprägt? Welche Beziehungen sind dir wichtig? Von wem lernst du am meisten?</p>
+                                    <textarea 
+                                        id="relationships" 
+                                        name="relationships"
+                                        placeholder="Beschreibe die wichtigsten Menschen in deinem Leben... Wer hat dich geprägt? Von wem lernst du?"
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="current-life">6. Aktuelles Leben und Zufriedenheit</label>
+                                    <p class="question-hint">Wie zufrieden bist du mit deinem aktuellen Leben? Was macht dich glücklich? Was belastet dich? Wo siehst du dich in 5 Jahren?</p>
+                                    <textarea 
+                                        id="current-life" 
+                                        name="current-life"
+                                        placeholder="Reflektiere über dein aktuelles Leben... Was macht dich glücklich? Was belastet dich? Wo siehst du dich in 5 Jahren?"
+                                        rows="4"
                                     ></textarea>
                                 </div>
                                 

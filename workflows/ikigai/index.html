@@ -73,6 +73,8 @@
             margin-bottom: 2rem;
             opacity: 0.9;
             font-weight: 300;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         
         .hero-actions-enhanced {
@@ -447,7 +449,7 @@
             </p>
             
             <div class="video-grid">
-                <div class="video-card">
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
                     <div class="video-thumbnail">
                         <div class="play-button">
                             <i class="fas fa-play"></i>
@@ -457,7 +459,7 @@
                     <p class="video-description">Ein umfassender Einblick in die Ikigai-Methode und wie sie dir helfen kann, deinen Lebenszweck zu finden.</p>
                 </div>
                 
-                <div class="video-card">
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
                     <div class="video-thumbnail">
                         <div class="play-button">
                             <i class="fas fa-play"></i>
@@ -467,7 +469,7 @@
                     <p class="video-description">Lerne, wie du die Ikigai-Methode praktisch anwendest und deinen persönlichen Lebenszweck entdeckst.</p>
                 </div>
                 
-                <div class="video-card">
+                <div class="video-card" onclick="openVideo('https://www.youtube.com/watch?v=Jik3g0Y6Bqk')">
                     <div class="video-thumbnail">
                         <div class="play-button">
                             <i class="fas fa-play"></i>
@@ -631,6 +633,11 @@
             card.style.transition = 'all 0.6s ease';
             observer.observe(card);
         });
+        
+        // YouTube video function
+        function openVideo(url) {
+            window.open(url, '_blank');
+        }
     </script>
 </body>
 </html>
