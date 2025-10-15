@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Schritt 1: Selbstreflexion</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ikigai Schritt 1: Beginne mit einer tiefen Selbstreflexion über dein Leben">
+    <meta name="keywords" content="ikigai, selbstreflexion, persönlichkeitsentwicklung, lebenszweck">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../ikigai/">Ikigai Workflow</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="step1.html">Schritt 1</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Step Header -->
+        <section class="step-header">
+            <div class="container">
+                <div class="step-header-content">
+                    <div class="step-breadcrumb">
+                        <a href="../ikigai/">Ikigai Workflow</a> > <span>Schritt 1: Selbstreflexion</span>
+                    </div>
+                    <h1 class="step-title">Schritt 1: Selbstreflexion</h1>
+                    <p class="step-subtitle">Beginne mit einer tiefen Selbstreflexion über dein Leben</p>
+                    <div class="step-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 14.29%;"></div>
+                        </div>
+                        <span class="progress-text">1 von 7 Schritten</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step Content -->
+        <section class="step-content">
+            <div class="container">
+                <div class="step-layout">
+                    <!-- Main Content -->
+                    <div class="step-main">
+                        <!-- YouTube Video -->
+                        <div class="video-section">
+                            <h3>📺 Lerne mehr über Ikigai:</h3>
+                            <div class="video-grid">
+                                <div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=JdS6FYUi54s', '_blank')">
+                                    <div class="video-thumbnail">
+                                        <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <h4>What is Ikigai? - The Japanese Secret</h4>
+                                    <p>Erklärt das Konzept von Ikigai und wie man es findet</p>
+                                </div>
+                                
+                                <div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=CevxZvSJLk8', '_blank')">
+                                    <div class="video-thumbnail">
+                                        <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <h4>How to Find Your Ikigai - TED Talk</h4>
+                                    <p>TED Talk über die Suche nach dem eigenen Ikigai</p>
+                                </div>
+                                
+                                <div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=iJc1dSAUp6g', '_blank')">
+                                    <div class="video-thumbnail">
+                                        <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <h4>Ikigai: The Japanese Way of Finding Purpose</h4>
+                                    <p>Detaillierte Anleitung zur Ikigai-Methode</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reflection Form -->
+                        <div class="reflection-form">
+                            <h3>Deine Selbstreflexion</h3>
+                            <form id="self-reflection-form">
+                                <div class="form-group">
+                                    <label for="self-reflection">Was denkst du über dein aktuelles Leben?</label>
+                                    <textarea 
+                                        id="self-reflection" 
+                                        name="self-reflection"
+                                        placeholder="Reflektiere über dein Leben: Was macht dich glücklich? Was belastet dich? Wo siehst du dich in 5 Jahren? Was sind deine größten Träume und Ängste?..."
+                                        rows="6"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="saveProgress()">
+                                        <i class="fas fa-save"></i>
+                                        Zwischenspeichern
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextStep()">
+                                        <i class="fas fa-arrow-right"></i>
+                                        Weiter zu Schritt 2
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="step-sidebar">
+                        <!-- Tips -->
+                        <div class="tip-box">
+                            <h4>💡 Tipps für die Selbstreflexion:</h4>
+                            <ul>
+                                <li>Nimm dir Zeit - beeile dich nicht</li>
+                                <li>Sei ehrlich zu dir selbst</li>
+                                <li>Denke an Momente, in denen du dich besonders lebendig gefühlt hast</li>
+                                <li>Frage Freunde und Familie nach ihrer Einschätzung</li>
+                            </ul>
+                        </div>
+
+                        <!-- Progress -->
+                        <div class="progress-box">
+                            <h4>Dein Fortschritt</h4>
+                            <div class="progress-steps">
+                                <div class="progress-step active">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Selbstreflexion</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Passion</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Mission</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Profession</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Vocation</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Synthese</span>
+                                </div>
+                                <div class="progress-step">
+                                    <i class="far fa-circle"></i>
+                                    <span>Aktionsplan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="navigation-box">
+                            <h4>Navigation</h4>
+                            <div class="nav-links">
+                                <a href="../ikigai/" class="nav-link">
+                                    <i class="fas fa-home"></i>
+                                    Workflow Übersicht
+                                </a>
+                                <a href="step2.html" class="nav-link">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Nächster Schritt
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR Consultant for AI & Transformation</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function saveProgress() {
+            const reflection = document.getElementById('self-reflection').value;
+            localStorage.setItem('ikigai_step1_self_reflection', reflection);
+            
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Gespeichert!';
+            btn.style.background = '#22c55e';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function nextStep() {
+            // Save current progress
+            saveProgress();
+            
+            // Redirect to next step
+            window.location.href = 'step2.html';
+        }
+
+        // Load saved progress
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedReflection = localStorage.getItem('ikigai_step1_self_reflection');
+            if (savedReflection) {
+                document.getElementById('self-reflection').value = savedReflection;
+            }
+        });
+    </script>
+</body>
+</html>
