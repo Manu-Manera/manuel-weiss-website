@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Schritt 4: Profession</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ikigai Schritt 4: Identifiziere deine beruflichen Möglichkeiten">
+    <meta name="keywords" content="ikigai, profession, beruf, karriere, persönlichkeitsentwicklung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="../../ikigai.html">Ikigai</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Step Header -->
+        <section class="step-header">
+            <div class="container">
+                <div class="step-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 57.14%;"></div>
+                    </div>
+                    <span class="progress-text">Schritt 4 von 7</span>
+                </div>
+                
+                <h1 class="step-title">💼 Profession - Womit du Geld verdienen kannst</h1>
+                <p class="step-subtitle">Identifiziere deine beruflichen Möglichkeiten</p>
+            </div>
+        </section>
+
+        <!-- Step Content -->
+        <section class="step-content">
+            <div class="container">
+                <div class="content-grid">
+                    <div class="content-main">
+                        <div class="step-explanation">
+                            <h2>Deine Profession finden</h2>
+                            <p>Hier geht es darum, herauszufinden, wie du deine Talente und Leidenschaften monetarisieren kannst. Welche beruflichen Wege stehen dir offen? Wie kannst du deine Fähigkeiten in Einkommen umwandeln?</p>
+                            
+                            <div class="profession-questions">
+                                <h3>Reflexionsfragen:</h3>
+                                <ul>
+                                    <li>Welche Jobs oder Branchen interessieren dich?</li>
+                                    <li>Wie könntest du deine Hobbys zum Beruf machen?</li>
+                                    <li>Welche Fähigkeiten sind auf dem Arbeitsmarkt gefragt?</li>
+                                    <li>Möchtest du angestellt sein oder selbstständig arbeiten?</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="interactive-exercise">
+                            <h3>Profession-Mapping</h3>
+                            <div class="exercise-content">
+                                <div class="profession-categories">
+                                    <div class="category">
+                                        <h4>Traditionelle Berufe</h4>
+                                        <textarea id="traditionalJobs" placeholder="z.B. Lehrer, Arzt, Ingenieur..."></textarea>
+                                    </div>
+                                    <div class="category">
+                                        <h4>Kreative Berufe</h4>
+                                        <textarea id="creativeJobs" placeholder="z.B. Designer, Künstler, Schriftsteller..."></textarea>
+                                    </div>
+                                    <div class="category">
+                                        <h4>Unternehmerische Wege</h4>
+                                        <textarea id="entrepreneurialJobs" placeholder="z.B. Gründer, Berater, Coach..."></textarea>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveProfession()">Profession speichern</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-sidebar">
+                        <div class="tips-card">
+                            <h3>💡 Tipps für deine Profession</h3>
+                            <ul>
+                                <li>Überlege, was du gerne tust und wofür du bezahlt werden könntest</li>
+                                <li>Forsche nach neuen Berufsfeldern in deinem Interessensbereich</li>
+                                <li>Betrachte sowohl Vollzeit- als auch Teilzeit-Möglichkeiten</li>
+                                <li>Denke an Remote-Arbeit und flexible Arbeitsmodelle</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="examples-card">
+                            <h3>Beispiele für Professionen</h3>
+                            <ul>
+                                <li>Freelancer in deinem Fachgebiet</li>
+                                <li>Online-Kurse und Coaching anbieten</li>
+                                <li>Beratung für Unternehmen</li>
+                                <li>Kreative Dienstleistungen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="step-navigation">
+        <div class="container">
+            <div class="nav-buttons">
+                <a href="step3.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zu Schritt 3
+                </a>
+                <a href="step5.html" class="btn btn-primary">
+                    Weiter zu Schritt 5
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script>
+        function saveProfession() {
+            const traditional = document.getElementById('traditionalJobs').value;
+            const creative = document.getElementById('creativeJobs').value;
+            const entrepreneurial = document.getElementById('entrepreneurialJobs').value;
+            
+            const profession = {
+                traditional: traditional,
+                creative: creative,
+                entrepreneurial: entrepreneurial
+            };
+            
+            localStorage.setItem('ikigai_profession', JSON.stringify(profession));
+            alert('Deine Profession wurde gespeichert!');
+        }
+        
+        // Load saved profession
+        window.addEventListener('load', function() {
+            const savedProfession = localStorage.getItem('ikigai_profession');
+            if (savedProfession) {
+                const profession = JSON.parse(savedProfession);
+                document.getElementById('traditionalJobs').value = profession.traditional || '';
+                document.getElementById('creativeJobs').value = profession.creative || '';
+                document.getElementById('entrepreneurialJobs').value = profession.entrepreneurial || '';
+            }
+        });
+    </script>
+</body>
+</html>

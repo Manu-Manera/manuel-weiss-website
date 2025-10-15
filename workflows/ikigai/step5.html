@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Schritt 5: Vocation</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ikigai Schritt 5: Erkenne deine Talente und natürlichen Fähigkeiten">
+    <meta name="keywords" content="ikigai, vocation, talente, fähigkeiten, persönlichkeitsentwicklung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="../../ikigai.html">Ikigai</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Step Header -->
+        <section class="step-header">
+            <div class="container">
+                <div class="step-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 71.43%;"></div>
+                    </div>
+                    <span class="progress-text">Schritt 5 von 7</span>
+                </div>
+                
+                <h1 class="step-title">🎯 Vocation - Was du gut kannst</h1>
+                <p class="step-subtitle">Erkenne deine Talente und natürlichen Fähigkeiten</p>
+            </div>
+        </section>
+
+        <!-- Step Content -->
+        <section class="step-content">
+            <div class="container">
+                <div class="content-grid">
+                    <div class="content-main">
+                        <div class="step-explanation">
+                            <h2>Deine Vocation entdecken</h2>
+                            <p>Hier geht es darum, deine natürlichen Talente und Fähigkeiten zu erkennen. Was kannst du besonders gut? Welche Fähigkeiten hast du entwickelt? Wo liegen deine Stärken?</p>
+                            
+                            <div class="vocation-questions">
+                                <h3>Reflexionsfragen:</h3>
+                                <ul>
+                                    <li>Was können andere von dir lernen?</li>
+                                    <li>Welche Fähigkeiten hast du ohne große Anstrengung entwickelt?</li>
+                                    <li>Wofür wirst du oft gelobt oder um Rat gefragt?</li>
+                                    <li>Welche Tätigkeiten gehen dir leicht von der Hand?</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="interactive-exercise">
+                            <h3>Fähigkeiten-Assessment</h3>
+                            <div class="exercise-content">
+                                <div class="skills-categories">
+                                    <div class="skill-category">
+                                        <h4>Technische Fähigkeiten</h4>
+                                        <textarea id="technicalSkills" placeholder="z.B. Programmierung, Design, Schreiben..."></textarea>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h4>Soziale Fähigkeiten</h4>
+                                        <textarea id="socialSkills" placeholder="z.B. Kommunikation, Führung, Empathie..."></textarea>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h4>Kreative Fähigkeiten</h4>
+                                        <textarea id="creativeSkills" placeholder="z.B. Musik, Kunst, Problemlösung..."></textarea>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h4>Analytische Fähigkeiten</h4>
+                                        <textarea id="analyticalSkills" placeholder="z.B. Datenanalyse, Strategie, Forschung..."></textarea>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveVocation()">Vocation speichern</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-sidebar">
+                        <div class="tips-card">
+                            <h3>💡 Tipps für deine Vocation</h3>
+                            <ul>
+                                <li>Denke an Feedback, das du von anderen erhalten hast</li>
+                                <li>Überlege, welche Aufgaben dir Spaß machen</li>
+                                <li>Betrachte sowohl harte als auch weiche Fähigkeiten</li>
+                                <li>Frage Freunde und Familie nach ihrer Einschätzung</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="examples-card">
+                            <h3>Beispiele für Fähigkeiten</h3>
+                            <ul>
+                                <li>Kommunikation und Präsentation</li>
+                                <li>Problemlösung und Kreativität</li>
+                                <li>Organisation und Planung</li>
+                                <li>Technische oder handwerkliche Fertigkeiten</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="step-navigation">
+        <div class="container">
+            <div class="nav-buttons">
+                <a href="step4.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zu Schritt 4
+                </a>
+                <a href="step6.html" class="btn btn-primary">
+                    Weiter zu Schritt 6
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script>
+        function saveVocation() {
+            const technical = document.getElementById('technicalSkills').value;
+            const social = document.getElementById('socialSkills').value;
+            const creative = document.getElementById('creativeSkills').value;
+            const analytical = document.getElementById('analyticalSkills').value;
+            
+            const vocation = {
+                technical: technical,
+                social: social,
+                creative: creative,
+                analytical: analytical
+            };
+            
+            localStorage.setItem('ikigai_vocation', JSON.stringify(vocation));
+            alert('Deine Vocation wurde gespeichert!');
+        }
+        
+        // Load saved vocation
+        window.addEventListener('load', function() {
+            const savedVocation = localStorage.getItem('ikigai_vocation');
+            if (savedVocation) {
+                const vocation = JSON.parse(savedVocation);
+                document.getElementById('technicalSkills').value = vocation.technical || '';
+                document.getElementById('socialSkills').value = vocation.social || '';
+                document.getElementById('creativeSkills').value = vocation.creative || '';
+                document.getElementById('analyticalSkills').value = vocation.analytical || '';
+            }
+        });
+    </script>
+</body>
+</html>
