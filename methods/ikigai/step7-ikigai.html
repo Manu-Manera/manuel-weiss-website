@@ -282,6 +282,15 @@
             };
         }
         
+        // Initialize workflow
+        window.addEventListener('load', function() {
+            if (typeof IkigaiSmartWorkflow !== 'undefined') {
+                window.ikigaiSmartWorkflow = new IkigaiSmartWorkflow();
+                window.ikigaiSmartWorkflow.currentStep = 7;
+                window.ikigaiSmartWorkflow.updateProgress();
+            }
+        });
+        
         // Load saved data if available
         window.addEventListener('load', function() {
             const savedData = localStorage.getItem('ikigaiStep7');

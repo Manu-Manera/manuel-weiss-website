@@ -192,6 +192,15 @@
             window.location.href = 'step5-ikigai.html';
         }
         
+        // Initialize workflow
+        window.addEventListener('load', function() {
+            if (typeof IkigaiSmartWorkflow !== 'undefined') {
+                window.ikigaiSmartWorkflow = new IkigaiSmartWorkflow();
+                window.ikigaiSmartWorkflow.currentStep = 4;
+                window.ikigaiSmartWorkflow.updateProgress();
+            }
+        });
+        
         // Load saved data if available
         window.addEventListener('load', function() {
             const savedData = localStorage.getItem('ikigaiStep4');
