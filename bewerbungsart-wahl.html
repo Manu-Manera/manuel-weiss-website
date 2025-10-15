@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schritt 0: Bewerbungsart wählen - KI-Bewerbungsworkflow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .workflow-step-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .step-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .step-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .step-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .application-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .application-type {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .application-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .application-type.selected {
+            border: 3px solid #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .type-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .type-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .type-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .type-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .type-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            color: #555;
+            font-size: 1rem;
+        }
+        
+        .type-features li i {
+            color: #667eea;
+            margin-right: 0.8rem;
+            width: 20px;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .step-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+        
+        .step-info h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .step-info p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-step-container {
+                padding: 1rem;
+            }
+            
+            .step-title {
+                font-size: 2rem;
+            }
+            
+            .application-types {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-step-container">
+        <div class="step-header">
+            <h1 class="step-title">Schritt 0: Bewerbungsart wählen</h1>
+            <p class="step-description">Wählen Sie die Art Ihrer Bewerbung aus. Die KI passt den Workflow entsprechend an.</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="step-info">
+            <h3><i class="fas fa-info-circle"></i> Was passiert in diesem Schritt?</h3>
+            <p>Die KI analysiert Ihre Wahl und passt den gesamten Workflow entsprechend an. Stellenanzeigen werden analysiert, Initiativbewerbungen werden strategisch aufgebaut.</p>
+        </div>
+        
+        <div class="application-types">
+            <div class="application-type" onclick="selectApplicationType('stellenanzeige')" id="stellenanzeige-option">
+                <div class="type-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="type-title">Stellenanzeige</div>
+                <div class="type-description">Sie haben eine konkrete Stellenausschreibung gefunden und möchten sich darauf bewerben</div>
+                <ul class="type-features">
+                    <li><i class="fas fa-check"></i> KI analysiert die Stellenausschreibung</li>
+                    <li><i class="fas fa-check"></i> Anforderungen werden priorisiert</li>
+                    <li><i class="fas fa-check"></i> Bewerbung wird passgenau erstellt</li>
+                    <li><i class="fas fa-check"></i> ATS-optimierte Formatierung</li>
+                </ul>
+            </div>
+            
+            <div class="application-type" onclick="selectApplicationType('initiativ')" id="initiativ-option">
+                <div class="type-icon"><i class="fas fa-lightbulb"></i></div>
+                <div class="type-title">Initiativbewerbung</div>
+                <div class="type-description">Sie möchten sich proaktiv bei einem Unternehmen bewerben</div>
+                <ul class="type-features">
+                    <li><i class="fas fa-check"></i> KI recherchiert das Unternehmen</li>
+                    <li><i class="fas fa-check"></i> Strategische Positionierung</li>
+                    <li><i class="fas fa-check"></i> Überzeugende Argumentation</li>
+                    <li><i class="fas fa-check"></i> Professionelle Präsentation</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <a href="ki-bewerbungsworkflow.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+            </a>
+            
+            <button class="btn btn-primary" id="nextBtn" onclick="proceedToNextStep()" disabled>
+                Weiter <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedType = null;
+        
+        function selectApplicationType(type) {
+            // Alle Optionen deselektieren
+            document.querySelectorAll('.application-type').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Gewählte Option selektieren
+            document.getElementById(type + '-option').classList.add('selected');
+            selectedType = type;
+            
+            // Weiter-Button aktivieren
+            document.getElementById('nextBtn').disabled = false;
+            
+            // Progress aktualisieren
+            updateProgress(16.67); // 1/6 = 16.67%
+        }
+        
+        function proceedToNextStep() {
+            if (!selectedType) {
+                alert('Bitte wählen Sie eine Bewerbungsart aus.');
+                return;
+            }
+            
+            // Auswahl in localStorage speichern
+            localStorage.setItem('bewerbungsart', selectedType);
+            
+            // Zur nächsten Seite weiterleiten
+            window.location.href = 'ki-stellenanalyse.html';
+        }
+        
+        function updateProgress(percentage) {
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+        
+        // Animation beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(0);
+            
+            const options = document.querySelectorAll('.application-type');
+            options.forEach((option, index) => {
+                option.style.opacity = '0';
+                option.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    option.style.transition = 'all 0.5s ease';
+                    option.style.opacity = '1';
+                    option.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
