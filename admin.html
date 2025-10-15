@@ -10790,38 +10790,115 @@
         function saveOpenAIKey() {
             const apiKey = document.getElementById('openai-api-key').value;
             if (!apiKey) {
-                showStatus('Bitte gib einen API Key ein.', 'error');
+                showStatus('❌ Bitte geben Sie einen API Key ein.', 'error');
                 return;
             }
             
-            if (window.aiIntegration) {
-                window.aiIntegration.setAPIKey(apiKey);
-                showStatus('✅ API Key erfolgreich gespeichert!', 'success');
-            } else {
-                localStorage.setItem('openai_api_key', apiKey);
-                showStatus('✅ API Key gespeichert (AI Integration nicht verfügbar)', 'success');
+            // Speichere API Key in localStorage
+            localStorage.setItem('openai_api_key', apiKey);
+            showStatus('✅ OpenAI API Key erfolgreich gespeichert!', 'success');
+            
+            // Teste die Verbindung automatisch
+            setTimeout(() => {
+                testOpenAIConnection();
+            }, 1000);
+        }
+        
+        async function testOpenAIConnection() {
+            const apiKey = document.getElementById('openai-api-key').value;
+            
+            if (!apiKey) {
+                showStatus('❌ Bitte geben Sie einen API Key ein.', 'error');
+                return;
+            }
+            
+            showStatus('🧪 Teste OpenAI Verbindung...', 'info');
+            
+            // Versuche zuerst direkte Verbindung
+            await testDirectConnection(apiKey);
+        }
+        
+        async function testDirectConnection(apiKey) {
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`,
+                        'User-Agent': 'Manuel-Weiss-Website/1.0'
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: 'Test'
+                            }
+                        ],
+                        max_tokens: 5,
+                        temperature: 0.1
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
+                    console.log('OpenAI Test Response:', data);
+                } else {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error?.message || errorMessage;
+                    } catch (parseError) {
+                        console.error('Error parsing response:', parseError);
+                    }
+                    showStatus(`❌ API Fehler: ${errorMessage}`, 'error');
+                }
+            } catch (error) {
+                console.error('OpenAI Test Error:', error);
+                let errorMessage = error.message;
+                
+                // Spezifische Fehlermeldungen für häufige Probleme
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Netzwerkfehler: CORS oder Verbindungsproblem. Bitte prüfen Sie Ihre Internetverbindung.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'CORS-Fehler: Browser blockiert die Anfrage. Bitte verwenden Sie HTTPS.';
+                } else if (error.message.includes('timeout')) {
+                    errorMessage = 'Timeout: Die Anfrage dauerte zu lange.';
+                }
+                
+                showStatus(`❌ ${errorMessage}`, 'error');
+                
+                // Versuche Fallback-Methode
+                showStatus('🔄 Versuche alternative Verbindung...', 'info');
+                await testProxyConnection(apiKey);
             }
         }
         
-        function testOpenAIConnection() {
-            if (!window.aiIntegration) {
-                showStatus('❌ AI Integration nicht verfügbar', 'error');
-                return;
-            }
-            
-            showStatus('🧪 Teste Verbindung...', 'info');
-            
-            window.aiIntegration.testConnection()
-                .then(result => {
-                    if (result.success) {
-                        showStatus('✅ Verbindung erfolgreich!', 'success');
-                    } else {
-                        showStatus(`❌ ${result.message}`, 'error');
-                    }
-                })
-                .catch(error => {
-                    showStatus(`❌ Fehler: ${error.message}`, 'error');
+        async function testProxyConnection(apiKey) {
+            try {
+                // Alternative: Teste über einen Proxy oder lokalen Server
+                const response = await fetch('/api/test-openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        apiKey: apiKey,
+                        test: true
+                    })
                 });
+                
+                if (response.ok) {
+                    showStatus('✅ OpenAI Verbindung über Proxy erfolgreich!', 'success');
+                } else {
+                    showStatus('❌ Auch Proxy-Verbindung fehlgeschlagen. Bitte prüfen Sie Ihren API Key.', 'error');
+                }
+            } catch (error) {
+                console.error('Proxy Test Error:', error);
+                showStatus('❌ Alle Verbindungsmethoden fehlgeschlagen. Bitte prüfen Sie Ihren API Key und Ihre Internetverbindung.', 'error');
+            }
         }
         
         function showStatus(message, type) {
