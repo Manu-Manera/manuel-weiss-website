@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeitsentwicklung Workflows - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Professionelle Workflows für Persönlichkeitsentwicklung: Ikigai, RAISEC, SWOT, Wheel of Life">
+    <meta name="keywords" content="persönlichkeitsentwicklung, workflows, ikigai, raisec, swot, wheel of life">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Persönlichkeitsentwicklung Workflows">
+    <meta property="og:description" content="Professionelle Workflows für deine persönliche Entwicklung">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app/apps/personality-workflows/">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/workflows.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../../index.html">
+                        <img src="../../manuel-weiss-photo.svg" alt="Manuel Weiss" class="logo-img">
+                        <span class="logo-text">Manuel Weiss</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="index.html">Workflows</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">🎯 Persönlichkeitsentwicklung Workflows</h1>
+                    <p class="hero-subtitle">Professionelle Methoden für deine persönliche Entwicklung</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" onclick="showWorkflowSelector()">
+                            <i class="fas fa-play"></i>
+                            Workflow starten
+                        </button>
+                        <a href="#workflows" class="btn btn-outline">
+                            <i class="fas fa-info-circle"></i>
+                            Alle Workflows
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflows Section -->
+        <section id="workflows" class="workflows-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Verfügbare Workflows</h2>
+                    <p class="section-subtitle">Wähle den Workflow, der zu dir passt</p>
+                </div>
+                
+                <div class="workflows-grid">
+                    <!-- Ikigai Workflow -->
+                    <div class="workflow-card" data-workflow="ikigai">
+                        <div class="workflow-icon">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <h3>Ikigai</h3>
+                        <p>Finde deinen Lebenszweck mit der japanischen Methode</p>
+                        <div class="workflow-stats">
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                7 Schritte
+                            </span>
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                30-45 Min
+                            </span>
+                        </div>
+                        <div class="workflow-actions">
+                            <button class="btn btn-primary" onclick="startWorkflow('ikigai')">
+                                <i class="fas fa-play"></i>
+                                Starten
+                            </button>
+                            <button class="btn btn-outline" onclick="showWorkflowDetails('ikigai')">
+                                <i class="fas fa-info"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- RAISEC Workflow -->
+                    <div class="workflow-card" data-workflow="raisec">
+                        <div class="workflow-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>RAISEC</h3>
+                        <p>Entdecke deine beruflichen Interessen und Karrierewege</p>
+                        <div class="workflow-stats">
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                6 Schritte
+                            </span>
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                25-35 Min
+                            </span>
+                        </div>
+                        <div class="workflow-actions">
+                            <button class="btn btn-primary" onclick="startWorkflow('raisec')">
+                                <i class="fas fa-play"></i>
+                                Starten
+                            </button>
+                            <button class="btn btn-outline" onclick="showWorkflowDetails('raisec')">
+                                <i class="fas fa-info"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SWOT Workflow -->
+                    <div class="workflow-card" data-workflow="swot">
+                        <div class="workflow-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>SWOT-Analyse</h3>
+                        <p>Analysiere deine Stärken, Schwächen, Chancen und Risiken</p>
+                        <div class="workflow-stats">
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                5 Schritte
+                            </span>
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                20-30 Min
+                            </span>
+                        </div>
+                        <div class="workflow-actions">
+                            <button class="btn btn-primary" onclick="startWorkflow('swot')">
+                                <i class="fas fa-play"></i>
+                                Starten
+                            </button>
+                            <button class="btn btn-outline" onclick="showWorkflowDetails('swot')">
+                                <i class="fas fa-info"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Wheel of Life Workflow -->
+                    <div class="workflow-card" data-workflow="wheel-of-life">
+                        <div class="workflow-icon">
+                            <i class="fas fa-circle-notch"></i>
+                        </div>
+                        <h3>Wheel of Life</h3>
+                        <p>Bewerte deine Lebensbereiche und finde dein Gleichgewicht</p>
+                        <div class="workflow-stats">
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                6 Schritte
+                            </span>
+                            <span class="stat">
+                                <i class="fas fa-clock"></i>
+                                25-35 Min
+                            </span>
+                        </div>
+                        <div class="workflow-actions">
+                            <button class="btn btn-primary" onclick="startWorkflow('wheel-of-life')">
+                                <i class="fas fa-play"></i>
+                                Starten
+                            </button>
+                            <button class="btn btn-outline" onclick="showWorkflowDetails('wheel-of-life')">
+                                <i class="fas fa-info"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Workflows -->
+        <section class="recent-workflows">
+            <div class="container">
+                <h3>Deine letzten Workflows</h3>
+                <div id="recent-workflows-list" class="recent-list">
+                    <p class="no-recent">Noch keine Workflows durchgeführt</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Manuel Weiss</h3>
+                    <p>HR Consultant for AI & Transformation</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Workflows</h4>
+                    <ul>
+                        <li><a href="#workflows" onclick="startWorkflow('ikigai')">Ikigai</a></li>
+                        <li><a href="#workflows" onclick="startWorkflow('raisec')">RAISEC</a></li>
+                        <li><a href="#workflows" onclick="startWorkflow('swot')">SWOT</a></li>
+                        <li><a href="#workflows" onclick="startWorkflow('wheel-of-life')">Wheel of Life</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Workflow Selector Modal -->
+    <div id="workflow-selector-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workflow auswählen</h3>
+                <button class="modal-close" onclick="closeWorkflowSelector()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="workflow-options">
+                    <div class="workflow-option" onclick="startWorkflow('ikigai')">
+                        <i class="fas fa-compass"></i>
+                        <h4>Ikigai</h4>
+                        <p>Finde deinen Lebenszweck</p>
+                    </div>
+                    <div class="workflow-option" onclick="startWorkflow('raisec')">
+                        <i class="fas fa-briefcase"></i>
+                        <h4>RAISEC</h4>
+                        <p>Berufliche Interessen entdecken</p>
+                    </div>
+                    <div class="workflow-option" onclick="startWorkflow('swot')">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>SWOT</h4>
+                        <p>Stärken und Schwächen analysieren</p>
+                    </div>
+                    <div class="workflow-option" onclick="startWorkflow('wheel-of-life')">
+                        <i class="fas fa-circle-notch"></i>
+                        <h4>Wheel of Life</h4>
+                        <p>Lebensbereiche bewerten</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/workflow-manager.js"></script>
+    <script src="../../js/ikigai-smart-workflow.js"></script>
+    <script src="../../js/raisec-smart-workflow.js"></script>
+    <script src="../../js/swot-smart-workflow.js"></script>
+    <script src="../../js/wheel-of-life-smart-workflow.js"></script>
+    
+    <script>
+        // Workflow Manager
+        function showWorkflowSelector() {
+            document.getElementById('workflow-selector-modal').style.display = 'flex';
+        }
+
+        function closeWorkflowSelector() {
+            document.getElementById('workflow-selector-modal').style.display = 'none';
+        }
+
+        function startWorkflow(workflowType) {
+            closeWorkflowSelector();
+            
+            // Save to recent workflows
+            saveRecentWorkflow(workflowType);
+            
+            // Start the appropriate workflow
+            switch(workflowType) {
+                case 'ikigai':
+                    if (window.IkigaiSmartWorkflow) {
+                        window.ikigaiSmartWorkflow = new window.IkigaiSmartWorkflow();
+                    }
+                    break;
+                case 'raisec':
+                    if (window.RAISECSmartWorkflow) {
+                        window.raisecSmartWorkflow = new window.RAISECSmartWorkflow();
+                    }
+                    break;
+                case 'swot':
+                    if (window.SWOTSmartWorkflow) {
+                        window.swotSmartWorkflow = new window.SWOTSmartWorkflow();
+                    }
+                    break;
+                case 'wheel-of-life':
+                    if (window.WheelOfLifeSmartWorkflow) {
+                        window.wheelOfLifeSmartWorkflow = new window.WheelOfLifeSmartWorkflow();
+                    }
+                    break;
+            }
+        }
+
+        function showWorkflowDetails(workflowType) {
+            // Show detailed information about the workflow
+            alert(`Details für ${workflowType} Workflow werden geladen...`);
+        }
+
+        function saveRecentWorkflow(workflowType) {
+            const recent = JSON.parse(localStorage.getItem('recentWorkflows') || '[]');
+            const timestamp = new Date().toISOString();
+            
+            // Remove if already exists
+            const filtered = recent.filter(w => w.type !== workflowType);
+            
+            // Add to beginning
+            filtered.unshift({ type: workflowType, timestamp });
+            
+            // Keep only last 5
+            const limited = filtered.slice(0, 5);
+            
+            localStorage.setItem('recentWorkflows', JSON.stringify(limited));
+            loadRecentWorkflows();
+        }
+
+        function loadRecentWorkflows() {
+            const recent = JSON.parse(localStorage.getItem('recentWorkflows') || '[]');
+            const container = document.getElementById('recent-workflows-list');
+            
+            if (recent.length === 0) {
+                container.innerHTML = '<p class="no-recent">Noch keine Workflows durchgeführt</p>';
+                return;
+            }
+            
+            container.innerHTML = recent.map(workflow => `
+                <div class="recent-workflow-item">
+                    <i class="fas fa-${getWorkflowIcon(workflow.type)}"></i>
+                    <span>${getWorkflowName(workflow.type)}</span>
+                    <button class="btn btn-sm" onclick="startWorkflow('${workflow.type}')">Wiederholen</button>
+                </div>
+            `).join('');
+        }
+
+        function getWorkflowIcon(type) {
+            const icons = {
+                'ikigai': 'compass',
+                'raisec': 'briefcase',
+                'swot': 'chart-line',
+                'wheel-of-life': 'circle-notch'
+            };
+            return icons[type] || 'play';
+        }
+
+        function getWorkflowName(type) {
+            const names = {
+                'ikigai': 'Ikigai',
+                'raisec': 'RAISEC',
+                'swot': 'SWOT-Analyse',
+                'wheel-of-life': 'Wheel of Life'
+            };
+            return names[type] || type;
+        }
+
+        // Load recent workflows on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecentWorkflows();
+        });
+    </script>
+</body>
+</html>

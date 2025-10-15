@@ -1,0 +1,541 @@
+/**
+ * Personality Workflows App Styles
+ * Moderne Styles für das Workflow-Programm
+ */
+
+/* Base Styles */
+.workflows-section {
+    padding: 4rem 0;
+    background: #f8fafc;
+}
+
+.workflows-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.workflow-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.workflow-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.workflow-card:hover::before {
+    transform: scaleX(1);
+}
+
+.workflow-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.workflow-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.workflow-card h3 {
+    color: #374151;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+.workflow-card p {
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+}
+
+.workflow-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.stat i {
+    color: #667eea;
+}
+
+.workflow-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.workflow-actions .btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Recent Workflows */
+.recent-workflows {
+    padding: 3rem 0;
+    background: white;
+}
+
+.recent-workflows h3 {
+    color: #374151;
+    margin-bottom: 1.5rem;
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.recent-workflow-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.recent-workflow-item:hover {
+    background: #f0f9ff;
+    border-color: #667eea;
+}
+
+.recent-workflow-item i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.recent-workflow-item span {
+    flex: 1;
+    color: #374151;
+    font-weight: 500;
+}
+
+.no-recent {
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #374151;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.workflow-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.workflow-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.workflow-option:hover {
+    border-color: #667eea;
+    background: #f0f9ff;
+    transform: translateY(-2px);
+}
+
+.workflow-option i {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.workflow-option h4 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+}
+
+.workflow-option p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Step Header Styles */
+.step-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+}
+
+.step-header-content {
+    text-align: center;
+}
+
+.step-breadcrumb {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.step-breadcrumb a {
+    color: white;
+    text-decoration: none;
+}
+
+.step-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.step-title {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+}
+
+.step-subtitle {
+    font-size: 1.2rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+}
+
+.step-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-bar {
+    width: 300px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Step Content Styles */
+.step-content {
+    padding: 3rem 0;
+}
+
+.step-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.step-main {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.step-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tip-box, .progress-box, .navigation-box {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #667eea;
+}
+
+.tip-box h4, .progress-box h4, .navigation-box h4 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+}
+
+.tip-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #6b7280;
+}
+
+.progress-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.progress-step i {
+    color: #6b7280;
+}
+
+.progress-step.active i {
+    color: #667eea;
+}
+
+.progress-step.completed i {
+    color: #22c55e;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: #6b7280;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background: #f0f9ff;
+    color: #667eea;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+/* Video Section */
+.video-section {
+    margin-bottom: 2rem;
+}
+
+.video-section h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.video-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.video-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 120px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    color: #667eea;
+    font-size: 2rem;
+}
+
+.video-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.video-card p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .step-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .workflows-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .workflow-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .step-title {
+        font-size: 2rem;
+    }
+    
+    .progress-bar {
+        width: 100%;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .workflow-card, .step-main, .tip-box, .progress-box, .navigation-box {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .workflow-card h3, .tip-box h4, .progress-box h4, .navigation-box h4 {
+        color: #f9fafb;
+    }
+    
+    .workflow-card p, .tip-box ul {
+        color: #d1d5db;
+    }
+}
