@@ -143,10 +143,6 @@
                             <i class="fas fa-arrow-left"></i>
                             Zurück zu Synthese
                         </a>
-                        <button type="button" class="btn btn-success" onclick="generatePDF()">
-                            <i class="fas fa-download"></i>
-                            PDF Zusammenfassung
-                        </button>
                         <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
                             <i class="fas fa-check"></i>
                             Ikigai Workflow abschließen
@@ -243,8 +239,15 @@
             // Generate final Ikigai analysis
             generateFinalAnalysis();
             
+            // Zeige Erfolgsmeldung mit PDF-Download Option
+            const userConfirmed = confirm('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!\n\nMöchtest du jetzt eine schöne PDF-Zusammenfassung deines Ikigai herunterladen?');
+            
+            if (userConfirmed) {
+                // Generiere und lade PDF herunter
+                generatePDF();
+            }
+            
             // Redirect to results or completion page
-            alert('🎉 Herzlichen Glückwunsch! Du hast deinen Ikigai-Workflow erfolgreich abgeschlossen!');
             window.location.href = 'index-ikigai.html';
         }
         
