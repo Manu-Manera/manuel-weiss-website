@@ -46,6 +46,26 @@
     background-clip: text;
 }
 
+.hero-title-enhanced::before {
+    content: '🎯';
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-size: 4rem;
+    filter: hue-rotate(45deg) saturate(1.5) brightness(1.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: hue-rotate(45deg) saturate(1.5) brightness(1.2);
+    }
+    50% {
+        transform: scale(1.1);
+        filter: hue-rotate(90deg) saturate(2) brightness(1.4);
+    }
+}
+
 .hero-subtitle-enhanced {
     font-size: 1.5rem;
     color: white;
