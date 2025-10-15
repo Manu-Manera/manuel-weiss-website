@@ -272,11 +272,11 @@
 
 /* Removed all keyframe animations */
 
-/* Clean Ikigai Diagram - Simple & Clear */
+/* Super Simple Ikigai Diagram */
 .ikigai-diagram-enhanced {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
     height: 600px;
     margin: 2rem auto;
     display: flex;
@@ -286,20 +286,20 @@
 
 .ikigai-flower-enhanced {
     position: relative;
-    width: 600px;
-    height: 600px;
+    width: 500px;
+    height: 500px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     justify-items: center;
 }
 
 .ikigai-petal-enhanced {
-    width: 280px;
-    height: 280px;
-    border-radius: 20px;
+    width: 240px;
+    height: 240px;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -307,16 +307,18 @@
     text-align: center;
     font-weight: 600;
     color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transition: all 0.4s ease;
     cursor: pointer;
-    border: 3px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(255,255,255,0.4);
+    animation: gentle-float 3s ease-in-out infinite;
 }
 
 .ikigai-petal-enhanced:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    transform: scale(1.08) translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    animation-play-state: paused;
 }
 
 .petal-content {
@@ -329,20 +331,20 @@
 }
 
 .petal-icon {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
 
 .petal-label {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 0.3rem;
     line-height: 1.2;
 }
 
 .petal-description {
-    font-size: 1rem;
-    opacity: 0.9;
+    font-size: 0.9rem;
+    opacity: 0.95;
     font-weight: 500;
 }
 
@@ -350,24 +352,37 @@
     background: linear-gradient(135deg, #ff6b6b, #ee5a24);
     grid-column: 1;
     grid-row: 1;
+    animation-delay: 0s;
 }
 
 .petal-mission {
     background: linear-gradient(135deg, #4ecdc4, #44a08d);
     grid-column: 2;
     grid-row: 1;
+    animation-delay: 0.5s;
 }
 
 .petal-profession {
     background: linear-gradient(135deg, #45b7d1, #96c93d);
     grid-column: 1;
     grid-row: 2;
+    animation-delay: 1s;
 }
 
 .petal-vocation {
     background: linear-gradient(135deg, #f093fb, #f5576c);
     grid-column: 2;
     grid-row: 2;
+    animation-delay: 1.5s;
+}
+
+@keyframes gentle-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 /* Clean Center - Simple Ikigai */
