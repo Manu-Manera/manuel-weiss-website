@@ -1,0 +1,174 @@
+<div class="section-header">
+    <h2>Stärken-Analyse</h2>
+    <p>Entdecke deine natürlichen Talente und lerne sie optimal einzusetzen</p>
+</div>
+
+<div class="workflow-intro">
+    <h3>Stärken-Analyse: Entdecke deine natürlichen Talente</h3>
+    <p>Deine Stärken sind der Schlüssel zu deinem Erfolg. In diesem Workflow identifizierst du deine natürlichen Talente und lernst, sie optimal einzusetzen.</p>
+    <div class="workflow-features">
+        <span class="feature-badge">Gallup-Stärken</span>
+        <span class="feature-badge">VIA-Test</span>
+        <span class="feature-badge">Entwicklungsplan</span>
+        <span class="feature-badge">Stärken-Tracking</span>
+    </div>
+</div>
+
+<div class="workflow-progress">
+    <div class="progress-step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-title">Stärken-Identifikation</div>
+    </div>
+    <div class="progress-step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-title">Stärken-Bewertung</div>
+    </div>
+    <div class="progress-step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-title">Entwicklungsplan</div>
+    </div>
+    <div class="progress-step" data-step="4">
+        <div class="step-number">4</div>
+        <div class="step-title">Anwendungsbereiche</div>
+    </div>
+    <div class="progress-step" data-step="5">
+        <div class="step-number">5</div>
+        <div class="step-title">Stärken-Tracking</div>
+    </div>
+</div>
+
+<!-- Step 1: Stärken-Identifikation -->
+<div class="workflow-step active" data-step="1">
+    <div class="step-header">
+        <h3>Schritt 1: Stärken-Identifikation</h3>
+        <p>Identifiziere deine natürlichen Talente und Stärken. Nutze verschiedene Assessment-Tools oder die Selbsteinschätzung.</p>
+    </div>
+    
+    <div class="strengths-identification-tools">
+        <div class="assessment-options">
+            <h4>🎯 Assessment-Tools</h4>
+            <div class="assessment-grid">
+                <div class="assessment-card" onclick="startGallupAssessment()">
+                    <div class="assessment-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Gallup StrengthsFinder</h5>
+                    <p>Der weltweit führende Stärken-Test mit 34 Talent-Themen</p>
+                    <div class="assessment-features">
+                        <span class="feature-tag">34 Talente</span>
+                        <span class="feature-tag">Wissenschaftlich</span>
+                    </div>
+                    <button class="btn btn-primary">Test starten</button>
+                </div>
+                
+                <div class="assessment-card" onclick="startVIAAssessment()">
+                    <div class="assessment-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h5>VIA Character Strengths</h5>
+                    <p>24 Charakterstärken basierend auf positiver Psychologie</p>
+                    <div class="assessment-features">
+                        <span class="feature-tag">24 Stärken</span>
+                        <span class="feature-tag">Kostenlos</span>
+                    </div>
+                    <button class="btn btn-primary">Test starten</button>
+                </div>
+                
+                <div class="assessment-card" onclick="startSelfAssessment()">
+                    <div class="assessment-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h5>Selbsteinschätzung</h5>
+                    <p>Reflektiere über deine eigenen Stärken und Talente</p>
+                    <div class="assessment-features">
+                        <span class="feature-tag">Persönlich</span>
+                        <span class="feature-tag">Reflexiv</span>
+                    </div>
+                    <button class="btn btn-primary">Reflexion starten</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 2: Stärken-Bewertung -->
+<div class="workflow-step" data-step="2">
+    <div class="step-header">
+        <h3>Schritt 2: Stärken-Bewertung</h3>
+        <p>Bewerte deine identifizierten Stärken nach Relevanz und Entwicklungsstand.</p>
+    </div>
+    
+    <div class="strengths-evaluation">
+        <div class="evaluation-grid" id="strengthsEvaluationGrid">
+            <!-- Stärken werden hier dynamisch geladen -->
+        </div>
+    </div>
+</div>
+
+<!-- Step 3: Entwicklungsplan -->
+<div class="workflow-step" data-step="3">
+    <div class="step-header">
+        <h3>Schritt 3: Entwicklungsplan</h3>
+        <p>Erstelle einen konkreten Plan zur Weiterentwicklung deiner Stärken.</p>
+    </div>
+    
+    <div class="development-plan">
+        <div class="plan-section">
+            <h4>Top 5 Stärken</h4>
+            <div class="top-strengths" id="topStrengths">
+                <!-- Top Stärken werden hier angezeigt -->
+            </div>
+        </div>
+        
+        <div class="plan-section">
+            <h4>Entwicklungsbereiche</h4>
+            <div class="development-areas" id="developmentAreas">
+                <!-- Entwicklungsbereiche werden hier angezeigt -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 4: Anwendungsbereiche -->
+<div class="workflow-step" data-step="4">
+    <div class="step-header">
+        <h3>Schritt 4: Anwendungsbereiche</h3>
+        <p>Identifiziere konkrete Bereiche, in denen du deine Stärken einsetzen kannst.</p>
+    </div>
+    
+    <div class="application-areas">
+        <div class="area-cards" id="applicationAreaCards">
+            <!-- Anwendungsbereiche werden hier angezeigt -->
+        </div>
+    </div>
+</div>
+
+<!-- Step 5: Stärken-Tracking -->
+<div class="workflow-step" data-step="5">
+    <div class="step-header">
+        <h3>Schritt 5: Stärken-Tracking</h3>
+        <p>Verfolge deine Fortschritte bei der Entwicklung deiner Stärken.</p>
+    </div>
+    
+    <div class="strengths-tracking">
+        <div class="tracking-dashboard" id="strengthsTrackingDashboard">
+            <!-- Tracking-Dashboard wird hier angezeigt -->
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<div class="workflow-navigation">
+    <button class="btn btn-secondary" id="prevStep" style="display: none;">
+        <i class="fas fa-arrow-left"></i>
+        Zurück
+    </button>
+    <button class="btn btn-primary" id="nextStep" style="display: none;">
+        Weiter
+        <i class="fas fa-arrow-right"></i>
+    </button>
+    <button class="btn btn-success" id="completeWorkflow" style="display: none;">
+        <i class="fas fa-check"></i>
+        Workflow abschließen
+    </button>
+</div>

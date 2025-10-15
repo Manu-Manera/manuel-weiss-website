@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziel-Coaching - Strukturierte Zielerreichung</title>
+    <link rel="stylesheet" href="../../css/ikigai-planner.css">
+    <link rel="stylesheet" href="target-coaching.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+</head>
+<body>
+    <div class="target-coaching-method">
+        <div class="method-header">
+            <div class="method-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="method-title">
+                <h1>Ziel-Coaching</h1>
+                <p>Strukturierte Methoden zur effektiven Zielerreichung</p>
+        </div>
+
+        <div class="workflow-header">
+            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+            </button>
+        <div class="workflow-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Ziel definieren</div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">Strategie entwickeln</div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Aktionsplan erstellen</div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-title">Umsetzung begleiten</div>
+            <div class="progress-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-title">Erfolg evaluieren</div>
+        <div class="workflow-content">
+            <!-- Step 1: Ziel definieren -->
+            <div class="workflow-step active" id="step-1">
+                <div class="step-header">
+                    <h2>Schritt 1: Ziel definieren</h2>
+                    <p>Klare und messbare Ziele formulieren</p>
+                </div>
+                <div class="step-content">
+                    <div class="phase-description">
+                        <h3><i class="fas fa-flag"></i> Was macht ein gutes Ziel aus?</h3>
+                        <p>Ein gutes Ziel ist spezifisch, messbar, erreichbar, relevant und terminiert (SMART). Es motiviert und gibt klare Richtung vor.</p>
+                    </div>
+                    <div class="exercise-section">
+                        <h3><i class="fas fa-tasks"></i> Übung: SMART-Ziel formulieren</h3>
+                        <div class="exercise-content">
+                            <div class="smart-goal">
+                                <h4>Ziel-Formulierung</h4>
+                                <div class="goal-input">
+                                    <label for="goal-description">Was möchtest du erreichen?</label>
+                                    <textarea id="goal-description" placeholder="Beschreibe dein Ziel..."></textarea>
+                                </div>
+                                <h4>SMART-Kriterien prüfen</h4>
+                                <div class="smart-criteria">
+                                    <div class="criterion">
+                                        <label><strong>S</strong>pezifisch: Ist das Ziel klar und eindeutig?</label>
+                                        <textarea placeholder="Formuliere dein Ziel so spezifisch wie möglich..."></textarea>
+                                    </div>
+                                        <label><strong>M</strong>essbar: Wie wirst du den Erfolg messen?</label>
+                                        <textarea placeholder="Definiere messbare Kriterien..."></textarea>
+                                        <label><strong>A</strong>erreichbar: Ist das Ziel realistisch?</label>
+                                        <textarea placeholder="Überprüfe die Erreichbarkeit..."></textarea>
+                                        <label><strong>R</strong>elevant: Warum ist das Ziel wichtig?</label>
+                                        <textarea placeholder="Erkläre die Relevanz..."></textarea>
+                                        <label><strong>T</strong>erminiert: Bis wann soll das Ziel erreicht sein?</label>
+                                        <input type="date" placeholder="Wähle ein konkretes Datum">
+                                <h4>Ziel-Hierarchie</h4>
+                                <div class="goal-hierarchy">
+                                    <div class="hierarchy-level">
+                                        <label>Langfristiges Ziel (1-3 Jahre):</label>
+                                        <textarea placeholder="Dein großes, visionäres Ziel..."></textarea>
+                                        <label>Mittelfristiges Ziel (3-12 Monate):</label>
+                                        <textarea placeholder="Zwischenziele, die zum langfristigen Ziel führen..."></textarea>
+                                        <label>Kurzfristiges Ziel (1-3 Monate):</label>
+                                        <textarea placeholder="Konkrete, kurzfristige Schritte..."></textarea>
+                            </div>
+                        </div>
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Tipps für Zieldefinition</h3>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-heart"></i>
+                                <h4>Emotional verbinden</h4>
+                                <p>Dein Ziel sollte dich emotional berühren und motivieren.</p>
+                                <i class="fas fa-eye"></i>
+                                <h4>Visualisieren</h4>
+                                <p>Stelle dir vor, wie es sich anfühlt, das Ziel erreicht zu haben.</p>
+                                <i class="fas fa-balance-scale"></i>
+                                <h4>Realistisch bleiben</h4>
+                                <p>Setze dir herausfordernde, aber erreichbare Ziele.</p>
+            <!-- Step 2: Strategie entwickeln -->
+            <div class="workflow-step" id="step-2">
+                    <h2>Schritt 2: Strategie entwickeln</h2>
+                    <p>Den besten Weg zum Ziel finden</p>
+                        <h3><i class="fas fa-route"></i> Was ist eine gute Strategie?</h3>
+                        <p>Eine gute Strategie berücksichtigt deine Ressourcen, mögliche Hindernisse und den effizientesten Weg zum Ziel.</p>
+                        <h3><i class="fas fa-tasks"></i> Übung: Strategie-Entwicklung</h3>
+                            <div class="strategy-development">
+                                <h4>Ressourcen-Analyse</h4>
+                                <div class="resources-analysis">
+                                    <div class="resource-category">
+                                        <h5>Persönliche Ressourcen</h5>
+                                        <textarea placeholder="Welche Fähigkeiten, Stärken und Erfahrungen bringst du mit?"></textarea>
+                                        <h5>Externe Ressourcen</h5>
+                                        <textarea placeholder="Welche Unterstützung, Tools oder Materialien stehen dir zur Verfügung?"></textarea>
+                                        <h5>Zeitliche Ressourcen</h5>
+                                        <textarea placeholder="Wie viel Zeit kannst du investieren? Wann hast du Zeit?"></textarea>
+                                <h4>Hindernisse identifizieren</h4>
+                                <div class="obstacles-analysis">
+                                    <div class="obstacle-item">
+                                        <label>Mögliches Hindernis 1:</label>
+                                        <input type="text" placeholder="Was könnte dir im Weg stehen?">
+                                        <label>Lösungsansatz:</label>
+                                        <textarea placeholder="Wie könntest du dieses Hindernis überwinden?"></textarea>
+                                        <label>Mögliches Hindernis 2:</label>
+                                <h4>Strategie-Optionen</h4>
+                                <div class="strategy-options">
+                                    <div class="strategy-option">
+                                        <label>Strategie 1:</label>
+                                        <textarea placeholder="Erste mögliche Herangehensweise..."></textarea>
+                                        <label>Vor- und Nachteile:</label>
+                                        <textarea placeholder="Bewerte diese Strategie..."></textarea>
+                                        <label>Strategie 2:</label>
+                                        <textarea placeholder="Zweite mögliche Herangehensweise..."></textarea>
+            <!-- Step 3: Aktionsplan erstellen -->
+            <div class="workflow-step" id="step-3">
+                    <h2>Schritt 3: Aktionsplan erstellen</h2>
+                    <p>Konkrete Schritte zur Umsetzung planen</p>
+                        <h3><i class="fas fa-list-check"></i> Was ist ein guter Aktionsplan?</h3>
+                        <p>Ein guter Aktionsplan teilt das Ziel in konkrete, umsetzbare Schritte auf und definiert klare Zeitrahmen und Verantwortlichkeiten.</p>
+                        <h3><i class="fas fa-tasks"></i> Übung: Aktionsplan entwickeln</h3>
+                            <div class="action-plan">
+                                <h4>Meilensteine definieren</h4>
+                                <div class="milestones">
+                                    <div class="milestone-item">
+                                        <label>Meilenstein 1:</label>
+                                        <input type="text" placeholder="Erster wichtiger Zwischenschritt">
+                                        <label>Zieltermin:</label>
+                                        <input type="date">
+                                        <label>Beschreibung:</label>
+                                        <textarea placeholder="Was genau muss erreicht werden?"></textarea>
+                                        <label>Meilenstein 2:</label>
+                                        <input type="text" placeholder="Zweiter wichtiger Zwischenschritt">
+                                <h4>Konkrete Aktionen</h4>
+                                <div class="concrete-actions">
+                                    <div class="action-item">
+                                        <label>Aktion 1:</label>
+                                        <input type="text" placeholder="Was musst du konkret tun?">
+                                        <label>Bis wann:</label>
+                                        <label>Ressourcen:</label>
+                                        <textarea placeholder="Was brauchst du dafür?"></textarea>
+                                        <label>Aktion 2:</label>
+                                <h4>Verantwortlichkeiten</h4>
+                                <div class="responsibilities">
+                                    <div class="responsibility-item">
+                                        <label>Wer ist verantwortlich?</label>
+                                        <input type="text" placeholder="Du selbst oder andere Personen">
+                                        <label>Wer kann unterstützen?</label>
+                                        <textarea placeholder="Welche Personen können dir helfen?"></textarea>
+            <!-- Step 4: Umsetzung begleiten -->
+            <div class="workflow-step" id="step-4">
+                    <h2>Schritt 4: Umsetzung begleiten</h2>
+                    <p>Den Fortschritt verfolgen und anpassen</p>
+                        <h3><i class="fas fa-chart-line"></i> Was ist Umsetzungsbegleitung?</h3>
+                        <p>Umsetzungsbegleitung bedeutet, den Fortschritt regelmäßig zu überprüfen, bei Bedarf Anpassungen vorzunehmen und motiviert zu bleiben.</p>
+                        <h3><i class="fas fa-tasks"></i> Übung: Fortschritts-Tracking</h3>
+                            <div class="progress-tracking">
+                                <h4>Fortschrittsmessung</h4>
+                                <div class="progress-measurement">
+                                    <label>Wo stehst du heute? (0-100%)</label>
+                                    <input type="range" min="0" max="100" value="0">
+                                    <span id="progress-value">0%</span>
+                                <h4>Wöchentliche Reflexion</h4>
+                                <div class="weekly-reflection">
+                                    <div class="reflection-item">
+                                        <label>Was ist diese Woche gut gelaufen?</label>
+                                        <textarea placeholder="Positive Entwicklungen und Erfolge..."></textarea>
+                                        <label>Was war schwierig?</label>
+                                        <textarea placeholder="Herausforderungen und Hindernisse..."></textarea>
+                                        <label>Was wirst du nächste Woche anders machen?</label>
+                                        <textarea placeholder="Anpassungen und Verbesserungen..."></textarea>
+                                <h4>Anpassungen</h4>
+                                <div class="adjustments">
+                                    <div class="adjustment-item">
+                                        <label>Welche Anpassungen sind nötig?</label>
+                                        <textarea placeholder="Was muss geändert werden?"></textarea>
+                                        <label>Wie wirst du die Anpassungen umsetzen?</label>
+                                        <textarea placeholder="Konkrete Schritte für die Anpassung..."></textarea>
+            <!-- Step 5: Erfolg evaluieren -->
+            <div class="workflow-step" id="step-5">
+                    <h2>Schritt 5: Erfolg evaluieren</h2>
+                    <p>Das Ergebnis bewerten und lernen</p>
+                        <h3><i class="fas fa-trophy"></i> Was ist Erfolgsevaluation?</h3>
+                        <p>Erfolgsevaluation bedeutet, das Ergebnis zu bewerten, aus dem Prozess zu lernen und Erkenntnisse für zukünftige Ziele zu gewinnen.</p>
+                        <h3><i class="fas fa-tasks"></i> Übung: Erfolgs-Evaluation</h3>
+                            <div class="success-evaluation">
+                                <h4>Zielerreichung bewerten</h4>
+                                <div class="goal-assessment">
+                                    <label>Hast du dein Ziel erreicht?</label>
+                                    <select>
+                                        <option>Vollständig erreicht</option>
+                                        <option>Teilweise erreicht</option>
+                                        <option>Nicht erreicht</option>
+                                    </select>
+                                    
+                                    <label>Wie zufrieden bist du mit dem Ergebnis? (1-10)</label>
+                                    <input type="range" min="1" max="10" value="5">
+                                    <span id="satisfaction-value">5</span>
+                                <h4>Prozess-Reflexion</h4>
+                                <div class="process-reflection">
+                                        <label>Was hat gut funktioniert?</label>
+                                        <textarea placeholder="Erfolgreiche Strategien und Methoden..."></textarea>
+                                        <label>Was hätte besser laufen können?</label>
+                                        <textarea placeholder="Verbesserungsmöglichkeiten..."></textarea>
+                                        <label>Was hast du über dich gelernt?</label>
+                                        <textarea placeholder="Neue Erkenntnisse über dich selbst..."></textarea>
+                                <h4>Lektionen für die Zukunft</h4>
+                                <div class="future-lessons">
+                                    <div class="lesson-item">
+                                        <label>Wichtigste Lektion:</label>
+                                        <textarea placeholder="Die wichtigste Erkenntnis aus diesem Prozess..."></textarea>
+                                        <label>Nächstes Ziel:</label>
+                                        <textarea placeholder="Was möchtest du als nächstes angehen?"></textarea>
+        <div class="workflow-navigation">
+            <button id="prev-step" class="btn btn-secondary" data-action="previous-step">
+                <i class="fas fa-arrow-left"></i> Zurück
+            <button id="next-step" class="btn btn-primary" data-action="next-step">
+                Weiter <i class="fas fa-arrow-right"></i>
+        <div class="method-footer">
+            <div class="progress-summary">
+                <h3>Dein Fortschritt</h3>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Schritte abgeschlossen:</span>
+                        <span class="stat-value" id="completed-steps">0/5</span>
+                        <span class="stat-label">Ziele definiert:</span>
+                        <span class="stat-value" id="goals-defined">0</span>
+    </div>
+    <script src="target-coaching.js"></script>
+    <!-- Global Auth System -->
+    <script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
+    
+    <!-- Auth Modals Container -->
+    <div id="authModalsContainer"></div>
+</body>
+</html>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>
