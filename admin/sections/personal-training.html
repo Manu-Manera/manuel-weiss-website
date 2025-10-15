@@ -1,0 +1,204 @@
+<div class="section-header">
+    <h2>Personal Training Verwaltung</h2>
+    <p>Verwalte Trainingspläne, Übungen und AI-Konfigurationen</p>
+</div>
+
+<!-- Training Plans Management -->
+<div class="training-plans-management">
+    <h3>🏋️ Trainingspläne verwalten</h3>
+    <div class="plans-grid">
+        <div class="plan-template-card">
+            <div class="plan-header">
+                <h4>Muskelaufbau - Anfänger</h4>
+                <button class="edit-plan-btn" data-action="open-plan-editor" data-param="muscle-beginner">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div class="plan-content">
+                <p>3x pro Woche, 45 Min, Ganzkörper-Training</p>
+                <div class="plan-stats">
+                    <span class="stat">12 Übungen</span>
+                    <span class="stat">4 Wochen</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="plan-template-card">
+            <div class="plan-header">
+                <h4>Gewichtsreduktion - Fortgeschritten</h4>
+                <button class="edit-plan-btn" data-action="open-plan-editor" data-param="weight-loss-advanced">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div class="plan-content">
+                <p>4x pro Woche, 60 Min, Split-Training</p>
+                <div class="plan-stats">
+                    <span class="stat">20 Übungen</span>
+                    <span class="stat">6 Wochen</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="plan-template-card">
+            <div class="plan-header">
+                <h4>Bodyweight - Anfänger</h4>
+                <button class="edit-plan-btn" data-action="open-plan-editor" data-param="bodyweight-beginner">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div class="plan-content">
+                <p>3x pro Woche, 30 Min, Körpergewicht</p>
+                <div class="plan-stats">
+                    <span class="stat">8 Übungen</span>
+                    <span class="stat">4 Wochen</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="plan-template-card">
+            <div class="plan-header">
+                <h4>Ausdauer - Alle Level</h4>
+                <button class="edit-plan-btn" data-action="open-plan-editor" data-param="endurance-all">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div class="plan-content">
+                <p>5x pro Woche, 45 Min, Cardio-Fokus</p>
+                <div class="plan-stats">
+                    <span class="stat">15 Übungen</span>
+                    <span class="stat">8 Wochen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exercise Database Management -->
+<div class="exercise-database-management">
+    <h3>💪 Übungsdatenbank verwalten</h3>
+    <div class="exercise-categories">
+        <div class="category-card">
+            <div class="category-header">
+                <h4>Brust</h4>
+                <span class="exercise-count">12 Übungen</span>
+            </div>
+            <div class="category-exercises">
+                <div class="exercise-item">
+                    <span>Bankdrücken</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="bench-press">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Liegestütze</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="push-ups">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Schrägbankdrücken</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="incline-bench">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category-card">
+            <div class="category-header">
+                <h4>Rücken</h4>
+                <span class="exercise-count">15 Übungen</span>
+            </div>
+            <div class="category-exercises">
+                <div class="exercise-item">
+                    <span>Klimmzüge</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="pull-ups">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Rudern</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="rowing">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Latziehen</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="lat-pulldown">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category-card">
+            <div class="category-header">
+                <h4>Beine</h4>
+                <span class="exercise-count">18 Übungen</span>
+            </div>
+            <div class="category-exercises">
+                <div class="exercise-item">
+                    <span>Kniebeugen</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="squats">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Ausfallschritte</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="lunges">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="exercise-item">
+                    <span>Rumänisches Kreuzheben</span>
+                    <button class="edit-exercise-btn" data-action="open-exercise-editor" data-param="romanian-deadlift">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Training Statistics -->
+<div class="training-statistics">
+    <h3>📊 Trainings-Statistiken</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="total-exercises">150+</h3>
+                <p>Übungen in der Datenbank</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="generated-plans">25</h3>
+                <p>Generierte Trainingspläne</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="active-users">12</h3>
+                <p>Aktive Nutzer</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="average-rating">4.8</h3>
+                <p>Durchschnittliche Bewertung</p>
+            </div>
+        </div>
+    </div>
+</div>

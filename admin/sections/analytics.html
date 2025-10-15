@@ -1,0 +1,36 @@
+<div class="section-header">
+    <h2>Analytics Dashboard</h2>
+    <p>Website-Statistiken und Performance-Metriken</p>
+</div>
+
+<div class="analytics-filters">
+    <select class="period-select">
+        <option>Letzte 7 Tage</option>
+        <option>Letzte 30 Tage</option>
+        <option>Letzte 3 Monate</option>
+        <option>Letztes Jahr</option>
+    </select>
+    <button class="btn btn-outline" data-action="export-analytics">
+        <i class="fas fa-download"></i>
+        Export
+    </button>
+</div>
+
+<div class="analytics-grid">
+    <div class="chart-card">
+        <h3>Besucherstatistik</h3>
+        <canvas id="visitorsChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Beliebteste Seiten</h3>
+        <canvas id="pagesChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Gerätetypen</h3>
+        <canvas id="devicesChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Vermietungsstatistik</h3>
+        <canvas id="rentalsChart"></canvas>
+    </div>
+</div>

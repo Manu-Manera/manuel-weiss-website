@@ -1,0 +1,119 @@
+<div class="section-header">
+    <h2>⚙️ Einstellungen</h2>
+    <p>Verwalten Sie alle Website-Einstellungen</p>
+</div>
+
+<div class="settings-tabs">
+    <button class="settings-tab active" data-tab="general">
+        <i class="fas fa-cog"></i>
+        Allgemein
+    </button>
+    <button class="settings-tab" data-tab="seo">
+        <i class="fas fa-search"></i>
+        SEO
+    </button>
+    <button class="settings-tab" data-tab="security">
+        <i class="fas fa-shield-alt"></i>
+        Sicherheit
+    </button>
+    <button class="settings-tab" data-tab="backup">
+        <i class="fas fa-database"></i>
+        Backup
+    </button>
+</div>
+
+<div class="settings-content">
+    <!-- Allgemeine Einstellungen -->
+    <div class="settings-panel active" id="generalSettings">
+        <h3><i class="fas fa-cog"></i> Allgemeine Einstellungen</h3>
+        <p>Grundlegende Website-Einstellungen verwalten</p>
+        <form class="settings-form">
+            <div class="form-group">
+                <label>Website-Titel</label>
+                <input type="text" class="form-control" value="Manuel Weiss - Professional Services">
+            </div>
+            <div class="form-group">
+                <label>Kontakt E-Mail</label>
+                <input type="email" class="form-control" value="weissmanuel94@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Zeitzone</label>
+                <select class="form-control">
+                    <option>Europe/Zurich</option>
+                    <option>Europe/Berlin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Speichern</button>
+        </form>
+    </div>
+    
+    <!-- SEO Einstellungen -->
+    <div class="settings-panel" id="seoSettings">
+        <h3><i class="fas fa-search"></i> SEO Einstellungen</h3>
+        <p>Suchmaschinenoptimierung für bessere Sichtbarkeit</p>
+        <form class="settings-form">
+            <div class="form-group">
+                <label>Meta-Titel</label>
+                <input type="text" class="form-control" value="Manuel Weiss - HR Berater für AI & Transformation">
+            </div>
+            <div class="form-group">
+                <label>Meta-Beschreibung</label>
+                <textarea class="form-control" rows="3">Professionelle HR-Beratung für digitale Transformation und Geschäftsprozesse.</textarea>
+            </div>
+            <div class="form-group">
+                <label>Keywords</label>
+                <input type="text" class="form-control" value="HR Berater, AI, Transformation, Digitalisierung">
+            </div>
+            <button type="submit" class="btn btn-primary">SEO-Einstellungen speichern</button>
+        </form>
+    </div>
+    
+    <!-- Sicherheitseinstellungen -->
+    <div class="settings-panel" id="securitySettings">
+        <h3><i class="fas fa-shield-alt"></i> Sicherheit</h3>
+        <p>Sicherheitseinstellungen für Ihr Admin-Panel</p>
+        <form class="settings-form">
+            <div class="form-group">
+                <label>Passwort ändern</label>
+                <input type="password" class="form-control" placeholder="Neues Passwort">
+            </div>
+            <div class="form-group">
+                <label>Zwei-Faktor-Authentifizierung</label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="2fa">
+                    <label class="form-check-label" for="2fa">2FA aktivieren</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Session-Timeout</label>
+                <select class="form-control">
+                    <option>30 Minuten</option>
+                    <option>1 Stunde</option>
+                    <option>2 Stunden</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Sicherheitseinstellungen speichern</button>
+        </form>
+    </div>
+    
+    <!-- Backup Einstellungen -->
+    <div class="settings-panel" id="backupSettings">
+        <h3><i class="fas fa-database"></i> Backup</h3>
+        <p>Backup und Wiederherstellung Ihrer Website-Daten</p>
+        <div class="backup-actions">
+            <button type="button" class="btn btn-primary" data-action="create-backup">
+                <i class="fas fa-download"></i> Backup erstellen
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="restore-backup">
+                <i class="fas fa-upload"></i> Backup wiederherstellen
+            </button>
+            <button type="button" class="btn btn-info" data-action="schedule-backup">
+                <i class="fas fa-clock"></i> Automatisches Backup einrichten
+            </button>
+        </div>
+        <div class="backup-info">
+            <h4>Letztes Backup:</h4>
+            <p>Kein Backup verfügbar</p>
+        </div>
+    </div>
+</div>

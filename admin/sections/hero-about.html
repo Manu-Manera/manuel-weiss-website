@@ -1,0 +1,64 @@
+<div class="section-header">
+    <h2>🏠 Hero & Über mich verwalten</h2>
+    <p>Passen Sie den Hero-Bereich und Über-mich-Informationen Ihrer Website an</p>
+</div>
+
+<div class="hero-content-grid">
+    <!-- Profilbild-Galerie -->
+    <div class="hero-card">
+        <h3>📸 Profilbild-Galerie</h3>
+        <div class="profile-gallery">
+            <!-- Aktuelles Profilbild -->
+            <div class="current-profile-section">
+                <h4>Aktuelles Profilbild</h4>
+                <div class="current-image">
+                    <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
+                </div>
+                <div class="current-profile-info">
+                    <p id="current-profile-name">Standard Profilbild</p>
+                    <div class="profile-actions">
+                        <button type="button" id="change-profile-btn" class="btn btn-secondary">
+                            <i class="fas fa-exchange-alt"></i> Profilbild wechseln
+                        </button>
+                        <button type="button" onclick="uploadImage()" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Bild hochladen
+                        </button>
+                    </div>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="processImage(this)">
+                </div>
+            </div>
+            
+            <!-- Galerie-Upload -->
+            <div class="gallery-upload-section">
+                <h4>Neue Bilder hochladen</h4>
+                <div class="gallery-upload-area" id="gallery-upload-area">
+                    <div class="upload-zone">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #667eea; margin-bottom: 1rem;"></i>
+                        <p>Mehrere Profilbilder hier ablegen oder auswählen</p>
+                        <input type="file" id="gallery-upload-input" accept="image/*" multiple style="display: none;">
+                        <button type="button" id="select-gallery-images-btn" class="btn btn-primary">
+                            <i class="fas fa-images"></i> Bilder auswählen
+                        </button>
+                        <p class="upload-info">Unterstützte Formate: JPG, PNG, SVG (max. 5MB pro Bild)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Galerie-Anzeige -->
+            <div class="gallery-display-section">
+                <h4>Profilbild-Galerie</h4>
+                <div class="profile-gallery-grid" id="profile-gallery-grid">
+                    <!-- Galerie-Bilder werden hier dynamisch geladen -->
+                </div>
+                <div class="gallery-actions">
+                    <button type="button" id="refresh-gallery-btn" class="btn btn-outline">
+                        <i class="fas fa-sync"></i> Galerie aktualisieren
+                    </button>
+                    <button type="button" id="clear-gallery-btn" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Alle Bilder löschen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
