@@ -640,7 +640,6 @@
         #personality-development,
         #personal-training,
         #applications,
-        #ai-settings,
         #ai-twin,
         #translations,
         #media,
@@ -689,7 +688,6 @@
             #personality-development,
             #personal-training,
             #applications,
-            #ai-settings,
             #ai-twin,
             #translations,
             #media,
@@ -2667,12 +2665,6 @@
                                 <span>Bewerbungen</span>
                             </a>
                         </li>
-                        <li class="nav-item" data-section="ai-settings" data-tooltip="KI-Einstellungen">
-                            <a href="#ai-settings">
-                                <i class="fas fa-robot"></i>
-                                <span>KI-Einstellungen</span>
-                            </a>
-                        </li>
                         <li class="nav-item" data-section="ai-twin" data-tooltip="AI Twin">
                             <a href="#ai-twin">
                                 <i class="fas fa-user-robot"></i>
@@ -3070,8 +3062,8 @@
                             <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
                                 <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">🤖 OpenAI API Konfiguration</h3>
                                 <p style="margin: 0; color: #0c4a6e;">
-                                    Alle OpenAI Einstellungen wurden in die <strong>KI-Einstellungen</strong> verschoben.
-                                    <br><small>Klicken Sie auf "KI-Einstellungen" in der Sidebar für die vollständige Konfiguration.</small>
+                                    OpenAI Einstellungen wurden entfernt.
+                                    <br><small>Verwenden Sie die separate KI-Einstellungen-Seite.</small>
                                 </p>
                             </div>
                             
@@ -4764,7 +4756,7 @@
                                 <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
                                     <h4 style="color: #0c4a6e; margin-bottom: 0.5rem;">🤖 OpenAI API</h4>
                                     <p style="margin: 0; color: #0c4a6e; font-size: 0.9rem;">
-                                        → Siehe <strong>KI-Einstellungen</strong> in der Sidebar
+                                        → Verwenden Sie die separate KI-Einstellungen-Seite
                                     </p>
                                 </div>
                                 
@@ -6495,7 +6487,7 @@
                                             <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
                                                 <p style="margin: 0; color: #0c4a6e; font-size: 0.9rem;">
                                                     <strong>OpenAI API Konfiguration</strong><br>
-                                                    → Siehe <strong>KI-Einstellungen</strong> in der Sidebar
+                                                    → Verwenden Sie die separate KI-Einstellungen-Seite
                                                 </p>
                                             </div>
                                             <div class="form-group">
@@ -16536,7 +16528,7 @@ Bitte antworte im folgenden JSON-Format:
                 }
                 
                 // Alle Admin-Sektionen anpassen
-                const allSections = document.querySelectorAll('.admin-section, #user-management-live, #analytics, #system-health, #settings, #dashboard, #content, #nutrition, #personality-development, #personal-training, #applications, #ai-settings, #ai-twin, #translations, #media, #vermietungen, #buchungen');
+                const allSections = document.querySelectorAll('.admin-section, #user-management-live, #analytics, #system-health, #settings, #dashboard, #content, #nutrition, #personality-development, #personal-training, #applications, #ai-twin, #translations, #media, #vermietungen, #buchungen');
             allSections.forEach(section => {
                     section.style.width = '100%';
                     section.style.maxWidth = '100%';
