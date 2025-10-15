@@ -3,11 +3,11 @@ node_modules/
 package.json
 package-lock.json
 .npmrc
+playwright.config.ts
 
 # Ignoriere Build-Tools
 .github/
 tests/
-playwright.config.ts
 
 # Ignoriere temporäre Dateien
 *.log
