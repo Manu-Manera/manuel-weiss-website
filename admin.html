@@ -10819,42 +10819,29 @@
         }
         
         async function testDirectConnection(apiKey) {
-            // Verwende direkt den Proxy-Server
-            showStatus('🔄 Verwende Proxy-Server für CORS-Problem...', 'info');
+            showStatus('🔄 Teste OpenAI API über Netlify Functions...', 'info');
             await testProxyConnection(apiKey);
         }
         
         async function testProxyConnection(apiKey) {
-            try {
-                // Methode 1: Netlify Functions Proxy
-                const response = await fetch('/.netlify/functions/openai-proxy', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        apiKey: apiKey,
-                        test: true
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok && result.success) {
-                    showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
-                    console.log('OpenAI Test Response:', result);
-                } else {
-                    showStatus(`❌ API Fehler: ${result.error || 'Unbekannter Fehler'}`, 'error');
-                }
-            } catch (error) {
-                console.error('Proxy Test Error:', error);
-                
-                // Fallback: API Key Format validieren
-                if (apiKey.startsWith('sk-') && apiKey.length > 20) {
-                    showStatus('✅ API Key Format ist korrekt (direkte Verbindung blockiert durch CORS)', 'success');
-                } else {
-                    showStatus('❌ API Key Format ist ungültig. Bitte prüfen Sie den Key.', 'error');
-                }
+            const response = await fetch('/.netlify/functions/openai-proxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    apiKey: apiKey,
+                    test: true
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                showStatus('✅ OpenAI API Verbindung erfolgreich!', 'success');
+                console.log('OpenAI Test Response:', result);
+            } else {
+                showStatus(`❌ API Fehler: ${result.error || 'Unbekannter Fehler'}`, 'error');
             }
         }
         
