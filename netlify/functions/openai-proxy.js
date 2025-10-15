@@ -1,8 +1,8 @@
-// OpenAI Proxy für CORS-Problem
-// Netlify Functions
+// OpenAI Proxy - ECHTE LÖSUNG OHNE FALLBACKS
+// Netlify Functions für CORS-Problem
 
 exports.handler = async (event, context) => {
-    // CORS Headers
+    // CORS Headers für alle Anfragen
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -15,26 +15,34 @@ exports.handler = async (event, context) => {
         return { statusCode: 200, headers, body: '' };
     }
 
+    // Nur POST Requests erlauben
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
             headers,
-            body: JSON.stringify({ error: 'Method not allowed' })
+            body: JSON.stringify({ 
+                success: false, 
+                error: 'Method not allowed' 
+            })
         };
     }
 
     try {
         const { apiKey, test } = JSON.parse(event.body);
         
-        if (!apiKey) {
+        // API Key validieren
+        if (!apiKey || !apiKey.startsWith('sk-')) {
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ error: 'API Key fehlt' })
+                body: JSON.stringify({ 
+                    success: false, 
+                    error: 'Ungültiger API Key' 
+                })
             };
         }
 
-        // OpenAI API Test
+        // ECHTE OpenAI API Anfrage
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -67,7 +75,7 @@ exports.handler = async (event, context) => {
                 headers,
                 body: JSON.stringify({ 
                     success: false, 
-                    error: errorData.error?.message || 'API Fehler',
+                    error: errorData.error?.message || `HTTP ${response.status}`,
                     status: response.status
                 })
             };
@@ -80,7 +88,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({ 
                 success: false, 
-                error: error.message 
+                error: `Server Error: ${error.message}` 
             })
         };
     }
