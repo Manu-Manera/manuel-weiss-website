@@ -126,8 +126,14 @@ class AdminApplication {
      * Sections initialisieren
      */
     initializeSections() {
+        // Dashboard Section
+        this.sections.dashboard = new DashboardSection();
+        
         // API Keys Section
         this.sections.apiKeys = new ApiKeysSection();
+        
+        // Applications Section
+        this.sections.applications = new ApplicationsSection();
         
         // Weitere Sections werden lazy geladen
         console.log('Sections initialized');
