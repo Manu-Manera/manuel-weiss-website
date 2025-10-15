@@ -20,21 +20,6 @@ class IkigaiWorkflowEN {
         console.log('🎯 Initializing Ikigai Workflow (English)...');
         this.createWorkflowInterface();
         this.loadStep(1);
-        this.setupEventListeners();
-    }
-    
-    setupEventListeners() {
-        // Setup initial event listeners for navigation buttons
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.previousStep());
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextStep());
-        }
     }
     
     createWorkflowInterface() {
@@ -82,11 +67,11 @@ class IkigaiWorkflowEN {
                 
                 <!-- Navigation -->
                 <div style="background: #f8fafc; padding: 1.5rem 2rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between;">
-                    <button id="prev-btn" style="padding: 0.75rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: none;">
+                    <button id="prev-btn" onclick="window.ikigaiWorkflowEN.previousStep()" style="padding: 0.75rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: none;">
                         ← Previous
                     </button>
                     <div style="flex: 1;"></div>
-                    <button id="next-btn" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    <button id="next-btn" onclick="window.ikigaiWorkflowEN.nextStep()" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                         Next →
                     </button>
                 </div>
@@ -326,10 +311,10 @@ class IkigaiWorkflowEN {
         if (nextBtn) {
             if (this.currentStep === this.totalSteps) {
                 nextBtn.textContent = 'Finish';
-                nextBtn.onclick = () => this.finish();
+                nextBtn.setAttribute('onclick', 'window.ikigaiWorkflowEN.finish()');
             } else {
                 nextBtn.textContent = 'Next →';
-                nextBtn.onclick = () => this.nextStep();
+                nextBtn.setAttribute('onclick', 'window.ikigaiWorkflowEN.nextStep()');
             }
         }
     }
