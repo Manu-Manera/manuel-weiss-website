@@ -9,13 +9,10 @@
 /analytics          /analytics-dashboard.html 200
 /analytics-dashboard /analytics-dashboard.html 200
 
-# Application Routes
-/bewerbungsmanager  /bewerbung.html       200
-/coverlettergpt     /bewerbung.html       200
-/bewerbung          /bewerbung.html       200
-/bewerbungsmappe    /bewerbung.html       200
-/ki-workflow        /bewerbung.html       200
-/workflow           /bewerbung.html       200
+# Personality Development Routes
+/persoenlichkeitsentwicklung /persoenlichkeitsentwicklung-uebersicht.html 200
+/personality        /persoenlichkeitsentwicklung-uebersicht.html 200
+/methods            /persoenlichkeitsentwicklung-uebersicht.html 200
 
 # API Documentation & OpenAPI
 /api-docs           /api-documentation.html   200
