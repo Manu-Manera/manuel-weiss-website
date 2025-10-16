@@ -496,5 +496,33 @@
     </footer>
 
     <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Fix navigation for social page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix back button
+            const backButton = document.querySelector('a[href="enterprising-raisec.html"]');
+            if (backButton) {
+                backButton.href = 'artistic-raisec.html';
+                backButton.innerHTML = '<span class="btn-icon">←</span>Zurück zu Künstlerisch';
+            }
+            
+            // Fix submit button
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Save form data
+                    const formData = new FormData(document.getElementById('social-form'));
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    localStorage.setItem('raisec-social', JSON.stringify(data));
+                    // Navigate to next step
+                    window.location.href = 'enterprising-raisec.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

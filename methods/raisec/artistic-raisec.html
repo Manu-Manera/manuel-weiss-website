@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Künstlerisch (A) - RAISEC | Manuel Weiss</title>
+    <title>RAISEC Künstlerisch - Persönlichkeitsentwicklung</title>
     <link rel="stylesheet" href="css/raisec-smart-styles.css">
     <link rel="stylesheet" href="css/artistic-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Progress Bar -->
@@ -20,24 +21,16 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-background">
-            <div class="sparkling-stars"></div>
-        </div>
+        <div class="hero-background"></div>
+        <div class="sparkling-stars"></div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="title-icon">🎨</span>
-                        Künstlerisch (A)
-                    </h1>
-                    <p class="hero-subtitle">
-                        Praktisch-technisch orientiert, handwerklich begabt
-                    </p>
-                    <p class="hero-description">
-                        Du löst gerne konkrete Probleme, arbeitest praktisch und technisch. 
-                        Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
-                    </p>
-                </div>
+                <h1 class="hero-title">Künstlerisch (A)</h1>
+                <p class="hero-subtitle">Kreativ-künstlerisch, expressiv, arbeitet gerne mit Ideen und Emotionen</p>
+                <p class="hero-description">
+                    Du bist ein künstlerischer Typ, der gerne kreativ arbeitet und sich ausdrückt. 
+                    Kreativität, Ästhetik und Innovation sind deine Stärken.
+                </p>
             </div>
         </div>
     </section>
@@ -54,38 +47,38 @@
                     <form class="questions-form" id="artistic-form">
                         <!-- Frage 1 -->
                         <div class="question-card">
-                            <h3 class="question-title">1. Technische Fähigkeiten und Handwerk</h3>
+                            <h3 class="question-title">1. Kreativität und Innovation</h3>
                             <p class="question-description">
-                                Wie sehr interessierst du dich für technische Arbeiten und handwerkliche Tätigkeiten?
+                                Wie gerne entwickelst du neue Ideen und kreative Lösungen?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Reparierst du gerne Dinge selbst?</label>
+                                        <label>Hast du gerne neue, originelle Ideen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="repair_things_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="original_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit Werkzeugen?</label>
+                                        <label>Denkst du gerne "out of the box"?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="out_of_box_thinking_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Interessierst du dich für technische Zusammenhänge?</label>
+                                        <label>Experimentierst du gerne mit neuen Ansätzen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="technical_understanding_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="experiment_approaches_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Machst du gerne praktische Experimente?</label>
+                                        <label>Bist du gerne der Erste mit neuen Ideen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="practical_experiments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="first_with_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -93,11 +86,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="technical_skills_slider">Wie wichtig sind dir technische Fähigkeiten insgesamt? (1-10)</label>
+                                    <label for="creativity_slider">Wie wichtig ist dir Kreativität insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="technical_skills_slider" 
-                                               name="technical_skills_slider" 
+                                               id="creativity_slider" 
+                                               name="creativity_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -106,8 +99,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="technical_skills" 
-                                    placeholder="Beschreibe deine technischen Interessen und Fähigkeiten..."
+                                    name="creativity" 
+                                    placeholder="Beschreibe deine kreativen Fähigkeiten und wie du neue Ideen entwickelst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -115,38 +108,38 @@
 
                         <!-- Frage 2 -->
                         <div class="question-card">
-                            <h3 class="question-title">2. Praktische Problemlösung</h3>
+                            <h3 class="question-title">2. Künstlerische Ausdrucksfähigkeit</h3>
                             <p class="question-description">
-                                Wie gehst du an praktische Probleme heran und löst sie?
+                                Wie gut kannst du dich künstlerisch ausdrücken und Emotionen vermitteln?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Analysierst du Probleme systematisch?</label>
+                                        <label>Kannst du gut zeichnen, malen oder gestalten?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="analyze_systematically_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="drawing_painting_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Probierst du gerne verschiedene Lösungsansätze aus?</label>
+                                        <label>Spielst du gerne ein Musikinstrument?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="try_different_approaches_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="music_instrument_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit konkreten Ergebnissen?</label>
+                                        <label>Schreibst du gerne kreative Texte?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_concrete_results_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="creative_writing_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Schätzt du praktische Erfahrung über theoretisches Wissen?</label>
+                                        <label>Tanzt oder bewegst du dich gerne ausdrucksvoll?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="value_practical_experience_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="dance_movement_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -154,11 +147,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="problem_solving_slider">Wie wichtig ist dir praktische Problemlösung? (1-10)</label>
+                                    <label for="artistic_expression_slider">Wie wichtig ist dir künstlerischer Ausdruck insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="problem_solving_slider" 
-                                               name="problem_solving_slider" 
+                                               id="artistic_expression_slider" 
+                                               name="artistic_expression_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -167,8 +160,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="problem_solving" 
-                                    placeholder="Beschreibe deine Herangehensweise an praktische Probleme..."
+                                    name="artistic_expression" 
+                                    placeholder="Beschreibe deine künstlerischen Ausdrucksfähigkeiten und wie du dich kreativ ausdrückst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -176,38 +169,38 @@
 
                         <!-- Frage 3 -->
                         <div class="question-card">
-                            <h3 class="question-title">3. Berufliche Präferenzen</h3>
+                            <h3 class="question-title">3. Ästhetisches Empfinden</h3>
                             <p class="question-description">
-                                Welche beruflichen Tätigkeiten sprechen dich am meisten an?
+                                Wie wichtig ist dir Schönheit, Harmonie und ästhetische Gestaltung?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Handwerkliche Berufe (Handwerker, Künstler, Kunsthandwerker)</label>
+                                        <label>Bemerkst du gerne schöne Details in deiner Umgebung?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="craft_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="notice_beautiful_details_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Praktische Berufe (Landwirt, Gärtner, Tierarzt)</label>
+                                        <label>Ist es dir wichtig, dass Dinge schön aussehen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="practical_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="things_look_beautiful_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>IT-Berufe (Programmierer, Systemadministrator, Netzwerktechniker)</label>
+                                        <label>Besuchst du gerne Museen, Galerien oder Konzerte?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="it_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="visit_museums_galleries_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Maschinenbau (Ingenieur, Techniker, Mechaniker)</label>
+                                        <label>Gestaltest du gerne deine Umgebung schön?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="mechanical_engineering_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="beautiful_environment_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -215,11 +208,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="career_preferences_slider">Wie wichtig sind dir berufliche Tätigkeiten? (1-10)</label>
+                                    <label for="aesthetic_sense_slider">Wie wichtig ist dir Ästhetik insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="career_preferences_slider" 
-                                               name="career_preferences_slider" 
+                                               id="aesthetic_sense_slider" 
+                                               name="aesthetic_sense_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -228,8 +221,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="career_preferences" 
-                                    placeholder="Beschreibe deine beruflichen Interessen und Präferenzen..."
+                                    name="aesthetic_sense" 
+                                    placeholder="Beschreibe dein ästhetisches Empfinden und wie du Schönheit wahrnimmst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -237,38 +230,38 @@
 
                         <!-- Frage 4 -->
                         <div class="question-card">
-                            <h3 class="question-title">4. Arbeitsumgebung</h3>
+                            <h3 class="question-title">4. Emotionale Intelligenz</h3>
                             <p class="question-description">
-                                In welcher Arbeitsumgebung fühlst du dich am wohlsten?
+                                Wie gut kannst du Emotionen wahrnehmen und künstlerisch ausdrücken?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne draußen oder drinnen?</label>
+                                        <label>Kannst du Emotionen gut in Kunst umsetzen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_outside_inside_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="emotions_to_art_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Präferierst du Einzelarbeit oder Teamarbeit?</label>
+                                        <label>Verstehst du die Stimmung in Musik oder Bildern?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="individual_team_work_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="understand_mood_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Magst du strukturierte oder flexible Arbeitszeiten?</label>
+                                        <label>Kannst du andere emotional berühren?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="structured_flexible_hours_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="touch_others_emotionally_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit Maschinen oder Werkzeugen?</label>
+                                        <label>Arbeitest du gerne mit Symbolen und Metaphern?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_machines_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="symbols_metaphors_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -276,11 +269,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="work_environment_slider">Wie wichtig ist dir die Arbeitsumgebung? (1-10)</label>
+                                    <label for="emotional_intelligence_slider">Wie wichtig ist dir emotionale Ausdrucksfähigkeit insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="work_environment_slider" 
-                                               name="work_environment_slider" 
+                                               id="emotional_intelligence_slider" 
+                                               name="emotional_intelligence_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -289,8 +282,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="work_environment" 
-                                    placeholder="Beschreibe deine ideale Arbeitsumgebung..."
+                                    name="emotional_intelligence" 
+                                    placeholder="Beschreibe deine emotionale Intelligenz und wie du Gefühle künstlerisch ausdrückst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -298,38 +291,38 @@
 
                         <!-- Frage 5 -->
                         <div class="question-card">
-                            <h3 class="question-title">5. Lernstil und Entwicklung</h3>
+                            <h3 class="question-title">5. Originalität und Individualität</h3>
                             <p class="question-description">
-                                Wie lernst du am besten neue Fähigkeiten?
+                                Wie wichtig ist es dir, einzigartig und individuell zu sein?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Lernst du gerne durch praktische Übungen?</label>
+                                        <label>Möchtest du gerne anders sein als andere?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="learn_practical_exercises_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="different_from_others_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Präferierst du Learning-by-Doing?</label>
+                                        <label>Ist es dir wichtig, deinen eigenen Stil zu haben?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="learning_by_doing_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="own_style_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Interessierst du dich für technische Weiterbildungen?</label>
+                                        <label>Vermeidest du gerne Mainstream-Trends?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="technical_training_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="avoid_mainstream_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Magst du konkrete, messbare Ergebnisse?</label>
+                                        <label>Experimentierst du gerne mit unkonventionellen Ideen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="concrete_measurable_results_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="unconventional_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -337,11 +330,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="learning_style_slider">Wie wichtig ist dir praktisches Lernen? (1-10)</label>
+                                    <label for="originality_slider">Wie wichtig ist dir Originalität insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="learning_style_slider" 
-                                               name="learning_style_slider" 
+                                               id="originality_slider" 
+                                               name="originality_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -350,8 +343,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="learning_style" 
-                                    placeholder="Beschreibe deinen bevorzugten Lernstil..."
+                                    name="originality" 
+                                    placeholder="Beschreibe deine Originalität und wie du deine Individualität ausdrückst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -359,38 +352,38 @@
 
                         <!-- Frage 6 -->
                         <div class="question-card">
-                            <h3 class="question-title">6. Werte und Motivation</h3>
+                            <h3 class="question-title">6. Künstlerische Inspiration</h3>
                             <p class="question-description">
-                                Was motiviert dich in deiner beruflichen Tätigkeit?
+                                Wo findest du Inspiration für deine kreative Arbeit?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Ist es dir wichtig, etwas Konkretes zu schaffen?</label>
+                                        <label>Inspirieren dich andere Künstler und ihre Werke?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="create_something_concrete_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="inspired_by_artists_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Motiviert dich die Lösung praktischer Probleme?</label>
+                                        <label>Findest du Inspiration in der Natur?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="solve_practical_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="nature_inspiration_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Schätzt du handwerkliche Qualität und Präzision?</label>
+                                        <label>Inspirieren dich Reisen und neue Kulturen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="craft_quality_precision_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="travel_culture_inspiration_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Ist dir Unabhängigkeit und Selbstständigkeit wichtig?</label>
+                                        <label>Kommst du durch Träume und Fantasie auf Ideen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="independence_autonomy_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="dreams_fantasy_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -398,11 +391,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="values_motivation_slider">Wie wichtig sind dir deine Werte? (1-10)</label>
+                                    <label for="artistic_inspiration_slider">Wie wichtig ist dir künstlerische Inspiration insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="values_motivation_slider" 
-                                               name="values_motivation_slider" 
+                                               id="artistic_inspiration_slider" 
+                                               name="artistic_inspiration_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -411,8 +404,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="values_motivation" 
-                                    placeholder="Beschreibe deine Werte und Motivation..."
+                                    name="artistic_inspiration" 
+                                    placeholder="Beschreibe deine künstlerischen Inspirationsquellen und wie du neue Ideen findest..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -420,51 +413,81 @@
 
                         <!-- Navigation Buttons -->
                         <div class="navigation-buttons">
-                            <a href="index-raisec.html" class="btn-secondary">Zurück zur Übersicht</a>
-                            <a href="social-raisec.html" class="btn-primary">Weiter zu Sozial</a>
-                        </div>                    </form>
+                            <a href="investigative-raisec.html" class="btn btn-secondary">
+                                <span class="btn-icon">←</span>
+                                Zurück zu Investigativ
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Weiter zu Sozial
+                                <span class="btn-icon">→</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="sidebar">
-                    <div class="sidebar-card">
-                        <h3>💡 Tipps für künstlerische Typen</h3>
-                        <ul>
-                            <li>Nutze deine praktischen Fähigkeiten</li>
-                            <li>Suche nach technischen Herausforderungen</li>
-                            <li>Entwickle deine handwerklichen Skills</li>
-                            <li>Netzwerke mit anderen Technikern</li>
-                        </ul>
-                    </div>
+                    <div class="sidebar-content">
+                        <!-- Tipps Section -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>💡 Tipps für deine künstlerischen Interessen</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Besuche Kunstausstellungen und Museen</li>
+                                    <li>Engagiere dich in kreativen Projekten</li>
+                                    <li>Experimentiere mit verschiedenen Medien</li>
+                                    <li>Entwickle deine künstlerischen Fähigkeiten</li>
+                                    <li>Suche nach Inspiration in der Natur</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>🔗 Verwandte Methoden</h3>
-                        <ul>
-                            <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
-                            <li><a href="../swot/index-swot.html">SWOT</a></li>
-                            <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
-                        </ul>
-                    </div>
+                        <!-- Verwandte Methoden -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>🔗 Verwandte Methoden</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                                    <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                    <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>📚 Empfohlene Ressourcen</h3>
-                        <ul>
-                            <li>Technische Zeitschriften</li>
-                            <li>Handwerkliche Kurse</li>
-                            <li>Technische Weiterbildungen</li>
-                            <li>Praktische Projekte</li>
-                        </ul>
-                    </div>
+                        <!-- Ressourcen -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>📚 Ressourcen</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Kunstbücher und -zeitschriften</li>
+                                    <li>Kreativitätsworkshops</li>
+                                    <li>Künstlerische Kurse</li>
+                                    <li>Podcasts über Kunst und Design</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>🎯 Berufsfelder</h3>
-                        <ul>
-                            <li>Ingenieurwesen</li>
-                            <li>Handwerk</li>
-                            <li>Technik</li>
-                            <li>Landwirtschaft</li>
-                            <li>Maschinenbau</li>
-                        </ul>
+                        <!-- Berufsfelder -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>💼 Passende Berufsfelder</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Kunst und Design</li>
+                                    <li>Musik und Theater</li>
+                                    <li>Film und Medien</li>
+                                    <li>Literatur und Schreiben</li>
+                                    <li>Mode und Styling</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -475,86 +498,32 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>RAISEC - Künstlerisch</h3>
-                    <p>Praktisch-technisch orientierte Berufsinteressen</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Navigation</h3>
-                    <ul>
-                        <li><a href="index-raisec.html">Übersicht</a></li>
-                        <li><a href="investigative-raisec.html">Investigativ</a></li>
-                        <li><a href="artistic-raisec.html">Künstlerisch</a></li>
-                    </ul>
-                </div>
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/raisec-workflow.js"></script>
     <script>
-        // Slider functionality
-        document.querySelectorAll('.importance-slider').forEach(slider => {
-            slider.addEventListener('input', function() {
-                const value = this.value;
-                const valueDisplay = this.parentElement.querySelector('.slider-value');
-                if (valueDisplay) {
-                    valueDisplay.textContent = value;
-                }
-            });
-        });
-
-        // Form handling
-        document.getElementById('artistic-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Collect form data including sliders
-            const formData = new FormData(this);
-            const artisticData = {};
-            
-            for (let [key, value] of formData.entries()) {
-                artisticData[key] = value;
-            }
-            
-            // Calculate average score
-            const sliderValues = [
-                parseInt(artisticData.technical_skills_slider),
-                parseInt(artisticData.problem_solving_slider),
-                parseInt(artisticData.career_preferences_slider),
-                parseInt(artisticData.work_environment_slider),
-                parseInt(artisticData.learning_style_slider),
-                parseInt(artisticData.values_motivation_slider)
-            ];
-            
-            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
-            artisticData.averageScore = averageScore;
-            artisticData.type = 'Realistic';
-            
-            // Save to localStorage
-            localStorage.setItem('raisec-artistic', JSON.stringify(artisticData));
-            
-            // Navigate to next step
-            window.location.href = 'investigative-raisec.html';
-        });
-        
-        // Load saved data
-        const savedData = localStorage.getItem('raisec-artistic');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            Object.keys(data).forEach(key => {
-                const field = document.querySelector(`[name="${key}"]`);
-                if (field) {
-                    field.value = data[key];
-                    // Update slider displays
-                    if (key.includes('_slider')) {
-                        const valueDisplay = field.parentElement.querySelector('.slider-value');
-                        if (valueDisplay) {
-                            valueDisplay.textContent = data[key];
-                        }
+        // Fix navigation for artistic page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix submit button
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Save form data
+                    const formData = new FormData(document.getElementById('artistic-form'));
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
                     }
-                }
-            });
-        }
+                    localStorage.setItem('raisec-artistic', JSON.stringify(data));
+                    // Navigate to next step
+                    window.location.href = 'social-raisec.html';
+                });
+            }
+        });
     </script>
 </body>
 </html>
