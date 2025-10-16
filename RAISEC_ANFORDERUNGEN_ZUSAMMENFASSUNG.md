@@ -1,13 +1,13 @@
 # RAISEC-Methode: Vollständige Anforderungen und Implementierung
 
 ## 🎯 Übersicht
-Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die RAISEC-Persönlichkeitsentwicklungsmethode zusammen, die auf der Holland's RIASEC-Theorie basiert und die neuesten Erkenntnisse der Berufspsychologie 2025 integriert.
+Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die RAISEC-Persönlichkeitsentwicklungsmethode zusammen, die auf der Holland-Codes-Theorie basiert und die neuesten Erkenntnisse der Berufspsychologie 2025 integriert.
 
 ## 📋 Kernanforderungen
 
 ### 1. **Workflow-Struktur**
-- **6 Persönlichkeitstypen:** Realistic, Investigative, Artistic, Social, Enterprising, Conventional
-- **Individuelle HTML-Seiten:** Jeder Typ als separate Datei (`type1-raisec.html` bis `type6-raisec.html`)
+- **6 Persönlichkeitstypen:** Realistisch, Investigativ, Künstlerisch, Sozial, Unternehmerisch, Konventionell
+- **Individuelle HTML-Seiten:** Jeder Typ als separate Datei (`realistic-raisec.html`, `investigative-raisec.html`, `artistic-raisec.html`, etc.)
 - **Moderne Navigation:** Fortschrittsbalken, Typ-Navigation, Auto-Save
 - **Responsive Design:** Funktioniert auf allen Geräten
 - **Keine zentrale Workflow-App:** Jeder Workflow ist individuell und eigenständig
@@ -22,8 +22,8 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die R
 - **Smooth Animations:** Sanfte Übergänge und Hover-Effekte
 
 #### **Farbpalette:**
-- **Primärfarben:** Realistic (Grün #4CAF50), Investigative (Blau #2196F3), Artistic (Lila #9C27B0)
-- **Sekundärfarben:** Social (Orange #FF9800), Enterprising (Rot #F44336), Conventional (Grau #607D8B)
+- **Primärfarben:** Realistisch (Orange #FF9800), Investigativ (Blau #2196F3), Künstlerisch (Lila #9C27B0), Sozial (Grün #4CAF50), Unternehmerisch (Rot #F44336), Konventionell (Grau #607D8B)
+- **Sekundärfarben:** Komplementäre Farben für bessere Kontraste
 - **Neutrale Farben:** Grau-Töne für Text und Hintergründe
 
 #### **Typografie:**
@@ -34,18 +34,18 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die R
 ### 3. **RAISEC-Diagramm**
 
 #### **Visuelles Design:**
-- **Hexagonale Struktur:** 6-seitiges Diagramm für die 6 Typen
+- **Hexagonales Diagramm:** 6-seitiges Hexagon für die 6 Persönlichkeitstypen
 - **Interaktive Bereiche:** Klickbare Sektoren für jeden Typ
 - **Farbkodierung:** Jeder Typ hat seine eigene Farbe
-- **Zentrum:** Persönlichkeitsprofil als Schnittpunkt
+- **Zentrum:** Berufsinteressen-Score als Schnittpunkt
 
 #### **Typen:**
-1. **Realistic (R)** - Praktisch, handwerklich, technisch - Grün
-2. **Investigative (I)** - Analytisch, wissenschaftlich, forschend - Blau
-3. **Artistic (A)** - Kreativ, expressiv, unkonventionell - Lila
-4. **Social (S)** - Hilfsbereit, kooperativ, kommunikativ - Orange
-5. **Enterprising (E)** - Führungsstark, überzeugend, unternehmerisch - Rot
-6. **Conventional (C)** - Organisiert, strukturiert, detailorientiert - Grau
+1. **Realistisch (R)** - Praktisch-technisch, handwerklich - Orange
+2. **Investigativ (I)** - Forschend-analytisch, wissenschaftlich - Blau
+3. **Künstlerisch (A)** - Kreativ-künstlerisch, expressiv - Lila
+4. **Sozial (S)** - Menschen-orientiert, helfend - Grün
+5. **Unternehmerisch (E)** - Führungs-orientiert, überzeugend - Rot
+6. **Konventionell (C)** - Strukturiert, regelbasiert - Grau
 
 #### **Interaktivität:**
 - **Klickbare Bereiche:** Jeder Sektor führt zu entsprechendem Typ
@@ -69,7 +69,7 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die R
 ### 5. **Granularität und Tiefe**
 
 #### **Detaillierte Fragen:**
-- **10+ Fragen pro Typ:** Statt einer einzigen Frage
+- **12+ Fragen pro Typ:** Statt einer einzigen Frage
 - **Denkanstöße:** Bullet-Points mit Anregungen
 - **Hintergrund-Informationen:** Kontextuelle Erklärungen
 - **Beispiele:** Konkrete Beispiele für besseres Verständnis
@@ -111,8 +111,8 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die R
 #### **Inhalt:**
 - **RAISEC-Erklärung:** Was ist RAISEC auf erster Seite
 - **Alle Fragen & Antworten:** Aus allen 6 Typen
-- **Persönlichkeitsprofil:** Zusammenfassung der Erkenntnisse
-- **Berufsempfehlungen:** Konkrete nächste Schritte
+- **Berufsinteressen-Analyse:** Zusammenfassung der Erkenntnisse
+- **Karriere-Empfehlungen:** Konkrete Berufsfelder und Wege
 - **Tipps & Ressourcen:** Von den Sidebars
 - **Detaillierte Typ-Aufschlüsselung:** Jeder Typ auf eigener Seite
 - **Frage-Kategorisierung:** Gruppierung nach Themenbereichen
@@ -153,24 +153,24 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die R
 
 ```
 methods/raisec/
-├── index-raisec.html          # Hauptseite mit Diagramm
-├── type1-raisec.html         # Realistic
-├── type2-raisec.html         # Investigative
-├── type3-raisec.html         # Artistic
-├── type4-raisec.html         # Social
-├── type5-raisec.html         # Enterprising
-├── type6-raisec.html         # Conventional
+├── index-raisec.html           # Hauptseite mit Diagramm
+├── realistic-raisec.html       # Realistisch
+├── investigative-raisec.html  # Investigativ
+├── artistic-raisec.html       # Künstlerisch
+├── social-raisec.html         # Sozial
+├── enterprising-raisec.html   # Unternehmerisch
+├── conventional-raisec.html    # Konventionell
 ├── css/
 │   ├── raisec-smart-styles.css
-│   ├── type1-styles.css
-│   ├── type2-styles.css
+│   ├── realistic-styles.css
+│   ├── investigative-styles.css
 │   └── ...
 └── js/
     └── raisec-workflow.js
 ```
 
 #### **Benennungskonventionen:**
-- **Eindeutige Namen:** `index-raisec.html`, `type1-raisec.html`, etc.
+- **Eindeutige Namen:** `index-raisec.html`, `realistic-raisec.html`, etc.
 - **Keine Verwirrung:** Alte Dateien als Templates behalten, aber entlinken
 - **Modulare Struktur:** Jede Methode in eigenem Ordner
 - **Klare Trennung:** HTML, CSS, JS getrennt nach Funktionalität
@@ -194,8 +194,8 @@ methods/raisec/
 #### **Cross-Methoden:**
 - **Ikigai:** Verknüpfung zu Lebenszweck-Analyse
 - **SWOT:** Verknüpfung zu Stärken-Schwächen-Analyse
-- **Wheel of Life:** Verknüpfung zu Lebensbereiche-Assessment
-- **Zielsetzung:** Verknüpfung zu Goal-Setting-Tools
+- **Wheel of Life:** Verknüpfung zu Lebensbalance-Analyse
+- **Karriereplanung:** Verknüpfung zu Goal-Setting-Tools
 
 ### 10. **Qualitätssicherung**
 
@@ -268,7 +268,7 @@ methods/raisec/
 - **Executive-Sprache unpassend:** Rückkehr zu normaler, verständlicher Sprache
 
 ### **Iterative Verbesserungen:**
-- **Granularität:** Von 1 Frage zu 10+ Fragen pro Typ
+- **Granularität:** Von 1 Frage zu 12+ Fragen pro Typ
 - **Design-Evolution:** Von einfachem Layout zu Glasmorphism und modernen Effekten
 - **PDF-Qualität:** Von tristem Layout zu buntem, modernem Design
 - **Navigation:** Von zentraler App zu individuellen Workflows
@@ -289,14 +289,14 @@ methods/raisec/
 - ✅ Motivierende Gestaltung
 
 ### **Content-Kriterien:**
-- ✅ 10+ Fragen pro Typ
+- ✅ 12+ Fragen pro Typ
 - ✅ Detaillierte Denkanstöße
 - ✅ Relevante Ressourcen-Links
-- ✅ Praktische Berufsempfehlungen
+- ✅ Praktische Karriere-Empfehlungen
 
 ## 📝 Fazit
 
-Die RAISEC-Methode wurde erfolgreich als moderne, interaktive Web-Anwendung implementiert, die alle ursprünglichen Anforderungen erfüllt und darüber hinaus moderne UX/UI-Standards von 2025 erfüllt. Das System ist modular aufgebaut, leicht erweiterbar und bietet eine umfassende Berufsorientierungs-Erfahrung.
+Die RAISEC-Methode wurde erfolgreich als moderne, interaktive Web-Anwendung implementiert, die alle ursprünglichen Anforderungen erfüllt und darüber hinaus moderne UX/UI-Standards von 2025 erfüllt. Das System ist modular aufgebaut, leicht erweiterbar und bietet eine umfassende Berufsinteressen-Analyse-Erfahrung.
 
 ### **Wichtige Lektionen aus der Entwicklung:**
 - **Iterative Entwicklung:** Kontinuierliche Verbesserung durch User-Feedback

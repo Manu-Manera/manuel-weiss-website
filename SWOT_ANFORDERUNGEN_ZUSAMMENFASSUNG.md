@@ -1,12 +1,12 @@
 # SWOT-Methode: Vollständige Anforderungen und Implementierung
 
 ## 🎯 Übersicht
-Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die SWOT-Persönlichkeitsentwicklungsmethode zusammen, die auf der strategischen SWOT-Analyse basiert und die neuesten Erkenntnisse der strategischen Planung 2025 integriert.
+Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die SWOT-Persönlichkeitsentwicklungsmethode zusammen, die auf der strategischen Analyse basiert und die neuesten Erkenntnisse der strategischen Planung 2025 integriert.
 
 ## 📋 Kernanforderungen
 
 ### 1. **Workflow-Struktur**
-- **4 Analysebereiche:** Strengths, Weaknesses, Opportunities, Threats
+- **4 Analysebereiche:** Stärken, Schwächen, Chancen, Risiken
 - **Individuelle HTML-Seiten:** Jeder Bereich als separate Datei (`strengths-swot.html`, `weaknesses-swot.html`, `opportunities-swot.html`, `threats-swot.html`)
 - **Moderne Navigation:** Fortschrittsbalken, Bereich-Navigation, Auto-Save
 - **Responsive Design:** Funktioniert auf allen Geräten
@@ -22,8 +22,8 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die S
 - **Smooth Animations:** Sanfte Übergänge und Hover-Effekte
 
 #### **Farbpalette:**
-- **Primärfarben:** Strengths (Grün #4CAF50), Weaknesses (Rot #F44336), Opportunities (Blau #2196F3), Threats (Orange #FF9800)
-- **Sekundärfarben:** Strategien (Lila #9C27B0), Aktionsplan (Grau #607D8B)
+- **Primärfarben:** Stärken (Grün #4CAF50), Schwächen (Rot #F44336), Chancen (Blau #2196F3), Risiken (Orange #FF9800)
+- **Sekundärfarben:** Komplementäre Farben für bessere Kontraste
 - **Neutrale Farben:** Grau-Töne für Text und Hintergründe
 
 #### **Typografie:**
@@ -34,16 +34,16 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die S
 ### 3. **SWOT-Diagramm**
 
 #### **Visuelles Design:**
-- **2x2 Matrix:** Klassische SWOT-Matrix mit 4 Quadranten
-- **Interaktive Bereiche:** Klickbare Quadranten für jeden Bereich
+- **2x2 Matrix:** Quadratisches Grid für die 4 Analysebereiche
+- **Interaktive Bereiche:** Klickbare Quadrate für jeden Bereich
 - **Farbkodierung:** Jeder Bereich hat seine eigene Farbe
-- **Zentrum:** Strategische Empfehlungen als Schnittpunkt
+- **Zentrum:** Strategische Prioritäten als Schnittpunkt
 
 #### **Bereiche:**
-1. **Strengths (S)** - Stärken, Fähigkeiten, Ressourcen - Grün
-2. **Weaknesses (W)** - Schwächen, Defizite, Verbesserungsbedarf - Rot
-3. **Opportunities (O)** - Chancen, Möglichkeiten, Trends - Blau
-4. **Threats (T)** - Risiken, Bedrohungen, Herausforderungen - Orange
+1. **Stärken (Strengths)** - Interne positive Faktoren - Grün
+2. **Schwächen (Weaknesses)** - Interne negative Faktoren - Rot
+3. **Chancen (Opportunities)** - Externe positive Faktoren - Blau
+4. **Risiken (Threats)** - Externe negative Faktoren - Orange
 
 #### **Interaktivität:**
 - **Klickbare Bereiche:** Jeder Quadrant führt zu entsprechendem Bereich
@@ -67,7 +67,7 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die S
 ### 5. **Granularität und Tiefe**
 
 #### **Detaillierte Fragen:**
-- **8+ Fragen pro Bereich:** Statt einer einzigen Frage
+- **12+ Fragen pro Bereich:** Statt einer einzigen Frage
 - **Denkanstöße:** Bullet-Points mit Anregungen
 - **Hintergrund-Informationen:** Kontextuelle Erklärungen
 - **Beispiele:** Konkrete Beispiele für besseres Verständnis
@@ -109,7 +109,7 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die S
 #### **Inhalt:**
 - **SWOT-Erklärung:** Was ist SWOT auf erster Seite
 - **Alle Fragen & Antworten:** Aus allen 4 Bereichen
-- **Strategische Empfehlungen:** Zusammenfassung der Erkenntnisse
+- **Strategische Analyse:** Zusammenfassung der Erkenntnisse
 - **Aktionsplan:** Konkrete nächste Schritte
 - **Tipps & Ressourcen:** Von den Sidebars
 - **Detaillierte Bereich-Aufschlüsselung:** Jeder Bereich auf eigener Seite
@@ -151,11 +151,11 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die S
 
 ```
 methods/swot/
-├── index-swot.html            # Hauptseite mit Diagramm
-├── strengths-swot.html        # Stärken
-├── weaknesses-swot.html      # Schwächen
-├── opportunities-swot.html   # Chancen
-├── threats-swot.html         # Bedrohungen
+├── index-swot.html             # Hauptseite mit Diagramm
+├── strengths-swot.html         # Stärken
+├── weaknesses-swot.html        # Schwächen
+├── opportunities-swot.html      # Chancen
+├── threats-swot.html          # Risiken
 ├── css/
 │   ├── swot-smart-styles.css
 │   ├── strengths-styles.css
@@ -190,8 +190,8 @@ methods/swot/
 #### **Cross-Methoden:**
 - **Ikigai:** Verknüpfung zu Lebenszweck-Analyse
 - **RAISEC:** Verknüpfung zu Berufsinteressen-Test
-- **Wheel of Life:** Verknüpfung zu Lebensbereiche-Assessment
-- **Zielsetzung:** Verknüpfung zu Goal-Setting-Tools
+- **Wheel of Life:** Verknüpfung zu Lebensbalance-Analyse
+- **Strategische Planung:** Verknüpfung zu Goal-Setting-Tools
 
 ### 10. **Qualitätssicherung**
 
@@ -264,7 +264,7 @@ methods/swot/
 - **Executive-Sprache unpassend:** Rückkehr zu normaler, verständlicher Sprache
 
 ### **Iterative Verbesserungen:**
-- **Granularität:** Von 1 Frage zu 8+ Fragen pro Bereich
+- **Granularität:** Von 1 Frage zu 12+ Fragen pro Bereich
 - **Design-Evolution:** Von einfachem Layout zu Glasmorphism und modernen Effekten
 - **PDF-Qualität:** Von tristem Layout zu buntem, modernem Design
 - **Navigation:** Von zentraler App zu individuellen Workflows
@@ -285,10 +285,10 @@ methods/swot/
 - ✅ Motivierende Gestaltung
 
 ### **Content-Kriterien:**
-- ✅ 8+ Fragen pro Bereich
+- ✅ 12+ Fragen pro Bereich
 - ✅ Detaillierte Denkanstöße
 - ✅ Relevante Ressourcen-Links
-- ✅ Praktische Strategieempfehlungen
+- ✅ Praktische strategische Empfehlungen
 
 ## 📝 Fazit
 
