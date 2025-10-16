@@ -3,13 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAISEC-Auswertung | Manuel Weiss</title>
+    <title>RAISEC-Auswertung - Deine beruflichen Interessen | Manuel Weiss</title>
     <link rel="stylesheet" href="css/raisec-smart-styles.css">
     <link rel="stylesheet" href="css/raisec-results-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="results-nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index-raisec.html" class="nav-logo">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zur Übersicht
+                </a>
+                <div class="nav-actions">
+                    <button class="btn btn-outline" onclick="window.print()">
+                        <i class="fas fa-print"></i>
+                        Drucken
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadResults()">
+                        <i class="fas fa-download"></i>
+                        PDF herunterladen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-background">
@@ -29,6 +51,20 @@
                         Basierend auf deinen Antworten haben wir deine beruflichen Interessen 
                         analysiert und passende Berufsfelder identifiziert.
                     </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalScore">0</span>
+                            <span class="stat-label">Gesamtpunktzahl</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="testDate">Heute</span>
+                            <span class="stat-label">Testdatum</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="completionTime">6</span>
+                            <span class="stat-label">Schritte abgeschlossen</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,15 +76,36 @@
             <div class="results-grid">
                 <!-- Haupttyp -->
                 <div class="main-type-card">
-                    <h2>Dein Haupttyp</h2>
+                    <div class="card-header">
+                        <h2>Dein Haupttyp</h2>
+                        <div class="confidence-badge" id="confidenceBadge">
+                            <i class="fas fa-check-circle"></i>
+                            Hohe Übereinstimmung
+                        </div>
+                    </div>
                     <div class="type-result" id="mainType">
-                        <div class="type-icon">🔧</div>
-                        <div class="type-name">Realistisch (R)</div>
-                        <div class="type-score">8.2/10</div>
-                        <div class="type-description">
+                        <div class="type-icon" id="mainTypeIcon">🔧</div>
+                        <div class="type-info">
+                            <div class="type-name" id="mainTypeName">Realistisch (R)</div>
+                            <div class="type-score" id="mainTypeScore">8.2/10</div>
+                            <div class="score-bar">
+                                <div class="score-fill" id="mainTypeScoreBar" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        <div class="type-description" id="mainTypeDescription">
                             Du bist praktisch-technisch orientiert und löst gerne konkrete Probleme. 
                             Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
                         </div>
+                    </div>
+                    <div class="type-actions">
+                        <button class="btn btn-outline" onclick="showDetailedEvaluation()">
+                            <i class="fas fa-chart-bar"></i>
+                            Detaillierte Bewertung
+                        </button>
+                        <button class="btn btn-outline" onclick="showCareerFields()">
+                            <i class="fas fa-briefcase"></i>
+                            Passende Berufsfelder
+                        </button>
                     </div>
                 </div>
 
@@ -129,6 +186,66 @@
                 <a href="../index.html" class="btn-outline">
                     <i class="fas fa-home"></i> Zur Startseite
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Career Recommendations Section -->
+    <section class="career-recommendations">
+        <div class="container">
+            <h2 class="section-title">Passende Berufsfelder</h2>
+            <div class="career-grid" id="careerRecommendations">
+                <!-- Career recommendations will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Recommendations Section -->
+    <section class="development-recommendations">
+        <div class="container">
+            <h2 class="section-title">Entwicklungsempfehlungen</h2>
+            <div class="development-grid">
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Stärken ausbauen</h3>
+                    <p id="strengthsText">Konzentriere dich auf deine natürlichen Talente und baue sie weiter aus.</p>
+                </div>
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Schwächen verbessern</h3>
+                    <p id="weaknessesText">Identifiziere Bereiche für persönliches Wachstum und Entwicklung.</p>
+                </div>
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-target"></i>
+                    </div>
+                    <h3>Ziele setzen</h3>
+                    <p id="goalsText">Definiere konkrete Ziele für deine berufliche Entwicklung.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons Section -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="action-grid">
+                <button class="action-btn primary" onclick="downloadResults()">
+                    <i class="fas fa-download"></i>
+                    <span>Bericht herunterladen</span>
+                </button>
+                <button class="action-btn secondary" onclick="retakeTest()">
+                    <i class="fas fa-redo"></i>
+                    <span>Test wiederholen</span>
+                </button>
+                <button class="action-btn tertiary" onclick="goHome()">
+                    <i class="fas fa-home"></i>
+                    <span>Zur Startseite</span>
+                </button>
             </div>
         </div>
     </section>
@@ -328,21 +445,73 @@
 
         function updateMainType(type, score) {
             const typeMap = {
-                'R': { name: 'Realistisch', icon: '🔧', description: 'Praktisch-technisch orientiert, handwerklich begabt' },
-                'I': { name: 'Investigativ', icon: '🔬', description: 'Forschend-analytisch, wissenschaftlich interessiert' },
-                'A': { name: 'Künstlerisch', icon: '🎨', description: 'Kreativ-künstlerisch, expressiv' },
-                'S': { name: 'Sozial', icon: '👥', description: 'Menschen-orientiert, helfend' },
-                'E': { name: 'Unternehmerisch', icon: '💼', description: 'Führungs-orientiert, überzeugend' },
-                'C': { name: 'Konventionell', icon: '📊', description: 'Strukturiert, regelbasiert' }
+                'R': { 
+                    name: 'Realistisch', 
+                    icon: '🔧', 
+                    description: 'Praktisch-technisch orientiert, löst gerne konkrete Probleme. Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.',
+                    color: '#e74c3c'
+                },
+                'I': { 
+                    name: 'Investigativ', 
+                    icon: '🔬', 
+                    description: 'Forschend-analytisch, wissenschaftlich interessiert. Du löst gerne komplexe Probleme und arbeitest gerne mit Daten und Theorien.',
+                    color: '#3498db'
+                },
+                'A': { 
+                    name: 'Künstlerisch', 
+                    icon: '🎨', 
+                    description: 'Kreativ-künstlerisch, expressiv, arbeitet gerne mit Ideen und Emotionen. Du denkst gerne außerhalb der Box.',
+                    color: '#9b59b6'
+                },
+                'S': { 
+                    name: 'Sozial', 
+                    icon: '👥', 
+                    description: 'Menschen-orientiert, helfend, arbeitet gerne mit anderen. Du möchtest anderen helfen und positive Veränderungen bewirken.',
+                    color: '#2ecc71'
+                },
+                'E': { 
+                    name: 'Unternehmerisch', 
+                    icon: '💼', 
+                    description: 'Führungs-orientiert, überzeugend, arbeitet gerne mit Menschen und Ideen. Du übernimmst gerne Verantwortung und führst andere.',
+                    color: '#f39c12'
+                },
+                'C': { 
+                    name: 'Konventionell', 
+                    icon: '📊', 
+                    description: 'Strukturiert, regelbasiert, arbeitet gerne mit Daten und Systemen. Du schätzt Ordnung, Präzision und systematische Arbeitsweise.',
+                    color: '#95a5a6'
+                }
             };
 
             const typeInfo = typeMap[type];
-            document.getElementById('mainType').innerHTML = `
-                <div class="type-icon">${typeInfo.icon}</div>
-                <div class="type-name">${typeInfo.name} (${type})</div>
-                <div class="type-score">${score}/10</div>
-                <div class="type-description">${typeInfo.description}</div>
-            `;
+            if (typeInfo) {
+                document.getElementById('mainTypeIcon').textContent = typeInfo.icon;
+                document.getElementById('mainTypeName').textContent = `${typeInfo.name} (${type})`;
+                document.getElementById('mainTypeScore').textContent = `${score}/10`;
+                document.getElementById('mainTypeDescription').textContent = typeInfo.description;
+                
+                // Update score bar
+                const scoreBar = document.getElementById('mainTypeScoreBar');
+                if (scoreBar) {
+                    scoreBar.style.width = `${(score / 10) * 100}%`;
+                    scoreBar.style.backgroundColor = typeInfo.color;
+                }
+                
+                // Update confidence badge
+                const confidenceBadge = document.getElementById('confidenceBadge');
+                if (confidenceBadge) {
+                    if (score >= 8) {
+                        confidenceBadge.innerHTML = '<i class="fas fa-check-circle"></i> Sehr hohe Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge high';
+                    } else if (score >= 6) {
+                        confidenceBadge.innerHTML = '<i class="fas fa-check-circle"></i> Hohe Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge medium';
+                    } else {
+                        confidenceBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Mittlere Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge low';
+                    }
+                }
+            }
         }
 
         function updateDetailedEvaluation(scores) {
@@ -995,6 +1164,90 @@
 
         // Load results when page loads
         document.addEventListener('DOMContentLoaded', loadResults);
+
+        // New interactive functions
+        function showDetailedEvaluation() {
+            const evaluationSection = document.getElementById('detailedEvaluation');
+            if (evaluationSection) {
+                evaluationSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showCareerFields() {
+            const careerSection = document.querySelector('.career-recommendations');
+            if (careerSection) {
+                careerSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function downloadResults() {
+            // Create a comprehensive PDF report
+            const printWindow = window.open('', '_blank');
+            const currentDate = new Date().toLocaleDateString('de-DE');
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>RAISEC-Auswertung - ${currentDate}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .section { margin-bottom: 25px; }
+                        .score-bar { background: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden; }
+                        .score-fill { height: 100%; background: #007bff; }
+                        .career-item { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>RAISEC-Auswertung</h1>
+                        <p>Erstellt am: ${currentDate}</p>
+                    </div>
+                    <div class="section">
+                        <h2>Dein Haupttyp</h2>
+                        <p id="mainTypeName"></p>
+                        <p id="mainTypeScore"></p>
+                        <p id="mainTypeDescription"></p>
+                    </div>
+                    <div class="section">
+                        <h2>Detaillierte Bewertung</h2>
+                        <div id="detailedEvaluation"></div>
+                    </div>
+                    <div class="section">
+                        <h2>Berufsempfehlungen</h2>
+                        <div id="careerRecommendations"></div>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function retakeTest() {
+            if (confirm('Möchtest du den Test wirklich wiederholen? Alle bisherigen Daten werden gelöscht.')) {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                window.location.href = 'index-raisec.html';
+            }
+        }
+
+        function goHome() {
+            window.location.href = '../../index.html';
+        }
+
+        // Update hero stats
+        function updateHeroStats(scores) {
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+            document.getElementById('testDate').textContent = new Date().toLocaleDateString('de-DE');
+        }
     </script>
 </body>
 </html>
