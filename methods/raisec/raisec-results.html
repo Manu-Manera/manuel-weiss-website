@@ -307,6 +307,7 @@
                 const enterprising = localStorage.getItem('raisec-enterprising');
                 const conventional = localStorage.getItem('raisec-conventional');
                 
+                console.log('Raw localStorage data:');
                 console.log('Realistic:', realistic);
                 console.log('Investigative:', investigative);
                 console.log('Artistic:', artistic);
@@ -314,16 +315,49 @@
                 console.log('Enterprising:', enterprising);
                 console.log('Conventional:', conventional);
                 
-                // Show data in alert for easy reading
-                let alertText = 'RAISEC Debug Data:\n\n';
-                alertText += `Realistic: ${realistic || 'null'}\n`;
-                alertText += `Investigative: ${investigative || 'null'}\n`;
-                alertText += `Artistic: ${artistic || 'null'}\n`;
-                alertText += `Social: ${social || 'null'}\n`;
-                alertText += `Enterprising: ${enterprising || 'null'}\n`;
-                alertText += `Conventional: ${conventional || 'null'}\n`;
-                
-                alert(alertText);
+                // Parse and show detailed data
+                try {
+                    const realisticData = JSON.parse(realistic || '{}');
+                    const investigativeData = JSON.parse(investigative || '{}');
+                    const artisticData = JSON.parse(artistic || '{}');
+                    const socialData = JSON.parse(social || '{}');
+                    const enterprisingData = JSON.parse(enterprising || '{}');
+                    const conventionalData = JSON.parse(conventional || '{}');
+                    
+                    console.log('Parsed data:');
+                    console.log('Realistic:', realisticData);
+                    console.log('Investigative:', investigativeData);
+                    console.log('Artistic:', artisticData);
+                    console.log('Social:', socialData);
+                    console.log('Enterprising:', enterprisingData);
+                    console.log('Conventional:', conventionalData);
+                    
+                    // Calculate scores
+                    const scores = {
+                        realistic: calculateTypeScore(realisticData),
+                        investigative: calculateTypeScore(investigativeData),
+                        artistic: calculateTypeScore(artisticData),
+                        social: calculateTypeScore(socialData),
+                        enterprising: calculateTypeScore(enterprisingData),
+                        conventional: calculateTypeScore(conventionalData)
+                    };
+                    
+                    console.log('Calculated scores:', scores);
+                    
+                    // Show data in alert for easy reading
+                    let alertText = 'RAISEC Debug Data:\n\n';
+                    alertText += `Realistic: ${realistic || 'null'} (Score: ${scores.realistic})\n`;
+                    alertText += `Investigative: ${investigative || 'null'} (Score: ${scores.investigative})\n`;
+                    alertText += `Artistic: ${artistic || 'null'} (Score: ${scores.artistic})\n`;
+                    alertText += `Social: ${social || 'null'} (Score: ${scores.social})\n`;
+                    alertText += `Enterprising: ${enterprising || 'null'} (Score: ${scores.enterprising})\n`;
+                    alertText += `Conventional: ${conventional || 'null'} (Score: ${scores.conventional})\n`;
+                    
+                    alert(alertText);
+                } catch (error) {
+                    console.error('Error parsing localStorage data:', error);
+                    alert('Error parsing localStorage data. Check console for details.');
+                }
             };
             
             const debugButton2 = document.createElement('button');
@@ -458,12 +492,12 @@
 
             // Calculate scores for each type
             const scores = {
-                'R': calculateTypeScore(realisticData),
-                'I': calculateTypeScore(investigativeData),
-                'A': calculateTypeScore(artisticData),
-                'S': calculateTypeScore(socialData),
-                'E': calculateTypeScore(enterprisingData),
-                'C': calculateTypeScore(conventionalData)
+                realistic: calculateTypeScore(realisticData),
+                investigative: calculateTypeScore(investigativeData),
+                artistic: calculateTypeScore(artisticData),
+                social: calculateTypeScore(socialData),
+                enterprising: calculateTypeScore(enterprisingData),
+                conventional: calculateTypeScore(conventionalData)
             };
 
             console.log('Calculated scores:', scores);
@@ -542,42 +576,45 @@
         }
 
         function findMainType(scores) {
-            return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            console.log('Finding main type from scores:', scores);
+            const mainType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            console.log('Main type found:', mainType, 'with score:', scores[mainType]);
+            return mainType;
         }
 
         function updateMainType(type, score) {
             const typeMap = {
-                'R': { 
+                'realistic': { 
                     name: 'Realistisch', 
                     icon: '🔧', 
                     description: 'Praktisch-technisch orientiert, löst gerne konkrete Probleme. Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.',
                     color: '#e74c3c'
                 },
-                'I': { 
+                'investigative': { 
                     name: 'Investigativ', 
                     icon: '🔬', 
                     description: 'Forschend-analytisch, wissenschaftlich interessiert. Du löst gerne komplexe Probleme und arbeitest gerne mit Daten und Theorien.',
                     color: '#3498db'
                 },
-                'A': { 
+                'artistic': { 
                     name: 'Künstlerisch', 
                     icon: '🎨', 
                     description: 'Kreativ-künstlerisch, expressiv, arbeitet gerne mit Ideen und Emotionen. Du denkst gerne außerhalb der Box.',
                     color: '#9b59b6'
                 },
-                'S': { 
+                'social': { 
                     name: 'Sozial', 
                     icon: '👥', 
                     description: 'Menschen-orientiert, helfend, arbeitet gerne mit anderen. Du möchtest anderen helfen und positive Veränderungen bewirken.',
                     color: '#2ecc71'
                 },
-                'E': { 
+                'enterprising': { 
                     name: 'Unternehmerisch', 
                     icon: '💼', 
                     description: 'Führungs-orientiert, überzeugend, arbeitet gerne mit Menschen und Ideen. Du übernimmst gerne Verantwortung und führst andere.',
                     color: '#f39c12'
                 },
-                'C': { 
+                'conventional': { 
                     name: 'Konventionell', 
                     icon: '📊', 
                     description: 'Strukturiert, regelbasiert, arbeitet gerne mit Daten und Systemen. Du schätzt Ordnung, Präzision und systematische Arbeitsweise.',
