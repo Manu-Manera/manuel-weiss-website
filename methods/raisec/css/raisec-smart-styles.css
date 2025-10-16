@@ -34,6 +34,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    top: 0.75rem;
+    font-size: 1.1rem;
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -131,6 +133,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    top: 0.75rem;
+    font-size: 1.1rem;
     width: 100%;
     height: 100%;
     border: none;
@@ -241,7 +245,7 @@ body {
 }
 
 .card-features li {
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     color: #666;
     position: relative;
     padding-left: 1.5rem;
@@ -251,6 +255,8 @@ body {
     content: "✓";
     position: absolute;
     left: 0;
+    top: 0.75rem;
+    font-size: 1.1rem;
     color: #1a1a1a !important;
     font-weight: bold;
 }
@@ -527,7 +533,7 @@ body {
 .sidebar {
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-xl) calc(var(--spacing-xl) + 1rem);
     border: 1px solid #e0e0e0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     position: sticky;
@@ -574,6 +580,8 @@ body {
     font-weight: bold;
     position: absolute;
     left: 0;
+    top: 0.75rem;
+    font-size: 1.1rem;
 }
 
 .tip-section li:last-child {
