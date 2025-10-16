@@ -279,10 +279,10 @@
 
     <script src="js/raisec-workflow.js"></script>
     <script>
-        // Load and process RAISEC data
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add debug buttons
+        // Add debug buttons immediately
+        function addDebugButtons() {
             const debugContainer = document.createElement('div');
+            debugContainer.id = 'debug-container';
             debugContainer.style.position = 'fixed';
             debugContainer.style.top = '10px';
             debugContainer.style.right = '10px';
@@ -351,8 +351,8 @@
             debugButton3.style.border = 'none';
             debugButton3.style.borderRadius = '5px';
             debugButton3.onclick = function() {
-                // Add test data
-                const testData = {
+                // Add realistic test data for all RAISEC types
+                const realisticData = {
                     'technical_skills_slider': '8',
                     'problem_solving_slider': '7',
                     'technical_interests_slider': '9',
@@ -362,13 +362,59 @@
                     'concrete_results_slider': '8'
                 };
                 
-                localStorage.setItem('raisec-realistic', JSON.stringify(testData));
-                localStorage.setItem('raisec-investigative', JSON.stringify({test: '5'}));
-                localStorage.setItem('raisec-artistic', JSON.stringify({test: '3'}));
-                localStorage.setItem('raisec-social', JSON.stringify({test: '4'}));
-                localStorage.setItem('raisec-enterprising', JSON.stringify({test: '6'}));
-                localStorage.setItem('raisec-conventional', JSON.stringify({test: '5'}));
+                const investigativeData = {
+                    'analytical_thinking_slider': '9',
+                    'research_science_slider': '8',
+                    'complex_problems_slider': '7',
+                    'knowledge_drive_slider': '9',
+                    'scientific_method_slider': '8',
+                    'data_analysis_slider': '7'
+                };
                 
+                const artisticData = {
+                    'creativity_innovation_slider': '9',
+                    'artistic_expression_slider': '8',
+                    'emotional_intelligence_slider': '7',
+                    'originality_slider': '9',
+                    'aesthetic_sense_slider': '8',
+                    'imagination_slider': '7'
+                };
+                
+                const socialData = {
+                    'empathy_compassion_slider': '9',
+                    'communication_skills_slider': '8',
+                    'teamwork_slider': '7',
+                    'helping_others_slider': '9',
+                    'social_responsibility_slider': '8',
+                    'people_skills_slider': '7'
+                };
+                
+                const enterprisingData = {
+                    'leadership_qualities_slider': '9',
+                    'persuasion_slider': '8',
+                    'entrepreneurial_thinking_slider': '7',
+                    'initiative_slider': '9',
+                    'risk_taking_slider': '8',
+                    'networking_slider': '7'
+                };
+                
+                const conventionalData = {
+                    'organizational_skills_slider': '9',
+                    'accuracy_precision_slider': '8',
+                    'systematic_work_slider': '7',
+                    'reliability_slider': '9',
+                    'attention_detail_slider': '8',
+                    'following_procedures_slider': '7'
+                };
+                
+                localStorage.setItem('raisec-realistic', JSON.stringify(realisticData));
+                localStorage.setItem('raisec-investigative', JSON.stringify(investigativeData));
+                localStorage.setItem('raisec-artistic', JSON.stringify(artisticData));
+                localStorage.setItem('raisec-social', JSON.stringify(socialData));
+                localStorage.setItem('raisec-enterprising', JSON.stringify(enterprisingData));
+                localStorage.setItem('raisec-conventional', JSON.stringify(conventionalData));
+                
+                alert('Test-Daten hinzugefügt! Seite wird neu geladen...');
                 location.reload();
             };
             
@@ -376,7 +422,13 @@
             debugContainer.appendChild(debugButton2);
             debugContainer.appendChild(debugButton3);
             document.body.appendChild(debugContainer);
-            
+        }
+
+        // Add debug buttons immediately
+        addDebugButtons();
+        
+        // Load and process RAISEC data
+        document.addEventListener('DOMContentLoaded', function() {
             loadRAISECResults();
         });
 
