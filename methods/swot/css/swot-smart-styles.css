@@ -1,0 +1,660 @@
+/* ========================================
+   SWOT-METHODE - SMART STYLES 2025
+   Modern, responsive, glassmorphism design
+   ======================================== */
+
+/* CSS Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* SWOT-spezifische Farbpalette */
+    --swot-primary: #3B82F6;
+    --swot-secondary: #8B5CF6;
+    --swot-accent: #F59E0B;
+    --swot-success: #10B981;
+    --swot-warning: #F59E0B;
+    --swot-danger: #EF4444;
+    --swot-info: #06B6D4;
+    
+    /* SWOT-Quadranten-Farben */
+    --strengths-color: #10B981;
+    --weaknesses-color: #EF4444;
+    --opportunities-color: #3B82F6;
+    --threats-color: #F59E0B;
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    
+    /* Typography */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: #1F2937;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-2xl) 0;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: -2;
+}
+
+.sparkling-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+        radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 20s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes sparkle {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-100px); }
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-text {
+    color: white;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.title-icon {
+    font-size: 4rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-md);
+    opacity: 0.9;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.8;
+    line-height: 1.7;
+}
+
+/* Video Section */
+.video-section {
+    margin-top: var(--spacing-xl);
+}
+
+.video-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-md);
+    color: white;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--glass-shadow);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* SWOT Matrix Container */
+.swot-matrix-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swot-matrix {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: var(--glass-shadow);
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 2px;
+    min-width: 400px;
+    min-height: 300px;
+}
+
+.matrix-header {
+    display: contents;
+}
+
+.header-cell {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-sm);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+    border-radius: var(--radius-sm);
+}
+
+.header-cell.internal {
+    background: var(--strengths-color);
+}
+
+.header-cell.external {
+    background: var(--opportunities-color);
+}
+
+.matrix-row {
+    display: contents;
+}
+
+.row-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-sm);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.row-header.positive {
+    background: var(--strengths-color);
+}
+
+.row-header.negative {
+    background: var(--weaknesses-color);
+}
+
+.matrix-quadrant {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+.matrix-quadrant:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.matrix-quadrant.strengths {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1));
+    border-color: var(--strengths-color);
+}
+
+.matrix-quadrant.weaknesses {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.1));
+    border-color: var(--weaknesses-color);
+}
+
+.matrix-quadrant.opportunities {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+    border-color: var(--opportunities-color);
+}
+
+.matrix-quadrant.threats {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.1));
+    border-color: var(--threats-color);
+}
+
+.quadrant-content {
+    text-align: center;
+    color: white;
+}
+
+.quadrant-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.quadrant-title {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+}
+
+.quadrant-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* SWOT Areas Section */
+.swot-areas-section {
+    padding: var(--spacing-2xl) 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    color: white;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.swot-areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.swot-area-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+
+.swot-area-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.swot-area-card.strengths {
+    border-color: var(--strengths-color);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.swot-area-card.weaknesses {
+    border-color: var(--weaknesses-color);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+}
+
+.swot-area-card.opportunities {
+    border-color: var(--opportunities-color);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.swot-area-card.threats {
+    border-color: var(--threats-color);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.card-header h3 {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+}
+
+.card-content {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.card-description {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.card-features {
+    list-style: none;
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-features li {
+    padding: var(--spacing-xs) 0;
+    position: relative;
+    padding-left: var(--spacing-md);
+}
+
+.card-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--swot-success);
+    font-weight: bold;
+}
+
+.card-actions {
+    margin-top: var(--spacing-md);
+}
+
+/* Buttons */
+.btn-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--swot-primary), var(--swot-secondary));
+    color: white;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-normal);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    display: inline-block;
+    background: transparent;
+    color: white;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-normal);
+    margin-left: var(--spacing-md);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Features Section */
+.features-section {
+    padding: var(--spacing-2xl) 0;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.feature-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    text-align: center;
+    transition: all var(--transition-normal);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-md);
+    color: white;
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    color: white;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-xl);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+/* Footer */
+.footer {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    padding: var(--spacing-2xl) 0 var(--spacing-lg);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.footer-section h3 {
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-md);
+    color: white;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: var(--spacing-xs);
+}
+
+.footer-section ul li a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.footer-section ul li a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .swot-matrix {
+        min-width: 300px;
+        min-height: 250px;
+    }
+    
+    .matrix-quadrant {
+        min-height: 80px;
+        padding: var(--spacing-sm);
+    }
+    
+    .quadrant-icon {
+        font-size: 1.5rem;
+    }
+    
+    .quadrant-title {
+        font-size: 0.9rem;
+    }
+    
+    .quadrant-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-secondary {
+        margin-left: 0;
+        margin-top: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .swot-matrix {
+        min-width: 250px;
+        min-height: 200px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+}

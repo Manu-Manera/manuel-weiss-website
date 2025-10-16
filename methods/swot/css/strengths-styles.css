@@ -1,0 +1,377 @@
+/* ========================================
+   STRENGTHS-SPECIFIC STYLES
+   Grüne Farbpalette für Stärken-Quadrant
+   ======================================== */
+
+:root {
+    --strengths-primary: #10B981;
+    --strengths-secondary: #059669;
+    --strengths-accent: #34D399;
+    --strengths-light: #D1FAE5;
+    --strengths-dark: #064E3B;
+}
+
+/* Hero Section für Stärken */
+.hero-section {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.1) 0%, 
+        rgba(5, 150, 105, 0.2) 100%);
+}
+
+.hero-title .title-icon {
+    color: var(--strengths-primary);
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Progress Bar */
+.progress-container {
+    margin-bottom: var(--spacing-lg);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-sm);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--strengths-primary), var(--strengths-accent));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.progress-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-medium);
+}
+
+/* Main Content */
+.main-content {
+    padding: var(--spacing-2xl) 0;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-2xl);
+    align-items: start;
+}
+
+/* Form Section */
+.form-section {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--glass-shadow);
+}
+
+.form-container h2 {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    color: white;
+    text-align: center;
+}
+
+.form-description {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--spacing-xl);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Question Groups */
+.question-group {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--strengths-primary);
+    transition: all var(--transition-normal);
+}
+
+.question-group:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
+}
+
+.question-group h3 {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+    color: var(--strengths-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.question-group h3::before {
+    content: "💪";
+    font-size: 1.2rem;
+}
+
+.question-text {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Denkanstöße */
+.denkanstoesse {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.denkanstoesse h4 {
+    color: var(--strengths-primary);
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+}
+
+.denkanstoesse ul {
+    list-style: none;
+    padding: 0;
+}
+
+.denkanstoesse li {
+    padding: var(--spacing-xs) 0;
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    padding-left: var(--spacing-md);
+    font-size: 0.95rem;
+}
+
+.denkanstoesse li::before {
+    content: "✨";
+    position: absolute;
+    left: 0;
+    top: var(--spacing-xs);
+}
+
+/* Form Inputs */
+textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    color: white;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 120px;
+    transition: all var(--transition-normal);
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--strengths-primary);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Form Navigation */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    position: sticky;
+    top: var(--spacing-lg);
+}
+
+.sidebar-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: var(--glass-shadow);
+}
+
+.sidebar-content h3 {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg);
+    color: var(--strengths-primary);
+    text-align: center;
+}
+
+.tip-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tip-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.tip-section h4 {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+    color: white;
+}
+
+.tip-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tip-section li {
+    padding: var(--spacing-xs) 0;
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    padding-left: var(--spacing-md);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.tip-section li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--strengths-primary);
+    font-weight: bold;
+}
+
+.tip-section a {
+    color: var(--strengths-accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.tip-section a:hover {
+    color: var(--strengths-primary);
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .sidebar {
+        position: static;
+    }
+    
+    .form-container {
+        padding: var(--spacing-lg);
+    }
+    
+    .question-group {
+        padding: var(--spacing-md);
+    }
+    
+    .form-navigation {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .btn-secondary,
+    .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        padding: var(--spacing-md);
+    }
+    
+    .question-group {
+        padding: var(--spacing-sm);
+    }
+    
+    .form-container h2 {
+        font-size: 1.5rem;
+    }
+    
+    .question-group h3 {
+        font-size: 1.1rem;
+    }
+    
+    .denkanstoesse {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* Animation für Form-Elemente */
+.question-group {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.question-group:nth-child(1) { animation-delay: 0.1s; }
+.question-group:nth-child(2) { animation-delay: 0.2s; }
+.question-group:nth-child(3) { animation-delay: 0.3s; }
+.question-group:nth-child(4) { animation-delay: 0.4s; }
+.question-group:nth-child(5) { animation-delay: 0.5s; }
+.question-group:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Focus States */
+textarea:focus {
+    transform: scale(1.02);
+}
+
+/* Hover Effects */
+.question-group:hover h3 {
+    color: var(--strengths-accent);
+}
+
+/* Loading States */
+textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Success States */
+.question-group.completed {
+    border-left-color: var(--strengths-accent);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.question-group.completed h3::after {
+    content: " ✓";
+    color: var(--strengths-accent);
+}

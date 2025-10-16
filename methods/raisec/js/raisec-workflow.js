@@ -1,392 +1,301 @@
-/**
- * 🎯 RAISEC Smart Workflow
- * Moderne, interaktive RAISEC-Methode zur beruflichen Orientierung
- * Autor: Manuel Weiss
- * Version: 2.0
- */
-
-class RAISECSmartWorkflow {
-    constructor() {
-        this.currentStep = 1;
-        this.totalSteps = 6;
-        this.workflowData = {};
-        this.raisecScores = {
-            realistic: 0,
-            artistic: 0,
-            investigative: 0,
-            social: 0,
-            enterprising: 0,
-            conventional: 0
-        };
-        this.init();
-    }
-
-    init() {
-        this.loadSavedData();
-        this.setupEventListeners();
-        this.updateProgress();
-        console.log('🎯 RAISEC Smart Workflow initialized');
-    }
-
-    loadSavedData() {
-        // Load data from localStorage
-        for (let i = 1; i <= this.totalSteps; i++) {
-            const savedData = localStorage.getItem(`raisecStep${i}`);
-            if (savedData) {
-                this.workflowData[`step${i}`] = JSON.parse(savedData);
+// RAISEC Workflow JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('RAISEC Workflow initialized');
+    
+    // Hexagon Sektor Klick-Handler
+    const hexagonSectors = document.querySelectorAll('.hexagon-sector');
+    hexagonSectors.forEach(sector => {
+        sector.addEventListener('click', function() {
+            const type = this.dataset.type;
+            if (type) {
+                navigateToType(type);
             }
-        }
-        
-        // Load RAISEC scores
-        const savedScores = localStorage.getItem('raisecScores');
-        if (savedScores) {
-            this.raisecScores = JSON.parse(savedScores);
-        }
-    }
-
-    setupEventListeners() {
-        // Auto-save functionality
-        document.querySelectorAll('textarea, input[type="text"], input[type="email"], input[type="radio"], input[type="checkbox"]').forEach(element => {
-            element.addEventListener('input', () => {
-                this.autoSave();
-            });
-            
-            element.addEventListener('change', () => {
-                this.autoSave();
-            });
         });
-
-        // Form submission
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveAndContinue();
-            });
-        });
-    }
-
-    autoSave() {
-        const currentStepData = this.collectCurrentStepData();
-        if (currentStepData) {
-            localStorage.setItem(`raisecStep${this.currentStep}`, JSON.stringify(currentStepData));
-        }
-    }
-
-    collectCurrentStepData() {
-        const form = document.querySelector('form');
-        if (!form) return null;
-
-        const formData = new FormData(form);
-        const data = {
-            step: this.currentStep,
-            timestamp: new Date().toISOString()
-        };
-
-        // Collect all form fields
-        for (let [key, value] of formData.entries()) {
-            data[key] = value;
-        }
-
-        // Also collect textarea values
-        document.querySelectorAll('textarea').forEach(textarea => {
-            data[textarea.name || textarea.id] = textarea.value;
-        });
-
-        // Collect radio button values
-        document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
-            data[radio.name] = radio.value;
-        });
-
-        // Collect checkbox values
-        const checkboxes = {};
-        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-            if (!checkboxes[checkbox.name]) {
-                checkboxes[checkbox.name] = [];
+    });
+    
+    // Typ-Karten Klick-Handler
+    const typeCards = document.querySelectorAll('.raisec-type-card');
+    typeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const type = this.dataset.type;
+            if (type) {
+                navigateToType(type);
             }
-            checkboxes[checkbox.name].push(checkbox.value);
         });
-        Object.assign(data, checkboxes);
-
-        return data;
-    }
-
-    saveAndContinue() {
-        const currentStepData = this.collectCurrentStepData();
-        if (currentStepData) {
-            localStorage.setItem(`raisecStep${this.currentStep}`, JSON.stringify(currentStepData));
-            this.workflowData[`step${this.currentStep}`] = currentStepData;
-        }
-
-        // Calculate RAISEC scores if this is an assessment step
-        if (this.currentStep <= 4) {
-            this.calculateRAISECScores();
-        }
-
-        // Navigate to next step
-        const nextStep = this.currentStep + 1;
-        if (nextStep <= this.totalSteps) {
-            window.location.href = `step${nextStep}.html`;
-        } else {
-            this.completeWorkflow();
-        }
-    }
-
-    calculateRAISECScores() {
-        // This is a simplified scoring system
-        // In a real implementation, you'd have more sophisticated scoring
-        
-        const stepData = this.workflowData[`step${this.currentStep}`];
-        if (!stepData) return;
-
-        // Example scoring logic (customize based on your questions)
-        const scoringRules = {
-            step1: {
-                realistic: ['handwerk', 'praktisch', 'technisch', 'maschinen', 'werkzeug'],
-                artistic: ['kreativ', 'künstlerisch', 'design', 'musik', 'kunst'],
-                investigative: ['forschung', 'wissenschaft', 'analysieren', 'experimentieren', 'untersuchen'],
-                social: ['helfen', 'lehren', 'beraten', 'pflegen', 'betreuen'],
-                enterprising: ['führen', 'verkaufen', 'unternehmen', 'management', 'organisieren'],
-                conventional: ['organisieren', 'verwalten', 'dokumentieren', 'strukturieren', 'planen']
-            }
+    });
+    
+    // Navigation zu Typ-spezifischen Seiten
+    function navigateToType(type) {
+        const typeMap = {
+            'realistic': 'realistic-raisec.html',
+            'investigative': 'investigative-raisec.html',
+            'artistic': 'artistic-raisec.html',
+            'social': 'social-raisec.html',
+            'enterprising': 'enterprising-raisec.html',
+            'conventional': 'conventional-raisec.html'
         };
-
-        const currentRules = scoringRules[`step${this.currentStep}`];
-        if (!currentRules) return;
-
-        // Count keyword matches in text responses
-        Object.keys(currentRules).forEach(area => {
-            const keywords = currentRules[area];
-            let score = 0;
-            
-            // Check all text fields for keywords
-            Object.values(stepData).forEach(value => {
-                if (typeof value === 'string') {
-                    const text = value.toLowerCase();
-                    keywords.forEach(keyword => {
-                        if (text.includes(keyword)) {
-                            score += 1;
-                        }
-                    });
-                }
-            });
-            
-            this.raisecScores[area] += score;
+        
+        const targetPage = typeMap[type];
+        if (targetPage) {
+            window.location.href = targetPage;
+        }
+    }
+    
+    // Smooth Scrolling für interne Links
+    const internalLinks = document.querySelectorAll('a[href^="#"]');
+    internalLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         });
-
-        // Save scores
-        localStorage.setItem('raisecScores', JSON.stringify(this.raisecScores));
-    }
-
-    completeWorkflow() {
-        // Generate final RAISEC analysis
-        const analysis = this.generateRAISECAnalysis();
-        
-        // Save final analysis
-        localStorage.setItem('raisecFinalAnalysis', JSON.stringify(analysis));
-        
-        // Redirect to results page
-        window.location.href = 'results.html';
-    }
-
-    generateRAISECAnalysis() {
-        const sortedScores = Object.entries(this.raisecScores)
-            .sort(([,a], [,b]) => b - a);
-
-        const topThree = sortedScores.slice(0, 3);
-        const raisectype = topThree.map(([area]) => area.toUpperCase()).join('');
-
-        const analysis = {
-            timestamp: new Date().toISOString(),
-            steps: this.workflowData,
-            scores: this.raisecScores,
-            raisectype: raisectype,
-            topAreas: topThree,
-            recommendations: this.generateRecommendations(topThree),
-            careerPaths: this.getCareerPaths(raisectype)
-        };
-
-        return analysis;
-    }
-
-    generateRecommendations(topThree) {
-        const recommendations = {
-            realistic: {
-                description: "Du bevorzugst praktische, handwerkliche Tätigkeiten",
-                careers: ["Ingenieur", "Handwerker", "Techniker", "Mechaniker", "Architekt"],
-                skills: ["Problemlösung", "Technisches Verständnis", "Praktische Umsetzung"],
-                development: ["Technische Weiterbildung", "Zertifikate", "Praktische Erfahrung"]
-            },
-            artistic: {
-                description: "Du bist kreativ und künstlerisch veranlagt",
-                careers: ["Designer", "Künstler", "Musiker", "Schriftsteller", "Fotograf"],
-                skills: ["Kreativität", "Ästhetisches Empfinden", "Innovation"],
-                development: ["Künstlerische Ausbildung", "Portfolio aufbauen", "Netzwerk in der Kreativbranche"]
-            },
-            investigative: {
-                description: "Du liebst analytische und wissenschaftliche Arbeit",
-                careers: ["Forscher", "Wissenschaftler", "Analyst", "Entwickler", "Berater"],
-                skills: ["Analytisches Denken", "Forschung", "Problemlösung"],
-                development: ["Studium", "Forschungserfahrung", "Fachpublikationen"]
-            },
-            social: {
-                description: "Du möchtest Menschen helfen und unterstützen",
-                careers: ["Lehrer", "Therapeut", "Berater", "Sozialarbeiter", "Coach"],
-                skills: ["Empathie", "Kommunikation", "Menschenkenntnis"],
-                development: ["Soziale Kompetenzen", "Beratungsausbildung", "Praktische Erfahrung"]
-            },
-            enterprising: {
-                description: "Du bist unternehmerisch und führungsstark",
-                careers: ["Manager", "Unternehmer", "Verkäufer", "Berater", "Projektleiter"],
-                skills: ["Führung", "Verkauf", "Strategisches Denken"],
-                development: ["Management-Ausbildung", "Netzwerk", "Unternehmerische Erfahrung"]
-            },
-            conventional: {
-                description: "Du bevorzugst strukturierte und organisatorische Aufgaben",
-                careers: ["Buchhalter", "Sekretär", "Verwalter", "Organisator", "Sachbearbeiter"],
-                skills: ["Organisation", "Genauigkeit", "Strukturiertes Arbeiten"],
-                development: ["Büroorganisation", "Software-Kenntnisse", "Verwaltungsausbildung"]
-            }
-        };
-
-        return topThree.map(([area, score]) => ({
-            area,
-            score,
-            ...recommendations[area]
-        }));
-    }
-
-    getCareerPaths(raisectype) {
-        const careerPaths = {
-            'REA': "Technisch-kreative Karriere",
-            'REI': "Forschung und Entwicklung",
-            'RES': "Technische Beratung",
-            'REE': "Technisches Management",
-            'REC': "Technische Verwaltung",
-            'ARE': "Kreative Technik",
-            'ARI': "Künstlerische Forschung",
-            'ARS': "Kreative Beratung",
-            'ARE': "Kreatives Management",
-            'ARC': "Kreative Verwaltung",
-            'IRE': "Forschung und Technik",
-            'IRA': "Wissenschaftliche Kreativität",
-            'IRS': "Wissenschaftliche Beratung",
-            'IRE': "Forschungsmanagement",
-            'IRC': "Wissenschaftliche Verwaltung",
-            'SRE': "Soziale Technik",
-            'SRA': "Soziale Kreativität",
-            'SRI': "Soziale Forschung",
-            'SRE': "Soziales Management",
-            'SRC': "Soziale Verwaltung",
-            'ERE': "Management und Technik",
-            'ERA': "Kreatives Management",
-            'ERI': "Forschungsmanagement",
-            'ERS': "Soziales Management",
-            'ERC': "Verwaltungsmanagement",
-            'CRE': "Verwaltung und Technik",
-            'CRA': "Verwaltungs-Kreativität",
-            'CRI': "Verwaltungs-Forschung",
-            'CRS': "Soziale Verwaltung",
-            'CRE': "Verwaltungs-Management"
-        };
-
-        return careerPaths[raisectype] || "Individuelle Karriereentwicklung";
-    }
-
-    updateProgress() {
-        const progressFill = document.querySelector('.progress-fill');
-        const progressText = document.querySelector('.progress-text');
-        
-        if (progressFill && progressText) {
-            const percentage = (this.currentStep / this.totalSteps) * 100;
-            progressFill.style.width = `${percentage}%`;
-            progressText.textContent = `${this.currentStep} von ${this.totalSteps}`;
-        }
-    }
-
-    // Public methods for external use
-    getCurrentStep() {
-        return this.currentStep;
-    }
-
-    getWorkflowData() {
-        return this.workflowData;
-    }
-
-    getRAISECScores() {
-        return this.raisecScores;
-    }
-
-    resetWorkflow() {
-        for (let i = 1; i <= this.totalSteps; i++) {
-            localStorage.removeItem(`raisecStep${i}`);
-        }
-        localStorage.removeItem('raisecScores');
-        localStorage.removeItem('raisecFinalAnalysis');
-        this.workflowData = {};
-        this.raisecScores = {
-            realistic: 0,
-            artistic: 0,
-            investigative: 0,
-            social: 0,
-            enterprising: 0,
-            conventional: 0
-        };
-        this.currentStep = 1;
-    }
-
-    exportData() {
-        const data = {
-            workflow: this.workflowData,
-            scores: this.raisecScores,
-            analysis: JSON.parse(localStorage.getItem('raisecFinalAnalysis') || '{}'),
-            exportDate: new Date().toISOString()
-        };
-        
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `raisec-workflow-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-}
-
-// Global functions for HTML onclick handlers
-function startRAISECWorkflow() {
-    window.location.href = 'step1.html';
-}
-
-function openVideo(url) {
-    window.open(url, '_blank');
-}
-
-function scrollToSection(section) {
-    const sections = {
-        'realistic': 'step1',
-        'artistic': 'step1', 
-        'investigative': 'step1',
-        'social': 'step1',
-        'enterprising': 'step1',
-        'conventional': 'step1'
+    });
+    
+    // Intersection Observer für Animationen
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     };
     
-    const targetStep = sections[section];
-    if (targetStep) {
-        window.location.href = `${targetStep}.html`;
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+    
+    // Beobachte alle animierbaren Elemente
+    const animatedElements = document.querySelectorAll('.raisec-type-card, .feature-card, .hexagon-sector');
+    animatedElements.forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Hexagon Hover-Effekte
+    const hexagon = document.querySelector('.raisec-hexagon');
+    if (hexagon) {
+        hexagon.addEventListener('mouseenter', function() {
+            this.classList.add('hexagon-hover');
+        });
+        
+        hexagon.addEventListener('mouseleave', function() {
+            this.classList.add('hexagon-hover');
+        });
     }
-}
-
-// Initialize workflow when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Only initialize if we're on a step page
-    if (window.location.pathname.includes('step')) {
-        window.raisecSmartWorkflow = new RAISECSmartWorkflow();
+    
+    // Auto-Save Funktionalität
+    const autoSave = {
+        data: {},
+        save: function(key, value) {
+            this.data[key] = value;
+            localStorage.setItem('raisec-workflow', JSON.stringify(this.data));
+        },
+        load: function() {
+            const saved = localStorage.getItem('raisec-workflow');
+            if (saved) {
+                this.data = JSON.parse(saved);
+            }
+        },
+        clear: function() {
+            this.data = {};
+            localStorage.removeItem('raisec-workflow');
+        }
+    };
+    
+    // Lade gespeicherte Daten
+    autoSave.load();
+    
+    // Progress Tracking
+    const progressTracker = {
+        currentStep: 0,
+        totalSteps: 6,
+        update: function(step) {
+            this.currentStep = step;
+            this.saveProgress();
+        },
+        saveProgress: function() {
+            autoSave.save('progress', {
+                currentStep: this.currentStep,
+                totalSteps: this.totalSteps,
+                timestamp: new Date().toISOString()
+            });
+        },
+        loadProgress: function() {
+            const progress = autoSave.data.progress;
+            if (progress) {
+                this.currentStep = progress.currentStep;
+                this.totalSteps = progress.totalSteps;
+            }
+        }
+    };
+    
+    // Lade Fortschritt
+    progressTracker.loadProgress();
+    
+    // YouTube Video Integration
+    const videoContainer = document.querySelector('.video-container iframe');
+    if (videoContainer) {
+        // Lazy Loading für YouTube Videos
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const iframe = entry.target;
+                    if (!iframe.src.includes('youtube.com')) {
+                        iframe.src = iframe.src || 'https://www.youtube.com/embed/VIDEO_ID';
+                    }
+                    videoObserver.unobserve(iframe);
+                }
+            });
+        });
+        
+        videoObserver.observe(videoContainer);
     }
+    
+    // Performance Optimierung
+    const performanceOptimizer = {
+        lazyLoadImages: function() {
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+        },
+        
+        preloadCriticalResources: function() {
+            // Preload kritische CSS und JS Dateien
+            const criticalResources = [
+                'css/raisec-smart-styles.css',
+                'css/raisec-hexagon-styles.css',
+                'js/raisec-workflow.js'
+            ];
+            
+            criticalResources.forEach(resource => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.href = resource;
+                link.as = resource.endsWith('.css') ? 'style' : 'script';
+                document.head.appendChild(link);
+            });
+        }
+    };
+    
+    // Initialisiere Performance-Optimierungen
+    performanceOptimizer.lazyLoadImages();
+    performanceOptimizer.preloadCriticalResources();
+    
+    // Error Handling
+    window.addEventListener('error', function(e) {
+        console.error('RAISEC Workflow Error:', e.error);
+        // Hier könnte ein Error Reporting Service integriert werden
+    });
+    
+    // Unhandled Promise Rejections
+    window.addEventListener('unhandledrejection', function(e) {
+        console.error('RAISEC Workflow Promise Rejection:', e.reason);
+        // Hier könnte ein Error Reporting Service integriert werden
+    });
+    
+    // Service Worker Registration (für Offline-Funktionalität)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(function(err) {
+                    console.log('ServiceWorker registration failed');
+                });
+        });
+    }
+    
+    // Analytics Integration (falls gewünscht)
+    const analytics = {
+        track: function(event, data) {
+            // Hier könnte Google Analytics, Mixpanel, etc. integriert werden
+            console.log('Analytics Event:', event, data);
+        },
+        
+        trackPageView: function(page) {
+            this.track('page_view', { page: page });
+        },
+        
+        trackUserAction: function(action, data) {
+            this.track('user_action', { action: action, data: data });
+        }
+    };
+    
+    // Track initial page view
+    analytics.trackPageView('raisec-index');
+    
+    // Track user interactions
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.hexagon-sector, .raisec-type-card')) {
+            analytics.trackUserAction('type_selected', { type: e.target.dataset.type });
+        }
+    });
+    
+    console.log('RAISEC Workflow fully initialized');
 });
 
-// Export for module systems
+// Utility Functions
+const utils = {
+    // Debounce function für Performance
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    // Throttle function für Performance
+    throttle: function(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+    
+    // Format date
+    formatDate: function(date) {
+        return new Intl.DateTimeFormat('de-DE', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(date);
+    },
+    
+    // Generate unique ID
+    generateId: function() {
+        return Math.random().toString(36).substr(2, 9);
+    }
+};
+
+// Export für Module (falls gewünscht)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = RAISECSmartWorkflow;
+    module.exports = { utils };
 }
