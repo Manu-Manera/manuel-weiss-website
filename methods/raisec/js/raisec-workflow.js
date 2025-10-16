@@ -2,6 +2,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('RAISEC Workflow initialized');
     
+    // Slider functionality
+    initializeSliders();
+    
+    // Form handling
+    initializeForms();
+    
     // Hexagon Sektor Klick-Handler
     const hexagonSectors = document.querySelectorAll('.hexagon-sector');
     hexagonSectors.forEach(sector => {
@@ -294,6 +300,97 @@ const utils = {
         return Math.random().toString(36).substr(2, 9);
     }
 };
+
+// Slider functionality
+function initializeSliders() {
+    // Alle Slider initialisieren
+    const allSliders = document.querySelectorAll('input[type="range"]');
+    
+    allSliders.forEach(slider => {
+        // Event Listener für Slider-Änderungen
+        slider.addEventListener('input', function() {
+            updateSliderValue(this);
+        });
+        
+        // Event Listener für Slider-Änderungen (auch bei Touch)
+        slider.addEventListener('change', function() {
+            updateSliderValue(this);
+        });
+        
+        // Initiale Werte setzen
+        updateSliderValue(slider);
+    });
+}
+
+// Slider-Wert aktualisieren
+function updateSliderValue(slider) {
+    const value = slider.value;
+    const valueDisplay = slider.parentElement.querySelector('.slider-value');
+    
+    if (valueDisplay) {
+        valueDisplay.textContent = value;
+    }
+    
+    // Visuelles Feedback
+    slider.style.setProperty('--slider-value', value + '%');
+}
+
+// Form handling
+function initializeForms() {
+    // Alle RAISEC-Formulare finden
+    const forms = document.querySelectorAll('form[id$="-form"]');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleFormSubmission(this);
+        });
+    });
+}
+
+// Form submission handling
+function handleFormSubmission(form) {
+    const formId = form.id;
+    const formData = new FormData(form);
+    const data = {};
+    
+    // Alle Form-Daten sammeln
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Slider-Werte hinzufügen
+    const sliders = form.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        data[slider.name] = slider.value;
+    });
+    
+    // Daten speichern
+    const type = formId.replace('-form', '');
+    localStorage.setItem(`raisec-${type}`, JSON.stringify(data));
+    
+    console.log(`RAISEC ${type} data saved:`, data);
+    
+    // Navigation zum nächsten Schritt
+    navigateToNextStep(type);
+}
+
+// Navigation zum nächsten Schritt
+function navigateToNextStep(currentType) {
+    const navigationMap = {
+        'realistic': 'investigative-raisec.html',
+        'investigative': 'artistic-raisec.html',
+        'artistic': 'social-raisec.html',
+        'social': 'enterprising-raisec.html',
+        'enterprising': 'conventional-raisec.html',
+        'conventional': 'raisec-results.html'
+    };
+    
+    const nextPage = navigationMap[currentType];
+    if (nextPage) {
+        window.location.href = nextPage;
+    }
+}
 
 // Export für Module (falls gewünscht)
 if (typeof module !== 'undefined' && module.exports) {
