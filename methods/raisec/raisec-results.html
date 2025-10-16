@@ -164,6 +164,29 @@
     <script>
         // Load and process RAISEC data
         document.addEventListener('DOMContentLoaded', function() {
+            // Add debug button to clear localStorage
+            const debugButton = document.createElement('button');
+            debugButton.textContent = 'Debug: Clear localStorage';
+            debugButton.style.position = 'fixed';
+            debugButton.style.top = '10px';
+            debugButton.style.right = '10px';
+            debugButton.style.zIndex = '9999';
+            debugButton.style.background = 'red';
+            debugButton.style.color = 'white';
+            debugButton.style.padding = '10px';
+            debugButton.style.border = 'none';
+            debugButton.style.borderRadius = '5px';
+            debugButton.onclick = function() {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                location.reload();
+            };
+            document.body.appendChild(debugButton);
+            
             loadRAISECResults();
         });
 
@@ -176,6 +199,14 @@
             const enterprisingData = JSON.parse(localStorage.getItem('raisec-enterprising') || '{}');
             const conventionalData = JSON.parse(localStorage.getItem('raisec-conventional') || '{}');
 
+            console.log('Loaded data from localStorage:');
+            console.log('Realistic:', realisticData);
+            console.log('Investigative:', investigativeData);
+            console.log('Artistic:', artisticData);
+            console.log('Social:', socialData);
+            console.log('Enterprising:', enterprisingData);
+            console.log('Conventional:', conventionalData);
+
             // Calculate scores for each type
             const scores = {
                 'R': calculateTypeScore(realisticData),
@@ -186,29 +217,54 @@
                 'C': calculateTypeScore(conventionalData)
             };
 
+            console.log('Calculated scores:', scores);
+
             // Find main type
             const mainType = findMainType(scores);
+            console.log('Main type:', mainType, 'Score:', scores[mainType]);
             
-            // Update UI with real data
-            updateMainType(mainType, scores[mainType]);
-            updateDetailedEvaluation(scores);
-            updateCareerRecommendations(mainType, scores);
-            updatePersonalityInterpretation(mainType, scores);
-            updateDevelopmentRecommendations(mainType, scores);
+            // Check if we have any data
+            const hasData = Object.values(scores).some(score => score > 0);
+            
+            if (!hasData) {
+                console.log('No data found, showing demo results');
+                // Show demo data if no real data is available
+                const demoScores = { 'R': 8.2, 'I': 6.5, 'A': 4.1, 'S': 7.3, 'E': 5.8, 'C': 6.9 };
+                updateMainType('R', 8.2);
+                updateDetailedEvaluation(demoScores);
+                updateCareerRecommendations('R', demoScores);
+                updatePersonalityInterpretation('R', demoScores);
+                updateDevelopmentRecommendations('R', demoScores);
+            } else {
+                // Update UI with real data
+                updateMainType(mainType, scores[mainType]);
+                updateDetailedEvaluation(scores);
+                updateCareerRecommendations(mainType, scores);
+                updatePersonalityInterpretation(mainType, scores);
+                updateDevelopmentRecommendations(mainType, scores);
+            }
         }
 
         function calculateTypeScore(data) {
             if (!data || Object.keys(data).length === 0) return 0;
             
+            console.log('Calculating score for data:', data);
+            
             // Calculate average from all slider values
-            const sliderValues = Object.values(data).filter(value => 
-                typeof value === 'string' && !isNaN(parseInt(value)) && parseInt(value) >= 1 && parseInt(value) <= 10
-            );
+            const sliderValues = Object.values(data).filter(value => {
+                const numValue = parseInt(value);
+                return !isNaN(numValue) && numValue >= 1 && numValue <= 10;
+            });
+            
+            console.log('Slider values found:', sliderValues);
             
             if (sliderValues.length === 0) return 0;
             
             const sum = sliderValues.reduce((acc, val) => acc + parseInt(val), 0);
-            return Math.round((sum / sliderValues.length) * 10) / 10;
+            const average = sum / sliderValues.length;
+            console.log('Average score:', average);
+            
+            return Math.round(average * 10) / 10;
         }
 
         function findMainType(scores) {
