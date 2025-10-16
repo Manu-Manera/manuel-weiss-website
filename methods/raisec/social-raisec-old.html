@@ -3,26 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAISEC Sozial - Persönlichkeitsentwicklung</title>
+    <title>Sozial (S) - RAISEC | Manuel Weiss</title>
     <link rel="stylesheet" href="css/raisec-smart-styles.css">
     <link rel="stylesheet" href="css/social-styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 16.67%"></div>
+        </div>
+        <div class="progress-text">Schritt 1 von 6 - Sozial</div>
+    </div>
+
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-background"></div>
-        <div class="sparkling-stars"></div>
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Sozial (S)</h1>
-                <p class="hero-subtitle">Menschen-orientiert, helfend, arbeitet gerne mit anderen zusammen</p>
-                <p class="hero-description">
-                    Du bist ein sozialer Typ, der gerne mit Menschen arbeitet und ihnen hilft. 
-                    Empathie, Kommunikationsfähigkeit und Teamarbeit sind deine Stärken.
-                </p>
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">👥</span>
+                        Sozial (S)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Praktisch-technisch orientiert, handwerklich begabt
+                    </p>
+                    <p class="hero-description">
+                        Du löst gerne konkrete Probleme, arbeitest praktisch und technisch. 
+                        Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -108,30 +123,30 @@
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Kannst du gut vor Gruppen sprechen?</label>
+                                        <label>Analysierst du Probleme systematisch?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="public_speaking_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="analyze_systematically_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Verstehst du nonverbale Kommunikation gut?</label>
+                                        <label>Probierst du gerne verschiedene Lösungsansätze aus?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="nonverbal_communication_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="try_different_approaches_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Kannst du Konflikte zwischen Menschen schlichten?</label>
+                                        <label>Arbeitest du gerne mit konkreten Ergebnissen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="conflict_resolution_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_concrete_results_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Bist du gut darin, andere zu motivieren?</label>
+                                        <label>Schätzt du praktische Erfahrung über theoretisches Wissen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="motivate_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="value_practical_experience_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -139,11 +154,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="communication_slider">Wie wichtig ist dir Kommunikation insgesamt? (1-10)</label>
+                                    <label for="problem_solving_slider">Wie wichtig ist dir praktische Problemlösung? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="communication_slider" 
-                                               name="communication_slider" 
+                                               id="problem_solving_slider" 
+                                               name="problem_solving_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -152,8 +167,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="communication" 
-                                    placeholder="Beschreibe deine Kommunikationsfähigkeiten und wie du Beziehungen aufbaust..."
+                                    name="problem_solving" 
+                                    placeholder="Beschreibe deine Herangehensweise an praktische Probleme..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -161,38 +176,38 @@
 
                         <!-- Frage 3 -->
                         <div class="question-card">
-                            <h3 class="question-title">3. Teamarbeit</h3>
+                            <h3 class="question-title">3. Berufliche Präferenzen</h3>
                             <p class="question-description">
-                                Wie gerne arbeitest du in Teams und Gruppen zusammen?
+                                Welche beruflichen Tätigkeiten sprechen dich am meisten an?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne in Gruppen?</label>
+                                        <label>Handwerkliche Berufe (Handwerker, Künstler, Kunsthandwerker)</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="group_work_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="craft_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Kannst du gut in Teams führen?</label>
+                                        <label>Praktische Berufe (Landwirt, Gärtner, Tierarzt)</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="team_leadership_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="practical_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Bist du gut darin, andere zu unterstützen?</label>
+                                        <label>IT-Berufe (Programmierer, Systemadministrator, Netzwerktechniker)</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="support_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="it_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Kannst du gut mit verschiedenen Persönlichkeiten umgehen?</label>
+                                        <label>Maschinenbau (Ingenieur, Techniker, Mechaniker)</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="diverse_personalities_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="mechanical_engineering_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -200,11 +215,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="teamwork_slider">Wie wichtig ist dir Teamarbeit insgesamt? (1-10)</label>
+                                    <label for="career_preferences_slider">Wie wichtig sind dir berufliche Tätigkeiten? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="teamwork_slider" 
-                                               name="teamwork_slider" 
+                                               id="career_preferences_slider" 
+                                               name="career_preferences_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -213,8 +228,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="teamwork" 
-                                    placeholder="Beschreibe deine Teamarbeitsfähigkeiten und wie du in Gruppen arbeitest..."
+                                    name="career_preferences" 
+                                    placeholder="Beschreibe deine beruflichen Interessen und Präferenzen..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -222,38 +237,38 @@
 
                         <!-- Frage 4 -->
                         <div class="question-card">
-                            <h3 class="question-title">4. Hilfsbereitschaft</h3>
+                            <h3 class="question-title">4. Arbeitsumgebung</h3>
                             <p class="question-description">
-                                Wie sehr möchtest du anderen Menschen helfen und sie unterstützen?
+                                In welcher Arbeitsumgebung fühlst du dich am wohlsten?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Hilfst du gerne anderen bei ihren Problemen?</label>
+                                        <label>Arbeitest du gerne draußen oder drinnen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="help_with_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_outside_inside_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Engagierst du dich gerne für soziale Projekte?</label>
+                                        <label>Präferierst du Einzelarbeit oder Teamarbeit?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="social_projects_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="individual_team_work_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Bist du gerne für andere da?</label>
+                                        <label>Magst du strukturierte oder flexible Arbeitszeiten?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="be_there_for_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="structured_flexible_hours_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Möchtest du die Welt zu einem besseren Ort machen?</label>
+                                        <label>Arbeitest du gerne mit Maschinen oder Werkzeugen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="make_world_better_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_machines_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -261,11 +276,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="helpfulness_slider">Wie wichtig ist dir Hilfsbereitschaft insgesamt? (1-10)</label>
+                                    <label for="work_environment_slider">Wie wichtig ist dir die Arbeitsumgebung? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="helpfulness_slider" 
-                                               name="helpfulness_slider" 
+                                               id="work_environment_slider" 
+                                               name="work_environment_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -274,8 +289,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="helpfulness" 
-                                    placeholder="Beschreibe deine Hilfsbereitschaft und wie du anderen unterstützt..."
+                                    name="work_environment" 
+                                    placeholder="Beschreibe deine ideale Arbeitsumgebung..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -283,38 +298,38 @@
 
                         <!-- Frage 5 -->
                         <div class="question-card">
-                            <h3 class="question-title">5. Soziale Verantwortung</h3>
+                            <h3 class="question-title">5. Lernstil und Entwicklung</h3>
                             <p class="question-description">
-                                Wie wichtig ist es dir, einen positiven Beitrag zur Gesellschaft zu leisten?
+                                Wie lernst du am besten neue Fähigkeiten?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Engagierst du dich gerne für soziale Gerechtigkeit?</label>
+                                        <label>Lernst du gerne durch praktische Übungen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="social_justice_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="learn_practical_exercises_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Ist es dir wichtig, benachteiligte Menschen zu unterstützen?</label>
+                                        <label>Präferierst du Learning-by-Doing?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="support_disadvantaged_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="learning_by_doing_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Möchtest du in deinem Beruf anderen helfen?</label>
+                                        <label>Interessierst du dich für technische Weiterbildungen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="help_through_work_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="technical_training_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Ist es dir wichtig, einen sinnvollen Beitrag zu leisten?</label>
+                                        <label>Magst du konkrete, messbare Ergebnisse?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="meaningful_contribution_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="concrete_measurable_results_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -322,11 +337,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="social_responsibility_slider">Wie wichtig ist dir soziale Verantwortung insgesamt? (1-10)</label>
+                                    <label for="learning_style_slider">Wie wichtig ist dir praktisches Lernen? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="social_responsibility_slider" 
-                                               name="social_responsibility_slider" 
+                                               id="learning_style_slider" 
+                                               name="learning_style_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -335,8 +350,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="social_responsibility" 
-                                    placeholder="Beschreibe deine soziale Verantwortung und wie du zur Gesellschaft beiträgst..."
+                                    name="learning_style" 
+                                    placeholder="Beschreibe deinen bevorzugten Lernstil..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -344,38 +359,38 @@
 
                         <!-- Frage 6 -->
                         <div class="question-card">
-                            <h3 class="question-title">6. Menschenkenntnis</h3>
+                            <h3 class="question-title">6. Werte und Motivation</h3>
                             <p class="question-description">
-                                Wie gut kannst du Menschen einschätzen und mit verschiedenen Persönlichkeiten umgehen?
+                                Was motiviert dich in deiner beruflichen Tätigkeit?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Kannst du Menschen schnell einschätzen?</label>
+                                        <label>Ist es dir wichtig, etwas Konkretes zu schaffen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="assess_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="create_something_concrete_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Verstehst du verschiedene Persönlichkeitstypen?</label>
+                                        <label>Motiviert dich die Lösung praktischer Probleme?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="understand_personalities_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="solve_practical_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Kannst du gut mit schwierigen Menschen umgehen?</label>
+                                        <label>Schätzt du handwerkliche Qualität und Präzision?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="difficult_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="craft_quality_precision_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Bist du gut darin, Vertrauen aufzubauen?</label>
+                                        <label>Ist dir Unabhängigkeit und Selbstständigkeit wichtig?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="build_trust_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="independence_autonomy_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -383,11 +398,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="people_skills_slider">Wie wichtig sind dir Menschenkenntnisse insgesamt? (1-10)</label>
+                                    <label for="values_motivation_slider">Wie wichtig sind dir deine Werte? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="people_skills_slider" 
-                                               name="people_skills_slider" 
+                                               id="values_motivation_slider" 
+                                               name="values_motivation_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -396,8 +411,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="people_skills" 
-                                    placeholder="Beschreibe deine Menschenkenntnisse und wie du mit verschiedenen Persönlichkeiten umgehst..."
+                                    name="values_motivation" 
+                                    placeholder="Beschreibe deine Werte und Motivation..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -405,81 +420,51 @@
 
                         <!-- Navigation Buttons -->
                         <div class="navigation-buttons">
-                            <a href="enterprising-raisec.html" class="btn btn-secondary">
-                                <span class="btn-icon">←</span>
-                                Zurück zu Unternehmerisch
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                Weiter zu Konventionell
-                                <span class="btn-icon">→</span>
-                            </button>
-                        </div>
-                    </form>
+                            <a href="index-raisec.html" class="btn-secondary">Zurück zur Übersicht</a>
+                            <a href="enterprising-raisec.html" class="btn-primary">Weiter zu Unternehmerisch</a>
+                        </div>                    </form>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="sidebar">
-                    <div class="sidebar-content">
-                        <!-- Tipps Section -->
-                        <div class="sidebar-card">
-                            <div class="card-header">
-                                <h3>💡 Tipps für deine sozialen Interessen</h3>
-                            </div>
-                            <div class="card-content">
-                                <ul>
-                                    <li>Engagiere dich in sozialen Projekten</li>
-                                    <li>Besuche Kommunikationskurse</li>
-                                    <li>Arbeite in Teams und Gruppen</li>
-                                    <li>Entwickle deine Empathie</li>
-                                    <li>Lerne verschiedene Persönlichkeitstypen kennen</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="sidebar-card">
+                        <h3>💡 Tipps für soziale Typen</h3>
+                        <ul>
+                            <li>Nutze deine praktischen Fähigkeiten</li>
+                            <li>Suche nach technischen Herausforderungen</li>
+                            <li>Entwickle deine handwerklichen Skills</li>
+                            <li>Netzwerke mit anderen Technikern</li>
+                        </ul>
+                    </div>
 
-                        <!-- Verwandte Methoden -->
-                        <div class="sidebar-card">
-                            <div class="card-header">
-                                <h3>🔗 Verwandte Methoden</h3>
-                            </div>
-                            <div class="card-content">
-                                <ul>
-                                    <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
-                                    <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
-                                    <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="sidebar-card">
+                        <h3>🔗 Verwandte Methoden</h3>
+                        <ul>
+                            <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                            <li><a href="../swot/index-swot.html">SWOT</a></li>
+                            <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                        </ul>
+                    </div>
 
-                        <!-- Ressourcen -->
-                        <div class="sidebar-card">
-                            <div class="card-header">
-                                <h3>📚 Ressourcen</h3>
-                            </div>
-                            <div class="card-content">
-                                <ul>
-                                    <li>Bücher über Kommunikation</li>
-                                    <li>Kurse zu Empathie</li>
-                                    <li>Workshops zu Teamarbeit</li>
-                                    <li>Podcasts über soziale Kompetenzen</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="sidebar-card">
+                        <h3>📚 Empfohlene Ressourcen</h3>
+                        <ul>
+                            <li>Technische Zeitschriften</li>
+                            <li>Handwerkliche Kurse</li>
+                            <li>Technische Weiterbildungen</li>
+                            <li>Praktische Projekte</li>
+                        </ul>
+                    </div>
 
-                        <!-- Berufsfelder -->
-                        <div class="sidebar-card">
-                            <div class="card-header">
-                                <h3>💼 Passende Berufsfelder</h3>
-                            </div>
-                            <div class="card-content">
-                                <ul>
-                                    <li>Sozialarbeit</li>
-                                    <li>Pädagogik</li>
-                                    <li>Psychologie</li>
-                                    <li>Medizin</li>
-                                    <li>Beratung</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="sidebar-card">
+                        <h3>🎯 Berufsfelder</h3>
+                        <ul>
+                            <li>Ingenieurwesen</li>
+                            <li>Handwerk</li>
+                            <li>Technik</li>
+                            <li>Landwirtschaft</li>
+                            <li>Maschinenbau</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -490,11 +475,86 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <div class="footer-section">
+                    <h3>RAISEC - Sozial</h3>
+                    <p>Praktisch-technisch orientierte Berufsinteressen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index-raisec.html">Übersicht</a></li>
+                        <li><a href="investigative-raisec.html">Investigativ</a></li>
+                        <li><a href="artistic-raisec.html">Künstlerisch</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </footer>
 
     <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('social-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const socialData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                socialData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(socialData.technical_skills_slider),
+                parseInt(socialData.problem_solving_slider),
+                parseInt(socialData.career_preferences_slider),
+                parseInt(socialData.work_environment_slider),
+                parseInt(socialData.learning_style_slider),
+                parseInt(socialData.values_motivation_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            socialData.averageScore = averageScore;
+            socialData.type = 'Realistic';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-social', JSON.stringify(socialData));
+            
+            // Navigate to next step
+            window.location.href = 'investigative-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-social');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
