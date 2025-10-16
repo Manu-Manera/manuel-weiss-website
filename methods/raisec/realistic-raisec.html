@@ -68,6 +68,19 @@
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="technical_skills_slider">Wie wichtig sind dir technische Fähigkeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="technical_skills_slider" 
+                                               name="technical_skills_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="technical_skills" 
                                     placeholder="Beschreibe deine technischen Interessen und Fähigkeiten..."
@@ -92,6 +105,19 @@
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="problem_solving_slider">Wie wichtig ist dir praktische Problemlösung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="problem_solving_slider" 
+                                               name="problem_solving_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="problem_solving" 
                                     placeholder="Beschreibe deine Herangehensweise an praktische Probleme..."
@@ -109,13 +135,26 @@
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <ul>
-                                    <li>Technische Berufe (Ingenieur, Techniker, Mechaniker)</li>
-                                    <li>Handwerkliche Berufe (Handwerker, Künstler, Handwerker)</li>
+                                    <li>Handwerkliche Berufe (Handwerker, Künstler, Kunsthandwerker)</li>
                                     <li>Praktische Berufe (Landwirt, Gärtner, Tierarzt)</li>
-                                    <li>Technische Berufe (IT, Elektronik, Maschinenbau)</li>
+                                    <li>IT-Berufe (Programmierer, Systemadministrator, Netzwerktechniker)</li>
+                                    <li>Maschinenbau (Ingenieur, Techniker, Mechaniker)</li>
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="career_preferences_slider">Wie wichtig sind dir berufliche Tätigkeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="career_preferences_slider" 
+                                               name="career_preferences_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="career_preferences" 
                                     placeholder="Beschreibe deine beruflichen Interessen und Präferenzen..."
@@ -140,6 +179,19 @@
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="work_environment_slider">Wie wichtig ist dir die Arbeitsumgebung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="work_environment_slider" 
+                                               name="work_environment_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="work_environment" 
                                     placeholder="Beschreibe deine ideale Arbeitsumgebung..."
@@ -164,6 +216,19 @@
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="learning_style_slider">Wie wichtig ist dir praktisches Lernen? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="learning_style_slider" 
+                                               name="learning_style_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="learning_style" 
                                     placeholder="Beschreibe deinen bevorzugten Lernstil..."
@@ -188,6 +253,19 @@
                                 </ul>
                             </div>
                             <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="values_motivation_slider">Wie wichtig sind dir deine Werte? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="values_motivation_slider" 
+                                               name="values_motivation_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
                                 <textarea 
                                     name="values_motivation" 
                                     placeholder="Beschreibe deine Werte und Motivation..."
@@ -272,16 +350,45 @@
 
     <script src="js/raisec-workflow.js"></script>
     <script>
+        // Slider functionality
+        document.querySelectorAll('.importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
         // Form handling
         document.getElementById('realistic-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Save form data
+            // Collect form data including sliders
             const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
+            const realisticData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                realisticData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(realisticData.technical_skills_slider),
+                parseInt(realisticData.problem_solving_slider),
+                parseInt(realisticData.career_preferences_slider),
+                parseInt(realisticData.work_environment_slider),
+                parseInt(realisticData.learning_style_slider),
+                parseInt(realisticData.values_motivation_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            realisticData.averageScore = averageScore;
+            realisticData.type = 'Realistic';
             
             // Save to localStorage
-            localStorage.setItem('raisec-realistic', JSON.stringify(data));
+            localStorage.setItem('raisec-realistic', JSON.stringify(realisticData));
             
             // Navigate to next step
             window.location.href = 'investigative-raisec.html';
@@ -295,6 +402,13 @@
                 const field = document.querySelector(`[name="${key}"]`);
                 if (field) {
                     field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
                 }
             });
         }

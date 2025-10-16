@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Life | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/wheel-of-life-smart-styles.css">
+    <link rel="stylesheet" href="css/wheel-of-life-diagram-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Hero Section mit Wheel of Life Diagramm -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">🎯</span>
+                        Wheel of Life
+                    </h1>
+                    <p class="hero-subtitle">
+                        Bewerte deine Lebensbereiche und finde heraus, wo du deine Energie investieren solltest
+                    </p>
+                    <p class="hero-description">
+                        Das Wheel of Life hilft dir dabei, deine Lebensbalance zu analysieren und 
+                        Bereiche zu identifizieren, die deine Aufmerksamkeit benötigen. Bewerte 
+                        jeden Lebensbereich und entwickle einen Plan für mehr Zufriedenheit.
+                    </p>
+                    
+                    <!-- YouTube Video -->
+                    <div class="video-section">
+                        <h3>Mehr über Wheel of Life erfahren</h3>
+                        <div class="video-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/VIDEO_ID" 
+                                title="Wheel of Life"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wheel of Life Diagramm -->
+                <div class="wheel-container">
+                    <div class="wheel-of-life" id="wheelOfLife">
+                        <div class="wheel-center">
+                            <div class="center-score" id="centerScore">0</div>
+                            <div class="center-label">Lebensbalance</div>
+                        </div>
+                        
+                        <!-- Lebensbereiche -->
+                        <div class="life-area" data-area="career" data-score="0">
+                            <div class="area-icon">💼</div>
+                            <div class="area-label">Karriere</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="finances" data-score="0">
+                            <div class="area-icon">💰</div>
+                            <div class="area-label">Finanzen</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="health" data-score="0">
+                            <div class="area-icon">🏥</div>
+                            <div class="area-label">Gesundheit</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="family" data-score="0">
+                            <div class="area-icon">👨‍👩‍👧‍👦</div>
+                            <div class="area-label">Familie</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="relationships" data-score="0">
+                            <div class="area-icon">👥</div>
+                            <div class="area-label">Beziehungen</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="personal-development" data-score="0">
+                            <div class="area-icon">📚</div>
+                            <div class="area-label">Entwicklung</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="leisure" data-score="0">
+                            <div class="area-icon">🎮</div>
+                            <div class="area-label">Freizeit</div>
+                            <div class="area-score">0</div>
+                        </div>
+                        
+                        <div class="life-area" data-area="spirituality" data-score="0">
+                            <div class="area-icon">🧘</div>
+                            <div class="area-label">Spiritualität</div>
+                            <div class="area-score">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lebensbereiche Übersicht -->
+    <section class="life-areas-section">
+        <div class="container">
+            <h2 class="section-title">Die 8 Lebensbereiche</h2>
+            <p class="section-subtitle">Bewerte jeden Bereich von 1-10 und entwickle deine Lebensbalance</p>
+            
+            <div class="life-areas-grid">
+                <!-- Karriere -->
+                <div class="life-area-card career" data-area="career">
+                    <div class="card-header">
+                        <div class="card-icon">💼</div>
+                        <h3>Karriere</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Deine berufliche Entwicklung, Zufriedenheit und Wachstum
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="career">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="career-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finanzen -->
+                <div class="life-area-card finances" data-area="finances">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <h3>Finanzen</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Finanzielle Sicherheit, Wohlstand und Geldmanagement
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="finances">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="finances-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gesundheit -->
+                <div class="life-area-card health" data-area="health">
+                    <div class="card-header">
+                        <div class="card-icon">🏥</div>
+                        <h3>Gesundheit</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Körperliche und mentale Gesundheit, Fitness und Wohlbefinden
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="health">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="health-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Familie -->
+                <div class="life-area-card family" data-area="family">
+                    <div class="card-header">
+                        <div class="card-icon">👨‍👩‍👧‍👦</div>
+                        <h3>Familie</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Familienbeziehungen, Zeit mit Angehörigen und Familienharmonie
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="family">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="family-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beziehungen -->
+                <div class="life-area-card relationships" data-area="relationships">
+                    <div class="card-header">
+                        <div class="card-icon">👥</div>
+                        <h3>Beziehungen</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Soziale Kontakte, Freundschaften und zwischenmenschliche Beziehungen
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="relationships">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="relationships-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Persönliche Entwicklung -->
+                <div class="life-area-card personal-development" data-area="personal-development">
+                    <div class="card-header">
+                        <div class="card-icon">📚</div>
+                        <h3>Entwicklung</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Lernen, Wachstum und persönliche Weiterentwicklung
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="personal-development">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="personal-development-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Freizeit -->
+                <div class="life-area-card leisure" data-area="leisure">
+                    <div class="card-header">
+                        <div class="card-icon">🎮</div>
+                        <h3>Freizeit</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Hobbys, Erholung und Aktivitäten für Entspannung
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="leisure">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="leisure-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spiritualität -->
+                <div class="life-area-card spirituality" data-area="spirituality">
+                    <div class="card-header">
+                        <div class="card-icon">🧘</div>
+                        <h3>Spiritualität</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-description">
+                            Sinn, Werte, Glaube und spirituelle Entwicklung
+                        </p>
+                        <div class="score-input">
+                            <label>Bewertung (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="spirituality">
+                            <span class="score-display">5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="spirituality-wheel.html" class="btn-primary">Detaillierte Analyse</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Warum Wheel of Life?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Lebensbalance</h3>
+                    <p>Erkenne Ungleichgewichte in deinen Lebensbereichen und finde Wege zur Balance</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Priorisierung</h3>
+                    <p>Identifiziere Bereiche, die deine Aufmerksamkeit und Energie benötigen</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Entwicklung</h3>
+                    <p>Entwickle konkrete Pläne für die Verbesserung deiner Lebensbereiche</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Selbsterkenntnis</h3>
+                    <p>Gewinne Klarheit über deine aktuelle Lebenssituation und Zufriedenheit</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Bereit für deine Lebensbalance-Analyse?</h2>
+                <p>Bewerte deine Lebensbereiche und entwickle einen Plan für mehr Zufriedenheit</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" onclick="startWheelAnalysis()">Jetzt starten</button>
+                    <button class="btn-secondary" onclick="generateReport()">Bericht generieren</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Wheel of Life</h3>
+                    <p>Lebensbalance-Analyse für mehr Zufriedenheit</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../raisec/index-raisec.html">RAISEC</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Lebensbalance-Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/wheel-of-life-workflow.js"></script>
+</body>
+</html>

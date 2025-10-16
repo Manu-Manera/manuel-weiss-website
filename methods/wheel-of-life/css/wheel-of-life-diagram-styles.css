@@ -1,0 +1,381 @@
+/* ========================================
+   WHEEL OF LIFE DIAGRAM SPEZIFISCHE STYLES
+   Interaktives Rad mit 8 Lebensbereichen
+   ======================================== */
+
+/* Wheel Container */
+.wheel-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
+}
+
+/* Wheel of Life */
+.wheel-of-life {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 3px solid var(--glass-border);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+}
+
+.wheel-of-life:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Wheel Center */
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--wheel-primary), var(--wheel-secondary));
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 10;
+    box-shadow: 
+        0 8px 25px rgba(99, 102, 241, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: centerPulse 3s ease-in-out infinite;
+}
+
+@keyframes centerPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.center-score {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.center-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    text-align: center;
+    margin-top: var(--spacing-xs);
+}
+
+/* Life Areas */
+.life-area {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-align: center;
+    color: white;
+    font-size: 0.7rem;
+    z-index: 5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.life-area:hover {
+    transform: scale(1.1);
+    z-index: 15;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.life-area:active {
+    transform: scale(0.95);
+}
+
+/* Positionierung der Lebensbereiche */
+.life-area[data-area="career"] {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--career-color), rgba(33, 150, 243, 0.8));
+    border-color: var(--career-color);
+}
+
+.life-area[data-area="finances"] {
+    top: 50px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--finances-color), rgba(76, 175, 80, 0.8));
+    border-color: var(--finances-color);
+}
+
+.life-area[data-area="health"] {
+    bottom: 50px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--health-color), rgba(244, 67, 54, 0.8));
+    border-color: var(--health-color);
+}
+
+.life-area[data-area="family"] {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--family-color), rgba(255, 152, 0, 0.8));
+    border-color: var(--family-color);
+}
+
+.life-area[data-area="relationships"] {
+    bottom: 50px;
+    left: 20px;
+    background: linear-gradient(135deg, var(--relationships-color), rgba(156, 39, 176, 0.8));
+    border-color: var(--relationships-color);
+}
+
+.life-area[data-area="personal-development"] {
+    top: 50px;
+    left: 20px;
+    background: linear-gradient(135deg, var(--personal-dev-color), rgba(255, 193, 7, 0.8));
+    border-color: var(--personal-dev-color);
+}
+
+.life-area[data-area="leisure"] {
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--leisure-color), rgba(0, 188, 212, 0.8));
+    border-color: var(--leisure-color);
+}
+
+.life-area[data-area="spirituality"] {
+    top: 80px;
+    right: 50%;
+    transform: translateX(50%);
+    background: linear-gradient(135deg, var(--spirituality-color), rgba(96, 125, 139, 0.8));
+    border-color: var(--spirituality-color);
+}
+
+/* Area Icons */
+.area-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+    animation: iconFloat 2s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+.area-label {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.area-score {
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-bold);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover Effects */
+.life-area:hover .area-icon {
+    animation: iconBounce 0.6s ease;
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+.life-area:hover .area-score {
+    transform: scale(1.2);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Score-based styling */
+.life-area[data-score="1"] { opacity: 0.3; }
+.life-area[data-score="2"] { opacity: 0.4; }
+.life-area[data-score="3"] { opacity: 0.5; }
+.life-area[data-score="4"] { opacity: 0.6; }
+.life-area[data-score="5"] { opacity: 0.7; }
+.life-area[data-score="6"] { opacity: 0.8; }
+.life-area[data-score="7"] { opacity: 0.9; }
+.life-area[data-score="8"] { opacity: 1; }
+.life-area[data-score="9"] { opacity: 1; }
+.life-area[data-score="10"] { opacity: 1; }
+
+/* High score areas get special treatment */
+.life-area[data-score="8"],
+.life-area[data-score="9"],
+.life-area[data-score="10"] {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    animation: highScoreGlow 2s ease-in-out infinite;
+}
+
+@keyframes highScoreGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+}
+
+/* Responsive Wheel */
+@media (max-width: 768px) {
+    .wheel-of-life {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .life-area {
+        width: 60px;
+        height: 60px;
+        font-size: 0.6rem;
+    }
+    
+    .area-icon {
+        font-size: 1.2rem;
+    }
+    
+    .area-score {
+        width: 20px;
+        height: 20px;
+        font-size: 1rem;
+    }
+    
+    .wheel-center {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .center-score {
+        font-size: 1.5rem;
+    }
+    
+    .center-label {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .wheel-of-life {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .life-area {
+        width: 50px;
+        height: 50px;
+        font-size: 0.5rem;
+    }
+    
+    .area-icon {
+        font-size: 1rem;
+    }
+    
+    .area-score {
+        width: 18px;
+        height: 18px;
+        font-size: 0.9rem;
+    }
+    
+    .wheel-center {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .center-score {
+        font-size: 1.2rem;
+    }
+    
+    .center-label {
+        font-size: 0.6rem;
+    }
+}
+
+/* Animation für Wheel-Entrance */
+.wheel-of-life {
+    animation: wheelEntrance 1s ease-out;
+}
+
+@keyframes wheelEntrance {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(180deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Staggered Animation für Life Areas */
+.life-area {
+    animation: areaEntrance 0.8s ease-out forwards;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.life-area[data-area="career"] { animation-delay: 0.1s; }
+.life-area[data-area="finances"] { animation-delay: 0.2s; }
+.life-area[data-area="health"] { animation-delay: 0.3s; }
+.life-area[data-area="family"] { animation-delay: 0.4s; }
+.life-area[data-area="relationships"] { animation-delay: 0.5s; }
+.life-area[data-area="personal-development"] { animation-delay: 0.6s; }
+.life-area[data-area="leisure"] { animation-delay: 0.7s; }
+.life-area[data-area="spirituality"] { animation-delay: 0.8s; }
+
+@keyframes areaEntrance {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Connection Lines (optional) */
+.wheel-of-life::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: translate(-50%, -50%) rotate(0deg);
+    z-index: 1;
+}
+
+.wheel-of-life::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: translate(-50%, -50%) rotate(45deg);
+    z-index: 1;
+}
