@@ -40,23 +40,18 @@
   status = 301
 
 [[redirects]]
-  from = "/bewerbungsmanager"
-  to = "/bewerbung.html"
+  from = "/persoenlichkeitsentwicklung"
+  to = "/persoenlichkeitsentwicklung-uebersicht.html"
   status = 301
 
 [[redirects]]
-  from = "/ki-workflow"
-  to = "/bewerbung.html"
+  from = "/personality"
+  to = "/persoenlichkeitsentwicklung-uebersicht.html"
   status = 301
 
 [[redirects]]
-  from = "/workflow"
-  to = "/bewerbung.html"
-  status = 301
-
-[[redirects]]
-  from = "/bewerbungsmappe"
-  to = "/bewerbung.html"
+  from = "/methods"
+  to = "/persoenlichkeitsentwicklung-uebersicht.html"
   status = 301
 
 # Headers für bessere Performance und Sicherheit
