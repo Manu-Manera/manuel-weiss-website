@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAISEC-Auswertung | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/raisec-results-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">📊</span>
+                        Deine RAISEC-Auswertung
+                    </h1>
+                    <p class="hero-subtitle">
+                        Entdecke deinen Persönlichkeitstyp und passende Berufsfelder
+                    </p>
+                    <p class="hero-description">
+                        Basierend auf deinen Antworten haben wir deine beruflichen Interessen 
+                        analysiert und passende Berufsfelder identifiziert.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <div class="results-grid">
+                <!-- Haupttyp -->
+                <div class="main-type-card">
+                    <h2>Dein Haupttyp</h2>
+                    <div class="type-result" id="mainType">
+                        <div class="type-icon">🔧</div>
+                        <div class="type-name">Realistisch (R)</div>
+                        <div class="type-score">8.2/10</div>
+                        <div class="type-description">
+                            Du bist praktisch-technisch orientiert und löst gerne konkrete Probleme. 
+                            Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAISEC-Hexagon -->
+                <div class="hexagon-container">
+                    <h2>Dein RAISEC-Profil</h2>
+                    <div class="hexagon-chart" id="hexagonChart">
+                        <svg viewBox="0 0 300 300" class="hexagon-svg">
+                            <!-- Hexagon Grid -->
+                            <polygon points="150,50 250,100 250,200 150,250 50,200 50,100" 
+                                     fill="none" 
+                                     stroke="rgba(255,255,255,0.3)" 
+                                     stroke-width="2"/>
+                            
+                            <!-- Score Areas -->
+                            <polygon id="realistic-area" 
+                                     points="150,50 250,100 250,200 150,250 50,200 50,100" 
+                                     fill="rgba(255,152,0,0.3)" 
+                                     stroke="#FF9800" 
+                                     stroke-width="2"/>
+                            
+                            <!-- Labels -->
+                            <text x="150" y="30" text-anchor="middle" class="hex-label">R</text>
+                            <text x="270" y="120" text-anchor="middle" class="hex-label">I</text>
+                            <text x="270" y="180" text-anchor="middle" class="hex-label">A</text>
+                            <text x="150" y="280" text-anchor="middle" class="hex-label">S</text>
+                            <text x="30" y="180" text-anchor="middle" class="hex-label">E</text>
+                            <text x="30" y="120" text-anchor="middle" class="hex-label">C</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Detaillierte Scores -->
+                <div class="scores-breakdown">
+                    <h2>Detaillierte Bewertung</h2>
+                    <div class="score-list" id="scoreList">
+                        <!-- Scores werden dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Berufsfelder -->
+                <div class="career-fields">
+                    <h2>Passende Berufsfelder</h2>
+                    <div class="fields-grid" id="careerFields">
+                        <!-- Berufsfelder werden dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Interpretation -->
+                <div class="interpretation">
+                    <h2>Deine Persönlichkeitsinterpretation</h2>
+                    <div class="interpretation-content" id="interpretationContent">
+                        <!-- Interpretation wird dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Empfehlungen -->
+                <div class="recommendations">
+                    <h2>Entwicklungsempfehlungen</h2>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <!-- Empfehlungen werden dynamisch eingefügt -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-section">
+        <div class="container">
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="downloadReport()">
+                    <i class="fas fa-download"></i> Bericht herunterladen
+                </button>
+                <button class="btn-secondary" onclick="retakeTest()">
+                    <i class="fas fa-redo"></i> Test wiederholen
+                </button>
+                <a href="../index.html" class="btn-outline">
+                    <i class="fas fa-home"></i> Zur Startseite
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // RAISEC Types and their characteristics
+        const raisecTypes = {
+            'R': {
+                name: 'Realistisch',
+                icon: '🔧',
+                description: 'Praktisch-technisch orientiert, handwerklich begabt',
+                color: '#FF9800',
+                careers: [
+                    'Ingenieur', 'Techniker', 'Mechaniker', 'Elektriker',
+                    'Handwerker', 'Landwirt', 'Gärtner', 'Tierarzt',
+                    'Pilot', 'Architekt', 'IT-Systemadministrator'
+                ]
+            },
+            'I': {
+                name: 'Investigativ',
+                icon: '🔬',
+                description: 'Forschend, analytisch, wissenschaftlich orientiert',
+                color: '#2196F3',
+                careers: [
+                    'Wissenschaftler', 'Forscher', 'Analyst', 'Statistiker',
+                    'Mathematiker', 'Physiker', 'Chemiker', 'Biologe',
+                    'Psychologe', 'Doktor', 'Programmierer'
+                ]
+            },
+            'A': {
+                name: 'Artistic',
+                icon: '🎨',
+                description: 'Kreativ, künstlerisch, expressiv',
+                color: '#9C27B0',
+                careers: [
+                    'Künstler', 'Designer', 'Musiker', 'Schauspieler',
+                    'Schriftsteller', 'Fotograf', 'Architekt', 'Journalist',
+                    'Grafikdesigner', 'Mode-Designer', 'Innenarchitekt'
+                ]
+            },
+            'S': {
+                name: 'Sozial',
+                icon: '👥',
+                description: 'Hilfsbereit, sozial, kommunikativ',
+                color: '#4CAF50',
+                careers: [
+                    'Lehrer', 'Sozialarbeiter', 'Berater', 'Therapeut',
+                    'Arzt', 'Krankenpfleger', 'Psychologe', 'Trainer',
+                    'Personalmanager', 'Verkäufer', 'Kundenberater'
+                ]
+            },
+            'E': {
+                name: 'Enterprising',
+                icon: '💼',
+                description: 'Führungsorientiert, verkaufsorientiert, unternehmerisch',
+                color: '#F44336',
+                careers: [
+                    'Manager', 'Unternehmer', 'Verkäufer', 'Berater',
+                    'Politiker', 'Anwalt', 'Makler', 'Eventmanager',
+                    'Marketing-Manager', 'Vertriebsleiter', 'CEO'
+                ]
+            },
+            'C': {
+                name: 'Conventional',
+                icon: '📊',
+                description: 'Organisiert, strukturiert, detailorientiert',
+                color: '#607D8B',
+                careers: [
+                    'Buchhalter', 'Sekretär', 'Bankangestellter', 'Verwaltungsangestellter',
+                    'Datenanalyst', 'Qualitätsmanager', 'Projektmanager', 'Controller',
+                    'Steuerberater', 'Personalverwaltung', 'Büroorganisation'
+                ]
+            }
+        };
+
+        // Load and display results
+        function loadResults() {
+            // Load all RAISEC data
+            const realisticData = JSON.parse(localStorage.getItem('raisec-realistic') || '{}');
+            const investigativeData = JSON.parse(localStorage.getItem('raisec-investigative') || '{}');
+            const artisticData = JSON.parse(localStorage.getItem('raisec-artistic') || '{}');
+            const socialData = JSON.parse(localStorage.getItem('raisec-social') || '{}');
+            const enterprisingData = JSON.parse(localStorage.getItem('raisec-enterprising') || '{}');
+            const conventionalData = JSON.parse(localStorage.getItem('raisec-conventional') || '{}');
+
+            // Calculate scores (using realistic as example)
+            const scores = {
+                'R': realisticData.averageScore || 5,
+                'I': investigativeData.averageScore || 5,
+                'A': artisticData.averageScore || 5,
+                'S': socialData.averageScore || 5,
+                'E': enterprisingData.averageScore || 5,
+                'C': conventionalData.averageScore || 5
+            };
+
+            // Find main type
+            const mainType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const mainTypeData = raisecTypes[mainType];
+
+            // Display main type
+            document.getElementById('mainType').innerHTML = `
+                <div class="type-icon">${mainTypeData.icon}</div>
+                <div class="type-name">${mainTypeData.name} (${mainType})</div>
+                <div class="type-score">${scores[mainType].toFixed(1)}/10</div>
+                <div class="type-description">${mainTypeData.description}</div>
+            `;
+
+            // Display scores
+            const scoreList = document.getElementById('scoreList');
+            scoreList.innerHTML = Object.keys(scores).map(type => `
+                <div class="score-item">
+                    <div class="score-label">${raisecTypes[type].name} (${type})</div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${scores[type] * 10}%; background: ${raisecTypes[type].color}"></div>
+                    </div>
+                    <div class="score-value">${scores[type].toFixed(1)}/10</div>
+                </div>
+            `).join('');
+
+            // Display career fields
+            const careerFields = document.getElementById('careerFields');
+            careerFields.innerHTML = mainTypeData.careers.map(career => `
+                <div class="career-field">
+                    <div class="field-icon">💼</div>
+                    <div class="field-name">${career}</div>
+                </div>
+            `).join('');
+
+            // Display interpretation
+            const interpretationContent = document.getElementById('interpretationContent');
+            interpretationContent.innerHTML = `
+                <div class="interpretation-text">
+                    <h3>Dein Profil: ${mainTypeData.name}</h3>
+                    <p>Basierend auf deinen Antworten zeigt sich ein starker ${mainTypeData.name.toLowerCase()}er Typ. 
+                    Du bevorzugst ${mainTypeData.description.toLowerCase()} und fühlst dich in entsprechenden 
+                    Berufsfeldern am wohlsten.</p>
+                    
+                    <h4>Deine Stärken:</h4>
+                    <ul>
+                        <li>Praktische Problemlösung</li>
+                        <li>Technisches Verständnis</li>
+                        <li>Handwerkliche Fähigkeiten</li>
+                        <li>Konkrete Ergebnisse</li>
+                    </ul>
+                    
+                    <h4>Entwicklungsmöglichkeiten:</h4>
+                    <ul>
+                        <li>Weiterbildung in deinem Fachbereich</li>
+                        <li>Führungskompetenzen entwickeln</li>
+                        <li>Netzwerk aufbauen</li>
+                        <li>Innovative Technologien kennenlernen</li>
+                    </ul>
+                </div>
+            `;
+
+            // Display recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = `
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">📚</div>
+                    <div class="recommendation-content">
+                        <h4>Weiterbildung</h4>
+                        <p>Vertiefe deine technischen Fähigkeiten durch spezialisierte Kurse und Zertifizierungen.</p>
+                    </div>
+                </div>
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🤝</div>
+                    <div class="recommendation-content">
+                        <h4>Netzwerk</h4>
+                        <p>Baue Kontakte in deinem Fachbereich auf und tausche dich mit Gleichgesinnten aus.</p>
+                    </div>
+                </div>
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🚀</div>
+                    <div class="recommendation-content">
+                        <h4>Karriere</h4>
+                        <p>Suche nach Positionen, die deine praktischen Fähigkeiten optimal nutzen.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Download report
+        function downloadReport() {
+            const reportContent = generateReport();
+            const blob = new Blob([reportContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'raisec-auswertung.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate report
+        function generateReport() {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>RAISEC-Auswertung</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                        .header { text-align: center; margin-bottom: 40px; }
+                        .section { margin-bottom: 30px; }
+                        .score-bar { width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+                        .score-fill { height: 100%; background: #FF9800; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>RAISEC-Auswertung</h1>
+                        <p>Erstellt am: ${new Date().toLocaleDateString('de-DE')}</p>
+                    </div>
+                    <div class="section">
+                        <h2>Dein Haupttyp: Realistisch (R)</h2>
+                        <p>Du bist praktisch-technisch orientiert und löst gerne konkrete Probleme.</p>
+                    </div>
+                    <div class="section">
+                        <h2>Detaillierte Bewertung</h2>
+                        <p>Hier findest du deine Bewertungen für alle RAISEC-Bereiche.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        // Retake test
+        function retakeTest() {
+            if (confirm('Möchtest du den Test wirklich wiederholen? Alle bisherigen Daten gehen verloren.')) {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                window.location.href = 'index-raisec.html';
+            }
+        }
+
+        // Load results when page loads
+        document.addEventListener('DOMContentLoaded', loadResults);
+    </script>
+</body>
+</html>
