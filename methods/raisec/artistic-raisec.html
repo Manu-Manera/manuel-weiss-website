@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Künstlerisch (A) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/artistic-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%"></div>
+        </div>
+        <div class="progress-text">Schritt 3 von 6 - Künstlerisch</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">🎨</span>
+                        Künstlerisch (A)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Kreativ-künstlerisch, expressiv
+                    </p>
+                    <p class="hero-description">
+                        Du arbeitest gerne mit Ideen und Emotionen. 
+                        Kreativität, Innovation und künstlerische Ausdrucksfähigkeit sind deine Stärken.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine künstlerischen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="artistic-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Kreativität und Innovation</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Kreativität und innovative Lösungen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Entwickelst du gerne neue Ideen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="develop_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Denkst du gerne "out of the box"?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="think_outside_box_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du es, Dinge anders zu machen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="do_things_differently_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Inspirierst du andere mit deinen Ideen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="inspire_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="creativity_innovation_slider">Wie wichtig sind dir Kreativität und Innovation? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="creativity_innovation_slider" 
+                                               name="creativity_innovation_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="creativity_innovation" 
+                                    placeholder="Beschreibe deine kreativen Fähigkeiten und innovativen Ansätze..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Künstlerische Ausdrucksfähigkeit</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für künstlerische Ausdrucksformen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Malt, zeichnest oder gestaltest du gerne?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="paint_draw_design_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Spielst du ein Instrument oder singst?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="play_instrument_sing_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schreibst du gerne kreative Texte?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="write_creative_texts_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Tanzt oder bewegst du dich gerne künstlerisch?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="dance_artistic_movement_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="artistic_expression_slider">Wie wichtig ist dir künstlerische Ausdrucksfähigkeit? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="artistic_expression_slider" 
+                                               name="artistic_expression_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="artistic_expression" 
+                                    placeholder="Beschreibe deine künstlerischen Ausdrucksformen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Emotionale Intelligenz</h3>
+                            <p class="question-description">
+                                Wie sehr arbeitest du gerne mit Emotionen und Gefühlen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Verstehst du Emotionen gut?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="understand_emotions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kannst du Emotionen in Kunst ausdrücken?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="express_emotions_art_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Empfindest du starke Gefühle bei Kunst?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="strong_feelings_art_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Hilfst du anderen, ihre Gefühle zu verstehen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="help_others_emotions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="emotional_intelligence_slider">Wie wichtig ist dir emotionale Intelligenz? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="emotional_intelligence_slider" 
+                                               name="emotional_intelligence_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="emotional_intelligence" 
+                                    placeholder="Beschreibe deine emotionale Intelligenz und deinen Umgang mit Gefühlen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Originalität</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Originalität und Einzigartigkeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Magst du es, einzigartig zu sein?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="be_unique_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vermeidest du es, anderen zu folgen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="avoid_following_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Entwickelst du gerne eigene Stile?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="develop_own_styles_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schätzt du künstlerische Experimente?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="artistic_experiments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="originality_slider">Wie wichtig ist dir Originalität? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="originality_slider" 
+                                               name="originality_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="originality" 
+                                    placeholder="Beschreibe deine Originalität und Einzigartigkeit..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Ästhetisches Empfinden</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Schönheit und Ästhetik?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Nimmst du Schönheit in deiner Umgebung wahr?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="perceive_beauty_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Gestaltest du gerne schöne Dinge?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="create_beautiful_things_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für Design und Mode?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="design_fashion_interest_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Besuchst du gerne Museen und Galerien?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="visit_museums_galleries_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="aesthetic_sense_slider">Wie wichtig ist dir ästhetisches Empfinden? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="aesthetic_sense_slider" 
+                                               name="aesthetic_sense_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="aesthetic_sense" 
+                                    placeholder="Beschreibe dein ästhetisches Empfinden und deine Vorlieben..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Künstlerische Freiheit</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du künstlerische Freiheit und Unabhängigkeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne ohne Vorgaben?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_without_guidelines_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du es, deine eigenen Projekte zu wählen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="choose_own_projects_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schätzt du künstlerische Autonomie?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="artistic_autonomy_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vermeidest du gerne starre Strukturen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="avoid_rigid_structures_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="artistic_freedom_slider">Wie wichtig ist dir künstlerische Freiheit? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="artistic_freedom_slider" 
+                                               name="artistic_freedom_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="artistic_freedom" 
+                                    placeholder="Beschreibe deine Bedürfnisse nach künstlerischer Freiheit..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="investigative-raisec.html" class="btn-secondary">Zurück zu Investigativ</a>
+                            <button type="submit" class="btn-primary">Weiter zu Sozial</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine künstlerischen Interessen</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Kreativität & Innovation</h4>
+                            <ul>
+                                <li>Entwickle regelmäßig neue Ideen</li>
+                                <li>Experimentiere mit verschiedenen Medien</li>
+                                <li>Suche Inspiration in der Natur</li>
+                                <li>Kollaboriere mit anderen Kreativen</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Künstlerische Ausdrucksfähigkeit</h4>
+                            <ul>
+                                <li>Übe täglich deine künstlerischen Fähigkeiten</li>
+                                <li>Probiere verschiedene Kunstformen aus</li>
+                                <li>Teile deine Werke mit anderen</li>
+                                <li>Besuche Workshops und Kurse</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>Kreativitätstechniken</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Kunstmuseen und Galerien</li>
+                                <li>Online-Kreativkurse</li>
+                                <li>Künstlerische Communities</li>
+                                <li>Kreativitätsworkshops</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.hint-slider-input, .importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('artistic-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const artisticData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                artisticData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(artisticData.creativity_innovation_slider),
+                parseInt(artisticData.artistic_expression_slider),
+                parseInt(artisticData.emotional_intelligence_slider),
+                parseInt(artisticData.originality_slider),
+                parseInt(artisticData.aesthetic_sense_slider),
+                parseInt(artisticData.artistic_freedom_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            artisticData.averageScore = averageScore;
+            artisticData.type = 'Artistic';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-artistic', JSON.stringify(artisticData));
+            
+            // Navigate to next step
+            window.location.href = 'social-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-artistic');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

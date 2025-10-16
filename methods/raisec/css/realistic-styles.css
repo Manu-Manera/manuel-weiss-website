@@ -1,5 +1,108 @@
 /* Realistisch (R) - Spezifische Styles */
 
+/* Light Theme - Schwarze Schrift auf hellem Hintergrund */
+body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #212529;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+}
+
+.hero-text {
+    color: white;
+}
+
+.hero-title, .hero-subtitle, .hero-description {
+    color: white;
+}
+
+.main-content {
+    background: #ffffff;
+    color: #212529;
+}
+
+.questions-section {
+    background: #ffffff;
+    color: #212529;
+}
+
+.question-card {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
+.question-title {
+    color: #FF9800;
+}
+
+.question-description {
+    color: #495057;
+}
+
+.question-hints {
+    background: rgba(255, 152, 0, 0.1);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    color: #212529;
+}
+
+.question-hints h4 {
+    color: #FF9800;
+}
+
+.question-hints ul {
+    color: #495057;
+}
+
+.answer-section {
+    color: #212529;
+}
+
+textarea {
+    background: #ffffff;
+    border: 2px solid #dee2e6;
+    color: #212529;
+}
+
+textarea:focus {
+    border-color: #FF9800;
+    background: #ffffff;
+}
+
+textarea::placeholder {
+    color: #6c757d;
+}
+
+.sidebar {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+.sidebar-content {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    color: #212529;
+}
+
+.sidebar-content h3 {
+    color: #FF9800;
+}
+
+.sidebar-content h4 {
+    color: #212529;
+}
+
+.sidebar-content ul {
+    color: #495057;
+}
+
+.sidebar-content a {
+    color: #FF9800;
+}
+
 /* Slider Styles */
 .slider-container {
     margin-bottom: var(--spacing-md);

@@ -60,16 +60,40 @@
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
-                                <ul>
-                                    <li>Reparierst du gerne Dinge selbst?</li>
-                                    <li>Arbeitest du gerne mit Werkzeugen?</li>
-                                    <li>Interessierst du dich für technische Zusammenhänge?</li>
-                                    <li>Machst du gerne praktische Experimente?</li>
-                                </ul>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Reparierst du gerne Dinge selbst?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="repair_things_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne mit Werkzeugen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für technische Zusammenhänge?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="technical_understanding_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Machst du gerne praktische Experimente?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="practical_experiments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="technical_skills_slider">Wie wichtig sind dir technische Fähigkeiten? (1-10)</label>
+                                    <label for="technical_skills_slider">Wie wichtig sind dir technische Fähigkeiten insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
                                                id="technical_skills_slider" 
