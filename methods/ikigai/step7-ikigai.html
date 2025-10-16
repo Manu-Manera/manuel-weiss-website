@@ -369,6 +369,19 @@
             return titles[step] || `Step ${step}`;
         }
         
+        function getExecutiveStepTitle(step) {
+            const executiveTitles = {
+                1: 'Executive Self-Assessment',
+                2: 'Leadership Passion Analysis',
+                3: 'Strategic Mission Definition', 
+                4: 'Professional Excellence Framework',
+                5: 'Core Competency Mapping',
+                6: 'Executive Synthesis',
+                7: 'Strategic Action Plan'
+            };
+            return executiveTitles[step] || `Executive Module ${step}`;
+        }
+        
         function getQuestionText(step, key) {
             const questions = {
                 1: {
@@ -505,111 +518,127 @@
             }
         }
         
-        // ERSTE SEITE: Modernes Ikigai-Diagramm
+        // EXECUTIVE COVER PAGE: Hochglanz-Manager-Broschüre
         function createIkigaiCoverPage(doc) {
-            // Moderner Gradient-Header
-            doc.setFillColor(102, 126, 234);
-            doc.rect(0, 0, 210, 50, 'F');
+            // Premium Executive Header mit Gold-Akzenten
+            doc.setFillColor(15, 23, 42); // Dunkelblau
+            doc.rect(0, 0, 210, 60, 'F');
             
-            // Gradient-Effekt simulieren
-            doc.setFillColor(118, 75, 162);
-            doc.rect(0, 0, 210, 25, 'F');
+            // Gold-Akzent-Linie
+            doc.setFillColor(255, 215, 0); // Gold
+            doc.rect(0, 58, 210, 2, 'F');
             
-            // Titel mit moderner Typografie
+            // Executive Titel
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(32);
+            doc.setFontSize(36);
             doc.setFont('helvetica', 'bold');
-            doc.text('🎯 Mein Ikigai', 20, 30);
+            doc.text('IKIGAI', 20, 35);
             
-            // Untertitel mit Schatten-Effekt
+            // Gold-Untertitel
+            doc.setTextColor(255, 215, 0);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Executive Leadership Framework', 20, 50);
+            
+            // Premium Ikigai-Diagramm
+            drawExecutiveIkigaiDiagram(doc, 105, 120);
+            
+            // Executive Beschreibung in Premium-Box
+            doc.setFillColor(248, 250, 252);
+            doc.rect(20, 180, 170, 70, 'F');
+            doc.setDrawColor(15, 23, 42);
+            doc.setLineWidth(3);
+            doc.rect(20, 180, 170, 70, 'S');
+            
+            // Gold-Akzent oben
+            doc.setFillColor(255, 215, 0);
+            doc.rect(20, 180, 170, 4, 'F');
+            
+            doc.setTextColor(15, 23, 42);
             doc.setFontSize(16);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Persönliche Lebenszweck-Analyse', 20, 42);
-            
-            // Modernes Ikigai-Diagramm
-            drawModernIkigaiDiagram(doc, 105, 100);
-            
-            // Moderne Beschreibung mit Box
-            doc.setFillColor(248, 249, 250);
-            doc.rect(15, 160, 180, 80, 'F');
-            doc.setDrawColor(102, 126, 234);
-            doc.setLineWidth(2);
-            doc.rect(15, 160, 180, 80, 'S');
-            
-            doc.setTextColor(50, 50, 50);
-            doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text('Was ist Ikigai?', 25, 175);
+            doc.text('Strategic Purpose Alignment', 30, 195);
             
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
             
-            const description = `Ikigai (生き甲斐) ist ein japanisches Konzept, das wörtlich "Grund zu leben" oder "Lebenszweck" bedeutet. 
-Es ist der Schnittpunkt von vier fundamentalen Lebensbereichen:
+            const executiveDescription = `Ikigai ist ein japanisches Führungsprinzip, das strategische Ausrichtung mit persönlicher Erfüllung verbindet. 
+Es definiert den optimalen Schnittpunkt zwischen:
 
-• WAS DU LIEBST - Deine Leidenschaften und Interessen
-• WAS DIE WELT BRAUCHT - Deine Mission und dein Beitrag zur Gesellschaft  
-• WAS DU GUT KANNST - Deine Talente und Fähigkeiten
-• WOMIT DU GELD VERDIENST - Deine Profession und Einkommensquelle
+• PASSION - Ihre Führungsleidenschaft und Vision
+• MISSION - Ihr strategischer Beitrag zur Organisation  
+• VOCATION - Ihre Kernkompetenzen und Expertise
+• PROFESSION - Ihr beruflicher Erfolg und Impact
 
-Wenn diese vier Bereiche sich überschneiden, findest du dein Ikigai - deinen persönlichen Lebenszweck.`;
+Für Executive Leaders bedeutet Ikigai die perfekte Balance zwischen strategischer Führung 
+und persönlicher Erfüllung - der Schlüssel zu nachhaltigem Führungserfolg.`;
             
-            const lines = doc.splitTextToSize(description, 160);
-            doc.text(lines, 25, 185);
+            const lines = doc.splitTextToSize(executiveDescription, 150);
+            doc.text(lines, 30, 205);
             
-            // Moderne Footer
-            doc.setFillColor(102, 126, 234);
+            // Executive Footer
+            doc.setFillColor(15, 23, 42);
             doc.rect(0, 270, 210, 20, 'F');
             
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Erstellt am: ${new Date().toLocaleDateString('de-DE')}`, 20, 280);
-            doc.text('Manuel Weiss - Ikigai-Workflow', 20, 285);
+            doc.text(`Executive Report - ${new Date().toLocaleDateString('de-DE')}`, 20, 280);
+            doc.text('Manuel Weiss Leadership Consulting', 20, 285);
         }
         
-        // Modernes Ikigai-Diagramm zeichnen
-        function drawModernIkigaiDiagram(doc, centerX, centerY) {
-            const radius = 35;
+        // Executive Ikigai-Diagramm mit Premium Design
+        function drawExecutiveIkigaiDiagram(doc, centerX, centerY) {
+            const radius = 40;
             
-            // Moderne Farben mit besseren Kontrasten
+            // Executive Farbpalette - Business-Professionell
             const circles = [
-                {x: centerX - 25, y: centerY - 25, color: [255, 107, 107], label: 'Was du liebst'},
-                {x: centerX + 25, y: centerY - 25, color: [46, 204, 113], label: 'Was die Welt braucht'},
-                {x: centerX - 25, y: centerY + 25, color: [52, 152, 219], label: 'Was du gut kannst'},
-                {x: centerX + 25, y: centerY + 25, color: [155, 89, 182], label: 'Womit du Geld verdienst'}
+                {x: centerX - 30, y: centerY - 30, color: [220, 38, 127], label: 'PASSION\nLeadership Vision'},
+                {x: centerX + 30, y: centerY - 30, color: [16, 185, 129], label: 'MISSION\nStrategic Impact'},
+                {x: centerX - 30, y: centerY + 30, color: [59, 130, 246], label: 'VOCATION\nCore Expertise'},
+                {x: centerX + 30, y: centerY + 30, color: [168, 85, 247], label: 'PROFESSION\nExecutive Success'}
             ];
             
-            // Kreise mit Schatten-Effekt
+            // Premium Kreise mit Business-Design
             circles.forEach(circle => {
-                // Schatten
-                doc.setFillColor(200, 200, 200);
-                doc.circle(circle.x + 2, circle.y + 2, radius, 'F');
+                // Schatten für Tiefe
+                doc.setFillColor(100, 100, 100);
+                doc.circle(circle.x + 3, circle.y + 3, radius, 'F');
                 
-                // Hauptkreis
+                // Hauptkreis mit Business-Farben
                 doc.setFillColor(circle.color[0], circle.color[1], circle.color[2]);
                 doc.circle(circle.x, circle.y, radius, 'F');
                 
-                // Text mit besserer Lesbarkeit
+                // Gold-Border für Premium-Look
+                doc.setDrawColor(255, 215, 0);
+                doc.setLineWidth(2);
+                doc.circle(circle.x, circle.y, radius, 'S');
+                
+                // Executive Text
                 doc.setTextColor(255, 255, 255);
-                doc.setFontSize(9);
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.text(circle.label, circle.x - 18, circle.y + 3);
+                doc.text(circle.label, circle.x - 20, circle.y - 5);
             });
             
-            // Zentrum - Ikigai mit Gradient-Effekt
-            doc.setFillColor(102, 126, 234);
-            doc.circle(centerX, centerY, 20, 'F');
+            // Executive Zentrum - Premium Design
+            doc.setFillColor(15, 23, 42); // Dunkelblau
+            doc.circle(centerX, centerY, 25, 'F');
             
-            // Border um Zentrum
-            doc.setDrawColor(255, 255, 255);
-            doc.setLineWidth(3);
-            doc.circle(centerX, centerY, 20, 'S');
+            // Gold-Border um Zentrum
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(4);
+            doc.circle(centerX, centerY, 25, 'S');
             
+            // Executive Zentrum-Text
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
+            doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text('IKIGAI', centerX - 10, centerY + 4);
+            doc.text('IKIGAI', centerX - 12, centerY - 2);
+            
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Executive', centerX - 8, centerY + 8);
         }
         
         // ZWEITE SEITE: Detaillierte Beschreibung
@@ -663,33 +692,43 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
             doc.text(lines, 20, yPos);
         }
         
-        // STEP-SEITEN: Jeder Step auf einer eigenen Seite mit Tipps
+        // EXECUTIVE STEP-SEITEN: Business-Fokussierte Leadership-Entwicklung
         function createStepPage(doc, step, stepData) {
-            // Moderner Header mit Gradient
-            doc.setFillColor(102, 126, 234);
-            doc.rect(0, 0, 210, 30, 'F');
-            doc.setFillColor(118, 75, 162);
-            doc.rect(0, 0, 210, 15, 'F');
+            // Executive Header mit Premium Design
+            doc.setFillColor(15, 23, 42); // Dunkelblau
+            doc.rect(0, 0, 210, 35, 'F');
+            
+            // Gold-Akzent-Linie
+            doc.setFillColor(255, 215, 0);
+            doc.rect(0, 33, 210, 2, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(18);
+            doc.setFontSize(20);
             doc.setFont('helvetica', 'bold');
-            doc.text(`Step ${step}: ${getStepTitle(step)}`, 20, 22);
+            doc.text(`Executive Module ${step}: ${getExecutiveStepTitle(step)}`, 20, 25);
             
-            let yPos = 45;
+            let yPos = 50;
             
-            // Moderne Step-Beschreibung
-            doc.setFillColor(248, 249, 250);
-            doc.rect(15, yPos - 5, 180, 15, 'F');
-            doc.setDrawColor(102, 126, 234);
-            doc.setLineWidth(1);
-            doc.rect(15, yPos - 5, 180, 15, 'S');
+            // Executive Step-Beschreibung
+            doc.setFillColor(248, 250, 252);
+            doc.rect(15, yPos - 5, 180, 18, 'F');
+            doc.setDrawColor(15, 23, 42);
+            doc.setLineWidth(2);
+            doc.rect(15, yPos - 5, 180, 18, 'S');
             
-            doc.setTextColor(50, 50, 50);
-            doc.setFontSize(11);
+            // Gold-Akzent oben
+            doc.setFillColor(255, 215, 0);
+            doc.rect(15, yPos - 5, 180, 3, 'F');
+            
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Strategic Leadership Assessment`, 25, yPos + 8);
+            
+            doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Fülle die folgenden Fragen aus, um dein Ikigai zu entdecken:`, 20, yPos + 5);
-            yPos += 25;
+            doc.text(`Complete the following executive questions to define your leadership Ikigai:`, 25, yPos + 15);
+            yPos += 30;
             
             // Alle Fragen für diesen Step
             const stepQuestions = getStepQuestions(step);
@@ -802,45 +841,46 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
             });
         }
         
-        // Tipps für jeden Step
+        // Executive Tipps für Business-Leader
         function getStepTips(step) {
             const allTips = {
                 1: [
                     {
-                        category: 'Schreibmethoden',
+                        category: 'Executive Self-Assessment Tools',
                         items: [
-                            {name: 'Journaling - Täglich 10 Minuten schreiben'},
-                            {name: 'Free Writing - 15 Minuten ohne Unterbrechung'},
-                            {name: 'Mind Mapping - Visuelle Gedankenstrukturierung'},
-                            {name: 'Bullet Journal - Organisierte Selbstreflexion'}
+                            {name: '360-Degree Feedback - Comprehensive Leadership Assessment'},
+                            {name: 'Leadership Style Analysis - Identify Your Management Approach'},
+                            {name: 'Emotional Intelligence Assessment - EQ for Leaders', url: 'https://www.mindtools.com/pages/article/ei-quiz.htm'},
+                            {name: 'Executive Coaching - Professional Leadership Development'}
                         ]
                     },
                     {
-                        category: 'Selbstanalyse-Tools',
+                        category: 'Strategic Self-Reflection',
                         items: [
-                            {name: 'Big Five Persönlichkeitstest', url: 'https://www.123test.com/big-five-personality-theory/'},
-                            {name: 'Myers-Briggs Typenindikator', url: 'https://www.16personalities.com/de'},
-                            {name: 'StrengthsFinder - Stärken identifizieren', url: 'https://www.gallup.com/cliftonstrengths/en/home.aspx'},
-                            {name: 'Values in Action (VIA) Test', url: 'https://www.viacharacter.org/survey/account/register'}
+                            {name: 'Leadership Journal - Daily Executive Reflection'},
+                            {name: 'SWOT Analysis - Personal Leadership Strengths & Weaknesses'},
+                            {name: 'Values Clarification - Core Leadership Principles'},
+                            {name: 'Legacy Planning - Long-term Leadership Impact'}
                         ]
                     }
                 ],
                 2: [
                     {
-                        category: 'Leidenschaften entdecken',
+                        category: 'Leadership Passion Development',
                         items: [
-                            {name: 'Passion Project - 30 Tage Challenge'},
-                            {name: 'Hobby-Experiment - Neue Aktivitäten testen'},
-                            {name: 'Interessens-Mapping - Was begeistert dich?'},
-                            {name: 'Zeit-Tracking - Womit verbringst du Zeit gerne?'}
+                            {name: 'Vision Board Creation - Visual Leadership Goals'},
+                            {name: 'Leadership Mentorship - Learn from Industry Leaders'},
+                            {name: 'Strategic Thinking Workshops - Advanced Leadership Skills'},
+                            {name: 'Innovation Labs - Creative Leadership Approaches'}
                         ]
                     },
                     {
-                        category: 'Inspirierende Bücher',
+                        category: 'Executive Leadership Books',
                         items: [
-                            {name: 'Ikigai - Hector Garcia', url: 'https://www.amazon.de/Ikigai-Hector-Garcia/dp/3442313472'},
-                            {name: 'Finde dein Warum - Simon Sinek', url: 'https://www.amazon.de/Finde-dein-Warum-Simon-Sinek/dp/3442313472'},
-                            {name: 'The Passion Test - Janet Attwood', url: 'https://www.amazon.de/Passion-Test-Janet-Attwood/dp/3442313472'}
+                            {name: 'Good to Great - Jim Collins', url: 'https://www.amazon.de/Good-Great-Jim-Collins/dp/0066620996'},
+                            {name: 'The 7 Habits of Highly Effective People - Stephen Covey', url: 'https://www.amazon.de/7-Habits-Highly-Effective-People/dp/1982137274'},
+                            {name: 'Leaders Eat Last - Simon Sinek', url: 'https://www.amazon.de/Leaders-Eat-Last-Simon-Sinek/dp/1591845327'},
+                            {name: 'The Lean Startup - Eric Ries', url: 'https://www.amazon.de/Lean-Startup-Eric-Ries/dp/0307887898'}
                         ]
                     }
                 ],
