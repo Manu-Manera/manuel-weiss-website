@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sozial (S) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/social-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 66.67%"></div>
+        </div>
+        <div class="progress-text">Schritt 4 von 6 - Sozial</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">👥</span>
+                        Sozial (S)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Menschen-orientiert, helfend
+                    </p>
+                    <p class="hero-description">
+                        Du arbeitest gerne mit anderen zusammen und hilfst Menschen. 
+                        Empathie, Kommunikation und Teamarbeit sind deine Stärken.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine sozialen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="social-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Empathie und Mitgefühl</h3>
+                            <p class="question-description">
+                                Wie sehr kannst du dich in andere Menschen hineinversetzen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Verstehst du die Gefühle anderer gut?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="understand_others_feelings_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Hilfst du gerne Menschen in Not?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="help_people_in_need_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Spürst du, wenn jemand Unterstützung braucht?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="sense_when_support_needed_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kannst du gut zuhören?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="good_listener_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="empathy_compassion_slider">Wie wichtig sind dir Empathie und Mitgefühl? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="empathy_compassion_slider" 
+                                               name="empathy_compassion_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="empathy_compassion" 
+                                    placeholder="Beschreibe deine empathischen Fähigkeiten und dein Mitgefühl..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Kommunikationsfähigkeit</h3>
+                            <p class="question-description">
+                                Wie gut kannst du mit anderen Menschen kommunizieren?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Kannst du dich klar und verständlich ausdrücken?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="express_clearly_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verstehst du nonverbale Signale gut?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="understand_nonverbal_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kannst du Konflikte gut lösen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="resolve_conflicts_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vermittelst du gerne zwischen Menschen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="mediate_between_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="communication_skills_slider">Wie wichtig sind dir Kommunikationsfähigkeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="communication_skills_slider" 
+                                               name="communication_skills_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="communication_skills" 
+                                    placeholder="Beschreibe deine Kommunikationsfähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Teamarbeit</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Teamarbeit und Zusammenarbeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne in Gruppen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_in_groups_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Unterstützt du gerne deine Teammitglieder?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="support_team_members_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Teilst du gerne Wissen und Erfahrungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="share_knowledge_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Motivierst du gerne andere?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="motivate_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="teamwork_slider">Wie wichtig ist dir Teamarbeit? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="teamwork_slider" 
+                                               name="teamwork_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="teamwork" 
+                                    placeholder="Beschreibe deine Teamarbeitsfähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Hilfsbereitschaft</h3>
+                            <p class="question-description">
+                                Wie sehr bist du bereit, anderen zu helfen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Hilfst du gerne bei Problemen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="help_with_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Engagierst du dich gerne ehrenamtlich?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="volunteer_work_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Unterstützt du gerne schwächere Menschen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="support_weaker_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Gibst du gerne Ratschläge?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="give_advice_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="helpfulness_slider">Wie wichtig ist dir Hilfsbereitschaft? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="helpfulness_slider" 
+                                               name="helpfulness_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="helpfulness" 
+                                    placeholder="Beschreibe deine Hilfsbereitschaft und dein Engagement..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Soziale Verantwortung</h3>
+                            <p class="question-description">
+                                Wie sehr fühlst du dich für die Gesellschaft verantwortlich?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Engagierst du dich für soziale Gerechtigkeit?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="social_justice_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für gesellschaftliche Themen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="social_issues_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Möchtest du die Welt verbessern?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="improve_world_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Unterstützt du gerne benachteiligte Gruppen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="support_disadvantaged_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="social_responsibility_slider">Wie wichtig ist dir soziale Verantwortung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="social_responsibility_slider" 
+                                               name="social_responsibility_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="social_responsibility" 
+                                    placeholder="Beschreibe dein soziales Engagement und deine Verantwortung..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Beziehungsfähigkeit</h3>
+                            <p class="question-description">
+                                Wie gut kannst du Beziehungen zu anderen Menschen aufbauen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Kannst du schnell Kontakte knüpfen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="make_contacts_quickly_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Pflegst du gerne Freundschaften?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="maintain_friendships_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vertraust du anderen Menschen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="trust_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kannst du gut mit Konflikten umgehen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="handle_conflicts_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="relationship_skills_slider">Wie wichtig sind dir Beziehungsfähigkeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="relationship_skills_slider" 
+                                               name="relationship_skills_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="relationship_skills" 
+                                    placeholder="Beschreibe deine Beziehungsfähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="artistic-raisec.html" class="btn-secondary">Zurück zu Künstlerisch</a>
+                            <button type="submit" class="btn-primary">Weiter zu Unternehmerisch</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine sozialen Interessen</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Empathie & Mitgefühl</h4>
+                            <ul>
+                                <li>Übe aktives Zuhören</li>
+                                <li>Entwickle emotionale Intelligenz</li>
+                                <li>Lerne, Gefühle zu erkennen</li>
+                                <li>Übe Mitgefühl im Alltag</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Kommunikation & Teamarbeit</h4>
+                            <ul>
+                                <li>Verbessere deine Kommunikationsfähigkeiten</li>
+                                <li>Lerne Konfliktlösung</li>
+                                <li>Übe Teamarbeit</li>
+                                <li>Entwickle Führungsqualitäten</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>Kommunikationstraining</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Ehrenamtliche Tätigkeiten</li>
+                                <li>Soziale Projekte</li>
+                                <li>Kommunikationskurse</li>
+                                <li>Mentoring-Programme</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.hint-slider-input, .importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('social-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const socialData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                socialData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(socialData.empathy_compassion_slider),
+                parseInt(socialData.communication_skills_slider),
+                parseInt(socialData.teamwork_slider),
+                parseInt(socialData.helpfulness_slider),
+                parseInt(socialData.social_responsibility_slider),
+                parseInt(socialData.relationship_skills_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            socialData.averageScore = averageScore;
+            socialData.type = 'Social';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-social', JSON.stringify(socialData));
+            
+            // Navigate to next step
+            window.location.href = 'enterprising-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-social');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

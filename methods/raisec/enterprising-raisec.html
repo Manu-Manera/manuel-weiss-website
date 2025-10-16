@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unternehmerisch (E) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/enterprising-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 83.33%"></div>
+        </div>
+        <div class="progress-text">Schritt 5 von 6 - Unternehmerisch</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">💼</span>
+                        Unternehmerisch (E)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Führungs-orientiert, überzeugend
+                    </p>
+                    <p class="hero-description">
+                        Du arbeitest gerne mit Menschen und Ideen. 
+                        Führungsqualitäten, Überzeugungskraft und unternehmerisches Denken sind deine Stärken.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine unternehmerischen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="enterprising-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Führungsqualitäten</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für Führung und Leitung?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Übernimmst du gerne Verantwortung?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="take_responsibility_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Motivierst du gerne andere Menschen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="motivate_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Triffst du gerne wichtige Entscheidungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="make_decisions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Leitest du gerne Teams oder Projekte?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="lead_teams_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="leadership_qualities_slider">Wie wichtig sind dir Führungsqualitäten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="leadership_qualities_slider" 
+                                               name="leadership_qualities_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="leadership_qualities" 
+                                    placeholder="Beschreibe deine Führungsqualitäten und -erfahrungen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Überzeugungskraft</h3>
+                            <p class="question-description">
+                                Wie gut kannst du andere von deinen Ideen überzeugen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Kannst du gut argumentieren?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="argue_well_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verkaufst du gerne Produkte oder Ideen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="sell_products_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Überzeugst du gerne andere von deinem Standpunkt?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="convince_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kannst du gut präsentieren?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="present_well_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="persuasion_skills_slider">Wie wichtig ist dir Überzeugungskraft? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="persuasion_skills_slider" 
+                                               name="persuasion_skills_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="persuasion_skills" 
+                                    placeholder="Beschreibe deine Überzeugungskraft und Verkaufstalent..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Unternehmerisches Denken</h3>
+                            <p class="question-description">
+                                Wie sehr denkst du unternehmerisch und zukunftsorientiert?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Erkennst du gerne Geschäftsmöglichkeiten?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="recognize_business_opportunities_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Denkst du gerne an neue Geschäftsideen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="think_business_ideas_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für Märkte und Trends?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="interested_markets_trends_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du es, Risiken einzugehen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="take_risks_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="entrepreneurial_thinking_slider">Wie wichtig ist dir unternehmerisches Denken? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="entrepreneurial_thinking_slider" 
+                                               name="entrepreneurial_thinking_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="entrepreneurial_thinking" 
+                                    placeholder="Beschreibe dein unternehmerisches Denken und deine Geschäftsideen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Initiative</h3>
+                            <p class="question-description">
+                                Wie sehr ergreifst du gerne die Initiative?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Startest du gerne neue Projekte?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="start_new_projects_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Gehst du gerne auf Menschen zu?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="approach_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Organisierst du gerne Veranstaltungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="organize_events_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Übernimmst du gerne die erste Rolle?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="take_first_role_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="initiative_slider">Wie wichtig ist dir Initiative? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="initiative_slider" 
+                                               name="initiative_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="initiative" 
+                                    placeholder="Beschreibe deine Initiative und dein proaktives Verhalten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Networking</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Networking und Beziehungsaufbau?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Knüpfst du gerne neue Kontakte?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="make_new_contacts_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Besuchst du gerne Networking-Events?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="attend_networking_events_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Pflegst du gerne berufliche Beziehungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="maintain_professional_relationships_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vermittelst du gerne zwischen Menschen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="connect_people_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="networking_slider">Wie wichtig ist dir Networking? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="networking_slider" 
+                                               name="networking_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="networking" 
+                                    placeholder="Beschreibe dein Networking und deine Beziehungsfähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Wettbewerbsorientierung</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Wettbewerb und Erfolg?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Magst du es, zu gewinnen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="like_winning_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Setzt du dir gerne hohe Ziele?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="set_high_goals_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vergleichst du dich gerne mit anderen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="compare_with_others_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Strebst du gerne nach Spitzenleistungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="strive_excellence_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="competitive_orientation_slider">Wie wichtig ist dir Wettbewerbsorientierung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="competitive_orientation_slider" 
+                                               name="competitive_orientation_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="competitive_orientation" 
+                                    placeholder="Beschreibe deine Wettbewerbsorientierung und deine Erfolgsziele..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="social-raisec.html" class="btn-secondary">Zurück zu Sozial</a>
+                            <button type="submit" class="btn-primary">Weiter zu Konventionell</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine unternehmerischen Interessen</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Führung & Management</h4>
+                            <ul>
+                                <li>Entwickle deine Führungsqualitäten</li>
+                                <li>Lerne Teammanagement</li>
+                                <li>Übe Entscheidungsfindung</li>
+                                <li>Baue Vertrauen auf</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Verkauf & Überzeugung</h4>
+                            <ul>
+                                <li>Verbessere deine Präsentationsfähigkeiten</li>
+                                <li>Lerne Verkaufstechniken</li>
+                                <li>Übe Argumentation</li>
+                                <li>Entwickle emotionale Intelligenz</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>Business-Plan-Tools</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Startup-Communities</li>
+                                <li>Führungskräfte-Seminare</li>
+                                <li>Networking-Events</li>
+                                <li>Mentoring-Programme</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.hint-slider-input, .importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('enterprising-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const enterprisingData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                enterprisingData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(enterprisingData.leadership_qualities_slider),
+                parseInt(enterprisingData.persuasion_skills_slider),
+                parseInt(enterprisingData.entrepreneurial_thinking_slider),
+                parseInt(enterprisingData.initiative_slider),
+                parseInt(enterprisingData.networking_slider),
+                parseInt(enterprisingData.competitive_orientation_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            enterprisingData.averageScore = averageScore;
+            enterprisingData.type = 'Enterprising';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-enterprising', JSON.stringify(enterprisingData));
+            
+            // Navigate to next step
+            window.location.href = 'conventional-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-enterprising');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

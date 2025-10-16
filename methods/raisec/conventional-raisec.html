@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konventionell (C) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/conventional-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
+        </div>
+        <div class="progress-text">Schritt 6 von 6 - Konventionell</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">📊</span>
+                        Konventionell (C)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Strukturiert, regelbasiert
+                    </p>
+                    <p class="hero-description">
+                        Du arbeitest gerne mit Daten und Systemen. 
+                        Organisatorische Fähigkeiten, Genauigkeit und systematisches Arbeiten sind deine Stärken.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine konventionellen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="conventional-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Organisatorische Fähigkeiten</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Organisation und Struktur?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Organisierst du gerne Dinge systematisch?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="organize_systematically_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Erstellst du gerne Listen und Pläne?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="create_lists_plans_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Strukturierst du gerne Informationen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="structure_information_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verwaltest du gerne Daten und Dokumente?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="manage_data_documents_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="organizational_skills_slider">Wie wichtig sind dir organisatorische Fähigkeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="organizational_skills_slider" 
+                                               name="organizational_skills_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="organizational_skills" 
+                                    placeholder="Beschreibe deine organisatorischen Fähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Genauigkeit und Präzision</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Genauigkeit und Fehlerfreiheit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne sehr genau?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_precisely_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Kontrollierst du gerne Details?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="check_details_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vermeidest du gerne Fehler?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="avoid_errors_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Folgst du gerne genauen Anweisungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="follow_instructions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="accuracy_precision_slider">Wie wichtig sind dir Genauigkeit und Präzision? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="accuracy_precision_slider" 
+                                               name="accuracy_precision_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="accuracy_precision" 
+                                    placeholder="Beschreibe deine Genauigkeit und Präzision..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Systematisches Arbeiten</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du systematische Arbeitsweisen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne nach festen Abläufen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_fixed_procedures_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verwendest du gerne Checklisten?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="use_checklists_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Folgst du gerne etablierten Prozessen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="follow_established_processes_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Standardisierst du gerne Arbeitsabläufe?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="standardize_workflows_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="systematic_work_slider">Wie wichtig ist dir systematisches Arbeiten? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="systematic_work_slider" 
+                                               name="systematic_work_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="systematic_work" 
+                                    placeholder="Beschreibe dein systematisches Arbeitsverhalten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Zuverlässigkeit</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Zuverlässigkeit und Pünktlichkeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Hältst du gerne Termine ein?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="keep_appointments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Erfüllst du gerne Versprechen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="keep_promises_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne termingerecht?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_on_time_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schätzt du Stabilität und Sicherheit?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="value_stability_security_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="reliability_slider">Wie wichtig ist dir Zuverlässigkeit? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="reliability_slider" 
+                                               name="reliability_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="reliability" 
+                                    placeholder="Beschreibe deine Zuverlässigkeit und Pünktlichkeit..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Datenverarbeitung</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für Daten und Zahlen?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne mit Tabellen und Listen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_tables_lists_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für Statistiken?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="interested_statistics_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verwendest du gerne Computerprogramme?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="use_computer_programs_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Analysierst du gerne Daten?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="analyze_data_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="data_processing_slider">Wie wichtig ist dir Datenverarbeitung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="data_processing_slider" 
+                                               name="data_processing_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="data_processing" 
+                                    placeholder="Beschreibe deine Interessen an Datenverarbeitung..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Regelkonformität</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du Regeln und Vorschriften?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Hältst du gerne Regeln ein?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="follow_rules_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne nach Vorschriften?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_according_regulations_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schätzt du klare Strukturen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="value_clear_structures_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Bevorzugst du etablierte Verfahren?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="prefer_established_procedures_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="rule_compliance_slider">Wie wichtig ist dir Regelkonformität? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="rule_compliance_slider" 
+                                               name="rule_compliance_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="rule_compliance" 
+                                    placeholder="Beschreibe deine Einstellung zu Regeln und Vorschriften..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="enterprising-raisec.html" class="btn-secondary">Zurück zu Unternehmerisch</a>
+                            <button type="submit" class="btn-primary">Auswertung anzeigen</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine konventionellen Interessen</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Organisation & Struktur</h4>
+                            <ul>
+                                <li>Entwickle systematische Arbeitsweisen</li>
+                                <li>Verwende digitale Tools zur Organisation</li>
+                                <li>Erstelle klare Prozesse und Abläufe</li>
+                                <li>Dokumentiere Arbeitsabläufe</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Genauigkeit & Qualität</h4>
+                            <ul>
+                                <li>Übe sorgfältiges Arbeiten</li>
+                                <li>Implementiere Qualitätskontrollen</li>
+                                <li>Lerne Fehleranalyse</li>
+                                <li>Entwickle Checklisten</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>Projektmanagement-Tools</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Büroorganisation-Kurse</li>
+                                <li>Datenverarbeitungs-Seminare</li>
+                                <li>Qualitätsmanagement-Schulungen</li>
+                                <li>Prozessoptimierung-Workshops</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.hint-slider-input, .importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('conventional-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const conventionalData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                conventionalData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(conventionalData.organizational_skills_slider),
+                parseInt(conventionalData.accuracy_precision_slider),
+                parseInt(conventionalData.systematic_work_slider),
+                parseInt(conventionalData.reliability_slider),
+                parseInt(conventionalData.data_processing_slider),
+                parseInt(conventionalData.rule_compliance_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            conventionalData.averageScore = averageScore;
+            conventionalData.type = 'Conventional';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-conventional', JSON.stringify(conventionalData));
+            
+            // Navigate to results
+            window.location.href = 'raisec-results.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-conventional');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

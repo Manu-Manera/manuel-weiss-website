@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investigativ (I) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/investigative-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 33.33%"></div>
+        </div>
+        <div class="progress-text">Schritt 2 von 6 - Investigativ</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">🔬</span>
+                        Investigativ (I)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Forschend-analytisch, wissenschaftlich interessiert
+                    </p>
+                    <p class="hero-description">
+                        Du löst gerne komplexe Probleme, forschst und analysierst. 
+                        Wissenschaftliche Methoden und logisches Denken motivieren dich.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine investigativen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="investigative-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Analytisches Denken</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für analytisches Denken und Problemlösung?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Analysierst du gerne komplexe Probleme?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="analyze_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für wissenschaftliche Methoden?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="scientific_methods_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du logische Rätsel und Denksport?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="logical_puzzles_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Forschst du gerne nach Ursachen und Zusammenhängen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="research_causes_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="analytical_thinking_slider">Wie wichtig ist dir analytisches Denken insgesamt? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="analytical_thinking_slider" 
+                                               name="analytical_thinking_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="analytical_thinking" 
+                                    placeholder="Beschreibe deine analytischen Fähigkeiten und Interessen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Forschung und Wissenschaft</h3>
+                            <p class="question-description">
+                                Wie sehr fasziniert dich Forschung und wissenschaftliche Arbeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Liest du gerne wissenschaftliche Artikel?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="read_scientific_articles_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für neue Entdeckungen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="new_discoveries_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Führst du gerne Experimente durch?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="conduct_experiments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du es, Hypothesen zu testen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="test_hypotheses_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="research_science_slider">Wie wichtig sind dir Forschung und Wissenschaft? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="research_science_slider" 
+                                               name="research_science_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="research_science" 
+                                    placeholder="Beschreibe deine Interessen an Forschung und Wissenschaft..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Komplexe Problemlösung</h3>
+                            <p class="question-description">
+                                Wie gehst du an komplexe Probleme heran?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Zerlegst du komplexe Probleme in kleinere Teile?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="break_down_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Verwendest du systematische Methoden?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="systematic_methods_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Suchst du nach Mustern und Zusammenhängen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="find_patterns_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Bewertest du verschiedene Lösungsansätze?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="evaluate_solutions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="complex_problem_solving_slider">Wie wichtig ist dir komplexe Problemlösung? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="complex_problem_solving_slider" 
+                                               name="complex_problem_solving_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="complex_problem_solving" 
+                                    placeholder="Beschreibe deine Herangehensweise an komplexe Probleme..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Wissensdrang</h3>
+                            <p class="question-description">
+                                Wie stark ist dein Wissensdrang und deine Neugier?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Lernst du gerne neue Konzepte und Theorien?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="learn_concepts_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Stellst du gerne "Warum?"-Fragen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="ask_why_questions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Vertiefst du dich gerne in komplexe Themen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="deep_dive_topics_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Suchst du nach neuen Erkenntnissen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="seek_insights_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="knowledge_curiosity_slider">Wie wichtig ist dir Wissensdrang? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="knowledge_curiosity_slider" 
+                                               name="knowledge_curiosity_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="knowledge_curiosity" 
+                                    placeholder="Beschreibe deinen Wissensdrang und deine Neugier..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Mathematisch-logisches Denken</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für Mathematik und Logik?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Löst du gerne mathematische Probleme?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="solve_math_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Interessierst du dich für Statistik und Datenanalyse?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="statistics_data_analysis_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du logische Beweise und Argumentationen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="logical_proofs_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne mit Formeln und Algorithmen?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="formulas_algorithms_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="mathematical_logical_slider">Wie wichtig ist dir mathematisch-logisches Denken? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="mathematical_logical_slider" 
+                                               name="mathematical_logical_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="mathematical_logical" 
+                                    placeholder="Beschreibe deine mathematischen und logischen Interessen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Unabhängige Arbeit</h3>
+                            <p class="question-description">
+                                Wie sehr schätzt du unabhängige, selbstständige Arbeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <div class="hints-sliders">
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne allein an Projekten?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="work_alone_projects_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Magst du es, deine eigenen Forschungsfragen zu entwickeln?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="develop_research_questions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Schätzt du intellektuelle Freiheit?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="intellectual_freedom_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                    <div class="hint-slider">
+                                        <label>Arbeitest du gerne in deinem eigenen Tempo?</label>
+                                        <div class="slider-wrapper">
+                                            <input type="range" name="own_pace_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <span class="slider-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="slider-container">
+                                    <label for="independent_work_slider">Wie wichtig ist dir unabhängige Arbeit? (1-10)</label>
+                                    <div class="slider-wrapper">
+                                        <input type="range" 
+                                               id="independent_work_slider" 
+                                               name="independent_work_slider" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               class="importance-slider">
+                                        <span class="slider-value">5</span>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    name="independent_work" 
+                                    placeholder="Beschreibe deine Präferenzen für unabhängige Arbeit..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="realistic-raisec.html" class="btn-secondary">Zurück zu Realistisch</a>
+                            <button type="submit" class="btn-primary">Weiter zu Künstlerisch</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine investigativen Interessen</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Analytisches Denken</h4>
+                            <ul>
+                                <li>Zerlege komplexe Probleme in kleinere Teile</li>
+                                <li>Verwende systematische Methoden</li>
+                                <li>Suche nach Mustern und Zusammenhängen</li>
+                                <li>Bewerte verschiedene Lösungsansätze</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Forschung & Wissenschaft</h4>
+                            <ul>
+                                <li>Lese wissenschaftliche Artikel</li>
+                                <li>Führe eigene Experimente durch</li>
+                                <li>Teste Hypothesen systematisch</li>
+                                <li>Verfolge neue Entdeckungen</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>Wissenschaftliche Datenbanken</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Fachzeitschriften und Papers</li>
+                                <li>Online-Kurse und MOOCs</li>
+                                <li>Forschungsnetzwerke</li>
+                                <li>Konferenzen und Workshops</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Slider functionality
+        document.querySelectorAll('.hint-slider-input, .importance-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+            });
+        });
+
+        // Form handling
+        document.getElementById('investigative-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data including sliders
+            const formData = new FormData(this);
+            const investigativeData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                investigativeData[key] = value;
+            }
+            
+            // Calculate average score
+            const sliderValues = [
+                parseInt(investigativeData.analytical_thinking_slider),
+                parseInt(investigativeData.research_science_slider),
+                parseInt(investigativeData.complex_problem_solving_slider),
+                parseInt(investigativeData.knowledge_curiosity_slider),
+                parseInt(investigativeData.mathematical_logical_slider),
+                parseInt(investigativeData.independent_work_slider)
+            ];
+            
+            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
+            investigativeData.averageScore = averageScore;
+            investigativeData.type = 'Investigative';
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-investigative', JSON.stringify(investigativeData));
+            
+            // Navigate to next step
+            window.location.href = 'artistic-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-investigative');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                    // Update slider displays
+                    if (key.includes('_slider')) {
+                        const valueDisplay = field.parentElement.querySelector('.slider-value');
+                        if (valueDisplay) {
+                            valueDisplay.textContent = data[key];
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
