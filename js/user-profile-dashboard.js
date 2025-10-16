@@ -35,8 +35,8 @@ class UserProfileDashboard {
         const maxAttempts = 50;
         
         while (attempts < maxAttempts) {
-            if (window.userAuth && window.userAuth.isInitialized()) {
-                this.currentUser = window.userAuth.getCurrentUser();
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+                this.currentUser = window.realUserAuth.getCurrentUser();
                 if (this.currentUser) {
                     console.log('✅ User authenticated:', this.currentUser.email);
                     return;
@@ -47,8 +47,18 @@ class UserProfileDashboard {
             attempts++;
         }
         
-        console.warn('⚠️ Auth system not ready, using demo data');
-        this.currentUser = this.getDemoUser();
+        console.warn('⚠️ Auth system not ready, redirecting to login');
+        this.redirectToLogin();
+    }
+
+    redirectToLogin() {
+        // Show login modal
+        if (window.realUserAuth) {
+            window.realUserAuth.showAuthModal();
+        } else {
+            // Fallback: redirect to main page
+            window.location.href = 'index.html';
+        }
     }
 
     getDemoUser() {
@@ -77,16 +87,12 @@ class UserProfileDashboard {
     }
 
     loadUserData() {
-        // Load progress data from existing system
-        if (window.userProgressTracker) {
-            this.progressData = window.userProgressTracker.getProgressData();
+        // Load data from real auth system
+        if (window.realUserAuth) {
+            this.progressData = window.realUserAuth.getProgressData();
+            this.achievements = window.realUserAuth.getAchievements();
+            this.goals = window.realUserAuth.getGoals();
         }
-        
-        // Load achievements
-        this.loadAchievements();
-        
-        // Load goals
-        this.loadGoals();
         
         // Load activity data
         this.loadActivityData();
@@ -779,8 +785,9 @@ class UserProfileDashboard {
     }
 
     saveUserData() {
-        if (window.userAuth) {
-            window.userAuth.updateUserInStorage();
+        if (window.realUserAuth) {
+            // Data is automatically saved by the auth system
+            console.log('✅ User data saved via real auth system');
         }
     }
 

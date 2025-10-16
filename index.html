@@ -54,12 +54,15 @@
             </a>
         </div>
         
-        <!-- Mein Profil Button -->
-        <div class="profile-dashboard-section">
-            <a href="user-profile-dashboard.html" class="btn btn-dashboard">
-                <i class="fas fa-user-circle"></i>
-                <span class="dashboard-text">Mein Profil</span>
-            </a>
+        <!-- Auth Buttons -->
+        <div class="auth-section">
+            <button id="realAuthButton" class="btn btn-auth" onclick="realUserAuth.showAuthModal()">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="auth-text">Anmelden</span>
+            </button>
+            <div id="realUserMenu" class="user-menu" style="display: none;">
+                <!-- User menu will be populated by JavaScript -->
+            </div>
         </div>
                 
                 
@@ -367,6 +370,7 @@
     
     
     <!-- Scripts -->
+    <script src="js/real-user-auth-system.js"></script>
     <script src="script.js"></script>
     
         <!-- Website Data Sync - KORRIGIERTE VERSION -->
