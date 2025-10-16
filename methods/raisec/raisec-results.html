@@ -183,13 +183,30 @@
             debugButton1.style.borderRadius = '5px';
             debugButton1.onclick = function() {
                 console.log('=== RAISEC DEBUG DATA ===');
-                console.log('Realistic:', localStorage.getItem('raisec-realistic'));
-                console.log('Investigative:', localStorage.getItem('raisec-investigative'));
-                console.log('Artistic:', localStorage.getItem('raisec-artistic'));
-                console.log('Social:', localStorage.getItem('raisec-social'));
-                console.log('Enterprising:', localStorage.getItem('raisec-enterprising'));
-                console.log('Conventional:', localStorage.getItem('raisec-conventional'));
-                alert('Debug data logged to console (F12)');
+                const realistic = localStorage.getItem('raisec-realistic');
+                const investigative = localStorage.getItem('raisec-investigative');
+                const artistic = localStorage.getItem('raisec-artistic');
+                const social = localStorage.getItem('raisec-social');
+                const enterprising = localStorage.getItem('raisec-enterprising');
+                const conventional = localStorage.getItem('raisec-conventional');
+                
+                console.log('Realistic:', realistic);
+                console.log('Investigative:', investigative);
+                console.log('Artistic:', artistic);
+                console.log('Social:', social);
+                console.log('Enterprising:', enterprising);
+                console.log('Conventional:', conventional);
+                
+                // Show data in alert for easy reading
+                let alertText = 'RAISEC Debug Data:\n\n';
+                alertText += `Realistic: ${realistic || 'null'}\n`;
+                alertText += `Investigative: ${investigative || 'null'}\n`;
+                alertText += `Artistic: ${artistic || 'null'}\n`;
+                alertText += `Social: ${social || 'null'}\n`;
+                alertText += `Enterprising: ${enterprising || 'null'}\n`;
+                alertText += `Conventional: ${conventional || 'null'}\n`;
+                
+                alert(alertText);
             };
             
             const debugButton2 = document.createElement('button');
@@ -251,18 +268,21 @@
             
             // Check if we have any data
             const hasData = Object.values(scores).some(score => score > 0);
+            console.log('Has data:', hasData);
+            console.log('All scores:', scores);
             
             if (!hasData) {
                 console.log('No data found, showing message to complete test');
                 // Show message to complete test instead of demo data
                 document.querySelector('.main-type').innerHTML = `
-                    <div class="no-data-message">
-                        <h2>Test noch nicht abgeschlossen</h2>
-                        <p>Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
-                        <a href="index-raisec.html" class="btn btn-primary">Test starten</a>
+                    <div class="no-data-message" style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px; margin: 2rem 0;">
+                        <h2 style="color: #dc3545; margin-bottom: 1rem;">Test noch nicht abgeschlossen</h2>
+                        <p style="color: #6c757d; margin-bottom: 2rem;">Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
+                        <a href="index-raisec.html" class="btn btn-primary" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Test starten</a>
                     </div>
                 `;
             } else {
+                console.log('Data found, updating UI with real data');
                 // Update UI with real data
                 updateMainType(mainType, scores[mainType]);
                 updateDetailedEvaluation(scores);
@@ -273,23 +293,31 @@
         }
 
         function calculateTypeScore(data) {
-            if (!data || Object.keys(data).length === 0) return 0;
+            if (!data || Object.keys(data).length === 0) {
+                console.log('No data found for this type');
+                return 0;
+            }
             
             console.log('Calculating score for data:', data);
             
             // Calculate average from all slider values
             const sliderValues = Object.values(data).filter(value => {
                 const numValue = parseInt(value);
-                return !isNaN(numValue) && numValue >= 1 && numValue <= 10;
+                const isValid = !isNaN(numValue) && numValue >= 1 && numValue <= 10;
+                console.log(`Value: ${value}, Parsed: ${numValue}, Valid: ${isValid}`);
+                return isValid;
             });
             
             console.log('Slider values found:', sliderValues);
             
-            if (sliderValues.length === 0) return 0;
+            if (sliderValues.length === 0) {
+                console.log('No valid slider values found');
+                return 0;
+            }
             
             const sum = sliderValues.reduce((acc, val) => acc + parseInt(val), 0);
             const average = sum / sliderValues.length;
-            console.log('Average score:', average);
+            console.log(`Sum: ${sum}, Count: ${sliderValues.length}, Average: ${average}`);
             
             return Math.round(average * 10) / 10;
         }
