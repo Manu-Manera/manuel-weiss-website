@@ -505,29 +505,43 @@
             }
         }
         
-        // ERSTE SEITE: Ikigai-Diagramm
+        // ERSTE SEITE: Modernes Ikigai-Diagramm
         function createIkigaiCoverPage(doc) {
-            // Header mit Gradient-Effekt
+            // Moderner Gradient-Header
             doc.setFillColor(102, 126, 234);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.rect(0, 0, 210, 50, 'F');
             
-            // Titel
+            // Gradient-Effekt simulieren
+            doc.setFillColor(118, 75, 162);
+            doc.rect(0, 0, 210, 25, 'F');
+            
+            // Titel mit moderner Typografie
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(28);
+            doc.setFontSize(32);
             doc.setFont('helvetica', 'bold');
-            doc.text('🎯 Mein Ikigai', 20, 25);
+            doc.text('🎯 Mein Ikigai', 20, 30);
             
-            // Untertitel
-            doc.setFontSize(14);
+            // Untertitel mit Schatten-Effekt
+            doc.setFontSize(16);
             doc.setFont('helvetica', 'normal');
-            doc.text('Persönliche Lebenszweck-Analyse', 20, 35);
+            doc.text('Persönliche Lebenszweck-Analyse', 20, 42);
             
-            // Ikigai-Diagramm zeichnen
-            drawIkigaiDiagram(doc, 105, 80);
+            // Modernes Ikigai-Diagramm
+            drawModernIkigaiDiagram(doc, 105, 100);
             
-            // Ausführliche Beschreibung
+            // Moderne Beschreibung mit Box
+            doc.setFillColor(248, 249, 250);
+            doc.rect(15, 160, 180, 80, 'F');
+            doc.setDrawColor(102, 126, 234);
+            doc.setLineWidth(2);
+            doc.rect(15, 160, 180, 80, 'S');
+            
             doc.setTextColor(50, 50, 50);
-            doc.setFontSize(12);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Was ist Ikigai?', 25, 175);
+            
+            doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
             
             const description = `Ikigai (生き甲斐) ist ein japanisches Konzept, das wörtlich "Grund zu leben" oder "Lebenszweck" bedeutet. 
@@ -538,49 +552,64 @@ Es ist der Schnittpunkt von vier fundamentalen Lebensbereichen:
 • WAS DU GUT KANNST - Deine Talente und Fähigkeiten
 • WOMIT DU GELD VERDIENST - Deine Profession und Einkommensquelle
 
-Wenn diese vier Bereiche sich überschneiden, findest du dein Ikigai - deinen persönlichen Lebenszweck. 
-Dieses Konzept hilft dir dabei, ein erfülltes, zielgerichtetes Leben zu führen.`;
+Wenn diese vier Bereiche sich überschneiden, findest du dein Ikigai - deinen persönlichen Lebenszweck.`;
             
-            const lines = doc.splitTextToSize(description, 170);
-            doc.text(lines, 20, 150);
+            const lines = doc.splitTextToSize(description, 160);
+            doc.text(lines, 25, 185);
             
-            // Footer
+            // Moderne Footer
+            doc.setFillColor(102, 126, 234);
+            doc.rect(0, 270, 210, 20, 'F');
+            
+            doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
+            doc.setFont('helvetica', 'normal');
             doc.text(`Erstellt am: ${new Date().toLocaleDateString('de-DE')}`, 20, 280);
             doc.text('Manuel Weiss - Ikigai-Workflow', 20, 285);
         }
         
-        // Ikigai-Diagramm zeichnen
-        function drawIkigaiDiagram(doc, centerX, centerY) {
-            const radius = 30;
+        // Modernes Ikigai-Diagramm zeichnen
+        function drawModernIkigaiDiagram(doc, centerX, centerY) {
+            const radius = 35;
             
-            // Vier Kreise in verschiedenen Farben
+            // Moderne Farben mit besseren Kontrasten
             const circles = [
-                {x: centerX - 20, y: centerY - 20, color: [255, 193, 7], label: 'Was du liebst'},
-                {x: centerX + 20, y: centerY - 20, color: [40, 167, 69], label: 'Was die Welt braucht'},
-                {x: centerX - 20, y: centerY + 20, color: [220, 53, 69], label: 'Was du gut kannst'},
-                {x: centerX + 20, y: centerY + 20, color: [0, 123, 255], label: 'Womit du Geld verdienst'}
+                {x: centerX - 25, y: centerY - 25, color: [255, 107, 107], label: 'Was du liebst'},
+                {x: centerX + 25, y: centerY - 25, color: [46, 204, 113], label: 'Was die Welt braucht'},
+                {x: centerX - 25, y: centerY + 25, color: [52, 152, 219], label: 'Was du gut kannst'},
+                {x: centerX + 25, y: centerY + 25, color: [155, 89, 182], label: 'Womit du Geld verdienst'}
             ];
             
+            // Kreise mit Schatten-Effekt
             circles.forEach(circle => {
+                // Schatten
+                doc.setFillColor(200, 200, 200);
+                doc.circle(circle.x + 2, circle.y + 2, radius, 'F');
+                
+                // Hauptkreis
                 doc.setFillColor(circle.color[0], circle.color[1], circle.color[2]);
                 doc.circle(circle.x, circle.y, radius, 'F');
                 
+                // Text mit besserer Lesbarkeit
                 doc.setTextColor(255, 255, 255);
-                doc.setFontSize(8);
+                doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
-                doc.text(circle.label, circle.x - 15, circle.y + 3);
+                doc.text(circle.label, circle.x - 18, circle.y + 3);
             });
             
-            // Zentrum - Ikigai
+            // Zentrum - Ikigai mit Gradient-Effekt
             doc.setFillColor(102, 126, 234);
-            doc.circle(centerX, centerY, 15, 'F');
+            doc.circle(centerX, centerY, 20, 'F');
+            
+            // Border um Zentrum
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(3);
+            doc.circle(centerX, centerY, 20, 'S');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
-            doc.text('IKIGAI', centerX - 8, centerY + 3);
+            doc.text('IKIGAI', centerX - 10, centerY + 4);
         }
         
         // ZWEITE SEITE: Detaillierte Beschreibung
@@ -634,30 +663,38 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
             doc.text(lines, 20, yPos);
         }
         
-        // STEP-SEITEN: Jeder Step auf einer eigenen Seite
+        // STEP-SEITEN: Jeder Step auf einer eigenen Seite mit Tipps
         function createStepPage(doc, step, stepData) {
-            // Header
+            // Moderner Header mit Gradient
             doc.setFillColor(102, 126, 234);
-            doc.rect(0, 0, 210, 25, 'F');
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setFillColor(118, 75, 162);
+            doc.rect(0, 0, 210, 15, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
+            doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text(`Step ${step}: ${getStepTitle(step)}`, 20, 18);
+            doc.text(`Step ${step}: ${getStepTitle(step)}`, 20, 22);
             
-            let yPos = 40;
+            let yPos = 45;
             
-            // Step-Beschreibung
+            // Moderne Step-Beschreibung
+            doc.setFillColor(248, 249, 250);
+            doc.rect(15, yPos - 5, 180, 15, 'F');
+            doc.setDrawColor(102, 126, 234);
+            doc.setLineWidth(1);
+            doc.rect(15, yPos - 5, 180, 15, 'S');
+            
             doc.setTextColor(50, 50, 50);
-            doc.setFontSize(10);
+            doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Fülle die folgenden Fragen aus, um dein Ikigai zu entdecken:`, 20, yPos);
-            yPos += 15;
+            doc.text(`Fülle die folgenden Fragen aus, um dein Ikigai zu entdecken:`, 20, yPos + 5);
+            yPos += 25;
             
             // Alle Fragen für diesen Step
             const stepQuestions = getStepQuestions(step);
             stepQuestions.forEach((questionData, index) => {
-                if (yPos > 250) {
+                if (yPos > 200) {
                     doc.addPage();
                     yPos = 20;
                 }
@@ -665,12 +702,19 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                 const question = questionData.question;
                 const answer = stepData[questionData.key];
                 
+                // Moderne Frage-Box
+                doc.setFillColor(240, 248, 255);
+                doc.rect(15, yPos - 3, 180, 12, 'F');
+                doc.setDrawColor(102, 126, 234);
+                doc.setLineWidth(1);
+                doc.rect(15, yPos - 3, 180, 12, 'S');
+                
                 // Frage
                 doc.setFont('helvetica', 'bold');
                 doc.setTextColor(102, 126, 234);
-                doc.setFontSize(11);
-                doc.text(`${index + 1}. ${question}`, 20, yPos);
-                yPos += 8;
+                doc.setFontSize(12);
+                doc.text(`${index + 1}. ${question}`, 20, yPos + 5);
+                yPos += 15;
                 
                 // Antwort-Bereich
                 doc.setFont('helvetica', 'normal');
@@ -681,7 +725,7 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                     // Gefüllte Antwort
                     const lines = doc.splitTextToSize(answer, 170);
                     doc.text(lines, 25, yPos);
-                    yPos += lines.length * 5 + 10;
+                    yPos += lines.length * 5 + 15;
                 } else {
                     // Leere Zeilen zum Ausfüllen
                     doc.setTextColor(150, 150, 150);
@@ -695,6 +739,213 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                 
                 yPos += 10;
             });
+            
+            // Tipps von Seitenrändern hinzufügen
+            addSidebarTips(doc, step, yPos);
+        }
+        
+        // Tipps von Seitenrändern hinzufügen
+        function addSidebarTips(doc, step, yPos) {
+            if (yPos > 150) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Tipps-Header
+            doc.setFillColor(46, 204, 113);
+            doc.rect(15, yPos - 5, 180, 12, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('💡 Hilfreiche Tipps & Ressourcen', 20, yPos + 3);
+            yPos += 20;
+            
+            // Tipps basierend auf Step
+            const tips = getStepTips(step);
+            tips.forEach(tip => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                // Tip-Kategorie
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(46, 204, 113);
+                doc.setFontSize(11);
+                doc.text(`• ${tip.category}:`, 20, yPos);
+                yPos += 8;
+                
+                // Tip-Inhalte
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(50, 50, 50);
+                doc.setFontSize(9);
+                
+                tip.items.forEach(item => {
+                    if (item.url) {
+                        // Klickbarer Link
+                        doc.setTextColor(52, 152, 219);
+                        doc.text(`  - ${item.name}`, 25, yPos);
+                        // Link-URL als kleine Schrift
+                        doc.setFontSize(7);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text(`    ${item.url}`, 25, yPos + 4);
+                        doc.setFontSize(9);
+                        yPos += 8;
+                    } else {
+                        doc.text(`  - ${item.name}`, 25, yPos);
+                        yPos += 6;
+                    }
+                });
+                
+                yPos += 8;
+            });
+        }
+        
+        // Tipps für jeden Step
+        function getStepTips(step) {
+            const allTips = {
+                1: [
+                    {
+                        category: 'Schreibmethoden',
+                        items: [
+                            {name: 'Journaling - Täglich 10 Minuten schreiben'},
+                            {name: 'Free Writing - 15 Minuten ohne Unterbrechung'},
+                            {name: 'Mind Mapping - Visuelle Gedankenstrukturierung'},
+                            {name: 'Bullet Journal - Organisierte Selbstreflexion'}
+                        ]
+                    },
+                    {
+                        category: 'Selbstanalyse-Tools',
+                        items: [
+                            {name: 'Big Five Persönlichkeitstest', url: 'https://www.123test.com/big-five-personality-theory/'},
+                            {name: 'Myers-Briggs Typenindikator', url: 'https://www.16personalities.com/de'},
+                            {name: 'StrengthsFinder - Stärken identifizieren', url: 'https://www.gallup.com/cliftonstrengths/en/home.aspx'},
+                            {name: 'Values in Action (VIA) Test', url: 'https://www.viacharacter.org/survey/account/register'}
+                        ]
+                    }
+                ],
+                2: [
+                    {
+                        category: 'Leidenschaften entdecken',
+                        items: [
+                            {name: 'Passion Project - 30 Tage Challenge'},
+                            {name: 'Hobby-Experiment - Neue Aktivitäten testen'},
+                            {name: 'Interessens-Mapping - Was begeistert dich?'},
+                            {name: 'Zeit-Tracking - Womit verbringst du Zeit gerne?'}
+                        ]
+                    },
+                    {
+                        category: 'Inspirierende Bücher',
+                        items: [
+                            {name: 'Ikigai - Hector Garcia', url: 'https://www.amazon.de/Ikigai-Hector-Garcia/dp/3442313472'},
+                            {name: 'Finde dein Warum - Simon Sinek', url: 'https://www.amazon.de/Finde-dein-Warum-Simon-Sinek/dp/3442313472'},
+                            {name: 'The Passion Test - Janet Attwood', url: 'https://www.amazon.de/Passion-Test-Janet-Attwood/dp/3442313472'}
+                        ]
+                    }
+                ],
+                3: [
+                    {
+                        category: 'Mission finden',
+                        items: [
+                            {name: 'Impact Mapping - Welchen Unterschied willst du machen?'},
+                            {name: 'Problem-Solving Ansatz - Welche Probleme lösen?'},
+                            {name: 'Legacy Thinking - Was willst du hinterlassen?'},
+                            {name: 'Service Learning - Ehrenamtliche Arbeit'}
+                        ]
+                    },
+                    {
+                        category: 'Inspirierende Videos',
+                        items: [
+                            {name: 'TED Talk: Start with Why - Simon Sinek', url: 'https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action'},
+                            {name: 'TED Talk: The Power of Vulnerability - Brené Brown', url: 'https://www.ted.com/talks/brene_brown_the_power_of_vulnerability'},
+                            {name: 'TED Talk: Your Body Language Shapes Who You Are - Amy Cuddy', url: 'https://www.ted.com/talks/amy_cuddy_your_body_language_shapes_who_you_are'}
+                        ]
+                    }
+                ],
+                4: [
+                    {
+                        category: 'Profession entwickeln',
+                        items: [
+                            {name: 'Skill Assessment - Welche Fähigkeiten verkaufen?'},
+                            {name: 'Market Research - Was ist gefragt?'},
+                            {name: 'Freelancing - Erste Schritte', url: 'https://www.fiverr.com'},
+                            {name: 'Online Kurse - Fähigkeiten erweitern', url: 'https://www.udemy.com'}
+                        ]
+                    },
+                    {
+                        category: 'Business Tools',
+                        items: [
+                            {name: 'LinkedIn Learning', url: 'https://www.linkedin.com/learning/'},
+                            {name: 'Coursera', url: 'https://www.coursera.org'},
+                            {name: 'Skillshare', url: 'https://www.skillshare.com'},
+                            {name: 'MasterClass', url: 'https://www.masterclass.com'}
+                        ]
+                    }
+                ],
+                5: [
+                    {
+                        category: 'Talente entdecken',
+                        items: [
+                            {name: 'Feedback sammeln - Was sagen andere?'},
+                            {name: 'Achievement Analysis - Was hast du erreicht?'},
+                            {name: 'Natural Abilities Test', url: 'https://www.123test.com/natural-abilities-test/'},
+                            {name: 'Skill Inventory - Alle deine Fähigkeiten auflisten'}
+                        ]
+                    },
+                    {
+                        category: 'Entwicklungstools',
+                        items: [
+                            {name: 'Duolingo - Sprachen lernen', url: 'https://www.duolingo.com'},
+                            {name: 'Khan Academy - Kostenlose Bildung', url: 'https://www.khanacademy.org'},
+                            {name: 'Codecademy - Programmieren lernen', url: 'https://www.codecademy.com'},
+                            {name: 'Canva - Design lernen', url: 'https://www.canva.com'}
+                        ]
+                    }
+                ],
+                6: [
+                    {
+                        category: 'Synthese-Tools',
+                        items: [
+                            {name: 'Ikigai Canvas - Visuelle Darstellung'},
+                            {name: 'Life Wheel - Alle Bereiche bewerten'},
+                            {name: 'SWOT Analyse - Stärken, Schwächen, Chancen, Risiken'},
+                            {name: 'Vision Board - Visuelle Zielsetzung'}
+                        ]
+                    },
+                    {
+                        category: 'Coaching & Beratung',
+                        items: [
+                            {name: 'Life Coach finden', url: 'https://www.lifecoach-directory.org.uk'},
+                            {name: 'Career Counselor', url: 'https://www.careerkey.org'},
+                            {name: 'Online Coaching', url: 'https://www.betterup.com'},
+                            {name: 'Peer Coaching - Austausch mit Gleichgesinnten'}
+                        ]
+                    }
+                ],
+                7: [
+                    {
+                        category: 'Aktionsplan-Tools',
+                        items: [
+                            {name: 'SMART Goals - Spezifisch, Messbar, Erreichbar'},
+                            {name: 'Habit Tracking - Gewohnheiten aufbauen', url: 'https://habitica.com'},
+                            {name: 'Project Management - Trello, Asana', url: 'https://trello.com'},
+                            {name: 'Time Management - Pomodoro Technik'}
+                        ]
+                    },
+                    {
+                        category: 'Motivation & Accountability',
+                        items: [
+                            {name: 'Accountability Partner finden'},
+                            {name: 'Progress Tracking - Fortschritt messen'},
+                            {name: 'Celebration Rituals - Erfolge feiern'},
+                            {name: 'Review Sessions - Regelmäßige Reflexion'}
+                        ]
+                    }
+                ]
+            };
+            
+            return allTips[step] || [];
         }
         
         // LETZTE SEITE: Synthese
