@@ -343,12 +343,49 @@
                 location.reload();
             };
             
+            const debugButton3 = document.createElement('button');
+            debugButton3.textContent = 'Debug: Test Data';
+            debugButton3.style.background = 'green';
+            debugButton3.style.color = 'white';
+            debugButton3.style.padding = '10px';
+            debugButton3.style.border = 'none';
+            debugButton3.style.borderRadius = '5px';
+            debugButton3.onclick = function() {
+                // Add test data
+                const testData = {
+                    'technical_skills_slider': '8',
+                    'problem_solving_slider': '7',
+                    'technical_interests_slider': '9',
+                    'physical_outdoor_slider': '6',
+                    'structured_work_slider': '8',
+                    'security_reliability_slider': '7',
+                    'concrete_results_slider': '8'
+                };
+                
+                localStorage.setItem('raisec-realistic', JSON.stringify(testData));
+                localStorage.setItem('raisec-investigative', JSON.stringify({test: '5'}));
+                localStorage.setItem('raisec-artistic', JSON.stringify({test: '3'}));
+                localStorage.setItem('raisec-social', JSON.stringify({test: '4'}));
+                localStorage.setItem('raisec-enterprising', JSON.stringify({test: '6'}));
+                localStorage.setItem('raisec-conventional', JSON.stringify({test: '5'}));
+                
+                location.reload();
+            };
+            
             debugContainer.appendChild(debugButton1);
             debugContainer.appendChild(debugButton2);
+            debugContainer.appendChild(debugButton3);
             document.body.appendChild(debugContainer);
             
             loadRAISECResults();
         });
+
+        // Also call loadRAISECResults when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadRAISECResults);
+        } else {
+            loadRAISECResults();
+        }
 
         function loadRAISECResults() {
             // Load data from all RAISEC types
@@ -391,21 +428,34 @@
             if (!hasData) {
                 console.log('No data found, showing message to complete test');
                 // Show message to complete test instead of demo data
-                document.querySelector('.main-type').innerHTML = `
-                    <div class="no-data-message" style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px; margin: 2rem 0;">
-                        <h2 style="color: #dc3545; margin-bottom: 1rem;">Test noch nicht abgeschlossen</h2>
-                        <p style="color: #6c757d; margin-bottom: 2rem;">Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
-                        <a href="index-raisec.html" class="btn btn-primary" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Test starten</a>
-                    </div>
-                `;
+                const mainTypeElement = document.querySelector('.main-type');
+                if (mainTypeElement) {
+                    mainTypeElement.innerHTML = `
+                        <div class="no-data-message" style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px; margin: 2rem 0;">
+                            <h2 style="color: #dc3545; margin-bottom: 1rem;">Test noch nicht abgeschlossen</h2>
+                            <p style="color: #6c757d; margin-bottom: 2rem;">Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
+                            <a href="index-raisec.html" class="btn btn-primary" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Test starten</a>
+                        </div>
+                    `;
+                }
+                
+                // Hide other sections
+                const careerSection = document.querySelector('.career-recommendations');
+                const developmentSection = document.querySelector('.development-recommendations');
+                if (careerSection) careerSection.style.display = 'none';
+                if (developmentSection) developmentSection.style.display = 'none';
             } else {
                 console.log('Data found, updating UI with real data');
+                console.log('Main type:', mainType, 'Score:', scores[mainType]);
+                console.log('All scores:', scores);
+                
                 // Update UI with real data
                 updateMainType(mainType, scores[mainType]);
                 updateDetailedEvaluation(scores);
                 updateCareerRecommendations(mainType, scores);
                 updatePersonalityInterpretation(mainType, scores);
                 updateDevelopmentRecommendations(mainType, scores);
+                updateHeroStats(scores);
             }
         }
 
@@ -540,8 +590,14 @@
         }
 
         function updateCareerRecommendations(mainType, scores) {
-            const careerFields = document.getElementById('careerFields');
+            const careerContainer = document.getElementById('careerRecommendations');
+            if (!careerContainer) {
+                console.log('Career recommendations container not found');
+                return;
+            }
+            
             const recommendations = getCareerRecommendations(mainType, scores);
+            console.log('Career recommendations:', recommendations);
             
             let html = '<div class="career-grid">';
             recommendations.forEach(career => {
@@ -556,7 +612,7 @@
             });
             html += '</div>';
             
-            careerFields.innerHTML = html;
+            careerContainer.innerHTML = html;
         }
 
         function getCareerRecommendations(mainType, scores) {
