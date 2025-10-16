@@ -73,6 +73,12 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die I
 - **Beispiele:** Konkrete Beispiele für besseres Verständnis
 - **Viel granularer:** Alles noch detaillierter und umfangreicher
 - **Mehr Denkanstöße:** Pro Frage noch mehr Hintergrund und Anregungen
+- **Unterfragen:** Jede Hauptfrage hat 3-5 Unterfragen
+- **Kontextuelle Hinweise:** Spezifische Tipps für jede Frage
+- **Reflexionsfragen:** Zusätzliche Fragen zur Vertiefung
+- **Beispiel-Szenarien:** Konkrete Situationen zum Durchdenken
+- **Persönliche Anknüpfungspunkte:** Bezug zu eigenen Erfahrungen
+- **Entwicklungsrichtungen:** Mögliche nächste Schritte pro Frage
 
 #### **Sidebar-Content:**
 - **Hilfreiche Tools:** Schreibmethoden, Selbstanalyse-Tools
@@ -81,6 +87,12 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die I
 - **YouTube-Videos:** Eingebettete, funktionierende Videos
 - **Tools & Methoden Querverlinkung:** Andere Tools und Methoden die helfen könnten
 - **Cross-Links zu anderen Workflows:** Interne Verknüpfungen zwischen Methoden
+- **Kategorisierte Tools:** Aufgeteilt nach Schreibmethoden, Selbstanalyse, Feedback, Zielsetzung
+- **Ressourcen-Kategorien:** Bücher, Online-Tools, Podcasts & Videos, Verwandte Workflows
+- **Tool-Beschreibungen:** Kurze Erklärungen zu jedem Tool
+- **Schwierigkeitsgrade:** Einfach, Mittel, Fortgeschritten
+- **Zeitaufwand:** Geschätzte Dauer für jedes Tool
+- **Anwendungsbereiche:** Wofür jedes Tool besonders geeignet ist
 
 ### 6. **PDF-Generierung**
 
@@ -100,6 +112,13 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die I
 - **Synthese:** Zusammenfassung der Erkenntnisse
 - **Aktionsplan:** Konkrete nächste Schritte
 - **Tipps & Ressourcen:** Von den Sidebars
+- **Detaillierte Schritt-Aufschlüsselung:** Jeder Schritt auf eigener Seite
+- **Frage-Kategorisierung:** Gruppierung nach Themenbereichen
+- **Antwort-Analyse:** Strukturierte Auswertung der Eingaben
+- **Entwicklungsempfehlungen:** Basierend auf den Antworten
+- **Ressourcen-Integration:** Alle Tipps und Links aus den Sidebars
+- **Persönliche Notizen:** Platz für zusätzliche Gedanken
+- **Follow-up-Aktionen:** Konkrete nächste Schritte mit Zeitrahmen
 
 #### **Technische Umsetzung:**
 - **jsPDF:** Für moderne PDF-Erstellung
@@ -119,6 +138,14 @@ Dieses Dokument fasst alle Anforderungen und Implementierungsschritte für die I
 - **Fehlerbehandlung:** Graceful Fallbacks bei Problemen
 - **Accessibility:** Screen-Reader-freundlich
 - **Mobile-First:** Optimiert für Smartphones
+- **Progress-Indikatoren:** Visuelle Fortschrittsanzeige
+- **Auto-Save:** Automatisches Speichern aller Eingaben
+- **Undo/Redo:** Rückgängig-Funktionen für Eingaben
+- **Keyboard-Navigation:** Vollständige Tastatur-Bedienbarkeit
+- **Touch-Optimierung:** Große Touch-Targets für mobile Geräte
+- **Ladezeiten-Anzeige:** Feedback bei längeren Operationen
+- **Hilfe-System:** Kontextuelle Hilfe und Tooltips
+- **Spracheinstellungen:** Mehrsprachige Unterstützung
 
 ### 8. **Dateistruktur**
 
@@ -146,6 +173,14 @@ methods/ikigai/
 - **Keine Verwirrung:** Alte Dateien als Templates behalten, aber entlinken
 - **Modulare Struktur:** Jede Methode in eigenem Ordner
 - **Klare Trennung:** HTML, CSS, JS getrennt nach Funktionalität
+- **Versionskontrolle:** Git-Tags für wichtige Meilensteine
+- **Dokumentation:** README-Dateien für jeden Ordner
+- **Backup-Strategie:** Regelmäßige Backups der Entwicklungsumgebung
+- **Code-Review:** Peer-Review-Prozess für alle Änderungen
+- **Testing-Struktur:** Separate Test-Ordner für Unit-Tests
+- **Asset-Management:** Optimierte Bilder und Icons
+- **Dependency-Management:** Klare Abhängigkeitsstruktur
+- **Build-Prozess:** Automatisierte Build- und Deploy-Pipeline
 
 ### 9. **Integration**
 
@@ -168,12 +203,28 @@ methods/ikigai/
 - **Mobile Testing:** iOS, Android, verschiedene Bildschirmgrößen
 - **Performance:** Ladezeiten, Memory-Usage
 - **Usability:** User-Testing mit echten Nutzern
+- **Unit-Tests:** Automatisierte Tests für alle Funktionen
+- **Integration-Tests:** End-to-End-Tests für komplette Workflows
+- **Accessibility-Tests:** Screen-Reader und Keyboard-Navigation
+- **Performance-Tests:** Load-Testing und Stress-Testing
+- **Security-Tests:** Vulnerability-Scans und Penetration-Tests
+- **Compatibility-Tests:** Verschiedene Browser-Versionen
+- **Regression-Tests:** Automatisierte Tests bei jeder Änderung
+- **User-Acceptance-Tests:** Tests mit echten End-Usern
 
 #### **Code-Qualität:**
 - **Modularer Code:** Wiederverwendbare Komponenten
 - **Dokumentation:** Kommentierte Code-Basis
 - **Error Handling:** Robuste Fehlerbehandlung
 - **Maintenance:** Einfach wartbar und erweiterbar
+- **Code-Style:** Konsistente Formatierung und Namenskonventionen
+- **Refactoring:** Regelmäßige Code-Optimierung
+- **Design-Patterns:** Anwendung bewährter Architektur-Patterns
+- **SOLID-Prinzipien:** Single Responsibility, Open/Closed, etc.
+- **DRY-Prinzip:** Don't Repeat Yourself
+- **KISS-Prinzip:** Keep It Simple, Stupid
+- **Code-Reviews:** Peer-Review für alle Änderungen
+- **Technical-Debt:** Regelmäßige Aufräumarbeiten
 
 ## 🚀 Implementierungsstatus
 
