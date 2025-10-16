@@ -718,6 +718,40 @@ a:hover {
     font-size: var(--text-sm);
 }
 
+/* Dashboard Button Styles */
+.profile-dashboard-section {
+    display: flex;
+    align-items: center;
+    margin-left: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    border-left: 1px solid var(--gray-200);
+}
+
+.btn-dashboard {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: var(--white);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.btn-dashboard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #4f46e5, #3730a3);
+}
+
+.btn-dashboard i {
+    font-size: var(--text-sm);
+}
+
 
 @media (max-width: 360px) {
     .service-card .btn {

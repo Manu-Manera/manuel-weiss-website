@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein Profil - Manuel Weiss Persönlichkeitsentwicklung</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/user-profile-dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="profile-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-user-circle"></i>
+                <span>Mein Profil</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Profil bearbeiten
+                </button>
+                <button class="btn btn-primary" onclick="goToMethods()">
+                    <i class="fas fa-arrow-left"></i> Zurück zu Methoden
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+        <!-- Profile Header -->
+        <section class="profile-header">
+            <div class="profile-avatar">
+                <img src="images/default-avatar.png" alt="Profilbild" id="profileImage">
+                <button class="avatar-edit" onclick="changeAvatar()">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-info">
+                <h1 id="userName">Manuel Weiss</h1>
+                <p class="user-title" id="userTitle">HR Berater für AI & Transformation</p>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="completedMethods">0</span>
+                        <span class="stat-label">Abgeschlossene Methoden</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="currentStreak">0</span>
+                        <span class="stat-label">Tage am Stück</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalTimeSpent">0h</span>
+                        <span class="stat-label">Zeit investiert</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Tabs -->
+        <nav class="dashboard-tabs">
+            <button class="tab-btn active" data-tab="overview">
+                <i class="fas fa-chart-pie"></i> Übersicht
+            </button>
+            <button class="tab-btn" data-tab="progress">
+                <i class="fas fa-tasks"></i> Fortschritt
+            </button>
+            <button class="tab-btn" data-tab="achievements">
+                <i class="fas fa-trophy"></i> Erfolge
+            </button>
+            <button class="tab-btn" data-tab="goals">
+                <i class="fas fa-bullseye"></i> Ziele
+            </button>
+            <button class="tab-btn" data-tab="statistics">
+                <i class="fas fa-chart-line"></i> Statistiken
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog"></i> Einstellungen
+            </button>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="dashboard-content">
+            <!-- Overview Tab -->
+            <section id="overview" class="tab-content active">
+                <div class="overview-grid">
+                    <!-- Quick Stats -->
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="card-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="overviewCompleted">0</h3>
+                                <p>Abgeschlossene Methoden</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="overviewProgress"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-icon">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="overviewInProgress">0</h3>
+                                <p>In Bearbeitung</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="overviewStreak">0</h3>
+                                <p>Tage am Stück</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="overviewRating">0</h3>
+                                <p>Durchschnittliche Bewertung</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h3><i class="fas fa-clock"></i> Letzte Aktivitäten</h3>
+                        <div class="activity-list" id="recentActivityList">
+                            <!-- Activity items will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3><i class="fas fa-bolt"></i> Schnellzugriff</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="continueLastMethod()">
+                                <i class="fas fa-play"></i>
+                                <span>Letzte Methode fortsetzen</span>
+                            </button>
+                            <button class="action-btn" onclick="startNewMethod()">
+                                <i class="fas fa-plus"></i>
+                                <span>Neue Methode starten</span>
+                            </button>
+                            <button class="action-btn" onclick="viewAllMethods()">
+                                <i class="fas fa-list"></i>
+                                <span>Alle Methoden anzeigen</span>
+                            </button>
+                            <button class="action-btn" onclick="setNewGoal()">
+                                <i class="fas fa-bullseye"></i>
+                                <span>Neues Ziel setzen</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Tab -->
+            <section id="progress" class="tab-content">
+                <div class="progress-section">
+                    <h2><i class="fas fa-tasks"></i> Dein Fortschritt</h2>
+                    
+                    <!-- In Progress Methods -->
+                    <div class="progress-methods">
+                        <h3>Methoden in Bearbeitung</h3>
+                        <div class="methods-grid" id="inProgressMethods">
+                            <!-- In progress methods will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Completed Methods -->
+                    <div class="completed-methods">
+                        <h3>Abgeschlossene Methoden</h3>
+                        <div class="methods-grid" id="completedMethods">
+                            <!-- Completed methods will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements Tab -->
+            <section id="achievements" class="tab-content">
+                <div class="achievements-section">
+                    <h2><i class="fas fa-trophy"></i> Deine Erfolge</h2>
+                    
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Achievements will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Tab -->
+            <section id="goals" class="tab-content">
+                <div class="goals-section">
+                    <div class="goals-header">
+                        <h2><i class="fas fa-bullseye"></i> Meine Ziele</h2>
+                        <button class="btn btn-primary" onclick="addNewGoal()">
+                            <i class="fas fa-plus"></i> Neues Ziel
+                        </button>
+                    </div>
+                    
+                    <div class="goals-list" id="goalsList">
+                        <!-- Goals will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Tab -->
+            <section id="statistics" class="tab-content">
+                <div class="statistics-section">
+                    <h2><i class="fas fa-chart-line"></i> Statistiken</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="chart-container">
+                            <h3>Aktivität der letzten 30 Tage</h3>
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Methoden-Kategorien</h3>
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Zeit pro Methode</h3>
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings" class="tab-content">
+                <div class="settings-section">
+                    <h2><i class="fas fa-cog"></i> Einstellungen</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <h3>Profil-Einstellungen</h3>
+                            <div class="setting-item">
+                                <label>Name</label>
+                                <input type="text" id="userNameInput" value="Manuel Weiss">
+                            </div>
+                            <div class="setting-item">
+                                <label>E-Mail</label>
+                                <input type="email" id="userEmailInput" value="manuel@example.com">
+                            </div>
+                            <div class="setting-item">
+                                <label>Beruf</label>
+                                <input type="text" id="userTitleInput" value="HR Berater für AI & Transformation">
+                            </div>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h3>Benachrichtigungen</h3>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    E-Mail Benachrichtigungen
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="reminderNotifications" checked>
+                                    Erinnerungen für offene Methoden
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h3>Datenschutz</h3>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="dataSharing" checked>
+                                    Anonymisierte Daten für Verbesserungen teilen
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-actions">
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Einstellungen speichern
+                        </button>
+                        <button class="btn btn-danger" onclick="exportData()">
+                            <i class="fas fa-download"></i> Daten exportieren
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/user-profile-dashboard.js"></script>
+    <script src="js/user-progress-tracker.js"></script>
+    <script src="js/personality-auth-integration.js"></script>
+</body>
+</html>
