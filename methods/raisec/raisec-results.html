@@ -164,19 +164,42 @@
     <script>
         // Load and process RAISEC data
         document.addEventListener('DOMContentLoaded', function() {
-            // Add debug button to clear localStorage
-            const debugButton = document.createElement('button');
-            debugButton.textContent = 'Debug: Clear localStorage';
-            debugButton.style.position = 'fixed';
-            debugButton.style.top = '10px';
-            debugButton.style.right = '10px';
-            debugButton.style.zIndex = '9999';
-            debugButton.style.background = 'red';
-            debugButton.style.color = 'white';
-            debugButton.style.padding = '10px';
-            debugButton.style.border = 'none';
-            debugButton.style.borderRadius = '5px';
-            debugButton.onclick = function() {
+            // Add debug buttons
+            const debugContainer = document.createElement('div');
+            debugContainer.style.position = 'fixed';
+            debugContainer.style.top = '10px';
+            debugContainer.style.right = '10px';
+            debugContainer.style.zIndex = '9999';
+            debugContainer.style.display = 'flex';
+            debugContainer.style.flexDirection = 'column';
+            debugContainer.style.gap = '5px';
+            
+            const debugButton1 = document.createElement('button');
+            debugButton1.textContent = 'Debug: Show Data';
+            debugButton1.style.background = 'blue';
+            debugButton1.style.color = 'white';
+            debugButton1.style.padding = '10px';
+            debugButton1.style.border = 'none';
+            debugButton1.style.borderRadius = '5px';
+            debugButton1.onclick = function() {
+                console.log('=== RAISEC DEBUG DATA ===');
+                console.log('Realistic:', localStorage.getItem('raisec-realistic'));
+                console.log('Investigative:', localStorage.getItem('raisec-investigative'));
+                console.log('Artistic:', localStorage.getItem('raisec-artistic'));
+                console.log('Social:', localStorage.getItem('raisec-social'));
+                console.log('Enterprising:', localStorage.getItem('raisec-enterprising'));
+                console.log('Conventional:', localStorage.getItem('raisec-conventional'));
+                alert('Debug data logged to console (F12)');
+            };
+            
+            const debugButton2 = document.createElement('button');
+            debugButton2.textContent = 'Debug: Clear Data';
+            debugButton2.style.background = 'red';
+            debugButton2.style.color = 'white';
+            debugButton2.style.padding = '10px';
+            debugButton2.style.border = 'none';
+            debugButton2.style.borderRadius = '5px';
+            debugButton2.onclick = function() {
                 localStorage.removeItem('raisec-realistic');
                 localStorage.removeItem('raisec-investigative');
                 localStorage.removeItem('raisec-artistic');
@@ -185,7 +208,10 @@
                 localStorage.removeItem('raisec-conventional');
                 location.reload();
             };
-            document.body.appendChild(debugButton);
+            
+            debugContainer.appendChild(debugButton1);
+            debugContainer.appendChild(debugButton2);
+            document.body.appendChild(debugContainer);
             
             loadRAISECResults();
         });
@@ -227,14 +253,15 @@
             const hasData = Object.values(scores).some(score => score > 0);
             
             if (!hasData) {
-                console.log('No data found, showing demo results');
-                // Show demo data if no real data is available
-                const demoScores = { 'R': 8.2, 'I': 6.5, 'A': 4.1, 'S': 7.3, 'E': 5.8, 'C': 6.9 };
-                updateMainType('R', 8.2);
-                updateDetailedEvaluation(demoScores);
-                updateCareerRecommendations('R', demoScores);
-                updatePersonalityInterpretation('R', demoScores);
-                updateDevelopmentRecommendations('R', demoScores);
+                console.log('No data found, showing message to complete test');
+                // Show message to complete test instead of demo data
+                document.querySelector('.main-type').innerHTML = `
+                    <div class="no-data-message">
+                        <h2>Test noch nicht abgeschlossen</h2>
+                        <p>Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
+                        <a href="index-raisec.html" class="btn btn-primary">Test starten</a>
+                    </div>
+                `;
             } else {
                 // Update UI with real data
                 updateMainType(mainType, scores[mainType]);
